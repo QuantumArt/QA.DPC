@@ -1,0 +1,56 @@
+﻿@{
+    Layout = null;
+}
+<html>
+<head>
+    <title></title>
+    @Styles.Render("~/content/KendoUI/KendoUIStyles")
+    @Scripts.Render("~/bundles/KendoUI")
+    @Styles.Render("~/content/site")
+    @Scripts.Render("~/Scripts/AutoUpdateStrategy.js")
+</head>
+<body>
+    <div class="formLayout">
+
+        <div style="display: none" id="PartialSendLinkDiv">
+            <a href="@Url.Action("Index","PartialSend")?@string.Join("&", ((string[])ViewBag.IgnoredStatus).Select(n => string.Format("IgnoredStatus=" + n)))">Отправить новую порцию</a>
+        </div>
+
+        <fieldset>
+            <legend>Ваша задача на частичную отправку</legend>
+            <div id="ActionTaskPropsDiv">
+            </div>
+        </fieldset>
+    </div>
+    <script>
+
+        AutoUpdateStrategy.updateRequestFunction = UpdateForm;
+
+        $(document).ready(function () { UpdateForm(); });
+
+        function UpdateForm() {
+            $.ajax({
+                url: '@Url.Action("UserTask", new { taskId = Model })',
+                type: "GET",
+                cache: false
+            }).done(
+                    function (result) {
+
+                        $("#ActionTaskPropsDiv").html(result.taskHtml);
+
+                        if (result.taskProcessingFinished)
+                            $("#PartialSendLinkDiv").show();
+
+                        AutoUpdateStrategy.notifyUpdateRequestEnded();
+                    })
+                .fail(
+                    function (jqXHR) {
+                        AutoUpdateStrategy.notifyUpdateRequestFailed(jqXHR.status);
+                    }
+                );
+        }
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+﻿@using QA.Core.Web
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<title>@(ViewBag.Title ?? "DPC")</title>
+	<meta name="app" content="dpc" />
+	@Styles.Render("~/content/site")
+
+	@this.RenderSection("jquery",
+	@<text>
+		@Scripts.Render("~/bundles/jquery")
+	</text>)
+
+	@Scripts.Render("~/bundles/scripts")
+	@RenderSection("head", false)
+	<script type="text/javascript">
+		if (!window.console) {
+			window.console = {};
+			window.console.log = function () { };
+			window.console.error = function() {};
+		}
+
+		@if (!string.IsNullOrEmpty(QA.Core.Web.Qp.QpHelper.HostId))
+        {
+        <text>
+		window.name = '@(QA.Core.Web.Qp.QpHelper.HostId)';
+		</text>
+        }
+	</script>
+</head>
+<body>
+	<div class="loadingLayer hidden"></div>
+	@RenderBody()
+	@RenderSection("scripts", false)
+</body>
+</html>

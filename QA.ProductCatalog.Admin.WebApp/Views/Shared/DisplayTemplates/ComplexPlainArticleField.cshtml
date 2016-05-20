@@ -1,0 +1,7 @@
+﻿@model PlainArticleField
+@if (Model == null) { return; }
+@{var value = Model.Value ?? "";}
+<dl class="plain-field row">
+    <dt class="plain-field-capture label">@Model.FieldDisplayName: </dt>
+    <dd class="plain-field-value field">@(value.Length > 100 ? value.Substring(0, 100) + "..." : value)</dd>
+</dl>

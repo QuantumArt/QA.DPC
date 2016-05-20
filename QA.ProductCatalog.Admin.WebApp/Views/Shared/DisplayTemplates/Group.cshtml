@@ -1,0 +1,38 @@
+﻿@using QA.Core.Models.UI
+@model Group
+@{
+	if (Model == null || Model.Hidden || Model.Title == null)
+	{
+		return;
+	}
+
+	var title = Model.Title is DependencyObject ? Html.DisplayFor(x => Model.Title) : Model.ReplaceNotesIfNeeded(Model.Title.ToString());
+
+	string titleStr = title.ToString();
+	
+	if (string.IsNullOrEmpty(titleStr))
+    {
+        return;
+    }
+
+	var hash = Html.GetUniqueId(titleStr);
+}
+<div id="@hash" class="group-panel collapsible @Model.ClassName @(Model.IsHorizontal ? "is-horizontal" : "") @((Model.Collapsible && Model.Collapsed) ? "collapsed" : "") ">
+    <fieldset>
+        <legend>@title</legend>
+        @if (Model.Collapsible)
+        {
+            <span class="handle">+-</span>
+        }
+        <div class="gr-wrapper">
+
+            @for (int i = 0; i < Model.Items.Count; i++)
+            {
+                <div class="group-panel-item">
+                    @Html.DisplayFor(x => Model.Items[i])
+                </div>
+            }
+        </div>
+    </fieldset>
+</div>
+

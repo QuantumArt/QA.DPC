@@ -1,0 +1,14 @@
+﻿@model GridColumn
+@if (Model == null || Model.Hidden) { return; }
+@if (Model.CellTemplate == null && Model.CurrentItem != null)
+{
+    @Html.DisplayFor(x => Model.CurrentItem)
+}
+else if (Model.CellTemplate != null)
+{
+    @Html.DisplayFor(x => Model.CellTemplate)
+}
+else
+{
+    @Html.DisplayFor(x => Model.Content)
+}

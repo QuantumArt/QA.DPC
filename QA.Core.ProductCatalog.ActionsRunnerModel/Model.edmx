@@ -1,0 +1,270 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Schedules">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Enabled" Type="bit" Nullable="false" />
+          <Property Name="CronExpression" Type="varchar" MaxLength="100" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Tasks">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="CreatedTime" Type="datetime" Nullable="false" />
+          <Property Name="LastStatusChangeTime" Type="datetime" />
+          <Property Name="Name" Type="varchar" MaxLength="500" Nullable="false" />
+          <Property Name="StateID" Type="int" Nullable="false" />
+          <Property Name="Data" Type="nvarchar(max)" />
+          <Property Name="UserID" Type="int" Nullable="false" />
+          <Property Name="UserName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Progress" Type="tinyint" />
+          <Property Name="Message" Type="nvarchar(max)" />
+          <Property Name="IsCancellationRequested" Type="bit" Nullable="false" />
+          <Property Name="IsCancelled" Type="bit" Nullable="false" />
+          <Property Name="DisplayName" Type="nvarchar" MaxLength="4000" Nullable="false" />
+          <Property Name="ScheduleID" Type="int" />
+          <Property Name="ScheduledFromTaskID" Type="int" />
+          <Property Name="ExclusiveCategory" Type="varchar" MaxLength="50" />
+          <Property Name="Config" Type="nvarchar(max)" />
+		  <Property Name="BinData" Type="varbinary(max)" />
+        </EntityType>
+        <EntityType Name="TaskStates">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Tasks_Schedules">
+          <End Role="Schedules" Type="Self.Schedules" Multiplicity="0..1" />
+          <End Role="Tasks" Type="Self.Tasks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Schedules">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tasks">
+              <PropertyRef Name="ScheduleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tasks_TaskStates">
+          <End Role="TaskStates" Type="Self.TaskStates" Multiplicity="1" />
+          <End Role="Tasks" Type="Self.Tasks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TaskStates">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tasks">
+              <PropertyRef Name="StateID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TasksScheduledFrom_Tasks">
+          <End Role="Tasks" Type="Self.Tasks" Multiplicity="0..1" />
+          <End Role="Tasks1" Type="Self.Tasks" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Tasks">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Tasks1">
+              <PropertyRef Name="ScheduledFromTaskID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ModelStoreContainer">
+          <EntitySet Name="Schedules" EntityType="Self.Schedules" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tasks" EntityType="Self.Tasks" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="TaskStates" EntityType="Self.TaskStates" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Tasks_Schedules" Association="Self.FK_Tasks_Schedules">
+            <End Role="Schedules" EntitySet="Schedules" />
+            <End Role="Tasks" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tasks_TaskStates" Association="Self.FK_Tasks_TaskStates">
+            <End Role="TaskStates" EntitySet="TaskStates" />
+            <End Role="Tasks" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TasksScheduledFrom_Tasks" Association="Self.FK_TasksScheduledFrom_Tasks">
+            <End Role="Tasks" EntitySet="Tasks" />
+            <End Role="Tasks1" EntitySet="Tasks" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="Model" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="TaskRunnerEntities" p1:LazyLoadingEnabled="true">
+          <EntitySet Name="Schedules" EntityType="Model.Schedule" />
+          <EntitySet Name="Tasks" EntityType="Model.Task" />
+          <EntitySet Name="TaskStates" EntityType="Model.TaskState" />
+          <AssociationSet Name="FK_Tasks_Schedules" Association="Model.FK_Tasks_Schedules">
+            <End Role="Schedule" EntitySet="Schedules" />
+            <End Role="Task" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Tasks_TaskStates" Association="Model.FK_Tasks_TaskStates">
+            <End Role="TaskState" EntitySet="TaskStates" />
+            <End Role="Task" EntitySet="Tasks" />
+          </AssociationSet>
+          <AssociationSet Name="FK_TasksScheduledFrom_Tasks" Association="Model.FK_TasksScheduledFrom_Tasks">
+            <End Role="Task" EntitySet="Tasks" />
+            <End Role="Task1" EntitySet="Tasks" />
+          </AssociationSet>
+        </EntityContainer>
+        <EntityType Name="Schedule">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Enabled" Type="Boolean" Nullable="false" />
+          <Property Name="CronExpression" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Tasks" Relationship="Model.FK_Tasks_Schedules" FromRole="Schedule" ToRole="Task" />
+        </EntityType>
+        <EntityType Name="Task">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="CreatedTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="LastStatusChangeTime" Type="DateTime" Precision="3" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+          <Property Name="StateID" Type="Int32" Nullable="false" />
+          <Property Name="Data" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="UserID" Type="Int32" Nullable="false" />
+          <Property Name="UserName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Progress" Type="Byte" />
+          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="IsCancellationRequested" Type="Boolean" Nullable="false" />
+          <Property Name="IsCancelled" Type="Boolean" Nullable="false" />
+          <Property Name="DisplayName" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+          <Property Name="ScheduledFromTaskID" Type="Int32" />
+          <Property Name="ScheduleID" Type="Int32" />
+          <NavigationProperty Name="Schedule" Relationship="Model.FK_Tasks_Schedules" FromRole="Task" ToRole="Schedule" />
+          <NavigationProperty Name="TaskState" Relationship="Model.FK_Tasks_TaskStates" FromRole="Task" ToRole="TaskState" />
+          <NavigationProperty Name="SpawnedTasks" Relationship="Model.FK_TasksScheduledFrom_Tasks" FromRole="Task" ToRole="Task1" />
+          <NavigationProperty Name="SheduledFromTask" Relationship="Model.FK_TasksScheduledFrom_Tasks" FromRole="Task1" ToRole="Task" />
+          <Property Name="ExclusiveCategory" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Config" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+		  <Property Name="BinData" Type="Binary" MaxLength="Max" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="TaskState">
+          <Key>
+            <PropertyRef Name="ID" />
+          </Key>
+          <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Tasks" Relationship="Model.FK_Tasks_TaskStates" FromRole="TaskState" ToRole="Task" />
+        </EntityType>
+        <Association Name="FK_Tasks_Schedules">
+          <End Type="Model.Schedule" Role="Schedule" Multiplicity="0..1" />
+          <End Type="Model.Task" Role="Task" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Schedule">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Task">
+              <PropertyRef Name="ScheduleID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Tasks_TaskStates">
+          <End Type="Model.TaskState" Role="TaskState" Multiplicity="1" />
+          <End Type="Model.Task" Role="Task" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="TaskState">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Task">
+              <PropertyRef Name="StateID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_TasksScheduledFrom_Tasks">
+          <End Type="Model.Task" Role="Task" Multiplicity="0..1" />
+          <End Type="Model.Task" Role="Task1" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Task">
+              <PropertyRef Name="ID" />
+            </Principal>
+            <Dependent Role="Task1">
+              <PropertyRef Name="ScheduledFromTaskID" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ModelStoreContainer" CdmEntityContainer="TaskRunnerEntities">
+          <EntitySetMapping Name="Schedules">
+            <EntityTypeMapping TypeName="Model.Schedule">
+              <MappingFragment StoreEntitySet="Schedules">
+                <ScalarProperty Name="CronExpression" ColumnName="CronExpression" />
+                <ScalarProperty Name="Enabled" ColumnName="Enabled" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Tasks">
+            <EntityTypeMapping TypeName="Model.Task">
+              <MappingFragment StoreEntitySet="Tasks">
+			    <ScalarProperty Name="BinData" ColumnName="BinData" />
+                <ScalarProperty Name="Config" ColumnName="Config" />
+                <ScalarProperty Name="ExclusiveCategory" ColumnName="ExclusiveCategory" />
+                <ScalarProperty Name="ScheduleID" ColumnName="ScheduleID" />
+                <ScalarProperty Name="ScheduledFromTaskID" ColumnName="ScheduledFromTaskID" />
+                <ScalarProperty Name="DisplayName" ColumnName="DisplayName" />
+                <ScalarProperty Name="IsCancelled" ColumnName="IsCancelled" />
+                <ScalarProperty Name="IsCancellationRequested" ColumnName="IsCancellationRequested" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="Progress" ColumnName="Progress" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="UserID" ColumnName="UserID" />
+                <ScalarProperty Name="Data" ColumnName="Data" />
+                <ScalarProperty Name="StateID" ColumnName="StateID" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="LastStatusChangeTime" ColumnName="LastStatusChangeTime" />
+                <ScalarProperty Name="CreatedTime" ColumnName="CreatedTime" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TaskStates">
+            <EntityTypeMapping TypeName="Model.TaskState">
+              <MappingFragment StoreEntitySet="TaskStates">
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+        <DesignerProperty Name="UseLegacyProvider" Value="False" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

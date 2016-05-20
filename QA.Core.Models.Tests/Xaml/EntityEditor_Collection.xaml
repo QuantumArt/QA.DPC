@@ -1,0 +1,15 @@
+﻿<EntityEditor xmlns="http://artq.com/configuration"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="{x:Binding Path=/MarketingProduct/Title}"
+    CurrentItem="{Binding}"    
+    DisplayAllPlainFields="true">
+    <EntityEditor.Behavior>
+        <QPBehavior Editable="true" FieldsToHide="1,2,4" FieldsToBlock="asd,asd,wer" />
+    </EntityEditor.Behavior>
+    <EntityCollection Items="{Binding /Parameters}">
+        <EntityCollection.ItemTemplate>
+            <Label Title="{Binding Path=/Title}"/>
+        </EntityCollection.ItemTemplate>
+    </EntityCollection>
+</EntityEditor>
+

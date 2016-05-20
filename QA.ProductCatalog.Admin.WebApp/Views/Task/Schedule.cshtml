@@ -1,0 +1,120 @@
+﻿@model QA.ProductCatalog.Admin.WebApp.Models.TaskScheduleModel
+
+
+@Scripts.Render("~/bundles/jqueryunobtrusive")
+
+@Scripts.Render("~/bundles/Schedule")
+
+@Styles.Render("~/content/jqcron.css")
+
+<style>
+	.editor-label {
+		width: 100px;
+	}
+</style>
+
+@using (Ajax.BeginForm("SaveShedule", "Task",
+	new AjaxOptions
+	{
+		OnSuccess = ViewBag.OnSuccess,
+		OnFailure = "OnSheduleSaveError"
+	}))
+{
+	@Html.HiddenFor(x => x.TaskId)
+	<div class="editor-label">
+		@Html.LabelFor(x => x.TaskId)
+	</div>
+	<div class="editor-field">
+		@Html.DisplayFor(x => x.TaskId)
+	</div>
+	<div class="editor-label">
+		@Html.LabelFor(x => x.Enabled)
+	</div>
+	<div class="editor-field">
+		@Html.EditorFor(x => x.Enabled)
+	</div>
+
+	<input type="hidden" name="CronExpression" id="CronExpressionInput" value="@(string.IsNullOrEmpty(Model.CronExpression) ? "* * * * *" : Model.CronExpression)" />
+
+	<div style="clear: both">
+		<input type="radio" onchange="SetSheduleEditingMode(false)" name="repeatType" id="RepeatInput">Повторять<input type="radio" onchange="SetSheduleEditingMode(true)" id="NonRepeatInput" name="repeatType">Одноразовое
+	</div>
+	<span id="jqCron"></span>
+	<input type="hidden" id="OneTimeDateTimePicker" />
+
+
+	<script>
+		var cronExpr = $("#CronExpressionInput").val();
+
+		var isOneTime = cronExpr[cronExpr.length - 1] != '*';
+
+		SetSheduleEditingMode(isOneTime);
+
+		$("#" + (isOneTime ? "NonRepeatInput" : "RepeatInput"))[0].checked = true;
+
+		function OnSheduleSaveError(xhr, status, error) {
+			alert('Ошибка' + error);
+		}
+
+		function SetSheduleEditingMode(isOneTime) {
+
+			var oneTimeDateTimePicker = $("#OneTimeDateTimePicker");
+
+			var cronInput = $("#CronExpressionInput");
+
+			var cronExpr = cronInput.val();
+
+			var cronSpan = $("#jqCron");
+
+			if (isOneTime) {
+
+				var kendoDateTimePicker = oneTimeDateTimePicker.data("kendoDateTimePicker");
+
+				if (!kendoDateTimePicker) {
+
+					var dateVal = GetDateFromCron(cronExpr);
+
+					kendoDateTimePicker = oneTimeDateTimePicker.kendoDateTimePicker({
+						format: "dd.MM.yyyy HH:mm",
+						value: dateVal,
+						culture: "ru-RU",
+						change: function() {
+
+							var selectedDate = this.value();
+
+							cronInput.val(GetCronExprFromDate(selectedDate));
+						}
+					}).data("kendoDateTimePicker");
+				} else
+					kendoDateTimePicker.wrapper.show();
+
+				cronInput.val(GetCronExprFromDate(kendoDateTimePicker.value()));
+
+				cronSpan.hide();
+
+			} else {
+
+				if (oneTimeDateTimePicker.data("kendoDateTimePicker"))
+					oneTimeDateTimePicker.data("kendoDateTimePicker").wrapper.hide();
+
+				cronSpan.show();
+
+				if (!cronSpan.data("jqCron")) {
+
+					cronSpan.jqCron(
+						{
+							bind_to: cronInput,
+						}
+					);
+				}
+
+				cronInput.val(cronSpan.data("jqCron").getCron());
+			}
+		}
+
+	</script>
+
+	<p>
+		<input id="save" type="submit" value="Сохранить" />
+	</p>
+}

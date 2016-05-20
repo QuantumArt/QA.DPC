@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Content ContentId="288" LoadAllPlainFields="True" ContentName="Products"  xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<EntityField FieldId="1729" >
+		<Content ContentId="376" x:Name="content_376">
+			<EntityField Content="{x:Reference content_376}" FieldId="1728" />
+		</Content>
+	</EntityField>
+	<EntityField FieldId="111" >
+		<Content ContentId="376" x:Name="content_376_2">
+			<EntityField Content="{x:Reference content_376_2}" FieldId="1728" />
+		</Content>
+	</EntityField>
+</Content>

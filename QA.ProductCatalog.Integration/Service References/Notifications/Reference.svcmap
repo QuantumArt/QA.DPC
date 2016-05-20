@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="598732eb-a958-4629-973d-45cbcea5166e" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>false</ReferenceAllAssemblies>
+    <ReferencedAssemblies>
+      <ReferencedAssembly AssemblyName="Microsoft.CSharp" />
+      <ReferencedAssembly AssemblyName="mscorlib" />
+      <ReferencedAssembly AssemblyName="System" />
+      <ReferencedAssembly AssemblyName="System.Core" />
+      <ReferencedAssembly AssemblyName="System.Data" />
+      <ReferencedAssembly AssemblyName="System.Data.DataSetExtensions" />
+      <ReferencedAssembly AssemblyName="System.Runtime.Serialization" />
+      <ReferencedAssembly AssemblyName="System.ServiceModel" />
+      <ReferencedAssembly AssemblyName="System.Xml" />
+      <ReferencedAssembly AssemblyName="System.Xml.Linq" />
+    </ReferencedAssemblies>
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://localhost:8010/DpcNotificationService" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="DpcNotificationService1.xsd" MetadataType="Schema" ID="9f412051-02a2-477d-adad-d229d3629cef" SourceId="1" SourceUrl="http://localhost:8010/DpcNotificationService?xsd=xsd2" />
+    <MetadataFile FileName="DpcNotificationService2.xsd" MetadataType="Schema" ID="8189080c-96a7-49ac-9524-006a7ee80cb4" SourceId="1" SourceUrl="http://localhost:8010/DpcNotificationService?xsd=xsd3" />
+    <MetadataFile FileName="DpcNotificationService1.disco" MetadataType="Disco" ID="2f506323-c744-48c8-a501-9a27711eba87" SourceId="1" SourceUrl="http://localhost:8010/DpcNotificationService?disco" />
+    <MetadataFile FileName="DpcNotificationService3.xsd" MetadataType="Schema" ID="7e25d668-edb4-477b-a30b-1eb58ffa09f1" SourceId="1" SourceUrl="http://localhost:8010/DpcNotificationService?xsd=xsd1" />
+    <MetadataFile FileName="DpcNotificationService4.xsd" MetadataType="Schema" ID="4c229e5e-e6bc-49dd-90ff-e571bdd375aa" SourceId="1" SourceUrl="http://localhost:8010/DpcNotificationService?xsd=xsd0" />
+    <MetadataFile FileName="NotificationService1.wsdl" MetadataType="Wsdl" ID="86fd3e9b-c3ca-4b7f-822d-fae07ba2b620" SourceId="1" SourceUrl="http://localhost:8010/DpcNotificationService?wsdl" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

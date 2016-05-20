@@ -1,0 +1,18 @@
+﻿<GroupGridView xmlns="http://artq.com/configuration"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" 
+               Items="{Binding /Parameters}">
+    
+    <GroupGridView.Columns>
+        <GridColumn Title="Id" Width="10em">
+            <Label Title="{Binding Id}" />
+        </GridColumn>
+        <GridColumn Title="Title" Width="20em">
+            <Label Title="{Binding /Title}" />
+        </GridColumn>
+        <GridColumn Title="Value">
+            <Label Title="{Binding /Value}" />
+        </GridColumn>
+    </GroupGridView.Columns>
+</GroupGridView>
+
+

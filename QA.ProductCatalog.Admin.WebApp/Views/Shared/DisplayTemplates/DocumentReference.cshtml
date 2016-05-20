@@ -1,0 +1,11 @@
+﻿@model DocumentReference
+@if (Model == null || Model.ReferenceTo == null || Model.Hidden) { return; }
+
+@{
+	object title = Model.GetTitle();
+    string referenceId = Model.ReferenceTo.UId;
+}
+<span class="anchor-wrapper"><a class="anchor bold" href="#@referenceId">@Model.ReplaceNotesIfNeeded(title.ToString())</a></span>
+
+
+

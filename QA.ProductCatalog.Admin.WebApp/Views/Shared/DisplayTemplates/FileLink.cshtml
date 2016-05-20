@@ -1,0 +1,6 @@
+﻿@using QA.Core.Web
+@model FileLink
+<span title="@Model.Title" class="idLink active">
+	<span class="icon link"><img src="@Url.Content("~/content/img/icons/0.gif")"></span>
+	<a class="js" href="@Model.GetFileLink()" target="_blank">@Model.ReplaceNotesIfNeeded(Model.Title)</a>
+</span>

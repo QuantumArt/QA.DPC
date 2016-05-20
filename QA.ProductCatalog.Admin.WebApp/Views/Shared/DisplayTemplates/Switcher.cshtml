@@ -1,0 +1,18 @@
+﻿@model Switcher
+@if (Model == null || Model.Hidden) { return; }
+@{var switchOn = Model.SwitchOn;
+QA.Core.Models.UI.UIElement element = null;}
+@if (switchOn == null /*|| (switchOn.GetType().IsValueType && switchOn == Activator.CreateInstance(switchOn.GetType()))*/)
+{
+    return;
+}
+
+@if (Model.Cases.TryGetValue(switchOn, out element))
+{
+    @: @Html.DisplayFor(x => element)
+}
+else
+{
+    @Html.DisplayFor(x => Model.Default)
+}
+

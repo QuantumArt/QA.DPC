@@ -1,0 +1,198 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.Admin.WebApp", "QA.ProductCatalog.Admin.WebApp\QA.ProductCatalog.Admin.WebApp.csproj", "{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core", "QA.Core\QA.Core.csproj", "{21895C57-CB09-4AF4-906A-71ED4599FE65}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.DPC.Loader", "QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj", "{30CE970F-DC61-40B7-9625-44A70E8BEAF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.DPC.UI", "QA.Core.DPC.UI\QA.Core.DPC.UI.csproj", "{08B8D510-2309-425F-B3E3-DD9DCDB3497F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.Models", "QA.Core.Models\QA.Core.Models.csproj", "{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.ProductCatalog.Actions", "QACore.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj", "{8516B769-6B89-4E24-BEF7-3C4B1924A11A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.ProductCatalog.ActionsRunner", "QA.Core.ProductCatalog.ActionsRunner\QA.Core.ProductCatalog.ActionsRunner.csproj", "{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.ProductCatalog.ActionsRunnerModel", "QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj", "{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.Service.Interaction", "QA.Core.Service.Interaction\QA.Core.Service.Interaction.csproj", "{55DD52CC-35E6-4254-A753-5005EF682F14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.Web", "QA.Core.Web\QA.Core.Web.csproj", "{D11650B3-2082-48B1-986B-605A033A04DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.Infrastructure", "QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj", "{5AF860A1-97A7-4C36-9496-21054975E226}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.Integration", "QA.ProductCatalog.Integration\QA.ProductCatalog.Integration.csproj", "{54C5A130-E1F2-4971-A76A-C7991FC456AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.Data", "QA.Core.Data\QA.Core.Data.csproj", "{7AF052FF-C40A-45C7-ADFE-BC0FFF0B59FD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{10472872-2A52-4957-88A0-5A3593D8FA69}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Bee_test|Any CPU = Bee_test|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Megafon|Any CPU = Megafon|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{08B8D510-2309-425F-B3E3-DD9DCDB3497F}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{08B8D510-2309-425F-B3E3-DD9DCDB3497F}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{08B8D510-2309-425F-B3E3-DD9DCDB3497F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08B8D510-2309-425F-B3E3-DD9DCDB3497F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08B8D510-2309-425F-B3E3-DD9DCDB3497F}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{08B8D510-2309-425F-B3E3-DD9DCDB3497F}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{08B8D510-2309-425F-B3E3-DD9DCDB3497F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08B8D510-2309-425F-B3E3-DD9DCDB3497F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55DD52CC-35E6-4254-A753-5005EF682F14}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{55DD52CC-35E6-4254-A753-5005EF682F14}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{55DD52CC-35E6-4254-A753-5005EF682F14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55DD52CC-35E6-4254-A753-5005EF682F14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55DD52CC-35E6-4254-A753-5005EF682F14}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{55DD52CC-35E6-4254-A753-5005EF682F14}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{55DD52CC-35E6-4254-A753-5005EF682F14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55DD52CC-35E6-4254-A753-5005EF682F14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D11650B3-2082-48B1-986B-605A033A04DC}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{D11650B3-2082-48B1-986B-605A033A04DC}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{D11650B3-2082-48B1-986B-605A033A04DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D11650B3-2082-48B1-986B-605A033A04DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D11650B3-2082-48B1-986B-605A033A04DC}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{D11650B3-2082-48B1-986B-605A033A04DC}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{D11650B3-2082-48B1-986B-605A033A04DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D11650B3-2082-48B1-986B-605A033A04DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7AF052FF-C40A-45C7-ADFE-BC0FFF0B59FD}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{7AF052FF-C40A-45C7-ADFE-BC0FFF0B59FD}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{7AF052FF-C40A-45C7-ADFE-BC0FFF0B59FD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AF052FF-C40A-45C7-ADFE-BC0FFF0B59FD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AF052FF-C40A-45C7-ADFE-BC0FFF0B59FD}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{7AF052FF-C40A-45C7-ADFE-BC0FFF0B59FD}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{7AF052FF-C40A-45C7-ADFE-BC0FFF0B59FD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AF052FF-C40A-45C7-ADFE-BC0FFF0B59FD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 14
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://tfs.artq.com:8080/tfs/quantumartcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = QA.ProductCatalog.Admin.WebApp\\QA.ProductCatalog.Admin.WebApp.csproj
+		SccProjectName1 = QA.ProductCatalog.Admin.WebApp
+		SccLocalPath1 = QA.ProductCatalog.Admin.WebApp
+		SccProjectUniqueName2 = QA.Core\\QA.Core.csproj
+		SccProjectName2 = QA.Core
+		SccLocalPath2 = QA.Core
+		SccProjectUniqueName3 = QA.Core.DPC.Loader\\QA.Core.DPC.Loader.csproj
+		SccProjectName3 = QA.Core.DPC.Loader
+		SccLocalPath3 = QA.Core.DPC.Loader
+		SccProjectUniqueName4 = QA.Core.DPC.UI\\QA.Core.DPC.UI.csproj
+		SccProjectName4 = QA.Core.DPC.UI
+		SccLocalPath4 = QA.Core.DPC.UI
+		SccProjectUniqueName5 = QA.Core.Models\\QA.Core.Models.csproj
+		SccProjectName5 = QA.Core.Models
+		SccLocalPath5 = QA.Core.Models
+		SccProjectUniqueName6 = QACore.ProductCatalog.Actions\\QA.Core.ProductCatalog.Actions.csproj
+		SccProjectName6 = QACore.ProductCatalog.Actions
+		SccLocalPath6 = QACore.ProductCatalog.Actions
+		SccProjectUniqueName7 = QA.Core.ProductCatalog.ActionsRunner\\QA.Core.ProductCatalog.ActionsRunner.csproj
+		SccProjectName7 = QA.Core.ProductCatalog.ActionsRunner
+		SccLocalPath7 = QA.Core.ProductCatalog.ActionsRunner
+		SccProjectUniqueName8 = QA.Core.ProductCatalog.ActionsRunnerModel\\QA.Core.ProductCatalog.ActionsRunnerModel.csproj
+		SccProjectName8 = QA.Core.ProductCatalog.ActionsRunnerModel
+		SccLocalPath8 = QA.Core.ProductCatalog.ActionsRunnerModel
+		SccProjectUniqueName9 = QA.Core.Service.Interaction\\QA.Core.Service.Interaction.csproj
+		SccProjectName9 = QA.Core.Service.Interaction
+		SccLocalPath9 = QA.Core.Service.Interaction
+		SccProjectUniqueName10 = QA.Core.Web\\QA.Core.Web.csproj
+		SccProjectName10 = QA.Core.Web
+		SccLocalPath10 = QA.Core.Web
+		SccProjectUniqueName11 = QA.ProductCatalog.Infrastructure\\QA.ProductCatalog.Infrastructure.csproj
+		SccProjectName11 = QA.ProductCatalog.Infrastructure
+		SccLocalPath11 = QA.ProductCatalog.Infrastructure
+		SccProjectUniqueName12 = QA.ProductCatalog.Integration\\QA.ProductCatalog.Integration.csproj
+		SccProjectName12 = QA.ProductCatalog.Integration
+		SccLocalPath12 = QA.ProductCatalog.Integration
+		SccProjectUniqueName13 = QA.Core.Data\\QA.Core.Data.csproj
+		SccProjectName13 = QA.Core.Data
+		SccLocalPath13 = QA.Core.Data
+	EndGlobalSection
+EndGlobal

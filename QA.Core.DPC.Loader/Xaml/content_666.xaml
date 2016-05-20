@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Несуществующий контент для тестов парсинга конфигурационного XML-->
+<Content ContentId="288" LoadAllPlainFields="True" ContentName="Products"  xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <EntityField FieldName="MarketingProduct" FieldId="1115"  Load="True" CloningMode="UseExisting" DeletingMode="Keep" >
+        <!-- O2M -->
+        <Content ContentName="MarketingProducts" ContentId="111" LoadAllPlainFields="True">
+            <EntityField FieldId="1293" Content="300" CloningMode="UseExisting" DeletingMode="Keep" FieldName="Modifiers" Load="True" />
+            <EntityField FieldId="1450"  CloningMode="UseExisting" DeletingMode="Keep" FieldName="Images" Load="True" >
+                <Content ContentName="ProductImage" ContentId="112" LoadAllPlainFields="False">
+                    <PlainField FieldName="Image" FieldId="1447"/>
+                    <EntityField FieldId="1448"  CloningMode="UseExisting" DeletingMode="Keep" FieldName="Type" Load="True" >
+                        <Content ContentName="ImageType" ContentId="113" LoadAllPlainFields="True" />
+                    </EntityField>
+                    <PlainField FieldName="Image2" FieldId="1442" />
+                </Content>
+            </EntityField>
+            <EntityField FieldId="1289" CloningMode="UseExisting" DeletingMode="Keep" FieldName="PreOpenParamGroups" Load="True" >
+                <Content ContentName="ProductParameterGroup" ContentId="296" LoadAllPlainFields="True" />   
+            </EntityField>
+        </Content>
+    </EntityField>
+    <EntityField FieldName="Regions" FieldId="1228"  Load="True" CloningMode="UseExisting" DeletingMode="Keep" >
+        <!-- M2M-->
+        <Content ContentName="Regions" ContentId="294" LoadAllPlainFields="False">
+            <PlainField FieldName="Title" FieldId="1137"/>
+            <PlainField FieldName="Alias" FieldId="1139"/>
+            <EntityField FieldId="1450"  CloningMode="UseExisting" DeletingMode="Keep" FieldName="Images" Load="True" >
+                <Content ContentName="ProductImage" ContentId="112" LoadAllPlainFields="False">
+                    <PlainField FieldName="Image2" FieldId="1442" />
+                </Content>
+            </EntityField>
+        </Content>
+    </EntityField>
+    <EntityField FieldName="Parameters" FieldId="1193" Load="True" CloningMode="Copy" DeletingMode="Delete">
+        <!-- M2O -->
+        <Content ContentName="ProductParameters" ContentId="291" LoadAllPlainFields="True">
+            <EntityField FieldId="1169" Content="211" FieldName="BaseParamenter" CloningMode="UseExisting" DeletingMode="Keep" Load="True"/>
+            <EntityField FieldId="1396" Content="335" FieldName="Zone" CloningMode="UseExisting" DeletingMode="Keep" Load="True"/>
+        </Content>
+    </EntityField>
+    <EntityField FieldId="1295" Content="300" FieldName="Modifiers" Load="True" CloningMode="UseExisting" DeletingMode="Keep" />
+    <!--M2O-->
+    <EntityField FieldId="1313" Content="327" FieldName="ArchiveTabs" Load="True" CloningMode="Copy" DeletingMode="Delete" />
+    <ExtensionField FieldId="1233" FieldName="Type">
+        <!--моб. тарифы-->
+        <Content ContentId="305" ContentName="Мобильные тарифы">
+            <EntityField FieldId="1365" FieldName="ProductFilters" Load="True" CloningMode="UseExisting" DeletingMode="Keep">
+                <Content ContentId="112" ContentName="Маркетинговые продукты" LoadAllPlainFields="False" x:Name="marketing_product_compact">
+                    <PlainField FieldId="1110" FieldName="Title" />
+                    <PlainField FieldId="1112" FieldName="Alias" />
+                </Content>
+            </EntityField>
+            <EntityField FieldId="1453" Content="343" FieldName="AccountTypes" Load="True" CloningMode="UseExisting" DeletingMode="Keep" />
+        </Content>
+        <!--моб. услуги-->
+        <Content ContentId="312" ContentName="Мобильные услуги">
+            <EntityField FieldId="1363" FieldName="ProductFilters" Load="True" CloningMode="UseExisting" Content="{x:Reference marketing_product_compact}" DeletingMode="Keep" />
+            <EntityField FieldId="1454" Content="343" FieldName="AccountTypes" Load="True" CloningMode="UseExisting" DeletingMode="Keep" />
+        </Content>
+    </ExtensionField>
+
+    <!--Связь с контентом "Связи продуктов и WebEntity"-->
+    <!--наличие этого кода-->
+    <BackwardRelationField FieldId="1471" FieldName="ProductWebEntities" CloningMode="Ignore">
+        <Content ContentId="344" LoadAllPlainFields="False">
+            <EntityField FieldId="1472" Content="345" FieldName="Modifiers"/>            
+            <EntityField FieldId="1469" FieldName="WebEntity">
+                <Content ContentId="311" ContentName="WebEntity" LoadAllPlainFields="True">
+                    <EntityField FieldName="Params" FieldId="1414"  Load="True" CloningMode="Ignore" DeletingMode="Delete" >
+                        <!-- M2M-->
+                        <Content ContentName="WebEntityParam" ContentId="325" LoadAllPlainFields="True">
+                            <EntityField FieldName="Params" FieldId="1323"  Load="True" CloningMode="Ignore" DeletingMode="Keep" >
+                                <Content ContentName="ProductParameter" ContentId="291" LoadAllPlainFields="False" />
+                            </EntityField>
+                        </Content>
+                    </EntityField>
+                </Content>
+            </EntityField>
+        </Content>
+    </BackwardRelationField>
+    <!-- Связь через обратное поле с расширением "Группы взаимоисключений продуктов" которому подгружается родительская статья "Матрица связей продуктов" -->
+    <BackwardRelationField FieldId="1279" FieldName="XorProductsMatrix" CloningMode="Ignore">
+        <Content ContentId="309" ContentName="Группы взаимоисключающих тарифов" LoadAllPlainFields="True">
+            <EntityField FieldId="1385" Content="307" FieldName="XorProductsMatrix" Load="True" CloningMode="Ignore" DeletingMode="Keep" />
+        </Content>
+    </BackwardRelationField>
+    <Dictionaries>
+        <!-- 303 вложен в 287 -->
+        <Content ContentName="Modifiers" ContentId="111" />
+        <Content ContentName="Modifiers" ContentId="112" />
+        <Content ContentName="Modifiers" ContentId="113" />
+
+        <!-- Пока нельзя добавлять сюда другие контенты, т.к. получение статей этого захардкожено (см. ProductLoader.InitDictionaries(...)-->
+        <Content ContentName="Modifiers" ContentId="300" />
+
+        <Content ContentName="Modifiers" ContentId="211" />
+
+        <Content ContentName="Modifiers" ContentId="311" />
+    </Dictionaries>
+</Content>

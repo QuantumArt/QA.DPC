@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Content ContentId="340" ContentName="Группы продуктов"  xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<PlainField ShowInList="True" FieldName="Title" FieldId="1329"/>
+	<EntityField CloningMode="UseExisting"  FieldName="Texts" FieldId="1334" >
+		<Content ContentName="Дополнительные тексты групп продуктов" ContentId="341" />
+	</EntityField>
+	<PlainField ShowInList="True" FieldName="Parent" FieldId="1337"/>
+	<EntityField CloningMode="UseExisting"  FieldName="Modifiers" FieldId="1353" >
+		<Content ContentName="Модификаторы групп продуктов"  ContentId="371" />
+	</EntityField>
+</Content>

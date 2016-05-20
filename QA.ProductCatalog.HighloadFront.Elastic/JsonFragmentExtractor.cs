@@ -1,0 +1,110 @@
+﻿using System.IO;
+using System.Threading.Tasks;
+
+namespace QA.ProductCatalog.HighloadFront.Elastic
+{
+    public static class JsonFragmentExtractor
+    {
+        public static int ReaderBufferSize { get; set; } = 4096;
+
+        public static async Task<int> ExtractJsonFragment(string textToSearch, Stream requestStream, Stream responseStream, int? depthToSearch = null)
+        {
+            using (var reader = new StreamReader(requestStream))
+            {
+                using (var writer = new StreamWriter(responseStream))
+                {
+                    return await JsonFragmentExtractor.ExtractJsonFragment(textToSearch, reader, writer, depthToSearch);
+                }
+            }
+        }
+
+        public static async Task<int> ExtractJsonFragment(string textToSearch, TextReader reader, StreamWriter writer, int? depthToSearch = null)
+        {
+            bool inside = false, startExport = false, exporting = false;
+            int depth = 0, exportDepth = 0, l = 0, batchSize = 0, count = 1, found = 0, entityNumber = 0;
+            char prev = (char)0;
+            writer.Write("[");
+            var findInWhole = !depthToSearch.HasValue;
+            int deep = depthToSearch ?? 0;
+            char[] json = new char[ReaderBufferSize];
+            batchSize = json.Length;
+
+            while ((batchSize = await reader.ReadAsync(json, 0, json.Length)) > 0)
+            {
+                l++;
+                for (int i = 0; i < batchSize; i++)
+                {
+                    var c = json[i];
+
+                    if (exporting)
+                    {
+                        writer.Write(c);
+                        count++;
+                    }
+
+                    if (!inside && (c == '{' || c == '['))
+                    {
+                        if (startExport && !exporting)
+                        {
+                            entityNumber++;
+                            exporting = true;
+                            if (entityNumber > 1)
+                            {
+                                writer.Write(',');
+                                count++;
+                            }
+                            writer.Write(c);
+                            count++;
+                        }
+                        depth++;
+                        continue;
+                    }
+
+                    if (!inside && (c == '}' || c == ']'))
+                    {
+                        depth--;
+                        if (exporting && depth == exportDepth)
+                        {
+                            exporting = false;
+                            startExport = false;
+                        }
+                        continue;
+                    }
+                    if (c == '"')
+                    {
+                        if (prev != '\\')
+                            inside = !inside;
+                    }
+
+                    if (!findInWhole && depth >= deep)
+                    {
+                        if (found < textToSearch.Length && c == textToSearch[found])
+                        {
+                            found++;
+                        }
+                        else
+                        {
+                            found = 0;
+                        }
+
+                        if (found == textToSearch.Length)
+                        {
+                            //нашли текст
+                            // далее запись будет вестить начиная с З { или [
+                            startExport = true;
+                            exportDepth = depth;
+                            found = 0;
+                        }
+                    }
+
+                    prev = c;
+                }
+            }
+
+            writer.Write("]");
+            count++;
+
+            return count;
+        }      
+    }    
+}

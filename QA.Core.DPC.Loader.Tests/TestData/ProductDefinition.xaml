@@ -1,0 +1,458 @@
+<Content ContentId="288" ContentName="Products" xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <EntityField CloningMode="UseExisting" FieldId="1115" FieldName="MarketingProduct">
+        <Content XmlMappingBehavior.CachePeriod="00:10:00" ContentId="287" ContentName="MarketingProducts">
+            <EntityField CloningMode="UseExisting" FieldId="1202" FieldName="Categories">
+                <Content ContentId="304" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1201" FieldName="Family">
+                <Content ContentId="303" ContentName="ProductFamily">
+                    <EntityField CloningMode="UseExisting" FieldId="1187" FieldName="MarketingSign">
+                        <Content ContentId="298" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1461" FieldName="Categories">
+                        <Content ContentId="304" />
+                    </EntityField>
+                    <BackwardRelationField DeletingMode="Delete" DisplayName="B2B Тип параметра" FieldId="1664" FieldName="B2BParameterTypes" RelationGroupName="Типы параметров b2b">
+                        <Content ContentId="367" ContentName="B2BParameterType">
+                            <EntityField FieldId="1663" FieldName="Parameters">
+                                <Content ContentId="291" ContentName="ProductParameter" LoadAllPlainFields="False">
+                                    <PlainField FieldId="1119" FieldName="Title" />
+                                </Content>
+                            </EntityField>
+                        </Content>
+                    </BackwardRelationField>
+                    <EntityField CloningMode="UseExisting" FieldId="1666" FieldName="ConnectedFamilies">
+                        <Content ContentId="303" ContentName="ProductFamily" LoadAllPlainFields="False">
+                            <PlainField FieldId="1183" FieldName="Title" />
+                        </Content>
+                    </EntityField>
+                </Content>
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1297" FieldName="MarketingSign">
+                <Content ContentId="298" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1620" FieldName="ExtServices">
+                <Content ContentId="355" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1293" FieldName="Modifiers">
+                <Content ContentId="300" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1450" FieldName="Images">
+                <Content ContentId="342" ContentName="ProductImage" LoadAllPlainFields="False">
+                    <PlainField FieldId="1447" FieldName="Image" />
+                    <EntityField CloningMode="UseExisting" FieldId="1448" FieldName="Type">
+                        <Content ContentId="341" ContentName="ImageType" />
+                    </EntityField>
+                </Content>
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1289" FieldName="PreOpenParamGroups">
+                <Content ContentId="296" ContentName="ProductParameterGroup" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1655" FieldName="Usages">
+                <Content ContentId="316" />
+            </EntityField>
+            <ExtensionField FieldId="1134" FieldName="ProductType">
+                <Content ContentId="289" ContentName="Маркетинговые мобильные тарифы B2C">
+                    <EntityField CloningMode="UseExisting" FieldId="1281" FieldName="ProductFilters">
+                        <Content ContentId="314" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1456" FieldName="OtherPaymentSystemTariff">
+                        <Content ContentId="287" ContentName="MarketingMobileTariff" LoadAllPlainFields="False" />
+                    </EntityField>
+                </Content>
+                <Content ContentId="290" ContentName="Маркетинговые мобильные услуги B2C">
+                    <EntityField CloningMode="UseExisting" FieldId="1280" FieldName="ProductFilters">
+                        <Content ContentId="314" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1282" FieldName="TariffParameterGroups">
+                        <Content ContentId="296" ContentName="ProductParameterGroup" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1307" FieldName="Prefix">
+                        <Content ContentId="326" ContentName="ServicePrefix" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1308" FieldName="MobileDevices">
+                        <Content ContentId="319" ContentName="RecomendedDevice" />
+                    </EntityField>
+                </Content>
+                <Content ContentId="362" ContentName="Маркетинговые мобильные тарифы B2B">
+                    <EntityField CloningMode="UseExisting" FieldId="1706" FieldName="ProductFilters">
+                        <Content ContentId="314" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1710" FieldName="Segment">
+                        <Content ContentId="369" ContentName="B2BSegment">
+                            <EntityField CloningMode="UseExisting" FieldId="1677" FieldName="Groups">
+                                <Content ContentId="368" />
+                            </EntityField>
+                        </Content>
+                    </EntityField>
+                </Content>
+                <Content ContentId="363" ContentName="Маркетинговые мобильные услуги B2B">
+                    <EntityField CloningMode="UseExisting" FieldId="1707" FieldName="ProductFilters">
+                        <Content ContentId="314" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1711" FieldName="Segment">
+                        <Content ContentId="369" ContentName="B2BSegment">
+                            <EntityField CloningMode="UseExisting" FieldId="1677" FieldName="Groups">
+                                <Content ContentId="368" />
+                            </EntityField>
+                        </Content>
+                    </EntityField>
+                </Content>
+                <Content ContentId="364" ContentName="Маркетинговое оборудование B2B">
+                    <EntityField CloningMode="UseExisting" FieldId="1705" FieldName="ProductFilters">
+                        <Content ContentId="314" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1709" FieldName="Segment">
+                        <Content ContentId="369" ContentName="B2BSegment">
+                            <EntityField CloningMode="UseExisting" FieldId="1677" FieldName="Groups">
+                                <Content ContentId="368" />
+                            </EntityField>
+                        </Content>
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1712" FieldName="EquipmentType">
+                        <Content ContentId="374" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1713" FieldName="Colors">
+                        <Content ContentId="373" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1714" FieldName="Fotos">
+                        <Content ContentId="372" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1715" FieldName="Applications">
+                        <Content ContentId="371" ContentName="B2BApplicationGroup">
+                            <EntityField CloningMode="UseExisting" FieldId="1689" FieldName="Group">
+                                <Content ContentId="370" />
+                            </EntityField>
+                        </Content>
+                    </EntityField>
+                </Content>
+                <Content ContentId="375" ContentName="Маркетинговые подписки CDP" LoadAllPlainFields="False">
+                    <PlainField FieldId="1731" FieldName="ServiceId" />
+                    <PlainField FieldId="1729" FieldName="Partner">
+                        <PlainField.CustomProperties>
+                            <x:Boolean x:Key="RenderTextFieldAsXml">True</x:Boolean>
+                        </PlainField.CustomProperties>
+                    </PlainField>
+                    <PlainField FieldId="1730" FieldName="Activators">
+                        <PlainField.CustomProperties>
+                            <x:Boolean x:Key="RenderTextFieldAsXml">True</x:Boolean>
+                        </PlainField.CustomProperties>
+                    </PlainField>
+                    <PlainField FieldId="1734" FieldName="CdpDescription" />
+                    <PlainField FieldId="1744" FieldName="CommercialName" />
+                    <PlainField FieldId="1732" FieldName="ProductCode" />
+                    <PlainField FieldId="1733" FieldName="Timestamp" />
+                    <PlainField FieldId="1735" FieldName="ContentType" />
+                </Content>
+            </ExtensionField>
+            <EntityField CloningMode="UseExisting" FieldId="1291" FieldName="Tabs">
+                <Content ContentId="318" ContentName="ParameterGroupUsageInTab">
+                    <EntityField CloningMode="UseExisting" FieldId="1249" FieldName="Tab">
+                        <Content ContentId="317" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1251" FieldName="Groups">
+                        <Content ContentId="296" ContentName="ProductParameterGroup" />
+                    </EntityField>
+                </Content>
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1593" FieldName="ProductUsages">
+                <Content ContentId="315" ContentName="ProductUsageType">
+                    <EntityField CloningMode="UseExisting" FieldId="1243" FieldName="Regions">
+                        <Content ContentId="294" />
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1244" FieldName="UseCases">
+                        <Content ContentId="316" />
+                    </EntityField>
+                </Content>
+            </EntityField>
+            <BackwardRelationField DeletingMode="Delete" DisplayName="UpSale B2B" FieldId="1657" FieldName="UpSaleItems" RelationGroupName="Связи между продуктами">
+                <Content ContentId="366" ContentName="UpSaleB2B">
+                    <EntityField FieldId="1658" FieldName="ItemToUpSale">
+                        <Content ContentId="287" ContentName="MarketingProduct" LoadAllPlainFields="False">
+                            <PlainField FieldId="1110" FieldName="Title" />
+                            <PlainField FieldId="1112" FieldName="Alias" />
+                        </Content>
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1659" FieldName="Regions">
+                        <Content ContentId="294" ContentName="Regions" LoadAllPlainFields="False">
+                            <PlainField FieldId="1137" FieldName="Title" />
+                            <PlainField FieldId="1139" FieldName="Alias" />
+                            <PlainField FieldId="1337" FieldName="OldSiteId" />
+                            <EntityField CloningMode="UseExisting" FieldId="1602" FieldName="ExternalRegionMappings">
+                                <Content ContentId="350" />
+                            </EntityField>
+                        </Content>
+                    </EntityField>
+                    <EntityField FieldId="1656" FieldName="Parent">
+                        <Content ContentId="307" ContentName="ProductMatrix">
+                            <EntityField FieldId="1376" FieldName="Modifiers">
+                                <Content ContentId="331" />
+                            </EntityField>
+                            <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1368" FieldName="Parameters">
+                                <Content x:Name="__ReferenceID0" ContentId="330" ContentName="ProductReleationParameter">
+                                    <EntityField FieldId="1369" FieldName="BaseParameter">
+                                        <Content ContentId="292" />
+                                    </EntityField>
+                                    <EntityField FieldId="1370" FieldName="Modifiers">
+                                        <Content ContentId="339" />
+                                    </EntityField>
+                                    <EntityField FieldId="1372" FieldName="Unit">
+                                        <Content ContentId="302" />
+                                    </EntityField>
+                                </Content>
+                            </EntityField>
+                        </Content>
+                    </EntityField>
+                </Content>
+            </BackwardRelationField>
+        </Content>
+    </EntityField>
+    <EntityField CloningMode="UseExisting" FieldId="1228" FieldName="Regions">
+        <Content ContentId="294" ContentName="Regions" LoadAllPlainFields="False">
+            <PlainField FieldId="1137" FieldName="Title" />
+            <PlainField FieldId="1139" FieldName="Alias" />
+            <PlainField FieldId="1337" FieldName="OldSiteId" />
+            <EntityField CloningMode="UseExisting" FieldId="1602" FieldName="ExternalRegionMappings">
+                <Content ContentId="350" />
+            </EntityField>
+        </Content>
+    </EntityField>
+    <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1193" FieldName="Parameters">
+        <Content XmlMappingBehavior.CachePeriod="00:10:00" ContentId="291" ContentName="ProductParameters">
+            <EntityField CloningMode="UseExisting" FieldId="1169" FieldName="BaseParameter">
+                <Content ContentId="292" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1396" FieldName="Zone">
+                <Content ContentId="335" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1397" FieldName="Direction">
+                <Content ContentId="336" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1413" FieldName="BaseParameterModifiers">
+                <Content ContentId="339" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1179" FieldName="Modifiers">
+                <Content ContentId="293" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1170" FieldName="Group">
+                <Content ContentId="296" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1178" FieldName="Unit">
+                <Content ContentId="302" />
+            </EntityField>
+            <EntityField FieldId="1373" FieldName="MatrixParameter">
+                <Content ContentId="330" />
+            </EntityField>
+        </Content>
+    </EntityField>
+    <EntityField CloningMode="UseExisting" FieldId="1619" FieldName="ExtServices">
+        <Content ContentId="355" />
+    </EntityField>
+    <EntityField CloningMode="UseExisting" FieldId="1296" FieldName="MarketingSign">
+        <Content ContentId="298" />
+    </EntityField>
+    <EntityField CloningMode="UseExisting" FieldId="1295" FieldName="Modifiers">
+        <Content ContentId="300" />
+    </EntityField>
+    <EntityField CloningMode="UseExisting" FieldId="1667" FieldName="Usages">
+        <Content ContentId="316" />
+    </EntityField>
+    <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1313" FieldName="ArchiveTabs">
+        <Content ContentId="327" />
+    </EntityField>
+    <ExtensionField FieldId="1233" FieldName="Type">
+        <Content ContentId="305" ContentName="Мобильные тарифы">
+            <EntityField CloningMode="UseExisting" FieldId="1365" FieldName="ProductFilters">
+                <Content ContentId="314" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1453" FieldName="AccountTypes">
+                <Content ContentId="343" />
+            </EntityField>
+        </Content>
+        <Content ContentId="312" ContentName="Мобильные услуги">
+            <EntityField CloningMode="UseExisting" FieldId="1363" FieldName="ProductFilters">
+                <Content ContentId="314" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1454" FieldName="AccountTypes">
+                <Content ContentId="343" />
+            </EntityField>
+        </Content>
+        <Content ContentId="360" ContentName="Мобильные тарифы B2B">
+            <EntityField CloningMode="UseExisting" FieldId="1718" FieldName="Segment">
+                <Content ContentId="369" ContentName="B2BSegment">
+                    <EntityField CloningMode="UseExisting" FieldId="1677" FieldName="Groups">
+                        <Content ContentId="368" />
+                    </EntityField>
+                </Content>
+            </EntityField>
+        </Content>
+        <Content ContentId="361" ContentName="Мобильные услуги B2B">
+            <EntityField CloningMode="UseExisting" FieldId="1721" FieldName="Segment">
+                <Content ContentId="369" ContentName="B2BSegment">
+                    <EntityField CloningMode="UseExisting" FieldId="1677" FieldName="Groups">
+                        <Content ContentId="368" />
+                    </EntityField>
+                </Content>
+            </EntityField>
+        </Content>
+        <Content ContentId="365" ContentName="Оборудование B2B" />
+        <Content ContentId="376" ContentName="Подписки CDP" />
+    </ExtensionField>
+    <BackwardRelationField CloningMode="Copy" DeletingMode="Delete" DisplayName="Связи с WEbEntity" FieldId="1471" FieldName="ProductWebEntities" RelationGroupName="ProductWebEntities">
+        <Content XmlMappingBehavior.CachePeriod="00:10:00" ContentId="344">
+            <EntityField CloningMode="UseExisting" FieldId="1472" FieldName="Modifiers">
+                <Content ContentId="345" />
+            </EntityField>
+            <EntityField CloningMode="UseExisting" FieldId="1469" FieldName="WebEntity">
+                <Content ContentId="299" ContentName="WebEntity">
+                    <EntityField DeletingMode="Delete" FieldId="1414" FieldName="Params">
+                        <Content ContentId="325" ContentName="WebEntityParam">
+                            <EntityField FieldId="1323" FieldName="Params">
+                                <Content XmlMappingBehavior.CachePeriod="00:10:00" ContentId="291" ContentName="ProductParameter" LoadAllPlainFields="False">
+                                    <PlainField FieldId="1119" FieldName="Title" />
+                                </Content>
+                            </EntityField>
+                        </Content>
+                    </EntityField>
+                    <EntityField CloningMode="UseExisting" FieldId="1771" FieldName="ChildWebEntities">
+                        <Content ContentId="299" ContentName="WebEntity">
+                            <EntityField CloningMode="UseExisting" FieldId="1772" FieldName="ExternalRegionMappings">
+                                <Content ContentId="350" ContentName="Внешние системы регионов" />
+                            </EntityField>
+                            <EntityField CloningMode="UseExisting" FieldId="1414" FieldName="Params">
+                                <Content ContentId="325" ContentName="WebEntityParam">
+                                    <EntityField CloningMode="UseExisting" FieldId="1323" FieldName="Params">
+                                        <Content ContentId="291" ContentName="Параметры продукта" LoadAllPlainFields="False">
+                                            <PlainField FieldId="1119" FieldName="Title" />
+                                        </Content>
+                                    </EntityField>
+                                </Content>
+                            </EntityField>
+                            <EntityField CloningMode="UseExisting" FieldId="1771" FieldName="ChildWebEntities">
+                                <Content ContentId="299" ContentName="WebEntity">
+                                    <EntityField CloningMode="UseExisting" FieldId="1414" FieldName="Params">
+                                        <Content ContentId="325" ContentName="WebEntityParam">
+                                            <EntityField CloningMode="UseExisting" FieldId="1323" FieldName="Params">
+                                                <Content ContentId="291" ContentName="Параметры продукта" LoadAllPlainFields="False">
+                                                    <PlainField FieldId="1119" FieldName="Title" />
+                                                </Content>
+                                            </EntityField>
+                                        </Content>
+                                    </EntityField>
+                                </Content>
+                            </EntityField>
+                        </Content>
+                    </EntityField>
+                </Content>
+            </EntityField>
+        </Content>
+    </BackwardRelationField>
+    <BackwardRelationField CloningMode="Copy" DeletingMode="Delete" DisplayName="ProductParameterGroupChanges" FieldId="1259" FieldName="ProductParameterGroupChanges" RelationGroupName="ProductParameterGroupChanges">
+        <Content ContentId="320" ContentName="ProductParameterGroupChange">
+            <EntityField FieldId="1261" FieldName="ParamGroup">
+                <Content ContentId="296" />
+            </EntityField>
+        </Content>
+    </BackwardRelationField>
+    <BackwardRelationField DeletingMode="Delete" DisplayName="Услуги на тарифе" FieldId="1386" FieldName="ServicesOnTariff" RelationGroupName="Связи между продуктами">
+        <Content ContentId="311" ContentName="ServiceOnTariff">
+            <EntityField FieldId="1387" FieldName="Service">
+                <Content x:Name="__ReferenceID1" XmlMappingBehavior.CachePeriod="00:20:00" ContentId="288" LoadAllPlainFields="False" PublishingMode="SkipRecursive">
+                    <EntityField FieldId="1115" FieldName="MarketingProduct">
+                        <Content XmlMappingBehavior.CachePeriod="00:15:00" ContentId="287" LoadAllPlainFields="False" PublishingMode="SkipRecursive">
+                            <PlainField FieldId="1110" FieldName="Title" />
+                            <PlainField FieldId="1112" FieldName="Alias" />
+                        </Content>
+                    </EntityField>
+                </Content>
+            </EntityField>
+            <EntityField FieldId="1217" FieldName="Parent">
+                <Content ContentId="307" ContentName="ProductMatrix">
+                    <EntityField FieldId="1376" FieldName="Modifiers">
+                        <Content ContentId="331" />
+                    </EntityField>
+                    <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1368" FieldName="Parameters">
+                        <x:Reference>__ReferenceID0</x:Reference>
+                    </EntityField>
+                </Content>
+            </EntityField>
+        </Content>
+    </BackwardRelationField>
+    <BackwardRelationField DisplayName="Группы взаимоисключений продуктов" FieldId="1279" FieldName="XorProductsMatrix" RelationGroupName="XorProductsMatrix">
+        <Content ContentId="309" ContentName="MutualGroup">
+            <EntityField FieldId="1385" FieldName="Parent">
+                <Content ContentId="307" />
+            </EntityField>
+            <EntityField FieldId="1279" FieldName="Products">
+                <x:Reference>__ReferenceID1</x:Reference>
+            </EntityField>
+        </Content>
+    </BackwardRelationField>
+    <BackwardRelationField DeletingMode="Delete" DisplayName="Переход с тарифов" FieldId="1389" FieldName="TariffTransfers" RelationGroupName="Связи между продуктами">
+        <Content ContentId="308" ContentName="TariffTransfer">
+            <EntityField FieldId="1388" FieldName="TariffFrom">
+                <x:Reference>__ReferenceID1</x:Reference>
+            </EntityField>
+            <EntityField FieldId="1210" FieldName="Parent">
+                <Content ContentId="307" ContentName="ProductMatrix">
+                    <EntityField FieldId="1376" FieldName="Modifiers">
+                        <Content ContentId="331" />
+                    </EntityField>
+                    <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1368" FieldName="Parameters">
+                        <x:Reference>__ReferenceID0</x:Reference>
+                    </EntityField>
+                </Content>
+            </EntityField>
+        </Content>
+    </BackwardRelationField>
+    <BackwardRelationField DeletingMode="Delete" DisplayName="Тарифы с услугой" FieldId="1387" FieldName="TariffsOnService" RelationGroupName="Связи между продуктами">
+        <Content ContentId="311" ContentName="TariffOnService">
+            <EntityField FieldId="1386" FieldName="Tariff">
+                <x:Reference>__ReferenceID1</x:Reference>
+            </EntityField>
+            <EntityField FieldId="1217" FieldName="Parent">
+                <Content ContentId="307" ContentName="ProductMatrix">
+                    <EntityField FieldId="1376" FieldName="Modifiers">
+                        <Content ContentId="331" />
+                    </EntityField>
+                    <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1368" FieldName="Parameters">
+                        <x:Reference>__ReferenceID0</x:Reference>
+                    </EntityField>
+                </Content>
+            </EntityField>
+        </Content>
+    </BackwardRelationField>
+    <Dictionaries DefaultCachePeriod="01:45:00">
+        <Content XmlMappingBehavior.CachePeriod="10:00:00" ContentId="292" ContentName="BaseProductParameter" />
+        <Content XmlMappingBehavior.CachePeriod="00:30:00" ContentId="293" ContentName="ProductParamsModifier" />
+        <Content XmlMappingBehavior.CachePeriod="10:00:00" ContentId="294" ContentName="Region" />
+        <Content ContentId="296" ContentName="ProductParameterGroup" />
+        <Content XmlMappingBehavior.CachePeriod="00:40:00" ContentId="298" ContentName="MarketingSign" />
+        <Content XmlMappingBehavior.CachePeriod="01:10:00" ContentId="300" ContentName="ProductModifier" />
+        <Content XmlMappingBehavior.CachePeriod="10:00:00" ContentId="302" ContentName="Unit" />
+        <Content XmlMappingBehavior.CachePeriod="00:40:00" ContentId="303" ContentName="ProductFamily" />
+        <Content ContentId="304" ContentName="ProductCategory" />
+        <Content XmlMappingBehavior.CachePeriod="00:40:00" ContentId="314" ContentName="ProductFilter" />
+        <Content ContentId="316" ContentName="UsageType" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="317" ContentName="ProductTab" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="319" ContentName="RecomendedDevice" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="326" ContentName="ServicePrefix" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="331" ContentName="ProductRelationModifier" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="335" ContentName="TariffZone" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="336" ContentName="TariffDirection" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="339" ContentName="BaseParameterModifier" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="341" ContentName="ImageType" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="342" ContentName="ImageType" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="343" ContentName="AccountType" />
+        <Content ContentId="345" ContentName="AccountType" />
+        <Content ContentId="350" ContentName="ExternalSystemMapping" />
+        <Content XmlMappingBehavior.CachePeriod="00:55:00" ContentId="355" ContentName="ExtService" />
+        <Content ContentId="368" ContentName="B2BSegmentGroup" />
+        <Content ContentId="370" ContentName="B2BApplicationGroup" />
+        <Content ContentId="369" ContentName="B2BSegment" />
+        <Content XmlMappingBehavior.CachePeriod="00:50:00" ContentId="371" ContentName="B2BApplication" />
+        <Content ContentId="374" ContentName="B2BEquipmentType" />
+        <Content XmlMappingBehavior.CachePeriod="00:50:00" ContentId="373" ContentName="B2BColor" />
+        <Content XmlMappingBehavior.CachePeriod="00:50:00" ContentId="367" ContentName="B2BParameterType" />
+    </Dictionaries>
+</Content>

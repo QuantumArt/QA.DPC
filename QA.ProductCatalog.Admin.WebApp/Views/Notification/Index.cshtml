@@ -1,0 +1,44 @@
+﻿@using QA.ProductCatalog.Integration.Notifications
+@model ConfigurationInfo
+
+<div class="formLayout">
+    @if (!Model.IsAtual)
+    {
+        <fieldset>
+            <legend>Важно</legend>
+            <div class="gr-wrapper">
+                Настройки сервиса публикации изменены @Html.ActionLink("обновить", "UpdateConfiguration", null, new { @class = "js" })
+            </div>
+        </fieldset>
+    }
+
+    <fieldset>
+        <legend>Каналы</legend>
+        <table class="inner-groupping-table">
+            <tbody>
+            @foreach (var channel in Model.Channels)
+            {
+                <tr>
+                    <td>@channel.Name</td>
+                    @switch (channel.State)
+                {
+                    case State.Actual:
+                            <td class="icon"></td>
+                            break;
+                        case State.Chanded:
+                            <td class="refresh icon"></td>
+                            break;
+                        case State.Deleted:
+                            <td class="delete icon"></td>
+                            break;
+                        case State.New:
+                            <td class="add icon"></td>
+                            break;
+                    }
+
+                </tr>
+            }
+            </tbody>
+        </table>
+    </fieldset>
+</div>

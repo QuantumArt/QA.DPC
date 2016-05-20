@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="1cc4cb27-6508-45e4-9123-462a1036b685" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>false</ReferenceAllAssemblies>
+    <ReferencedAssemblies>
+      <ReferencedAssembly AssemblyName="Jil" />
+      <ReferencedAssembly AssemblyName="mscorlib" />
+      <ReferencedAssembly AssemblyName="Mts.Sonic" />
+      <ReferencedAssembly AssemblyName="Mts.Sonic.Infrastructure" />
+      <ReferencedAssembly AssemblyName="System" />
+      <ReferencedAssembly AssemblyName="System.Core" />
+      <ReferencedAssembly AssemblyName="System.Data" />
+      <ReferencedAssembly AssemblyName="System.Data.DataSetExtensions" />
+      <ReferencedAssembly AssemblyName="System.Net.Http" />
+      <ReferencedAssembly AssemblyName="System.Runtime.Serialization" />
+      <ReferencedAssembly AssemblyName="System.ServiceModel" />
+      <ReferencedAssembly AssemblyName="System.Xml" />
+      <ReferencedAssembly AssemblyName="System.Xml.Linq" />
+    </ReferencedAssemblies>
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="http://mscservices01:8029/DpcService.svc" Protocol="http" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="DpcService.xsd" MetadataType="Schema" ID="edfd58cd-02e2-4857-be1b-5002ec162319" SourceId="1" SourceUrl="http://mscservices01:8029/DpcService.svc?xsd=xsd0" />
+    <MetadataFile FileName="DpcProductService.wsdl" MetadataType="Wsdl" ID="fbb9a61c-1704-4351-8cdc-b2126acbb5e9" SourceId="1" SourceUrl="http://mscservices01:8029/DpcService.svc?wsdl" />
+    <MetadataFile FileName="DpcService1.xsd" MetadataType="Schema" ID="bb6faa30-540e-4f38-940d-e8bca6cc3aa9" SourceId="1" SourceUrl="http://mscservices01:8029/DpcService.svc?xsd=xsd1" />
+    <MetadataFile FileName="DpcService2.xsd" MetadataType="Schema" ID="af9c789e-869f-4bb7-9552-4680b874e68d" SourceId="1" SourceUrl="http://mscservices01:8029/DpcService.svc?xsd=xsd2" />
+    <MetadataFile FileName="DpcService.disco" MetadataType="Disco" ID="92b30a03-920a-4a2a-970a-f6d329ad46cb" SourceId="1" SourceUrl="http://mscservices01:8029/DpcService.svc?disco" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>

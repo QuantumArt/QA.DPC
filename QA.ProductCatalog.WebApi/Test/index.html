@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Test web api</title>
+    <script src="jquery-2.1.1.min.js"></script>
+    <style>
+        input {
+            width: 100%;
+        }
+        select {
+            width: 100%;
+        }
+        textarea {
+            width: 100%;
+            height: 500px;
+        }
+        table {
+            width: 1000px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+      Web API
+    </div>
+    <hr />
+    <div>
+        <table>
+            <tr>
+                <td>id</td>
+                <td><input id="idInput" type="text" value="167249" /></td>
+            </tr>
+			<tr>
+				<td>slug</td>
+				<td><input id="slugInput" type="text" value="Services" /></td>
+			</tr>
+            <tr>
+                <td>format</td>
+                <td>
+                    <select id="formatSelect">
+                        <option value="json" selected="selected">json</option>
+                        <option value="xml">xml</option>
+						<option value="xaml">xaml</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>type</td>
+                <td>
+                    <select id="typeSelect">
+                        <option value="get" selected="selected">get</option>
+                        <option value="post">post</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <textarea id="dataTextarea"></textarea>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input id="sendInput" type="button" value="отправить" />
+                </td>
+            </tr>
+        </table>
+    </div>
+    <pre id="resultPre"></pre>
+    <script>
+		function testApi(id, slug, format, type, data) {
+			$('#sendInput').attr('disabled', 'disabled');
+			updateResult("Запрос...");
+            $.ajax({
+                type: type,
+                url: getUrl(id, slug, format),
+                dataType: getdataType(format),
+                contentType: getcontentType(format),
+                data: data
+            }).success(function (result) {
+            	if (type == 'get'){
+            		updateValue(result, format);
+				}
+            	updateResult(null);
+            	$('#sendInput').removeAttr('disabled');
+            })
+            .error(function (result, error, errorThrown) {
+            	updateValue(null, 'error');
+            	updateResult(error + '\r\n' + errorThrown + '\r\n' + result.responseText);
+            	$('#sendInput').removeAttr('disabled');
+            });
+        }
+
+		function getdataType(format) {
+			if (format == 'json') {
+				return 'json';
+			}
+			if (format == 'xaml') {
+				return 'xml';
+			}
+			else {
+				return 'xml';
+			}
+		}
+
+        function getcontentType(format) {
+        	if (format == 'json') {
+        		return 'application/json';
+        	}
+        	if (format == 'xaml') {
+        		return 'application/xaml+xml';
+        	}
+        	else {
+        		return 'application/xml';
+        	}
+        }
+
+        function getUrl(id, slug, format) {
+            return '../api/v1/' + slug + '/' + format + '/' + id;
+        }
+
+        function updateValue(result, format) {
+        	var text;
+
+        	if (format == 'xml' || format == 'xaml') {
+        		if (result) {
+        			text = (new XMLSerializer()).serializeToString(result);
+        		}
+        		else {
+        			text = null;
+        		}
+        	}
+        	else if (format == 'json') {
+        		text = JSON.stringify(result);
+        	}
+        	else {
+        		text = result;
+        	}
+
+        	if (!text) {
+        		text = null;
+        	}
+
+        	$('#dataTextarea').val(text);
+        }
+
+        function updateResult(result) {       
+        	$('#resultPre').text(result);
+        }
+
+        $(document).ready(function () {
+            $('#sendInput').click(function () {
+            	var id = $('#idInput').val();
+            	var slug = $('#slugInput').val();
+                var format = $('#formatSelect').val();
+                var type = $('#typeSelect').val();
+                var data = type == 'get' ? null : $('#dataTextarea').val();
+                testApi(id, slug, format, type, data);
+            });
+        });
+    </script>
+</body>
+</html>

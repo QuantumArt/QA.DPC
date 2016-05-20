@@ -1,0 +1,18 @@
+﻿<StackPanel xmlns="http://artq.com/configuration"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" IsHorizontal="False" >
+    <QPControlTest Title="{Binding Path=Test1}" Name="{Binding AnotherCoolProperty}">
+        <QPControlTest Title="{Binding Inner.Prop}"/>
+    </QPControlTest>
+    <QPControlTest HierarchicalMember="test" Title="{Binding Path=Test1}" Name="{Binding AnotherCoolProperty}">
+        <QPControlTest />
+    </QPControlTest>
+
+    <QPControlTest HierarchicalMember="test" Title="{Binding Path=Test1}" Name="{Binding AnotherCoolProperty}">
+        <QPControlTest HierarchicalMember="test1" Name="{Binding AnotherCoolProperty}" />
+    </QPControlTest>
+
+    <QPControlTest HierarchicalMember="test" Title="{Binding Path=Test1}" Name="{Binding AnotherCoolProperty}">
+        <QPControlTest HierarchicalMember="{x:Null}" Name="{Binding AnotherCoolProperty}" />
+    </QPControlTest>
+</StackPanel>
+

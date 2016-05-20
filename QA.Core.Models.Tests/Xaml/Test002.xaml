@@ -1,0 +1,13 @@
+﻿<QPControlTest xmlns="http://artq.com/configuration"
+         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+          Name="{x:Binding ContentName}"          
+          Title="{Binding Path=/PDF}"
+          Caption="{Binding Path=/MarketingProduct.ContentId}"
+          ContentId="{Binding Path=/MarketingProduct.ContentId}"
+               >
+    <QPControlTest Name="{Binding Path=/MarketingProduct/Title.FieldName}"
+                   Title="{Binding Path=/MarketingProduct/Title.FieldName.Length}"
+                   Caption="{Binding Path=/MarketingProduct.Item/Family/IsUseModernDesign.Type}">        
+    </QPControlTest>
+</QPControlTest>
+

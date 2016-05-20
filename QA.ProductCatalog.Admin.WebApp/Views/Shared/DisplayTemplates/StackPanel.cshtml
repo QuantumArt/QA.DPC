@@ -1,0 +1,4 @@
+﻿@model StackPanel
+@if (Model == null || Model.Hidden) { return; }
+<div id="@Model.UId" class="stack-panel@(Model.IsHorizontal? " is-horizontal": "" )@(Model.ShowBorder ? " dashed-border" : "") @Model.DisplayMode">@for (int i = 0; i < Model.Items.Count; i++)
+{ <text><div class="stack-panel-item" style="@(Model.UseInlineForChildBlocks? "display: inline": "")">@Html.DisplayFor(x => Model.Items[i])</div></text> }</div>

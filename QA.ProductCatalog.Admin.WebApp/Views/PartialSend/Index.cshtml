@@ -1,0 +1,102 @@
+﻿@section head{
+    @Styles.Render("~/content/KendoUI/KendoUIStyles")
+}
+@section jquery{
+    @Scripts.Render("~/bundles/KendoUI")
+}
+
+<div class="formLayout">
+    <fieldset>
+        <legend>Частичная отправка продуктов на все витрины (live и\или stage)</legend>
+
+        <p>
+            Данная утилита позволяет публиковать и отправлять продукты на витрины,
+            <br />
+            а также удалять с витрин архивные, невидимые или по ошибке не удаленные продукты.
+            <br />
+            В поле следует вводить список Id региональных продуктов (возможные разделители: "," ";" пробел, с новой строки)
+        </p>
+
+
+        <div id="SendDiv" style="display: none">
+            @using (Html.BeginForm("Send", "PartialSend"))
+            {
+                @Html.ValidationSummary()
+
+                <div>
+                    @Html.TextArea("idsStr", new { cols = 125, rows = 10 })
+                </div>
+                <p>
+                    <div id="proceedIgnoredStatusDiv">
+                        @Html.CheckBox("proceedIgnoredStatus", new Dictionary<string, object>() { { "id", "proceedIgnoredStatus" } })
+                        <label for="proceedIgnoredStatus">Обрабатывать статьи со специальными статусами</label>
+                    </div>
+                    @Html.CheckBox("stageOnly", false, new { id = "stageOnlyCb", onchange="$('#proceedIgnoredStatusDiv').toggle()" })
+                    <label for="stageOnlyCb">Отправлять только на stage без публикации</label>
+
+                    @foreach (var st in ViewBag.IgnoredStatus)
+                    {
+                        <input type="hidden" name="IgnoredStatus" value="@st" />
+                    }
+                </p>
+                <p>
+                    <input id="save" type="submit" value="Отправить продукты" />
+                </p>
+            }
+        </div>
+
+        <div id="CurrentTaskDiv" style="display: none">
+            <div style="color: red; font-weight: bold;">Одновременно может выполняться только одна задача на отправку. Дождитесь завершения данной.</div>
+            <div class="formLayout">
+                <fieldset>
+                    <legend>Текущая задача на частичную отправку</legend>
+                    <div id="ActionTaskPropsDiv">
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+    </fieldset>
+</div>
+
+@section scripts{
+
+    @Scripts.Render("~/Scripts/AutoUpdateStrategy.js")
+
+    <script>
+
+        AutoUpdateStrategy.updateRequestFunction = UpdateForm;
+
+        $(document).ready(function () { UpdateForm(); });
+
+        function UpdateForm() {
+            $.ajax({
+                url: "@Url.Action("CurrentActiveTask")",
+                type: "GET",
+                cache: false
+            }).done(
+            function (actionPropsHtml) {
+
+                if (actionPropsHtml == "") {
+                    $("#CurrentTaskDiv").hide();
+
+                    $("#SendDiv").show();
+                } else {
+                    $("#CurrentTaskDiv").show();
+
+                    $("#ActionTaskPropsDiv").html(actionPropsHtml);
+
+                    $("#SendDiv").hide();
+                }
+
+                AutoUpdateStrategy.notifyUpdateRequestEnded();
+            })
+            .fail(
+                    function (jqXHR) {
+                        AutoUpdateStrategy.notifyUpdateRequestFailed(jqXHR.status);
+                    }
+                );
+        }
+
+    </script>
+}
+

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://schemas.datacontract.org/2004/07/QA.Core.DPC" elementFormDefault="qualified" targetNamespace="http://schemas.datacontract.org/2004/07/QA.Core.DPC" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="http://localhost:8010/DpcNotificationService?xsd=xsd3" namespace="http://schemas.microsoft.com/2003/10/Serialization/Arrays" />
+  <xs:complexType name="ArrayOfNotificationItem">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="NotificationItem" nillable="true" type="tns:NotificationItem" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfNotificationItem" nillable="true" type="tns:ArrayOfNotificationItem" />
+  <xs:complexType name="NotificationItem">
+    <xs:sequence>
+      <xs:element xmlns:q1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" minOccurs="0" name="Channels" nillable="true" type="q1:ArrayOfstring" />
+      <xs:element minOccurs="0" name="Data" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="ProductId" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="NotificationItem" nillable="true" type="tns:NotificationItem" />
+  <xs:complexType name="ConfigurationInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Channels" nillable="true" type="tns:ArrayOfChannelInfo" />
+      <xs:element minOccurs="0" name="IsAtual" type="xs:boolean" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ConfigurationInfo" nillable="true" type="tns:ConfigurationInfo" />
+  <xs:complexType name="ArrayOfChannelInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="ChannelInfo" nillable="true" type="tns:ChannelInfo" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ArrayOfChannelInfo" nillable="true" type="tns:ArrayOfChannelInfo" />
+  <xs:complexType name="ChannelInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Name" nillable="true" type="xs:string" />
+      <xs:element minOccurs="0" name="State" type="tns:State" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="ChannelInfo" nillable="true" type="tns:ChannelInfo" />
+  <xs:simpleType name="State">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="New" />
+      <xs:enumeration value="Actual" />
+      <xs:enumeration value="Chanded" />
+      <xs:enumeration value="Deleted" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:element name="State" nillable="true" type="tns:State" />
+</xs:schema>

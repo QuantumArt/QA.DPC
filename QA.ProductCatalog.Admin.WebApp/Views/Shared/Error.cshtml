@@ -1,0 +1,24 @@
+﻿@{
+    ViewBag.Title = "Error";
+    var exceptions = this.Html.ViewContext.RouteData.DataTokens[HandleAndLogErrorAttribute.DataKey] as IEnumerable<Exception>;
+}
+
+<div class="group-panel">
+    <fieldset>
+        <legend>Ошибка 500</legend>
+        @if (exceptions != null)
+        {
+            <div class="exception-wrapper">
+                @foreach (var exception in exceptions)
+                {
+                    <div class="exception">
+                        <div class="exception-detail"><strong>Type: </strong>@exception.GetType()</div>
+                        <div class="exception-detail"><strong>Message: </strong>@exception.Message</div>
+                        <div class="exception-detail"><strong>StackTrace: </strong>@exception.StackTrace</div>
+                    </div>
+                }
+            </div>
+        }
+
+    </fieldset>
+</div>

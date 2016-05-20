@@ -1,0 +1,1019 @@
+<Article Archived="False" ContentDisplayName="Продукты" ContentId="288" ContentName="Product" Created="2014-05-30T16:06:46.593" Id="3136" IsPublished="False" Splitted="False" Status="Created" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Article.Fields>
+    <PlainArticleField x:Key="PDF" ContentId="288" FieldDisplayName="PDF" FieldId="1229" FieldName="PDF" PlainFieldType="File" Value="" />
+    <PlainArticleField x:Key="Legal" ContentId="288" FieldDisplayName="Лигал" FieldId="1230" FieldName="Legal" PlainFieldType="Textbox" Value="" />
+    <PlainArticleField x:Key="Benefit" ContentId="288" FieldDisplayName="Бенефит" FieldId="1231" FieldName="Benefit" PlainFieldType="Textbox" Value="Звоните свободно на Билайн по всей России и пользуйтесь Интернет-пакетом по всей России" />
+    <PlainArticleField x:Key="SortOrder" ContentId="288" FieldDisplayName="Порядок" FieldId="1232" FieldName="SortOrder" PlainFieldType="Numeric" Value="" />
+    <PlainArticleField x:Key="StartDate" ContentId="288" FieldDisplayName="Дата начала" FieldId="1358" FieldName="StartDate" PlainFieldType="Date" Value="" />
+    <PlainArticleField x:Key="EndDate" ContentId="288" FieldDisplayName="Дата окончания" FieldId="1359" FieldName="EndDate" PlainFieldType="Date" Value="" />
+    <PlainArticleField x:Key="ArchiveTitle" ContentId="288" FieldDisplayName="Архивный заголовок" FieldId="1160" FieldName="ArchiveTitle" PlainFieldType="String" Value="" />
+    <PlainArticleField x:Key="ArchiveNotes" ContentId="288" FieldDisplayName="Архивные заметки" FieldId="1314" FieldName="ArchiveNotes" PlainFieldType="VisualEdit" Value="" />
+    <PlainArticleField x:Key="OldSiteId" ContentId="288" FieldDisplayName="OldSiteId" FieldId="1327" FieldName="OldSiteId" PlainFieldType="Numeric" Value="" />
+    <SingleArticleField x:Key="MarketingProduct" ContentId="288" FieldDisplayName="Маркетинговый продукт" FieldId="1115" FieldName="MarketingProduct" SubContentId="287">
+      <SingleArticleField.Item>
+        <Article Archived="False" ContentDisplayName="Маркетинговые продукты" ContentId="287" ContentName="MarketingProduct" Created="2014-05-30T16:06:45.063" Id="3134" IsPublished="False" Splitted="False" Status="Created" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="287" FieldDisplayName="Название" FieldId="1110" FieldName="Title" PlainFieldType="String" Value="Всё включено М" />
+            <PlainArticleField x:Key="Alias" ContentId="287" FieldDisplayName="Алиас" FieldId="1112" FieldName="Alias" PlainFieldType="String" Value="vse_vklyucheno_m" />
+            <PlainArticleField x:Key="Benefit" ContentId="287" FieldDisplayName="Бенефит" FieldId="1124" FieldName="Benefit" PlainFieldType="VisualEdit" Value="" />
+            <PlainArticleField x:Key="ShortBenefit" ContentId="287" FieldDisplayName="Моб. бенефит" FieldId="1302" FieldName="ShortBenefit" PlainFieldType="VisualEdit" Value="" />
+            <PlainArticleField x:Key="Legal" ContentId="287" FieldDisplayName="Лигал" FieldId="1125" FieldName="Legal" PlainFieldType="VisualEdit" Value="" />
+            <PlainArticleField x:Key="Description" ContentId="287" FieldDisplayName="Описание" FieldId="1126" FieldName="Description" PlainFieldType="VisualEdit" Value="" />
+            <PlainArticleField x:Key="ShortDescription" ContentId="287" FieldDisplayName="Моб. описание" FieldId="1303" FieldName="ShortDescription" PlainFieldType="VisualEdit" Value="" />
+            <PlainArticleField x:Key="Purpose" ContentId="287" FieldDisplayName="Назначение" FieldId="1127" FieldName="Purpose" PlainFieldType="VisualEdit" Value="" />
+            <PlainArticleField x:Key="TitleForFamily" ContentId="287" FieldDisplayName="Название для семейства" FieldId="1287" FieldName="TitleForFamily" PlainFieldType="String" Value="" />
+            <PlainArticleField x:Key="CommentForFamily" ContentId="287" FieldDisplayName="Комментарий для семейства" FieldId="1288" FieldName="CommentForFamily" PlainFieldType="Textbox" Value="" />
+            <PlainArticleField x:Key="OldSiteId" ContentId="287" FieldDisplayName="OldSiteId" FieldId="1328" FieldName="OldSiteId" PlainFieldType="Numeric" Value="" />
+            <MultiArticleField x:Key="Categories" ContentId="287" FieldDisplayName="Категории" FieldId="1202" FieldName="Categories" SubContentId="304" Type="M2M">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField Item="{x:Null}" x:Key="Family" ContentId="287" FieldDisplayName="Семейство" FieldId="1201" FieldName="Family" SubContentId="303" />
+            <SingleArticleField Item="{x:Null}" x:Key="MarketingSign" ContentId="287" FieldDisplayName="Маркетинговый признак" FieldId="1297" FieldName="MarketingSign" SubContentId="298" />
+            <MultiArticleField x:Key="Modifiers" ContentId="287" FieldDisplayName="Модификаторы" FieldId="1293" FieldName="Modifiers" SubContentId="300" Type="M2M">
+              <MultiArticleField.Items>
+                <Article x:Key="2244" x:Name="__ReferenceID0" Archived="False" ContentDisplayName="Модификаторы продукта" ContentId="300" ContentName="ProductModifier" Created="2014-04-08T10:25:02.347" Id="2244" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="300" FieldDisplayName="Title" FieldId="1163" FieldName="Title" PlainFieldType="String" Value="B2C" />
+                    <PlainArticleField x:Key="Alias" ContentId="300" FieldDisplayName="Alias" FieldId="1164" FieldName="Alias" PlainFieldType="String" Value="B2C" />
+                  </Article.Fields>
+                </Article>
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="Images" ContentId="287" FieldDisplayName="Картинки" FieldId="1450" FieldName="Images" SubContentId="342" Type="M2O">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="PreOpenParamGroups" ContentId="287" FieldDisplayName="Предраскрытые группы параметров" FieldId="1289" FieldName="PreOpenParamGroups" SubContentId="296" Type="M2M">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <ExtensionArticleField x:Key="ProductType" ContentId="287" FieldDisplayName="Тип продукта" FieldId="1134" FieldName="ProductType" SubContentId="0" Value="289">
+              <ExtensionArticleField.Item>
+                <Article Archived="False" ContentDisplayName="Маркетинговые мобильные тарифы" ContentId="289" ContentName="MarketingMobileTariff" Created="2014-05-30T16:06:45.207" Id="3135" IsPublished="False" Splitted="False" Status="Created" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="PaymentSystem" ContentId="289" FieldDisplayName="Расчетная система" FieldId="1361" FieldName="PaymentSystem" PlainFieldType="StringEnum" Value="Prepaid" />
+                    <PlainArticleField x:Key="HtmlTitle" ContentId="289" FieldDisplayName="HTML заголовок" FieldId="1117" FieldName="HtmlTitle" PlainFieldType="String" Value="" />
+                    <PlainArticleField x:Key="SplitInternetDeviceCount" ContentId="289" FieldDisplayName="Количество устройств" FieldId="1439" FieldName="SplitInternetDeviceCount" PlainFieldType="Numeric" Value="" />
+                    <MultiArticleField x:Key="ProductFilters" ContentId="289" FieldDisplayName="Фильтры по продуктам" FieldId="1281" FieldName="ProductFilters" SubContentId="314" Type="M2M">
+                      <MultiArticleField.Items>
+                        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                      </MultiArticleField.Items>
+                    </MultiArticleField>
+                    <SingleArticleField Item="{x:Null}" x:Key="OtherPaymentSystemTariff" ContentId="289" FieldDisplayName="Смежный тариф" FieldId="1456" FieldName="OtherPaymentSystemTariff" SubContentId="289" />
+                  </Article.Fields>
+                </Article>
+              </ExtensionArticleField.Item>
+            </ExtensionArticleField>
+            <MultiArticleField x:Key="Tabs" ContentId="287" FieldDisplayName="Использование вкладок" FieldId="1291" FieldName="Tabs" SubContentId="318" Type="M2O">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="ProductUsages" ContentId="287" FieldDisplayName="Варианты использования" FieldId="1593" FieldName="ProductUsages" SubContentId="315" Type="M2O">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+          </Article.Fields>
+        </Article>
+      </SingleArticleField.Item>
+    </SingleArticleField>
+    <MultiArticleField x:Key="Regions" ContentId="288" FieldDisplayName="Регионы" FieldId="1228" FieldName="Regions" SubContentId="294" Type="M2M">
+      <MultiArticleField.Items>
+        <Article x:Key="1762" Archived="False" ContentDisplayName="Регионы" ContentId="294" ContentName="Region" Created="2014-04-03T13:38:23.457" Id="1762" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="294" FieldDisplayName="Title" FieldId="1137" FieldName="Title" PlainFieldType="String" Value="Московская область" />
+            <PlainArticleField x:Key="Alias" ContentId="294" FieldDisplayName="Alias" FieldId="1139" FieldName="Alias" PlainFieldType="String" Value="moskovskaya-obl" />
+            <PlainArticleField x:Key="OldSiteId" ContentId="294" FieldDisplayName="OldSiteId" FieldId="1337" FieldName="OldSiteId" PlainFieldType="Numeric" Value="98082" />
+          </Article.Fields>
+        </Article>
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <MultiArticleField x:Key="Parameters" ContentId="288" FieldDisplayName="Параметры продукта" FieldId="1193" FieldName="Parameters" SubContentId="291" Type="M2O">
+      <MultiArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <SingleArticleField Item="{x:Null}" x:Key="MarketingSign" ContentId="288" FieldDisplayName="Маркетинговый признак" FieldId="1296" FieldName="MarketingSign" SubContentId="298" />
+    <MultiArticleField x:Key="Modifiers" ContentId="288" FieldDisplayName="Модификаторы" FieldId="1295" FieldName="Modifiers" SubContentId="300" Type="M2M">
+      <MultiArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article">
+          <x:Reference>__ReferenceID0<x:Key>2244</x:Key></x:Reference>
+        </scg:Dictionary>
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <MultiArticleField x:Key="ArchiveTabs" ContentId="288" FieldDisplayName="Архивные закладки" FieldId="1313" FieldName="ArchiveTabs" SubContentId="327" Type="M2O">
+      <MultiArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <ExtensionArticleField x:Key="Type" ContentId="288" FieldDisplayName="Тип продукта" FieldId="1233" FieldName="Type" SubContentId="0" Value="305">
+      <ExtensionArticleField.Item>
+        <Article Archived="False" ContentDisplayName="Мобильные тарифы" ContentId="305" ContentName="MobileTariff" Created="2014-05-30T16:06:46.727" Id="3137" IsPublished="False" Splitted="False" Status="Created" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="SplitInternetDeviceCount" ContentId="305" FieldDisplayName="Количество устройств" FieldId="1441" FieldName="SplitInternetDeviceCount" PlainFieldType="Numeric" Value="" />
+            <MultiArticleField x:Key="ProductFilters" ContentId="305" FieldDisplayName="Фильтры по продуктам" FieldId="1365" FieldName="ProductFilters" SubContentId="314" Type="M2M">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="AccountTypes" ContentId="305" FieldDisplayName="AccountTypes" FieldId="1453" FieldName="AccountTypes" SubContentId="343" Type="M2M">
+              <MultiArticleField.Items>
+                <Article x:Key="2777" Archived="False" ContentDisplayName="Типы учетных записей" ContentId="343" ContentName="AccountType" Created="2014-05-23T14:19:15.673" Id="2777" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="343" FieldDisplayName="Title" FieldId="1451" FieldName="Title" PlainFieldType="String" Value="Физ.лицо  некоммерч.          " />
+                    <PlainArticleField x:Key="OldSiteId" ContentId="343" FieldDisplayName="OldSiteId" FieldId="1452" FieldName="OldSiteId" PlainFieldType="Numeric" Value="3" />
+                  </Article.Fields>
+                </Article>
+                <Article x:Key="2778" Archived="False" ContentDisplayName="Типы учетных записей" ContentId="343" ContentName="AccountType" Created="2014-05-23T14:19:15.673" Id="2778" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="343" FieldDisplayName="Title" FieldId="1451" FieldName="Title" PlainFieldType="String" Value="Юр. лицо VIP 3  аванс         " />
+                    <PlainArticleField x:Key="OldSiteId" ContentId="343" FieldDisplayName="OldSiteId" FieldId="1452" FieldName="OldSiteId" PlainFieldType="Numeric" Value="30" />
+                  </Article.Fields>
+                </Article>
+              </MultiArticleField.Items>
+            </MultiArticleField>
+          </Article.Fields>
+        </Article>
+      </ExtensionArticleField.Item>
+    </ExtensionArticleField>
+    <BackwardArticleField x:Key="ProductWebEntities" ContentId="344" FieldDisplayName="Связи с WEbEntity" FieldId="1471" FieldName="ProductWebEntities" RelationGroupName="ProductWebEntities" SubContentId="344">
+      <BackwardArticleField.Items>
+        <Article x:Key="3138" Archived="False" ContentDisplayName="Связи продуктов и WebEntity" ContentId="344" ContentName="ProductWebEntity" Created="2014-05-30T16:06:46.823" Id="3138" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+          <Article.Fields>
+            <MultiArticleField x:Key="Modifiers" ContentId="344" FieldDisplayName="Модификаторы" FieldId="1472" FieldName="Modifiers" SubContentId="345" Type="M2M">
+              <MultiArticleField.Items>
+                <Article x:Key="3093" Archived="False" ContentDisplayName="Модификаторы связей продуктов и WebEntity" ContentId="345" ContentName="WebEntityRelationModifier" Created="2014-05-29T13:30:09.933" Id="3093" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="345" FieldDisplayName="Title" FieldId="1467" FieldName="Title" PlainFieldType="String" Value="Транслируемый" />
+                    <PlainArticleField x:Key="Alias" ContentId="345" FieldDisplayName="Alias" FieldId="1468" FieldName="Alias" PlainFieldType="String" Value="Translatable" />
+                  </Article.Fields>
+                </Article>
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField x:Key="WebEntity" ContentId="344" FieldDisplayName="WebEntity" FieldId="1469" FieldName="WebEntity" SubContentId="299">
+              <SingleArticleField.Item>
+                <Article Archived="False" ContentDisplayName="WebEntity" ContentId="299" ContentName="WebEntity" Created="2014-05-30T16:06:39.87" Id="3133" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="SOC" ContentId="299" FieldDisplayName="SOC" FieldId="1159" FieldName="SOC" PlainFieldType="String" Value="03VSEV_M" />
+                    <PlainArticleField x:Key="EntityType" ContentId="299" FieldDisplayName="EntityType" FieldId="1316" FieldName="EntityType" PlainFieldType="StringEnum" Value="PP" />
+                    <PlainArticleField x:Key="BusinessType" ContentId="299" FieldDisplayName="BusinessType" FieldId="1317" FieldName="BusinessType" PlainFieldType="StringEnum" Value="B2C" />
+                    <PlainArticleField x:Key="PaySystemType" ContentId="299" FieldDisplayName="PaySystemType" FieldId="1319" FieldName="PaySystemType" PlainFieldType="StringEnum" Value="PREP" />
+                    <PlainArticleField x:Key="EntityId" ContentId="299" FieldDisplayName="EntityId" FieldId="1318" FieldName="EntityId" PlainFieldType="Numeric" Value="1130135" />
+                    <PlainArticleField x:Key="Title" ContentId="299" FieldDisplayName="Название" FieldId="1158" FieldName="Title" PlainFieldType="String" Value="Всё включено М" />
+                    <PlainArticleField x:Key="ARPU" ContentId="299" FieldDisplayName="ARPU" FieldId="1465" FieldName="ARPU" PlainFieldType="Numeric" Value="" />
+                    <MultiArticleField x:Key="Params" ContentId="299" FieldDisplayName="Параметры" FieldId="1414" FieldName="Params" SubContentId="325" Type="M2O">
+                      <MultiArticleField.Items>
+                        <Article x:Key="3139" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3139" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Краткое описание продукта" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000001" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="Звоните свободно на Билайн по всей России и пользуйтесь Интернет-пакетом по всей России" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3140" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3140" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Абонентская плата" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000002" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="5" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3141" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3141" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Стоимость перехода на тариф" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000010" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="50" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3142" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3142" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Период списания абонентской платы" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000016" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="webProduct.rentalFee.period.dayly" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3143" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3143" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Признак необходимости показа аккумуляторов на SOC" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000028" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="да" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3144" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3144" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Индикатор, что нужно показывать аккумулятор" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000029" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="да" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3145" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3145" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя пакета" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000030" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="Интернет-трафика" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3146" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3146" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя аккумулятора" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000031" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ACC_ALLINC_GPRS_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3147" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3147" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя оффера" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000032" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="SUBS_SO_VV_M_PVR_RUR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3148" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3148" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя периодика" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000033" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ALCO_VV_M_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3149" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3149" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Величина пакета (только для базовых пакетов и ТП)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000034" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="524288" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3150" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3150" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Периодичность день/месяц" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000035" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="webProduct.rentalFee.period.monthly" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="3151" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-05-30T16:06:57.793" Id="3151" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Категория аккумулятора (по России/местный/в роуминге)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000036" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="в сети Билайн по всей России" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549628" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549628" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Краткое описание продукта" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000001" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="Звоните свободно на Билайн по всей России и пользуйтесь Интернет-пакетом по всей России" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549629" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549629" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Абонентская плата" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000002" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="5" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="1" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549630" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549630" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Стоимость перехода на тариф" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000010" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="50" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="1" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549631" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549631" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Период списания абонентской платы" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000016" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="webProduct.rentalFee.period.dayly" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="1" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549632" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549632" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Приоритет пакета" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000025" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="1" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549633" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549633" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Признак необходимости показа аккумуляторов на SOC" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000028" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="да" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549634" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549634" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Индикатор, что нужно показывать аккумулятор" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000029" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="да" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549635" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549635" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя пакета" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000030" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="Интернет-трафика" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549636" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549636" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя аккумулятора" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000031" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ACC_ALLINC_GPRS_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549637" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:24.117" Id="549637" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя оффера" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000032" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="SUBS_SO_VV_M_PVR_RUR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549645" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549645" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя периодика" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000033" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ALCO_VV_M_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549646" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549646" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Величина пакета (только для базовых пакетов и ТП)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000034" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="524288" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549647" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549647" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Периодичность день/месяц" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000035" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="webProduct.rentalFee.period.monthly" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549648" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549648" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Категория аккумулятора (по России/местный/в роуминге)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000036" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="в сети Билайн по всей России" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549649" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549649" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Минуты. Индикатор, что нужно показывать аккумулятор" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000037" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="да" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549650" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549650" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Минуты. Имя пакета" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000038" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="Минут общения" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549651" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549651" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Минуты. Имя аккумулятора" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000039" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ACC_VV_SEC_ONNET_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549652" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549652" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Минуты. Имя оффера" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000040" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="SUBS_SO_VV_M_PVR_RUR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549653" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549653" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Минуты. Имя периодика" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000041" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ALCO_VV_M_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549654" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549654" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Минуты. Величина пакета (только для базовых пакетов и ТП)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000042" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="6000" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549655" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549655" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Минуты. Периодичность день/месяц" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000043" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="webProduct.rentalFee.period.dayly" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549656" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549656" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Минуты. Категория аккумулятора (по России/местный/в роуминге)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000044" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="Для звонков на номера Билайн вашего региона и междугородные номера Билайн" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549657" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549657" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="SMS. Индикатор, что нужно показывать аккумулятор" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000045" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="да" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549658" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549658" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="SMS. Имя пакета" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000046" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="SMS" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549659" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549659" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="SMS. Имя аккумулятора" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000047" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ACC_VV_SMS_LOC_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549660" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549660" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="SMS. Имя оффера" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000048" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="SUBS_SO_VV_M_PVR_RUR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549661" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549661" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="SMS. Имя периодика" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000049" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ALCO_VV_M_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549662" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549662" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="SMS. Величина пакета (только для базовых пакетов и ТП)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000050" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="100" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549663" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549663" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="SMS. Периодичность день/месяц" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000051" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="webProduct.rentalFee.period.dayly" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549664" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:26.113" Id="549664" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="SMS. Категория аккумулятора (по России/местный/в роуминге)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000052" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="На все номера области подключения" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549669" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:28.093" Id="549669" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Максимально возможный объём трафика за месяц" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000061" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="60000000000" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="549670" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T13:14:28.093" Id="549670" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Максимальный порог для снижения скорости" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000062" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="90000000000" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="11" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675323" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675323" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Краткое описание продукта" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000001" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="Звоните свободно на Билайн по всей России и пользуйтесь Интернет-пакетом по всей России" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675324" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675324" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Абонентская плата" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000002" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="5" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675325" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675325" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Стоимость перехода на тариф" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000010" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="50" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675326" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675326" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Период списания абонентской платы" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000016" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="webProduct.rentalFee.period.dayly" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675327" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675327" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Признак необходимости показа аккумуляторов на SOC" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000028" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="да" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675328" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675328" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Индикатор, что нужно показывать аккумулятор" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000029" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="да" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675329" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675329" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя пакета" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000030" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="Интернет-трафика" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675330" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675330" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя аккумулятора" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000031" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ACC_ALLINC_GPRS_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675331" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675331" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя оффера" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000032" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="SUBS_SO_VV_M_PVR_RUR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675332" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675332" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Имя периодика" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000033" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="ALCO_VV_M_PVR" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675333" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675333" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Величина пакета (только для базовых пакетов и ТП)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000034" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="524288" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675334" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675334" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Периодичность день/месяц" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000035" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="webProduct.rentalFee.period.monthly" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                        <Article x:Key="675335" Archived="False" ContentDisplayName="WebEntityParam" ContentId="325" ContentName="WebEntityParam" Created="2014-06-24T17:52:16.873" Id="675335" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Name" ContentId="325" FieldDisplayName="Название" FieldId="1284" FieldName="Name" PlainFieldType="String" Value="Мобильный интернет. Категория аккумулятора (по России/местный/в роуминге)" />
+                            <PlainArticleField x:Key="NameId" ContentId="325" FieldDisplayName="NameId" FieldId="1320" FieldName="NameId" PlainFieldType="Numeric" Value="100000036" />
+                            <PlainArticleField x:Key="Value" ContentId="325" FieldDisplayName="Значение" FieldId="1321" FieldName="Value" PlainFieldType="Textbox" Value="в сети Билайн по всей России" />
+                            <PlainArticleField x:Key="UOM" ContentId="325" FieldDisplayName="Ед. измерения" FieldId="1326" FieldName="UOM" PlainFieldType="String" Value="" />
+                            <PlainArticleField x:Key="ParamId" ContentId="325" FieldDisplayName="ParamId" FieldId="1594" FieldName="ParamId" PlainFieldType="Numeric" Value="" />
+                            <MultiArticleField x:Key="Params" ContentId="325" FieldDisplayName="Привязанные параметры продукта" FieldId="1323" FieldName="Params" SubContentId="291" Type="M2M">
+                              <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                              </MultiArticleField.Items>
+                            </MultiArticleField>
+                          </Article.Fields>
+                        </Article>
+                      </MultiArticleField.Items>
+                    </MultiArticleField>
+                  </Article.Fields>
+                </Article>
+              </SingleArticleField.Item>
+            </SingleArticleField>
+          </Article.Fields>
+        </Article>
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="ProductParameterGroupChanges" ContentId="320" FieldDisplayName="ProductParameterGroupChanges" FieldId="1259" FieldName="ProductParameterGroupChanges" RelationGroupName="ProductParameterGroupChanges" SubContentId="320">
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="ServicesOnTariff" ContentId="311" FieldDisplayName="Услуги на тарифе" FieldId="1386" FieldName="ServicesOnTariff" RelationGroupName="Связи между продуктами" SubContentId="311">
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="XorProductsMatrix" ContentId="309" FieldDisplayName="Группы взаимоисключений продуктов" FieldId="1279" FieldName="XorProductsMatrix" RelationGroupName="XorProductsMatrix" SubContentId="309">
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="TariffTransfers" ContentId="308" FieldDisplayName="Переход с тарифов" FieldId="1389" FieldName="TariffTransfers" RelationGroupName="Связи между продуктами" SubContentId="308">
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="TariffsOnService" ContentId="311" FieldDisplayName="Тарифы с услугой" FieldId="1387" FieldName="TariffsOnService" RelationGroupName="Связи между продуктами" SubContentId="311">
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+  </Article.Fields>
+</Article>

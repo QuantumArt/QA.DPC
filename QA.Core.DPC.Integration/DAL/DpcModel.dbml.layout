@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ordesignerObjectsDiagram dslVersion="1.0.0.0" absoluteBounds="0, 0, 11, 8.5" name="DpcModel">
+  <DataContextMoniker Name="/DpcModelDataContext" />
+  <nestedChildShapes>
+    <classShape Id="350855c6-9110-4472-9c84-a9238d465a62" absoluteBounds="3.5, 1.75, 2, 1.3862939453125003">
+      <DataClassMoniker Name="/DpcModelDataContext/ProductRegion" />
+      <nestedChildShapes>
+        <elementListCompartment Id="e0ff2cc3-7ca1-4910-ba67-a924e3faaf8e" absoluteBounds="3.515, 2.21, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <classShape Id="def67325-38c6-42f4-9c68-4dd919f865e7" absoluteBounds="0.75, 1, 2, 2.9247054036458326">
+      <DataClassMoniker Name="/DpcModelDataContext/Product" />
+      <nestedChildShapes>
+        <elementListCompartment Id="3dc0f52f-9e00-41c0-93c3-4357fab1d7d1" absoluteBounds="0.765, 1.46, 1.9700000000000002, 2.364705403645833" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
+      </nestedChildShapes>
+    </classShape>
+    <associationConnector edgePoints="[(2.75 : 2.44314697265625); (3.5 : 2.44314697265625)]" fixedFrom="Algorithm" fixedTo="Algorithm">
+      <AssociationMoniker Name="/DpcModelDataContext/Product/Product_ProductRegion" />
+      <nodes>
+        <classShapeMoniker Id="def67325-38c6-42f4-9c68-4dd919f865e7" />
+        <classShapeMoniker Id="350855c6-9110-4472-9c84-a9238d465a62" />
+      </nodes>
+    </associationConnector>
+  </nestedChildShapes>
+</ordesignerObjectsDiagram>

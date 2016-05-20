@@ -1,0 +1,71 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{5F456B86-6814-47F9-8A84-645792224BD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.FileSyncWebHost", "QA.ProductCatalog.FileSyncWebHost\QA.ProductCatalog.FileSyncWebHost.csproj", "{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core", "QA.Core\QA.Core.csproj", "{21895C57-CB09-4AF4-906A-71ED4599FE65}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{552D0FAF-99F7-4E45-8A66-87596C3F8399}"
+	ProjectSection(SolutionItems) = preProject
+		nuget.config = nuget.config
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Bee_test|Any CPU = Bee_test|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Megafon|Any CPU = Megafon|Any CPU
+		MTS|Any CPU = MTS|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Tele2|Any CPU = Tele2|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Megafon|Any CPU.Build.0 = Release|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.MTS|Any CPU.ActiveCfg = Release|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.MTS|Any CPU.Build.0 = Release|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Tele2|Any CPU.ActiveCfg = Release|Any CPU
+		{EF2CA54C-748B-4E29-9EE2-15DE0DB5BFD6}.Tele2|Any CPU.Build.0 = Release|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.MTS|Any CPU.ActiveCfg = MTS|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.MTS|Any CPU.Build.0 = MTS|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Tele2|Any CPU.ActiveCfg = Tele2|Any CPU
+		{21895C57-CB09-4AF4-906A-71ED4599FE65}.Tele2|Any CPU.Build.0 = Tele2|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{21895C57-CB09-4AF4-906A-71ED4599FE65} = {5F456B86-6814-47F9-8A84-645792224BD1}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 3
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://tfs.artq.com:8080/tfs/quantumartcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = QA.ProductCatalog.FileSyncWebHost\\QA.ProductCatalog.FileSyncWebHost.csproj
+		SccProjectName1 = QA.ProductCatalog.FileSyncWebHost
+		SccLocalPath1 = QA.ProductCatalog.FileSyncWebHost
+		SccProjectUniqueName2 = QA.Core\\QA.Core.csproj
+		SccProjectTopLevelParentUniqueName2 = QA.ProductCatalog.FileSyncWebHost.sln
+		SccProjectName2 = QA.Core
+		SccLocalPath2 = QA.Core
+	EndGlobalSection
+EndGlobal

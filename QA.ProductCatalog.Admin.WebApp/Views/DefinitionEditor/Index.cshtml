@@ -1,0 +1,62 @@
+﻿@using QA.ProductCatalog.Admin.WebApp.Models
+@model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
+
+@section jquery{
+	@Scripts.Render("~/bundles/KendoUI")
+}
+
+@section head{
+	@Styles.Render("~/content/KendoUI/KendoUIStyles")
+
+	@Scripts.Render("~/bundles/codemirror")
+
+	@Styles.Render("~/content/codemirror")
+
+	@Scripts.Render("~/bundles/jqueryunobtrusive")
+
+    <link href="~/content/definitioneditor.css" rel="stylesheet"/>
+    <script src="~/Scripts/DefinitionEditor.js"></script>
+}
+
+<div id="verticalRootSplitter">
+	<div>
+		<div id="horizontalTreeAndPropsSplitter">
+			<div id="treeViewContainer">
+				<div id="treeView"></div>
+			</div>
+			<div id="propsPane"></div>
+		</div>
+	</div>
+	<div id="xamlPane">
+		<div id="dvToolbar"></div>
+		@Html.Partial("XmlViewer", Model.Xml ?? string.Empty )
+	</div>
+</div>
+
+<script id="treeNodeTemplate" type="text/x-kendo-template">
+	<span class="#=item.NotInDefinition?'NotInDefinition':''#">
+		#if(item.IsDictionaries){#
+		<span class="IsDictionaries">Настройки кеширования словарей</span>
+		#}else{#
+		#: item.text #
+		#}#
+		#if(item.MissingInQp && !item.IsDictionaries){#
+		<span class="MissingInQp">поля не существует в QP!</span>
+		#}#
+	</span>
+</script>
+
+@section scripts{
+
+	<script>
+
+		$(document).ready(function() {
+
+		    DefinitionEditor.init(@(Model.ContentItemId.HasValue ? "true" : "false"),
+            '@Url.Action("SaveDefinition", new {content_item_id = Model.ContentItemId})',
+            '@Url.Action("GetSingleNode")',
+            '@Url.Action("GetDefinitionLevel")',
+            '@Url.Action("Edit")');
+		});
+	</script>
+}

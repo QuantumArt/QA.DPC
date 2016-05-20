@@ -1,0 +1,136 @@
+﻿@model GroupGridView
+@if (Model == null || Model.Hidden) { return; }
+@{
+    var firstRow = Model.GetChildren().FirstOrDefault();
+    if (firstRow == null)
+    {
+        return;
+    }
+}
+<div id="@Model.UId" class="grid-view">
+    @if (Model.Collapsible)
+    {
+        <div class="grid-view-header">
+            <span class="toggle-all anchor">свернуть/развернуть все</span>
+        </div>
+    }
+    <table cellspacing="0" cellpadding="0" style="@(Model.Width != null? "width: " + Model.Width : "")">
+        @foreach (var col in firstRow.Columns)
+        {
+            <colgroup width="@(col.Width != null ? col.Width.TrimEnd('p','x') : "")"></colgroup>
+        }
+        <tr>
+            @foreach (var col in firstRow.Columns)
+            {
+                <th>
+                    @Model.ReplaceNotesIfNeeded(col.Title)
+                </th>
+            }
+        </tr>
+        @if (Model.Grouppable)
+        {
+            foreach (var gr in Model.GetGroups())
+            {
+                IHtmlString content;
+                if (Model.RowTemplate != null)
+                {
+                    if (Model.GetChildren(gr).Select(x =>
+                    {
+                        Model.RowTemplate.DataContext = x.DataContext;
+                        return Model.RowTemplate;
+                    }).All(x => x.Hidden))
+                    {
+                        continue;
+                    }
+                }
+                if (Model.GroupingTemplate != null)
+                {
+                    Model.GroupingTemplate.DataContext = gr.Key;
+                    content = Html.DisplayFor(x => Model.GroupingTemplate);
+                }
+                else
+                {
+                    content = Html.DisplayFor(x => gr.Key);
+                }
+
+                <tr id="@(Model.Collapsible ? Html.GetUniqueId(content.ToString()) : "")" class="group-row @(Model.GroupInitialFolding == GroupInitialFolding.Folded ? "collapsed" : "") @(Model.Collapsible ? "collapsible": "")">
+                    <td colspan="@Model.Columns.Count">
+                        @content
+                        @if (Model.Collapsible)
+                        {
+                            <span class="anchor click-handle">+/-</span>
+                        }
+                    </td>
+                </tr>
+                if (Model.Collapsible)
+                {
+                    var t = 0;
+                    <tr class="@(Model.Collapsible ? "collapsible-row" : "")">
+                        <td colspan="@Model.Columns.Count">
+
+                            <table class="inner-groupping-table" cellspacing="0" cellpadding="0">
+                                @foreach (var col in firstRow.Columns)
+                                {
+                                    <colgroup width="@(col.Width != null ? col.Width: "")"></colgroup>
+                                }
+                                @foreach (var row in Model.GetChildren(gr))
+                                {
+
+                                    if (Model.RowTemplate != null)
+                                    {
+                                        Model.RowTemplate.DataContext = row.DataContext;
+                                    }
+                                    if (Model.RowTemplate == null || !Model.RowTemplate.Hidden)
+                                    {
+                                        t++;
+                                        <tr class="@(Model.RowTemplate != null ? Model.RowTemplate.ClassName: "")">
+                                            @foreach (var col in row.Columns)
+                                            {
+
+                                                <td style="overflow: @col.Overflow.ToString().ToLower(); @(col.Padding!=null?col.Padding.ToString():"")">
+                                                    @Html.DisplayFor(x => col)
+                                                </td>
+
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </table>
+
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @: @GetRows(gr)
+                }
+            }
+        }
+        else
+        {
+            @: @GetRows(Model.Items)
+        }
+    </table>
+</div>
+
+@helper GetRows(IEnumerable<object> items, bool inner = false)
+{
+foreach (var row in Model.GetChildren(items))
+{
+    if (Model.RowTemplate != null)
+    {
+        Model.RowTemplate.DataContext = row.DataContext;
+    }
+    if (Model.RowTemplate == null || !Model.RowTemplate.Hidden)
+    {
+            <tr class="@(Model.RowTemplate != null ? Model.RowTemplate.ClassName: "")">
+                @foreach (var col in row.Columns)
+                {
+                    <td style="overflow: @col.Overflow.ToString().ToLower(); @(col.Padding!=null?col.Padding.ToString():"")">
+                        @Html.DisplayFor(x => col)
+                    </td>
+                }
+            </tr>
+    }
+}
+}

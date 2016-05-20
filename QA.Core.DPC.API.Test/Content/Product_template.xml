@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Article Archived="False" ContentDisplayName="Продукты" ContentId="288" ContentName="Product" Created="2015-02-05T17:35:28.173" HasVirtualFields="False" Id="0" IsPublished="True" Modified="2015-02-05T17:58:44.4" PublishingMode="Publish" Splitted="False" Status="Published" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Article.Fields>
+    <SingleArticleField x:Key="MarketingProduct" Aggregated="False" ContentId="288" FieldDisplayName="Маркетинговый продукт" FieldId="1115" FieldName="MarketingProduct" SubContentId="287">
+      <SingleArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </SingleArticleField.CustomProperties>
+      <SingleArticleField.Item>
+        <Article Archived="False" ContentDisplayName="Маркетинговые продукты" ContentId="287" ContentName="MarketingProduct" Created="2015-02-05T17:27:17.81" HasVirtualFields="False" Id="-1" IsPublished="True" Modified="2015-03-20T17:51:56.44" PublishingMode="Publish" Splitted="False" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="287" FieldDisplayName="Название" FieldId="1110" FieldName="Title" NativeValue="Короткий номер 91051878" PlainFieldType="String" Value="title2">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Alias" ContentId="287" FieldDisplayName="Алиас" FieldId="1112" FieldName="Alias" NativeValue="korotkiy-nomer-91051878" PlainFieldType="String" Value="alias">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <ExtensionArticleField SubContentId="{x:Null}" x:Key="ProductType" Aggregated="False" ContentId="287" FieldDisplayName="Тип продукта" FieldId="1134" FieldName="ProductType" Value="375">
+              <ExtensionArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </ExtensionArticleField.CustomProperties>
+              <ExtensionArticleField.Item>
+                <Article Archived="False" ContentDisplayName="Маркетинговые подписки CDP" ContentId="375" ContentName="CDPMarketingSubscription" Created="2015-02-05T17:27:35.293" HasVirtualFields="False" Id="-2" IsPublished="True" Modified="2015-03-20T17:51:56.93" PublishingMode="Publish" Splitted="False" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="CdpDescription" ContentId="375" FieldDisplayName="Описание в CDP" FieldId="1734" FieldName="CdpDescription" NativeValue="WEB" PlainFieldType="Textbox" Value="WEB">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="ProductCode" ContentId="375" FieldDisplayName="Код продукта" FieldId="1732" FieldName="ProductCode" NativeValue="CPA" PlainFieldType="String" Value="CPA">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Timestamp" ContentId="375" FieldDisplayName="Дата последней модификации в CDP" FieldId="1733" FieldName="Timestamp" PlainFieldType="DateTime" Value="1/16/2015 3:45:00 PM">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <s:DateTime>2015-01-16T15:45</s:DateTime>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField NativeValue="{x:Null}" x:Key="ContentType" ContentId="375" FieldDisplayName="Тип контента" FieldId="1735" FieldName="ContentType" PlainFieldType="StringEnum" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="ServiceId" ContentId="375" FieldDisplayName="GUID услуги" FieldId="1731" FieldName="ServiceId" NativeValue="1f8e1077-bbfe-459a-88fc-705242b6408c" PlainFieldType="String" Value="1f8e1077-bbfe-459a-88fc-705242b6408c">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Partner" ContentId="375" FieldDisplayName="Провайдер" FieldId="1729" FieldName="Partner" NativeValue="&lt;partnerId&gt;d4b978dc-c465-491f-90a5-a481bae43174&lt;/partnerId&gt;&#xA;&lt;partnerName&gt;Диджитaл Онлайн&lt;/partnerName&gt;&#xA;&lt;description&gt;Техническое подключение осталось на СМСМедиаРУ&lt;/description&gt;&#xA;&lt;email&gt;support@digital-o.ru&lt;/email&gt;&#xA;&lt;address&gt;Москва, ул.Новослободская&lt;/address&gt;&#xA;&lt;phone&gt;+79864513322&lt;/phone&gt;&#xA;&lt;url&gt;www.digital-o.ru&lt;/url&gt;&#xA;&lt;companyName&gt;ООО «Диджитaл Онлайн»&lt;/companyName&gt;&#xA;&lt;companyDescription&gt;Переуступка прав от СМСМедиаРУ к ООО «Диджитал Онлайн».&lt;/companyDescription&gt;&#xA;&lt;contactForSubscriber&gt;ООО &quot;Диджитал Онлайн&quot;, 8-800-555-5484, helpdesk@digital-o.ru&lt;/contactForSubscriber&gt;" PlainFieldType="Textbox" Value="&lt;partnerId&gt;d4b978dc-c465-491f-90a5-a481bae43174&lt;/partnerId&gt;&#xA;&lt;partnerName&gt;Диджитaл Онлайн&lt;/partnerName&gt;&#xA;&lt;description&gt;Техническое подключение осталось на СМСМедиаРУ&lt;/description&gt;&#xA;&lt;email&gt;support@digital-o.ru&lt;/email&gt;&#xA;&lt;address&gt;Москва, ул.Новослободская&lt;/address&gt;&#xA;&lt;phone&gt;+79864513322&lt;/phone&gt;&#xA;&lt;url&gt;www.digital-o.ru&lt;/url&gt;&#xA;&lt;companyName&gt;ООО «Диджитaл Онлайн»&lt;/companyName&gt;&#xA;&lt;companyDescription&gt;Переуступка прав от СМСМедиаРУ к ООО «Диджитал Онлайн».&lt;/companyDescription&gt;&#xA;&lt;contactForSubscriber&gt;ООО &quot;Диджитал Онлайн&quot;, 8-800-555-5484, helpdesk@digital-o.ru&lt;/contactForSubscriber&gt;">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                          <x:Boolean x:Key="RenderTextFieldAsXml">True</x:Boolean>
+                        </scg:Dictionary>
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Activators" ContentId="375" FieldDisplayName="Активаторы" FieldId="1730" FieldName="Activators" NativeValue="&lt;activator&gt;&#xA;    &lt;activatorId&gt;1917b5f8-34fb-4048-94a6-e09933fc04c4&lt;/activatorId&gt;&#xA;    &lt;action&gt;6&lt;/action&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;c4134c4f-4d9a-400a-8733-5ecf243b6506&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Для отключения нотификации регулярного платежа отправьте SMS c текстом 'end' на номер 9105&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;&#xA;&lt;activator&gt;&#xA;    &lt;activatorId&gt;32c92839-70b2-4616-974f-b99afb0ce5ba&lt;/activatorId&gt;&#xA;    &lt;action&gt;7&lt;/action&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;4b0910ee-a159-4a38-9035-50436baeb63d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Короткий номер 91051878&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;d9047a80-2218-44cd-9118-e59a05fd9d8f&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Для отключения подписки отправьте SMS c текстом 'СТОП1878' на короткий номер 9105&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;&#xA;&lt;activator&gt;&#xA;    &lt;activatorId&gt;ae5a0ecc-9045-4f3e-901c-d90531265c1d&lt;/activatorId&gt;&#xA;    &lt;action&gt;7&lt;/action&gt;&#xA;    &lt;subscriptionPeriod&gt;007:03:07&lt;/subscriptionPeriod&gt;&#xA;    &lt;subscriptionChargePeriod&gt;001:00:00&lt;/subscriptionChargePeriod&gt;&#xA;    &lt;subscriptionChargePeriodPrice&gt;20&lt;/subscriptionChargePeriodPrice&gt;&#xA;    &lt;cost&gt;&#xA;        &lt;sum&gt;10&lt;/sum&gt;&#xA;    &lt;/cost&gt;&#xA;    &lt;tryBuy&gt;&#xA;        &lt;subscribePrice&gt;0&lt;/subscribePrice&gt;&#xA;        &lt;subscriptionPeriod&gt;010:00:00&lt;/subscriptionPeriod&gt;&#xA;        &lt;subscriptionChargePeriod&gt;001:00:00&lt;/subscriptionChargePeriod&gt;&#xA;        &lt;subscriptionChargePeriodPrice&gt;0&lt;/subscriptionChargePeriodPrice&gt;&#xA;        &lt;tnbMode&gt;soft&lt;/tnbMode&gt;&#xA;    &lt;/tryBuy&gt;&#xA;    &lt;alreadySubscribed&gt;&#xA;        &lt;sum&gt;10&lt;/sum&gt;&#xA;    &lt;/alreadySubscribed&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;f89968ff-e811-45f7-9dae-d67072f29a5d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Для подключения услуги отправьте SMS c текстом '1878' на короткий номер 9105&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;6689ff19-b293-4d87-acfc-a9efb177a10d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;WEB&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;http://beeline.subscriptions.digital-o.ru/beeline-tarificator/ws/operator/subscribed?id=91051878s%&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;8ce5506c-700d-40a3-9d33-e16abbad37b4&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;LK&lt;/orderChannel&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;&#xA;&lt;activator&gt;&#xA;    &lt;activatorId&gt;ae5a0ecc-9045-4f3e-901c-d90531265c1d&lt;/activatorId&gt;&#xA;    &lt;action&gt;10&lt;/action&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;6689ff19-b293-4d87-acfc-a9efb177a10d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;WEB&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;http://beeline.subscriptions.digital-o.ru/beeline-tarificator/ws/operator/onerequest?id=91051878s%&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;&#xA;&lt;activator&gt;&#xA;    &lt;activatorId&gt;80b45a56-6cb8-444b-bce5-a21b85c6d33a&lt;/activatorId&gt;&#xA;    &lt;action&gt;11&lt;/action&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;6689ff19-b293-4d87-acfc-a9efb177a10d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Короткий номер 91051878&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;" PlainFieldType="Textbox" Value="&lt;activator&gt;&#xA;    &lt;activatorId&gt;1917b5f8-34fb-4048-94a6-e09933fc04c4&lt;/activatorId&gt;&#xA;    &lt;action&gt;6&lt;/action&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;c4134c4f-4d9a-400a-8733-5ecf243b6506&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Для отключения нотификации регулярного платежа отправьте SMS c текстом 'end' на номер 9105&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;&#xA;&lt;activator&gt;&#xA;    &lt;activatorId&gt;32c92839-70b2-4616-974f-b99afb0ce5ba&lt;/activatorId&gt;&#xA;    &lt;action&gt;7&lt;/action&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;4b0910ee-a159-4a38-9035-50436baeb63d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Короткий номер 91051878&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;d9047a80-2218-44cd-9118-e59a05fd9d8f&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Для отключения подписки отправьте SMS c текстом 'СТОП1878' на короткий номер 9105&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;&#xA;&lt;activator&gt;&#xA;    &lt;activatorId&gt;ae5a0ecc-9045-4f3e-901c-d90531265c1d&lt;/activatorId&gt;&#xA;    &lt;action&gt;7&lt;/action&gt;&#xA;    &lt;subscriptionPeriod&gt;007:03:07&lt;/subscriptionPeriod&gt;&#xA;    &lt;subscriptionChargePeriod&gt;001:00:00&lt;/subscriptionChargePeriod&gt;&#xA;    &lt;subscriptionChargePeriodPrice&gt;20&lt;/subscriptionChargePeriodPrice&gt;&#xA;    &lt;cost&gt;&#xA;        &lt;sum&gt;10&lt;/sum&gt;&#xA;    &lt;/cost&gt;&#xA;    &lt;tryBuy&gt;&#xA;        &lt;subscribePrice&gt;0&lt;/subscribePrice&gt;&#xA;        &lt;subscriptionPeriod&gt;010:00:00&lt;/subscriptionPeriod&gt;&#xA;        &lt;subscriptionChargePeriod&gt;001:00:00&lt;/subscriptionChargePeriod&gt;&#xA;        &lt;subscriptionChargePeriodPrice&gt;0&lt;/subscriptionChargePeriodPrice&gt;&#xA;        &lt;tnbMode&gt;soft&lt;/tnbMode&gt;&#xA;    &lt;/tryBuy&gt;&#xA;    &lt;alreadySubscribed&gt;&#xA;        &lt;sum&gt;10&lt;/sum&gt;&#xA;    &lt;/alreadySubscribed&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;f89968ff-e811-45f7-9dae-d67072f29a5d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Для подключения услуги отправьте SMS c текстом '1878' на короткий номер 9105&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;6689ff19-b293-4d87-acfc-a9efb177a10d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;WEB&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;http://beeline.subscriptions.digital-o.ru/beeline-tarificator/ws/operator/subscribed?id=91051878s%&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;8ce5506c-700d-40a3-9d33-e16abbad37b4&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;LK&lt;/orderChannel&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;&#xA;&lt;activator&gt;&#xA;    &lt;activatorId&gt;ae5a0ecc-9045-4f3e-901c-d90531265c1d&lt;/activatorId&gt;&#xA;    &lt;action&gt;10&lt;/action&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;6689ff19-b293-4d87-acfc-a9efb177a10d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;WEB&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;http://beeline.subscriptions.digital-o.ru/beeline-tarificator/ws/operator/onerequest?id=91051878s%&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;&#xA;&lt;activator&gt;&#xA;    &lt;activatorId&gt;80b45a56-6cb8-444b-bce5-a21b85c6d33a&lt;/activatorId&gt;&#xA;    &lt;action&gt;11&lt;/action&gt;&#xA;    &lt;locators&gt;&#xA;        &lt;locator&gt;&#xA;            &lt;locatorId&gt;6689ff19-b293-4d87-acfc-a9efb177a10d&lt;/locatorId&gt;&#xA;            &lt;orderChannel&gt;SMS&lt;/orderChannel&gt;&#xA;            &lt;userActionInfo&gt;Короткий номер 91051878&lt;/userActionInfo&gt;&#xA;        &lt;/locator&gt;&#xA;    &lt;/locators&gt;&#xA;&lt;/activator&gt;">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                          <x:Boolean x:Key="RenderTextFieldAsXml">True</x:Boolean>
+                        </scg:Dictionary>
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="CommercialName" ContentId="375" FieldDisplayName="Коммерческое название" FieldId="1744" FieldName="CommercialName" NativeValue="3 Doors Down999" PlainFieldType="String" Value="CommercialName">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                  </Article.Fields>
+                </Article>
+              </ExtensionArticleField.Item>
+            </ExtensionArticleField>
+          </Article.Fields>
+        </Article>
+      </SingleArticleField.Item>
+    </SingleArticleField>
+    <ExtensionArticleField SubContentId="{x:Null}" x:Key="Type" Aggregated="False" ContentId="288" FieldDisplayName="Тип продукта" FieldId="1233" FieldName="Type" Value="376">
+      <ExtensionArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </ExtensionArticleField.CustomProperties>
+      <ExtensionArticleField.Item>
+        <Article Archived="False" ContentDisplayName="Подписки CDP" ContentId="376" ContentName="CDPSubscription" Created="2015-02-05T17:36:20.29" HasVirtualFields="False" Id="-3" IsPublished="True" Modified="2015-04-02T19:00:18.35" PublishingMode="Publish" Splitted="False" Status="Published" Visible="True">
+          <Article.Fields>
+            <scg:Dictionary x:TypeArguments="x:String, ArticleField" />
+          </Article.Fields>
+        </Article>
+      </ExtensionArticleField.Item>
+    </ExtensionArticleField>
+    <MultiArticleField x:Key="Regions" ContentId="288" FieldDisplayName="Регионы" FieldId="1228" FieldName="Regions" SubContentId="294">
+      <MultiArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </MultiArticleField.CustomProperties>
+      <MultiArticleField.Items>
+        <Article x:Key="1704" Archived="False" ContentDisplayName="Регионы" ContentId="294" ContentName="Region" Created="2014-04-03T13:38:22.727" HasVirtualFields="False" Id="1704" IsPublished="True" Modified="2014-04-11T18:39:00.997" PublishingMode="Publish" Splitted="False" Status="Published" Visible="True">
+          <Article.Fields>
+            <scg:Dictionary x:TypeArguments="x:String, ArticleField" />
+          </Article.Fields>
+        </Article>
+      </MultiArticleField.Items>
+    </MultiArticleField>
+  </Article.Fields>
+</Article>

@@ -1,0 +1,15 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="QA.ProductCatalog.RegionSync.Service" GeneratedClassName="RegionSyncServiceSettings">
+  <Profiles />
+  <Settings>
+    <Setting Name="RegionSyncKey" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">dpc.region.sync</Value>
+    </Setting>
+    <Setting Name="RegionSyncName" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">DPC Region Sync</Value>
+    </Setting>
+    <Setting Name="RegionSyncDescription" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">Сервис синхронизации регионов сайта и каталога</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

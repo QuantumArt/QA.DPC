@@ -1,0 +1,145 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.RegionSync.Service", "QA.ProductCatalog.RegionSyncService\QA.ProductCatalog.RegionSync.Service.csproj", "{65934658-47E0-4175-A495-7F2D94318640}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Scheduler.API", "QA.Scheduler.API\QA.Scheduler.API.csproj", "{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Scheduler.Core", "QA.Scheduler.Core\QA.Scheduler.Core.csproj", "{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.RegionSync.Core", "QA.ProductCatalog.RegionSync.Core\QA.ProductCatalog.RegionSync.Core.csproj", "{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.RegionSync.MTS", "QA.ProductCatalog.RegionSync.MTS\QA.ProductCatalog.RegionSync.MTS.csproj", "{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.RegionSync.Tele2", "QA.ProductCatalog.RegionSync.Tele2\QA.ProductCatalog.RegionSync.Tele2.csproj", "{2D0F705B-AF76-4A31-9C56-6961191A765A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{463F0125-2329-4389-BD51-29D1F3D4EDF3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Catalogs", "Catalogs", "{8892DD86-7649-419A-A24A-FEA7D80A1407}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Bee_test|Any CPU = Bee_test|Any CPU
+		Debug|Any CPU = Debug|Any CPU
+		Megafon|Any CPU = Megafon|Any CPU
+		MTS|Any CPU = MTS|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Tele2|Any CPU = Tele2|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{65934658-47E0-4175-A495-7F2D94318640}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.Megafon|Any CPU.Build.0 = Release|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.MTS|Any CPU.ActiveCfg = MTS|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.MTS|Any CPU.Build.0 = MTS|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.Release|Any CPU.Build.0 = Release|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.Tele2|Any CPU.ActiveCfg = Tele2|Any CPU
+		{65934658-47E0-4175-A495-7F2D94318640}.Tele2|Any CPU.Build.0 = Tele2|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Megafon|Any CPU.Build.0 = Release|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.MTS|Any CPU.ActiveCfg = Release|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.MTS|Any CPU.Build.0 = Release|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Tele2|Any CPU.ActiveCfg = Release|Any CPU
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}.Tele2|Any CPU.Build.0 = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Megafon|Any CPU.Build.0 = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.MTS|Any CPU.ActiveCfg = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.MTS|Any CPU.Build.0 = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Tele2|Any CPU.ActiveCfg = Release|Any CPU
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Tele2|Any CPU.Build.0 = Release|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Megafon|Any CPU.Build.0 = Release|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.MTS|Any CPU.ActiveCfg = MTS|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.MTS|Any CPU.Build.0 = MTS|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Tele2|Any CPU.ActiveCfg = Tele2|Any CPU
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848}.Tele2|Any CPU.Build.0 = Tele2|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.Megafon|Any CPU.Build.0 = Release|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.MTS|Any CPU.ActiveCfg = MTS|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.MTS|Any CPU.Build.0 = MTS|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6}.Tele2|Any CPU.ActiveCfg = Release|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Megafon|Any CPU.Build.0 = Release|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.MTS|Any CPU.ActiveCfg = Release|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Tele2|Any CPU.ActiveCfg = Tele2|Any CPU
+		{2D0F705B-AF76-4A31-9C56-6961191A765A}.Tele2|Any CPU.Build.0 = Tele2|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0} = {463F0125-2329-4389-BD51-29D1F3D4EDF3}
+		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8} = {463F0125-2329-4389-BD51-29D1F3D4EDF3}
+		{A92ADEFA-5229-4BE3-AEFC-925EA55A8848} = {463F0125-2329-4389-BD51-29D1F3D4EDF3}
+		{2BA6F91E-4010-4B53-A5CF-BB286A6FF1F6} = {8892DD86-7649-419A-A24A-FEA7D80A1407}
+		{2D0F705B-AF76-4A31-9C56-6961191A765A} = {8892DD86-7649-419A-A24A-FEA7D80A1407}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Data.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.ExceptionHandling.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Logging.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.ExceptionHandling.Logging.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35;packages\Unity.2.1.505.2\lib\NET35
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 7
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://tfs.artq.com:8080/tfs/quantumartcollection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = QA.Scheduler.API\\QA.Scheduler.API.csproj
+		SccProjectTopLevelParentUniqueName1 = QA.ProductCatalog.RegionSync.sln
+		SccProjectName1 = QA.Scheduler.API
+		SccLocalPath1 = QA.Scheduler.API
+		SccProjectUniqueName2 = QA.Scheduler.Core\\QA.Scheduler.Core.csproj
+		SccProjectTopLevelParentUniqueName2 = QA.ProductCatalog.RegionSync.sln
+		SccProjectName2 = QA.Scheduler.Core
+		SccLocalPath2 = QA.Scheduler.Core
+		SccProjectUniqueName3 = QA.ProductCatalog.RegionSync.Core\\QA.ProductCatalog.RegionSync.Core.csproj
+		SccProjectTopLevelParentUniqueName3 = QA.ProductCatalog.RegionSync.sln
+		SccProjectName3 = QA.ProductCatalog.RegionSync.Core
+		SccLocalPath3 = QA.ProductCatalog.RegionSync.Core
+		SccProjectUniqueName4 = QA.ProductCatalog.RegionSyncService\\QA.ProductCatalog.RegionSync.Service.csproj
+		SccProjectName4 = QA.ProductCatalog.RegionSyncService
+		SccLocalPath4 = QA.ProductCatalog.RegionSyncService
+		SccProjectUniqueName5 = QA.ProductCatalog.RegionSync.MTS\\QA.ProductCatalog.RegionSync.MTS.csproj
+		SccProjectTopLevelParentUniqueName5 = QA.ProductCatalog.RegionSync.sln
+		SccProjectName5 = QA.ProductCatalog.RegionSync.MTS
+		SccLocalPath5 = QA.ProductCatalog.RegionSync.MTS
+		SccProjectUniqueName6 = QA.ProductCatalog.RegionSync.Tele2\\QA.ProductCatalog.RegionSync.Tele2.csproj
+		SccProjectTopLevelParentUniqueName6 = QA.ProductCatalog.RegionSync.sln
+		SccProjectName6 = QA.ProductCatalog.RegionSync.Tele2
+		SccLocalPath6 = QA.ProductCatalog.RegionSync.Tele2
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,32 @@
+﻿@model NotesProcessor
+@if (Model == null) { return; }
+
+<div class="@Model.GetType()">
+    <hr />
+    <ol class="FootNotes">
+        @foreach (var note in Model.Notes)
+        {
+            <li id="@("Note" + note.Id)">
+                @Html.Partial("DisplayTemplates/ActionLink", new ActionLink { Title = note.Id.ToString(), EntityId = note.Id, ParentEntityId = Model.NotesContentId })
+                @note.Text
+            </li>
+        }
+    </ol>
+</div>
+<script>
+	$(document).ready(function () {
+		$(".Note").each(function() {
+			$(this).kendoTooltip({
+			    content: kendo.template($("#TooltipTemplate").html()),
+                position: 'top',
+				autoHide: false
+			});
+		});
+
+	});
+</script>
+
+<script id="TooltipTemplate" type="text/x-kendo-template">
+	#:$('\\#Note' + target.data('noteid')).text().substr(0, 50) + '...'#
+		<a href="\\#Note#=target.data('noteid')#">Перейти</a>
+</script>

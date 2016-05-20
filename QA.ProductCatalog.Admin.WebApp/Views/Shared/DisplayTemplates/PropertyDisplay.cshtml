@@ -1,0 +1,37 @@
+﻿@model PropertyDisplay
+@{
+    if (Model == null || Model.Title == null || Model.Hidden) { return; }
+    string title = Model.Title;
+}
+<!--
+    Model: @Model
+    Model.Value: @Model.Value
+    -->
+<dl id="@Model.UId" class="plain-field row">
+    <dt title="@(title)" class="plain-field-capture label " style="@(Model.LabelWidth != null ? ("width: "+ Model.LabelWidth) : "")">@Model.ReplaceNotesIfNeeded(title.Length > 50 ? title.Substring(0, 50) + "..." : title)</dt>
+    <dd style="@(Model.Padding != null ? Model.Padding.ToString(): "")" class="plain-field-value field">
+        @if (Model.Value is string)
+        {
+			@Model.ReplaceNotesIfNeeded(Model.Value.ToString())
+        }
+        else
+        {
+	        @Html.DisplayFor(x => Model.Value);
+        }
+    </dd>
+
+</dl>
+@if (Model.Content != null)
+{
+    <dl class="row">
+        <dt class="label">
+
+        </dt>
+        <dd class="field">
+            <div>
+                @Html.DisplayFor(x => Model.Content)
+            </div>
+
+        </dd>
+    </dl>
+}

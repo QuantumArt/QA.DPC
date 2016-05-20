@@ -1,0 +1,27 @@
+﻿@model Tooltip
+
+@if (Model == null || Model.Hidden || Model.Content == null || Model.Target == null) { return; }
+
+@{ string id = Html.GetUniqueId("Tooltip");}
+
+<span id="@id">
+	@Html.DisplayFor(x => Model.Target)
+</span>
+
+@{ string contentId = Html.GetUniqueId("TooltipContent");}
+
+<div style="display: none"><span id="@contentId">@Html.DisplayFor(x => Model.Content)</span></div>
+
+
+<script>
+	$(document).ready(function () {
+		$("#@id").kendoTooltip({
+		    content: $("#@contentId"),
+		    position: '@Model.Position.ToString().ToLower()',
+		    showOn: '@Model.ShowOn.ToString().ToLower()',
+			autoHide: @(Model.AutoHide ? "true" : "false")
+			});
+	}
+	);
+
+</script>

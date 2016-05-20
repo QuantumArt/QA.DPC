@@ -1,0 +1,52 @@
+Сервисы Mts.Sonic.Sync
+
+1)PUT /sync добавление\обновление продукта. В JSON в body должно быть поле product внутри которого произвольная структура продукта. Любые другие поля рядом с product, например regionTags игнорируются.
+Пример: 
+
+		{
+		  "product": {
+			"Id": 106666,
+			"Description": "1 Гб Интернета и 0 рублей на все сети",
+			"FullDescription": "<ul>\n<b>Безлимитные звонки на МТС и 1 Гб Интернета</b></li>\n </ul>",
+			"Link": "/tariffs/oldtariffs/smart_mini",
+			"SortOrder": 1,
+			"ForisID": "30686,068",
+			"Icon": "http:///storage.demo.dev.quantumart.ru/mts_upload/images/products/sibir/smart_mini1119.png",
+			"PDF": {
+			  "Name": "smart_mini_khas_061015.pdf",
+			  "FileSizeBytes": 0,
+			  "AbsoluteUrl": "http:///storage.demo.dev.quantumart.ru/mts_upload/images/products/sibir/smart_mini_khas_061015.pdf"
+			},
+		  "regionTags": [
+			{
+			  "title": "domain",
+			  "values": [
+				{
+				  "value": "http://www.khakasia.mts.ru/",
+				  "regionsId": [
+					19961
+				  ]
+				}
+			  ]
+			},
+			{
+			  "title": "title_smart",
+			  "values": [
+				{
+				  "value": "Тарифы Smart",
+				  "regionsId": [
+					19961
+				  ]
+				}
+			  ]
+			}
+		  ]
+		}
+	}
+
+
+2)DELETE /sync удаление продукта. В JSON в body должно быть поле product внутри которого поле Id. Другие поля игнорируются.
+
+3)POST  /sync/reset удаляет а затем импортирует всю структуру
+
+4)GET sync/task?id=1 получает информацию по задаче которая была сгенерирована в п.3.

@@ -1,0 +1,30 @@
+﻿@model EntityCollection
+<!--EntityCollection
+	Items: @Model.Items
+	Template: @Model.ItemTemplate
+	SeparatorTemplate: @Model.SeparatorTemplate
+	-->
+@{
+	if (Model == null || Model.Hidden) {return;}
+	
+	bool isFirst = true;
+
+	string separator = null;
+	
+	foreach (var item in Model.GetChildren())
+	{
+		if (!isFirst)
+		{
+			if (separator == null)
+			{
+				separator = Html.DisplayFor(x => Model.SeparatorTemplate).ToString();
+			}
+			
+			@Html.Raw(separator)
+		}
+		
+		isFirst = false;
+		
+		@Html.DisplayFor(x => item)
+	}
+}

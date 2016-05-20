@@ -1,0 +1,154 @@
+﻿<Content XmlMappingBehavior.CachePeriod="00:10:00" ContentId="339" ContentName="Продукты" xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<Content.Resources>
+		<FieldExistsBoolConverter x:Key="fieldExistsBoolConverter"/>
+	</Content.Resources>
+	
+	<PlainField FieldId="1325" FieldName="Name" ShowInList="True" />
+
+	<VirtualEntityField FieldName="MarketingDescription">
+		<VirtualField FieldName="list" Path="MarketingDescription" />
+		<VirtualField FieldName="document" Path="ShortMarketingDescription" />
+	</VirtualEntityField>
+
+	<VirtualEntityField FieldName="links">
+		<VirtualField FieldName="site" ObjectToRemovePath="Parameters[BaseParameter/Alias='WebSiteLink']" Path="Parameters[BaseParameter/Alias='WebSiteLink']/Value" />
+		<VirtualField FieldName="lk" ObjectToRemovePath="Parameters[BaseParameter/Alias='UssLink']" Path="Parameters[BaseParameter/Alias='UssLink']/Value" />
+		<VirtualField FieldName="shop" ObjectToRemovePath="Parameters[BaseParameter/Alias='ShopLink']" Path="Parameters[BaseParameter/Alias='ShopLink']/Value" />
+	</VirtualEntityField>
+
+	<VirtualEntityField FieldName="SitesVisibility">
+		<VirtualField FieldName="site" Converter="{Resource fieldExistsBoolConverter}" Path="Modifiers[Alias='HideOnWebSite']" />
+		<VirtualField FieldName="lk" Converter="{Resource fieldExistsBoolConverter}" Path="Modifiers[Alias='HideInUss']" />
+		<VirtualField FieldName="shop" Converter="{Resource fieldExistsBoolConverter}" Path="Modifiers[Alias='HideInShop']" />
+	</VirtualEntityField>
+
+	<VirtualField FieldName="ShopId" ObjectToRemovePath="Parameters[BaseParameter/Alias='ShopId']" Path="Parameters[BaseParameter/Alias='ShopId']/Value" />
+
+	<VirtualField FieldName="IsArchive" Converter="{Resource fieldExistsBoolConverter}" Path="Modifiers[Alias='Archive']" />
+
+	<VirtualMultiEntityField FieldName="Price" Path="Parameters[BaseParameter/Alias='ExtraText'][Modifiers/Alias='PriceBlock']">
+		<VirtualField FieldName="Title" Path="Title" />
+		<VirtualField FieldName="Text" Path="Value" />
+		<VirtualField FieldName="SortOrder" Path="SortOrder" />
+	</VirtualMultiEntityField>
+
+	<VirtualMultiEntityField FieldName="Features" Path="Parameters[BaseParameter/Alias='ExtraText'][Modifiers/Alias='FeaturesBlock']">
+		<VirtualField FieldName="Title" Path="Title" />
+		<VirtualField FieldName="Text" Path="Value" />
+		<VirtualField FieldName="SortOrder" Path="SortOrder" />
+	</VirtualMultiEntityField>
+
+	<VirtualMultiEntityField FieldName="ExtraText" Path="Parameters[BaseParameter/Alias='ExtraText']">
+		<VirtualField FieldName="Title" Path="Title" />
+		<VirtualField FieldName="Text" Path="Value" />
+		<VirtualField FieldName="SortOrder" Path="SortOrder" />
+	</VirtualMultiEntityField>
+
+	
+
+	<EntityField FieldId="1402" FieldName="Images">
+		<Content ContentId="358" ContentName="Изображения продуктов" />
+	</EntityField>
+	<EntityField FieldId="1523" FieldName="Modifiers">
+		<Content ContentId="342" ContentName="Модификаторы продуктов" />
+	</EntityField>
+	<BackwardRelationField FieldId="1508" FieldName="ParamGroupUsages" RelationGroupName="ParamGroupUsages">
+		<Content ContentId="379" ContentName="Использование групп параметров в продуктах">
+			<PlainField FieldId="1510" FieldName="Group" />
+		</Content>
+	</BackwardRelationField>
+	<EntityField FieldId="1326" FieldName="Regions">
+		<Content ContentId="290" ContentName="Регионы и филиалы" />
+	</EntityField>
+	<ExtensionField FieldId="1341" FieldName="Type">
+		<Content ContentId="343" ContentName="Тарифы" />
+	</ExtensionField>
+	<EntityField FieldId="1469" FieldName="Group">
+		<Content ContentId="340" ContentName="Группы продуктов">
+			<PlainField FieldId="1337" FieldName="Parent" />
+		</Content>
+	</EntityField>
+	<EntityField FieldId="1403" FieldName="Parameters">
+		<Content XmlMappingBehavior.CachePeriod="00:10:00" ContentId="354" ContentName="Параметры продуктов">
+			<EntityField FieldId="1375" FieldName="BaseParameter">
+				<Content ContentId="350" ContentName="Базовые параметры продуктов" />
+			</EntityField>
+			<EntityField FieldId="1377" FieldName="Zone">
+				<Content ContentId="346" ContentName="Тарифные зоны" />
+			</EntityField>
+			<EntityField FieldId="1378" FieldName="Direction">
+				<Content ContentId="347" ContentName="Тарифные направления" />
+			</EntityField>
+			<EntityField FieldId="1379" FieldName="BaseParameterModifiers">
+				<Content ContentId="351" ContentName="Модификаторы базовых параметров продуктов" />
+			</EntityField>
+			<EntityField FieldId="1380" FieldName="Modifiers">
+				<Content ContentId="352" ContentName="Модификаторы параметров продуктов" />
+			</EntityField>
+			<EntityField FieldId="1386" FieldName="Unit">
+				<Content ContentId="355" ContentName="Единицы измерения" />
+			</EntityField>
+			<PlainField FieldId="1506" FieldName="Group" />
+		</Content>
+	</EntityField>
+	<BackwardRelationField FieldId="1440" FieldName="FromTariffs" RelationGroupName="FromTariffs">
+		<Content XmlMappingBehavior.CachePeriod="00:10:00" ContentId="364" ContentName="Переходы с тарифа на тариф">
+			<PlainField FieldId="1438" FieldName="FromTariff" />
+			<EntityField FieldId="1437" FieldName="Parent">
+				<Content x:Name="__ReferenceID0" ContentId="361" ContentName="Матрица связей">
+					<EntityField FieldId="1431" FieldName="Parameters">
+						<Content ContentId="362" ContentName="Параметры связей">
+							<EntityField FieldId="1420" FieldName="BaseParameter">
+								<Content ContentId="350" ContentName="Базовые параметры продуктов" />
+							</EntityField>
+							<EntityField FieldId="1421" FieldName="Zone">
+								<Content ContentId="346" ContentName="Тарифные зоны">
+									<PlainField FieldId="1348" FieldName="Product" />
+								</Content>
+							</EntityField>
+							<EntityField FieldId="1422" FieldName="Direction">
+								<Content ContentId="347" ContentName="Тарифные направленияы" />
+							</EntityField>
+							<EntityField FieldId="1423" FieldName="BaseParameterModifiers">
+								<Content ContentId="351" ContentName="Модификаторы базовых параметров продуктов" />
+							</EntityField>
+							<EntityField FieldId="1424" FieldName="Modifiers">
+								<Content ContentId="352" ContentName="Модификаторы параметров продуктов" />
+							</EntityField>
+							<EntityField FieldId="1428" FieldName="Unit">
+								<Content ContentId="355" ContentName="Единицы измерения" />
+							</EntityField>
+							<EntityField FieldId="1451" FieldName="ParametersToRemoveInCalculator">
+								<Content ContentId="354" ContentName="Параметры продуктов" LoadAllPlainFields="False" />
+							</EntityField>
+						</Content>
+					</EntityField>
+					<EntityField FieldId="1450" FieldName="Modifiers">
+						<Content ContentId="360" ContentName="Модификаторы связей" />
+					</EntityField>
+				</Content>
+			</EntityField>
+		</Content>
+	</BackwardRelationField>
+	<BackwardRelationField FieldId="1435" FieldName="TariffOptions" RelationGroupName="TariffOptions">
+		<Content XmlMappingBehavior.CachePeriod="00:10:00" ContentId="363" ContentName="Опции на тарифе">
+			<PlainField FieldId="1436" FieldName="Option" />
+			<EntityField FieldId="1433" FieldName="Parent">
+				<x:Reference>__ReferenceID0</x:Reference>
+			</EntityField>
+		</Content>
+	</BackwardRelationField>
+	<Dictionaries DefaultCachePeriod="01:45:00">
+		<Content ContentId="290" ContentName="Регионы и филиалы" />
+		<Content ContentId="340" ContentName="Группы продуктов" />
+		<Content ContentId="356" ContentName="Типы изображений" />
+		<Content ContentId="350" ContentName="Базовые параметры продуктов" />
+		<Content ContentId="346" ContentName="Тарифные зоны" />
+		<Content ContentId="347" ContentName="Тарифные направления" />
+		<Content ContentId="351" ContentName="Модификаторы базовых параметров продуктов" />
+		<Content ContentId="352" ContentName="Модификаторы параметров продуктов" />
+		<Content ContentId="355" ContentName="Единицы измерения" />
+		<Content ContentId="342" ContentName="Модификаторы продуктов" />
+		<Content ContentId="360" ContentName="Модификаторы связей" />
+	</Dictionaries>
+</Content>

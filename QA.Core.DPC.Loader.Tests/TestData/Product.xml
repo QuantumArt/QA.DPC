@@ -1,0 +1,1502 @@
+﻿<ProductInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Products>
+    <Product xsi:type="MobileTariff">
+      <Id>2166354</Id>
+      <Legal>
+        <![CDATA[<div>На тарифном плане &laquo;Ноль сомнений&raquo; недоступны для подключения услуги &laquo;Любимый номер&raquo;, &laquo;Безлимит внутри сети&raquo;, &laquo;Разговоры издалека&raquo;, а так же другие услуги, дающие льготу на местные и междугородные вызовы на номера &laquo;Билайн&raquo;, при переходе на тариф данные услуги отключаются.</div>
+<div>Переход на тарифный план - 067450040. Стоимость перехода &ndash; 50 рублей. Стоимость перехода с ТП &laquo;Все включено L, XL, XXL&raquo; и ТП линейки &laquo;Все за&raquo; - 100 рублей. Если с момента предыдущего перехода прошло более 1 месяца - переход бесплатный. Плата за изменение тарифа на телематические услуги связи не взимается. Первый переход с ТП &laquo;Ноль сомнений&raquo; на любой тарифный план, открытый к подписке, будет бесплатным.</div>
+<div>При активации SIM с тарифом &quot;Ноль сомнений&quot; происходит автоматическая предактивация услуг Умный интернет, Есть контакт. При переходе на тарифный план автоматически подключается услуга Умный интернет.</div>
+<div>При смене тарифного плана Абонент соглашается со всеми его условиями, в том числе с необходимостью подключать повторно ряд дополнительных услуг (АОН, Автоответчик и др.) и оплачивать их подключение, если это предусмотрено новым тарифным планом. &laquo;За изменение тарифа для оплаты телематических услуг связи плата не взимается&raquo;.</div>
+<div>Термины, приведенные в настоящем тарифном плане, используются только для целей обозначения услуг данного тарифного плана.</div>
+<div>Информацию о дополнительных услугах можно узнать на сайте <a href="http://www.beeline.ru">www.beeline.ru</a>.</div>
+<div>В случае отсутствия активности со стороны абонента (платные звонки, сообщения, GPRS сессии и проч.) на номере в течение 90 дней взимается абонентская плата в размере 5 руб. в день. Абонентская плата прекращает взиматься в случае исчерпания доступного баланса, а также в случае возобновления абонентской активности на номере.</div>
+<div>Цены и тарифы указаны в рублях с учетом НДС. Соединение менее 3-х секунд не тарифицируется.</div>
+<div>Тарифы действительны при нахождении Абонента на территории Пермского края. При нахождении за пределами Пермского края действуют роуминговые тарифы.</div>
+<div>Пополнение баланса осуществляется с помощью Единых карт оплаты или с помощью Универсальной системы платежей. Ограничения по периодам действия телефонных карт и платежей отсутствуют.</div>
+<div>Услуги лицензированы, оборудование сертифицировано.</div>]]>
+      </Legal>
+      <SortOrder>300</SortOrder>
+      <MarketingProduct>
+        <Id>698469</Id>
+        <Title>Ноль сомнений</Title>
+        <Alias>nol-somneniy</Alias>
+        <Benefit><![CDATA[<p>Безлимитное общение с абонентами «Билайн» в домашнем регионе и по всей России.</p>]]></Benefit>
+        <Legal>
+          <![CDATA[<p></p>
+<p></p>]]>
+        </Legal>
+        <Purpose><![CDATA[Для новых и действующих абонентов «Билайн»]]></Purpose>
+        <OldSiteId>271059</OldSiteId>
+        <Categories>
+          <ProductCategory>
+            <Id>2296</Id>
+            <Title>Для звонков на Билайн</Title>
+            <SortOrder>5</SortOrder>
+            <IsMarked>0</IsMarked>
+            <OldSiteId>270968</OldSiteId>
+          </ProductCategory>
+        </Categories>
+        <Family>
+          <Id>2284</Id>
+          <Title>Ноль сомнений</Title>
+          <Description><![CDATA[Бесплатные звонки на «Билайн» всей России!]]></Description>
+          <OldSiteId>270965</OldSiteId>
+        </Family>
+        <Modifiers>
+          <ProductModifier>
+            <Id>2329</Id>
+            <Title>MNP</Title>
+            <Alias>MNP</Alias>
+          </ProductModifier>
+        </Modifiers>
+        <Images>
+          <ProductImage>
+            <Id>699181</Id>
+            <Image>//storage.demo.artq.com/upload/dpcupload/contents/342/nol-solnenii-715.jpg</Image>
+            <Type>
+              <Id>1689403</Id>
+              <Title>Картинка для ИМ</Title>
+              <Alias>ShopImage</Alias>
+            </Type>
+          </ProductImage>
+          <ProductImage>
+            <Id>699182</Id>
+            <Image>//storage.demo.artq.com/upload/dpcupload/contents/342/Icons/MobileTariffs/tarif-nol-somneniy-new1-215.jpg</Image>
+            <Type>
+              <Id>2713</Id>
+              <Title>Иконка</Title>
+              <Alias>Icon</Alias>
+            </Type>
+          </ProductImage>
+        </Images>
+        <PreOpenParamGroups>
+          <ProductParameterGroup>
+            <Id>2198</Id>
+            <Title>Местная связь</Title>
+            <SortOrder>10</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232313</OldSiteId>
+          </ProductParameterGroup>
+          <ProductParameterGroup>
+            <Id>2200</Id>
+            <Title>Мобильный интернет</Title>
+            <SortOrder>40</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/beeline-home4-ben-1_internet_new.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232315</OldSiteId>
+          </ProductParameterGroup>
+          <ProductParameterGroup>
+            <Id>2203</Id>
+            <Title>Параметры подключения</Title>
+            <SortOrder>5</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/tarif-1_1.png</Icon>
+            <IsComparable>1</IsComparable>
+            <GroupType>PayGroup</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>300147</OldSiteId>
+          </ProductParameterGroup>
+          <ProductParameterGroup>
+            <Id>2364</Id>
+            <Title>Стоимость</Title>
+            <SortOrder>2</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/tarif-1_1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>PriceGroup</GroupType>
+            <PreOpen>1</PreOpen>
+            <OldSiteId>618975</OldSiteId>
+          </ProductParameterGroup>
+        </PreOpenParamGroups>
+        <ProductType>MarketingMobileTariff</ProductType>
+        <PaymentSystem>Prepaid</PaymentSystem>
+        <ProductFilters>
+          <ProductFilter>
+            <Id>2338</Id>
+            <Title>Мобильный телефон</Title>
+            <Image>//storage.demo.artq.com/upload/dpcupload/contents/314/main-mob_phone.png</Image>
+            <SortOrder>1</SortOrder>
+            <Alias>cellphone</Alias>
+            <DefaultTariffTileIcon>//storage.demo.artq.com/upload/dpcupload/contents/314/zagl_mob_phone.png</DefaultTariffTileIcon>
+            <DefaultServiceTileIcon>//storage.demo.artq.com/upload/dpcupload/contents/314/zagl_usl_mob.png</DefaultServiceTileIcon>
+            <OldSiteId>231146</OldSiteId>
+          </ProductFilter>
+        </ProductFilters>
+      </MarketingProduct>
+      <Regions>
+        <Region>
+          <Id>1964</Id>
+          <Title>Пермский край</Title>
+          <Alias>permskiy-kr</Alias>
+          <OldSiteId>98284</OldSiteId>
+          <ExternalRegionMappings>
+            <ExternalRegionMapping>
+              <Id>13419</Id>
+              <SystemName>MarketCode</SystemName>
+              <Value>PRM</Value>
+            </ExternalRegionMapping>
+          </ExternalRegionMappings>
+        </Region>
+      </Regions>
+      <Parameters>
+        <ProductParameter>
+          <Id>2166356</Id>
+          <Title><![CDATA[Номер перехода на тариф]]></Title>
+          <SortOrder>2</SortOrder>
+          <Value><![CDATA[0674 500 40]]></Value>
+          <BaseParameter>
+            <Id>2233</Id>
+            <Title>Биномер для перехода</Title>
+            <Alias>BeeNumber</Alias>
+          </BaseParameter>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2209</Id>
+              <Title>Показывать как команду подключения</Title>
+              <Alias>ShowAsConnectionCommand</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2203</Id>
+            <Title>Параметры подключения</Title>
+            <SortOrder>5</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/tarif-1_1.png</Icon>
+            <IsComparable>1</IsComparable>
+            <GroupType>PayGroup</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>300147</OldSiteId>
+          </Group>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166357</Id>
+          <Title><![CDATA[Стоимость перехода на тариф]]></Title>
+          <SortOrder>1</SortOrder>
+          <NumValue>50.00</NumValue>
+          <Legal>
+            <![CDATA[<p>Указана стоимость перехода при условии, что с момента предыдущей замены тарифного плана прошло менее 1 месяца. Если прошло более 1 месяца, стоимость перехода - 0 руб.</p>
+<p>Стоимость перехода с ТП &laquo;Все включено L, XL, XXL&raquo; и ТП линейки &laquo;Все за&raquo; - 100 рублей.</p>
+<p>Первый переход с ТП &laquo;Ноль сомнений&raquo; на любой тарифный план, открытый к подписке, будет бесплатным.</p>]]>
+          </Legal>
+          <BaseParameter>
+            <Id>2809</Id>
+            <Title>Стоимость перехода на тариф</Title>
+            <Alias>TransferFee</Alias>
+          </BaseParameter>
+          <BaseParameterModifiers>
+            <BaseParameterModifier>
+              <Id>2820</Id>
+              <Title>Федеральный номер</Title>
+              <Alias>Federal</Alias>
+            </BaseParameterModifier>
+          </BaseParameterModifiers>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2364</Id>
+            <Title>Стоимость</Title>
+            <SortOrder>2</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/tarif-1_1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>PriceGroup</GroupType>
+            <PreOpen>1</PreOpen>
+            <OldSiteId>618975</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2362</Id>
+            <Title>руб. за переход</Title>
+            <Display>руб.</Display>
+            <ShortDisplay>руб.</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166358</Id>
+          <Title><![CDATA[Внутренний номер перехода на тариф]]></Title>
+          <SortOrder>3</SortOrder>
+          <Value><![CDATA[067450040]]></Value>
+          <BaseParameter>
+            <Id>2236</Id>
+            <Title>Внутренний биномер</Title>
+            <Alias>BeeNumberInternal</Alias>
+          </BaseParameter>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2450</Id>
+              <Title>Скрывать в карточке</Title>
+              <Alias>HideInCard</Alias>
+            </ProductParamsModifier>
+            <ProductParamsModifier>
+              <Id>2806</Id>
+              <Title>Не использовать в мобильной версии</Title>
+              <Alias>HideInMobile</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2203</Id>
+            <Title>Параметры подключения</Title>
+            <SortOrder>5</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/tarif-1_1.png</Icon>
+            <IsComparable>1</IsComparable>
+            <GroupType>PayGroup</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>300147</OldSiteId>
+          </Group>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166359</Id>
+          <Title><![CDATA[Абонентская плата]]></Title>
+          <SortOrder>3</SortOrder>
+          <NumValue>0.00</NumValue>
+          <BaseParameter>
+            <Id>2242</Id>
+            <Title>Абонентская плата</Title>
+            <Alias>SubscriptionFee</Alias>
+          </BaseParameter>
+          <BaseParameterModifiers>
+            <BaseParameterModifier>
+              <Id>2820</Id>
+              <Title>Федеральный номер</Title>
+              <Alias>Federal</Alias>
+            </BaseParameterModifier>
+          </BaseParameterModifiers>
+          <Group>
+            <Id>2364</Id>
+            <Title>Стоимость</Title>
+            <SortOrder>2</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/tarif-1_1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>PriceGroup</GroupType>
+            <PreOpen>1</PreOpen>
+            <OldSiteId>618975</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2212</Id>
+            <Title>рублей в сутки</Title>
+            <Display>руб. в сутки</Display>
+            <ShortDisplay>руб/сут</ShortDisplay>
+            <OldSiteId>232324</OldSiteId>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166360</Id>
+          <Title><![CDATA[Входящие вызовы]]></Title>
+          <SortOrder>1</SortOrder>
+          <NumValue>0.00</NumValue>
+          <Value><![CDATA[0 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2456</Id>
+            <Title>Входящие звонки</Title>
+            <Alias>IncomingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2198</Id>
+            <Title>Местная связь</Title>
+            <SortOrder>10</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232313</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166363</Id>
+          <Title><![CDATA[Звонки на номера «Билайн» России]]></Title>
+          <SortOrder>0</SortOrder>
+          <NumValue>0.00</NumValue>
+          <Value><![CDATA[0 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>2521</Id>
+            <Title>Номера России</Title>
+            <Alias>Russia</Alias>
+          </Direction>
+          <BaseParameterModifiers>
+            <BaseParameterModifier>
+              <Id>2516</Id>
+              <Title>Только Билайн</Title>
+              <Alias>OnlyBeeline</Alias>
+            </BaseParameterModifier>
+          </BaseParameterModifiers>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+            <ProductParamsModifier>
+              <Id>2450</Id>
+              <Title>Скрывать в карточке</Title>
+              <Alias>HideInCard</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2198</Id>
+            <Title>Местная связь</Title>
+            <SortOrder>10</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232313</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166364</Id>
+          <Title><![CDATA[Звонки на номера «Билайн» стран СНГ и Грузии]]></Title>
+          <SortOrder>1</SortOrder>
+          <NumValue>12.00</NumValue>
+          <Value><![CDATA[12 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>2497</Id>
+            <Title>Номера СНГ, кроме России</Title>
+            <Alias>CisExceptRussia</Alias>
+          </Direction>
+          <BaseParameterModifiers>
+            <BaseParameterModifier>
+              <Id>2516</Id>
+              <Title>Только Билайн</Title>
+              <Alias>OnlyBeeline</Alias>
+            </BaseParameterModifier>
+          </BaseParameterModifiers>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2204</Id>
+            <Title>Международная связь</Title>
+            <SortOrder>30</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCountry</GroupType>
+            <OldSiteId>304802</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166365</Id>
+          <Title><![CDATA[Звонки на другие номера стран СНГ и Грузии, кроме номеров «Киевстар» Украины]]></Title>
+          <SortOrder>2</SortOrder>
+          <NumValue>24.00</NumValue>
+          <Value><![CDATA[24 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>1540502</Id>
+            <Title>Звонки на любые другие телефоны в странах СНГ и Грузии</Title>
+            <Alias>OtherCisAndGeorgia</Alias>
+          </Direction>
+          <BaseParameterModifiers>
+            <BaseParameterModifier>
+              <Id>363566</Id>
+              <Title>Кроме Киевстар</Title>
+              <Alias>ExceptKievstar</Alias>
+            </BaseParameterModifier>
+          </BaseParameterModifiers>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2204</Id>
+            <Title>Международная связь</Title>
+            <SortOrder>30</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCountry</GroupType>
+            <OldSiteId>304802</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166366</Id>
+          <Title><![CDATA[Звонки в Европу, США и Канаду]]></Title>
+          <SortOrder>3</SortOrder>
+          <NumValue>35.00</NumValue>
+          <Value><![CDATA[35 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>2488</Id>
+            <Title>Номера Европы, США, Канады</Title>
+            <Alias>EuropeUsaCanada</Alias>
+          </Direction>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2204</Id>
+            <Title>Международная связь</Title>
+            <SortOrder>30</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCountry</GroupType>
+            <OldSiteId>304802</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166367</Id>
+          <Title><![CDATA[Звонки в страны Северной и Центральной Америки (кроме США и Канады)]]></Title>
+          <SortOrder>4</SortOrder>
+          <NumValue>40.00</NumValue>
+          <Value><![CDATA[40 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>2489</Id>
+            <Title>Номера стран Северной и Центральной Америки (кроме США и Канады)</Title>
+            <Alias>AmericaExceptUsaCanada</Alias>
+          </Direction>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2204</Id>
+            <Title>Международная связь</Title>
+            <SortOrder>30</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCountry</GroupType>
+            <OldSiteId>304802</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166368</Id>
+          <Title><![CDATA[Звонки в другие страны]]></Title>
+          <SortOrder>5</SortOrder>
+          <NumValue>70.00</NumValue>
+          <Value><![CDATA[70 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>2483</Id>
+            <Title>Номера всего мира</Title>
+            <Alias>World</Alias>
+          </Direction>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2204</Id>
+            <Title>Международная связь</Title>
+            <SortOrder>30</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCountry</GroupType>
+            <OldSiteId>304802</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166369</Id>
+          <Title><![CDATA[SMS на номера всех мобильных операторов РФ за пределы Пермского края]]></Title>
+          <SortOrder>2</SortOrder>
+          <NumValue>2.95</NumValue>
+          <Value><![CDATA[2,95 руб. за SMS]]></Value>
+          <Legal><![CDATA[За исключением SMS на номера Республики Крым и г. Севастополь, для которых стоимость сообщения составляет 5,45 руб.]]></Legal>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2201</Id>
+            <Title>Сообщения</Title>
+            <SortOrder>50</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/beeline-mobile-benefit-sms-11.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232316</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2218</Id>
+            <Title>рублей за сообщение</Title>
+            <Display>руб.</Display>
+            <ShortDisplay>руб.</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166370</Id>
+          <Title><![CDATA[SMS на номера международных операторов]]></Title>
+          <SortOrder>3</SortOrder>
+          <NumValue>5.45</NumValue>
+          <Value><![CDATA[5,45 руб. за SMS]]></Value>
+          <BaseParameter>
+            <Id>2454</Id>
+            <Title>Исходящие SMS</Title>
+            <Alias>OutgoingSms</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>2498</Id>
+            <Title>Номера всего мира, кроме России</Title>
+            <Alias>WorldExceptRussia</Alias>
+          </Direction>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2201</Id>
+            <Title>Сообщения</Title>
+            <SortOrder>50</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/beeline-mobile-benefit-sms-11.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232316</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2218</Id>
+            <Title>рублей за сообщение</Title>
+            <Display>руб.</Display>
+            <ShortDisplay>руб.</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166372</Id>
+          <Title><![CDATA[Входящие MMS]]></Title>
+          <SortOrder>5</SortOrder>
+          <NumValue>0.00</NumValue>
+          <Value><![CDATA[0 руб. за MMS]]></Value>
+          <BaseParameter>
+            <Id>363564</Id>
+            <Title>Входящие MMS</Title>
+            <Alias>IncomingMms</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2201</Id>
+            <Title>Сообщения</Title>
+            <SortOrder>50</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/beeline-mobile-benefit-sms-11.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232316</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2218</Id>
+            <Title>рублей за сообщение</Title>
+            <Display>руб.</Display>
+            <ShortDisplay>руб.</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166373</Id>
+          <Title><![CDATA[Исходящие MMS]]></Title>
+          <SortOrder>6</SortOrder>
+          <NumValue>6.60</NumValue>
+          <Value><![CDATA[6,6 руб. за MMS]]></Value>
+          <BaseParameter>
+            <Id>2481</Id>
+            <Title>Исходящие MMS</Title>
+            <Alias>OutgoingMms</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2201</Id>
+            <Title>Сообщения</Title>
+            <SortOrder>50</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/beeline-mobile-benefit-sms-11.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232316</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2218</Id>
+            <Title>рублей за сообщение</Title>
+            <Display>руб.</Display>
+            <ShortDisplay>руб.</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166374</Id>
+          <Title><![CDATA[Внутрисетевой роуминг]]></Title>
+          <SortOrder>0</SortOrder>
+          <Value><![CDATA[<a href="/customers/products/mobile/roaming/"class="note"">Согласно тарифам на роуминг</a>]]></Value>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2202</Id>
+            <Title>Роуминг</Title>
+            <SortOrder>60</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/rouming.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>ConnectionAndOperation</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>232317</OldSiteId>
+          </Group>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166375</Id>
+          <Title><![CDATA[Международный роуминг]]></Title>
+          <SortOrder>0</SortOrder>
+          <Value><![CDATA[<a href="/customers/products/mobile/roaming/"class="note"">Согласно тарифам на роуминг</a>]]></Value>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2202</Id>
+            <Title>Роуминг</Title>
+            <SortOrder>60</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/rouming.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>ConnectionAndOperation</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>232317</OldSiteId>
+          </Group>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166376</Id>
+          <Title><![CDATA[Национальный роуминг]]></Title>
+          <SortOrder>0</SortOrder>
+          <Value><![CDATA[<a href="/customers/products/mobile/roaming/"class="note"">Согласно тарифам на роуминг</a>]]></Value>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2202</Id>
+            <Title>Роуминг</Title>
+            <SortOrder>60</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/rouming.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>ConnectionAndOperation</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>232317</OldSiteId>
+          </Group>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166387</Id>
+          <Title><![CDATA[Звонки на номера других операторов России]]></Title>
+          <SortOrder>4</SortOrder>
+          <NumValue>10.00</NumValue>
+          <Value><![CDATA[10 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>2491</Id>
+            <Title>Номера России (кроме домашнего региона)</Title>
+            <Alias>RussiaExceptHome</Alias>
+          </Direction>
+          <BaseParameterModifiers>
+            <BaseParameterModifier>
+              <Id>2514</Id>
+              <Title>Кроме Билайн</Title>
+              <Alias>ExceptBeeline</Alias>
+            </BaseParameterModifier>
+            <BaseParameterModifier>
+              <Id>363567</Id>
+              <Title>Кроме Республики Крым и г. Севастополь</Title>
+              <Alias>ExceptCrimea</Alias>
+            </BaseParameterModifier>
+          </BaseParameterModifiers>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2199</Id>
+            <Title>Междугородная связь</Title>
+            <SortOrder>20</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCity</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>232314</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166388</Id>
+          <Title><![CDATA[Звонки на номера других украинских операторов Республики Крым и г.Севастополя]]></Title>
+          <SortOrder>6</SortOrder>
+          <NumValue>24.00</NumValue>
+          <Value><![CDATA[24 руб. за минуту]]></Value>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2199</Id>
+            <Title>Междугородная связь</Title>
+            <SortOrder>20</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCity</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>232314</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166389</Id>
+          <Title><![CDATA[Звонки на номера оператора «Киевстар» в Республику Крым и г.Севастополя]]></Title>
+          <SortOrder>5</SortOrder>
+          <NumValue>24.00</NumValue>
+          <Value><![CDATA[24 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>363568</Id>
+            <Title>Номера Республики Крым и г. Севастополь</Title>
+            <Alias>Crimea</Alias>
+          </Direction>
+          <BaseParameterModifiers>
+            <BaseParameterModifier>
+              <Id>363565</Id>
+              <Title>Только Киевстар</Title>
+              <Alias>OnlyKievstar</Alias>
+            </BaseParameterModifier>
+          </BaseParameterModifiers>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2199</Id>
+            <Title>Междугородная связь</Title>
+            <SortOrder>20</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCity</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>232314</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166400</Id>
+          <Title><![CDATA[Звонки на номера «Билайн»]]></Title>
+          <SortOrder>3</SortOrder>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2198</Id>
+            <Title>Местная связь</Title>
+            <SortOrder>10</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232313</OldSiteId>
+          </Group>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166401</Id>
+          <Title><![CDATA[1-я минута разговора]]></Title>
+          <SortOrder>4</SortOrder>
+          <NumValue>0.50</NumValue>
+          <Value><![CDATA[0,5 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <BaseParameterModifiers>
+            <BaseParameterModifier>
+              <Id>2518</Id>
+              <Title>1-я минута разговора</Title>
+              <Alias>1Min</Alias>
+              <From>1</From>
+              <To>1</To>
+            </BaseParameterModifier>
+          </BaseParameterModifiers>
+          <Group>
+            <Id>2198</Id>
+            <Title>Местная связь</Title>
+            <SortOrder>10</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232313</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166402</Id>
+          <Title><![CDATA[со 2-й минуты разговора]]></Title>
+          <SortOrder>5</SortOrder>
+          <NumValue>0.00</NumValue>
+          <Value><![CDATA[0 руб. за минуту]]></Value>
+          <Group>
+            <Id>2198</Id>
+            <Title>Местная связь</Title>
+            <SortOrder>10</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232313</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166405</Id>
+          <Title><![CDATA[Звонки на местные номера других операторов]]></Title>
+          <SortOrder>9</SortOrder>
+          <NumValue>1.30</NumValue>
+          <Value><![CDATA[1,30 руб. за минуту]]></Value>
+          <BaseParameter>
+            <Id>2457</Id>
+            <Title>Исходящие звонки</Title>
+            <Alias>OutgoingCalls</Alias>
+          </BaseParameter>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Direction>
+            <Id>2492</Id>
+            <Title>Номера домашнего региона</Title>
+            <Alias>Home</Alias>
+          </Direction>
+          <BaseParameterModifiers>
+            <BaseParameterModifier>
+              <Id>2514</Id>
+              <Title>Кроме Билайн</Title>
+              <Alias>ExceptBeeline</Alias>
+            </BaseParameterModifier>
+          </BaseParameterModifiers>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2205</Id>
+              <Title>Показывать в плитке</Title>
+              <Alias>ShowInTile</Alias>
+            </ProductParamsModifier>
+            <ProductParamsModifier>
+              <Id>2208</Id>
+              <Title>Главный в карточке</Title>
+              <Alias>MainInCard</Alias>
+            </ProductParamsModifier>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2198</Id>
+            <Title>Местная связь</Title>
+            <SortOrder>10</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232313</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166408</Id>
+          <Title><![CDATA[Звонки на номера «Билайн» России]]></Title>
+          <SortOrder>3</SortOrder>
+          <NumValue>3.00</NumValue>
+          <Value><![CDATA[3 руб. за минуту]]></Value>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2199</Id>
+            <Title>Междугородная связь</Title>
+            <SortOrder>20</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCity</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>232314</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166409</Id>
+          <Title><![CDATA[SMS на номера всех мобильных операторов Пермского края]]></Title>
+          <SortOrder>1</SortOrder>
+          <NumValue>1.70</NumValue>
+          <Value><![CDATA[1,70 руб. за SMS]]></Value>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2201</Id>
+            <Title>Сообщения</Title>
+            <SortOrder>50</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/beeline-mobile-benefit-sms-11.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232316</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2218</Id>
+            <Title>рублей за сообщение</Title>
+            <Display>руб.</Display>
+            <ShortDisplay>руб.</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166410</Id>
+          <Title><![CDATA[1 Мбайт переданных/полученных данных с опцией «Хайвей 1 Гб»]]></Title>
+          <SortOrder>1</SortOrder>
+          <NumValue>0.00</NumValue>
+          <Value><![CDATA[0 руб. за Мбайт]]></Value>
+          <Legal><![CDATA[В состав тарифного плана включена опция «Хайвей 1 Гб» с ежесуточным списанием абонентской платы.  <a href="/customers/products/mobile/services/details/highway-1gb-plata-v-sutki/">Подробнее об опции «Хайвей 1 Гб»</a>. Номер для отключения— 0674 71 702.]]></Legal>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2200</Id>
+            <Title>Мобильный интернет</Title>
+            <SortOrder>40</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/beeline-home4-ben-1_internet_new.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232315</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2524</Id>
+            <Title>рублей за мегабайт</Title>
+            <Display>руб.</Display>
+            <ShortDisplay>руб/МБ</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166411</Id>
+          <Title><![CDATA[1 Мбайт переданных/полученных данных без опции «Хайвей 1 Гб»]]></Title>
+          <SortOrder>2</SortOrder>
+          <NumValue>10.00</NumValue>
+          <Value><![CDATA[10 руб. за Мбайт]]></Value>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2200</Id>
+            <Title>Мобильный интернет</Title>
+            <SortOrder>40</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/beeline-home4-ben-1_internet_new.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232315</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2524</Id>
+            <Title>рублей за мегабайт</Title>
+            <Display>руб.</Display>
+            <ShortDisplay>руб/МБ</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166412</Id>
+          <Title><![CDATA[Если в любом из календарных месяцев после активации тарифа вы используете 1 Мбайт интернет-трафика, то вам будет подключена опция <a href="/customers/products/mobile/services/details/highway-1gb-plata-v-sutki/">«Хайвей 1Гб»</a>, позволяющая активным пользователям интернета экономить на трафике. С опцией «Хайвей 1Гб» вы получаете 1 Гбайт интернет-трафика в месяц на максимальной скорости за 6 рублей в день.]]></Title>
+          <SortOrder>0</SortOrder>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2200</Id>
+            <Title>Мобильный интернет</Title>
+            <SortOrder>40</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/beeline-home4-ben-1_internet_new.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232315</OldSiteId>
+          </Group>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166417</Id>
+          <Title><![CDATA[Звонки на номера «Билайн» при нахождении в льготной зоне]]></Title>
+          <SortOrder>100</SortOrder>
+          <NumValue>0.00</NumValue>
+          <Legal><![CDATA[<p>Льготная цена действует при нахождении абонента на территории населенных пунктов Пермского края: Березники, Соликамск, Усолье</p>]]></Legal>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2198</Id>
+            <Title>Местная связь</Title>
+            <SortOrder>10</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232313</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166421</Id>
+          <Title><![CDATA[Звонки на местные номера других операторов при нахождении в льготной зоне]]></Title>
+          <SortOrder>110</SortOrder>
+          <NumValue>0.90</NumValue>
+          <Legal><![CDATA[<p>Льготная цена действует при нахождении абонента на территории населенных пунктов Пермского края: Березники, Соликамск, Усолье</p>]]></Legal>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2198</Id>
+            <Title>Местная связь</Title>
+            <SortOrder>10</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <OldSiteId>232313</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166426</Id>
+          <Title><![CDATA[Звонки на номера «Билайн» России при нахождении в льготной зоне]]></Title>
+          <SortOrder>100</SortOrder>
+          <NumValue>3.00</NumValue>
+          <Legal><![CDATA[<p>Льготная цена действует при нахождении абонента на территории населенных пунктов Пермского края: Березники, Соликамск, Усолье</p>]]></Legal>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2199</Id>
+            <Title>Междугородная связь</Title>
+            <SortOrder>20</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCity</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>232314</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+        <ProductParameter>
+          <Id>2166431</Id>
+          <Title><![CDATA[Звонки на номера других операторов России при нахождении в льготной зоне]]></Title>
+          <SortOrder>110</SortOrder>
+          <NumValue>10.00</NumValue>
+          <Legal><![CDATA[<p>Льготная цена действует при нахождении абонента на территории населенных пунктов Пермского края: Березники, Соликамск, Усолье</p>]]></Legal>
+          <Zone>
+            <Id>2468</Id>
+            <Title>Домашний регион</Title>
+            <Alias>HomeRegion</Alias>
+          </Zone>
+          <Modifiers>
+            <ProductParamsModifier>
+              <Id>2400</Id>
+              <Title>Исключить из лигала</Title>
+              <Alias>ExcludeFromLegal</Alias>
+            </ProductParamsModifier>
+          </Modifiers>
+          <Group>
+            <Id>2199</Id>
+            <Title>Междугородная связь</Title>
+            <SortOrder>20</SortOrder>
+            <Icon>//storage.demo.artq.com/upload/dpcupload/contents/296/home-phone1.png</Icon>
+            <IsComparable>0</IsComparable>
+            <GroupType>InterCity</GroupType>
+            <PreOpen>0</PreOpen>
+            <OldSiteId>232314</OldSiteId>
+          </Group>
+          <Unit>
+            <Id>2216</Id>
+            <Title>рублей за минуту</Title>
+            <Display>руб. за минуту</Display>
+            <ShortDisplay>руб/мин</ShortDisplay>
+          </Unit>
+        </ProductParameter>
+      </Parameters>
+      <MarketingSign>
+        <Id>2156</Id>
+        <Title>Для звонков на Билайн</Title>
+        <OldSiteId>589261</OldSiteId>
+      </MarketingSign>
+      <Modifiers>
+        <ProductModifier>
+          <Id>2172</Id>
+          <Title>Междугородний</Title>
+          <Alias>IsIntercity</Alias>
+        </ProductModifier>
+        <ProductModifier>
+          <Id>2329</Id>
+          <Title>MNP</Title>
+          <Alias>MNP</Alias>
+        </ProductModifier>
+      </Modifiers>
+      <Type>MobileTariff</Type>
+      <ProductWebEntities>
+        <ProductWebEntity>
+          <Id>2166413</Id>
+          <WebEntity>
+            <Id>1999179</Id>
+            <SOC>59DOUBT15</SOC>
+            <EntityType>PP</EntityType>
+            <BusinessType>B2C</BusinessType>
+            <PaySystemType>PREP</PaySystemType>
+            <EntityId>1184105</EntityId>
+            <Title>Ноль сомнений</Title>
+            <Params>
+              <WebEntityParam>
+                <Id>1999182</Id>
+                <Name>Краткое описание продукта</Name>
+                <NameId>100000001</NameId>
+                <Value><![CDATA[Ноль на Билайн и скидка на звонки на других операторов на территории Березников, Усолья и Соликамска]]></Value>
+                <ParamId>100000001</ParamId>
+                <SecNo>1</SecNo>
+              </WebEntityParam>
+              <WebEntityParam>
+                <Id>1999183</Id>
+                <Name>Стоимость перехода на тариф</Name>
+                <NameId>100000010</NameId>
+                <Value><![CDATA[50]]></Value>
+                <UOM>Руб.</UOM>
+                <ParamId>100000010</ParamId>
+                <SecNo>1</SecNo>
+              </WebEntityParam>
+              <WebEntityParam>
+                <Id>1999186</Id>
+                <Name>Краткое описание продукта</Name>
+                <NameId>100000001</NameId>
+                <Value><![CDATA[Ноль на Билайн и скидка на звонки на других операторов на территории Березников, Усолья и Соликамска]]></Value>
+                <ParamId>100000001</ParamId>
+                <SecNo>1</SecNo>
+              </WebEntityParam>
+              <WebEntityParam>
+                <Id>1999187</Id>
+                <Name>Стоимость перехода на тариф</Name>
+                <NameId>100000010</NameId>
+                <Value><![CDATA[50]]></Value>
+                <UOM>Руб.</UOM>
+                <ParamId>100000010</ParamId>
+                <SecNo>1</SecNo>
+              </WebEntityParam>
+            </Params>
+          </WebEntity>
+        </ProductWebEntity>
+      </ProductWebEntities>
+      <ServicesOnTariff>
+        <ServiceOnTariff>
+          <Id>2166544</Id>
+          <Service>
+            <Id>851415</Id>
+            <MarketingProduct>
+              <Id>696575</Id>
+              <Title>Есть контакт</Title>
+              <Alias>est-kontakt</Alias>
+            </MarketingProduct>
+          </Service>
+          <Parent>
+            <Id>2166543</Id>
+            <Title>Есть контакт на Ноль сомнений Пермь</Title>
+            <Type>311</Type>
+            <Modifiers>
+              <ProductRelationModifier>
+                <Id>2409</Id>
+                <Title>Включено в тариф</Title>
+                <Alias>IncludeInTariff</Alias>
+              </ProductRelationModifier>
+            </Modifiers>
+          </Parent>
+        </ServiceOnTariff>
+        <ServiceOnTariff>
+          <Id>2166576</Id>
+          <Service>
+            <Id>2107590</Id>
+            <MarketingProduct>
+              <Id>2107454</Id>
+              <Title>Умный интернет</Title>
+              <Alias>umnyy_internet</Alias>
+            </MarketingProduct>
+          </Service>
+          <Parent>
+            <Id>2166575</Id>
+            <Title>Умный интернет на Ноль сомнений (Пермь)</Title>
+            <Type>311</Type>
+            <Modifiers>
+              <ProductRelationModifier>
+                <Id>2409</Id>
+                <Title>Включено в тариф</Title>
+                <Alias>IncludeInTariff</Alias>
+              </ProductRelationModifier>
+            </Modifiers>
+          </Parent>
+        </ServiceOnTariff>
+      </ServicesOnTariff>
+    </Product>
+  </Products>
+</ProductInfo>

@@ -1,0 +1,81 @@
+﻿@using QA.ProductCatalog.Admin.WebApp.Models
+
+@model TaskModel
+
+
+<div class="display-label">
+    @Html.DisplayNameFor(x => x.DisplayName)
+</div>
+<div class="display-field">
+
+    @Html.DisplayFor(x => x.DisplayName)
+    @if (Model is CustomActionTaskModel && !string.IsNullOrEmpty(((CustomActionTaskModel)Model).IconUrl))
+    {
+        <img src="@(((CustomActionTaskModel)Model).IconUrl)" alt="@Model.Name"/>
+    }
+
+
+</div>
+
+
+@if (Model is CustomActionTaskModel)
+{
+    var customActionInfo = (CustomActionTaskModel)Model;
+    
+    <div class="display-label">
+        @Html.DisplayNameFor(x => customActionInfo.Description)
+    </div>
+    <div class="display-field">@Html.DisplayFor(x => customActionInfo.Description) </div>
+}
+
+<div class="display-label">
+    @Html.DisplayNameFor(x => x.Id)
+</div>
+<div class="display-field">@Html.DisplayFor(x => x.Id) </div>
+
+<div class="display-label">
+    @Html.DisplayNameFor(x => x.CreatedTime)
+</div>
+<div class="display-field">@Html.DisplayFor(x => x.CreatedTime) </div>
+<div class="display-label">
+    @Html.DisplayNameFor(x => x.UserName)
+</div>
+<div class="display-field">@Html.DisplayFor(x => x.UserName) </div>
+
+<div class="display-label">
+    @Html.DisplayNameFor(x => x.State)
+</div>
+<div class="display-field">
+     <img src="@Url.Content("~/Content/img/TaskStates/" + Model.IconName + "16.png")" alt="@Model.State"/>
+    @Html.DisplayFor(x => x.State) 
+</div>
+
+<div class="display-label">
+    @Html.DisplayNameFor(x => x.Progress)
+</div>
+
+<div id="ProgressFieldDiv" class="display-field">
+</div>
+<script>
+    $("#ProgressFieldDiv").kendoProgressBar({
+        value: @(Model.Progress ?? 0),
+        type: "percent"
+    });
+</script>
+<div class="display-label">
+    @Html.LabelFor(x => x.LastStatusChangeTime)
+</div>
+<div class="display-field">
+    @Html.DisplayFor(x => x.LastStatusChangeTime)
+</div>
+<div class="display-label">
+    @Html.LabelFor(x => x.Message)
+</div>
+<div class="display-field" style="white-space: pre-wrap">@Html.DisplayFor(x => x.Message)</div>
+
+
+
+
+
+
+

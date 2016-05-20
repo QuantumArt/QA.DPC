@@ -1,0 +1,89 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="jquery-2.1.1.min.js"></script>
+    <style>
+        ul {
+            padding-left: 0;
+        }
+
+            ul li {
+                list-style: none;
+                display: inline-block;
+            }
+    </style>
+</head>
+<body>
+    <div>
+        <ul class="actions">
+            <li><a class="actions" href="../api/v2/tariffs">Тарифы</a></li>
+            <li><a class="actions" href="../api/v2/regions">Регионы</a></li>
+            <li><a class="actions" href="../api/v2/options">Опции</a></li>
+            <li><a class="actions" href="../api/v2/notes">Сноски</a></li>
+            <li><a class="actions" href="../api/v2/tariffgroups">Группы тарифов</a></li>
+            <li><a class="actions" href="../api/v2/optiongroups">Группы опций</a></li>
+            <li><a class="actions" href="../api/v2/roaminggroups">Группы роуминга</a></li>
+            <li><a class="actions" href="../api/v2/bonusgroups">Группы бонусов</a></li>
+            <li><a class="actions" href="../api/v2/equipmentgroups">Группы оборудования</a></li>
+            <li><a class="actions" href="../api/v2/roaming">Направления роуминга</a></li>
+            <li><a class="actions" href="../api/v2/parametergroups">Группы параметров</a></li>
+            <li><a class="actions" href="../api/v2/bonuses">Бонусы</a></li>
+            <li><a class="actions" href="../api/v2/equipment">Оборудование</a></li>
+            <!--<li><a class="actions" href="../api/v2/productstest">Продукт для теста данных вьюхи</a></li>-->
+            <li><a class="actions" href="../api/v2/modifiers">Модификаторы</a></li>
+        </ul>
+    </div>
+    <div>
+        <ul class="actions">
+            <li><a class="actions" href="../api/v2/tariffs/schema">Тарифы (схема)</a></li>
+            <li><a class="actions" href="../api/v2/regions/schema">Регионы (схема)</a></li>
+            <li><a class="actions" href="../api/v2/options/schema">Опции (схема)</a></li>
+            <li><a class="actions" href="../api/v2/notes/schema">Сноски (схема)</a></li>
+            <li><a class="actions" href="../api/v2/tariffgroups/schema">Группы тарифов (схема)</a></li>
+            <li><a class="actions" href="../api/v2/optiongroups/schema">Группы опций (схема)</a></li>
+            <li><a class="actions" href="../api/v2/roaminggroups/schema">Группы роуминга (схема)</a></li>
+            <li><a class="actions" href="../api/v2/bonusgroups/schema">Группы бонусов (схема)</a></li>
+            <li><a class="actions" href="../api/v2/equipmentgroups/schema">Группы оборудования (схема)</a></li>
+            <li><a class="actions" href="../api/v2/roaming/schema">Направления роуминга (схема)</a></li>
+            <li><a class="actions" href="../api/v2/parametergroups/schema">Группы параметров (схема)</a></li>
+            <li><a class="actions" href="../api/v2/bonuses/schema">Бонусы (схема)</a></li>
+            <li><a class="actions" href="../api/v2/equipment/schema">Оборудование (схема)</a></li>
+            <li><a class="actions" href="../api/v2/productstest/schema">Продукт для теста данных вьюхи (схема)</a></li>
+            <li><a class="actions" href="../api/v2/modifiers/schema">Модификаторы (схема)</a></li>
+        </ul>
+    </div>
+    <div>url: <input autocomplete="on" name="txUrl" value="../api/v2/tariffs" style="width: 400px" id="txUrl" type="text" /> <button onclick="TestService()">test</button></div>
+    <script>
+
+        $('.actions a').click(function (e) {
+            if (e && e.preventDefault) {
+                e.preventDefault();
+            }
+            $('#txUrl').val($(this).attr('href'));
+            TestService();
+            return false;
+        });
+
+        function TestService() {
+
+            $("#resultPre").text("загрузка...");
+
+            $.ajax({
+                url: $("#txUrl").val(),
+                contentType: "application/json",
+                context: { startTime: new Date() }
+            }).done(
+            function (result) {
+                $("#resultPre").text("Выполнено за " + ((new Date() - this.startTime) / 1000) + " ceк\r\n" + JSON.stringify(result, null, "\t"));
+            }).fail(function (jqXHR) {
+
+                alert(jqXHR.responseText);
+            });
+
+        }
+    </script>
+
+    <pre id="resultPre"></pre>
+</body>
+</html>

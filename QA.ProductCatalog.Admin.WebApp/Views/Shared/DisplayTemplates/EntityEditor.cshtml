@@ -1,0 +1,37 @@
+﻿@model  EntityEditor
+@{
+    
+    if (Model == null || Model.Hidden) { return; }
+    var article = Model.CurrentItem as Article;
+    var id = "a_" + Guid.NewGuid();
+    bool editable = Model.Behavior != null && Model.Behavior.Editable && article != null;
+    if (article == null){ return; }
+}
+<div id="@Model.UId" class="entity-editor">
+    @if (editable)
+    {
+        <div>
+            @Html.LinkButton(string.Format("({0}) ред.", article.Id), id, "edit")
+        </div>
+    }
+
+    @foreach (var item in Model.GetFieldInfo(Model.CurrentItem))
+    {
+     @: @Html.DisplayFor(x => item)
+    }
+
+    @Html.DisplayFor(x => Model.Content)
+
+</div>
+@if (editable)
+{
+    <script>
+        $(function () {
+            $("#@(id)").click(function () {
+                QA.Integration.showQPForm("@article.Id", "@article.ContentId", function(){
+                    QA.Utils.refresh();
+                })
+            });
+        })
+    </script>
+}

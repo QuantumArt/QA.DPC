@@ -1,0 +1,726 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7F8AC7E1-5857-4383-A542-BBC1E9CD7609}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>QA.ProductCatalog.Admin.WebApp</RootNamespace>
+    <AssemblyName>QA.ProductCatalog.Admin.WebApp</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <MvcBuildViews>true</MvcBuildViews>
+    <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+    <WebGreaseLibPath>..\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(SolutionDir)packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\AutoMapper.1.1.0.118\lib\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EFExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\EFExtensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(SolutionDir)packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>$(SolutionDir)packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\FluentValidation.4.0.0.0\lib\Net40\FluentValidation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FluentValidation.Mvc, Version=3.1.0.0, Culture=neutral, PublicKeyToken=a82054b837897c66, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\FluentValidation.MVC3.3.1.0.0\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Irony.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=5.0.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Data, Version=5.0.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\EnterpriseLibrary.Data.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.ExceptionHandling, Version=5.0.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\EnterpriseLibrary.ExceptionHandling.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.ExceptionHandling.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.ExceptionHandling.Logging, Version=5.0.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\EnterpriseLibrary.ExceptionHandling.Logging.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.ExceptionHandling.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Logging, Version=5.0.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\EnterpriseLibrary.Logging.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Validation, Version=5.0.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35\Microsoft.Practices.EnterpriseLibrary.Validation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.ServiceLocation, Version=1.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\CommonServiceLocator.1.3\lib\portable-net4+sl5+netcore45+wpa81+wp8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Configuration, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Unity.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Unity.Interception.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.Interception.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Practices.Unity.Interception.Configuration, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Unity.Interception.2.1.505.0\lib\NET35\Microsoft.Practices.Unity.Interception.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\NLog.2.1.0\lib\net45\NLog.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog.Extended, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\NLog.Extended.2.1.0.1\lib\net45-full\NLog.Extended.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QA.Configuration, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Configuration.1.0.1.0\lib\net40\QA.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QA.Core, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Core.2.0.3.0\lib\net45\QA.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QA.Core.Data, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Core.Data.2.0.3.0\lib\net45\QA.Core.Data.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QA.Core.Service.Interaction, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Core.Service.Interaction.2.0.3.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QA.Core.Web, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Core.Web.2.0.3.0\lib\net45\QA.Core.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QA.Validation.Xaml, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.1.0.2.0\lib\net40\QA.Validation.Xaml.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="QA.Validation.Xaml.Extensions, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.Extensions.1.0.2.0\lib\net40\QA.Validation.Xaml.Extensions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.2.0.0.0\lib\net45\Quantumart.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.Assembling, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.Assembling.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.BLL, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.BLL.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.Configuration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.Constants, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.Constants.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.DAL, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.DAL.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.Logging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.Logging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.Merger, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.Merger.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.Security, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.Utils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.Utils.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Quantumart.QP8.Validators, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.3.0\lib\net45\Quantumart.QP8.Validators.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Web.ApplicationServices" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Optimization">
+      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.Web.Optimization.1.1.3\lib\net40\System.Web.Optimization.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Routing" />
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xaml">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <Private>True</Private>
+      <HintPath>$(SolutionDir)packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(SolutionDir)packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\TaskContainerConfiguration.cs" />
+    <Compile Include="Binders\ContentBinder.cs" />
+    <Compile Include="Controllers\DefinitionEditorController.cs" />
+    <Compile Include="Controllers\NotificationController.cs" />
+    <Compile Include="Core\Adapters\ActionAdapterBase.cs" />
+    <Compile Include="Core\Adapters\CountActionAdapter.cs" />
+    <Compile Include="Core\Adapters\TaskActionAdapter.cs" />
+    <Compile Include="Core\Adapters\TimebasedActionAdapter.cs" />
+    <Compile Include="Core\QPSecurityChecker.cs" />
+    <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\ModelBindersConfig.cs" />
+    <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="Binders\ActionContextModelBinder.cs" />
+    <Compile Include="Controllers\AppInfoController.cs" />
+    <Compile Include="Controllers\ProductDependencyController.cs" />
+    <Compile Include="Controllers\ProductRelevanceController.cs" />
+    <Compile Include="Controllers\PartialSendController.cs" />
+    <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\ProductSendController.cs" />
+    <Compile Include="Binders\RemoteValidationContextModelBinder.cs" />
+    <Compile Include="Controllers\RemoteValidationController.cs" />
+    <Compile Include="Controllers\TaskController.cs" />
+    <Compile Include="Core\Helpers.cs" />
+    <Compile Include="Core\IProductChangeNotificator.cs" />
+    <Compile Include="Core\IProductChangeSubscriber.cs" />
+    <Compile Include="Core\ProductChangeNotificator.cs" />
+    <Compile Include="Core\RelevanceUpdaterOnProductChange.cs" />
+    <Compile Include="Filters\HandleAndLogErrorAttribute.cs" />
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ArticleChangedNotification.cs" />
+    <Compile Include="Models\DefinitionContentInfo.cs" />
+    <Compile Include="Models\DefinitionEditor.cs" />
+    <Compile Include="Models\DefinitionElement.cs" />
+    <Compile Include="Models\DefinitionFieldInfo.cs" />
+    <Compile Include="Models\DefinitionPathInfo.cs" />
+    <Compile Include="Models\DefinitionInfoForFieldsSave.cs" />
+    <Compile Include="Models\DefinitionTreeNode.cs" />
+    <Compile Include="Models\KendoGridFilter.cs" />
+    <Compile Include="Models\KendoTreeNode.cs" />
+    <Compile Include="Models\ProductState.cs" />
+    <Compile Include="Models\SendProductModel.cs" />
+    <Compile Include="Models\CustomActionTaskModel.cs" />
+    <Compile Include="Models\TaskModel.cs" />
+    <Compile Include="Models\TaskScheduleModel.cs" />
+    <Compile Include="Models\TasksPageInfo.cs" />
+    <Compile Include="Models\XmlViewerViewModel.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\RouteConfig.cs" />
+    <Content Include="Content\DefinitionEditor.css" />
+    <Content Include="Content\img\big_loading.gif" />
+    <Content Include="Content\img\icons\0.gif" />
+    <Content Include="Content\img\icons\add.gif" />
+    <Content Include="Content\img\icons\application_form_edit.png" />
+    <Content Include="Content\img\icons\clear.gif" />
+    <Content Include="Content\img\icons\clone.png" />
+    <Content Include="Content\img\icons\content.gif" />
+    <Content Include="Content\img\icons\copy.gif" />
+    <Content Include="Content\img\icons\custom_action.gif" />
+    <Content Include="Content\img\icons\delete.gif" />
+    <Content Include="Content\img\icons\download.gif" />
+    <Content Include="Content\img\icons\error.png" />
+    <Content Include="Content\img\icons\error_add.png" />
+    <Content Include="Content\img\icons\error_delete.png" />
+    <Content Include="Content\img\icons\error_go.png" />
+    <Content Include="Content\img\icons\fields.gif" />
+    <Content Include="Content\img\icons\folder_link.png" />
+    <Content Include="Content\img\icons\image_link.png" />
+    <Content Include="Content\img\icons\link.png" />
+    <Content Include="Content\img\icons\link_add.png" />
+    <Content Include="Content\img\icons\link_break.png" />
+    <Content Include="Content\img\icons\link_delete.png" />
+    <Content Include="Content\img\icons\link_edit.png" />
+    <Content Include="Content\img\icons\link_error.png" />
+    <Content Include="Content\img\icons\link_go.png" />
+    <Content Include="Content\img\icons\pick.gif" />
+    <Content Include="Content\img\icons\pick_disabled.gif" />
+    <Content Include="Content\img\icons\picture.png" />
+    <Content Include="Content\img\icons\preview.gif" />
+    <Content Include="Content\img\icons\properties.gif" />
+    <Content Include="Content\img\icons\refresh.gif" />
+    <Content Include="Content\img\icons\relation.gif" />
+    <Content Include="Content\img\icons\save.gif" />
+    <Content Include="Content\img\icons\virtualField.gif" />
+    <Content Include="Content\img\TaskStates\Cancelled16.png" />
+    <Content Include="Content\img\TaskStates\Cancelled48.png" />
+    <Content Include="Content\img\TaskStates\Done16.png" />
+    <Content Include="Content\img\TaskStates\Done48.png" />
+    <Content Include="Content\img\TaskStates\Failed16.png" />
+    <Content Include="Content\img\TaskStates\Failed48.png" />
+    <Content Include="Content\img\TaskStates\New16.png" />
+    <Content Include="Content\img\TaskStates\New48.png" />
+    <Content Include="Content\img\TaskStates\Running16.png" />
+    <Content Include="Content\img\TaskStates\Running48.png" />
+    <Content Include="Content\jqCron.css" />
+    <Content Include="Content\KendoUI\Default\editor.png" />
+    <Content Include="Content\KendoUI\Default\imagebrowser.png" />
+    <Content Include="Content\KendoUI\Default\indeterminate.gif" />
+    <Content Include="Content\KendoUI\Default\loading-image.gif" />
+    <Content Include="Content\KendoUI\Default\loading.gif" />
+    <Content Include="Content\KendoUI\Default\loading_2x.gif" />
+    <Content Include="Content\KendoUI\Default\markers.png" />
+    <Content Include="Content\KendoUI\Default\markers_2x.png" />
+    <Content Include="Content\KendoUI\Default\slider-h.gif" />
+    <Content Include="Content\KendoUI\Default\slider-v.gif" />
+    <Content Include="Content\KendoUI\Default\sprite.png" />
+    <Content Include="Content\KendoUI\Default\sprite_2x.png" />
+    <Content Include="Content\KendoUI\Default\sprite_kpi.png" />
+    <Content Include="Content\KendoUI\Default\sprite_kpi_2x.png" />
+    <Content Include="Content\KendoUI\kendo.common.min.css" />
+    <Content Include="Content\KendoUI\kendo.default.min.css" />
+    <Content Include="Content\KendoUI\textures\brushed-metal.png" />
+    <Content Include="Content\KendoUI\textures\dots1.png" />
+    <Content Include="Content\KendoUI\textures\dots10.png" />
+    <Content Include="Content\KendoUI\textures\dots11.png" />
+    <Content Include="Content\KendoUI\textures\dots12.png" />
+    <Content Include="Content\KendoUI\textures\dots13.png" />
+    <Content Include="Content\KendoUI\textures\dots2.png" />
+    <Content Include="Content\KendoUI\textures\dots3.png" />
+    <Content Include="Content\KendoUI\textures\dots4.png" />
+    <Content Include="Content\KendoUI\textures\dots5.png" />
+    <Content Include="Content\KendoUI\textures\dots6.png" />
+    <Content Include="Content\KendoUI\textures\dots7.png" />
+    <Content Include="Content\KendoUI\textures\dots8.png" />
+    <Content Include="Content\KendoUI\textures\dots9.png" />
+    <Content Include="Content\KendoUI\textures\glass-lighter.png" />
+    <Content Include="Content\KendoUI\textures\glass.png" />
+    <Content Include="Content\KendoUI\textures\highlight.png" />
+    <Content Include="Content\KendoUI\textures\hsv-gradient.png" />
+    <Content Include="Content\KendoUI\textures\hue.png" />
+    <Content Include="Content\KendoUI\textures\leather1.png" />
+    <Content Include="Content\KendoUI\textures\leather2.png" />
+    <Content Include="Content\KendoUI\textures\noise.png" />
+    <Content Include="Content\KendoUI\textures\stripe1.png" />
+    <Content Include="Content\KendoUI\textures\stripe2.png" />
+    <Content Include="Content\KendoUI\textures\stripe3.png" />
+    <Content Include="Content\KendoUI\textures\stripe4.png" />
+    <Content Include="Content\KendoUI\textures\stripe5.png" />
+    <Content Include="Content\KendoUI\textures\stripe6.png" />
+    <Content Include="Content\KendoUI\textures\transparency.png" />
+    <Content Include="Content\KendoUI\textures\transtexture.png" />
+    <Content Include="Content\Site.css" />
+    <Content Include="Content\XmlViewer.css" />
+    <Content Include="Global.asax" />
+    <Content Include="Scripts\AutoUpdateStrategy.js" />
+    <Content Include="Scripts\codemirror\addon\edit\closetag.js" />
+    <Content Include="Scripts\codemirror\addon\edit\matchtags.js" />
+    <Content Include="Scripts\codemirror\addon\fold\brace-fold.js" />
+    <Content Include="Scripts\codemirror\addon\fold\comment-fold.js" />
+    <Content Include="Scripts\codemirror\addon\fold\foldcode.js" />
+    <Content Include="Scripts\codemirror\addon\fold\foldgutter.css" />
+    <Content Include="Scripts\codemirror\addon\fold\foldgutter.js" />
+    <Content Include="Scripts\codemirror\addon\fold\indent-fold.js" />
+    <Content Include="Scripts\codemirror\addon\fold\markdown-fold.js" />
+    <Content Include="Scripts\codemirror\addon\fold\xml-fold.js" />
+    <Content Include="Scripts\codemirror\lib\codemirror.css" />
+    <Content Include="Scripts\codemirror\lib\codemirror.js" />
+    <Content Include="Scripts\codemirror\mode\javascript\index.html" />
+    <Content Include="Scripts\codemirror\mode\javascript\javascript.js" />
+    <Content Include="Scripts\codemirror\mode\javascript\json-ld.html" />
+    <Content Include="Scripts\codemirror\mode\javascript\test.js" />
+    <Content Include="Scripts\codemirror\mode\javascript\typescript.html" />
+    <Content Include="Scripts\codemirror\mode\xml\index.html" />
+    <Content Include="Scripts\codemirror\mode\xml\test.js" />
+    <Content Include="Scripts\codemirror\mode\xml\xml.js" />
+    <Content Include="Scripts\ContentIncludes\DefinitionEditorButton.js" />
+    <Content Include="Scripts\ContentIncludes\Transliterate.js" />
+    <Content Include="Scripts\DefinitionEditor.js" />
+    <Content Include="Scripts\jqCron.en.js" />
+    <Content Include="Scripts\jqCron.js" />
+    <Content Include="Scripts\jquery.scrollto.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
+    <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
+    <Content Include="Scripts\jquery\jquery-1.11.1.js" />
+    <Content Include="Scripts\jq.trottle.js" />
+    <Content Include="Scripts\json2.js" />
+    <Content Include="Scripts\KendoUI\jquery.min.js" />
+    <Content Include="Scripts\KendoUI\kendo.culture.ru-RU.min.js" />
+    <Content Include="Scripts\KendoUI\kendo.messages.ru-RU.min.js" />
+    <Content Include="Scripts\KendoUI\kendo.web.min.js" />
+    <Content Include="Scripts\pmrpc.js" />
+    <Content Include="Scripts\product\index.js" />
+    <Content Include="Scripts\product\tabstrip.js" />
+    <Content Include="Scripts\qp\QA.Integration.js" />
+    <Content Include="Scripts\qp\QP8BackendApi.Interaction.js" />
+    <Content Include="NLogClient.config">
+      <TransformOnBuild>true</TransformOnBuild>
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="NLogClient.Bee_test.config">
+      <DependentUpon>NLogClient.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="NLogClient.Debug.config">
+      <DependentUpon>NLogClient.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="NLogClient.localhost.config">
+      <DependentUpon>NLogClient.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="NLogClient.Megafon.config">
+      <DependentUpon>NLogClient.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="NLogClient.MTS.config">
+      <DependentUpon>NLogClient.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="NLogClient.Release.config">
+      <DependentUpon>NLogClient.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="NLogClient.Tele2.config">
+      <DependentUpon>NLogClient.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="Properties\PublishProfiles\localhost.pubxml" />
+    <None Include="Properties\PublishProfiles\ms-dpcdvlp001.pubxml" />
+    <None Include="Properties\PublishProfiles\mscdev01-biryukov.pubxml" />
+    <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <None Include="Scripts\_references.js" />
+    <Content Include="Scripts\Schedule.js" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Views\Shared\DisplayTemplates\GroupGridView.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\GridColumn.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ActionLink.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ComplexPlainArticleField.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Switcher.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Template.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\DocumentReference.cshtml" />
+    <Content Include="Views\Shared\Error.cshtml" />
+    <Content Include="Views\Shared\Send.cshtml" />
+    <Content Include="Views\Task\Index.cshtml" />
+    <Content Include="Views\Shared\ActionProps.cshtml" />
+    <Content Include="Views\PartialSend\Index.cshtml" />
+    <Content Include="Views\PartialSend\Result.cshtml" />
+    <Content Include="Views\Task\Schedule.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\NotesProcessor.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Tooltip.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Icon.cshtml" />
+    <Content Include="Views\DefinitionEditor\Index.cshtml" />
+    <Content Include="Views\Shared\XmlViewer.cshtml" />
+    <Content Include="Views\DefinitionEditor\Edit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\DefinitionContentInfo.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\DefinitionFieldInfo.cshtml" />
+    <Content Include="Views\Shared\JsonViewer.cshtml" />
+    <Content Include="Views\Product\JsonProductFormatter.cshtml" />
+    <Content Include="Views\Product\XmlProductFormatter.cshtml" />
+    <Content Include="Views\Product\XamlProductFormatter.cshtml" />
+    <Content Include="Views\Notification\Index.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\TabStrip.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\TabStripItem.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ArticleInfo.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\ArticleCollection.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\DisplayField.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\FileLink.cshtml" />
+    <None Include="Web.Bee_test.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Megafon.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.MTS.config">
+      <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Web.MTS_Prod.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Tele2.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Core\" />
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\Index.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Product\GetXml.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Shared\_Layout.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\_ViewStart.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\mscdev01.pubxml">
+      <SubType>Designer</SubType>
+    </None>
+    <Content Include="Views\Shared\DisplayTemplates\EntityEditor.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\StackPanel.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Label.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\PlainArticleField.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\EntityCollection.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\PropertyDisplay.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Group.cshtml" />
+    <Content Include="Scripts\qp\QA.Utils.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QA.Core.DocumentGenerator\QA.Core.DocumentGenerator.csproj">
+      <Project>{7bf30688-370a-4290-89e4-ef9181d373e4}</Project>
+      <Name>QA.Core.DocumentGenerator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.Notification\QA.Core.DPC.Notification.csproj">
+      <Project>{d0e2cb2d-042a-4882-8e6d-bbb0966fb47b}</Project>
+      <Name>QA.Core.DPC.Notification</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.Formatters\QA.Core.DPC.Formatters.csproj">
+      <Project>{749fe9e8-3678-497b-948f-f0b0135e2d97}</Project>
+      <Name>QA.Core.DPC.Formatters</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj">
+      <Project>{30ce970f-dc61-40b7-9625-44a70e8beaf8}</Project>
+      <Name>QA.Core.DPC.Loader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.UI\QA.Core.DPC.UI.csproj">
+      <Project>{08b8d510-2309-425f-b3e3-dd9dcdb3497f}</Project>
+      <Name>QA.Core.DPC.UI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.Xaml\QA.Core.DPC.Xaml.csproj">
+      <Project>{8ee920a3-9a9f-49f4-91de-153e283f753c}</Project>
+      <Name>QA.Core.DPC.Xaml</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj">
+      <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
+      <Name>QA.Core.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj">
+      <Project>{56e7fb60-0511-4bc7-9091-99c91d4ca5f7}</Project>
+      <Name>QA.Core.ProductCatalog.ActionsRunnerModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunner\QA.Core.ProductCatalog.ActionsRunner.csproj">
+      <Project>{8ac337d0-15be-4a60-9166-b7eeae3d5b32}</Project>
+      <Name>QA.Core.ProductCatalog.ActionsRunner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj">
+      <Project>{5af860a1-97a7-4c36-9496-21054975e226}</Project>
+      <Name>QA.ProductCatalog.Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.ProductCatalog.Integration\QA.ProductCatalog.Integration.csproj">
+      <Project>{54c5a130-e1f2-4971-a76a-c7991fc456aa}</Project>
+      <Name>QA.ProductCatalog.Integration</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.ProductCatalog.Validation.Beeline\QA.ProductCatalog.Validation.Beeline.csproj">
+      <Project>{48fd10f0-6081-436f-b348-1b789e17cb2b}</Project>
+      <Name>QA.ProductCatalog.Validation.Beeline</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.ProductCatalog.Validation.MTS\QA.ProductCatalog.Validation.MTS.csproj">
+      <Project>{a64ea048-e76c-4df1-b825-0a19e463035c}</Project>
+      <Name>QA.ProductCatalog.Validation.MTS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.ProductCatalog.Validation\QA.ProductCatalog.Validation.csproj">
+      <Project>{1b4547c9-ea65-4025-a940-a1516ea460d3}</Project>
+      <Name>QA.ProductCatalog.Validation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj">
+      <Project>{8516b769-6b89-4e24-bef7-3c4b1924a11a}</Project>
+      <Name>QA.Core.ProductCatalog.Actions</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Bee_test|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Megafon|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MTS|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Label="SlowCheetah">
+    <SlowCheetahToolsPath>$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\..\packages\SlowCheetah.2.5.14\tools\))</SlowCheetahToolsPath>
+    <SlowCheetah_EnableImportFromNuGet Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='' ">true</SlowCheetah_EnableImportFromNuGet>
+    <SlowCheetah_NuGetImportPath Condition=" '$(SlowCheetah_NuGetImportPath)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\Properties\SlowCheetah\SlowCheetah.Transforms.targets ))</SlowCheetah_NuGetImportPath>
+    <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Tele2|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MTS_Prod|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">
+    <AspNetCompiler VirtualPath="temp" PhysicalPath="$(WebProjectOutputDir)" />
+  </Target>
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <SaveServerSettingsInUserFile>True</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target> -->
+</Project>

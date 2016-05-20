@@ -1,0 +1,109 @@
+<Article Archived="False" ContentDisplayName="Маркетинговые продукты" ContentId="287" ContentName="MarketingProduct" Created="2014-06-23T11:36:10.57" Id="17432" IsPublished="True" Splitted="False" Status="Published" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Article.Fields>
+        <PlainArticleField x:Key="Title" ContentId="287" FieldDisplayName="Название" FieldId="1110" FieldName="Title" PlainFieldType="String" Value="Простой интернет + Хайвей 6 Гб" />
+        <PlainArticleField x:Key="Alias" ContentId="287" FieldDisplayName="Алиас" FieldId="1112" FieldName="Alias" PlainFieldType="String" Value="prostoy-internet-plus-highway6Gb" />
+        <PlainArticleField x:Key="Benefit" ContentId="287" FieldDisplayName="Бенефит" FieldId="1124" FieldName="Benefit" PlainFieldType="VisualEdit" Value="" />
+        <PlainArticleField x:Key="ShortBenefit" ContentId="287" FieldDisplayName="Моб. бенефит" FieldId="1302" FieldName="ShortBenefit" PlainFieldType="VisualEdit" Value="" />
+        <PlainArticleField x:Key="Legal" ContentId="287" FieldDisplayName="Лигал" FieldId="1125" FieldName="Legal" PlainFieldType="VisualEdit" Value="" />
+        <PlainArticleField x:Key="Description" ContentId="287" FieldDisplayName="Описание" FieldId="1126" FieldName="Description" PlainFieldType="VisualEdit" Value="" />
+        <PlainArticleField x:Key="ShortDescription" ContentId="287" FieldDisplayName="Моб. описание" FieldId="1303" FieldName="ShortDescription" PlainFieldType="VisualEdit" Value="" />
+        <PlainArticleField x:Key="Purpose" ContentId="287" FieldDisplayName="Назначение" FieldId="1127" FieldName="Purpose" PlainFieldType="VisualEdit" Value="" />
+        <PlainArticleField x:Key="TitleForFamily" ContentId="287" FieldDisplayName="Название для семейства" FieldId="1287" FieldName="TitleForFamily" PlainFieldType="String" Value="" />
+        <PlainArticleField x:Key="CommentForFamily" ContentId="287" FieldDisplayName="Комментарий для семейства" FieldId="1288" FieldName="CommentForFamily" PlainFieldType="Textbox" Value="" />
+        <PlainArticleField x:Key="OldSiteId" ContentId="287" FieldDisplayName="OldSiteId" FieldId="1328" FieldName="OldSiteId" PlainFieldType="Numeric" Value="635671" />
+        <MultiArticleField x:Key="Categories" ContentId="287" FieldDisplayName="Категории" FieldId="1202" FieldName="Categories" SubContentId="304" Type="M2M">
+            <MultiArticleField.Items>
+                <Article x:Key="2301" Archived="False" ContentDisplayName="Категории продуктов" ContentId="304" ContentName="ProductCategory" Created="2014-04-08T16:58:00.977" Id="2301" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <PlainArticleField x:Key="Title" ContentId="304" FieldDisplayName="Title" FieldId="1190" FieldName="Title" PlainFieldType="String" Value="Для мобильного интернета" />
+                        <PlainArticleField x:Key="Description" ContentId="304" FieldDisplayName="Description" FieldId="1194" FieldName="Description" PlainFieldType="Textbox" Value="" />
+                        <PlainArticleField x:Key="SortOrder" ContentId="304" FieldDisplayName="SortOrder" FieldId="1196" FieldName="SortOrder" PlainFieldType="Numeric" Value="8" />
+                        <PlainArticleField x:Key="IsMarked" ContentId="304" FieldDisplayName="IsMarked" FieldId="1197" FieldName="IsMarked" PlainFieldType="Boolean" Value="0" />
+                        <PlainArticleField x:Key="OldSiteId" ContentId="304" FieldDisplayName="OldSiteId" FieldId="1343" FieldName="OldSiteId" PlainFieldType="Numeric" Value="353235" />
+                    </Article.Fields>
+                </Article>
+            </MultiArticleField.Items>
+        </MultiArticleField>
+        <SingleArticleField x:Key="Family" ContentId="287" FieldDisplayName="Семейство" FieldId="1201" FieldName="Family" SubContentId="303">
+            <SingleArticleField.Item>
+                <Article Archived="False" ContentDisplayName="Семейства продуктов" ContentId="303" ContentName="ProductFamily" Created="2014-04-08T16:52:26.527" Id="2291" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <PlainArticleField x:Key="Title" ContentId="303" FieldDisplayName="Title" FieldId="1183" FieldName="Title" PlainFieldType="String" Value="Простой интернет + Хайвей" />
+                        <PlainArticleField x:Key="Description" ContentId="303" FieldDisplayName="Description" FieldId="1184" FieldName="Description" PlainFieldType="Textbox" Value="USB-модем и опция Хайвей" />
+                        <PlainArticleField x:Key="Signature" ContentId="303" FieldDisplayName="Signature" FieldId="1185" FieldName="Signature" PlainFieldType="String" Value="" />
+                        <PlainArticleField x:Key="TitleForTile" ContentId="303" FieldDisplayName="TitleForTile" FieldId="1186" FieldName="TitleForTile" PlainFieldType="String" Value="" />
+                        <PlainArticleField x:Key="IsUseModernDesign" ContentId="303" FieldDisplayName="IsUseModernDesign" FieldId="1189" FieldName="IsUseModernDesign" PlainFieldType="Boolean" Value="" />
+                        <PlainArticleField x:Key="OldSiteId" ContentId="303" FieldDisplayName="OldSiteId" FieldId="1336" FieldName="OldSiteId" PlainFieldType="Numeric" Value="615325" />
+                        <SingleArticleField Item="{x:Null}" x:Key="MarketingSign" ContentId="303" FieldDisplayName="MarketingSign" FieldId="1187" FieldName="MarketingSign" SubContentId="298" />
+                        <MultiArticleField x:Key="Categories" ContentId="303" FieldDisplayName="Categories" FieldId="1461" FieldName="Categories" SubContentId="304" Type="M2M">
+                            <MultiArticleField.Items>
+                                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                            </MultiArticleField.Items>
+                        </MultiArticleField>
+                    </Article.Fields>
+                </Article>
+            </SingleArticleField.Item>
+        </SingleArticleField>
+        <SingleArticleField Item="{x:Null}" x:Key="MarketingSign" ContentId="287" FieldDisplayName="Маркетинговый признак" FieldId="1297" FieldName="MarketingSign" SubContentId="298" />
+        <MultiArticleField x:Key="Modifiers" ContentId="287" FieldDisplayName="Модификаторы" FieldId="1293" FieldName="Modifiers" SubContentId="300" Type="M2M">
+            <MultiArticleField.Items>
+                <Article x:Key="2244" Archived="False" ContentDisplayName="Модификаторы продукта" ContentId="300" ContentName="ProductModifier" Created="2014-04-08T10:25:02.347" Id="2244" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <PlainArticleField x:Key="Title" ContentId="300" FieldDisplayName="Title" FieldId="1163" FieldName="Title" PlainFieldType="String" Value="B2C" />
+                        <PlainArticleField x:Key="Alias" ContentId="300" FieldDisplayName="Alias" FieldId="1164" FieldName="Alias" PlainFieldType="String" Value="B2C" />
+                    </Article.Fields>
+                </Article>
+            </MultiArticleField.Items>
+        </MultiArticleField>
+        <MultiArticleField x:Key="Images" ContentId="287" FieldDisplayName="Картинки" FieldId="1450" FieldName="Images" SubContentId="342" Type="M2O">
+            <MultiArticleField.Items>
+                <Article x:Key="18202" Archived="False" ContentDisplayName="Изображения продуктов" ContentId="342" ContentName="ProductImage" Created="2014-06-23T11:36:26.003" Id="18202" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <PlainArticleField x:Key="Image" ContentId="342" FieldDisplayName="Image" FieldId="1447" FieldName="Image" PlainFieldType="Image" Value="MobileTariffs/tarif-yusb-prostoy-internet-715.jpg" />
+                        <SingleArticleField x:Key="Type" ContentId="342" FieldDisplayName="Type" FieldId="1448" FieldName="Type" SubContentId="341">
+                            <SingleArticleField.Item>
+                                <Article Archived="False" ContentDisplayName="Типы изображений" ContentId="341" ContentName="ImageType" Created="2014-05-23T11:32:52.203" Id="2712" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                                    <Article.Fields>
+                                        <PlainArticleField x:Key="Title" ContentId="341" FieldDisplayName="Название" FieldId="1443" FieldName="Title" PlainFieldType="String" Value="Картинка" />
+                                        <PlainArticleField x:Key="Alias" ContentId="341" FieldDisplayName="Alias" FieldId="1444" FieldName="Alias" PlainFieldType="String" Value="Image" />
+                                    </Article.Fields>
+                                </Article>
+                            </SingleArticleField.Item>
+                        </SingleArticleField>
+                    </Article.Fields>
+                </Article>
+                <Article x:Key="18203" Archived="False" ContentDisplayName="Изображения продуктов" ContentId="342" ContentName="ProductImage" Created="2014-06-23T11:36:26.003" Id="18203" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <PlainArticleField x:Key="Image" ContentId="342" FieldDisplayName="Image" FieldId="1447" FieldName="Image" PlainFieldType="Image" Value="MobileTariffs/tarif-yusb-prostoy-internet-215.jpg" />
+                        <SingleArticleField x:Key="Type" ContentId="342" FieldDisplayName="Type" FieldId="1448" FieldName="Type" SubContentId="341">
+                            <SingleArticleField.Item>
+                                <Article Archived="False" ContentDisplayName="Типы изображений" ContentId="341" ContentName="ImageType" Created="2014-05-23T11:33:13.883" Id="2713" IsPublished="True" Splitted="False" Status="Published" Visible="True">
+                                    <Article.Fields>
+                                        <PlainArticleField x:Key="Title" ContentId="341" FieldDisplayName="Название" FieldId="1443" FieldName="Title" PlainFieldType="String" Value="Иконка" />
+                                        <PlainArticleField x:Key="Alias" ContentId="341" FieldDisplayName="Alias" FieldId="1444" FieldName="Alias" PlainFieldType="String" Value="Icon" />
+                                    </Article.Fields>
+                                </Article>
+                            </SingleArticleField.Item>
+                        </SingleArticleField>
+                    </Article.Fields>
+                </Article>
+            </MultiArticleField.Items>
+        </MultiArticleField>
+        <MultiArticleField x:Key="PreOpenParamGroups" ContentId="287" FieldDisplayName="Предраскрытые группы параметров" FieldId="1289" FieldName="PreOpenParamGroups" SubContentId="296" Type="M2M">
+            <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+            </MultiArticleField.Items>
+        </MultiArticleField>
+        <ExtensionArticleField Item="{x:Null}" x:Key="ProductType" ContentId="287" FieldDisplayName="Тип продукта" FieldId="1134" FieldName="ProductType" SubContentId="0" Value="289" />
+        <MultiArticleField x:Key="Tabs" ContentId="287" FieldDisplayName="Использование вкладок" FieldId="1291" FieldName="Tabs" SubContentId="318" Type="M2O">
+            <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+            </MultiArticleField.Items>
+        </MultiArticleField>
+        <MultiArticleField x:Key="ProductUsages" ContentId="287" FieldDisplayName="Варианты использования" FieldId="1593" FieldName="ProductUsages" SubContentId="315" Type="M2O">
+            <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+            </MultiArticleField.Items>
+        </MultiArticleField>
+    </Article.Fields>
+</Article>

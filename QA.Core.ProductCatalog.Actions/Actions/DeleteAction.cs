@@ -1,0 +1,75 @@
+﻿using QA.Core.Models.Configuration;
+using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+using QA.Core.ProductCatalog.Actions.Exceptions;
+using QA.Core.ProductCatalog.Actions.Services;
+using QA.ProductCatalog.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using QA.Core.DPC.Loader.Services;
+
+namespace QA.Core.ProductCatalog.Actions
+{
+	public class DeleteAction : ActionBase
+	{
+		private const string DoNotSendNotificationsKey = "DoNotSendNotifications";
+		protected IQPNotificationService NotificationService { get; private set; }
+
+		public DeleteAction(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
+			: base(articleService, fieldService, productService, logger, createTransaction)
+		{
+			NotificationService = notificationService;
+		}
+
+		#region Overrides
+		protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
+		{
+			var product = ArticleService.Read(productId);
+            var definition = Productservice.GetProductDefinition(0, product.ContentId);
+			bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
+
+            DeleteProduct(product, definition, doNotSendNotifications, true);
+		}
+		#endregion
+
+	    public void DeleteProduct(Quantumart.QP8.BLL.Article product, ProductDefinition definition, bool doNotSendNotifications, bool checkRootArticlePermissions)
+	    {
+            var dictionary = GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete);
+			var products = doNotSendNotifications ? null : Productservice.GetSimpleProductsByIds(new[] { product.Id });
+
+            DeleteProducts(dictionary, product.Id, checkRootArticlePermissions);
+
+            if (!doNotSendNotifications)
+				SendNotification(products, product.Id);
+		}
+
+		#region Private methods
+		private void DeleteProducts(Dictionary<int, Product<DeletingMode>> dictionary, int productId, bool checkRootArticlePermissions)
+		{
+			var articleIds = dictionary.Values.Where(a => a.Article.Id != productId).Select(p => p.Article.Id).ToArray();
+
+		    if (checkRootArticlePermissions)
+		    {
+                var result = ArticleService.Delete(productId);
+                ValidateMessageResult(productId, result);
+            }
+            else
+                ArticleService.SimpleDelete(new [] { productId } );
+
+            ArticleService.SimpleDelete(articleIds);
+		}
+
+		private void SendNotification(Models.Entities.Article[] products, int productId)
+		{
+			try
+			{
+				NotificationService.DeleteProducts(products, UserName, UserId);
+			}
+			catch (Exception ex)
+			{
+				throw new ProductException(productId, "не удалось отправить уведомление об удалении", ex);
+			}
+		}
+		#endregion
+	}
+}

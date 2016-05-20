@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Content ContentId="342" ContentName="Модификаторы продуктов"  xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+	<PlainField ShowInList="True" FieldName="Title" FieldId="1339"/>
+	<PlainField ShowInList="True" FieldName="Alias" FieldId="1340"/>
+</Content>

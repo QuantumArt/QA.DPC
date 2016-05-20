@@ -1,0 +1,58 @@
+﻿@using QA.ProductCatalog.Admin.WebApp.Models
+
+@model DefinitionElement
+
+@{
+    string actionName;
+
+    if (Model is DefinitionFieldInfo)
+    {
+        actionName = ((DefinitionFieldInfo)Model).Field.GetType().Name;
+    }
+    else
+    {
+        actionName = "Content";
+    }
+
+    actionName = "Save" + actionName;
+}
+
+@using (Ajax.BeginForm(actionName, new AjaxOptions
+{
+    OnSuccess = "DefinitionEditor.UpdateFormAfterSave",
+    OnFailure = "DefinitionEditor.OnTreeNodeSaveError",
+    OnBegin = "DefinitionEditor.onTreeNodeSaveBegin",
+    OnComplete = "DefinitionEditor.onTreeNodeSaveComplete"
+}))
+{
+    if (Model is DefinitionFieldInfo || (!Model.InDefinition && !(Model is DefinitionContentInfo && ((DefinitionContentInfo)Model).IsFromDictionaries)))
+    {
+        <div class="editor-label">
+            @Html.LabelFor(x => x.InDefinition)
+        </div>
+        <div class="editor-field">
+            @Html.CheckBoxFor(x => x.InDefinition, new { id = "inDefinitionCheckbox", onchange = "DefinitionEditor.ShowOrHideFieldProps()" })
+        </div>
+    }
+    else
+    {
+        @Html.HiddenFor(x => Model.InDefinition)
+    }
+
+
+    <div id="FieldProps">
+        @Html.EditorForModel()
+    </div>
+
+    @Html.HiddenFor(x => Model.Path)
+
+    @Html.HiddenFor(x => Model.Xml)
+
+    <p style="clear: both">
+        <input id="save" type="submit" value="Применить" />
+    </p>
+}
+
+<script>
+    DefinitionEditor.ShowOrHideFieldProps();
+</script>

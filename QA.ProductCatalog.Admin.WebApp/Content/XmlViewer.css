@@ -1,0 +1,16 @@
+﻿.code {
+		height: 100%;
+	}
+
+		.code .CodeMirror {
+			height: auto;
+			font-size: 13px;
+		}
+
+	.code-wrap {
+		height: 100%;
+	}
+
+	.CodeMirror-matchingtag {
+		background: rgba(255, 150, 0, .3);
+	}

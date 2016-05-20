@@ -1,0 +1,32 @@
+﻿@model QA.Core.Models.UI.UIElement
+@{
+    ViewBag.Title = "Продукт";
+}
+@if (Model == null)
+{
+    <h1>Ошибка при отображении продукта.</h1>
+    <p>@ViewBag.Message</p>
+    return;
+}
+
+@section jquery{
+	@Scripts.Render("~/bundles/KendoUI")
+}
+
+@section head{
+	@Styles.Render("~/content/KendoUI/KendoUIStyles")
+}
+
+<div class="formLayout">
+    @Html.DisplayFor(x => x)
+</div>
+
+@section scripts{
+    @Scripts.Render("~/bundles/product/index")
+
+    <script>
+        $(function () {
+            QA.Product.Index.init();
+        });
+    </script>
+}

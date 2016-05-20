@@ -1,0 +1,49 @@
+﻿@model DisplayField
+<!--asdasd-->
+@if (Model == null) { return; }
+@{ var field = Model.Value; }
+@if (field == null) { return; }
+@{ var value = field.NativeValue != null ? field.NativeValue.ToString() : string.Empty;
+    if (Model.HideEmptyPlainFields && string.IsNullOrEmpty(value))
+    {
+        return;
+    }
+}
+
+<dl class="plain-field row">
+    <dt class="plain-field-capture label">@field.FieldDisplayName: </dt>
+    <dd class="plain-field-value field">
+        @if (field.PlainFieldType == PlainFieldType.Boolean)
+        {
+            <input type="checkbox"
+                   disabled="disabled" @(value == "1" ? "checked='checked'" : "")
+                   data-value="@(field.NativeValue)" />
+        }
+        else if (field.PlainFieldType == PlainFieldType.VisualEdit)
+        {
+            <textarea class="plainfield__text" readonly="readonly" cols="45" rows="2">@value</textarea>
+        }
+        else if (field.PlainFieldType == PlainFieldType.Textbox)
+        {
+            <input type="text" class="plainfield__text" readonly="readonly" value="@value" />
+        }
+        else if (field.PlainFieldType == PlainFieldType.Image || field.PlainFieldType == PlainFieldType.DynamicImage)
+        {
+            <input type="text" class="plainfield__text" readonly="readonly" value="@value" />
+            <a href="@Model.GetFileUrl(field)" target="_blank" title="Открыть изображение в новой вкладке">
+                <span class="icon image_link"><img src="@Url.Content("~/content/img/icons/0.gif")"></span>
+            </a>
+        }
+        else if (field.PlainFieldType == PlainFieldType.File)
+        {
+            <input type="text" class="plainfield__text" readonly="readonly" value="@value" />
+            <a href="@Model.GetFileUrl(field)" target="_blank"  title="Открыть файл в новой вкладке">
+                <span class="icon folder_link"><img src="@Url.Content("~/content/img/icons/0.gif")"></span>
+            </a>
+        }
+        else
+        {
+            @: @(value.Length > 256 ? value.Substring(0, 256) + "..." : value)
+        }
+    </dd>
+</dl>

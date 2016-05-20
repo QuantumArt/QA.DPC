@@ -1,0 +1,67 @@
+﻿using System;
+using System.IO;
+using System.Net.Http.Formatting;
+using System.Threading.Tasks;
+using Microsoft.Practices.Unity;
+using QA.Core.DPC.Formatters.Formatting;
+using QA.Core.Models.Entities;
+using QA.ProductCatalog.Infrastructure;
+
+namespace QA.Core.DPC.Formatters.Configuration
+{
+	public static class FormattersContainerExstensions
+	{
+
+		public static ModelMediaTypeFormatter<TModel> AddModelMediaTypeFormatter<TFormatter, TModel>(this MediaTypeFormatterCollection formatters, IUnityContainer container, string name, string mediaType, params Action<MediaTypeFormatter, string, string>[] f)
+			where TModel : class
+			where TFormatter : IFormatter<TModel>
+		{
+			var formatter = new ModelMediaTypeFormatter<TModel>(container.Resolve<TFormatter>(), mediaType);
+
+			foreach (var addMapping in f)
+			{
+				addMapping(formatter, name, mediaType);
+			}
+
+			formatters.Add(formatter);
+			return formatter;
+		}
+
+		public static void AddRouteMapping(this MediaTypeFormatter formatter, string parameterName, string parameterValue, string mediaType)
+		{
+			formatter.MediaTypeMappings.Add(new RouteDataMapping(parameterName, parameterValue, mediaType));
+		}
+
+		public static void RegisterModelMediaTypeFormatter<TFormatter, TModel>(this IUnityContainer container, string name, string mediaType)
+			where TModel : class
+			where TFormatter : IFormatter<TModel>
+		{
+			container.RegisterType<MediaTypeFormatter, ModelMediaTypeFormatter<TModel>>(name, new InjectionFactory(c => new ModelMediaTypeFormatter<TModel>(c.Resolve<TFormatter>(), mediaType)));
+		}
+
+		public static void RegisterModelMediaTypeFormatter<TFormatter, TModel>(this IUnityContainer container, string mediaType)
+			where TModel : class
+			where TFormatter : IFormatter<TModel>
+		{
+			string name = typeof(TModel).Name;
+			container.RegisterModelMediaTypeFormatter<TFormatter, TModel>(name, mediaType);
+		}
+
+		public static void RegisterModelMediaTypeFormatter<TFormatter>(this IUnityContainer container, string name, string mediaType)
+			where TFormatter : MediaTypeFormatter
+		{
+			container.RegisterType<MediaTypeFormatter, TFormatter>(name);
+		}
+
+		public static async Task WriteAsync(this IArticleFormatter formatter, Stream stream, Article product, IArticleFilter filter, bool includeRegionTags)		
+		{
+			string data = formatter.Serialize(product, filter, includeRegionTags);
+
+			using (var writer = new StreamWriter(stream))
+			{
+				await writer.WriteAsync(data);
+				await writer.FlushAsync();
+			}
+		}
+	}
+}

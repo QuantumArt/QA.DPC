@@ -1,0 +1,7 @@
+Доступ к api возможен анонимно если в конфиге в Users есть поле Default, иначе в заголовке X-Auth-Token должна быть строка из значений в Users
+
+1. /api/1.0/products/type где type - тип, в query string принимает параметры Page PerPage PropertiesFilter - массив строк, Query, Filters - массив tuple<string,string>, RangeFilters - массив tuple<string,int,int> (поле от и до)
+
+2. /api/1.0/products/106392 где 106392 - id продукта, принимает PropertiesFilter - массив строк
+
+3. /api/1.0/products/search, принимает q - поисковый запрос, Filters - массив tuple<string,string>, RangeFilters - массив tuple<string,int,int> (поле от и до), Query.

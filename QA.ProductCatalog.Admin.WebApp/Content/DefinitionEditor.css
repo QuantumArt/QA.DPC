@@ -1,0 +1,49 @@
+﻿html,
+body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	overflow: hidden;
+}
+
+#verticalRootSplitter {
+	height: 100%;
+	border-width: 0;
+}
+
+#horizontalTreeAndPropsSplitter {
+	height: 100%;
+}
+
+#propsPane {
+	padding: 5px;
+}
+
+span.NotInDefinition {
+	color: gray;
+}
+
+span.IsDictionaries {
+	color: green;
+}
+
+span.MissingInQp {
+	color: red;
+}
+
+span.EditorNote {
+	color: green;
+	font-weight: bold;
+}
+
+.display-field, .editor-field {
+	min-height: 25px;
+}
+
+.display-label, .editor-label {
+	min-width: 260px;
+}
+
+.text-box {
+	min-width: 200px;
+}

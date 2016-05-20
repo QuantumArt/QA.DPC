@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Content ContentId="288" LoadAllPlainFields="True" ContentName="Products"  xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <EntityField FieldName="MarketingProduct" FieldId="1115"  Load="True" CloningMode="UseExisting" DeletingMode="Keep" >
+        <!-- O2M -->
+        <Content ContentName="MarketingProducts" ContentId="287" LoadAllPlainFields="True">
+            <EntityField FieldId="1202" CloningMode="Ignore" DeletingMode="Keep" FieldName="Categories" Load="True" >
+                <Content ContentName="Categories" ContentId="304" LoadAllPlainFields="True" />
+            </EntityField>
+            <EntityField FieldId="1201" CloningMode="Ignore" DeletingMode="Keep" FieldName="Family" Load="True" >
+                <Content ContentName="Family" ContentId="303" LoadAllPlainFields="True" />
+            </EntityField>
+            <EntityField FieldId="1297" CloningMode="Ignore" DeletingMode="Keep" FieldName="MarketingSign" Load="True" >
+                <Content ContentName="MarketingSign" ContentId="298" LoadAllPlainFields="True" />
+            </EntityField>
+            <EntityField FieldId="1293" CloningMode="Ignore" DeletingMode="Keep" FieldName="Modifiers" Load="True" >
+                <Content ContentName="Modifiers" ContentId="300" LoadAllPlainFields="True" />
+            </EntityField>
+        </Content>
+    </EntityField>
+    <EntityField FieldName="Regions" FieldId="1228"  Load="True" CloningMode="UseExisting" DeletingMode="Keep" >
+        <!-- M2M-->
+        <Content ContentName="Regions" ContentId="294" LoadAllPlainFields="False">
+            <PlainField FieldName="Title" FieldId="1137"/>
+            <PlainField FieldName="Alias" FieldId="1139"/>
+        </Content>
+    </EntityField>
+    <EntityField FieldName="Parameters" FieldId="1193" Load="True" CloningMode="Copy" DeletingMode="Keep">
+        <!-- M2O -->
+        <Content ContentName="ProductParameters" ContentId="291" LoadAllPlainFields="True">
+            <!--<EntityField FieldId="1169" Content="292" FieldName="BaseParamenter" CloningMode="UseExisting" DeletingMode="Keep" Load="True"/>-->
+            <EntityField FieldId="1396" Content="335" FieldName="Zone" CloningMode="UseExisting" DeletingMode="Keep" Load="True"/>
+            <EntityField FieldId="1397" Content="336" FieldName="Direction" CloningMode="UseExisting" DeletingMode="Keep" Load="True"/>
+            <EntityField FieldId="1413" Content="339" FieldName="BaseParameterModifiers"  CloningMode="UseExisting" DeletingMode="Keep" Load="True"/>
+            <EntityField FieldId="1179" Content="293" FieldName="Modifiers"  CloningMode="UseExisting" DeletingMode="Keep" Load="True"/>
+            <EntityField FieldId="1170" Content="296" FieldName="Group"  CloningMode="UseExisting" DeletingMode="Keep" Load="True"/>
+            <EntityField FieldId="1178" Content="302" FieldName="Unit"  CloningMode="UseExisting" DeletingMode="Keep" Load="True"/>
+            <EntityField FieldId="1373" Content="330" FieldName="MatrixParameter"  CloningMode="Ignore"  DeletingMode="Keep" Load="True"/>
+        </Content>
+    </EntityField>
+    <!--<ExtensionField FieldId="0" FieldName="Type">
+        <Content ContentName="MobileTariffs" x:Key="305" ContentId="305" LoadAllPlainFields="True" />
+    </ExtensionField> -->
+</Content>

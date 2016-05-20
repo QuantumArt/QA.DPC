@@ -1,0 +1,37 @@
+﻿@model string
+@{
+	Layout = null;
+}
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+	<title>@(ViewBag.Title ?? "DPC")</title>
+	<meta name="app" content="dpc" />
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+		}
+	</style>
+	
+	@Scripts.Render("~/bundles/jquery")
+
+	@Scripts.Render("~/bundles/codemirror")
+
+	@Styles.Render("~/content/codemirror")
+
+</head>
+<body>
+	@if (Model == null)
+	{
+		<h1>Ошибка при отображении xml продукта.</h1>
+		<p>@ViewBag.Message</p>
+	}
+	else
+	{
+		@Html.Partial("XmlViewer")
+	}
+</body>
+</html>

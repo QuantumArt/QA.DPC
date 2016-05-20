@@ -1,0 +1,242 @@
+﻿<ProductInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Products>
+		<Product xsi:type="MobileService">
+			<Id>1565020</Id>
+			<SortOrder>1039</SortOrder>
+			<OldSiteId>38727</OldSiteId>
+			<MarketingProduct>
+				<Id>1541998</Id>
+				<Title>Репетитор по Государственной Итоговой Аттестации (ГИА)</Title>
+				<Alias>repetitor-po-gia</Alias>
+				<Benefit><![CDATA[<p>Проверяйте самостоятельно свои знания по общеобразовательным предметам средней школы&nbsp; (история, математика, обществознание, русский язык).</p>]]></Benefit>
+				<Legal><![CDATA[<a href="http://storage.demo.artq.com/upload/dpcupload/images/Документы МБ/Услуги/Условия оказания дополнительных информационно-справочных и развлекательных услуг Билайн.pdf">Условия оказания дополнительных информационно-справочных и развлекательных услуг Билайн</a>]]></Legal>
+				<Description>
+					<![CDATA[<p>Выбирайте удобный для Вас режим прохождения тестирования и проводите время с пользой</p>
+<h3>Как подключить:</h3>
+<p>Наберите <span class="ussd">0789</span></p>
+<h3>Как пользоваться:</h3>
+<p>После подключения сервиса вы получите SMS:</p>
+<p>&laquo;Уважаемый Клиент! Вы подключили&nbsp; сервис &laquo;Репетитор по Государственной Итоговой Аттестации (ГИА)&raquo;. 7 дней бесплатно, далее 5 руб/день. Для начала обучения перейдите по ссылке&nbsp; <a href="http://free.temafon.ru/beefun">http://free.temafon.ru/beefun</a>. Отключение 0684211317 (бесп).&raquo;. Перейдя по ссылке в СМС, вы осуществите переход на основную страницу Сервиса &ndash; страницу с перечнем предметов. Под каждым из предметов выведены 2 режима проверки знаний: &laquo;Подготовиться&raquo;&nbsp; и &laquo;Сдать экзамен&raquo;. Каждый из режимов проверки знаний содержит несколько вариантов заданий.</p>
+<p>Режим &laquo;Подготовиться&raquo; представляет собой тестирование с возможностью получать подсказки для формирования правильных ответов на вопросы теста. Для получения подсказки на странице вопроса необходимо нажать &laquo;Подсказка&raquo; в нижней части страницы. Также есть возможность завершить прохождение теста, не ответив на все вопросы. Для этого необходимо нажать &laquo;Завершить тест и посмотреть результаты&raquo;. После этого сервис выведет страницу со списком правильных и неправильных ответов на вопросы теста. При клике на номер вопроса, Сервис переведет вас на страницу, содержащую текст выбранного вопроса, а также правильный ответ на данный вопрос.</p>
+<p>Режим &laquo;Сдать экзамен&raquo; аналогичен режиму &laquo;Подготовиться&raquo;&nbsp; с той лишь разницей, что в данном режиме отсутствуют подсказки.</p>
+<p>После выбора предмета и режима проверки знаний вам необходимо выбрать один из предлагаемых вариантов тестирования.</p>
+<p>Далее вам нужно последовательно отвечать на вопросы: выбирайте правильный ответ из предложенного списка, выбирайте несколько значений из предложенного списка или вводите текст ответа с клавиатуры. При вводе текста с клавиатуры регистр букв не имеет значения, необходимо просто следовать указаниям в текстах вопросов.</p>
+<p>Если в задании требуется ввести последовательность, состоящую из номеров списка (последовательность цифр), то между цифрами не нужно вводить пробелы или знаки препинания.</p>
+<p>Для подтверждения выбора или введенного с клавиатуры ответа, вам необходимо нажать на кнопку &laquo;Ответить&raquo;. Если вы не нажали на кнопку &laquo;Ответить&raquo;, ответ не будет принят и считается, что вы не знаете ответ на заданный вопрос. Для удобства кнопка &laquo;Ответить&raquo; представлена на странице дважды: до вариантов ответа на вопрос и после.</p>
+<p>В процессе прохождения тестирования можно пропускать вопросы, не давая на них ответ. Для перехода к следующему вопросу или возврату к предыдущему необходимо нажать на &laquo;&gt;&raquo; (к следующему вопросу) или &laquo;&lt;&raquo; (к предыдущему вопросу). В любое время можно вернуться к пропущенному вопросу и ответить на него.</p>
+<p>По окончании прохождения варианта обучения или экзамена отображается количество правильно и неправильно данных ответов. Чтобы посмотреть правильный ответ на интересующий вопрос, необходимо нажать на номер вопроса и посмотреть правильный ответ.</p>
+<p>Вся информация о сданных экзаменах сохраняется на Вашей персональной странице, которую всегда можно увидеть, нажав ссылку &laquo;Статистика прохождения тестов&raquo;.</p>]]>
+				</Description>
+				<Purpose><![CDATA[Для подключенных абонентов]]></Purpose>
+				<OldSiteId>715336</OldSiteId>
+				<Categories>
+					<ProductCategory>
+						<Id>2308</Id>
+						<Title>Информация и развлечения</Title>
+						<SortOrder>12</SortOrder>
+						<IsMarked>0</IsMarked>
+						<OldSiteId>440916</OldSiteId>
+					</ProductCategory>
+				</Categories>
+				<Modifiers>
+					<ProductModifier>
+						<Id>2244</Id>
+						<Title>B2C</Title>
+						<Alias>B2C</Alias>
+					</ProductModifier>
+				</Modifiers>
+				<ProductType>MarketingMobileService</ProductType>
+				<ProductFilters>
+					<ProductFilter>
+						<Id>2338</Id>
+						<Title>Мобильный телефон</Title>
+						<Image>//storage.demo.artq.com/upload/dpcupload/contents/314/main-mob_phone.png</Image>
+						<SortOrder>1</SortOrder>
+						<Alias>cellphone</Alias>
+						<DefaultTariffTileIcon>//storage.demo.artq.com/upload/dpcupload/contents/314/zagl_mob_phone.png</DefaultTariffTileIcon>
+						<DefaultServiceTileIcon>//storage.demo.artq.com/upload/dpcupload/contents/314/zagl_usl_mob.png</DefaultServiceTileIcon>
+						<OldSiteId>231146</OldSiteId>
+					</ProductFilter>
+				</ProductFilters>
+			</MarketingProduct>
+			<Regions>
+				<Region>
+					<Id>1708</Id>
+					<Title>Республика Хакасия</Title>
+					<Alias>khakasiya</Alias>
+					<OldSiteId>98028</OldSiteId>
+				</Region>
+				<Region>
+					<Id>2069</Id>
+					<Title>Майкоп</Title>
+					<Alias>maykop</Alias>
+					<OldSiteId>98398</OldSiteId>
+				</Region>
+			</Regions>
+			<Parameters>
+				<ProductParameter>
+					<Id>1572526</Id>
+					<Title><![CDATA[Номер для подключения услуги]]></Title>
+					<SortOrder>2</SortOrder>
+					<Value><![CDATA[0789]]></Value>
+					<BaseParameter>
+						<Id>2234</Id>
+						<Title>Биномер для подключения</Title>
+						<Alias>BeeNumberSubscribe</Alias>
+					</BaseParameter>
+					<Modifiers>
+						<ProductParamsModifier>
+							<Id>2209</Id>
+							<Title>Показывать как команду подключения</Title>
+							<Alias>ShowAsConnectionCommand</Alias>
+						</ProductParamsModifier>
+					</Modifiers>
+					<Group>
+						<Id>2176</Id>
+						<Title>Подключение и управление услугой</Title>
+						<SortOrder>20</SortOrder>
+						<GroupType>ConnectionAndOperation</GroupType>
+						<PreOpen>0</PreOpen>
+						<OldSiteId>271115</OldSiteId>
+					</Group>
+				</ProductParameter>
+				<ProductParameter>
+					<Id>1572527</Id>
+					<Title><![CDATA[Номер для отключения услуги]]></Title>
+					<SortOrder>4</SortOrder>
+					<Value><![CDATA[0684211317]]></Value>
+					<BaseParameter>
+						<Id>2235</Id>
+						<Title>Биномер для отключения</Title>
+						<Alias>BeeNumberUnSubscribe</Alias>
+					</BaseParameter>
+					<Modifiers>
+						<ProductParamsModifier>
+							<Id>2209</Id>
+							<Title>Показывать как команду подключения</Title>
+							<Alias>ShowAsConnectionCommand</Alias>
+						</ProductParamsModifier>
+					</Modifiers>
+					<Group>
+						<Id>2176</Id>
+						<Title>Подключение и управление услугой</Title>
+						<SortOrder>20</SortOrder>
+						<GroupType>ConnectionAndOperation</GroupType>
+						<PreOpen>0</PreOpen>
+						<OldSiteId>271115</OldSiteId>
+					</Group>
+				</ProductParameter>
+				<ProductParameter>
+					<Id>1572528</Id>
+					<Title><![CDATA[Абонентская плата на предоплатной системе расчетов]]></Title>
+					<SortOrder>20</SortOrder>
+					<NumValue>5.00</NumValue>
+					<BaseParameter>
+						<Id>2242</Id>
+						<Title>Абонентская плата</Title>
+						<Alias>SubscriptionFee</Alias>
+					</BaseParameter>
+					<BaseParameterModifiers>
+						<BaseParameterModifier>
+							<Id>2566</Id>
+							<Title>Предоплатная система расчета</Title>
+							<Alias>Prepaid</Alias>
+						</BaseParameterModifier>
+					</BaseParameterModifiers>
+					<Modifiers>
+						<ProductParamsModifier>
+							<Id>2205</Id>
+							<Title>Показывать в плитке</Title>
+							<Alias>ShowInTile</Alias>
+						</ProductParamsModifier>
+					</Modifiers>
+					<Group>
+						<Id>2177</Id>
+						<Title>Стоимость</Title>
+						<SortOrder>10</SortOrder>
+						<IsComparable>0</IsComparable>
+						<GroupType>PriceGroup</GroupType>
+						<PreOpen>1</PreOpen>
+						<OldSiteId>271116</OldSiteId>
+					</Group>
+					<Unit>
+						<Id>2212</Id>
+						<Title>рублей в сутки</Title>
+						<Display>руб. в сутки</Display>
+						<OldSiteId>232324</OldSiteId>
+					</Unit>
+				</ProductParameter>
+				<ProductParameter>
+					<Id>1584184</Id>
+					<Title><![CDATA[Звонки на номер 0789]]></Title>
+					<SortOrder>50</SortOrder>
+					<NumValue>0.00</NumValue>
+					<Value><![CDATA[0 руб.]]></Value>
+					<OldSiteId>1744228</OldSiteId>
+					<Group>
+						<Id>2177</Id>
+						<Title>Стоимость</Title>
+						<SortOrder>10</SortOrder>
+						<IsComparable>0</IsComparable>
+						<GroupType>PriceGroup</GroupType>
+						<PreOpen>1</PreOpen>
+						<OldSiteId>271116</OldSiteId>
+					</Group>
+					<Unit>
+						<Id>2659</Id>
+						<Title>рублей</Title>
+						<Display>руб.</Display>
+					</Unit>
+				</ProductParameter>
+				<ProductParameter>
+					<Id>1584185</Id>
+					<Title><![CDATA[Звонки на номер 0684211317]]></Title>
+					<SortOrder>50</SortOrder>
+					<NumValue>0.00</NumValue>
+					<Value><![CDATA[0 руб.]]></Value>
+					<OldSiteId>1744229</OldSiteId>
+					<Group>
+						<Id>2177</Id>
+						<Title>Стоимость</Title>
+						<SortOrder>10</SortOrder>
+						<IsComparable>0</IsComparable>
+						<GroupType>PriceGroup</GroupType>
+						<PreOpen>1</PreOpen>
+						<OldSiteId>271116</OldSiteId>
+					</Group>
+					<Unit>
+						<Id>2659</Id>
+						<Title>рублей</Title>
+						<Display>руб.</Display>
+					</Unit>
+				</ProductParameter>
+				<ProductParameter>
+					<Id>1584186</Id>
+					<Title><![CDATA[Новым пользователям предоставляется бесплатный период пользования сервисом]]></Title>
+					<SortOrder>0</SortOrder>
+					<NumValue>7.00</NumValue>
+					<Value><![CDATA[7 дней]]></Value>
+					<OldSiteId>1744230</OldSiteId>
+					<Group>
+						<Id>2175</Id>
+						<Title>Условия предоставления</Title>
+						<SortOrder>30</SortOrder>
+						<PreOpen>0</PreOpen>
+						<OldSiteId>271114</OldSiteId>
+					</Group>
+					<Unit>
+						<Id>363556</Id>
+						<Title>суток</Title>
+						<Display>суток</Display>
+					</Unit>
+				</ProductParameter>
+			</Parameters>
+			<MarketingSign>
+				<Id>2159</Id>
+				<Title>Бесплатно 7 дней</Title>
+				<OldSiteId>611125</OldSiteId>
+			</MarketingSign>
+			<Type>MobileService</Type>
+		</Product>
+	</Products>
+</ProductInfo>

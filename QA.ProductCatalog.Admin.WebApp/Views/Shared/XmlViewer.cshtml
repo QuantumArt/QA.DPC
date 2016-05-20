@@ -1,0 +1,18 @@
+﻿@model string
+
+<div id="xmlViewerDiv" class="code">
+	<div class="code-wrap">
+		@Html.TextArea("code", Model, new { disabled = "disabled", cols = 100, rows = 10 })
+	</div>
+</div>
+
+<script type="text/javascript">
+	$("#xmlViewerDiv").data("editor", CodeMirror.fromTextArea(document.getElementsByName("code")[0], {
+		mode: "text/xml",
+		readOnly: true,
+		matchTags: { bothTags: true },
+		foldGutter: true,
+		gutters: ["CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+		lineNumbers: true
+	}));
+</script>

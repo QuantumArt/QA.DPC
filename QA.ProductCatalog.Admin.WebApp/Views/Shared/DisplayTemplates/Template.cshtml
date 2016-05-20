@@ -1,0 +1,12 @@
+﻿@model Template
+@if (Model == null || Model.Hidden) { return; }
+@if (Model.Content != null)
+{
+    Model.DataContext = (object)Model.Items ?? (object)Model.CurrentItem;        
+    @Html.DisplayFor(x => Model.Content)
+}
+else
+{
+    @Html.DisplayFor(x => Model.CellTemplate)
+}
+

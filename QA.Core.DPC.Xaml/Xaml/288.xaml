@@ -1,0 +1,818 @@
+﻿<StackPanel xmlns="http://artq.com/configuration"
+			xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel.Resources>
+        <GenericConverter x:Key="line_class_converter">
+            <GenericConverter.Values>
+                <x:String>
+                    <x:Key>
+                        <x:Boolean>False</x:Boolean>
+                    </x:Key>
+                    line-through
+                </x:String>
+            </GenericConverter.Values>
+        </GenericConverter>
+        <FilterableBindingValueProvider x:Key="FilterableBindingValueProvider"/>
+        <GenericConverter x:Key="italic_class_converter">
+            <GenericConverter.Values>
+                <x:String>
+                    <x:Key>
+                        <x:Boolean>False</x:Boolean>
+                    </x:Key>
+                    italic
+                </x:String>
+            </GenericConverter.Values>
+        </GenericConverter>
+
+        <GenericConverter x:Key="hide_webEntities_converter">
+            <GenericConverter.Values>
+                <x:Boolean>
+                    <x:Key>
+                        <x:String>MobileTariff</x:String>
+                    </x:Key>
+                    False
+                </x:Boolean>
+                <x:Boolean>
+                    <x:Key>
+                        <x:String>B2BMobileTariff</x:String>
+                    </x:Key>
+                    False
+                </x:Boolean>
+                <x:Boolean>
+                    <x:Key>
+                        <x:String>MobileService</x:String>
+                    </x:Key>
+                    False
+                </x:Boolean>
+                <x:Boolean>
+                    <x:Key>
+                        <x:String>B2BMobileService</x:String>
+                    </x:Key>
+                    False
+                </x:Boolean>
+                <x:Boolean>
+                    <x:Key>
+                        <x:String>B2BEquipment</x:String>
+                    </x:Key>
+                    False
+                </x:Boolean>
+            </GenericConverter.Values>
+            <GenericConverter.DefaultValue>
+                <x:Boolean>True</x:Boolean>
+            </GenericConverter.DefaultValue>
+        </GenericConverter>
+
+        <GenericConverter x:Key="relevance_converter">
+            <GenericConverter.Values>
+                <x:String>
+                    <x:Key>
+                        <x:String>NotRelevant</x:String>
+                    </x:Key>
+                    bold
+                </x:String>
+
+                <x:String>
+                    <x:Key>
+                        <x:String>Missing</x:String>
+                    </x:Key>
+                    bold
+                </x:String>
+            </GenericConverter.Values>
+        </GenericConverter>
+        <GenericConverter x:Key="relevance_hidden_converter">
+            <GenericConverter.Values>
+                <x:String>
+                    <x:Key>
+                        <x:String>Relevant</x:String>
+                    </x:Key>
+                    hidden
+                </x:String>
+            </GenericConverter.Values>
+        </GenericConverter>
+    </StackPanel.Resources>
+
+    <Group Title="Важно" ClassName="{Binding /ConsumerStatusCode, Converter={Resource relevance_hidden_converter}}">
+        <PropertyDisplay Title="Статус на витрине">
+            <PropertyDisplay.Value>
+                <Label Title="{Binding /ConsumerStatusText}" ClassName="{Binding /ConsumerStatusCode, Converter={Resource relevance_converter}}"/>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+    </Group>
+
+    <Group Title="Краткое описание">
+        <PropertyDisplay Title="Id">
+            <PropertyDisplay.Value>
+                <ActionLink CurrentItem="{Binding}" Title="{Binding Path=Id}" ShowIcon="True" IconClass="edit"/>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+
+        <PropertyDisplay Title="Статус">
+            <PropertyDisplay.Value>
+                <Label Title="{Binding Status}"/>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+
+        <PropertyDisplay Title="Статус на витрине">
+            <PropertyDisplay.Value>
+                <Label Title="{Binding /ConsumerStatusText}" ClassName="{Binding /ConsumerStatusCode, Converter={Resource relevance_converter}}"/>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+        <PropertyDisplay Title="Дата последней публикации">
+            <PropertyDisplay.Value>
+                <Label Title="{Binding /ConsumerLastPublished}" />
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+        <PropertyDisplay Title="Опубликовал">
+            <PropertyDisplay.Value>
+                <Label Title="{Binding /ConsumerLastPublishedUserName}" />
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+        <PropertyDisplay Title="{Binding /Type.FieldDisplayName}" Value="{Binding Path=/Type.Item.ContentDisplayName}" />
+        <PropertyDisplay Title="{Binding Path=/MarketingProduct.FieldDisplayName}">
+            <PropertyDisplay.Value>
+                <!--<ActionLink CurrentItem="{Binding /MarketingProduct}" Title="{Binding Path=/MarketingProduct/Title}"/>-->
+                <DocumentReference ReferenceTo="{x:Reference m_p}" Title="{Binding Path=/MarketingProduct/Title}"/>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+
+        <PropertyDisplay Title="{Binding /Regions.FieldDisplayName}">
+            <PropertyDisplay.Value>
+                <EntityCollection Items="{Binding /Regions}" >
+                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                </EntityCollection>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+
+        <PropertyDisplay Title="{Binding /ProductWebEntities.FieldDisplayName}" Hidden="{Binding /Type.Item.ContentName, Converter={Resource hide_webEntities_converter}}">
+            <PropertyDisplay.Value>
+                <EntityCollection Items="{Binding /ProductWebEntities}">
+                    <ActionLink CurrentItem="{Binding}" Title="{Binding /WebEntity/SOC}"/>
+                </EntityCollection>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+        <PropertyDisplay Title="{Binding /Type/Segment.FieldDisplayName}">
+            <PropertyDisplay.Value>
+                <ActionLink CurrentItem="{Binding /Type/Segment}" Title="{Binding /Type/Segment/Title}"/>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+        <Switcher SwitchOn="{Binding /Type.Item.ContentName}">
+            <StackPanel x:Key="MobileTariff">
+                <PropertyDisplay Title="{Binding Path=/ServicesOnTariff.FieldDisplayName}">
+                    <PropertyDisplay.Value>
+                        <EntityCollection Items="{Binding /ServicesOnTariff}">
+                            <ActionLink CurrentItem="{Binding /Service}" Title="{Binding /Service/MarketingProduct/Title}" />
+                        </EntityCollection>
+                    </PropertyDisplay.Value>
+                </PropertyDisplay>
+
+                <PropertyDisplay Title="{Binding Path=/TariffTransfers.FieldDisplayName}">
+                    <PropertyDisplay.Value>
+                        <EntityCollection Items="{Binding /TariffTransfers}">
+                            <ActionLink CurrentItem="{Binding /TariffFrom}" Title="{Binding /TariffFrom/MarketingProduct/Title}" />
+                        </EntityCollection>
+                    </PropertyDisplay.Value>
+                </PropertyDisplay>
+
+            </StackPanel>
+            <PropertyDisplay x:Key="MobileService"  Title="{Binding Path=/TariffsOnService.FieldDisplayName}">
+                <PropertyDisplay.Value>
+                    <EntityCollection Items="{Binding /TariffsOnService}">
+                        <ActionLink CurrentItem="{Binding /Tariff}" Title="{Binding /Tariff/MarketingProduct/Title}" />
+                    </EntityCollection>
+                </PropertyDisplay.Value>
+            </PropertyDisplay>
+            <PropertyDisplay x:Key="TvTariff"  Title="{Binding Path=/TvPacketsOnTvTariff.FieldDisplayName}">
+                <PropertyDisplay.Value>
+                    <EntityCollection Items="{Binding /TvPacketsOnTvTariff}">
+                        <ActionLink CurrentItem="{Binding /Packet}" Title="{Binding /Packet/MarketingProduct/Title}" />
+                        <!--ActionLink CurrentItem="{Binding /Packet}" Title="{Binding /Packet.Item.Id}" /-->
+                    </EntityCollection>
+                </PropertyDisplay.Value>
+            </PropertyDisplay>
+            <PropertyDisplay x:Key="Preset"  Title="{Binding Path=/FTTBProductsOnPreset.FieldDisplayName}">
+                <PropertyDisplay.Value>
+                    <EntityCollection Items="{Binding /FTTBProductsOnPreset}">
+                        <ActionLink CurrentItem="{Binding /FTTBProduct}" Title="{Binding /FTTBProduct/MarketingProduct/Title}" />
+                        <!--ActionLink CurrentItem="{Binding /FTTBProduct}" Title="{Binding /Parent.Item.Id}" /-->
+                    </EntityCollection>
+                </PropertyDisplay.Value>
+            </PropertyDisplay>
+        </Switcher>
+        <PropertyDisplay Title="{Binding Path=/Type/MobileTariff.FieldDisplayName}">
+            <PropertyDisplay.Value>
+                <ActionLink CurrentItem="{Binding /Type/MobileTariff}" Title="{Binding /Type/MobileTariff/MarketingProduct/Title}" ActionName="Продукт" ResolveActionCode="True" ShowInTab="True" ShowIcon="True" IconClass="edit-product"/>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+    </Group>
+
+    <Group Title="Параметры ExcludeFromPdf" Collapsible="True" Collapsed="False">
+        <ActionLink CurrentItem="{Binding /Parameters}" ParentEntityId="{Binding /Parameters.SubContentId}" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить параметр">
+            <ActionLink.FieldValues>
+                <InitFieldValue Field="field_1172" Value="{Binding Path=Id}" />
+            </ActionLink.FieldValues>
+            <ActionLink.Behavior>
+                <QPBehavior FieldsToBlock="field_1172" />
+            </ActionLink.Behavior>
+        </ActionLink>
+        <GroupGridView Items="{Binding Path=&quot;Parameters[Modifiers/Alias='ExcludeFromPdf']&quot;, BindingValueProvider={Resource FilterableBindingValueProvider}}" OrderBy="Group/SortOrder,SortOrder" Collapsible="True"  GroupBy="Group">
+            <GroupGridView.GroupingTemplate>
+                <ActionLink Title="{Binding Path=/Title}" CurrentItem="{Binding}" ShowIcon="True"  IconClass="edit"/>
+            </GroupGridView.GroupingTemplate>
+            <GroupGridView.RowTemplate>
+                <GridRowTemplate Hidden="{Binding Archived}" ClassName="{Binding Visible, Converter={Resource line_class_converter}}" />
+            </GroupGridView.RowTemplate>
+            <GroupGridView.Columns>
+                <GridColumn Title="" Width="30px"/>
+                <GridColumn Title="" Width="20px">
+                    <ActionLink CurrentItem="{Binding}" ActionName="remove_article" ShowIcon="True" IconClass="delete" MaxWidth="16px" TextOverflow="Clip" Title="Удалить" />
+                </GridColumn>
+                <GridColumn Title="Id" Width="85px">
+                    <ActionLink CurrentItem="{Binding}" ShowIcon="True" IconClass="edit" Title="{Binding Id}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /Title.FieldDisplayName}">
+                    <ActionLink CurrentItem="{Binding}" TextOverflow="Ellipsis" Title="{Binding /Title}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /Value.FieldDisplayName}">
+                    <Label Title="{Binding /Value}" TextOverflow="Ellipsis" />
+                </GridColumn>
+                <GridColumn Title="{Binding /NumValue.FieldDisplayName}" Width="80px">
+                    <Label Title="{Binding /NumValue}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /Unit.FieldDisplayName}" Width="110px">
+                    <Label Title="{Binding /Unit/Display}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /SortOrder.FieldDisplayName}" Width="70px">
+                    <Label Title="{Binding /SortOrder}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /BaseParameter.FieldDisplayName}" Width="130px">
+                    <Label Title="{Binding /BaseParameter/Title}" />
+                </GridColumn>
+
+            </GroupGridView.Columns>
+        </GroupGridView>
+    </Group>
+
+
+    <Group Title="{Binding /Parameters.FieldDisplayName}" Collapsible="True">
+        <ActionLink CurrentItem="{Binding /Parameters}" ParentEntityId="{Binding /Parameters.SubContentId}" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить параметр">
+            <ActionLink.FieldValues>
+                <InitFieldValue Field="field_1172" Value="{Binding Path=Id}" />
+            </ActionLink.FieldValues>
+            <ActionLink.Behavior>
+                <QPBehavior FieldsToBlock="field_1172" />
+            </ActionLink.Behavior>
+        </ActionLink>
+        <GroupGridView Items="{Binding Path=&quot;Parameters[!Modifiers/Alias='ExcludeFromPdf']&quot;, BindingValueProvider={Resource FilterableBindingValueProvider}}" OrderBy="Group/SortOrder,SortOrder" Collapsible="True"  GroupBy="Group">
+            <GroupGridView.GroupingTemplate>
+                <ActionLink Title="{Binding Path=/Title}" CurrentItem="{Binding}" ShowIcon="True"  IconClass="edit"/>
+            </GroupGridView.GroupingTemplate>
+            <GroupGridView.RowTemplate>
+                <GridRowTemplate Hidden="{Binding Archived}" ClassName="{Binding Visible, Converter={Resource line_class_converter}}" />
+            </GroupGridView.RowTemplate>
+            <GroupGridView.Columns>
+                <GridColumn Title="" Width="30px"/>
+                <GridColumn Title="" Width="20px">
+                    <ActionLink CurrentItem="{Binding}" ActionName="remove_article" ShowIcon="True" IconClass="delete" MaxWidth="16px" TextOverflow="Clip" Title="Удалить" />
+                </GridColumn>
+                <GridColumn Title="Id" Width="85px">
+                    <ActionLink CurrentItem="{Binding}" ShowIcon="True" IconClass="edit" Title="{Binding Id}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /Title.FieldDisplayName}">
+                    <ActionLink CurrentItem="{Binding}" TextOverflow="Ellipsis" Title="{Binding /Title}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /Value.FieldDisplayName}">
+                    <Label Title="{Binding /Value}" TextOverflow="Ellipsis" />
+                </GridColumn>
+                <GridColumn Title="{Binding /NumValue.FieldDisplayName}" Width="80px">
+                    <Label Title="{Binding /NumValue}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /Unit.FieldDisplayName}" Width="110px">
+                    <Label Title="{Binding /Unit/Display}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /SortOrder.FieldDisplayName}" Width="70px">
+                    <Label Title="{Binding /SortOrder}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /BaseParameter.FieldDisplayName}" Width="130px">
+                    <Label Title="{Binding /BaseParameter/Title}" />
+                </GridColumn>
+
+            </GroupGridView.Columns>
+        </GroupGridView>
+    </Group>
+
+    <Group Title="Общие свойства" Collapsible="True">
+        <EntityEditor
+		Title="{x:Binding Path=/MarketingProduct/Title}"
+		CurrentItem="{Binding}"
+		DisplayAllPlainFields="true">
+            <EntityEditor.Behavior>
+                <QPBehavior Editable="true" />
+            </EntityEditor.Behavior>
+            <StackPanel>
+                <PropertyDisplay x:Name="m_p" Title="{Binding /MarketingProduct.FieldDisplayName}">
+                    <PropertyDisplay.Value>
+                        <ActionLink IconClass="edit" ShowIcon="True" CurrentItem="{Binding /MarketingProduct.Item}" Title="{Binding /MarketingProduct.Item.Id}"/>
+                    </PropertyDisplay.Value>
+                    <StackPanel ShowBorder="True">
+                        <EntityEditor CurrentItem="{Binding /MarketingProduct.Item}" DisplayAllPlainFields="true" Title="{x:Binding Path=/MarketingProduct/Title}" ></EntityEditor>
+                        <EntityEditor CurrentItem="{Binding /MarketingProduct/ProductType.Item}" DisplayAllPlainFields="true" Title="{x:Binding Path=/MarketingProduct/ProductType}" >
+                            <PropertyDisplay Title="{Binding /MarketingProduct/ProductType/ProductFilters.FieldDisplayName}">
+                                <PropertyDisplay.Value>
+                                    <EntityCollection Items="{Binding /MarketingProduct/ProductType/ProductFilters}">
+                                        <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                                    </EntityCollection>
+                                </PropertyDisplay.Value>
+                            </PropertyDisplay>
+                        </EntityEditor>
+                        <PropertyDisplay Title="{Binding /MarketingProduct/Family.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <ActionLink CurrentItem="{Binding /MarketingProduct/Family}" Title="{Binding /MarketingProduct/Family/Title}"/>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+
+                        <PropertyDisplay Title="{Binding /MarketingProduct/ProductType/Segment.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <ActionLink CurrentItem="{Binding /MarketingProduct/ProductType/Segment}" Title="{Binding /MarketingProduct/ProductType/Segment/Title}"/>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+
+                        <PropertyDisplay Title="{Binding /MarketingProduct/ProductType/EquipmentType.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <ActionLink CurrentItem="{Binding /MarketingProduct/ProductType/EquipmentType}" Title="{Binding /MarketingProduct/ProductType/EquipmentType/Title}"/>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+
+                        <PropertyDisplay Title="{Binding /MarketingProduct/MarketingSign.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <ActionLink CurrentItem="{Binding /MarketingProduct/MarketingSign}" Title="{Binding /MarketingProduct/MarketingSign/Title}"/>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+                        <PropertyDisplay Title="{Binding /MarketingProduct/Modifiers.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <EntityCollection Items="{Binding /MarketingProduct/Modifiers}">
+                                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                                </EntityCollection>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+
+
+                        <PropertyDisplay Title="{Binding /MarketingProduct/ProductType/Colors.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <EntityCollection Items="{Binding /MarketingProduct/ProductType/Colors}">
+                                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                                </EntityCollection>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+
+
+                        <PropertyDisplay Title="{Binding /MarketingProduct/ProductType/Fotos.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <EntityCollection Items="{Binding /MarketingProduct/ProductType/Fotos}">
+                                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                                </EntityCollection>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+
+                        <PropertyDisplay Title="{Binding /MarketingProduct/Categories.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <EntityCollection Items="{Binding /MarketingProduct/Categories}">
+                                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                                </EntityCollection>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+
+                        <PropertyDisplay Title="{Binding /MarketingProduct/Images.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <GroupGridView Items="{Binding /MarketingProduct/Images}" Width="auto">
+                                    <GroupGridView.Columns>
+                                        <GridColumn Title="Id" Width="50px">
+                                            <ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /Type.FieldDisplayName}" Width="150px">
+                                            <ActionLink CurrentItem="{Binding}" Title="{Binding /Type/Title}" TextOverflow="Ellipsis"  />
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /Image.FieldDisplayName}" Width="350px">
+                                            <Label Title="{Binding /Image}" TextOverflow="Ellipsis"  />
+                                        </GridColumn>
+                                    </GroupGridView.Columns>
+                                </GroupGridView>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+
+                        <PropertyDisplay Title="{Binding /MarketingProduct/UpSaleItems.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <GroupGridView Items="{Binding /MarketingProduct/UpSaleItems}" Width="auto">
+                                    <GroupGridView.Columns>
+                                        <GridColumn Title="Id" Width="50px">
+                                            <ActionLink CurrentItem="{Binding /Parent}" Title="{Binding Id}" />
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /ItemToUpSale.FieldDisplayName}" >
+                                            <EntityCollection Items="{Binding /ItemToUpSale}" >
+                                                <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                                            </EntityCollection>
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /Regions.FieldDisplayName}" >
+                                            <EntityCollection SeparatorTemplate="" Items="{Binding /Regions}" >
+                                                <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                                            </EntityCollection>
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /Parent.Item.Id}" >
+                                            <Template CurrentItem="{Binding}">
+                                                <x:Reference>default_relation_template</x:Reference>
+                                            </Template>
+                                        </GridColumn>
+                                    </GroupGridView.Columns>
+                                </GroupGridView>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+
+                        <PropertyDisplay Title="{Binding /MarketingProduct/ProductType/Applications.FieldDisplayName}">
+                            <PropertyDisplay.Value>
+                                <GroupGridView Items="{Binding /MarketingProduct/ProductType/Applications}" Width="auto">
+                                    <GroupGridView.Columns>
+                                        <GridColumn Title="Id" Width="50px">
+                                            <ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /Title.FieldDisplayName}" Width="150px">
+                                            <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}" TextOverflow="Ellipsis"  />
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /Icon.FieldDisplayName}" Width="350px">
+                                            <Label Title="{Binding /Icon}" TextOverflow="Ellipsis"  />
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /Group.FieldDisplayName}" Width="150px">
+                                            <ActionLink CurrentItem="{Binding /Group}" Title="{Binding /Group/Title}" TextOverflow="Ellipsis"  />
+                                        </GridColumn>
+                                    </GroupGridView.Columns>
+                                </GroupGridView>
+                            </PropertyDisplay.Value>
+                        </PropertyDisplay>
+                    </StackPanel>
+                </PropertyDisplay>
+            </StackPanel>
+        </EntityEditor>
+        <PropertyDisplay Title="{Binding  /Modifiers.FieldDisplayName}">
+            <PropertyDisplay.Value>
+                <ActionLink CurrentItem="{Binding}"  ShowIcon="True" IconClass="edit" Title="ред." />
+            </PropertyDisplay.Value>
+            <EntityCollection Items="{Binding /Modifiers}" >
+                <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+            </EntityCollection>
+        </PropertyDisplay>
+        <EntityEditor CurrentItem="{Binding /Type.Item}" DisplayAllPlainFields="true" Title="ДОп поля" />
+        <PropertyDisplay Title="{Binding /ArchiveTabs.FieldDisplayName}">
+            <PropertyDisplay.Value>
+                <EntityCollection Items="{Binding /ArchiveTabs}" >
+                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                </EntityCollection>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+
+        <PropertyDisplay Title="{Binding /Type/ProductFilters.FieldDisplayName}">
+            <PropertyDisplay.Value>
+                <EntityCollection Items="{Binding /Type/ProductFilters}" >
+                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                </EntityCollection>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+
+        <PropertyDisplay Title="{Binding /Type/AccountTypes.FieldDisplayName}">
+            <PropertyDisplay.Value>
+                <EntityCollection Items="{Binding /Type/AccountTypes}" >
+                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                </EntityCollection>
+            </PropertyDisplay.Value>
+        </PropertyDisplay>
+
+        <!--<PropertyDisplay Title="{Binding /Regions.FieldDisplayName}">
+			<PropertyDisplay.Value>
+			<GroupGridView Items="{Binding /Regions}" Width="auto">
+			<GroupGridView.Columns>
+			<GridColumn Title="Id" Width="50px">
+			<ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+			</GridColumn>
+			<GridColumn Title="{Binding /Type.FieldDisplayName}" Width="150px">
+			<ActionLink CurrentItem="{Binding}" Title="{Binding /Type/Title}" TextOverflow="Ellipsis"  />
+			</GridColumn>
+			<GridColumn Title="{Binding /Alias.FieldDisplayName}" Width="350px">
+			<Label Title="{Binding /Alias}" TextOverflow="Ellipsis"  />
+			</GridColumn>
+			<GridColumn Title="{Binding /ExternalRegionMappings.FieldDisplayName}" Width="350px">
+			<EntityCollection Items="{Binding /ExternalRegionMappings}">
+			<StackPanel IsHorizontal="True">
+			<ActionLink CurrentItem="{Binding}" Title="{Binding /Value}"/>
+			<Label Title="("/>
+			<ActionLink CurrentItem="{Binding}" Title="{Binding /SystemName}"/>
+			<Label Title=")"/>
+			</StackPanel>
+			</EntityCollection>
+			</GridColumn>
+			</GroupGridView.Columns>
+			</GroupGridView>
+			</PropertyDisplay.Value>
+			</PropertyDisplay>-->
+    </Group>
+
+    <Group Title="{Binding /ProductWebEntities.FieldDisplayName}" Hidden="{Binding /Type.Item.ContentName, Converter={Resource hide_webEntities_converter}}" Collapsible="True">
+        <ActionLink CurrentItem="{Binding /ProductWebEntities}" ParentEntityId="{Binding /ProductWebEntities.SubContentId}" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить связь">
+            <ActionLink.FieldValues>
+                <InitFieldValue Field="field_1471" Value="{Binding Path=Id}" />
+            </ActionLink.FieldValues>
+            <ActionLink.Behavior>
+                <QPBehavior FieldsToBlock="field_1471" />
+            </ActionLink.Behavior>
+        </ActionLink>
+        <EntityCollection Items="{Binding /ProductWebEntities}" >
+            <Group Title="{Binding /WebEntity/SOC}" Collapsible="True">
+                <ActionLink CurrentItem="{Binding}"  ShowIcon="True" IconClass="edit" Title="{Binding Id}" />
+                <PropertyDisplay Title="Id" Value="{Binding /WebEntity.Item.Id}" />
+                <EntityEditor CurrentItem="{Binding /WebEntity.Item}" DisplayAllPlainFields="true" Title="WebEntity" >
+                    <PropertyDisplay Title="{Binding /WebEntity/Params.FieldDisplayName}">
+                        <PropertyDisplay.Value>
+                            <ActionLink CurrentItem="{Binding /WebEntity}" ShowIcon="True" IconClass="edit" Title="ред." />
+                        </PropertyDisplay.Value>
+                        <GroupGridView Items="{Binding /WebEntity/Params}" Width="auto">
+                            <GroupGridView.Columns>
+                                <GridColumn Title="Id" Width="50px">
+                                    <ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+                                </GridColumn>
+                                <GridColumn Title="{Binding /Name.FieldDisplayName}" Width="250px">
+                                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Name}" MaxWidth="250px" TextOverflow="Ellipsis" />
+                                </GridColumn>
+                                <GridColumn Title="{Binding /Value.FieldDisplayName}" Width="150px">
+                                    <Label Title="{Binding /Value}" TextOverflow="Ellipsis" MaxWidth="150px" />
+                                </GridColumn>
+                                <GridColumn Title="{Binding /UOM.FieldDisplayName}" Width="70px">
+                                    <Label Title="{Binding /UOM}" TextOverflow="Ellipsis"  />
+                                </GridColumn>
+                                <GridColumn Title="{Binding /Params.FieldDisplayName}" Width="150px">
+                                    <EntityCollection Items="{Binding /Params}" >
+                                        <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}" />
+                                    </EntityCollection>
+                                </GridColumn>
+                            </GroupGridView.Columns>
+                        </GroupGridView>
+                    </PropertyDisplay>
+                </EntityEditor>
+                <PropertyDisplay Title="{Binding  /Modifiers.FieldDisplayName}">
+                    <PropertyDisplay.Value>
+                        <StackPanel>
+                            <ActionLink CurrentItem="{Binding}" ShowIcon="True" IconClass="edit" Title="ред." />
+                        </StackPanel>
+                    </PropertyDisplay.Value>
+                    <EntityCollection Items="{Binding /Modifiers}" >
+                        <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}" />
+                    </EntityCollection>
+                </PropertyDisplay>
+            </Group>
+        </EntityCollection>
+    </Group>
+
+    <Group Title="{Binding Path=/XorProductsMatrix.FieldDisplayName}" Collapsible="True">
+        <Switcher SwitchOn="{Binding /XorProductsMatrix.Items.Keys.Count}">
+            <ActionLink CurrentItem="{Binding /XorProductsMatrix}" ParentEntityId="307" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить группу">
+                <x:Key>
+                    <x:Int32>0</x:Int32>
+                </x:Key>
+                <ActionLink.FieldValues>
+                    <InitFieldValue Field="field_1208" Value="{Binding /XorProductsMatrix.SubContentId}" />
+                    <!--добавляем в коллекцию свой id -->
+                    <InitFieldValue Field="field_1279" Value="{Binding Id}" AsArray="True" />
+                </ActionLink.FieldValues>
+                <ActionLink.Behavior>
+                    <QPBehavior FieldsToBlock="field_1208" />
+                </ActionLink.Behavior>
+            </ActionLink>
+        </Switcher>
+
+        <EntityCollection Items="{Binding /XorProductsMatrix}">
+            <Group>
+                <Group.Title>
+                    <ActionLink CurrentItem="{Binding /Parent}" ShowIcon="True" IconClass="edit" Title="{Binding /Parent.Item.Id}" />
+                </Group.Title>
+                <StackPanel>
+
+                    <PropertyDisplay Title="Id" Value="{Binding /Parent.Item.Id}" />
+                    <EntityEditor CurrentItem="{Binding /Parent.Item}" DisplayAllPlainFields="True" />
+                    <EntityEditor CurrentItem="{Binding}" DisplayAllPlainFields="True" />
+                </StackPanel>
+                <PropertyDisplay Title="{Binding /Products.FieldDisplayName}" >
+                    <PropertyDisplay.Value>
+                        <ActionLink CurrentItem="{Binding /Parent}"  ShowIcon="True" IconClass="edit" Title="ред." />
+                    </PropertyDisplay.Value>
+                    <GroupGridView Items="{Binding /Products}" Width="auto">
+                        <GroupGridView.Columns>
+                            <GridColumn Title="Id" Width="50px">
+                                <ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+                            </GridColumn>
+                            <GridColumn Title="{Binding /MarketingProduct/Title.FieldDisplayName}" Width="250px">
+                                <Label Title="{Binding /MarketingProduct/Title}" TextOverflow="Ellipsis"  />
+                            </GridColumn>
+                            <GridColumn Title="{Binding /Type.FieldDisplayName}" Width="150px">
+                                <Label Title="{Binding /Type}" TextOverflow="Ellipsis"  />
+                            </GridColumn>
+                        </GroupGridView.Columns>
+                    </GroupGridView>
+                </PropertyDisplay>
+            </Group>
+        </EntityCollection>
+    </Group>
+
+    <Switcher SwitchOn="{Binding /Type.Item.ContentName}">
+        <Group x:Key="MobileTariff"  Title="{Binding Path=/TariffTransfers.FieldDisplayName}"  Collapsible="True">
+            <ActionLink CurrentItem="{Binding /TariffTransfers}" ParentEntityId="307" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить переход на данный тариф">
+                <ActionLink.FieldValues>
+                    <InitFieldValue Field="field_1208" Value="{Binding /TariffTransfers.SubContentId}" />
+                    <!--вот тут надо выставлять поле в зависимости от типа-->
+                    <!--услуга-->
+                    <InitFieldValue Field="field_1389" Value="{Binding Id}" />
+                </ActionLink.FieldValues>
+                <ActionLink.Behavior>
+                    <QPBehavior FieldsToBlock="field_1208,field_1389" />
+                </ActionLink.Behavior>
+            </ActionLink>
+            <EntityCollection Items="{Binding /TariffTransfers}" >
+                <Group>
+                    <Group.Title>
+                        <ActionLink CurrentItem="{Binding /TariffFrom}" ShowIcon="True" IconClass="edit" Title="{Binding /Parent.Item.Id}" />
+                    </Group.Title>
+                    <PropertyDisplay Title="{Binding  /TariffFrom.FieldDisplayName}">
+                        <PropertyDisplay.Value>
+                            <StackPanel>
+                                <ActionLink CurrentItem="{Binding /Parent}" ShowIcon="True" IconClass="edit" Title="ред." />
+                            </StackPanel>
+                        </PropertyDisplay.Value>
+                        <ActionLink CurrentItem="{Binding /TariffFrom}" Title="{Binding /TariffFrom/MarketingProduct/Title}" />
+                    </PropertyDisplay>
+                    <Template CurrentItem="{Binding}">
+                        <StackPanel x:Name="default_relation_template">
+                            <PropertyDisplay Title="Id" Value="{Binding /Parent.Item.Id}" />
+                            <PropertyDisplay Title="Статус" Value="{Binding /Parent.Item.Status}" />
+                            <EntityEditor CurrentItem="{Binding /Parent.Item}" DisplayAllPlainFields="True" />
+                            <EntityEditor CurrentItem="{Binding}" DisplayAllPlainFields="True" />
+                            <PropertyDisplay Title="{Binding /Parent/Parameters.FieldDisplayName}" >
+                                <PropertyDisplay.Value>
+                                    <ActionLink CurrentItem="{Binding /Parent}"  ShowIcon="True" IconClass="edit" Title="ред." />
+                                </PropertyDisplay.Value>
+                                <GroupGridView Items="{Binding /Parent/Parameters}" Width="auto">
+                                    <GroupGridView.Columns>
+                                        <GridColumn Title="Id" Width="50px">
+                                            <ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /Title.FieldDisplayName}" Width="250px">
+                                            <Label Title="{Binding /Title}" TextOverflow="Ellipsis"  />
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /NumValue.FieldDisplayName}" Width="150px">
+                                            <Label Title="{Binding /NumValue}" TextOverflow="Ellipsis"  />
+                                        </GridColumn>
+                                        <GridColumn Title="{Binding /BaseParameter.FieldDisplayName}" Width="150px">
+                                            <Label Title="{Binding /BaseParameter/Alias}" TextOverflow="Ellipsis"  />
+                                        </GridColumn>
+                                    </GroupGridView.Columns>
+                                </GroupGridView>
+                            </PropertyDisplay>
+                            <PropertyDisplay Title="{Binding /Parent/Modifiers.FieldDisplayName}" >
+                                <PropertyDisplay.Value>
+                                    <ActionLink CurrentItem="{Binding /Parent}"  ShowIcon="True" IconClass="edit" Title="ред." />
+                                </PropertyDisplay.Value>
+                                <EntityCollection Items="{Binding /Parent/Modifiers}">
+                                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}"/>
+                                </EntityCollection>
+                            </PropertyDisplay>
+                        </StackPanel>
+                    </Template>
+                </Group>
+            </EntityCollection>
+        </Group>
+    </Switcher>
+
+
+    <Switcher SwitchOn="{Binding /Type.Item.ContentName}" >
+        <Group x:Key="MobileTariff" Title="{Binding Path=/ServicesOnTariff.FieldDisplayName}" Collapsible="True">
+            <ActionLink CurrentItem="{Binding /ServicesOnTariff}" ParentEntityId="307" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить услугу">
+                <ActionLink.FieldValues>
+                    <InitFieldValue Field="field_1208" Value="{Binding /ServicesOnTariff.SubContentId}" />
+                    <!--вот тут надо выставлять поле в зависимости от типа-->
+                    <!--услуга-->
+                    <InitFieldValue Field="field_1386" Value="{Binding Id}" />
+                </ActionLink.FieldValues>
+                <ActionLink.Behavior>
+                    <QPBehavior FieldsToBlock="field_1208,field_1386" />
+                </ActionLink.Behavior>
+            </ActionLink>
+            <EntityCollection Items="{Binding /ServicesOnTariff}">
+                <Group>
+                    <Group.Title>
+                        <ActionLink CurrentItem="{Binding /Parent}" ShowIcon="True" IconClass="edit" Title="{Binding /Parent.Item.Id}" />
+                    </Group.Title>
+                    <PropertyDisplay Title="{Binding /Service.FieldDisplayName}" >
+                        <PropertyDisplay.Value>
+                            <ActionLink CurrentItem="{Binding /Service}" Title="{Binding /Service/MarketingProduct/Title}" />
+                        </PropertyDisplay.Value>
+                    </PropertyDisplay>
+                    <Template CurrentItem="{Binding}">
+                        <x:Reference>default_relation_template</x:Reference>
+                    </Template>
+                </Group>
+            </EntityCollection>
+        </Group>
+
+        <Group x:Key="MobileService" Title="{Binding Path=/TariffsOnService.FieldDisplayName}" Collapsible="True">
+            <ActionLink CurrentItem="{Binding /TariffsOnService}" ParentEntityId="307" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить тариф">
+                <ActionLink.FieldValues>
+                    <InitFieldValue Field="field_1208" Value="{Binding /TariffsOnService.SubContentId}" />
+                    <InitFieldValue Field="field_1387" Value="{Binding Id}" />
+                </ActionLink.FieldValues>
+                <ActionLink.Behavior>
+                    <QPBehavior FieldsToBlock="field_1208,field_1387" />
+                </ActionLink.Behavior>
+            </ActionLink>
+            <EntityCollection Items="{Binding /TariffsOnService}">
+                <Group>
+                    <Group.Title>
+                        <ActionLink CurrentItem="{Binding /Parent}" ShowIcon="True" IconClass="edit" Title="{Binding /Parent.Item.Id}" />
+                    </Group.Title>
+                    <PropertyDisplay Title="{Binding /Tariff.FieldDisplayName}" >
+                        <PropertyDisplay.Value>
+                            <ActionLink CurrentItem="{Binding /Tariff}" Title="{Binding /Tariff/MarketingProduct/Title}" />
+                        </PropertyDisplay.Value>
+                    </PropertyDisplay>
+                    <Template CurrentItem="{Binding}">
+                        <x:Reference>default_relation_template</x:Reference>
+                    </Template>
+                </Group>
+            </EntityCollection>
+        </Group>
+    </Switcher>
+
+    <Switcher SwitchOn="{Binding /Type.Item.ContentName}" >
+        <Group x:Key="TvTariff" Title="{Binding Path=/TvPacketsOnTvTariff.FieldDisplayName}" Collapsible="True">
+            <ActionLink CurrentItem="{Binding /TvPacketsOnTvTariff}" ParentEntityId="307" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить пакет">
+                <ActionLink.FieldValues>
+                    <InitFieldValue Field="field_1208" Value="{Binding /TvPacketsOnTvTariff.SubContentId}" />
+                    <!--вот тут надо выставлять поле в зависимости от типа-->
+                    <!--тариф-->
+                    <InitFieldValue Field="field_1952" Value="{Binding Id}" />
+                </ActionLink.FieldValues>
+                <ActionLink.Behavior>
+                    <QPBehavior FieldsToBlock="field_1208,field_1952" />
+                </ActionLink.Behavior>
+            </ActionLink>
+            <EntityCollection Items="{Binding /TvPacketsOnTvTariff}">
+                <Group>
+                    <Group.Title>
+                        <ActionLink CurrentItem="{Binding /Parent}" ShowIcon="True" IconClass="edit" Title="{Binding /Parent.Item.Id}" />
+                    </Group.Title>
+                    <PropertyDisplay Title="{Binding /Packet.FieldDisplayName}" >
+                        <PropertyDisplay.Value>
+                            <ActionLink CurrentItem="{Binding /Packet}" Title="{Binding /Packet/MarketingProduct/Title}" />
+                            <!--ActionLink CurrentItem="{Binding /Packet}" Title="{Binding /Packet.Item.Id}" /-->
+                        </PropertyDisplay.Value>
+                    </PropertyDisplay>
+                    <PropertyDisplay Title="{Binding /Packet/MarketingProduct/ProductType/PacketType.FieldDisplayName}" >
+                        <PropertyDisplay.Value>
+                            <Label Title="{Binding /Packet/MarketingProduct/ProductType/PacketType}" />
+                        </PropertyDisplay.Value>
+                    </PropertyDisplay>
+                    <Template CurrentItem="{Binding}">
+                        <x:Reference>default_relation_template</x:Reference>
+                    </Template>
+                </Group>
+            </EntityCollection>
+        </Group>
+    </Switcher>
+
+    <Switcher SwitchOn="{Binding /Type.Item.ContentName}" >
+        <Group x:Key="Preset" Title="{Binding Path=/FTTBProductsOnPreset.FieldDisplayName}" Collapsible="True">
+            <PropertyDisplay Title="{Binding Path=/Type/MobileTariff.FieldDisplayName}">
+                <PropertyDisplay.Value>
+                    <ActionLink CurrentItem="{Binding /Type/MobileTariff}" Title="{Binding /Type/MobileTariff/MarketingProduct/Title}" ActionName="Продукт" ResolveActionCode="True" ShowInTab="True" ShowIcon="True" IconClass="edit-product"/>
+                </PropertyDisplay.Value>
+            </PropertyDisplay>
+            <ActionLink CurrentItem="{Binding /FTTBProductsOnPreset}" ParentEntityId="307" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить продукт ШПД">
+                <ActionLink.FieldValues>
+                    <InitFieldValue Field="field_1208" Value="{Binding /FTTBProductsOnPreset.SubContentId}" />
+                    <!--вот тут надо выставлять поле в зависимости от типа-->
+                    <!--пресет-->
+                    <InitFieldValue Field="field_1943" Value="{Binding Id}" />
+                </ActionLink.FieldValues>
+                <ActionLink.Behavior>
+                    <QPBehavior FieldsToBlock="field_1208,field_1943" />
+                </ActionLink.Behavior>
+            </ActionLink>
+            <EntityCollection Items="{Binding /FTTBProductsOnPreset}">
+                <Group>
+                    <Group.Title>
+                        <ActionLink CurrentItem="{Binding /Parent}" ShowIcon="True" IconClass="edit" Title="{Binding /Parent.Item.Id}" />
+                    </Group.Title>
+                    <PropertyDisplay Title="{Binding /FTTBProduct.FieldDisplayName}" >
+                        <PropertyDisplay.Value>
+                            <ActionLink CurrentItem="{Binding /FTTBProduct}" Title="{Binding /FTTBProduct/MarketingProduct/Title}" ActionName="Продукт" ResolveActionCode="True" ShowInTab="True" ShowIcon="True" IconClass="edit-product"/>
+                        </PropertyDisplay.Value>
+                    </PropertyDisplay>
+                    <Template CurrentItem="{Binding}">
+                        <x:Reference>default_relation_template</x:Reference>
+                    </Template>
+                </Group>
+            </EntityCollection>
+        </Group>
+    </Switcher>
+</StackPanel>

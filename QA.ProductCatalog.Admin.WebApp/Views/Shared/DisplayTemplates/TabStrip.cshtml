@@ -1,0 +1,65 @@
+﻿@using QA.Core.Models.UI
+@using QA.Core.Extensions
+@model TabStrip
+@if (Model == null || Model.Hidden) { return; }
+@{
+    var items = Model.GetChildren();
+    string defaultItemId = null;
+    var hash = "tabstrip_si" + Html.GetUniqueId("tabstrip");
+    int i = 0;
+}
+@if (Model.IsFullSized)
+{
+    <style>
+        #tabstrip-parent {
+            height: 100%;
+            border-width: 0;
+        }
+
+        .formLayout {
+            height: 100%;
+            border-width: 0;
+            margin: 0;
+        }
+        #@Model.UId{
+            border-width: 0;
+            margin: 0;
+        }
+    </style>
+}
+<div data-name="@hash" id="@Model.UId" class="tabstrip hidden @(Model.IsFullSized? "tabstrip_fullsized": "") ">
+    <ul class="tabstrip-header">
+        @foreach (var item in items)
+        {
+            if (!item.Hidden)
+            {
+                if (defaultItemId == null && item is TabStripItem)
+                {
+                    defaultItemId = ((TabStripItem)item).IsDefault ? item.UId : (string)null;
+                }
+
+                <li id="@item.UId" data-order="@(i++)" class="tabstrip-header-item">@Html.Raw(item is ITitled<object> ? Html.DisplayFor(x => ((ITitled<object>)item).Title).ToHtmlString() : "не указано")</li>
+            }
+        }
+    </ul>
+
+    @foreach (var item in items)
+    {
+        if (!item.Hidden)
+        {
+            <div class="tabstip-item @(Model.IsFullSized ? "tabstrip__item_fullsized" : "")">
+                @Html.DisplayFor(x => item)
+            </div>
+        }
+    }
+</div>
+<script>
+    $(function () {
+        QA.Product.TabStrip.init("@Model.UId",
+            "@defaultItemId",
+            '@Model.IsFullSized.ToString().ToLower()' == 'true', {
+                tabPosition: '@Model.TabPosition.ToString().ToLower()',
+                collapsible: '@Model.Collapsible.ToString().ToLower()' == 'true'
+            });
+    });
+</script>
