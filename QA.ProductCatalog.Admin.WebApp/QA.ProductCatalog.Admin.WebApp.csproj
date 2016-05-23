@@ -641,14 +641,6 @@
       <Project>{54c5a130-e1f2-4971-a76a-c7991fc456aa}</Project>
       <Name>QA.ProductCatalog.Integration</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QA.ProductCatalog.Validation.Beeline\QA.ProductCatalog.Validation.Beeline.csproj">
-      <Project>{48fd10f0-6081-436f-b348-1b789e17cb2b}</Project>
-      <Name>QA.ProductCatalog.Validation.Beeline</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.ProductCatalog.Validation.MTS\QA.ProductCatalog.Validation.MTS.csproj">
-      <Project>{a64ea048-e76c-4df1-b825-0a19e463035c}</Project>
-      <Name>QA.ProductCatalog.Validation.MTS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\QA.ProductCatalog.Validation\QA.ProductCatalog.Validation.csproj">
       <Project>{1b4547c9-ea65-4025-a940-a1516ea460d3}</Project>
       <Name>QA.ProductCatalog.Validation</Name>

@@ -152,14 +152,6 @@
       <Project>{a92adefa-5229-4be3-aefc-925ea55a8848}</Project>
       <Name>QA.ProductCatalog.RegionSync.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QA.ProductCatalog.RegionSync.MTS\QA.ProductCatalog.RegionSync.MTS.csproj">
-      <Project>{2ba6f91e-4010-4b53-a5cf-bb286a6ff1f6}</Project>
-      <Name>QA.ProductCatalog.RegionSync.MTS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.ProductCatalog.RegionSync.Tele2\QA.ProductCatalog.RegionSync.Tele2.csproj">
-      <Project>{2d0f705b-af76-4a31-9c56-6961191a765a}</Project>
-      <Name>QA.ProductCatalog.RegionSync.Tele2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\QA.Scheduler.API\QA.Scheduler.API.csproj">
       <Project>{5ba9ae54-4d68-4365-9ea2-34ee72ba27a0}</Project>
       <Name>QA.Scheduler.API</Name>
@@ -179,4 +171,3 @@
   </Target>
   -->
 </Project>
-
