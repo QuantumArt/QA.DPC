@@ -221,14 +221,14 @@
     <Compile Include="Service\ServiceRunner.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\QA.Scheduler.API\QA.Scheduler.API.csproj">
       <Project>{5ba9ae54-4d68-4365-9ea2-34ee72ba27a0}</Project>
       <Name>QA.Scheduler.API</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -239,4 +239,3 @@
   </Target>
   -->
 </Project>
-
