@@ -192,7 +192,7 @@
     </Reference>
     <Reference Include="QA.Core, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\QA.Core.3.0.0.0\lib\net45\QA.Core.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.3.0.0.0\lib\net45\QA.Core.dll</HintPath>
     </Reference>
     <Reference Include="QA.Validation.Xaml, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.1.0.2.0\lib\net40\QA.Validation.Xaml.dll</HintPath>
@@ -403,3 +403,4 @@
   </Target>
   -->
 </Project>
+
