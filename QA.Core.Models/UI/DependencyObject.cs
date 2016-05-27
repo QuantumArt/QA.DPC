@@ -61,7 +61,7 @@ namespace QA.Core.Models.UI
             if (dp.Log)
             {
                 var logger = ObjectFactoryBase.Resolve<ILogger>();
-                logger.LogDebug(string.Format("for {0} {1}.{2} {3} list: {4}", dp, dp.OwnerType, dp.PropertyType, bindingExpression.Expression, _bindings.GetHashCode()));
+                logger.Debug(string.Format("for {0} {1}.{2} {3} list: {4}", dp, dp.OwnerType, dp.PropertyType, bindingExpression.Expression, _bindings.GetHashCode()));
             }
 
             _bindings[dp] = bindingExpression;
@@ -85,7 +85,7 @@ namespace QA.Core.Models.UI
 
             if (dp.Log) logger = ObjectFactoryBase.Resolve<ILogger>();
 
-            if (dp.Log) logger.LogDebug(string.Format("{0} {1} {2}", dp.Name, dp.PropertyType, dp.GetHashCode()));
+            if (dp.Log) logger.Debug(string.Format("{0} {1} {2}", dp.Name, dp.PropertyType, dp.GetHashCode()));
 
             if (value == DependencyProperty.UnsetValue)
             {
@@ -100,7 +100,7 @@ namespace QA.Core.Models.UI
                 }
                 else
                 {
-                    if (dp.Log) logger.LogDebug(string.Format("binding not found for {0} {1} {2}", dp.Name, dp.PropertyType, dp.GetHashCode()));
+                    if (dp.Log) logger.Debug(string.Format("binding not found for {0} {1} {2}", dp.Name, dp.PropertyType, dp.GetHashCode()));
                 }
             }
 
@@ -114,7 +114,7 @@ namespace QA.Core.Models.UI
                 }
                 else
                 {
-                    if (dp.Log) logger.LogDebug(string.Format("local entry not found for {0} {1} {2}", dp.Name, dp.PropertyType, dp.GetHashCode()));
+                    if (dp.Log) logger.Debug(string.Format("local entry not found for {0} {1} {2}", dp.Name, dp.PropertyType, dp.GetHashCode()));
                 }
             }
 
