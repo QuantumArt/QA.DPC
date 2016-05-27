@@ -52,6 +52,11 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 		public void Dispose()
 		{
 		}
-		#endregion
-	}
+
+        public void Log(Func<string> message, EventLevel eventLevel)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+    }
 }

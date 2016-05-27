@@ -25,10 +25,9 @@ namespace QA.Core.DPC.UI
                 if (be.Log)
                 {
                     logger = ObjectFactoryBase.Resolve<ILogger>();
-                    logger
-                        .LogDebug(string.Format("Requested binding for {1}.{0} ({2}) expression: '{3}'",
-                                prop.Name, prop.OwnerType, prop.PropertyType, be.Expression))
-                        .LogDebug(string.Format("source: {0}", source));
+                    logger.Debug(string.Format("Requested binding for {1}.{0} ({2}) expression: '{3}'",
+                        prop.Name, prop.OwnerType, prop.PropertyType, be.Expression));
+                    logger.Debug(string.Format("source: {0}", source));
                 }
 
                 var value = ProvideValueInternal(prop, be, source);
@@ -60,22 +59,22 @@ namespace QA.Core.DPC.UI
             if (be.Log)
             {
                 logger = ObjectFactoryBase.Resolve<ILogger>();
-                logger.LogDebug(string.Format("ctx: {0}", ctx));
+                logger.Debug(string.Format("ctx: {0}", ctx));
             }
 
             if (!string.IsNullOrEmpty(be.Expression) && ShouldHook(be, ctx))
             {
-                if (be.Log) logger.LogDebug("!string.IsNullOrEmpty(be.Expression) && ShouldHook(be, ctx)");
+                if (be.Log) logger.Debug("!string.IsNullOrEmpty(be.Expression) && ShouldHook(be, ctx)");
 
                 var context = ctx as IModelObject;
 
-                if (be.Log) logger.LogDebug(string.Format("context as IModelObject: {0}", context));
+                if (be.Log) logger.Debug(string.Format("context as IModelObject: {0}", context));
 
                 var segments = GetSegments(be);
 
                 IModelObject current = context;
 
-                if (be.Log) logger.LogDebug(string.Format("segments: {0}", string.Join("->", segments)));
+                if (be.Log) logger.Debug(string.Format("segments: {0}", string.Join("->", segments)));
 
                 foreach (var segment in segments)
                 {
@@ -100,7 +99,7 @@ namespace QA.Core.DPC.UI
 
                             if (value == null)
                             {
-                                if (be.Log) logger.LogDebug("return null");
+                                if (be.Log) logger.Debug("return null");
                                 return ConvertToPropertyType(value, prop, be, source); 
                             }
 
@@ -124,7 +123,7 @@ namespace QA.Core.DPC.UI
 
                     if (segment.Latest)
                     {
-                        if (be.Log) logger.LogDebug(string.Format("latest {0} {1} {2}", segment.Name, prop.PropertyType, current));
+                        if (be.Log) logger.Debug(string.Format("latest {0} {1} {2}", segment.Name, prop.PropertyType, current));
 
                         if (prop.PropertyType == typeof(string))
                         {
@@ -155,7 +154,7 @@ namespace QA.Core.DPC.UI
             if (be.Log)
             {
                 logger = ObjectFactoryBase.Resolve<ILogger>();
-                logger.LogDebug(string.Format("value: {0}", value));
+                logger.Debug(string.Format("value: {0}", value));
             }
 
             if (be.Converter != null)

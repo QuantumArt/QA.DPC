@@ -99,7 +99,7 @@ namespace QA.Core.Models.UI
             if (log)
             {
                 logger = ObjectFactoryBase.Resolve<ILogger>();
-                logger.LogDebug(string.Format("register dp {0} - {2}.{1}", propertyName, propertyType, ownerType));
+                logger.Debug(string.Format("register dp {0} - {2}.{1}", propertyName, propertyType, ownerType));
             }
 
             property._name = propertyName;

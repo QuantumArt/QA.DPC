@@ -45,7 +45,7 @@ namespace QA.Core.Models.UI
             ILogger logger = null;
             if (Log) logger = ObjectFactoryBase.Resolve<ILogger>();
 
-            if (Log) logger.LogDebug(string.Format("Binding for path = {0}", Path));
+            if (Log) logger.Debug(string.Format("Binding for path = {0}", Path));
 
             var ipvt = (IProvideValueTarget)serviceProvider.GetService(typeof(IProvideValueTarget));
 
@@ -62,13 +62,13 @@ namespace QA.Core.Models.UI
 
                 if (dp != null)
                 {
-                    if (Log) logger.LogDebug(string.Format("Register binding with path {0} for dp {1}.{2} {3}", Path, dp.OwnerType, dp.PropertyType, dp));
+                    if (Log) logger.Debug(string.Format("Register binding with path {0} for dp {1}.{2} {3}", Path, dp.OwnerType, dp.PropertyType, dp));
 
                     targetObject.RegisterBinding(dp, be);
                 }
                 else
                 {
-                    if (Log) logger.LogDebug(string.Format("DP is not found for path {0} obj {1} prop {2}", Path, ipvt.TargetObject, ipvt.TargetProperty));
+                    if (Log) logger.Debug(string.Format("DP is not found for path {0} obj {1} prop {2}", Path, ipvt.TargetObject, ipvt.TargetProperty));
                 }
             }
             else if (ipvt.TargetObject is BindingExtension && name != null)
@@ -79,7 +79,7 @@ namespace QA.Core.Models.UI
             }
             else
             {
-                if (Log) logger.LogDebug(string.Format("Something is failed {0} {1}", ipvt.TargetObject, ipvt.TargetProperty));
+                if (Log) logger.Debug(string.Format("Something is failed {0} {1}", ipvt.TargetObject, ipvt.TargetProperty));
             }
 
             return null;
