@@ -464,35 +464,6 @@
       <TransformOnBuild>true</TransformOnBuild>
       <SubType>Designer</SubType>
     </Content>
-    <None Include="NLogClient.Bee_test.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.Debug.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.localhost.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.Megafon.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.MTS.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="NLogClient.Release.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.Tele2.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
     <None Include="Properties\PublishProfiles\localhost.pubxml" />
     <None Include="Properties\PublishProfiles\ms-dpcdvlp001.pubxml" />
     <None Include="Properties\PublishProfiles\mscdev01-biryukov.pubxml" />
@@ -501,13 +472,6 @@
     <Content Include="Scripts\Schedule.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
     </Content>
     <Content Include="Views\Web.config">
       <SubType>Designer</SubType>
@@ -545,22 +509,6 @@
     <Content Include="Views\Shared\DisplayTemplates\ArticleCollection.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\DisplayField.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\FileLink.cshtml" />
-    <None Include="Web.Bee_test.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Megafon.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.MTS.config">
-      <DependentUpon>Web.config</DependentUpon>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Web.MTS_Prod.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Tele2.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Core\" />
