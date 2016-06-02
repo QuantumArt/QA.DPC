@@ -303,9 +303,6 @@
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </Content>
     <Content Include="Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -340,48 +337,8 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="NLogClient.Debug.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.MTS.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="NLogClient.MTS_Json.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.MTS_Stage.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.Release.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.Tele2.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
     <None Include="Properties\PublishProfiles\loc.pubxml" />
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.MTS.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.MTS_Json.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.MTS_Stage.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Tele2.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

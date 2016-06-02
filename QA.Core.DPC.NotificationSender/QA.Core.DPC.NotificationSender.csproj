@@ -325,70 +325,19 @@
     <Compile Include="UnityConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.Bee_test.config">
-      <DependentUpon>App.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
       <TransformOnBuild>true</TransformOnBuild>
-    </None>
-    <None Include="App.Debug.config">
-      <DependentUpon>App.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="App.Megafon.config">
-      <DependentUpon>App.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="App.MTS.config">
-      <DependentUpon>App.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="App.Release.config">
-      <DependentUpon>App.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="App.Tele2.config">
-      <DependentUpon>App.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
     </None>
     <None Include="DAL\NotificationsModel.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>NotificationsModel.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <None Include="NLogClient.Bee_test.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
     <None Include="NLogClient.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TransformOnBuild>true</TransformOnBuild>
       <SubType>Designer</SubType>
-    </None>
-    <None Include="NLogClient.Debug.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.Megafon.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.MTS.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.Release.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
-    </None>
-    <None Include="NLogClient.Tele2.config">
-      <DependentUpon>NLogClient.config</DependentUpon>
-      <IsTransformFile>True</IsTransformFile>
     </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

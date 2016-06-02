@@ -279,21 +279,6 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="NLogClient.config" />
-    <None Include="Web.Bee_test.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Debug.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Megafon.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.MTS.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
-    <None Include="Web.Release.config">
-      <DependentUpon>Web.config</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
