@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.WebApi", "QA.ProductCatalog.WebApi\QA.ProductCatalog.WebApi.csproj", "{AD3609FC-0781-432A-912B-FDD3B1FB773C}"
 EndProject
@@ -21,8 +21,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.DPC.Formatters", "Q
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.DPC.API.Test", "QA.Core.DPC.API.Test\QA.Core.DPC.API.Test.csproj", "{03733F0D-60C5-41DB-BBA0-C60658CFF327}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.ProductCatalog.Actions", "QACore.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj", "{8516B769-6B89-4E24-BEF7-3C4B1924A11A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2C749AD3-17F4-4543-A2C2-2005194D2AB7}"
 	ProjectSection(SolutionItems) = preProject
 		nuget.config = nuget.config
@@ -30,10 +28,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{2C749A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.ProductCatalog.ActionsRunnerModel", "QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj", "{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.ProductCatalog.Actions", "QA.Core.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj", "{8516B769-6B89-4E24-BEF7-3C4B1924A11A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Bee_test|Any CPU = Bee_test|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		Dev|Any CPU = Dev|Any CPU
 		Megafon|Any CPU = Megafon|Any CPU
 		MTS_Prod|Any CPU = MTS_Prod|Any CPU
 		MTS|Any CPU = MTS|Any CPU
@@ -45,6 +46,8 @@ Global
 		{AD3609FC-0781-432A-912B-FDD3B1FB773C}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
 		{AD3609FC-0781-432A-912B-FDD3B1FB773C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AD3609FC-0781-432A-912B-FDD3B1FB773C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD3609FC-0781-432A-912B-FDD3B1FB773C}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD3609FC-0781-432A-912B-FDD3B1FB773C}.Dev|Any CPU.Build.0 = Debug|Any CPU
 		{AD3609FC-0781-432A-912B-FDD3B1FB773C}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
 		{AD3609FC-0781-432A-912B-FDD3B1FB773C}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
 		{AD3609FC-0781-432A-912B-FDD3B1FB773C}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
@@ -59,6 +62,8 @@ Global
 		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
 		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Dev|Any CPU.Build.0 = Dev|Any CPU
 		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
 		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
 		{30CE970F-DC61-40B7-9625-44A70E8BEAF8}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
@@ -73,6 +78,8 @@ Global
 		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
 		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Dev|Any CPU.Build.0 = Dev|Any CPU
 		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
 		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
 		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
@@ -87,6 +94,8 @@ Global
 		{5AF860A1-97A7-4C36-9496-21054975E226}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
 		{5AF860A1-97A7-4C36-9496-21054975E226}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5AF860A1-97A7-4C36-9496-21054975E226}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{5AF860A1-97A7-4C36-9496-21054975E226}.Dev|Any CPU.Build.0 = Dev|Any CPU
 		{5AF860A1-97A7-4C36-9496-21054975E226}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
 		{5AF860A1-97A7-4C36-9496-21054975E226}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
 		{5AF860A1-97A7-4C36-9496-21054975E226}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
@@ -101,6 +110,8 @@ Global
 		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
 		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Dev|Any CPU.Build.0 = Dev|Any CPU
 		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
 		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
 		{54C5A130-E1F2-4971-A76A-C7991FC456AA}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
@@ -115,6 +126,8 @@ Global
 		{7BF30688-370A-4290-89E4-EF9181D373E4}.Bee_test|Any CPU.Build.0 = Megafon|Any CPU
 		{7BF30688-370A-4290-89E4-EF9181D373E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7BF30688-370A-4290-89E4-EF9181D373E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BF30688-370A-4290-89E4-EF9181D373E4}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{7BF30688-370A-4290-89E4-EF9181D373E4}.Dev|Any CPU.Build.0 = Dev|Any CPU
 		{7BF30688-370A-4290-89E4-EF9181D373E4}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
 		{7BF30688-370A-4290-89E4-EF9181D373E4}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
 		{7BF30688-370A-4290-89E4-EF9181D373E4}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
@@ -129,6 +142,8 @@ Global
 		{F14BB090-9951-49BA-BE2B-80027F155D65}.Bee_test|Any CPU.Build.0 = Release|Any CPU
 		{F14BB090-9951-49BA-BE2B-80027F155D65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F14BB090-9951-49BA-BE2B-80027F155D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F14BB090-9951-49BA-BE2B-80027F155D65}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{F14BB090-9951-49BA-BE2B-80027F155D65}.Dev|Any CPU.Build.0 = Dev|Any CPU
 		{F14BB090-9951-49BA-BE2B-80027F155D65}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
 		{F14BB090-9951-49BA-BE2B-80027F155D65}.Megafon|Any CPU.Build.0 = Release|Any CPU
 		{F14BB090-9951-49BA-BE2B-80027F155D65}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
@@ -143,6 +158,8 @@ Global
 		{749FE9E8-3678-497B-948F-F0B0135E2D97}.Bee_test|Any CPU.Build.0 = Release|Any CPU
 		{749FE9E8-3678-497B-948F-F0B0135E2D97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{749FE9E8-3678-497B-948F-F0B0135E2D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{749FE9E8-3678-497B-948F-F0B0135E2D97}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{749FE9E8-3678-497B-948F-F0B0135E2D97}.Dev|Any CPU.Build.0 = Dev|Any CPU
 		{749FE9E8-3678-497B-948F-F0B0135E2D97}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
 		{749FE9E8-3678-497B-948F-F0B0135E2D97}.Megafon|Any CPU.Build.0 = Release|Any CPU
 		{749FE9E8-3678-497B-948F-F0B0135E2D97}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
@@ -157,6 +174,8 @@ Global
 		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Bee_test|Any CPU.Build.0 = Release|Any CPU
 		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Dev|Any CPU.Build.0 = Debug|Any CPU
 		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
 		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Megafon|Any CPU.Build.0 = Release|Any CPU
 		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.MTS_Prod|Any CPU.ActiveCfg = MTS|Any CPU
@@ -167,24 +186,12 @@ Global
 		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Release|Any CPU.Build.0 = Release|Any CPU
 		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Tele2|Any CPU.ActiveCfg = MTS|Any CPU
 		{03733F0D-60C5-41DB-BBA0-C60658CFF327}.Tele2|Any CPU.Build.0 = MTS|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.MTS_Prod|Any CPU.Build.0 = MTS_Prod|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.MTS|Any CPU.ActiveCfg = MTS|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.MTS|Any CPU.Build.0 = MTS|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Tele2|Any CPU.ActiveCfg = Tele2|Any CPU
-		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Tele2|Any CPU.Build.0 = Tele2|Any CPU
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Dev|Any CPU.Build.0 = Dev|Any CPU
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
@@ -195,50 +202,27 @@ Global
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Tele2|Any CPU.ActiveCfg = Tele2|Any CPU
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}.Tele2|Any CPU.Build.0 = Tele2|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Bee_test|Any CPU.ActiveCfg = Bee_test|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Bee_test|Any CPU.Build.0 = Bee_test|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Dev|Any CPU.ActiveCfg = Dev|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Dev|Any CPU.Build.0 = Dev|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Megafon|Any CPU.ActiveCfg = Megafon|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Megafon|Any CPU.Build.0 = Megafon|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.MTS_Prod|Any CPU.ActiveCfg = MTS_Prod|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.MTS_Prod|Any CPU.Build.0 = MTS_Prod|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.MTS|Any CPU.ActiveCfg = MTS|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.MTS|Any CPU.Build.0 = MTS|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Tele2|Any CPU.ActiveCfg = Tele2|Any CPU
+		{8516B769-6B89-4E24-BEF7-3C4B1924A11A}.Tele2|Any CPU.Build.0 = Tele2|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Data.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.ExceptionHandling.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Logging.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.ExceptionHandling.Logging.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35;packages\Unity.2.1.505.2\lib\NET35
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 12
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://tfs:8080/tfs/quantumartcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = QA.ProductCatalog.WebApi\\QA.ProductCatalog.WebApi.csproj
-		SccProjectName1 = QA.ProductCatalog.WebApi
-		SccLocalPath1 = QA.ProductCatalog.WebApi
-		SccProjectUniqueName2 = QA.Core.DPC.Loader\\QA.Core.DPC.Loader.csproj
-		SccProjectName2 = QA.Core.DPC.Loader
-		SccLocalPath2 = QA.Core.DPC.Loader
-		SccProjectUniqueName3 = QA.Core.Models\\QA.Core.Models.csproj
-		SccProjectName3 = QA.Core.Models
-		SccLocalPath3 = QA.Core.Models
-		SccProjectUniqueName4 = QA.ProductCatalog.Infrastructure\\QA.ProductCatalog.Infrastructure.csproj
-		SccProjectName4 = QA.ProductCatalog.Infrastructure
-		SccLocalPath4 = QA.ProductCatalog.Infrastructure
-		SccProjectUniqueName5 = QA.ProductCatalog.Integration\\QA.ProductCatalog.Integration.csproj
-		SccProjectName5 = QA.ProductCatalog.Integration
-		SccLocalPath5 = QA.ProductCatalog.Integration
-		SccProjectUniqueName6 = QA.Core.DocumentGenerator\\QA.Core.DocumentGenerator.csproj
-		SccProjectName6 = QA.Core.DocumentGenerator
-		SccLocalPath6 = QA.Core.DocumentGenerator
-		SccProjectUniqueName7 = QA.Core.DPC.API\\QA.Core.DPC.API.csproj
-		SccProjectName7 = QA.Core.DPC.API
-		SccLocalPath7 = QA.Core.DPC.API
-		SccProjectUniqueName8 = QA.Core.DPC.Formatters\\QA.Core.DPC.Formatters.csproj
-		SccProjectName8 = QA.Core.DPC.Formatters
-		SccLocalPath8 = QA.Core.DPC.Formatters
-		SccProjectUniqueName9 = QA.Core.DPC.API.Test\\QA.Core.DPC.API.Test.csproj
-		SccProjectName9 = QA.Core.DPC.API.Test
-		SccLocalPath9 = QA.Core.DPC.API.Test
-		SccProjectUniqueName10 = QACore.ProductCatalog.Actions\\QA.Core.ProductCatalog.Actions.csproj
-		SccProjectName10 = QACore.ProductCatalog.Actions
-		SccLocalPath10 = QACore.ProductCatalog.Actions
-		SccProjectUniqueName11 = QA.Core.ProductCatalog.ActionsRunnerModel\\QA.Core.ProductCatalog.ActionsRunnerModel.csproj
-		SccProjectName11 = QA.Core.ProductCatalog.ActionsRunnerModel
-		SccLocalPath11 = QA.Core.ProductCatalog.ActionsRunnerModel
 	EndGlobalSection
 EndGlobal
