@@ -293,6 +293,10 @@
       <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
       <Name>QA.Core.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QA.Core.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj">
+      <Project>{8516b769-6b89-4e24-bef7-3c4b1924a11a}</Project>
+      <Name>QA.Core.ProductCatalog.Actions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj">
       <Project>{5af860a1-97a7-4c36-9496-21054975e226}</Project>
       <Name>QA.ProductCatalog.Infrastructure</Name>
@@ -315,4 +319,3 @@
   </Target>
   -->
 </Project>
-
