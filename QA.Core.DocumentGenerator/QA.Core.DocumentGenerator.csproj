@@ -57,6 +57,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MTS_Prod|AnyCPU'">
     <OutputPath>bin\MTS_Prod\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="GemBox.Document, Version=25.3.30.1076, Culture=neutral, PublicKeyToken=b1b72c69714d4847, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\GemBox.Document.25.3.30.1076\lib\net30\GemBox.Document.dll</HintPath>
@@ -111,4 +120,3 @@
   </Target>
   -->
 </Project>
-

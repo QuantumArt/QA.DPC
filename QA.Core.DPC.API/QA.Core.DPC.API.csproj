@@ -48,6 +48,15 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MTS_Prod|AnyCPU'">
     <OutputPath>bin\MTS_Prod\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\AutoMapper.1.1.0.118\lib\AutoMapper.dll</HintPath>
@@ -284,6 +293,10 @@
       <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
       <Name>QA.Core.Models</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QA.Core.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj">
+      <Project>{8516b769-6b89-4e24-bef7-3c4b1924a11a}</Project>
+      <Name>QA.Core.ProductCatalog.Actions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj">
       <Project>{5af860a1-97a7-4c36-9496-21054975e226}</Project>
       <Name>QA.ProductCatalog.Infrastructure</Name>
@@ -291,10 +304,6 @@
     <ProjectReference Include="..\QA.ProductCatalog.Integration\QA.ProductCatalog.Integration.csproj">
       <Project>{54c5a130-e1f2-4971-a76a-c7991fc456aa}</Project>
       <Name>QA.ProductCatalog.Integration</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.Core.ProductCatalog.Actions\QA.Core.ProductCatalog.Actions.csproj">
-      <Project>{8516b769-6b89-4e24-bef7-3c4b1924a11a}</Project>
-      <Name>QA.Core.ProductCatalog.Actions</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -310,4 +319,3 @@
   </Target>
   -->
 </Project>
-

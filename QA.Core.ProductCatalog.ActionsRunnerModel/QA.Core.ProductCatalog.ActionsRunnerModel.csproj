@@ -68,6 +68,16 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MTS_Prod|AnyCPU'">
     <OutputPath>bin\MTS_Prod\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\QA.Core.ProductCatalog.ActionsRunnerModel.XML</DocumentationFile>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="EntityFramework">
       <HintPath>$(SolutionDir)packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
@@ -192,4 +202,3 @@
   </Target>
   -->
 </Project>
-
