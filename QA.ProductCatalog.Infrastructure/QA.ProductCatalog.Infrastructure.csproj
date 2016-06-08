@@ -255,6 +255,7 @@
     <Compile Include="INotesService.cs" />
     <Compile Include="INotificationProvider.cs" />
     <Compile Include="IProductAPIService.cs" />
+    <Compile Include="IProductLocalizationService.cs" />
     <Compile Include="IProductRelevanceService.cs" />
     <Compile Include="IProductSearchService.cs" />
     <Compile Include="IProductUpdateService.cs" />
@@ -293,4 +294,3 @@
   </Target>
   -->
 </Project>
-

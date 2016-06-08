@@ -272,6 +272,7 @@
     <Compile Include="Entities\IGetFieldStringValue.cs" />
     <Compile Include="Entities\IModelObject.cs" />
     <Compile Include="Entities\IProductDataSource.cs" />
+    <Compile Include="Entities\LocalizedArticle.cs" />
     <Compile Include="Entities\PlainFieldType.cs" />
     <Compile Include="Entities\RegionTag.cs" />
     <Compile Include="Entities\VirtualMultiArticleField.cs" />
@@ -342,4 +343,3 @@
   </Target>
   -->
 </Project>
-
