@@ -67,15 +67,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'MTS_Prod|AnyCPU'">
     <OutputPath>bin\MTS_Prod\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Dev\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=1.1.0.188, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\AutoMapper.1.1.0.118\lib\AutoMapper.dll</HintPath>
@@ -335,7 +326,9 @@
     <Compile Include="Services\IReadOnlyArticleService.cs" />
     <Compile Include="Services\IServiceFactory.cs" />
     <Compile Include="Services\ITransaction.cs" />
+    <Compile Include="Services\LocalizationSettingsService.cs" />
     <Compile Include="Services\NotesFromContentService.cs" />
+    <Compile Include="Services\ProductLocalizationService.cs" />
     <Compile Include="Services\ProductPdfTemplateService.cs" />
     <Compile Include="CacheTags.cs" />
     <Compile Include="Services\QpCachedContextStorage.cs" />

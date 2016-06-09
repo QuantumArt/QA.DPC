@@ -261,6 +261,7 @@
     <Compile Include="IExecutionContext.cs" />
     <Compile Include="IFormatter.cs" />
     <Compile Include="IFreezeService.cs" />
+    <Compile Include="ILocalizationSettingsService.cs" />
     <Compile Include="INotesService.cs" />
     <Compile Include="INotificationProvider.cs" />
     <Compile Include="IProductAPIService.cs" />
@@ -277,6 +278,7 @@
     <Compile Include="IWarmUpProvider.cs" />
     <Compile Include="IXmlProductService.cs" />
     <Compile Include="IProductService.cs" />
+    <Compile Include="LocalizationSetting.cs" />
     <Compile Include="NotificationChannel.cs" />
     <Compile Include="NotificationSenderConfig.cs" />
     <Compile Include="ProductInfo.cs" />
