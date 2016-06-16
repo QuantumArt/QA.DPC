@@ -4,19 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QA.ProductCatalog.Infrastructure;
+using QA.Core.Models.Entities;
 
 namespace QA.ProductCatalog.Integration
 {
 	public class FakeQPNotificationService : IQPNotificationService
 	{
-		public Task SendProductsAsync(string[] data, int[] ids, bool isStage, string userName, int userId, string[] forcedСhannels = null)
-	    {
-			return Task.Delay(100);
-	    }
+        public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+        {
+            await Task.Delay(100);
+            return new int[0];
+        }
 
-		public void SendProducts(string[] data, int[] ids, bool isStage, string userName, int userId, string[] forcedСhannels = null)
-	    {
-	    }
+        public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+        {
+            return new int[0];
+        }     
 
 		public Task DeleteProductsAsync(int[] ids, string userName, int userId, string[] forcedСhannels = null)
 	    {

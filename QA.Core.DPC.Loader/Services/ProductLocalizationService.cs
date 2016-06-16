@@ -2,8 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.Models.Entities;
 using System.Globalization;
 using QA.Core.Models.Extensions;
@@ -21,14 +19,19 @@ namespace QA.Core.DPC.Loader.Services
         }
 
         #region IProductLocalizationService implementation
-        public LocalizedArticle Localize(Article product, CultureInfo culture)
+        public Article Localize(Article product, CultureInfo culture)
         {
             if (culture == null)
             {
                 throw new ArgumentNullException(nameof(culture));
             }
 
-            var localizationMap = _settingsService.GetSettings(0);
+            var localizationMap = _settingsService.GetSettings(product.ContentId);
+
+            if (!localizationMap.Any())
+            {
+                return product;
+            }
 
             var articleMap = CloneArticles(product);
 
@@ -69,27 +72,17 @@ namespace QA.Core.DPC.Loader.Services
                 }
             }
 
-            return new LocalizedArticle(articleMap[product], culture);
+            return articleMap[product];
         }
 
-        public Article MergeLocalizations(LocalizedArticle[] localizations)
+        public Dictionary<CultureInfo, Article> SplitLocalizations(Article product)
         {
             throw new NotImplementedException();
         }
 
-        public Article MergeLocalizations(Article product, LocalizedArticle[] localizations)
+        public Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures)
         {
-            throw new NotImplementedException();
-        }
-
-        public LocalizedArticle[] SplitLocalizations(Article product)
-        {
-            throw new NotImplementedException();
-        }
-
-        public LocalizedArticle[] SplitLocalizations(Article product, CultureInfo[] cultures)
-        {
-            throw new NotImplementedException();
+            return cultures.ToDictionary(c => c, c => Localize(product, c));
         }
         #endregion
 
@@ -97,7 +90,8 @@ namespace QA.Core.DPC.Loader.Services
         private Dictionary<Article, Article> CloneArticles(Article article)
         {
             return article
-                .GetAllArticles()
+                .GetAllArticles(true)
+                .Distinct()
                 .ToDictionary(
                     a => a,
                     a => CloneArticle(a)
@@ -127,42 +121,97 @@ namespace QA.Core.DPC.Loader.Services
         {
             var pField = field as PlainArticleField;
             var sField = field as SingleArticleField;
+            var mField = field as MultiArticleField;
+            var eField = field as ExtensionArticleField;
+            var bField = field as BackwardArticleField;
+            var vField = field as VirtualArticleField;
+            var vmField = field as VirtualMultiArticleField;
+
+            ArticleField clonnedField;
 
             if (pField != null)
             {
-                return new PlainArticleField
+                clonnedField = new PlainArticleField
                 {
-                    FieldName = fieldName,
-                    ContentId = pField.ContentId,
-                    FieldId = pField.FieldId,
-                    CustomProperties = pField.CustomProperties,
-                    FieldDisplayName = pField.FieldDisplayName,
                     NativeValue = pField.NativeValue,
                     Value = pField.Value,
                     PlainFieldType = pField.PlainFieldType
                 };
             }
+            else if (eField != null)
+            {
+                clonnedField = new ExtensionArticleField
+                {
+                    Aggregated = eField.Aggregated,
+                    SubContentId = eField.SubContentId,
+                    Item = eField.Item == null ? null : articleMap[eField.Item],
+                    Value = eField.Value
+                };
+            }
             else if (sField != null)
             {
-                return new SingleArticleField
+                clonnedField = new SingleArticleField
                 {
-                    FieldName = fieldName,
-                    ContentId = sField.ContentId,
-                    FieldId = sField.ContentId,
                     Aggregated = sField.Aggregated,
-                    CustomProperties = sField.CustomProperties,
-                    FieldDisplayName = sField.FieldDisplayName,
                     SubContentId = sField.SubContentId,
-                    Item = articleMap[sField.Item]
+                    Item = sField.Item == null ? null : articleMap[sField.Item]
+                };
+            }
+            else if (bField != null)
+            {
+                clonnedField = new BackwardArticleField
+                {
+                    SubContentId = bField.SubContentId,
+                    Items = bField.Items.ToDictionary(itm => itm.Key, itm => articleMap[itm.Value]),
+                    RelationGroupName = bField.RelationGroupName
+                };
+            }
+            else if (mField != null)
+            {
+                clonnedField = new MultiArticleField
+                {
+                    SubContentId = mField.SubContentId,
+                    Items = mField.Items.ToDictionary(itm => itm.Key, itm => articleMap[itm.Value])
+                };
+            }
+            else if (vField != null)
+            {
+                clonnedField = new VirtualArticleField
+                {
+                    Fields = vField.Fields
+                };
+            }
+            else if (vmField != null)
+            {
+                clonnedField = new VirtualMultiArticleField
+                {
+                    VirtualArticles = vmField.VirtualArticles
+                        .Select(f => CloneField(f, fieldName, articleMap) as VirtualArticleField)
+                        .ToArray()
                 };
             }
             else
             {
-                return null;
+                throw new Exception($"Cant't process field {field.FieldName} for localization");
             }
+
+            clonnedField.FieldName = fieldName;
+            clonnedField.ContentId = field.ContentId;
+            clonnedField.FieldId = field.FieldId;
+            clonnedField.CustomProperties = field.CustomProperties;
+            clonnedField.FieldDisplayName = field.FieldDisplayName;
+
+            return clonnedField;
         }
         public IEnumerable<IGrouping<string, LocalizedField>> GetLocalizedFields(Article article, Dictionary<string, CultureInfo> localizationMap)
         {
+            CultureInfo defaultCultue;
+
+            if (!localizationMap.TryGetValue(string.Empty, out defaultCultue))
+            {
+                defaultCultue = CultureInfo.InvariantCulture;
+            }
+
             var fields = from field in article
                          let suffix = localizationMap.Keys
                              .Where(l => field.FieldName.EndsWith(l))
@@ -172,17 +221,17 @@ namespace QA.Core.DPC.Loader.Services
                          select new LocalizedField
                          {
                              Field = field,
-                             InvariantFieldName = suffix == null ?
+                             InvariantFieldName = string.IsNullOrEmpty(suffix) ?
                                   fieldName :
                                   fieldName.Remove(fieldName.Length - suffix.Length),
                              Culture = suffix == null ?
-                                  CultureInfo.InvariantCulture :
+                                  defaultCultue :
                                   localizationMap[suffix]
                          };
 
-            var gr = fields.GroupBy(f => f.InvariantFieldName);
+            var group = fields.GroupBy(f => f.InvariantFieldName);
 
-            var x = gr
+            var invalidFields = group
                 .Where(
                     g => g.Select(f => f.Field.GetType())
                     .Distinct()
@@ -197,13 +246,13 @@ namespace QA.Core.DPC.Loader.Services
                 .Select(g => g.Key)
                 .ToArray();
 
-            if (x.Any())
+            if (invalidFields.Any())
             {
-                throw new Exception($"Поля {string.Join(", ", x)} имеют разный тип в локализованных версиях");
+                throw new Exception($"Поля {string.Join(", ", invalidFields)} имеют разный тип в локализованных версиях");
             }
 
-            return gr;
-        }
+            return group;
+        }    
         #endregion
     }
 

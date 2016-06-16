@@ -7,23 +7,23 @@ namespace QA.Core.Models.Extensions
 {
     public static class ArticleExstensions
     {
-        public static IEnumerable<Article> GetAllArticles(this Article article)
+        public static IEnumerable<Article> GetAllArticles(this Article article, bool allArticles = false)
         {
-            return new[] { article }.GetAllArticles();
+            return new[] { article }.GetAllArticles(allArticles);
         }
 
-        public static IEnumerable<Article> GetAllArticles(this IEnumerable<Article> articles)
+        public static IEnumerable<Article> GetAllArticles(this IEnumerable<Article> articles, bool allArticles = false)
         {
-            return GetAllArticles(articles, false);
+            return GetAllArticlesInternal(articles, false, allArticles);
         }
 
-        private static IEnumerable<Article> GetAllArticles(IEnumerable<Article> articles, bool isExsteinsion)
+        private static IEnumerable<Article> GetAllArticlesInternal(IEnumerable<Article> articles, bool isExsteinsion, bool allArticles)
         {
             foreach (var article in articles)
             {
-                if (article != null && article.PublishingMode == PublishingMode.Publish)
+                if (article != null && (allArticles || article.PublishingMode == PublishingMode.Publish))
                 {
-                    if (!isExsteinsion)
+                    if (allArticles || !isExsteinsion)
                     {
                         yield return article;
                     }
@@ -34,13 +34,13 @@ namespace QA.Core.Models.Extensions
                     {
                         if (field.Item != null)
                         {
-                            referencedArticles.AddRange(GetAllArticles(new[] { field.Item }, field is ExtensionArticleField));
+                            referencedArticles.AddRange(GetAllArticlesInternal(new[] { field.Item }, field is ExtensionArticleField, allArticles));
                         }
                     }
 
                     foreach (var field in article.Fields.Values.OfType<MultiArticleField>())
                     {
-                        referencedArticles.AddRange(GetAllArticles(field));
+                        referencedArticles.AddRange(GetAllArticlesInternal(field, false, allArticles));
                     }
 
                     foreach (var referencedArticle in referencedArticles)

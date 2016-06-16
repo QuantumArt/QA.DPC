@@ -1,14 +1,13 @@
 ﻿using QA.Core.Models.Entities;
+using System.Collections.Generic;
 using System.Globalization;
 
 namespace QA.ProductCatalog.Infrastructure
 {
     public interface IProductLocalizationService
     {
-        LocalizedArticle Localize(Article product, CultureInfo culture);
-        LocalizedArticle[] SplitLocalizations(Article product);
-        LocalizedArticle[] SplitLocalizations(Article product, CultureInfo[] cultures);
-        Article MergeLocalizations(LocalizedArticle[] localizations);
-        Article MergeLocalizations(Article product, LocalizedArticle[] localizations);
+        Article Localize(Article product, CultureInfo culture);
+        Dictionary<CultureInfo, Article> SplitLocalizations(Article product);
+        Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures); 
     }
 }

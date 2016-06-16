@@ -19,13 +19,15 @@ namespace QA.ProductCatalog.Integration
 		
 		private readonly IContentProvider<NotificationChannel> _channelProvider;
 		private readonly Func<string, IArticleFormatter> _getFormatter;
-		private readonly ILogger _logger;
+        private readonly IProductLocalizationService _localizationService;
+        private readonly ILogger _logger;
 
-		public QPNotificationService(IContentProvider<NotificationChannel> channelProvider, Func<string, IArticleFormatter> getFormatter, ILogger logger)
+		public QPNotificationService(IContentProvider<NotificationChannel> channelProvider, Func<string, IArticleFormatter> getFormatter, IProductLocalizationService localizationService, ILogger logger)
 		{
 			_channelProvider = channelProvider;
 			_getFormatter = getFormatter;
-			_logger = logger;			
+            _localizationService = localizationService;
+            _logger = logger;			
 		}
 
 		protected override void OnInitializeClient(object service)
@@ -33,37 +35,37 @@ namespace QA.ProductCatalog.Integration
 		}
 
 		#region IQPNotificationService implementation
-		public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, string[] forcedСhannels = null)
+		public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
 		{
-			return await PushProductsAsync(products, isStage, userName, userId, Put, forcedСhannels);
+			return await PushProductsAsync(products, isStage, userName, userId, Put, localize, forcedСhannels);
 		}
 
-		public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, string[] forcedСhannels = null)
+		public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
 		{
-			return PushProducts(products, isStage, userName, userId, Put, forcedСhannels);
+			return PushProducts(products, isStage, userName, userId, Put, localize, forcedСhannels);
 		}
 
 		public async Task DeleteProductsAsync(Article[] products, string userName, int userId, string[] forcedСhannels = null)
 		{
-			await PushProductsAsync(products, true, userName, userId, Delete, forcedСhannels);
-			await PushProductsAsync(products, false, userName, userId, Delete, forcedСhannels);
+			await PushProductsAsync(products, true, userName, userId, Delete, false, forcedСhannels);
+			await PushProductsAsync(products, false, userName, userId, Delete, false, forcedСhannels);
 		}
 
 		public void DeleteProducts(Article[] products, string userName, int userId, string[] forcedСhannels = null)
 		{
-			PushProducts(products, true, userName, userId, Delete, forcedСhannels);
-			PushProducts(products, false, userName, userId, Delete, forcedСhannels);
+			PushProducts(products, true, userName, userId, Delete, false, forcedСhannels);
+			PushProducts(products, false, userName, userId, Delete, false, forcedСhannels);
 		}
 
 		public async Task UnpublishProductsAsync(Article[] products, string userName, int userId, string[] forcedСhannels = null)
 		{
-			await PushProductsAsync(products, false, userName, userId, Delete, forcedСhannels);
+			await PushProductsAsync(products, false, userName, userId, Delete, false, forcedСhannels);
 		}
 
 		public void UnpublishProducts(Article[] products, string userName, int userId, string[] forcedСhannels = null)
 		{
-			UnpublishProducts(products, userName, userId, forcedСhannels);
-		}
+            PushProducts(products, false, userName, userId, Delete, false, forcedСhannels);
+        }
 		#endregion
 
 		#region Private methods
@@ -72,10 +74,10 @@ namespace QA.ProductCatalog.Integration
 			return _getFormatter(formatter).Serialize(product, ArticleFilter.DefaultFilter, true);
 		}
 
-		private int[] PushProducts(Article[] products, bool isStage, string userName, int userId, string method, string[] forcedСhannels)
+		private int[] PushProducts(Article[] products, bool isStage, string userName, int userId, string method, bool localize, string[] forcedСhannels)
 		{
 			var service = new Notifications.NotificationServiceClient();
-			var notifications = GetNotifications(products, isStage, forcedСhannels);
+			var notifications = GetNotifications(products, isStage, forcedСhannels, localize);
 
             if (notifications == null)
             {
@@ -89,10 +91,10 @@ namespace QA.ProductCatalog.Integration
 			return notifications.Select(n => n.ProductId).ToArray();
 		}
 
-		private async Task<int[]> PushProductsAsync(Article[] products, bool isStage, string userName, int userId, string method, string[] forcedСhannels)
+		private async Task<int[]> PushProductsAsync(Article[] products, bool isStage, string userName, int userId, string method, bool localize, string[] forcedСhannels)
 		{
 			var service = new Notifications.NotificationServiceClient();
-			var notifications = GetNotifications(products, isStage, forcedСhannels);
+			var notifications = GetNotifications(products, isStage, forcedСhannels, localize);
 
 			if (notifications == null)
 			{
@@ -106,7 +108,7 @@ namespace QA.ProductCatalog.Integration
 			return notifications.Select(n => n.ProductId).ToArray();
 		}
 
-		private NotificationItem[] GetNotifications(Article[] products, bool isStage, string[] forcedСhannels)
+		private NotificationItem[] GetNotifications(Article[] products, bool isStage, string[] forcedСhannels, bool localize)
 		{
 			var channels = _channelProvider.GetArticles();
 			NotificationItem[] notifications = null;
@@ -133,20 +135,46 @@ namespace QA.ProductCatalog.Integration
 			{
 				channels = channels.Where(c => c.IsStage == isStage).ToArray();
 
-				if (channels.Any())
-				{
-					notifications = (from c in channels
-									 from p in products
-									 where Match(c.Filter, p)
-									 group new { Channel = c, Product = p } by new { Product = p, c.Formatter } into g
-									 select new NotificationItem
-									 {
-										 Channels = g.Select(x => x.Channel.Name).ToArray(),
-										 Data = Convert(g.Key.Product, g.Key.Formatter, isStage),
-										 ProductId = g.Key.Product.Id
-									 })
-									.ToArray();				
-				}
+                if (channels.Any())
+                {
+
+                    if (localize)
+                    {
+                        notifications = (from items in
+                                             from c in channels
+                                             from p in products
+                                             where Match(c.Filter, p)
+                                             group c by p into g
+                                             let cultures = g.Select(x => x.Culture).Distinct().ToArray()
+                                             let localizationMap = _localizationService.SplitLocalizations(g.Key, cultures)
+                                             select from c2 in g
+                                                    group c2 by new { c2.Culture, c2.Formatter } into g2
+                                                    let localProduct = localizationMap[g2.Key.Culture]
+                                                    select new NotificationItem
+                                                    {
+                                                        Channels = g2.Select(x => x.Name).ToArray(),
+                                                        Data = Convert(localProduct, g2.Key.Formatter, isStage),
+                                                        ProductId = localProduct.Id
+                                                    }
+                                         from item in items
+                                         select item)
+                                         .ToArray();                   
+                    }
+                    else
+                    {
+                        notifications = (from c in channels
+                                         from p in products
+                                         where Match(c.Filter, p)
+                                         group new { Channel = c, Product = p } by new { Product = p, c.Formatter } into g
+                                         select new NotificationItem
+                                         {
+                                             Channels = g.Select(x => x.Channel.Name).ToArray(),
+                                             Data = Convert(g.Key.Product, g.Key.Formatter, isStage),
+                                             ProductId = g.Key.Product.Id
+                                         })
+                                       .ToArray();
+                    }
+                }
 			}
 			else
 			{

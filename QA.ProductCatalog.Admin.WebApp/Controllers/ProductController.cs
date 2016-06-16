@@ -151,7 +151,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             if (lang != null)
             {
                 var culture = CultureInfo.GetCultureInfo(lang);
-                product = _localizationService.Localize(product, culture).Article;
+                product = _localizationService.Localize(product, culture);
             }
 
             var filter = live ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;

@@ -10,6 +10,7 @@ namespace QA.Core.ProductCatalog.Actions
 	{
 		private const string ChannelsKey = "Channels";
         private const string ClearFieldIdsKey = "ClearFieldIds";
+        private const string LocalizeKey = "Localize";
         public static string[] GetChannels(this Dictionary<string, string> actionParameters)
 		{
 			string channels;
@@ -35,6 +36,29 @@ namespace QA.Core.ProductCatalog.Actions
             else
             {
                 return null;
+            }
+        }
+
+        public static bool GetLocalize(this Dictionary<string, string> actionParameters)
+        {
+            string localizeValue;
+
+            if (actionParameters.TryGetValue(LocalizeKey, out localizeValue))
+            {
+                bool localize;
+
+                if (bool.TryParse(localizeValue, out localize))
+                {
+                    return localize;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
             }
         }
     }
