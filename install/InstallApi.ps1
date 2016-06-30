@@ -48,7 +48,7 @@ New-Item -Path $sitePath -ItemType Directory -Force
 
 $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
-$adminPath = Join-Path $parentPath "Admin"
+$adminPath = Join-Path $parentPath "WebAPI"
 
 Copy-Item "$adminPath\*" -Destination $sitePath -Force -Recurse
 
