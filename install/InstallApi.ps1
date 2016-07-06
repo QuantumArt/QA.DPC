@@ -50,8 +50,9 @@ $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
 $adminPath = Join-Path $parentPath "WebAPI"
 
-Copy-Item "$adminPath\*" -Destination $sitePath -Force -Recurse
+Copy-Item "'$adminPath\*'" -Destination $sitePath -Force -Recurse
 
+$projectName = "QA.ProductCatalog.WebApi"
 $nLogPath = Join-Path $sitePath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath
 $var = $nlog.nlog.targets.target | where {$_.name -eq 'fileinfo'}

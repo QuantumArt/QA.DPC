@@ -53,19 +53,29 @@ $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
 $adminPath = Join-Path $parentPath "Admin"
 
-Copy-Item "$adminPath\*" -Destination $sitePath -Force -Recurse
+Copy-Item "'$adminPath\*'" -Destination $sitePath -Force -Recurse
 
+$projectName = "QA.ProductCatalog.Admin.WebApp"
 $nLogPath = Join-Path $sitePath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath
 $var = $nlog.nlog.targets.target | where {$_.name -eq 'fileinfo'}
 $var2 = $nlog.nlog.targets.target | where {$_.name -eq 'fileexception'}
+
 $var.fileName = $var.fileName -Replace $projectName, $siteName
 $var.archiveFileName = $var.archiveFileName -Replace $projectName, $siteName
 $var2.fileName = $var2.fileName -Replace $projectName, $siteName
 $var2.archiveFileName = $var2.archiveFileName -Replace $projectName, $siteName
+
+$var3 = $nlog.nlog.targets.target | where {$_.name -eq 'debug'}
+if ($var3)
+{
+    $var3.ParentNode.RemoveChild($var3)
+}
+$var4 = $nlog.nlog.rules.logger | where {$_.level -eq 'Debug'}
+$var4.writeTo = "fileInfo"
+
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
-
 
 $dbServerName = Read-Or-Default $dbServerName "Please enter db server name to connect"
 $dbLogin = Read-Or-Default $dbLogin "Please enter login name to connect databases"
