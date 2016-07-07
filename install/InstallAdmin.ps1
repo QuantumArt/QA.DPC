@@ -53,7 +53,7 @@ $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
 $adminPath = Join-Path $parentPath "Admin"
 
-Copy-Item "'$adminPath\*'" -Destination $sitePath -Force -Recurse
+Copy-Item "$adminPath\*" -Destination $sitePath -Force -Recurse
 
 $projectName = "QA.ProductCatalog.Admin.WebApp"
 $nLogPath = Join-Path $sitePath "NLogClient.config"

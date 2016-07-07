@@ -65,7 +65,7 @@ Invoke-Expression "InstallService.ps1 -Name '$name' -DisplayName '$displayName' 
 
 Invoke-Expression "CreateDB.ps1 -DbName '$dbName' -DbServerName '$dbServerName' -AdminLogin '$adminLogin' -AdminPassword '$adminPassword' -Login '$dbLogin' -ScriptPath '$dbScriptPath'"
 
-$installPath = Join-Path $installRoot $projectName
+$installPath = Join-Path $installRoot $name
 
 $nLogPath = Join-Path $installPath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath
