@@ -12,15 +12,15 @@ using QA.ProductCatalog.HighloadFront.Infrastructure;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
-    public class ElasticProductStore : 
-        IProductStore, 
-        IProductTypeStore, 
+    public class ElasticProductStore :
+        IProductStore,
+        IProductTypeStore,
         IProductBulkStore,
         IProductStreamStore,
         IProductSearchStore
     {
         private IElasticClient _client { get; }
-        
+
         private SonicElasticStoreOptions Options { get; set; }
 
         public ElasticProductStore(IElasticClient client, IOptions<SonicElasticStoreOptions> optionsAccessor)
@@ -48,7 +48,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             return type;
         }
-       
+
         public async Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> products)
         {
             ThrowIfDisposed();
@@ -180,7 +180,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
 
             var response = await _client.UpdateAsync<JObject>(id, d => d.Upsert(product).Type(type));
-           
+
             return response.IsValid
                 ? SonicResult.Success
                 : SonicResult.Failed(SonicErrorDescriber
@@ -217,9 +217,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 var response = await _client.DeleteIndexAsync(_client.ConnectionSettings.DefaultIndex);
 
-                await _client.CreateIndexAsync(
+                var r = await _client.CreateIndexAsync(
                     _client.ConnectionSettings.DefaultIndex,
-                    index => index.Settings(s => s.Setting("max_result_window", Options.MaxResultWindow))
+                    index => index
+                        .Settings(s => s.Setting("max_result_window", Options.MaxResultWindow))
+                        .Mappings(m => m.MapAnalyzed(Options.Types, Options.AnalyzedFields))                 
                 );
 
                 return SonicResult.Success;
@@ -238,15 +240,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             var request = new SearchDescriptor<JObject>()
                 .Type(type)
-                .From((options?.Page ?? 0)*(options?.PerPage ?? Options.DefaultSize))
+                .From((options?.Page ?? 0) * (options?.PerPage ?? Options.DefaultSize))
                 .Size(options?.PerPage ?? Options.DefaultSize)
                 .Query(q => Filter(q, options));
-       
+
             //var filter = MakeFilter(options);
             //request.Filter(filter);
 
             if (options?.PropertiesFilter?.Any() == true)
-                request.Source(s=>s.Include(f => f.Fields(options.PropertiesFilter.ToArray())));
+                request.Source(s => s.Include(f => f.Fields(options.PropertiesFilter.ToArray())));
 
             var response = await _client.SearchAsync<JObject>(request);
 
@@ -273,16 +275,26 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private QueryContainer Filter(QueryContainer query, ProductsOptions productsOptions)
         {
+
+
             if (productsOptions == null) return query;
 
             if (productsOptions.Filters != null)
             {
                 query = productsOptions.Filters.Where(f => f.Item1 != Options.TypePath).Aggregate(query, (current, sf) =>
-                 current & + new TermQuery
-                 {
-                     Field = sf.Item1,
-                     Value = sf.Item2
-                 });
+
+                IsAnalyzedField(sf.Item1) ?
+                current & +new MatchPhraseQuery
+                {
+                    Field = sf.Item1,
+                    Query = sf.Item2,
+                    Operator = Operator.And
+                } :
+                current & +new TermQuery
+                {
+                    Field = sf.Item1,
+                    Value = sf.Item2.ToLowerInvariant()
+                });
             }
 
             if (productsOptions.RangeFilters != null)
@@ -301,7 +313,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 query &= new QueryStringQuery
                 {
                     Query = productsOptions.Query,
-                    Lenient = true
+                    Lenient = true,
                 };
             }
 
@@ -391,7 +403,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             //var filter = MakeFilter(options);
             var respons = await _client.SearchAsync<JObject>(body => body
                 //.Filter(filter)
-                .Query(query =>  query.QueryString(qs => qs.Query(q).Lenient()))
+                .Query(query => query.QueryString(qs => qs.Query(q).Lenient()))
                 .AllTypes());
 
             return respons.Documents.ToList();
@@ -424,6 +436,34 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             SetSorting(request, options);
 
             return await _client.SearchStreamAsync(request);
+        }
+
+        private bool IsAnalyzedField(string pathField)
+        {
+            return Options.AnalyzedFields.Any(mask => {
+                var field = pathField.Split(new[] { '.' }).Last();
+
+                bool startsWithMask = mask.StartsWith("*");
+                bool endsWithMask = mask.EndsWith("*");
+                string analyzedField = startsWithMask && endsWithMask ? analyzedField = mask.Replace("*", string.Empty) : mask;
+
+                if (startsWithMask && endsWithMask)
+                {
+                    return field.Contains(analyzedField);
+                }
+                else if (startsWithMask)
+                {
+                    return field.EndsWith(analyzedField);
+                }
+                else if (endsWithMask)
+                {
+                    return field.StartsWith(analyzedField);
+                }
+                else
+                {
+                    return field.Equals(analyzedField);
+                }
+            });
         }
 
         private void ThrowIfDisposed()

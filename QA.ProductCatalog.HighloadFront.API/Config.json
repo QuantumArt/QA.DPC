@@ -16,6 +16,15 @@
       "MarketingProduct.Alias",
       "MarketingProduct.Title",
       "Modifiers.Alias"
+    ],
+    "Types": [
+      "Action",
+      "Tariff",
+      "Service"
+    ],
+    "AnalyzedFields": [
+      "Title",
+      "*Description"
     ]
   },
 
