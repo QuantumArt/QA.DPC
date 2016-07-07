@@ -329,12 +329,16 @@
     <Content Include="Content\img\icons\0.gif" />
     <Content Include="Content\img\icons\add.gif" />
     <Content Include="Content\img\icons\application_form_edit.png" />
+    <Content Include="Content\img\icons\arrow_divide.png" />
+    <Content Include="Content\img\icons\check.png" />
     <Content Include="Content\img\icons\clear.gif" />
     <Content Include="Content\img\icons\clone.png" />
     <Content Include="Content\img\icons\content.gif" />
     <Content Include="Content\img\icons\copy.gif" />
+    <Content Include="Content\img\icons\copy.png" />
     <Content Include="Content\img\icons\custom_action.gif" />
     <Content Include="Content\img\icons\delete.gif" />
+    <Content Include="Content\img\icons\delete2.png" />
     <Content Include="Content\img\icons\download.gif" />
     <Content Include="Content\img\icons\error.png" />
     <Content Include="Content\img\icons\error_add.png" />
@@ -350,6 +354,9 @@
     <Content Include="Content\img\icons\link_edit.png" />
     <Content Include="Content\img\icons\link_error.png" />
     <Content Include="Content\img\icons\link_go.png" />
+    <Content Include="Content\img\icons\pack.png" />
+    <Content Include="Content\img\icons\pack2.png" />
+    <Content Include="Content\img\icons\page_white_code_red.png" />
     <Content Include="Content\img\icons\pick.gif" />
     <Content Include="Content\img\icons\pick_disabled.gif" />
     <Content Include="Content\img\icons\picture.png" />
@@ -358,7 +365,9 @@
     <Content Include="Content\img\icons\refresh.gif" />
     <Content Include="Content\img\icons\relation.gif" />
     <Content Include="Content\img\icons\save.gif" />
+    <Content Include="Content\img\icons\sync.png" />
     <Content Include="Content\img\icons\virtualField.gif" />
+    <Content Include="Content\img\icons\web.png" />
     <Content Include="Content\img\TaskStates\Cancelled16.png" />
     <Content Include="Content\img\TaskStates\Cancelled48.png" />
     <Content Include="Content\img\TaskStates\Done16.png" />
