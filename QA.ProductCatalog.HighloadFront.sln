@@ -13,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{BBDE2A19-2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{57CA9ECB-F7D0-45B1-B3A3-205BBD03668D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.HighloadFront.Sync", "QA.ProductCatalog.HighloadFront.Sync\QA.ProductCatalog.HighloadFront.Sync.csproj", "{78124EE7-9123-4B67-A9F9-B34A8E39823E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{D423ABE6-E476-41D6-80BE-06A6B86F3C31}"
 	ProjectSection(SolutionItems) = preProject
 		ApiRest.txt = ApiRest.txt
@@ -37,6 +35,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Core.ProductCatalog.ActionsRunnerModel", "QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj", "{56E7FB60-0511-4BC7-9091-99C91D4CA5F7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.Infrastructure", "QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj", "{5AF860A1-97A7-4C36-9496-21054975E226}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.HighloadFront.API", "QA.ProductCatalog.HighloadFront.API\QA.ProductCatalog.HighloadFront.API.csproj", "{78124EE7-9123-4B67-A9F9-B34A8E39823E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,20 +77,6 @@ Global
 		{455C03F3-A541-469E-B0F5-FFAE84F56274}.Release|Any CPU.Build.0 = Release|Any CPU
 		{455C03F3-A541-469E-B0F5-FFAE84F56274}.Tele2|Any CPU.ActiveCfg = Release|Any CPU
 		{455C03F3-A541-469E-B0F5-FFAE84F56274}.Tele2|Any CPU.Build.0 = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Bee_test|Any CPU.Build.0 = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Megafon|Any CPU.Build.0 = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.MTS_Prod|Any CPU.ActiveCfg = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.MTS_Prod|Any CPU.Build.0 = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.MTS|Any CPU.ActiveCfg = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.MTS|Any CPU.Build.0 = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Tele2|Any CPU.ActiveCfg = Release|Any CPU
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Tele2|Any CPU.Build.0 = Release|Any CPU
 		{3B949EFD-3D99-4915-ADA1-AA74025156EA}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
 		{3B949EFD-3D99-4915-ADA1-AA74025156EA}.Bee_test|Any CPU.Build.0 = Release|Any CPU
 		{3B949EFD-3D99-4915-ADA1-AA74025156EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -175,6 +161,20 @@ Global
 		{5AF860A1-97A7-4C36-9496-21054975E226}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5AF860A1-97A7-4C36-9496-21054975E226}.Tele2|Any CPU.ActiveCfg = Tele2|Any CPU
 		{5AF860A1-97A7-4C36-9496-21054975E226}.Tele2|Any CPU.Build.0 = Tele2|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Bee_test|Any CPU.ActiveCfg = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Bee_test|Any CPU.Build.0 = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Megafon|Any CPU.ActiveCfg = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Megafon|Any CPU.Build.0 = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.MTS_Prod|Any CPU.ActiveCfg = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.MTS_Prod|Any CPU.Build.0 = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.MTS|Any CPU.ActiveCfg = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.MTS|Any CPU.Build.0 = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Tele2|Any CPU.ActiveCfg = Release|Any CPU
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E}.Tele2|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -182,57 +182,15 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{828345E1-3B11-45DD-871D-AC445B466E42} = {00F0AE90-C094-4F43-B5CD-2430DC76EA67}
 		{455C03F3-A541-469E-B0F5-FFAE84F56274} = {00F0AE90-C094-4F43-B5CD-2430DC76EA67}
-		{78124EE7-9123-4B67-A9F9-B34A8E39823E} = {57CA9ECB-F7D0-45B1-B3A3-205BBD03668D}
 		{3B949EFD-3D99-4915-ADA1-AA74025156EA} = {00F0AE90-C094-4F43-B5CD-2430DC76EA67}
 		{08DE5738-45F8-47B9-B828-D657223EAE51} = {00F0AE90-C094-4F43-B5CD-2430DC76EA67}
 		{4BAEAE00-DA81-49DC-8B75-475724D4C4C2} = {BBDE2A19-20BD-428A-BF62-A34AD274955E}
 		{8AC337D0-15BE-4A60-9166-B7EEAE3D5B32} = {BBDE2A19-20BD-428A-BF62-A34AD274955E}
 		{56E7FB60-0511-4BC7-9091-99C91D4CA5F7} = {BBDE2A19-20BD-428A-BF62-A34AD274955E}
 		{5AF860A1-97A7-4C36-9496-21054975E226} = {BBDE2A19-20BD-428A-BF62-A34AD274955E}
+		{78124EE7-9123-4B67-A9F9-B34A8E39823E} = {57CA9ECB-F7D0-45B1-B3A3-205BBD03668D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Data.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.ExceptionHandling.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Logging.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.ExceptionHandling.Logging.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35;packages\Unity.2.1.505.2\lib\NET35
-	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 10
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://tfs.artq.com:8080/tfs/quantumartcollection
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = QA.ProductCatalog.HighloadFront.Importer\\QA.ProductCatalog.HighloadFront.Importer.csproj
-		SccProjectTopLevelParentUniqueName1 = QA.ProductCatalog.HighloadFront.sln
-		SccProjectName1 = QA.ProductCatalog.HighloadFront.Importer
-		SccLocalPath1 = QA.ProductCatalog.HighloadFront.Importer
-		SccProjectUniqueName2 = QA.ProductCatalog.HighloadFront.Infrastructure\\QA.ProductCatalog.HighloadFront.Infrastructure.csproj
-		SccProjectTopLevelParentUniqueName2 = QA.ProductCatalog.HighloadFront.sln
-		SccProjectName2 = QA.ProductCatalog.HighloadFront.Infrastructure
-		SccLocalPath2 = QA.ProductCatalog.HighloadFront.Infrastructure
-		SccProjectUniqueName3 = QA.ProductCatalog.HighloadFront.Elastic\\QA.ProductCatalog.HighloadFront.Elastic.csproj
-		SccProjectTopLevelParentUniqueName3 = QA.ProductCatalog.HighloadFront.sln
-		SccProjectName3 = QA.ProductCatalog.HighloadFront.Elastic
-		SccLocalPath3 = QA.ProductCatalog.HighloadFront.Elastic
-		SccProjectUniqueName4 = QA.ProductCatalog.HighloadFront.Sync\\QA.ProductCatalog.HighloadFront.Sync.csproj
-		SccProjectTopLevelParentUniqueName4 = QA.ProductCatalog.HighloadFront.sln
-		SccProjectName4 = QA.ProductCatalog.HighloadFront.Sync
-		SccLocalPath4 = QA.ProductCatalog.HighloadFront.Sync
-		SccProjectUniqueName5 = QA.ProductCatalog.HighloadFront\\QA.ProductCatalog.HighloadFront.csproj
-		SccProjectTopLevelParentUniqueName5 = QA.ProductCatalog.HighloadFront.sln
-		SccProjectName5 = QA.ProductCatalog.HighloadFront
-		SccLocalPath5 = QA.ProductCatalog.HighloadFront
-		SccProjectUniqueName6 = QA.Core.Models\\QA.Core.Models.csproj
-		SccProjectTopLevelParentUniqueName6 = QA.ProductCatalog.HighloadFront.sln
-		SccProjectName6 = QA.Core.Models
-		SccLocalPath6 = QA.Core.Models
-		SccProjectUniqueName7 = QA.Core.ProductCatalog.ActionsRunner\\QA.Core.ProductCatalog.ActionsRunner.csproj
-		SccProjectTopLevelParentUniqueName7 = QA.ProductCatalog.HighloadFront.sln
-		SccProjectName7 = QA.Core.ProductCatalog.ActionsRunner
-		SccLocalPath7 = QA.Core.ProductCatalog.ActionsRunner
-		SccProjectUniqueName8 = QA.Core.ProductCatalog.ActionsRunnerModel\\QA.Core.ProductCatalog.ActionsRunnerModel.csproj
-		SccProjectTopLevelParentUniqueName8 = QA.ProductCatalog.HighloadFront.sln
-		SccProjectName8 = QA.Core.ProductCatalog.ActionsRunnerModel
-		SccLocalPath8 = QA.Core.ProductCatalog.ActionsRunnerModel
-		SccProjectUniqueName9 = QA.ProductCatalog.Infrastructure\\QA.ProductCatalog.Infrastructure.csproj
-		SccProjectTopLevelParentUniqueName9 = QA.ProductCatalog.HighloadFront.sln
-		SccProjectName9 = QA.ProductCatalog.Infrastructure
-		SccLocalPath9 = QA.ProductCatalog.Infrastructure
 	EndGlobalSection
 EndGlobal
