@@ -281,10 +281,12 @@
     <Compile Include="Entities\IGetFieldStringValue.cs" />
     <Compile Include="Entities\IModelObject.cs" />
     <Compile Include="Entities\IProductDataSource.cs" />
+    <Compile Include="Entities\LocalizedArticle.cs" />
     <Compile Include="Entities\PlainFieldType.cs" />
     <Compile Include="Entities\RegionTag.cs" />
     <Compile Include="Entities\VirtualMultiArticleField.cs" />
     <Compile Include="Entities\VirtualArticleField.cs" />
+    <Compile Include="Extensions\ArticleExstensions.cs" />
     <Compile Include="Extensions\FieldExtensions.cs" />
     <Compile Include="Filters\Base\AnyFilter.cs" />
     <Compile Include="Filters\DelegateFilter.cs" />

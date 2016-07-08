@@ -5,16 +5,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {
 	public class QPNotificationServiceFake : IQPNotificationService
 	{	
-        #region IQPNotificationService Members
-		public Task SendProductsAsync(string[] data, int[] ids, bool isStage, string userName, int userId, string[] forcedСhannels = null)
-		{
-			return Task.Delay(1);
-		}
-
-		public void SendProducts(string[] data, int[] ids, bool isStage, string userName, int userId, string[] forcedСhannels = null)
-		{			
-		}
-
+        #region IQPNotificationService Members	
 		public Task DeleteProductsAsync(int[] ids, string userName, int userId, string[] forcedСhannels = null)
 		{
 			return Task.Delay(1);
@@ -38,12 +29,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 			throw new System.NotImplementedException();
 		}
 
-		public Task<int[]> SendProductsAsync(Models.Entities.Article[] products, bool isStage, string userName, int userId, string[] forcedСhannels = null)
+		public Task<int[]> SendProductsAsync(Models.Entities.Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public int[] SendProducts(Models.Entities.Article[] products, bool isStage, string userName, int userId, string[] forcedСhannels = null)
+		public int[] SendProducts(Models.Entities.Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
 		{
 			throw new System.NotImplementedException();
 		}
