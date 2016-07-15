@@ -99,6 +99,9 @@ namespace QA.Core.DPC.Loader.Container
                     typeof(IConsumerMonitoringService)
                 ));
 
+            Container.RegisterType<ILocalizationSettingsService, LocalizationSettingsService>();
+            Container.RegisterType<IProductLocalizationService, ProductLocalizationService>();            
+
             Container.RegisterType<IArticleDependencyService, ArticleDependencyService>(
                 new InjectionFactory(c => new ArticleDependencyService(
                     c.Resolve<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin"),

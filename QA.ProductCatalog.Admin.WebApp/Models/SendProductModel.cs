@@ -135,11 +135,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 						var tasks =
 							ps1
 							.Section(Math.Min(bundleSize, 5))
-							.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), false, userName, userId))
+							.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), false, userName, userId, false))
 							.Union
 							(ps2
 							.Section(Math.Min(bundleSize, 5))
-							.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), true, userName, userId))
+							.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), true, userName, userId, false))
 							).ToList();
 
                         Task.WhenAll(tasks).Wait();

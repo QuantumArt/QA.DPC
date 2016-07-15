@@ -22,6 +22,7 @@ using QA.ProductCatalog.Admin.WebApp.Binders;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Processors;
+using System.Globalization;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -31,12 +32,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly Func<string, string, IAction> _getAction;
         private IVersionedCacheProvider _versionedCacheProvider;
         private readonly Func<string, IArticleFormatter> _getFormatter;
+        private readonly IProductLocalizationService _localizationService;
 
-        public ProductController(Func<string, string, IAction> getAction, IVersionedCacheProvider versionedCacheProvider, Func<string, IArticleFormatter> getFormatter)
+        public ProductController(Func<string, string, IAction> getAction, IVersionedCacheProvider versionedCacheProvider, Func<string, IArticleFormatter> getFormatter, IProductLocalizationService localizationService)
         {
             _getAction = getAction;
             _versionedCacheProvider = versionedCacheProvider;
             _getFormatter = getFormatter;
+            _localizationService = localizationService;
         }
 
         [RequireCustomAction]
@@ -136,13 +139,19 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return View("GetXml", (object)xml);
         }
 
-        public ActionResult GetProductData(int content_item_id, string formatter, bool live = false)
+        public ActionResult GetProductData(int content_item_id, string formatter, bool live = false, string lang = null)
         {
             var product = ObjectFactoryBase.Resolve<IProductService>().GetProductById(content_item_id, live);
             if (product == null)
             {
                 ViewBag.Message = "Продукт не найден.";
                 return View();
+            }
+
+            if (lang != null)
+            {
+                var culture = CultureInfo.GetCultureInfo(lang);
+                product = _localizationService.Localize(product, culture);
             }
 
             var filter = live ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;

@@ -19,19 +19,19 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			Service = _notificationService.GetType().Name;
 		}
 
-		public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, string[] forcedСhannels = null)
+		public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
 		{
 		
 				var token = CallMethod("SendProductsAsync", "isStage = {0}", isStage);
-				var result = await _notificationService.SendProductsAsync(products, isStage, userName, userId, forcedСhannels);
+				var result = await _notificationService.SendProductsAsync(products, isStage, userName, userId, localize, forcedСhannels);
 				EndMethod(token);
 				return result;
 		}
 
-		public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, string[] forcedСhannels = null)
+		public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
 		{
 			var token = CallMethod("SendProducts", "isStage = {0}", isStage);
-			var result = _notificationService.SendProducts(products, isStage, userName, userId, forcedСhannels);
+			var result = _notificationService.SendProducts(products, isStage, userName, userId, localize, forcedСhannels);
 			EndMethod(token);
 			return result;
 		}

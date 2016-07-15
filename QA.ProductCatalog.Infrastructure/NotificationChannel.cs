@@ -1,4 +1,5 @@
 ﻿
+using System.Globalization;
 using System.Xml.XPath;
 namespace QA.ProductCatalog.Infrastructure
 {
@@ -50,6 +51,13 @@ namespace QA.ProductCatalog.Infrastructure
 		public string Formatter { get; set; }
 		public string MediaType { get; set; }
 
+        public string Language { get; set; }
+
+        public CultureInfo Culture
+        {
+            get { return string.IsNullOrEmpty(Language) ? CultureInfo.InvariantCulture : CultureInfo.GetCultureInfo(Language); }
+        }
+
         public override bool Equals(object obj)
         {
             var channel = obj as NotificationChannel;
@@ -68,7 +76,8 @@ namespace QA.ProductCatalog.Infrastructure
                     IsStage == channel.IsStage &&
                     MediaType == channel.MediaType &&
                     Name == channel.Name &&
-                    Url == channel.Url;
+                    Url == channel.Url &&
+                    Language == channel.Language;
             }
         }
     }

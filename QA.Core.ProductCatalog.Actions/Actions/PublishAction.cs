@@ -41,8 +41,9 @@ namespace QA.Core.ProductCatalog.Actions
             var transactionId = Guid.NewGuid().ToString();
 
 			string[] channels = actionParameters.GetChannels();
+            bool localize = actionParameters.GetLocalize();
 
-			string ignoredStatus = (actionParameters.ContainsKey("IgnoredStatus")) ? actionParameters["IgnoredStatus"] : null;
+            string ignoredStatus = (actionParameters.ContainsKey("IgnoredStatus")) ? actionParameters["IgnoredStatus"] : null;
 			string[] ignoredStatuses = (ignoredStatus == null) ? Enumerable.Empty<string>().ToArray() : ignoredStatus.Split(new[]{','});
 
             var product = DoWithLogging("Productservice.GetProductById", transactionId, () => Productservice.GetProductById(productId, false));
@@ -80,7 +81,7 @@ namespace QA.Core.ProductCatalog.Actions
 
 	        if (!doNotSendNotifications)
 			{
-				DoWithLogging("SendNotification (includes substeps)", transactionId, () => SendNotification(product, transactionId, UserName, UserId, containsIgnored, channels));
+				DoWithLogging("SendNotification (includes substeps)", transactionId, () => SendNotification(product, transactionId, UserName, UserId, containsIgnored, localize, channels));
             }          
         }
         #endregion
@@ -129,14 +130,14 @@ namespace QA.Core.ProductCatalog.Actions
 			}
 		}
 
-		private void SendNotification(Article stageProduct, string transactionId, string userName, int userId, bool sendSeparateLive, string[] channels)
+		private void SendNotification(Article stageProduct, string transactionId, string userName, int userId, bool sendSeparateLive, bool localize, string[] channels)
 		{
 			try
 			{
 				var stageProducts = new[] { stageProduct };
 				var liveProducts = new[] { sendSeparateLive ? Productservice.GetProductById(stageProduct.Id, true) : stageProduct };
-				DoWithLogging("NotificationService.SendProducts stage", transactionId, () => NotificationService.SendProducts(stageProducts, true, userName, userId, channels));
-				DoWithLogging("NotificationService.SendProducts live", transactionId, () => NotificationService.SendProducts(liveProducts, false, userName, userId, channels));
+				DoWithLogging("NotificationService.SendProducts stage", transactionId, () => NotificationService.SendProducts(stageProducts, true, userName, userId, localize, channels));
+				DoWithLogging("NotificationService.SendProducts live", transactionId, () => NotificationService.SendProducts(liveProducts, false, userName, userId, localize, channels));
 			}
 			catch (Exception ex)
 			{

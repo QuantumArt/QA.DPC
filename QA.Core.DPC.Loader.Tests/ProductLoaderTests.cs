@@ -206,7 +206,7 @@ namespace QA.Core.DPC.Loader.Tests
 				var content = service.GetProductById(id);
 
 				var text = QA.Core.Models.Tools.ConfigurationSerializer.GetXml(content);
-				var result = nService.SendProductsAsync(new[] { content }, true, "Admin", 1);
+				var result = nService.SendProductsAsync(new[] { content }, true, "Admin", 1, false);
 				tasks.Add(result);
 			}
 			var newT = Task.WhenAll(tasks);

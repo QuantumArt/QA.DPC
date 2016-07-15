@@ -40,8 +40,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		public override string Process(ActionContext context)
 		{
 			string[] channels = context.Parameters.GetChannels();
+            bool localize = context.Parameters.GetLocalize();
 
-			int marketingProductContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.MARKETING_PRODUCT_CONTENT_ID));
+            int marketingProductContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.MARKETING_PRODUCT_CONTENT_ID));
 			string productsFieldName = _settingsService.GetSetting(SettingsTitles.MARKETING_PRODUCT_PRODUCTS_FIELD_NAME);
 
 		    Dictionary<int, int[]> articleIdsToCheckRelationsByContentId;
@@ -244,11 +245,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 								ArticleFilter.LiveFilter.Filter(prodsLive)
 								.Section(sectionSize)
 								.Select(z => tl.QPNotificationService
-									.SendProductsAsync(z.ToArray(), false, context.UserName, context.UserId, channels)
+									.SendProductsAsync(z.ToArray(), false, context.UserName, context.UserId, localize, channels)
 									.ContinueWith(y => UpdateFilteredIds(filteredInLive, y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed)))
 								.Concat(ArticleFilter.DefaultFilter.Filter(prodsStage)
 									.Section(sectionSize)
-									.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), true, context.UserName, context.UserId, channels)
+									.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), true, context.UserName, context.UserId, localize, channels)
 									.ContinueWith(y => UpdateFilteredIds(filteredInStage, y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed))))
 								.ToArray();
 
