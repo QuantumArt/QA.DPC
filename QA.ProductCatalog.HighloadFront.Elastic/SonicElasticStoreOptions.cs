@@ -9,5 +9,7 @@
         public string DefaultType { get; set; }
         public string[] DefaultFields { get; set; }
         public int MaxResultWindow { get; set; }
+        public string[] Types { get; set; }
+        public string[] AnalyzedFields { get; set; }
     }
 }
