@@ -11,6 +11,7 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using Article = QA.Core.Models.Entities.Article;
 using Field = QA.Core.Models.Configuration.Field;
+using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.Loader
 {
@@ -34,24 +35,25 @@ namespace QA.Core.DPC.Loader
 
             _cacheItemWatcher = cacheItemWatcher;
 
-            _contextStorage = contextStorage;
+            _contextStorage = contextStorage;            
         }
-
        
 
         public Article Deserialize(IProductDataSource productDataSource, Models.Configuration.Content definition)
         {
-            using (new QPConnectionScope(ConfigurationManager.ConnectionStrings[ProductLoader.KEY_CONNECTION_STRING].ConnectionString))
+            using (var cs = new QPConnectionScope(ConfigurationManager.ConnectionStrings[ProductLoader.KEY_CONNECTION_STRING].ConnectionString))
             {
                 _cacheItemWatcher.TrackChanges();
 
                 _contentService.LoadStructureCache(_contextStorage);
 
-                return DeserializeArticle(productDataSource, definition);
+                var connector = new DBConnector(cs.DbConnection);
+
+                return DeserializeArticle(productDataSource, definition, connector);
             }
         }
 
-        private Article DeserializeArticle(IProductDataSource productDataSource, Models.Configuration.Content definition)
+        private Article DeserializeArticle(IProductDataSource productDataSource, Models.Configuration.Content definition, DBConnector connector)
         {
             if (productDataSource == null)
                 return null;
@@ -72,7 +74,7 @@ namespace QA.Core.DPC.Loader
 
             foreach (Field fieldInDef in definition.Fields.Where(x => !(x is BaseVirtualField) && !(x is Dictionaries)))
             {
-                var field = DeserializeField(fieldInDef, _fieldService.Read(fieldInDef.FieldId), productDataSource);
+                var field = DeserializeField(fieldInDef, _fieldService.Read(fieldInDef.FieldId), productDataSource, connector);
 
                 article.Fields[field.FieldName] = field;
             }
@@ -83,25 +85,25 @@ namespace QA.Core.DPC.Loader
 
                 foreach (var plainFieldFromQp in qpFields.Where(x => x.RelationType == RelationType.None && definition.Fields.All(y => y.FieldId != x.Id)))
                 {
-                    article.Fields[plainFieldFromQp.Name] = DeserializeField(new PlainField { FieldId = plainFieldFromQp.Id }, plainFieldFromQp, productDataSource);
+                    article.Fields[plainFieldFromQp.Name] = DeserializeField(new PlainField { FieldId = plainFieldFromQp.Id }, plainFieldFromQp, productDataSource, connector);
                 }
             }
 
             return article;
         }
 
-        private ArticleField DeserializeField(Field fieldInDef, Quantumart.QP8.BLL.Field qpField, IProductDataSource productDataSource)
+        private ArticleField DeserializeField(Field fieldInDef, Quantumart.QP8.BLL.Field qpField, IProductDataSource productDataSource, DBConnector connector)
         {
             ArticleField field;
 
             if (fieldInDef is BackwardRelationField)
-                field = DeserializeBackwardField((BackwardRelationField)fieldInDef, productDataSource);
+                field = DeserializeBackwardField((BackwardRelationField)fieldInDef, productDataSource, connector);
             else if (fieldInDef is EntityField)
-                field = DeserializeEntityField((EntityField)fieldInDef, qpField, productDataSource);
+                field = DeserializeEntityField((EntityField)fieldInDef, qpField, productDataSource, connector);
             else if (fieldInDef is ExtensionField)
-                field = DeserializeExtensionField((ExtensionField)fieldInDef, qpField, productDataSource);
+                field = DeserializeExtensionField((ExtensionField)fieldInDef, qpField, productDataSource, connector);
             else if (fieldInDef is PlainField)
-                field = DeserializePlainField(qpField, productDataSource);
+                field = DeserializePlainField(qpField, productDataSource, connector);
             else throw new Exception("Неподдерживаемый тип поля: " + fieldInDef.GetType().Name);
 
             field.ContentId = qpField.ContentId;
@@ -115,7 +117,7 @@ namespace QA.Core.DPC.Loader
             return field;
         }
 
-        private ArticleField DeserializePlainField(Quantumart.QP8.BLL.Field plainFieldFromQP, IProductDataSource productDataSource)
+        private ArticleField DeserializePlainField(Quantumart.QP8.BLL.Field plainFieldFromQP, IProductDataSource productDataSource, DBConnector connector)
         {
             var field = new PlainArticleField
             {
@@ -155,13 +157,24 @@ namespace QA.Core.DPC.Loader
                     }
                     break;
 
+                case PlainFieldType.Image:
+                    string imageUrl = productDataSource.GetString(plainFieldFromQP.Name);
+
+                    if (imageUrl != null)
+                    {
+                        string imageName = Common.GetFileNameByUrl(connector, plainFieldFromQP.Id, imageUrl);
+                        field.NativeValue = field.Value = imageName;
+                    }
+                    break;
+
                 case PlainFieldType.File:
 
                     IProductDataSource fileContainer = productDataSource.GetContainer(plainFieldFromQP.Name);
 
                     if (fileContainer != null)
                     {
-                        string fileName = fileContainer.GetString("Name");
+                        string fileUrl = fileContainer.GetString("AbsoluteUrl");
+                        string fileName = Common.GetFileNameByUrl(connector, plainFieldFromQP.Id, fileUrl);
 
                         field.NativeValue = field.Value = fileName;
                     }
@@ -191,7 +204,7 @@ namespace QA.Core.DPC.Loader
             return field;
         }
 
-        private ArticleField DeserializeExtensionField(ExtensionField fieldInDef, Quantumart.QP8.BLL.Field qpField, IProductDataSource productDataSource)
+        private ArticleField DeserializeExtensionField(ExtensionField fieldInDef, Quantumart.QP8.BLL.Field qpField, IProductDataSource productDataSource, DBConnector connector)
         {
             var extensionArticleField = new ExtensionArticleField();
 
@@ -208,7 +221,7 @@ namespace QA.Core.DPC.Loader
 
                 extensionArticleField.Value = valueDef.ContentId.ToString();
 
-                extensionArticleField.Item = DeserializeArticle(productDataSource, valueDef);
+                extensionArticleField.Item = DeserializeArticle(productDataSource, valueDef, connector);
 
                 extensionArticleField.Item.Id = default(int);
 
@@ -218,7 +231,7 @@ namespace QA.Core.DPC.Loader
             return extensionArticleField;
         }
 
-        private ArticleField DeserializeBackwardField(BackwardRelationField fieldInDef, IProductDataSource productDataSource)
+        private ArticleField DeserializeBackwardField(BackwardRelationField fieldInDef, IProductDataSource productDataSource, DBConnector connector)
         {
             if (string.IsNullOrEmpty(fieldInDef.FieldName))
                 throw new Exception("В описании BackwardArticleField должен быть непустой FieldName");
@@ -231,13 +244,13 @@ namespace QA.Core.DPC.Loader
             };
 
             if (containersCollection != null)
-                foreach (Article article in containersCollection.Select(x => DeserializeArticle(x, fieldInDef.Content)))
+                foreach (Article article in containersCollection.Select(x => DeserializeArticle(x, fieldInDef.Content, connector)))
                     backwardArticleField.Items.Add(article.Id, article);
 
             return backwardArticleField;
         }
 
-        private ArticleField DeserializeEntityField(EntityField fieldInDef, Quantumart.QP8.BLL.Field qpField, IProductDataSource productDataSource)
+        private ArticleField DeserializeEntityField(EntityField fieldInDef, Quantumart.QP8.BLL.Field qpField, IProductDataSource productDataSource, DBConnector connector)
         {
             string fieldName = fieldInDef.FieldName ?? qpField.Name;
 
@@ -247,7 +260,7 @@ namespace QA.Core.DPC.Loader
             {
                 articleField = new SingleArticleField
                 {
-                    Item = DeserializeArticle(productDataSource.GetContainer(fieldName), fieldInDef.Content),
+                    Item = DeserializeArticle(productDataSource.GetContainer(fieldName), fieldInDef.Content, connector),
                     Aggregated = qpField.Aggregated,
                     SubContentId = fieldInDef.Content.ContentId
                 };
@@ -259,7 +272,7 @@ namespace QA.Core.DPC.Loader
                 var containersCollection = productDataSource.GetContainersCollection(fieldName);
 
                 if (containersCollection != null)
-                    foreach (Article article in containersCollection.Select(x => DeserializeArticle(x, fieldInDef.Content)))
+                    foreach (Article article in containersCollection.Select(x => DeserializeArticle(x, fieldInDef.Content, connector)))
                         multiArticleField.Items.Add(article.Id, article);
 
                 articleField = multiArticleField;

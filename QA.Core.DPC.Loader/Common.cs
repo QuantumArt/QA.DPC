@@ -44,5 +44,19 @@ namespace QA.Core.DPC.Loader
 
 			return string.Format(@"{0}\{1}", dbConnector.GetDirectoryForFileAttribute(fieldId), fieldValue.Replace("/", "\\"));
 	    }
+
+        public static string GetFileNameByUrl(DBConnector dbConnector, int fieldId, string url)
+        {
+            if (string.IsNullOrEmpty(url))
+                return null;
+
+            var path = dbConnector.GetUrlForFileAttribute(fieldId, true, true);
+            var fileName = url.Replace(path, string.Empty);
+
+            if (fileName.StartsWith("/"))
+                fileName = fileName.Remove(0, 1);
+
+            return fileName;
+        }
     }
 }
