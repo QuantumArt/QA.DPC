@@ -181,8 +181,9 @@ namespace QA.Core.DPC
 					var request = (HttpWebRequest)WebRequest.Create(url);
 					request.Method = message.Method.ToUpper();
 					request.Timeout = 1000 * _config.TimeOut;
-					request.ContentType = "text/xml; charset=utf-8";
-					byte[] data = Encoding.UTF8.GetBytes(message.Xml);
+				    var mediaType = !string.IsNullOrEmpty(channel.MediaType) ? channel.MediaType : "text/xml";
+                    request.ContentType = $"{mediaType}; charset=utf-8";
+                    byte[] data = Encoding.UTF8.GetBytes(message.Xml);
 					request.ContentLength = data.Length;
 
 					using (var streamWriter = request.GetRequestStream())
