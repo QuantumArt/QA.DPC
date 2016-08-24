@@ -319,10 +319,10 @@
     <Compile Include="UnityConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
+    <Content Include="App.config">
       <SubType>Designer</SubType>
       <TransformOnBuild>true</TransformOnBuild>
-    </None>
+    </Content>
     <Content Include="NLogClient.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TransformOnBuild>true</TransformOnBuild>

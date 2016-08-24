@@ -325,20 +325,20 @@
     <Compile Include="UnityConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
+    <Content Include="App.config">
       <SubType>Designer</SubType>
       <TransformOnBuild>true</TransformOnBuild>
-    </None>
+    </Content>
     <None Include="DAL\NotificationsModel.dbml">
       <Generator>MSLinqToSQLGenerator</Generator>
       <LastGenOutput>NotificationsModel.designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </None>
-    <None Include="NLogClient.config">
+    <Content Include="NLogClient.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TransformOnBuild>true</TransformOnBuild>
       <SubType>Designer</SubType>
-    </None>
+    </Content>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
