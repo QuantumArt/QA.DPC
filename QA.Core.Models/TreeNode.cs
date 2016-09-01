@@ -42,9 +42,20 @@ namespace QA.Core.Models
         }
         public IEnumerable<TNode> EnumerateParents()
         {
+            var set = new HashSet<TKey>();
+
             var c = this;
             while (c != null)
             {
+                if (set.Contains(c.Key))
+                {
+                    throw new Exception($"Infinite loop for node {c.Key}");
+                }
+                else
+                {
+                    set.Add(c.Key);
+                }
+                
                 yield return c.Node;
                 c = c.Parent;
             }
