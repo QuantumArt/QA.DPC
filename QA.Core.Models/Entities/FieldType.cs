@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace QA.Core.Models.Entities
+﻿namespace QA.Core.Models.Entities
 {
     /// <summary>
     /// Типы полей
@@ -11,15 +6,7 @@ namespace QA.Core.Models.Entities
     public enum FieldType
     {
         Unknown,
-        
-        /// <summary>
-        /// текст, число, дата, признак
-        /// </summary>
         Plain,
-
-        /// <summary>
-        /// 
-        /// </summary>
         Entity,
         Aggreragion,
         Association,

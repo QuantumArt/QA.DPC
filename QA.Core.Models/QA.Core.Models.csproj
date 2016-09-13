@@ -144,12 +144,12 @@
       <HintPath>$(SolutionDir)packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\NLog.2.1.0\lib\net45\NLog.dll</HintPath>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog.Extended, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\NLog.Extended.2.1.0.1\lib\net45-full\NLog.Extended.dll</HintPath>
+    <Reference Include="NLog.Extended, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NLog.Extended.4.0.0.1\lib\net45-full\NLog.Extended.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Configuration, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -271,8 +271,12 @@
     <Compile Include="Entities\Article.cs" />
     <Compile Include="Entities\ArticleExtensions.cs" />
     <Compile Include="Entities\ArticleField.cs" />
+    <Compile Include="Entities\BackwardArticleField.cs" />
+    <Compile Include="Entities\DPathArticleData.cs" />
+    <Compile Include="Entities\DPathFilterData.cs" />
     <Compile Include="Entities\EntityFieldMetaData.cs" />
     <Compile Include="Entities\EntityFieldValue.cs" />
+    <Compile Include="Entities\ExtensionArticleField.cs" />
     <Compile Include="Entities\FieldType.cs" />
     <Compile Include="Entities\IArticleFilter.cs" />
     <Compile Include="Entities\IGetArticle.cs" />
@@ -282,8 +286,11 @@
     <Compile Include="Entities\IModelObject.cs" />
     <Compile Include="Entities\IProductDataSource.cs" />
     <Compile Include="Entities\LocalizedArticle.cs" />
+    <Compile Include="Entities\MultiArticleField.cs" />
+    <Compile Include="Entities\PlainArticleField.cs" />
     <Compile Include="Entities\PlainFieldType.cs" />
     <Compile Include="Entities\RegionTag.cs" />
+    <Compile Include="Entities\SingleArticleField.cs" />
     <Compile Include="Entities\VirtualMultiArticleField.cs" />
     <Compile Include="Entities\VirtualArticleField.cs" />
     <Compile Include="Extensions\ArticleExstensions.cs" />
@@ -302,6 +309,7 @@
     <Compile Include="IModelPostProcessor.cs" />
     <Compile Include="IValueConverter.cs" />
     <Compile Include="IValueConverterWithType.cs" />
+    <Compile Include="Processors\DPathProcessor.cs" />
     <Compile Include="Processors\HierarchySorter.cs" />
     <Compile Include="TreeNode.cs" />
     <Compile Include="UI\Binding.cs" />
@@ -329,6 +337,7 @@
     <Compile Include="UI\ItemList%271.cs" />
     <Compile Include="UI\ItemList.cs" />
     <Compile Include="UI\ITitled.cs" />
+    <Compile Include="UI\ModelObjectWithParent.cs" />
     <Compile Include="UI\MutableCollection.cs" />
     <Compile Include="UI\Padding.cs" />
     <Compile Include="UI\TypeConverters\PaddingTypeConverter.cs" />
@@ -344,6 +353,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

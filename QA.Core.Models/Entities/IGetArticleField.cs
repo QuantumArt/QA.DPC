@@ -1,5 +1,4 @@
-﻿using System;
-namespace QA.Core.Models.Entities
+﻿namespace QA.Core.Models.Entities
 {
     public interface IGetArticleField
     {

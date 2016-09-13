@@ -18,21 +18,14 @@ namespace QA.Core.DPC.Loader.Tests
             var stopWatch = new Stopwatch();
 
             stopWatch.Start();
-
             _service = ObjectFactoryBase.Resolve<IArticleDependencyService>();
-
             stopWatch.Stop();
-
             Debug.WriteLine($"IArticleDependencyService отрезолвен за {stopWatch.Elapsed.TotalSeconds} сек");
 
             stopWatch.Reset();
-
             stopWatch.Start();
-
             ((ArticleDependencyService)_service).InitCache(false);
-
             stopWatch.Stop();
-
             Debug.WriteLine($"ArticleDependencyService инициализировал кеш {stopWatch.Elapsed.TotalSeconds} сек");
         }
 

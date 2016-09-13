@@ -1,4 +1,4 @@
-﻿<ProductInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<ProductInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <Products>
     <Product xsi:type="MobileTariff">
       <Id>2166354</Id>

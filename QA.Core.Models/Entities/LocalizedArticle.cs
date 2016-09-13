@@ -22,6 +22,7 @@ namespace QA.Core.Models.Entities
         }
 
         public Article Article { get; private set; }
+
         public CultureInfo Culture { get; private set; }
     }
 }
