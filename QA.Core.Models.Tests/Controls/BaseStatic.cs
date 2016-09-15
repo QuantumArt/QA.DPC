@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 
 namespace QA.Core.Models.Tests.Controls
 {
     public class Tester
     {
-        static Tester() { }
         public static bool state;
 
         public static DateTime Call()
         {
-            Console.WriteLine("call");
+            Console.WriteLine(@"1");
             state = true;
             return DateTime.Now;
         }
@@ -20,16 +18,17 @@ namespace QA.Core.Models.Tests.Controls
     {
         static Base()
         {
-            Console.WriteLine("base");
+            Console.WriteLine(@"1");
         }
     }
 
     public class Class1 : Base
     {
         static Class1() { }
+
         public static readonly object prop = Tester.Call();
 
-        public virtual object Prop { get { return prop; } }
+        public virtual object Prop => prop;
     }
 
     public class Class2
@@ -41,7 +40,7 @@ namespace QA.Core.Models.Tests.Controls
 
         public static object prop;
 
-        public virtual object Prop { get { return prop; } }
+        public virtual object Prop => prop;
     }
 }
 

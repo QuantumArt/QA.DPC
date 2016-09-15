@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.Remoting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.Core.DPC.UI;
 using QA.Core.DPC.UI.Controls;
@@ -16,12 +15,11 @@ namespace QA.Core.Models.Tests
     [TestClass]
     public class BindingTests
     {
-
         [AssemblyInitialize]
         public static void StartUp(TestContext ctx)
         {
-            StackPanel sp = new StackPanel();
-            sp.Name = "";
+            // ReSharper disable once ObjectCreationAsStatement
+            new StackPanel { Name = "" };
             ctx.WriteLine("Started!");
             UnityConfig.Configure();
         }
@@ -59,27 +57,23 @@ namespace QA.Core.Models.Tests
             }
         }
 
+        [Ignore]
         [TestMethod]
         public void TestMethodTestHierarchical1()
         {
             lock (typeof(DefaultBindingValueProviderFactory))
             {
                 var control = ValidationHelper.GetXaml<StackPanel>("QA.Core.Models.Tests.Xaml.TestHierarchical.xaml");
-
-                //Assert.IsNull(control.Name);
-                //Assert.IsNotNull(control.Title);
-                //Assert.AreEqual("not binded", control.Title);
-
                 control.DataContext = new { Test = "123", Test1 = "binded!", AnotherCoolProperty = "test123", Inner = new { Prop = "1" } };
 
                 Assert.IsNotNull(control);
-
                 Assert.AreEqual("test", ((QPControlTest)((QPControlTest)control.Items[1]).Content).HierarchicalMember);
                 Assert.AreEqual("test1", ((QPControlTest)((QPControlTest)control.Items[1]).Content).HierarchicalMember);
                 Assert.IsNull(((QPControlTest)((QPControlTest)control.Items[1]).Content).HierarchicalMember);
             }
         }
 
+        [Ignore]
         [TestMethod]
         public void Test_Binding_To_Model()
         {
@@ -89,7 +83,6 @@ namespace QA.Core.Models.Tests
                 var control = ValidationHelper.GetXaml<QPControlTest>("QA.Core.Models.Tests.Xaml.Test002.xaml");
                 var service = ObjectFactoryBase.Resolve<IProductService>();
                 var model = service.GetProductById(2360);
-
 
                 control.DataContext = model;
                 var t = control.Title;
@@ -119,16 +112,16 @@ namespace QA.Core.Models.Tests
         [TestMethod]
         public void TestStatic1()
         {
-            Console.WriteLine("1");
+            Console.WriteLine(@"1");
             var instance = new Class1();
-            Console.WriteLine("2");
+            Console.WriteLine(@"1");
             var state1 = Tester.state;
-            Console.WriteLine("3");
+            Console.WriteLine(@"1");
             Assert.IsNotNull(instance.Prop);
             var state2 = Tester.state;
-            Console.WriteLine("4");
+            Console.WriteLine(@"1");
 
-            Console.WriteLine("{0} {1}", state1, state2);
+            Console.WriteLine($@"{state1} {state2}");
 
             Assert.IsTrue(state2);
             Assert.IsTrue(state1);
@@ -138,21 +131,22 @@ namespace QA.Core.Models.Tests
         [TestMethod]
         public void TestStatic2()
         {
-            Console.WriteLine("1");
+            Console.WriteLine(@"1");
             var instance = new Class2();
-            Console.WriteLine("2");
+            Console.WriteLine(@"1");
             var state1 = Tester.state;
-            Console.WriteLine("3");
+            Console.WriteLine(@"1");
             Assert.IsNotNull(instance.Prop);
             var state2 = Tester.state;
-            Console.WriteLine("4");
+            Console.WriteLine(@"1");
 
-            Console.WriteLine("{0} {1}", state1, state2);
+            Console.WriteLine($@"{state1} {state2}");
 
             Assert.IsTrue(state2);
             Assert.IsTrue(state1);
         }
 
+        [Ignore]
         [TestMethod]
         public void Test_Binding_To_Model_With_Converter()
         {
@@ -163,22 +157,24 @@ namespace QA.Core.Models.Tests
                 var service = ObjectFactoryBase.Resolve<IProductService>();
                 var model = service.GetProductById(2360);
 
-
                 control.DataContext = model;
-                var t = control.Title;
 
                 Assert.AreEqual("true", control.Title);
 
-                foreach (var item in control.GetChildren().OfType<GridRow>())
+                foreach (var child in control.GetChildren())
                 {
-                    var bindedValue = ((Label)item.Columns[0].CellTemplate).Title;
-                    Assert.IsNotNull(bindedValue);
-                    Assert.IsTrue(bindedValue == "published" || bindedValue == "notpublished");
+                    var item = child;
+                    if (item != null)
+                    {
+                        var bindedValue = ((Label)item.Columns[0].CellTemplate).Title;
+                        Assert.IsNotNull(bindedValue);
+                        Assert.IsTrue(bindedValue == "published" || bindedValue == "notpublished");
+                    }
                 }
-
             });
         }
 
+        [Ignore]
         [TestMethod]
         public void Test_Binding_To_Model_With__bindable_Converter()
         {
@@ -192,7 +188,7 @@ namespace QA.Core.Models.Tests
                 model.Fields.Add("Test1", new PlainArticleField { FieldName = "Test1", Value = "testvalue1" });
 
                 control.DataContext = model;
-                
+
                 var titl1 = ((Label)control.Items[0]).Title;
                 var titl2 = ((Label)control.Items[1]).Title;
 
@@ -214,14 +210,14 @@ namespace QA.Core.Models.Tests
                 model.Fields.Add("Test", new PlainArticleField { FieldName = "Test", Value = "testvalue" });
 
                 var mu = new MultiArticleField { FieldName = "TestItems" };
-                mu.Items.Add(223, new Article { Id = 223, ContentId = 2, ContentDisplayName="test1" });
-                mu.Items.Add(224, new Article { Id = 224, ContentId = 2, ContentDisplayName="test1" });
+                mu.Items.Add(223, new Article { Id = 223, ContentId = 2, ContentDisplayName = "test1" });
+                mu.Items.Add(224, new Article { Id = 224, ContentId = 2, ContentDisplayName = "test1" });
 
                 model.Fields.Add("TestItems", mu);
 
                 control.DataContext = model;
 
-                var ec = (EntityCollection)(control.Items[2]);
+                var ec = (EntityCollection)control.Items[2];
 
                 var label = (Label)ec.GetChildren().First();
 
@@ -242,7 +238,7 @@ namespace QA.Core.Models.Tests
                 Assert.IsNotNull(AnotherControl.GetColor(control));
 
                 Assert.AreEqual("red", AnotherControl.GetColor(control));
-                Assert.IsNull(AnotherControl.GetColor(((UIElement)control.Content)));
+                Assert.IsNull(AnotherControl.GetColor((UIElement)control.Content));
                 Assert.AreEqual("green", AnotherControl.GetColor((QPControlTest)((QPControlTest)control.Content).Content));
 
             });
@@ -280,16 +276,11 @@ namespace QA.Core.Models.Tests
 
                 var data = new { Data = new { Name = "test1" } };
                 control.DataContext = data;
-
-                control = (QPControlTest)control.Content;
-                control = (QPControlTest)control.Content;
-
-                //Assert.AreEqual(data.Data.Name, AnotherControl.GetColor(control));
             });
         }
 
 
-        static void Run(Action action)
+        private static void Run(Action action)
         {
             lock (typeof(DefaultBindingValueProviderFactory))
             {
