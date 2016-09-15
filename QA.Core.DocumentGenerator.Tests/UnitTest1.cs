@@ -1,7 +1,5 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -9,59 +7,57 @@ using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DocumentGenerator.Tests
 {
-	[TestClass]
-	public class UnitTest1
-	{
-		[ClassInitialize]
-		public static void ClassInitialize(TestContext ctx)
-		{
-			NotesServiceMoq.Setup(x => x.GetNoteText(It.IsAny<int>())).Returns<int>(x => string.Format("Тестовая заметка с id={0}.", x));
+    [TestClass]
+    public class UnitTest1
+    {
+        [ClassInitialize]
+        public static void ClassInitialize(TestContext ctx)
+        {
+            NotesServiceMoq.Setup(x => x.GetNoteText(It.IsAny<int>())).Returns<int>(x => $"Тестовая заметка с id={x}.");
 
-			XmlText =
-				new StreamReader(
-					Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.Product.xml"))
-					.ReadToEnd();
-		}
+            _xmlText = new StreamReader(Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.Product.xml")).ReadToEnd();
+        }
 
-		private static readonly Mock<INotesService> NotesServiceMoq = new Mock<INotesService>();
-		private static string XmlText;
+        private static readonly Mock<INotesService> NotesServiceMoq = new Mock<INotesService>();
+        private static string _xmlText;
 
 
-		//[TestMethod]
-		public void TestMailMerge()
-		{
-			var generator = new DocumentGenerator(NotesServiceMoq.Object);
+        //[TestMethod]
+        public void TestMailMerge()
+        {
+            var generator = new DocumentGenerator(NotesServiceMoq.Object);
 
-			string resFilePath = "c:\\temp\\TestMailMerge.pdf";
+            const string resFilePath = "c:\\temp\\TestMailMerge.pdf";
 
-			generator.SaveAsPdf(XmlText, Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.TestMailMerge.docx"), new FileStream(resFilePath, FileMode.Create));
+            generator.SaveAsPdf(_xmlText, Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.TestMailMerge.docx"), new FileStream(resFilePath, FileMode.Create));
 
-			Process.Start(resFilePath);
-		}
+            Process.Start(resFilePath);
+        }
 
-		//[TestMethod]
-		public void TestNotes()
-		{
-			var generator = new DocumentGenerator(NotesServiceMoq.Object);
+        //[TestMethod]
+        public void TestNotes()
+        {
+            var generator = new DocumentGenerator(NotesServiceMoq.Object);
 
-			string resFilePath = "c:\\temp\\TestNotes.pdf";
+            const string resFilePath = "c:\\temp\\TestNotes.pdf";
 
-			generator.SaveAsPdf(XmlText,Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.TestNotes.docx"),new FileStream(resFilePath, FileMode.Create));
+            generator.SaveAsPdf(_xmlText, Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.TestNotes.docx"), new FileStream(resFilePath, FileMode.Create));
 
-			Process.Start(resFilePath);
-		}
+            Process.Start(resFilePath);
+        }
 
-		[TestMethod]
-		public void TestRazor()
-		{
-			var generator = new DocumentGenerator(NotesServiceMoq.Object);
+        [Ignore]
+        [TestMethod]
+        public void TestRazor()
+        {
+            var generator = new DocumentGenerator(NotesServiceMoq.Object);
 
-			string resFilePath = "c:\\temp\\TestRazor.pdf";
+            const string resFilePath = "c:\\temp\\TestRazor.pdf";
 
-			generator.SaveAsPdf(XmlText, Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.TestRazor.docx"),new FileStream(resFilePath, FileMode.Create));
+            generator.SaveAsPdf(_xmlText, Assembly.GetExecutingAssembly().GetManifestResourceStream("QA.Core.DocumentGenerator.Tests.TestDocs.TestRazor.docx"), new FileStream(resFilePath, FileMode.Create));
 
-			Process.Start(resFilePath);
-		}
+            Process.Start(resFilePath);
+        }
 
-	}
+    }
 }

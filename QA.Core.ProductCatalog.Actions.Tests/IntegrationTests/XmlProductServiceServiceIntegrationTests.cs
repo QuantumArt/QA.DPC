@@ -1,17 +1,16 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
+using System.Transactions;
 using Microsoft.Practices.Unity;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using QA.Core.Models;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
-
-using QA.Core.ProductCatalog.Actions.Container;
-using System.Transactions;
 using Quantumart.QP8.BLL;
-using System.Threading.Tasks;
-using QA.Core.Models;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
 {
+    [Ignore]
     [TestClass]
     public class XmlProductServiceIntegrationTests : IntegrationTestsBase
     {
@@ -68,7 +67,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
             var productService = Container.Resolve<IProductService>();
             var xmlProductService = Container.Resolve<IXmlProductService>();
 
-            using (var cs = new QPConnectionScope(Container.GetConnectionString()))
+            using (new QPConnectionScope(Container.GetConnectionString()))
             {
                 using (var ts = new TransactionScope(TransactionScopeOption.Required,
                     new TransactionOptions { Timeout = TimeSpan.FromMinutes(2), IsolationLevel = il }))
@@ -81,11 +80,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
             }
         }
 
-        private void Do(int ms) {
+        private static void Do(int ms)
+        {
             Task.WaitAll(Task.Run(async () => { await DoFakeWork(ms); }), DoFakeWork(300));
         }
 
-        private Task DoFakeWork(int ms)
+        private static Task DoFakeWork(int ms)
         {
             return Task.Delay(ms);
         }
