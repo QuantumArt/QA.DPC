@@ -15,6 +15,7 @@ namespace QA.Core.Models.Processors
         public class AdditionalInfo
         {
             public int Order { get; set; }
+
             public int NewOrder { get; set; }
         }
 

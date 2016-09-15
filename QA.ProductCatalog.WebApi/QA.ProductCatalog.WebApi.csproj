@@ -59,39 +59,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.15.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.1\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.DependencyCollector, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.ApplicationInsights.DependencyCollector.2.1.0\lib\net45\Microsoft.AI.DependencyCollector.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.1.0\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.1.0\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.Web, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.ApplicationInsights.Web.2.1.0\lib\net45\Microsoft.AI.Web.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.AI.WindowsServer, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.ApplicationInsights.WindowsServer.2.1.0\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.ApplicationInsights, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.ApplicationInsights.2.1.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=2.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Microsoft.ApplicationInsights.Log4NetAppender.2.1.0\lib\net45\Microsoft.ApplicationInsights.Log4NetAppender.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\log4net.2.0.5\lib\net45-full\log4net.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
@@ -152,11 +120,11 @@
       <HintPath>$(SolutionDir)packages\Newtonsoft.Json.Schema.1.0.10\lib\net45\Newtonsoft.Json.Schema.dll</HintPath>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog.Extended, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NLog.Extended.4.0.0.1\lib\net45-full\NLog.Extended.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NLog.Extended.4.0.0.1\lib\net45-full\NLog.Extended.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Configuration, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -164,15 +132,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.3.0.2.0\lib\net45\QA.Core.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.3.0.2.0\lib\net45\QA.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Data, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.Data.3.0.2.0\lib\net45\QA.Core.Data.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Data.3.0.2.0\lib\net45\QA.Core.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Service.Interaction, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.Service.Interaction.3.0.2.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Service.Interaction.3.0.2.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Validation.Xaml, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -184,11 +152,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.2.0.3.0\lib\net45\Quantumart.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.2.0.3.0\lib\net45\Quantumart.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Assembling, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.2.0.3.0\lib\net45\Quantumart.QP8.Assembling.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.2.0.3.0\lib\net45\Quantumart.QP8.Assembling.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.BLL, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -395,7 +363,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
@@ -403,3 +371,4 @@
   </Target>
   -->
 </Project>
+

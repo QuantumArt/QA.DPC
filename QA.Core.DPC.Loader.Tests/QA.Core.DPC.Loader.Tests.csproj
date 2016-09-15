@@ -86,11 +86,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentAssertions, Version=4.14.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.14.0\lib\net45\FluentAssertions.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\FluentAssertions.4.14.0\lib\net45\FluentAssertions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="FluentAssertions.Core, Version=4.14.0.0, Culture=neutral, PublicKeyToken=33f2691a05b67b6a, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\FluentAssertions.4.14.0\lib\net45\FluentAssertions.Core.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\FluentAssertions.4.14.0\lib\net45\FluentAssertions.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
@@ -154,35 +154,35 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog.Extended, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NLog.Extended.4.0.0.1\lib\net45-full\NLog.Extended.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NLog.Extended.4.0.0.1\lib\net45-full\NLog.Extended.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ploeh.AutoFixture, Version=3.50.2.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AutoFixture.3.50.2\lib\net40\Ploeh.AutoFixture.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\AutoFixture.3.50.2\lib\net40\Ploeh.AutoFixture.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Ploeh.AutoFixture.Xunit2, Version=3.50.2.0, Culture=neutral, PublicKeyToken=b24654c590009d4f, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\AutoFixture.Xunit2.3.50.2\lib\net45\Ploeh.AutoFixture.Xunit2.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\AutoFixture.Xunit2.3.50.2\lib\net45\Ploeh.AutoFixture.Xunit2.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Configuration, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Configuration.1.0.1.0\lib\net40\QA.Configuration.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Configuration.1.0.1.0\lib\net40\QA.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.3.0.2.0\lib\net45\QA.Core.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.3.0.2.0\lib\net45\QA.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Data, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.Data.3.0.2.0\lib\net45\QA.Core.Data.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Data.3.0.2.0\lib\net45\QA.Core.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Service.Interaction, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.Service.Interaction.3.0.2.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Service.Interaction.3.0.2.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Validation.Xaml, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -194,11 +194,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.2.0.3.0\lib\net45\Quantumart.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.2.0.3.0\lib\net45\Quantumart.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Assembling, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.2.0.3.0\lib\net45\Quantumart.QP8.Assembling.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.2.0.3.0\lib\net45\Quantumart.QP8.Assembling.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.BLL, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -277,19 +277,19 @@
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\xunit.abstractions.2.0.0\lib\net35\xunit.abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.assert, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.assert.2.1.0\lib\dotnet\xunit.assert.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\xunit.assert.2.1.0\lib\dotnet\xunit.assert.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.core, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\xunit.extensibility.core.2.1.0\lib\dotnet\xunit.core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.execution.desktop, Version=2.1.0.3179, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\xunit.extensibility.execution.2.1.0\lib\net45\xunit.execution.desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -384,13 +384,7 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
+    <Error Condition="!Exists('$(SolutionDir)packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
+

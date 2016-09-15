@@ -123,7 +123,7 @@ namespace QA.Core.Models.Processors
             var result = expression.Trim();
             if (expression.First() == '/')
             {
-                result += result.Skip(1);
+                result = new string(result.Skip(1).ToArray());
             }
 
             if (expression.Last() != '/')

@@ -47,7 +47,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="EFExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\EFExtensions.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\EFExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -63,7 +63,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Irony.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Irony.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
@@ -119,11 +119,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NLog.4.3.8\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog.Extended, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\NLog.Extended.4.0.0.1\lib\net45-full\NLog.Extended.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\NLog.Extended.4.0.0.1\lib\net45-full\NLog.Extended.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Configuration, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -131,19 +131,19 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.3.0.2.0\lib\net45\QA.Core.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.3.0.2.0\lib\net45\QA.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Data, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.Data.3.0.2.0\lib\net45\QA.Core.Data.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Data.3.0.2.0\lib\net45\QA.Core.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Service.Interaction, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.Service.Interaction.3.0.2.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Service.Interaction.3.0.2.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Web, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\QA.Core.Web.3.0.3.0\lib\net45\QA.Core.Web.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Web.3.0.3.0\lib\net45\QA.Core.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Validation.Xaml, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -155,47 +155,47 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.2.0.3.0\lib\net45\Quantumart.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.2.0.3.0\lib\net45\Quantumart.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Assembling, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.2.0.3.0\lib\net45\Quantumart.QP8.Assembling.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.2.0.3.0\lib\net45\Quantumart.QP8.Assembling.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.BLL, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.BLL.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.BLL.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Configuration, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Configuration.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Constants, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Constants.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Constants.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.DAL, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.DAL.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.DAL.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Logging, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Logging.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Logging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Merger, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Merger.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Merger.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Security, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Security.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Utils, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Utils.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Validators, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Validators.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Validators.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -322,3 +322,4 @@
   </Target>
   -->
 </Project>
+
