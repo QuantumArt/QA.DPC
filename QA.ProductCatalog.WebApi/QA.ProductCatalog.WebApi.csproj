@@ -163,16 +163,16 @@
       <HintPath>$(SolutionDir)packages\QA.Configuration.1.0.1.0\lib\net40\QA.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="QA.Core, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Core.3.0.0.0\lib\net45\QA.Core.dll</HintPath>
+    <Reference Include="QA.Core, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\QA.Core.3.0.2.0\lib\net45\QA.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="QA.Core.Data, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Core.Data.3.0.0.0\lib\net45\QA.Core.Data.dll</HintPath>
+    <Reference Include="QA.Core.Data, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\QA.Core.Data.3.0.2.0\lib\net45\QA.Core.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="QA.Core.Service.Interaction, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Core.Service.Interaction.3.0.0.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
+    <Reference Include="QA.Core.Service.Interaction, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\QA.Core.Service.Interaction.3.0.2.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Validation.Xaml, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -183,12 +183,12 @@
       <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.Extensions.1.0.2.0\lib\net40\QA.Validation.Xaml.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Quantumart, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.2.0.0.0\lib\net45\Quantumart.dll</HintPath>
+    <Reference Include="Quantumart, Version=2.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Quantumart.2.0.3.0\lib\net45\Quantumart.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Assembling, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Assembling.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.2.0.3.0\lib\net45\Quantumart.QP8.Assembling.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.BLL, Version=2.0.4.0, Culture=neutral, processorArchitecture=MSIL">
@@ -351,11 +351,6 @@
       <Project>{54c5a130-e1f2-4971-a76a-c7991fc456aa}</Project>
       <Name>QA.ProductCatalog.Integration</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="ApplicationInsights.config">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

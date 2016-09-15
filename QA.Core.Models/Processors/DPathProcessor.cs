@@ -166,7 +166,7 @@ namespace QA.Core.Models.Processors
         {
             if (articleToCheck == null)
             {
-                throw new Exception("May be filter expression was wrong");
+                throw new Exception("May be filter expression was wrong (should implement IGetFieldStringValue interface)");
             }
 
             if (filterData.IsInversed)
