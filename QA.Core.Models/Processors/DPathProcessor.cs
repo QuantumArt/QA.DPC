@@ -113,12 +113,7 @@ namespace QA.Core.Models.Processors
             }
         }
 
-        public static bool IsExpressionValid(string expression)
-        {
-            return ExpressionRegexToValidate.IsMatch(expression);
-        }
-
-        private static string NormalizeExpression(string expression)
+        public static string NormalizeExpression(string expression)
         {
             var result = expression.Trim();
             if (expression.First() == '/')
@@ -132,6 +127,11 @@ namespace QA.Core.Models.Processors
             }
 
             return result;
+        }
+
+        public static bool IsExpressionValid(string expression)
+        {
+            return ExpressionRegexToValidate.IsMatch(expression);
         }
 
         private static IEnumerable<ModelObjectWithParent> FilterResult(IEnumerable<ModelObjectWithParent> resultData, IList<DPathFilterData> articleFiltersData)

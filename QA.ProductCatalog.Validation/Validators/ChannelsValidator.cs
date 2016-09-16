@@ -21,9 +21,10 @@ namespace QA.ProductCatalog.Validation.Validators
             var filter = context.ProvideValueExact<string>(filterDefinition);
             if (!string.IsNullOrEmpty(filter))
             {
-                if (!DPathProcessor.IsExpressionValid(filter))
+                var normalizedFilter = DPathProcessor.NormalizeExpression(filter);
+                if (!DPathProcessor.IsExpressionValid(normalizedFilter))
                 {
-                    result.AddModelError(filterDefinition.PropertyName, "Невалидный фильтр");
+                    result.AddModelError(filterDefinition.PropertyName, $"Невалидный фильтр: {normalizedFilter}");
                 }
             }
         }
