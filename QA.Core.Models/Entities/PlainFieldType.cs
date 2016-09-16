@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace QA.Core.Models.Entities
+﻿namespace QA.Core.Models.Entities
 {
     public enum PlainFieldType
     {
@@ -24,5 +19,5 @@ namespace QA.Core.Models.Entities
         M2MRelation = 15,
         Classifier = 16,
         StringEnum = 17,
-    }    
+    }
 }

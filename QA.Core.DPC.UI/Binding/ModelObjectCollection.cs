@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.Models.Entities;
 
 namespace QA.Core.DPC.UI.Binding
 {
-    public class ModelObjectCollection : IModelObject, IEnumerable<IModelObject>, IGetArticles
+    public class ModelObjectCollection : IEnumerable<IModelObject>, IGetArticles
     {
-        private IEnumerable<IModelObject> _inner;
+        private readonly IEnumerable<IModelObject> _inner;
+
         public ModelObjectCollection(IEnumerable<IModelObject> inner)
         {
             _inner = inner;

@@ -1,9 +1,4 @@
 ﻿using QA.Core.Models.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QA.Core.Models
 {
@@ -15,6 +10,7 @@ namespace QA.Core.Models
         where TParameter : class, new()
     {
         public ModelPostProcessorBase() : this(null) { }
+
         public ModelPostProcessorBase(TParameter parameter) { }
 
         public TParameter Parameter { get; set; }

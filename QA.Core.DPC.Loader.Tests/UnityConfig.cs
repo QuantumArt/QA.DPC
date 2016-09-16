@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Practices.Unity;
+using QA.Core.Cache;
+using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
-using QA.Core.Data;
-using QA.Core.Web;
-using QA.Core.Cache;
 using QA.ProductCatalog.Integration;
-using QA.Core.DPC.Loader.Container;
 
 namespace QA.Core.DPC.Loader.Tests
 {
@@ -32,25 +26,24 @@ namespace QA.Core.DPC.Loader.Tests
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
 
             // устанавливаем фальшивый сервис для загрузки модели
-            container.RegisterType<IProductService, ProductLoader>()
-                .RegisterType<IXmlProductService, XmlProductService>();
+            container.RegisterType<IProductService, ProductLoader>().RegisterType<IXmlProductService, XmlProductService>();
             container.RegisterType<IQPNotificationService, QPNotificationService>();
             container.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager());
             container.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContentInvalidator, DPCContentInvalidator>();
-			container.RegisterType<ISettingsService, SettingsFromContentService>();
-			container.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
+            container.RegisterType<ISettingsService, SettingsFromContentService>();
+            container.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
             container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()));
             container.RegisterType<IRegionTagReplaceService, RegionTagService>();
             container.RegisterType<IRegionService, RegionService>();
-            container.RegisterType<IConsumerMonitoringService, FakeConsumerMonitoringService> ();
+            container.RegisterType<IConsumerMonitoringService, FakeConsumerMonitoringService>();
             container.RegisterType<IArticleDependencyService, ArticleDependencyService>(
-		        new InjectionConstructor(
-			        typeof (IContentDefinitionService),
-			        typeof (IServiceFactory),
-					typeof(IVersionedCacheProvider),
-					typeof(ISettingsService),
-			        ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString));
+                new InjectionConstructor(
+                    typeof(IContentDefinitionService),
+                    typeof(IServiceFactory),
+                    typeof(IVersionedCacheProvider),
+                    typeof(ISettingsService),
+                    ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString));
 
             return container;
         }
