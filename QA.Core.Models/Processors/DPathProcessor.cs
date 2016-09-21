@@ -156,6 +156,11 @@ namespace QA.Core.Models.Processors
         private static bool IsArticlePassFilter(Article article, DPathFilterData filterData)
         {
             var articlesInFilter = Process(filterData.Expression, article);
+            if (!articlesInFilter.Any() && filterData.IsInversed)
+            {
+                return true;
+            }
+
             return articlesInFilter
                 .Select(articleInFilter => (IGetFieldStringValue)articleInFilter.ModelObject)
                 .Select(articleToCheck => IsEqualToFilter(articleToCheck, filterData))

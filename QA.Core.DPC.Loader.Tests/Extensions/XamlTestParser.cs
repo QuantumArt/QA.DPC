@@ -14,6 +14,8 @@ namespace QA.Core.DPC.Loader.Tests.Extensions
 
         private readonly string _expression;
 
+        private readonly int? _expectedCount;
+
         public XamlDataAttribute(string fileName)
         {
             _fileName = fileName;
@@ -23,6 +25,13 @@ namespace QA.Core.DPC.Loader.Tests.Extensions
         {
             _fileName = fileName;
             _expression = expression;
+        }
+
+        public XamlDataAttribute(string fileName, string expression, int expectedCount)
+        {
+            _fileName = fileName;
+            _expression = expression;
+            _expectedCount = expectedCount;
         }
 
         public override IEnumerable<object[]> GetData(MethodInfo testMethod)
@@ -36,6 +45,11 @@ namespace QA.Core.DPC.Loader.Tests.Extensions
             if (!string.IsNullOrWhiteSpace(_expression))
             {
                 result.Insert(0, _expression);
+            }
+
+            if (_expectedCount.HasValue)
+            {
+                result.Add(_expectedCount);
             }
 
             return new[]

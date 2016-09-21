@@ -1,0 +1,1934 @@
+<Article ContentDisplayName="Продукты" ContentId="288" ContentName="Product" Created="2016-09-21T11:54:52.867" Id="2268052" IsPublished="True" Modified="2016-09-21T11:55:01.553" PublishingMode="Publish" Status="Published" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Article.Fields>
+    <PlainArticleField x:Key="PDF" ContentId="288" FieldDisplayName="PDF" FieldId="1229" FieldName="PDF" PlainFieldType="File" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="PDF_local" ContentId="288" FieldDisplayName="PDF_local" FieldId="2128" FieldName="PDF_local" PlainFieldType="File" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="PDF_en" ContentId="288" FieldDisplayName="PDF_en" FieldId="2127" FieldName="PDF_en" PlainFieldType="File" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="Legal" ContentId="288" FieldDisplayName="Лигал" FieldId="1230" FieldName="Legal" PlainFieldType="VisualEdit" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="Benefit" ContentId="288" FieldDisplayName="Бенефит" FieldId="1231" FieldName="Benefit" PlainFieldType="VisualEdit" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="Benefit_local" ContentId="288" FieldDisplayName="Бенефит_local" FieldId="2129" FieldName="Benefit_local" PlainFieldType="VisualEdit" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="Benefit_en" ContentId="288" FieldDisplayName="Бенефит (английский)" FieldId="2243" FieldName="Benefit_en" PlainFieldType="VisualEdit" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="SortOrder" ContentId="288" FieldDisplayName="Порядок" FieldId="1232" FieldName="SortOrder" PlainFieldType="Numeric" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="StartDate" ContentId="288" FieldDisplayName="Дата начала" FieldId="1358" FieldName="StartDate" PlainFieldType="Date" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="EndDate" ContentId="288" FieldDisplayName="Дата окончания" FieldId="1359" FieldName="EndDate" PlainFieldType="Date" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="ArchiveTitle" ContentId="288" FieldDisplayName="Архивный заголовок" FieldId="1160" FieldName="ArchiveTitle" PlainFieldType="String" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="ArchiveTitle_local" ContentId="288" FieldDisplayName="Архивный заголовок_local" FieldId="2126" FieldName="ArchiveTitle_local" PlainFieldType="String" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="ArchiveTitle_en" ContentId="288" FieldDisplayName="Архивный заголовок_en" FieldId="2125" FieldName="ArchiveTitle_en" PlainFieldType="String" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="ArchiveNotes" ContentId="288" FieldDisplayName="Архивные заметки" FieldId="1314" FieldName="ArchiveNotes" PlainFieldType="VisualEdit" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <PlainArticleField x:Key="OldSiteId" ContentId="288" FieldDisplayName="OldSiteId" FieldId="1327" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+      <PlainArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </PlainArticleField.CustomProperties>
+    </PlainArticleField>
+    <SingleArticleField x:Key="MarketingProduct" ContentId="288" FieldDisplayName="Маркетинговый продукт" FieldId="1115" FieldName="MarketingProduct" SubContentId="287">
+      <SingleArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </SingleArticleField.CustomProperties>
+      <SingleArticleField.Item>
+        <Article ContentDisplayName="Маркетинговые продукты" ContentId="287" ContentName="MarketingProduct" Created="2016-09-21T11:53:40.817" Id="2268050" IsPublished="True" Modified="2016-09-21T15:17:38.387" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="287" FieldDisplayName="Название" FieldId="1110" FieldName="Title" NativeValue="Клик" PlainFieldType="String" Value="Клик">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_local" ContentId="287" FieldDisplayName="Название_local" FieldId="2121" FieldName="Title_local" NativeValue="კლიკი" PlainFieldType="String" Value="კლიკი">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_en" ContentId="287" FieldDisplayName="Название_en" FieldId="2122" FieldName="Title_en" NativeValue="Click" PlainFieldType="String" Value="Click">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Alias" ContentId="287" FieldDisplayName="Алиас" FieldId="1112" FieldName="Alias" NativeValue="click" PlainFieldType="String" Value="click">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Benefit" ContentId="287" FieldDisplayName="Бенефит" FieldId="1124" FieldName="Benefit" NativeValue="&lt;p&gt;Пользуйтесь самым быстрым 4G LTE интернетом по самой низкой цене.&lt;/p&gt;" PlainFieldType="VisualEdit" Value="&lt;p&gt;Пользуйтесь самым быстрым 4G LTE интернетом по самой низкой цене.&lt;/p&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Benefit_local" ContentId="287" FieldDisplayName="Бенефит_local" FieldId="2131" FieldName="Benefit_local" NativeValue="&lt;p&gt;ისარგებლეთ უსწრაფესი 4G LTE ინტერნეტით ყველაზე დაბალ ფასად!&lt;/p&gt;" PlainFieldType="VisualEdit" Value="&lt;p&gt;ისარგებლეთ უსწრაფესი 4G LTE ინტერნეტით ყველაზე დაბალ ფასად!&lt;/p&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Benefit_en" ContentId="287" FieldDisplayName="Бенефит_en" FieldId="2248" FieldName="Benefit_en" NativeValue="&lt;p&gt;Use fastest 4G LTE internet at the lowest price!&amp;nbsp;&lt;/p&gt;" PlainFieldType="VisualEdit" Value="&lt;p&gt;Use fastest 4G LTE internet at the lowest price!&amp;nbsp;&lt;/p&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortBenefit" ContentId="287" FieldDisplayName="Моб. бенефит" FieldId="1302" FieldName="ShortBenefit" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortBenefit_local" ContentId="287" FieldDisplayName="Моб. бенефит_local" FieldId="2132" FieldName="ShortBenefit_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortBenefit_en" ContentId="287" FieldDisplayName="Моб. бенефит_en" FieldId="2249" FieldName="ShortBenefit_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal" ContentId="287" FieldDisplayName="Лигал" FieldId="1125" FieldName="Legal" NativeValue="&lt;p&gt;&lt;/p&gt;&#xA;&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width: 500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (00:00 - 07:59)&amp;nbsp;&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,05&amp;nbsp;₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;Звонки на все номера местных операторов&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;Стоимость перехода на тарифный план&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;1,00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&#xA;&lt;p&gt;&lt;/p&gt;" PlainFieldType="VisualEdit" Value="&lt;p&gt;&lt;/p&gt;&#xA;&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width: 500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (00:00 - 07:59)&amp;nbsp;&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,05&amp;nbsp;₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;Звонки на все номера местных операторов&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;Стоимость перехода на тарифный план&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;1,00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&#xA;&lt;p&gt;&lt;/p&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_local" ContentId="287" FieldDisplayName="Лигал_local" FieldId="2278" FieldName="Legal_local" NativeValue="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width: 500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (00:00 - 07:59)&amp;nbsp;&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,05&amp;nbsp;₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;ზარი ყველა ადგილობრივ ქსელთან&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;სატარიფო გეგმაზე გადასვლის ღირებულება&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;1,00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;" PlainFieldType="VisualEdit" Value="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width: 500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (00:00 - 07:59)&amp;nbsp;&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,05&amp;nbsp;₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;ზარი ყველა ადგილობრივ ქსელთან&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;სატარიფო გეგმაზე გადასვლის ღირებულება&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;1,00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_en" ContentId="287" FieldDisplayName="Лигал_en" FieldId="2279" FieldName="Legal_en" NativeValue="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width: 500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (00:00 - 07:59)&amp;nbsp;&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,05&amp;nbsp;₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;Calls to all local operators&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;Cost of price plan change&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;1,00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;" PlainFieldType="VisualEdit" Value="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width: 500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (00:00 - 07:59)&amp;nbsp;&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,05&amp;nbsp;₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;Calls to all local operators&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;0,10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td&gt;Cost of price plan change&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: right;&quot;&gt;1,00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="SortOrder" ContentId="287" FieldDisplayName="Порядок" FieldId="1723" FieldName="SortOrder" PlainFieldType="Numeric" Value="2">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>2</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Description" ContentId="287" FieldDisplayName="Описание" FieldId="1126" FieldName="Description" NativeValue="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width:500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (00:00 - 07:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.05₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;Звонки на все номера местных операторов&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;Стоимость перехода на тарифный план&lt;/td&gt;&#xA;&lt;td&gt;1.00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&#xA;&lt;p&gt;&lt;/p&gt;" PlainFieldType="VisualEdit" Value="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width:500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (00:00 - 07:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.05₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;Звонки на все номера местных операторов&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;Стоимость перехода на тарифный план&lt;/td&gt;&#xA;&lt;td&gt;1.00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&#xA;&lt;p&gt;&lt;/p&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Description_local" ContentId="287" FieldDisplayName="Description_local" FieldId="2133" FieldName="Description_local" NativeValue="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width:500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (00:00 - 07:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.05₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;ზარი ყველა ადგილობრივ ქსელთან&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;სატარიფო გეგმაზე გადასვლის ღირებულება&lt;/td&gt;&#xA;&lt;td&gt;1.00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;" PlainFieldType="VisualEdit" Value="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width:500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (00:00 - 07:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.05₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;ზარი ყველა ადგილობრივ ქსელთან&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;სატარიფო გეგმაზე გადასვლის ღირებულება&lt;/td&gt;&#xA;&lt;td&gt;1.00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Description_en" ContentId="287" FieldDisplayName="Description_en" FieldId="2250" FieldName="Description_en" NativeValue="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width:500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (00:00 - 07:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.05₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;Calls to all local operators&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;Cost of price plan change&lt;/td&gt;&#xA;&lt;td&gt;1.00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;" PlainFieldType="VisualEdit" Value="&lt;table border=&quot;1&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;width:500px;&quot;&gt;&#xA;&lt;tbody&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;SMS&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.01₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (00:00 - 07:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.0025₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;1 MB (08:00 - 23:59)&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.05₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;Calls to all local operators&lt;/td&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;0.10₾&lt;/td&gt;&lt;/tr&gt;&#xA;&lt;tr&gt;&#xA;&lt;td style=&quot;text-align: justify;&quot;&gt;Cost of price plan change&lt;/td&gt;&#xA;&lt;td&gt;1.00₾&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortDescription" ContentId="287" FieldDisplayName="Моб. описание" FieldId="1303" FieldName="ShortDescription" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Purpose" ContentId="287" FieldDisplayName="Назначение" FieldId="1127" FieldName="Purpose" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="TitleForFamily" ContentId="287" FieldDisplayName="Название для семейства" FieldId="1287" FieldName="TitleForFamily" PlainFieldType="String" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="TitleForFamily_local" ContentId="287" FieldDisplayName="Название для семейства КЗ" FieldId="2251" FieldName="TitleForFamily_local" PlainFieldType="String" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="TitleForFamily_en" ContentId="287" FieldDisplayName="Название для семейства англ." FieldId="2252" FieldName="TitleForFamily_en" PlainFieldType="String" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="CommentForFamily" ContentId="287" FieldDisplayName="Комментарий для семейства" FieldId="1288" FieldName="CommentForFamily" PlainFieldType="Textbox" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="287" FieldDisplayName="OldSiteId" FieldId="1328" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <MultiArticleField x:Key="Categories" ContentId="287" FieldDisplayName="Категории" FieldId="1202" FieldName="Categories" SubContentId="304">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField x:Key="Family" ContentId="287" FieldDisplayName="Семейство" FieldId="1201" FieldName="Family" SubContentId="303">
+              <SingleArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </SingleArticleField.CustomProperties>
+            </SingleArticleField>
+            <SingleArticleField x:Key="MarketingSign" ContentId="287" FieldDisplayName="Маркетинговый признак" FieldId="1297" FieldName="MarketingSign" SubContentId="298">
+              <SingleArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </SingleArticleField.CustomProperties>
+            </SingleArticleField>
+            <MultiArticleField x:Key="ExtServices" ContentId="287" FieldDisplayName="Дополнительные сервисы" FieldId="1620" FieldName="ExtServices" SubContentId="355">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="Modifiers" ContentId="287" FieldDisplayName="Модификаторы" FieldId="1293" FieldName="Modifiers" SubContentId="300">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="Images" ContentId="287" FieldDisplayName="Картинки" FieldId="1450" FieldName="Images" SubContentId="342">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="PreOpenParamGroups" ContentId="287" FieldDisplayName="Предраскрытые группы параметров" FieldId="1289" FieldName="PreOpenParamGroups" SubContentId="296">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <Article x:Key="1886890" ContentDisplayName="Группы параметров продуктов" ContentId="296" ContentName="ProductParameterGroup" Created="2015-03-19T15:41:43.293" Id="1886890" IsPublished="True" Modified="2016-09-21T12:23:18.07" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="296" FieldDisplayName="Название" FieldId="1141" FieldName="Title" NativeValue="Сколько это стоит?" PlainFieldType="String" Value="Сколько это стоит?">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_local" ContentId="296" FieldDisplayName="Название_local" FieldId="2137" FieldName="Title_local" NativeValue="ფასი" PlainFieldType="String" Value="ფასი">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_en" ContentId="296" FieldDisplayName="Название (английский)" FieldId="2246" FieldName="Title_en" NativeValue="Price" PlainFieldType="String" Value="Price">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="SortOrder" ContentId="296" FieldDisplayName="Порядок" FieldId="1142" FieldName="SortOrder" PlainFieldType="Numeric" Value="5">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Int32>5</x:Int32>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Icon" ContentId="296" FieldDisplayName="Иконка" FieldId="1143" FieldName="Icon" PlainFieldType="Image" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="IsComparable" ContentId="296" FieldDisplayName="Участвует в сравнении" FieldId="1144" FieldName="IsComparable" PlainFieldType="Boolean" Value="1">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>1</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Legal" ContentId="296" FieldDisplayName="Лигал" FieldId="1145" FieldName="Legal" PlainFieldType="Textbox" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="TitleDative" ContentId="296" FieldDisplayName="Название (дательный падеж)" FieldId="1146" FieldName="TitleDative" PlainFieldType="String" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="GroupType" ContentId="296" FieldDisplayName="Тип Группы параметров" FieldId="1147" FieldName="GroupType" NativeValue="PriceGroup" PlainFieldType="StringEnum" Value="PriceGroup">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="PreOpen" ContentId="296" FieldDisplayName="PreOpen" FieldId="1167" FieldName="PreOpen" PlainFieldType="Boolean" Value="0">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>0</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="OldSiteId" ContentId="296" FieldDisplayName="OldSiteId" FieldId="1338" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                  </Article.Fields>
+                </Article>
+                <Article x:Key="2266716" ContentDisplayName="Группы параметров продуктов" ContentId="296" ContentName="ProductParameterGroup" Created="2016-09-10T15:47:25.197" Id="2266716" IsPublished="True" Modified="2016-09-21T12:21:46.257" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="296" FieldDisplayName="Название" FieldId="1141" FieldName="Title" NativeValue="Как подключить?" PlainFieldType="String" Value="Как подключить?">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_local" ContentId="296" FieldDisplayName="Название_local" FieldId="2137" FieldName="Title_local" NativeValue="აქტივაცია" PlainFieldType="String" Value="აქტივაცია">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_en" ContentId="296" FieldDisplayName="Название (английский)" FieldId="2246" FieldName="Title_en" NativeValue="How to activate?" PlainFieldType="String" Value="How to activate?">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="SortOrder" ContentId="296" FieldDisplayName="Порядок" FieldId="1142" FieldName="SortOrder" PlainFieldType="Numeric" Value="15">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Int32>15</x:Int32>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Icon" ContentId="296" FieldDisplayName="Иконка" FieldId="1143" FieldName="Icon" PlainFieldType="Image" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="IsComparable" ContentId="296" FieldDisplayName="Участвует в сравнении" FieldId="1144" FieldName="IsComparable" PlainFieldType="Boolean" Value="1">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>1</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Legal" ContentId="296" FieldDisplayName="Лигал" FieldId="1145" FieldName="Legal" PlainFieldType="Textbox" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="TitleDative" ContentId="296" FieldDisplayName="Название (дательный падеж)" FieldId="1146" FieldName="TitleDative" PlainFieldType="String" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="GroupType" ContentId="296" FieldDisplayName="Тип Группы параметров" FieldId="1147" FieldName="GroupType" NativeValue="PayGroup" PlainFieldType="StringEnum" Value="PayGroup">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="PreOpen" ContentId="296" FieldDisplayName="PreOpen" FieldId="1167" FieldName="PreOpen" PlainFieldType="Boolean" Value="0">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>0</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="OldSiteId" ContentId="296" FieldDisplayName="OldSiteId" FieldId="1338" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                  </Article.Fields>
+                </Article>
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="Usages" ContentId="287" FieldDisplayName="Варианты использования" FieldId="1655" FieldName="Usages" SubContentId="316">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <ExtensionArticleField SubContentId="{x:Null}" x:Key="ProductType" ContentId="287" FieldDisplayName="Тип продукта" FieldId="1134" FieldName="ProductType" Value="289">
+              <ExtensionArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </ExtensionArticleField.CustomProperties>
+              <ExtensionArticleField.Item>
+                <Article ContentDisplayName="Маркетинговые мобильные тарифы B2C" ContentId="289" ContentName="MarketingMobileTariff" Created="2016-09-21T11:53:41.207" Id="2268051" IsPublished="True" Modified="2016-09-21T15:17:38.74" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="PaymentSystem" ContentId="289" FieldDisplayName="Расчетная система" FieldId="1361" FieldName="PaymentSystem" NativeValue="Prepaid" PlainFieldType="StringEnum" Value="Prepaid">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="HtmlTitle" ContentId="289" FieldDisplayName="HTML заголовок" FieldId="1117" FieldName="HtmlTitle" PlainFieldType="String" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="SplitInternetDeviceCount" ContentId="289" FieldDisplayName="Количество устройств" FieldId="1439" FieldName="SplitInternetDeviceCount" PlainFieldType="Numeric" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <MultiArticleField x:Key="ProductFilters" ContentId="289" FieldDisplayName="Фильтры по продуктам" FieldId="1281" FieldName="ProductFilters" SubContentId="314">
+                      <MultiArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </MultiArticleField.CustomProperties>
+                      <MultiArticleField.Items>
+                        <Article x:Key="2338" ContentDisplayName="Фильтры по продуктам" ContentId="314" ContentName="ProductFilter" Created="2014-04-11T17:00:33.62" Id="2338" IsPublished="True" Modified="2016-09-12T14:48:28.403" PublishingMode="Publish" Status="Published" Visible="True">
+                          <Article.Fields>
+                            <PlainArticleField x:Key="Title" ContentId="314" FieldDisplayName="Название" FieldId="1238" FieldName="Title" NativeValue="Местные звонки" PlainFieldType="String" Value="Местные звонки">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="Title_local" ContentId="314" FieldDisplayName="Название local." FieldId="2253" FieldName="Title_local" NativeValue="ადგილობრივი ზარები" PlainFieldType="String" Value="ადგილობრივი ზარები">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="Title_en" ContentId="314" FieldDisplayName="Название англ." FieldId="2254" FieldName="Title_en" NativeValue="Local calls" PlainFieldType="String" Value="Local calls">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="Image" ContentId="314" FieldDisplayName="Картинка для фильтра" FieldId="1268" FieldName="Image" PlainFieldType="Image" Value="">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="SortOrder" ContentId="314" FieldDisplayName="Порядок" FieldId="1270" FieldName="SortOrder" PlainFieldType="Numeric" Value="1">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                              <PlainArticleField.NativeValue>
+                                <x:Int32>1</x:Int32>
+                              </PlainArticleField.NativeValue>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="Icon" ContentId="314" FieldDisplayName="Иконка" FieldId="1271" FieldName="Icon" PlainFieldType="Image" Value="">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="TitleForIcon" ContentId="314" FieldDisplayName="Подпись к иконке" FieldId="1272" FieldName="TitleForIcon" PlainFieldType="String" Value="">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="Alias" ContentId="314" FieldDisplayName="Alias" FieldId="1273" FieldName="Alias" NativeValue="localcalls" PlainFieldType="String" Value="localcalls">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="DefaultTariffTileIcon" ContentId="314" FieldDisplayName="Иконка для плитки тарифа по умолчанию" FieldId="1274" FieldName="DefaultTariffTileIcon" NativeValue="zagl_mob_phone.png" PlainFieldType="Image" Value="zagl_mob_phone.png">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="DefaultServiceTileIcon" ContentId="314" FieldDisplayName="Иконка для плитки услуги по умолчанию" FieldId="1275" FieldName="DefaultServiceTileIcon" NativeValue="zagl_usl_mob.png" PlainFieldType="Image" Value="zagl_usl_mob.png">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                            </PlainArticleField>
+                            <PlainArticleField x:Key="OldSiteId" ContentId="314" FieldDisplayName="OldSiteId" FieldId="1330" FieldName="OldSiteId" PlainFieldType="Numeric" Value="231146">
+                              <PlainArticleField.CustomProperties>
+                                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                              </PlainArticleField.CustomProperties>
+                              <PlainArticleField.NativeValue>
+                                <x:Int32>231146</x:Int32>
+                              </PlainArticleField.NativeValue>
+                            </PlainArticleField>
+                          </Article.Fields>
+                        </Article>
+                      </MultiArticleField.Items>
+                    </MultiArticleField>
+                    <SingleArticleField x:Key="OtherPaymentSystemTariff" ContentId="289" FieldDisplayName="Смежный тариф" FieldId="1456" FieldName="OtherPaymentSystemTariff" SubContentId="287">
+                      <SingleArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </SingleArticleField.CustomProperties>
+                    </SingleArticleField>
+                  </Article.Fields>
+                </Article>
+              </ExtensionArticleField.Item>
+            </ExtensionArticleField>
+            <MultiArticleField x:Key="Tabs" ContentId="287" FieldDisplayName="Использование вкладок" FieldId="1291" FieldName="Tabs" SubContentId="318">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="ProductUsages" ContentId="287" FieldDisplayName="Варианты использования по регионам" FieldId="1593" FieldName="ProductUsages" SubContentId="315">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <BackwardArticleField x:Key="UpSaleItems" ContentId="366" FieldDisplayName="UpSale B2B" FieldId="1657" FieldName="UpSaleItems" SubContentId="366">
+              <BackwardArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </BackwardArticleField.CustomProperties>
+              <BackwardArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </BackwardArticleField.Items>
+            </BackwardArticleField>
+          </Article.Fields>
+        </Article>
+      </SingleArticleField.Item>
+    </SingleArticleField>
+    <MultiArticleField x:Key="Regions" ContentId="288" FieldDisplayName="Регионы" FieldId="1228" FieldName="Regions" SubContentId="294">
+      <MultiArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </MultiArticleField.CustomProperties>
+      <MultiArticleField.Items>
+        <Article x:Key="2266369" ContentDisplayName="Регионы" ContentId="294" ContentName="Region" Created="2016-08-25T15:22:18.243" Id="2266369" IsPublished="True" Modified="2016-09-02T11:37:14.423" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="294" FieldDisplayName="Title" FieldId="1137" FieldName="Title" NativeValue="Тбилиси" PlainFieldType="String" Value="Тбилиси">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID0" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Alias" ContentId="294" FieldDisplayName="Alias" FieldId="1139" FieldName="Alias" NativeValue="tbilisi" PlainFieldType="String" Value="tbilisi">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID1" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="294" FieldDisplayName="OldSiteId" FieldId="1337" FieldName="OldSiteId" PlainFieldType="Numeric" Value="921805">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID2" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>921805</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <MultiArticleField x:Key="ExternalRegionMappings" ContentId="294" FieldDisplayName="Внешние системы регионов" FieldId="1602" FieldName="ExternalRegionMappings" SubContentId="350">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID3" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <Article x:Key="2266265" Archived="True" ContentDisplayName="Внешние системы регионов" ContentId="350" ContentName="ExternalRegionMapping" Created="2016-06-30T13:55:14.75" Id="2266265" IsPublished="True" Modified="2016-09-01T16:24:34.44" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="SystemName" ContentId="350" FieldDisplayName="Система" FieldId="1600" FieldName="SystemName" NativeValue="MarketCode" PlainFieldType="StringEnum" Value="MarketCode">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Value" ContentId="350" FieldDisplayName="Значение" FieldId="1603" FieldName="Value" NativeValue="TBL" PlainFieldType="String" Value="TBL">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                  </Article.Fields>
+                </Article>
+              </MultiArticleField.Items>
+            </MultiArticleField>
+          </Article.Fields>
+        </Article>
+        <Article x:Key="2266370" ContentDisplayName="Регионы" ContentId="294" ContentName="Region" Created="2016-08-25T15:22:59.397" Id="2266370" IsPublished="True" Modified="2016-09-02T11:37:40.283" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField CustomProperties="{x:Reference __ReferenceID0}" x:Key="Title" ContentId="294" FieldDisplayName="Title" FieldId="1137" FieldName="Title" NativeValue="Западная Грузия" PlainFieldType="String" Value="Западная Грузия" />
+            <PlainArticleField CustomProperties="{x:Reference __ReferenceID1}" x:Key="Alias" ContentId="294" FieldDisplayName="Alias" FieldId="1139" FieldName="Alias" NativeValue="west-ge" PlainFieldType="String" Value="west-ge" />
+            <PlainArticleField CustomProperties="{x:Reference __ReferenceID2}" x:Key="OldSiteId" ContentId="294" FieldDisplayName="OldSiteId" FieldId="1337" FieldName="OldSiteId" PlainFieldType="Numeric" Value="921810">
+              <PlainArticleField.NativeValue>
+                <x:Int32>921810</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID3}" x:Key="ExternalRegionMappings" ContentId="294" FieldDisplayName="Внешние системы регионов" FieldId="1602" FieldName="ExternalRegionMappings" SubContentId="350">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+          </Article.Fields>
+        </Article>
+        <Article x:Key="2266371" ContentDisplayName="Регионы" ContentId="294" ContentName="Region" Created="2016-08-25T15:23:17.87" Id="2266371" IsPublished="True" Modified="2016-09-02T11:37:26.903" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField CustomProperties="{x:Reference __ReferenceID0}" x:Key="Title" ContentId="294" FieldDisplayName="Title" FieldId="1137" FieldName="Title" NativeValue="Восточная Грузия" PlainFieldType="String" Value="Восточная Грузия" />
+            <PlainArticleField CustomProperties="{x:Reference __ReferenceID1}" x:Key="Alias" ContentId="294" FieldDisplayName="Alias" FieldId="1139" FieldName="Alias" NativeValue="east-ge" PlainFieldType="String" Value="east-ge" />
+            <PlainArticleField CustomProperties="{x:Reference __ReferenceID2}" x:Key="OldSiteId" ContentId="294" FieldDisplayName="OldSiteId" FieldId="1337" FieldName="OldSiteId" PlainFieldType="Numeric" Value="921811">
+              <PlainArticleField.NativeValue>
+                <x:Int32>921811</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID3}" x:Key="ExternalRegionMappings" ContentId="294" FieldDisplayName="Внешние системы регионов" FieldId="1602" FieldName="ExternalRegionMappings" SubContentId="350">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+          </Article.Fields>
+        </Article>
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <MultiArticleField x:Key="Parameters" ContentId="288" FieldDisplayName="Параметры продукта" FieldId="1193" FieldName="Parameters" SubContentId="291">
+      <MultiArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </MultiArticleField.CustomProperties>
+      <MultiArticleField.Items>
+        <Article x:Key="2268055" ContentDisplayName="Параметры продукта" ContentId="291" ContentName="ProductParameter" Created="2016-09-21T11:56:13.057" Id="2268055" IsPublished="True" Modified="2016-09-21T12:05:42.627" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="291" FieldDisplayName="Название" FieldId="1119" FieldName="Title" NativeValue="SMS" PlainFieldType="Textbox" Value="SMS">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_local" ContentId="291" FieldDisplayName="Название_local" FieldId="2134" FieldName="Title_local" NativeValue="SMS" PlainFieldType="Textbox" Value="SMS">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_en" ContentId="291" FieldDisplayName="Название_en" FieldId="2280" FieldName="Title_en" NativeValue="SMS" PlainFieldType="Textbox" Value="SMS">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="SortOrder" ContentId="291" FieldDisplayName="Порядок" FieldId="1171" FieldName="SortOrder" PlainFieldType="Numeric" Value="0">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>0</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="NumValue" ContentId="291" FieldDisplayName="Числовое значение" FieldId="1175" FieldName="NumValue" PlainFieldType="Numeric" Value="0,0100">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Decimal>0.0100</x:Decimal>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value" ContentId="291" FieldDisplayName="Текстовое значение" FieldId="1173" FieldName="Value" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_local" ContentId="291" FieldDisplayName="Текстовое значение_local" FieldId="2135" FieldName="Value_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_en" ContentId="291" FieldDisplayName="Текстовое значение_en" FieldId="2276" FieldName="Value_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal" ContentId="291" FieldDisplayName="Лигал" FieldId="1174" FieldName="Legal" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Icon" ContentId="291" FieldDisplayName="Иконка" FieldId="2071" FieldName="Icon" PlainFieldType="Image" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_local" ContentId="291" FieldDisplayName="Лигал_local" FieldId="2136" FieldName="Legal_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_en" ContentId="291" FieldDisplayName="Лигал_en" FieldId="2277" FieldName="Legal_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortTitle" ContentId="291" FieldDisplayName="Моб. название" FieldId="1300" FieldName="ShortTitle" PlainFieldType="Textbox" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortValue" ContentId="291" FieldDisplayName="Моб. текстовое значение" FieldId="1301" FieldName="ShortValue" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="291" FieldDisplayName="OldSiteId" FieldId="1362" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <SingleArticleField x:Key="BaseParameter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParameter" SubContentId="292">
+              <SingleArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID4" />
+              </SingleArticleField.CustomProperties>
+            </SingleArticleField>
+            <SingleArticleField x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" SubContentId="335">
+              <SingleArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID6" />
+              </SingleArticleField.CustomProperties>
+              <SingleArticleField.Item>
+                <Article x:Name="__ReferenceID5" ContentDisplayName="Тарифные зоны" ContentId="335" ContentName="TariffZone" Created="2014-04-16T16:42:54.43" Id="2468" IsPublished="True" Modified="2014-04-16T16:42:54.43" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="335" FieldDisplayName="Title" FieldId="1392" FieldName="Title" NativeValue="Домашний регион" PlainFieldType="String" Value="Домашний регион">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Alias" ContentId="335" FieldDisplayName="Alias" FieldId="1395" FieldName="Alias" NativeValue="HomeRegion" PlainFieldType="String" Value="HomeRegion">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                  </Article.Fields>
+                </Article>
+              </SingleArticleField.Item>
+            </SingleArticleField>
+            <SingleArticleField x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" SubContentId="336">
+              <SingleArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID7" />
+              </SingleArticleField.CustomProperties>
+            </SingleArticleField>
+            <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" SubContentId="339">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID8" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" SubContentId="293">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID9" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField x:Key="Group" ContentId="291" FieldDisplayName="Группа параметров" FieldId="1170" FieldName="Group" SubContentId="296">
+              <SingleArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID11" />
+              </SingleArticleField.CustomProperties>
+              <SingleArticleField.Item>
+                <Article x:Name="__ReferenceID10" ContentDisplayName="Группы параметров продуктов" ContentId="296" ContentName="ProductParameterGroup" Created="2015-03-19T15:41:43.293" Id="1886890" IsPublished="True" Modified="2016-09-21T12:23:18.07" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="296" FieldDisplayName="Название" FieldId="1141" FieldName="Title" NativeValue="Сколько это стоит?" PlainFieldType="String" Value="Сколько это стоит?">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_local" ContentId="296" FieldDisplayName="Название_local" FieldId="2137" FieldName="Title_local" NativeValue="ფასი" PlainFieldType="String" Value="ფასი">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_en" ContentId="296" FieldDisplayName="Название (английский)" FieldId="2246" FieldName="Title_en" NativeValue="Price" PlainFieldType="String" Value="Price">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="SortOrder" ContentId="296" FieldDisplayName="Порядок" FieldId="1142" FieldName="SortOrder" PlainFieldType="Numeric" Value="5">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Int32>5</x:Int32>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Icon" ContentId="296" FieldDisplayName="Иконка" FieldId="1143" FieldName="Icon" PlainFieldType="Image" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="IsComparable" ContentId="296" FieldDisplayName="Участвует в сравнении" FieldId="1144" FieldName="IsComparable" PlainFieldType="Boolean" Value="1">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>1</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Legal" ContentId="296" FieldDisplayName="Лигал" FieldId="1145" FieldName="Legal" PlainFieldType="Textbox" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="TitleDative" ContentId="296" FieldDisplayName="Название (дательный падеж)" FieldId="1146" FieldName="TitleDative" PlainFieldType="String" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="GroupType" ContentId="296" FieldDisplayName="Тип Группы параметров" FieldId="1147" FieldName="GroupType" NativeValue="PriceGroup" PlainFieldType="StringEnum" Value="PriceGroup">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="PreOpen" ContentId="296" FieldDisplayName="PreOpen" FieldId="1167" FieldName="PreOpen" PlainFieldType="Boolean" Value="0">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>0</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="OldSiteId" ContentId="296" FieldDisplayName="OldSiteId" FieldId="1338" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <MultiArticleField x:Key="Modifiers" ContentId="296" FieldDisplayName="Модификаторы" FieldId="1787" FieldName="Modifiers" SubContentId="382">
+                      <MultiArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID15" />
+                      </MultiArticleField.CustomProperties>
+                      <MultiArticleField.Items>
+                        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                      </MultiArticleField.Items>
+                    </MultiArticleField>
+                  </Article.Fields>
+                </Article>
+              </SingleArticleField.Item>
+            </SingleArticleField>
+            <SingleArticleField x:Key="Unit" ContentId="291" FieldDisplayName="Единица измерения" FieldId="1178" FieldName="Unit" SubContentId="302">
+              <SingleArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID13" />
+              </SingleArticleField.CustomProperties>
+              <SingleArticleField.Item>
+                <Article x:Name="__ReferenceID12" ContentDisplayName="Единицы измерения" ContentId="302" ContentName="Unit" Created="2016-09-07T10:10:33.143" Id="2266540" IsPublished="True" Modified="2016-09-16T13:39:34.88" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="302" FieldDisplayName="Title" FieldId="1176" FieldName="Title" NativeValue="Лари" PlainFieldType="String" Value="Лари">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_local" ContentId="302" FieldDisplayName="Title_local" FieldId="2138" FieldName="Title_local" NativeValue="ლარი" PlainFieldType="String" Value="ლარი">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_en" ContentId="302" FieldDisplayName="Title_en" FieldId="2244" FieldName="Title_en" NativeValue="GEL" PlainFieldType="String" Value="GEL">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Display" ContentId="302" FieldDisplayName="Display" FieldId="1177" FieldName="Display" NativeValue="&lt;i class=&quot;lari-sign&quot;&gt;&lt;/i&gt;" PlainFieldType="String" Value="&lt;i class=&quot;lari-sign&quot;&gt;&lt;/i&gt;">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Display_local" ContentId="302" FieldDisplayName="Display_local" FieldId="2139" FieldName="Display_local" NativeValue="&lt;i class=&quot;lari-sign&quot;&gt;&lt;/i&gt;" PlainFieldType="String" Value="&lt;i class=&quot;lari-sign&quot;&gt;&lt;/i&gt;">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Display_en" ContentId="302" FieldDisplayName="Display_en" FieldId="2245" FieldName="Display_en" NativeValue="&lt;i class=&quot;lari-sign&quot;&gt;&lt;/i&gt;" PlainFieldType="String" Value="&lt;i class=&quot;lari-sign&quot;&gt;&lt;/i&gt;">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="ShortDisplay" ContentId="302" FieldDisplayName="ShortDisplay" FieldId="1630" FieldName="ShortDisplay" PlainFieldType="String" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="OldSiteId" ContentId="302" FieldDisplayName="OldSiteId" FieldId="1346" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                  </Article.Fields>
+                </Article>
+              </SingleArticleField.Item>
+            </SingleArticleField>
+            <SingleArticleField x:Key="MatrixParameter" ContentId="291" FieldDisplayName="Параметр матрицы совместимости" FieldId="1373" FieldName="MatrixParameter" SubContentId="330">
+              <SingleArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" x:Name="__ReferenceID14" />
+              </SingleArticleField.CustomProperties>
+            </SingleArticleField>
+          </Article.Fields>
+        </Article>
+        <Article x:Key="2268056" ContentDisplayName="Параметры продукта" ContentId="291" ContentName="ProductParameter" Created="2016-09-21T11:57:55.287" Id="2268056" IsPublished="True" Modified="2016-09-21T12:09:27.223" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="291" FieldDisplayName="Название" FieldId="1119" FieldName="Title" NativeValue="1 MB (00:00 - 07:59)" PlainFieldType="Textbox" Value="1 MB (00:00 - 07:59)">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_local" ContentId="291" FieldDisplayName="Название_local" FieldId="2134" FieldName="Title_local" NativeValue="1 MB (00:00 - 07:59)" PlainFieldType="Textbox" Value="1 MB (00:00 - 07:59)">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_en" ContentId="291" FieldDisplayName="Название_en" FieldId="2280" FieldName="Title_en" NativeValue="1 MB (00:00 - 07:59)" PlainFieldType="Textbox" Value="1 MB (00:00 - 07:59)">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="SortOrder" ContentId="291" FieldDisplayName="Порядок" FieldId="1171" FieldName="SortOrder" PlainFieldType="Numeric" Value="0">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>0</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="NumValue" ContentId="291" FieldDisplayName="Числовое значение" FieldId="1175" FieldName="NumValue" PlainFieldType="Numeric" Value="0,0000">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Decimal>0.0000</x:Decimal>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value" ContentId="291" FieldDisplayName="Текстовое значение" FieldId="1173" FieldName="Value" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_local" ContentId="291" FieldDisplayName="Текстовое значение_local" FieldId="2135" FieldName="Value_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_en" ContentId="291" FieldDisplayName="Текстовое значение_en" FieldId="2276" FieldName="Value_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal" ContentId="291" FieldDisplayName="Лигал" FieldId="1174" FieldName="Legal" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Icon" ContentId="291" FieldDisplayName="Иконка" FieldId="2071" FieldName="Icon" PlainFieldType="Image" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_local" ContentId="291" FieldDisplayName="Лигал_local" FieldId="2136" FieldName="Legal_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_en" ContentId="291" FieldDisplayName="Лигал_en" FieldId="2277" FieldName="Legal_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortTitle" ContentId="291" FieldDisplayName="Моб. название" FieldId="1300" FieldName="ShortTitle" PlainFieldType="Textbox" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortValue" ContentId="291" FieldDisplayName="Моб. текстовое значение" FieldId="1301" FieldName="ShortValue" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="291" FieldDisplayName="OldSiteId" FieldId="1362" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID4}" x:Key="BaseParameter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParameter" SubContentId="292" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID6}" Item="{x:Reference __ReferenceID5}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" SubContentId="335" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID7}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" SubContentId="336" />
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID8}" x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" SubContentId="339">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID9}" x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" SubContentId="293">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID11}" Item="{x:Reference __ReferenceID10}" x:Key="Group" ContentId="291" FieldDisplayName="Группа параметров" FieldId="1170" FieldName="Group" SubContentId="296" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID13}" Item="{x:Reference __ReferenceID12}" x:Key="Unit" ContentId="291" FieldDisplayName="Единица измерения" FieldId="1178" FieldName="Unit" SubContentId="302" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID14}" x:Key="MatrixParameter" ContentId="291" FieldDisplayName="Параметр матрицы совместимости" FieldId="1373" FieldName="MatrixParameter" SubContentId="330" />
+          </Article.Fields>
+        </Article>
+        <Article x:Key="2268057" ContentDisplayName="Параметры продукта" ContentId="291" ContentName="ProductParameter" Created="2016-09-21T11:58:56.127" Id="2268057" IsPublished="True" Modified="2016-09-21T13:10:44.853" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="291" FieldDisplayName="Название" FieldId="1119" FieldName="Title" NativeValue="1 MB (08:00 - 23:59)" PlainFieldType="Textbox" Value="1 MB (08:00 - 23:59)">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_local" ContentId="291" FieldDisplayName="Название_local" FieldId="2134" FieldName="Title_local" NativeValue="1 MB (08:00 - 23:59)" PlainFieldType="Textbox" Value="1 MB (08:00 - 23:59)">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_en" ContentId="291" FieldDisplayName="Название_en" FieldId="2280" FieldName="Title_en" NativeValue="1 MB (08:00 - 23:59)" PlainFieldType="Textbox" Value="1 MB (08:00 - 23:59)">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="SortOrder" ContentId="291" FieldDisplayName="Порядок" FieldId="1171" FieldName="SortOrder" PlainFieldType="Numeric" Value="0">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>0</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="NumValue" ContentId="291" FieldDisplayName="Числовое значение" FieldId="1175" FieldName="NumValue" PlainFieldType="Numeric" Value="0,0500">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Decimal>0.0500</x:Decimal>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value" ContentId="291" FieldDisplayName="Текстовое значение" FieldId="1173" FieldName="Value" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_local" ContentId="291" FieldDisplayName="Текстовое значение_local" FieldId="2135" FieldName="Value_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_en" ContentId="291" FieldDisplayName="Текстовое значение_en" FieldId="2276" FieldName="Value_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal" ContentId="291" FieldDisplayName="Лигал" FieldId="1174" FieldName="Legal" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Icon" ContentId="291" FieldDisplayName="Иконка" FieldId="2071" FieldName="Icon" PlainFieldType="Image" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_local" ContentId="291" FieldDisplayName="Лигал_local" FieldId="2136" FieldName="Legal_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_en" ContentId="291" FieldDisplayName="Лигал_en" FieldId="2277" FieldName="Legal_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortTitle" ContentId="291" FieldDisplayName="Моб. название" FieldId="1300" FieldName="ShortTitle" PlainFieldType="Textbox" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortValue" ContentId="291" FieldDisplayName="Моб. текстовое значение" FieldId="1301" FieldName="ShortValue" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="291" FieldDisplayName="OldSiteId" FieldId="1362" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID4}" x:Key="BaseParameter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParameter" SubContentId="292" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID6}" Item="{x:Reference __ReferenceID5}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" SubContentId="335" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID7}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" SubContentId="336" />
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID8}" x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" SubContentId="339">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID9}" x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" SubContentId="293">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID11}" Item="{x:Reference __ReferenceID10}" x:Key="Group" ContentId="291" FieldDisplayName="Группа параметров" FieldId="1170" FieldName="Group" SubContentId="296" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID13}" Item="{x:Reference __ReferenceID12}" x:Key="Unit" ContentId="291" FieldDisplayName="Единица измерения" FieldId="1178" FieldName="Unit" SubContentId="302" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID14}" x:Key="MatrixParameter" ContentId="291" FieldDisplayName="Параметр матрицы совместимости" FieldId="1373" FieldName="MatrixParameter" SubContentId="330" />
+          </Article.Fields>
+        </Article>
+        <Article x:Key="2268058" ContentDisplayName="Параметры продукта" ContentId="291" ContentName="ProductParameter" Created="2016-09-21T12:00:25.947" Id="2268058" IsPublished="True" Modified="2016-09-21T12:00:25.947" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="291" FieldDisplayName="Название" FieldId="1119" FieldName="Title" NativeValue="Звонки на все номера местных операторов" PlainFieldType="Textbox" Value="Звонки на все номера местных операторов">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_local" ContentId="291" FieldDisplayName="Название_local" FieldId="2134" FieldName="Title_local" NativeValue="ზარი ყველა ადგილობრივ ქსელთან" PlainFieldType="Textbox" Value="ზარი ყველა ადგილობრივ ქსელთან">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_en" ContentId="291" FieldDisplayName="Название_en" FieldId="2280" FieldName="Title_en" NativeValue="Calls to all local operators" PlainFieldType="Textbox" Value="Calls to all local operators">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="SortOrder" ContentId="291" FieldDisplayName="Порядок" FieldId="1171" FieldName="SortOrder" PlainFieldType="Numeric" Value="0">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>0</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="NumValue" ContentId="291" FieldDisplayName="Числовое значение" FieldId="1175" FieldName="NumValue" PlainFieldType="Numeric" Value="0,1000">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Decimal>0.1000</x:Decimal>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value" ContentId="291" FieldDisplayName="Текстовое значение" FieldId="1173" FieldName="Value" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_local" ContentId="291" FieldDisplayName="Текстовое значение_local" FieldId="2135" FieldName="Value_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_en" ContentId="291" FieldDisplayName="Текстовое значение_en" FieldId="2276" FieldName="Value_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal" ContentId="291" FieldDisplayName="Лигал" FieldId="1174" FieldName="Legal" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Icon" ContentId="291" FieldDisplayName="Иконка" FieldId="2071" FieldName="Icon" PlainFieldType="Image" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_local" ContentId="291" FieldDisplayName="Лигал_local" FieldId="2136" FieldName="Legal_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_en" ContentId="291" FieldDisplayName="Лигал_en" FieldId="2277" FieldName="Legal_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortTitle" ContentId="291" FieldDisplayName="Моб. название" FieldId="1300" FieldName="ShortTitle" PlainFieldType="Textbox" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortValue" ContentId="291" FieldDisplayName="Моб. текстовое значение" FieldId="1301" FieldName="ShortValue" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="291" FieldDisplayName="OldSiteId" FieldId="1362" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID4}" x:Key="BaseParameter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParameter" SubContentId="292" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID6}" Item="{x:Reference __ReferenceID5}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" SubContentId="335" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID7}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" SubContentId="336" />
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID8}" x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" SubContentId="339">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID9}" x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" SubContentId="293">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID11}" Item="{x:Reference __ReferenceID10}" x:Key="Group" ContentId="291" FieldDisplayName="Группа параметров" FieldId="1170" FieldName="Group" SubContentId="296" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID13}" Item="{x:Reference __ReferenceID12}" x:Key="Unit" ContentId="291" FieldDisplayName="Единица измерения" FieldId="1178" FieldName="Unit" SubContentId="302" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID14}" x:Key="MatrixParameter" ContentId="291" FieldDisplayName="Параметр матрицы совместимости" FieldId="1373" FieldName="MatrixParameter" SubContentId="330" />
+          </Article.Fields>
+        </Article>
+        <Article x:Key="2268059" ContentDisplayName="Параметры продукта" ContentId="291" ContentName="ProductParameter" Created="2016-09-21T12:01:29.397" Id="2268059" IsPublished="True" Modified="2016-09-21T13:07:07.087" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="291" FieldDisplayName="Название" FieldId="1119" FieldName="Title" NativeValue="Стоимость перехода на тарифный план" PlainFieldType="Textbox" Value="Стоимость перехода на тарифный план">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_local" ContentId="291" FieldDisplayName="Название_local" FieldId="2134" FieldName="Title_local" NativeValue="სატარიფო გეგმაზე გადასვლის ღირებულება" PlainFieldType="Textbox" Value="სატარიფო გეგმაზე გადასვლის ღირებულება">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_en" ContentId="291" FieldDisplayName="Название_en" FieldId="2280" FieldName="Title_en" NativeValue="Cost of price plan change" PlainFieldType="Textbox" Value="Cost of price plan change">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="SortOrder" ContentId="291" FieldDisplayName="Порядок" FieldId="1171" FieldName="SortOrder" PlainFieldType="Numeric" Value="7">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>7</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="NumValue" ContentId="291" FieldDisplayName="Числовое значение" FieldId="1175" FieldName="NumValue" PlainFieldType="Numeric" Value="1,0000">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Decimal>1.0000</x:Decimal>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value" ContentId="291" FieldDisplayName="Текстовое значение" FieldId="1173" FieldName="Value" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_local" ContentId="291" FieldDisplayName="Текстовое значение_local" FieldId="2135" FieldName="Value_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_en" ContentId="291" FieldDisplayName="Текстовое значение_en" FieldId="2276" FieldName="Value_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal" ContentId="291" FieldDisplayName="Лигал" FieldId="1174" FieldName="Legal" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Icon" ContentId="291" FieldDisplayName="Иконка" FieldId="2071" FieldName="Icon" PlainFieldType="Image" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_local" ContentId="291" FieldDisplayName="Лигал_local" FieldId="2136" FieldName="Legal_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_en" ContentId="291" FieldDisplayName="Лигал_en" FieldId="2277" FieldName="Legal_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortTitle" ContentId="291" FieldDisplayName="Моб. название" FieldId="1300" FieldName="ShortTitle" PlainFieldType="Textbox" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortValue" ContentId="291" FieldDisplayName="Моб. текстовое значение" FieldId="1301" FieldName="ShortValue" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="291" FieldDisplayName="OldSiteId" FieldId="1362" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID4}" x:Key="BaseParameter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParameter" SubContentId="292" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID6}" Item="{x:Reference __ReferenceID5}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" SubContentId="335" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID7}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" SubContentId="336" />
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID8}" x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" SubContentId="339">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID9}" x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" SubContentId="293">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID11}" Item="{x:Reference __ReferenceID10}" x:Key="Group" ContentId="291" FieldDisplayName="Группа параметров" FieldId="1170" FieldName="Group" SubContentId="296" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID13}" Item="{x:Reference __ReferenceID12}" x:Key="Unit" ContentId="291" FieldDisplayName="Единица измерения" FieldId="1178" FieldName="Unit" SubContentId="302" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID14}" x:Key="MatrixParameter" ContentId="291" FieldDisplayName="Параметр матрицы совместимости" FieldId="1373" FieldName="MatrixParameter" SubContentId="330" />
+          </Article.Fields>
+        </Article>
+        <Article x:Key="2268060" ContentDisplayName="Параметры продукта" ContentId="291" ContentName="ProductParameter" Created="2016-09-21T12:03:54.28" Id="2268060" IsPublished="True" Modified="2016-09-21T12:51:22.177" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="291" FieldDisplayName="Название" FieldId="1119" FieldName="Title" NativeValue="Активация" PlainFieldType="Textbox" Value="Активация">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_local" ContentId="291" FieldDisplayName="Название_local" FieldId="2134" FieldName="Title_local" NativeValue="აქტივაცია" PlainFieldType="Textbox" Value="აქტივაცია">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_en" ContentId="291" FieldDisplayName="Название_en" FieldId="2280" FieldName="Title_en" NativeValue="Activation" PlainFieldType="Textbox" Value="Activation">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="SortOrder" ContentId="291" FieldDisplayName="Порядок" FieldId="1171" FieldName="SortOrder" PlainFieldType="Numeric" Value="0">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>0</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="NumValue" ContentId="291" FieldDisplayName="Числовое значение" FieldId="1175" FieldName="NumValue" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value" ContentId="291" FieldDisplayName="Текстовое значение" FieldId="1173" FieldName="Value" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_local" ContentId="291" FieldDisplayName="Текстовое значение_local" FieldId="2135" FieldName="Value_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_en" ContentId="291" FieldDisplayName="Текстовое значение_en" FieldId="2276" FieldName="Value_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal" ContentId="291" FieldDisplayName="Лигал" FieldId="1174" FieldName="Legal" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Icon" ContentId="291" FieldDisplayName="Иконка" FieldId="2071" FieldName="Icon" PlainFieldType="Image" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_local" ContentId="291" FieldDisplayName="Лигал_local" FieldId="2136" FieldName="Legal_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_en" ContentId="291" FieldDisplayName="Лигал_en" FieldId="2277" FieldName="Legal_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortTitle" ContentId="291" FieldDisplayName="Моб. название" FieldId="1300" FieldName="ShortTitle" PlainFieldType="Textbox" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortValue" ContentId="291" FieldDisplayName="Моб. текстовое значение" FieldId="1301" FieldName="ShortValue" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="291" FieldDisplayName="OldSiteId" FieldId="1362" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID4}" x:Key="BaseParameter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParameter" SubContentId="292">
+              <SingleArticleField.Item>
+                <Article ContentDisplayName="Базовые параметры продукта" ContentId="292" ContentName="BaseProductParameter" Created="2014-04-07T20:51:56.363" Id="2233" IsPublished="True" Modified="2015-03-11T10:59:08.423" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="292" FieldDisplayName="Title" FieldId="1120" FieldName="Title" NativeValue="Биномер для перехода" PlainFieldType="String" Value="Биномер для перехода">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Alias" ContentId="292" FieldDisplayName="Alias" FieldId="1122" FieldName="Alias" NativeValue="BeeNumber" PlainFieldType="String" Value="BeeNumber">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                  </Article.Fields>
+                </Article>
+              </SingleArticleField.Item>
+            </SingleArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID6}" Item="{x:Reference __ReferenceID5}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" SubContentId="335" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID7}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" SubContentId="336" />
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID8}" x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" SubContentId="339">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID9}" x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" SubContentId="293">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID11}" x:Key="Group" ContentId="291" FieldDisplayName="Группа параметров" FieldId="1170" FieldName="Group" SubContentId="296">
+              <SingleArticleField.Item>
+                <Article x:Name="__ReferenceID16" ContentDisplayName="Группы параметров продуктов" ContentId="296" ContentName="ProductParameterGroup" Created="2016-09-10T15:47:25.197" Id="2266716" IsPublished="True" Modified="2016-09-21T12:21:46.257" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="296" FieldDisplayName="Название" FieldId="1141" FieldName="Title" NativeValue="Как подключить?" PlainFieldType="String" Value="Как подключить?">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_local" ContentId="296" FieldDisplayName="Название_local" FieldId="2137" FieldName="Title_local" NativeValue="აქტივაცია" PlainFieldType="String" Value="აქტივაცია">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_en" ContentId="296" FieldDisplayName="Название (английский)" FieldId="2246" FieldName="Title_en" NativeValue="How to activate?" PlainFieldType="String" Value="How to activate?">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="SortOrder" ContentId="296" FieldDisplayName="Порядок" FieldId="1142" FieldName="SortOrder" PlainFieldType="Numeric" Value="15">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Int32>15</x:Int32>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Icon" ContentId="296" FieldDisplayName="Иконка" FieldId="1143" FieldName="Icon" PlainFieldType="Image" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="IsComparable" ContentId="296" FieldDisplayName="Участвует в сравнении" FieldId="1144" FieldName="IsComparable" PlainFieldType="Boolean" Value="1">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>1</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Legal" ContentId="296" FieldDisplayName="Лигал" FieldId="1145" FieldName="Legal" PlainFieldType="Textbox" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="TitleDative" ContentId="296" FieldDisplayName="Название (дательный падеж)" FieldId="1146" FieldName="TitleDative" PlainFieldType="String" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="GroupType" ContentId="296" FieldDisplayName="Тип Группы параметров" FieldId="1147" FieldName="GroupType" NativeValue="PayGroup" PlainFieldType="StringEnum" Value="PayGroup">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="PreOpen" ContentId="296" FieldDisplayName="PreOpen" FieldId="1167" FieldName="PreOpen" PlainFieldType="Boolean" Value="0">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>0</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="OldSiteId" ContentId="296" FieldDisplayName="OldSiteId" FieldId="1338" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <MultiArticleField CustomProperties="{x:Reference __ReferenceID15}" x:Key="Modifiers" ContentId="296" FieldDisplayName="Модификаторы" FieldId="1787" FieldName="Modifiers" SubContentId="382">
+                      <MultiArticleField.Items>
+                        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                      </MultiArticleField.Items>
+                    </MultiArticleField>
+                  </Article.Fields>
+                </Article>
+              </SingleArticleField.Item>
+            </SingleArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID13}" x:Key="Unit" ContentId="291" FieldDisplayName="Единица измерения" FieldId="1178" FieldName="Unit" SubContentId="302" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID14}" x:Key="MatrixParameter" ContentId="291" FieldDisplayName="Параметр матрицы совместимости" FieldId="1373" FieldName="MatrixParameter" SubContentId="330" />
+          </Article.Fields>
+        </Article>
+        <Article x:Key="2268061" ContentDisplayName="Параметры продукта" ContentId="291" ContentName="ProductParameter" Created="2016-09-21T12:05:07.343" Id="2268061" IsPublished="True" Modified="2016-09-21T12:05:07.343" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="291" FieldDisplayName="Название" FieldId="1119" FieldName="Title" NativeValue="USSD" PlainFieldType="Textbox" Value="USSD">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_local" ContentId="291" FieldDisplayName="Название_local" FieldId="2134" FieldName="Title_local" NativeValue="USSD" PlainFieldType="Textbox" Value="USSD">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_en" ContentId="291" FieldDisplayName="Название_en" FieldId="2280" FieldName="Title_en" NativeValue="USSD" PlainFieldType="Textbox" Value="USSD">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="SortOrder" ContentId="291" FieldDisplayName="Порядок" FieldId="1171" FieldName="SortOrder" PlainFieldType="Numeric" Value="0">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>0</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="NumValue" ContentId="291" FieldDisplayName="Числовое значение" FieldId="1175" FieldName="NumValue" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value" ContentId="291" FieldDisplayName="Текстовое значение" FieldId="1173" FieldName="Value" NativeValue="*150*21#" PlainFieldType="VisualEdit" Value="*150*21#">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_local" ContentId="291" FieldDisplayName="Текстовое значение_local" FieldId="2135" FieldName="Value_local" NativeValue="&lt;p&gt;*150*21#&lt;/p&gt;" PlainFieldType="VisualEdit" Value="&lt;p&gt;*150*21#&lt;/p&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_en" ContentId="291" FieldDisplayName="Текстовое значение_en" FieldId="2276" FieldName="Value_en" NativeValue="&lt;p&gt;*150*21#&lt;/p&gt;" PlainFieldType="VisualEdit" Value="&lt;p&gt;*150*21#&lt;/p&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal" ContentId="291" FieldDisplayName="Лигал" FieldId="1174" FieldName="Legal" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Icon" ContentId="291" FieldDisplayName="Иконка" FieldId="2071" FieldName="Icon" PlainFieldType="Image" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_local" ContentId="291" FieldDisplayName="Лигал_local" FieldId="2136" FieldName="Legal_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_en" ContentId="291" FieldDisplayName="Лигал_en" FieldId="2277" FieldName="Legal_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortTitle" ContentId="291" FieldDisplayName="Моб. название" FieldId="1300" FieldName="ShortTitle" PlainFieldType="Textbox" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortValue" ContentId="291" FieldDisplayName="Моб. текстовое значение" FieldId="1301" FieldName="ShortValue" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="291" FieldDisplayName="OldSiteId" FieldId="1362" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID4}" x:Key="BaseParameter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParameter" SubContentId="292">
+              <SingleArticleField.Item>
+                <Article x:Name="__ReferenceID17" ContentDisplayName="Базовые параметры продукта" ContentId="292" ContentName="BaseProductParameter" Created="2014-04-08T09:28:11.23" Id="2237" IsPublished="True" Modified="2016-09-08T12:00:43.48" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="292" FieldDisplayName="Title" FieldId="1120" FieldName="Title" NativeValue="USSD для перехода" PlainFieldType="String" Value="USSD для перехода">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Alias" ContentId="292" FieldDisplayName="Alias" FieldId="1122" FieldName="Alias" NativeValue="USSD" PlainFieldType="String" Value="USSD">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                  </Article.Fields>
+                </Article>
+              </SingleArticleField.Item>
+            </SingleArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID6}" Item="{x:Reference __ReferenceID5}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" SubContentId="335" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID7}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" SubContentId="336" />
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID8}" x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" SubContentId="339">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID9}" x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" SubContentId="293">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID11}" Item="{x:Reference __ReferenceID16}" x:Key="Group" ContentId="291" FieldDisplayName="Группа параметров" FieldId="1170" FieldName="Group" SubContentId="296" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID13}" x:Key="Unit" ContentId="291" FieldDisplayName="Единица измерения" FieldId="1178" FieldName="Unit" SubContentId="302" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID14}" x:Key="MatrixParameter" ContentId="291" FieldDisplayName="Параметр матрицы совместимости" FieldId="1373" FieldName="MatrixParameter" SubContentId="330" />
+          </Article.Fields>
+        </Article>
+        <Article x:Key="2268133" ContentDisplayName="Параметры продукта" ContentId="291" ContentName="ProductParameter" Created="2016-09-21T14:26:43.983" Id="2268133" IsPublished="True" Modified="2016-09-21T15:52:58.55" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="Title" ContentId="291" FieldDisplayName="Название" FieldId="1119" FieldName="Title" NativeValue="Команда для перехода" PlainFieldType="Textbox" Value="Команда для перехода">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_local" ContentId="291" FieldDisplayName="Название_local" FieldId="2134" FieldName="Title_local" NativeValue="აქტივაცია" PlainFieldType="Textbox" Value="აქტივაცია">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Title_en" ContentId="291" FieldDisplayName="Название_en" FieldId="2280" FieldName="Title_en" NativeValue="Activation" PlainFieldType="Textbox" Value="Activation">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="SortOrder" ContentId="291" FieldDisplayName="Порядок" FieldId="1171" FieldName="SortOrder" PlainFieldType="Numeric" Value="0">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+              <PlainArticleField.NativeValue>
+                <x:Int32>0</x:Int32>
+              </PlainArticleField.NativeValue>
+            </PlainArticleField>
+            <PlainArticleField x:Key="NumValue" ContentId="291" FieldDisplayName="Числовое значение" FieldId="1175" FieldName="NumValue" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value" ContentId="291" FieldDisplayName="Текстовое значение" FieldId="1173" FieldName="Value" NativeValue="&lt;span class=&quot;ussd&quot;&gt;*150*19#OK&lt;/span&gt;" PlainFieldType="VisualEdit" Value="&lt;span class=&quot;ussd&quot;&gt;*150*19#OK&lt;/span&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_local" ContentId="291" FieldDisplayName="Текстовое значение_local" FieldId="2135" FieldName="Value_local" NativeValue="&lt;p&gt;&lt;span class=&quot;ussd&quot;&gt;*150*19#OK&lt;/span&gt;&lt;/p&gt;" PlainFieldType="VisualEdit" Value="&lt;p&gt;&lt;span class=&quot;ussd&quot;&gt;*150*19#OK&lt;/span&gt;&lt;/p&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Value_en" ContentId="291" FieldDisplayName="Текстовое значение_en" FieldId="2276" FieldName="Value_en" NativeValue="&lt;p&gt;&lt;span class=&quot;ussd&quot;&gt;*150*19#OK&lt;/span&gt;&lt;/p&gt;" PlainFieldType="VisualEdit" Value="&lt;p&gt;&lt;span class=&quot;ussd&quot;&gt;*150*19#OK&lt;/span&gt;&lt;/p&gt;">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal" ContentId="291" FieldDisplayName="Лигал" FieldId="1174" FieldName="Legal" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Icon" ContentId="291" FieldDisplayName="Иконка" FieldId="2071" FieldName="Icon" PlainFieldType="Image" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_local" ContentId="291" FieldDisplayName="Лигал_local" FieldId="2136" FieldName="Legal_local" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="Legal_en" ContentId="291" FieldDisplayName="Лигал_en" FieldId="2277" FieldName="Legal_en" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortTitle" ContentId="291" FieldDisplayName="Моб. название" FieldId="1300" FieldName="ShortTitle" PlainFieldType="Textbox" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="ShortValue" ContentId="291" FieldDisplayName="Моб. текстовое значение" FieldId="1301" FieldName="ShortValue" PlainFieldType="VisualEdit" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <PlainArticleField x:Key="OldSiteId" ContentId="291" FieldDisplayName="OldSiteId" FieldId="1362" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID4}" Item="{x:Reference __ReferenceID17}" x:Key="BaseParameter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParameter" SubContentId="292" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID6}" Item="{x:Reference __ReferenceID5}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" SubContentId="335" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID7}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" SubContentId="336" />
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID8}" x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" SubContentId="339">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField CustomProperties="{x:Reference __ReferenceID9}" x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" SubContentId="293">
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID11}" x:Key="Group" ContentId="291" FieldDisplayName="Группа параметров" FieldId="1170" FieldName="Group" SubContentId="296">
+              <SingleArticleField.Item>
+                <Article ContentDisplayName="Группы параметров продуктов" ContentId="296" ContentName="ProductParameterGroup" Created="2015-02-04T16:53:49.193" Id="1776703" IsPublished="True" Modified="2016-09-21T16:02:05.927" PublishingMode="Publish" Status="Published" Visible="True">
+                  <Article.Fields>
+                    <PlainArticleField x:Key="Title" ContentId="296" FieldDisplayName="Название" FieldId="1141" FieldName="Title" NativeValue="Как подключить тариф?" PlainFieldType="String" Value="Как подключить тариф?">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_local" ContentId="296" FieldDisplayName="Название_local" FieldId="2137" FieldName="Title_local" NativeValue="აქტივაცია" PlainFieldType="String" Value="აქტივაცია">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Title_en" ContentId="296" FieldDisplayName="Название (английский)" FieldId="2246" FieldName="Title_en" NativeValue="How to activate" PlainFieldType="String" Value="How to activate">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="SortOrder" ContentId="296" FieldDisplayName="Порядок" FieldId="1142" FieldName="SortOrder" PlainFieldType="Numeric" Value="2">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Int32>2</x:Int32>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Icon" ContentId="296" FieldDisplayName="Иконка" FieldId="1143" FieldName="Icon" PlainFieldType="Image" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="IsComparable" ContentId="296" FieldDisplayName="Участвует в сравнении" FieldId="1144" FieldName="IsComparable" PlainFieldType="Boolean" Value="1">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>1</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="Legal" ContentId="296" FieldDisplayName="Лигал" FieldId="1145" FieldName="Legal" PlainFieldType="Textbox" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="TitleDative" ContentId="296" FieldDisplayName="Название (дательный падеж)" FieldId="1146" FieldName="TitleDative" PlainFieldType="String" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="GroupType" ContentId="296" FieldDisplayName="Тип Группы параметров" FieldId="1147" FieldName="GroupType" PlainFieldType="StringEnum" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="PreOpen" ContentId="296" FieldDisplayName="PreOpen" FieldId="1167" FieldName="PreOpen" PlainFieldType="Boolean" Value="0">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                      <PlainArticleField.NativeValue>
+                        <x:Decimal>0</x:Decimal>
+                      </PlainArticleField.NativeValue>
+                    </PlainArticleField>
+                    <PlainArticleField x:Key="OldSiteId" ContentId="296" FieldDisplayName="OldSiteId" FieldId="1338" FieldName="OldSiteId" PlainFieldType="Numeric" Value="">
+                      <PlainArticleField.CustomProperties>
+                        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+                      </PlainArticleField.CustomProperties>
+                    </PlainArticleField>
+                    <MultiArticleField CustomProperties="{x:Reference __ReferenceID15}" x:Key="Modifiers" ContentId="296" FieldDisplayName="Модификаторы" FieldId="1787" FieldName="Modifiers" SubContentId="382">
+                      <MultiArticleField.Items>
+                        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+                      </MultiArticleField.Items>
+                    </MultiArticleField>
+                  </Article.Fields>
+                </Article>
+              </SingleArticleField.Item>
+            </SingleArticleField>
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID13}" x:Key="Unit" ContentId="291" FieldDisplayName="Единица измерения" FieldId="1178" FieldName="Unit" SubContentId="302" />
+            <SingleArticleField CustomProperties="{x:Reference __ReferenceID14}" x:Key="MatrixParameter" ContentId="291" FieldDisplayName="Параметр матрицы совместимости" FieldId="1373" FieldName="MatrixParameter" SubContentId="330" />
+          </Article.Fields>
+        </Article>
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <MultiArticleField x:Key="ExtServices" ContentId="288" FieldDisplayName="Дополнительные сервисы" FieldId="1619" FieldName="ExtServices" SubContentId="355">
+      <MultiArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </MultiArticleField.CustomProperties>
+      <MultiArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <SingleArticleField x:Key="MarketingSign" ContentId="288" FieldDisplayName="Маркетинговый признак" FieldId="1296" FieldName="MarketingSign" SubContentId="298">
+      <SingleArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </SingleArticleField.CustomProperties>
+    </SingleArticleField>
+    <MultiArticleField x:Key="Modifiers" ContentId="288" FieldDisplayName="Модификаторы" FieldId="1295" FieldName="Modifiers" SubContentId="300">
+      <MultiArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </MultiArticleField.CustomProperties>
+      <MultiArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <MultiArticleField x:Key="Usages" ContentId="288" FieldDisplayName="Варианты использования" FieldId="1667" FieldName="Usages" SubContentId="316">
+      <MultiArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </MultiArticleField.CustomProperties>
+      <MultiArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <MultiArticleField x:Key="ArchiveTabs" ContentId="288" FieldDisplayName="Архивные закладки" FieldId="1313" FieldName="ArchiveTabs" SubContentId="327">
+      <MultiArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </MultiArticleField.CustomProperties>
+      <MultiArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </MultiArticleField.Items>
+    </MultiArticleField>
+    <ExtensionArticleField SubContentId="{x:Null}" x:Key="Type" ContentId="288" FieldDisplayName="Тип продукта" FieldId="1233" FieldName="Type" Value="305">
+      <ExtensionArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </ExtensionArticleField.CustomProperties>
+      <ExtensionArticleField.Item>
+        <Article ContentDisplayName="Мобильные тарифы B2C" ContentId="305" ContentName="MobileTariff" Created="2016-09-21T11:54:53.357" Id="2268053" IsPublished="True" Modified="2016-09-21T11:55:02.013" PublishingMode="Publish" Status="Published" Visible="True">
+          <Article.Fields>
+            <PlainArticleField x:Key="SplitInternetDeviceCount" ContentId="305" FieldDisplayName="Количество устройств" FieldId="1441" FieldName="SplitInternetDeviceCount" PlainFieldType="Numeric" Value="">
+              <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </PlainArticleField.CustomProperties>
+            </PlainArticleField>
+            <MultiArticleField x:Key="ProductFilters" ContentId="305" FieldDisplayName="Фильтры по продуктам" FieldId="1365" FieldName="ProductFilters" SubContentId="314">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+            <MultiArticleField x:Key="AccountTypes" ContentId="305" FieldDisplayName="AccountTypes" FieldId="1453" FieldName="AccountTypes" SubContentId="343">
+              <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+              </MultiArticleField.CustomProperties>
+              <MultiArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+              </MultiArticleField.Items>
+            </MultiArticleField>
+          </Article.Fields>
+        </Article>
+      </ExtensionArticleField.Item>
+    </ExtensionArticleField>
+    <BackwardArticleField x:Key="ProductWebEntities" ContentId="344" FieldDisplayName="Связи с WEbEntity" FieldId="1471" FieldName="ProductWebEntities" SubContentId="344">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="ProductParameterGroupChanges" ContentId="320" FieldDisplayName="ProductParameterGroupChanges" FieldId="1259" FieldName="ProductParameterGroupChanges" SubContentId="320">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="ServicesOnTariff" ContentId="311" FieldDisplayName="Услуги на тарифе" FieldId="1386" FieldName="ServicesOnTariff" SubContentId="311">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="XorProductsMatrix" ContentId="309" FieldDisplayName="Группы взаимоисключений продуктов" FieldId="1279" FieldName="XorProductsMatrix" SubContentId="309">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="TariffTransfers" ContentId="308" FieldDisplayName="Переход с тарифов" FieldId="1389" FieldName="TariffTransfers" SubContentId="308">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="TariffsOnService" ContentId="311" FieldDisplayName="Тарифы с услугой" FieldId="1387" FieldName="TariffsOnService" SubContentId="311">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="ProductsOnRoute" ContentId="442" FieldDisplayName="Продукты на маршруте" FieldId="2289" FieldName="ProductsOnRoute" SubContentId="442">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="FTTBProductsOnPreset" ContentId="407" FieldDisplayName="Продукты ШПД на пресете" FieldId="1943" FieldName="FTTBProductsOnPreset" SubContentId="407">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="TvPacketsOnTvTariff" ContentId="409" FieldDisplayName="ТВ пакеты на тарифе" FieldId="1952" FieldName="TvPacketsOnTvTariff" SubContentId="409">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField x:Key="FTTBProductsOnBundle" ContentId="420" FieldDisplayName="Продукты ШПД на комплекте" FieldId="2018" FieldName="FTTBProductsOnBundle" SubContentId="420">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+    <BackwardArticleField FieldDisplayName="{x:Null}" x:Key="BundlesOnFTTBProduct" ContentId="420" FieldId="2019" FieldName="BundlesOnFTTBProduct" SubContentId="420">
+      <BackwardArticleField.CustomProperties>
+        <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+      </BackwardArticleField.CustomProperties>
+      <BackwardArticleField.Items>
+        <scg:Dictionary x:TypeArguments="x:Int32, Article" />
+      </BackwardArticleField.Items>
+    </BackwardArticleField>
+  </Article.Fields>
+</Article>
