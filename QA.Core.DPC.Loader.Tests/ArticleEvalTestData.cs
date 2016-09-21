@@ -14,6 +14,27 @@ namespace QA.Core.DPC.Loader.Tests
             {
                 yield return new object[]
                 {
+                    "Parameters[!Modifiers/Alias='ExcludeFromPdf']",
+                    new[]
+                    {
+                        new DPathArticleData
+                        {
+                            FieldName = "Parameters",
+                            FiltersData = new List<DPathFilterData>
+                            {
+                               new DPathFilterData
+                               {
+                                   Expression = "Modifiers/Alias",
+                                   Value = "ExcludeFromPdf",
+                                   IsInversed = true
+                               }
+                            }
+                        }
+                    }
+                };
+
+                yield return new object[]
+                {
                     "PDF",
                     new[]
                     {
@@ -260,7 +281,7 @@ namespace QA.Core.DPC.Loader.Tests
 
                 yield return new object[]
                 {
-                    " field1 [ ! filter1_1_1 / filter1_1_2 / filter1_1_3 = ' value1_1 ' ] [ & filter1_2_1 / filter1_2_2 / filter1_2_3 = \n ' value1_2 ' ] \r   / field2 / field3 [ filter3_1_1 = ' value3_1 ' ] [    |     !   filter3_2_1    =    '    value3_2    '    ]   \r\n    /    field4   ",
+                    " field1 [ ! filter1_1_1 / filter1_1_2 / filter1_1_3 = ' value1_1 ' ] [ & filter1_2_1 / filter1_2_2 / filter1_2_3 = \n ' value1_2 ' ] \r   / field2 / field3 [ filter3_1_1/ filter3_1_2 = ' value3_1 ' ] [    |     !   filter3_2_1    =    '    value3_2    '    ]   \r\n    /    field4   ",
                     new[]
                     {
                         new DPathArticleData
@@ -293,7 +314,7 @@ namespace QA.Core.DPC.Loader.Tests
                             {
                                 new DPathFilterData
                                 {
-                                    Expression = "filter3_1_1",
+                                    Expression = "filter3_1_1/ filter3_1_2",
                                     Value = "value3_1"
                                 },
                                 new DPathFilterData
