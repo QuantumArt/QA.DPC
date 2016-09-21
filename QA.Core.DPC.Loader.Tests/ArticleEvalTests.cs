@@ -11,7 +11,8 @@ namespace QA.Core.DPC.Loader.Tests
 {
     public partial class ArticleEvalTests
     {
-        private const string TestDataFile = @"TestData\ReferenceDto.xaml";
+        private const string TestSampleDataFile = @"TestData\ReferenceDto.xaml";
+        private const string TestGeProductFile = @"TestData\ge_product_click.xaml";
 
         [MemberData(nameof(GetDPathExpressionData))]
         [Theory, Trait("DPathProcessor", "RegexParser")]
@@ -25,28 +26,28 @@ namespace QA.Core.DPC.Loader.Tests
             actualResult.ShouldBeEquivalentTo(expectedResult);
         }
 
-        [XamlData(TestDataFile, " PDF ")]
-        [XamlData(TestDataFile, "ProductWebEntities")]
-        [XamlData(TestDataFile, "Type/ ")]
-        [XamlData(TestDataFile, " Type / ProductFilters ")]
-        [XamlData(TestDataFile, " /Regions")]
-        [XamlData(TestDataFile, "Regions /  Title")]
-        [XamlData(TestDataFile, "MarketingProduct")]
-        [XamlData(TestDataFile, "MarketingProduct/Family")]
-        [XamlData(TestDataFile, "MarketingProduct/Categories")]
-        [XamlData(TestDataFile, "MarketingProduct/ProductType")]
-        [XamlData(TestDataFile, "MarketingProduct/UpSaleItems")]
-        [XamlData(TestDataFile, "[Type='305']")]
-        [XamlData(TestDataFile, "[Type='305'][Type='305']")]
-        [XamlData(TestDataFile, "[!Type='306'][!Type='306']")]
-        [XamlData(TestDataFile, "[SortOrder='300'][!SortOrder='200']")]
-        [XamlData(TestDataFile, "[!SortOrder='200'][SortOrder='300']")]
-        [XamlData(TestDataFile, "MarketingProduct[ProductType/ProductFilters/SortOrder='1']")]
-        [XamlData(TestDataFile, "MarketingProduct/ProductType/ProductFilters[SortOrder='1']")]
-        [XamlData(TestDataFile, "MarketingProduct/ProductType/ProductFilters[SortOrder='1']/Title")]
-        [XamlData(TestDataFile, "MarketingProduct[ProductType='289']")]
-        [XamlData(TestDataFile, "MarketingProduct[ProductType='289']/ProductType/ProductFilters[SortOrder='1']")]
-        [XamlData(TestDataFile, "MarketingProduct[ProductType='289']/ProductType/ProductFilters[SortOrder='1']/Title")]
+        [XamlData(TestSampleDataFile, " PDF ")]
+        [XamlData(TestSampleDataFile, "ProductWebEntities")]
+        [XamlData(TestSampleDataFile, "Type/ ")]
+        [XamlData(TestSampleDataFile, " Type / ProductFilters ")]
+        [XamlData(TestSampleDataFile, " /Regions")]
+        [XamlData(TestSampleDataFile, "Regions /  Title")]
+        [XamlData(TestSampleDataFile, "MarketingProduct")]
+        [XamlData(TestSampleDataFile, "MarketingProduct/Family")]
+        [XamlData(TestSampleDataFile, "MarketingProduct/Categories")]
+        [XamlData(TestSampleDataFile, "MarketingProduct/ProductType")]
+        [XamlData(TestSampleDataFile, "MarketingProduct/UpSaleItems")]
+        [XamlData(TestSampleDataFile, "[Type='305']")]
+        [XamlData(TestSampleDataFile, "[Type='305'][Type='305']")]
+        [XamlData(TestSampleDataFile, "[!Type='306'][!Type='306']")]
+        [XamlData(TestSampleDataFile, "[SortOrder='300'][!SortOrder='200']")]
+        [XamlData(TestSampleDataFile, "[!SortOrder='200'][SortOrder='300']")]
+        [XamlData(TestSampleDataFile, "MarketingProduct[ProductType/ProductFilters/SortOrder='1']")]
+        [XamlData(TestSampleDataFile, "MarketingProduct/ProductType/ProductFilters[SortOrder='1']")]
+        [XamlData(TestSampleDataFile, "MarketingProduct/ProductType/ProductFilters[SortOrder='1']/Title")]
+        [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='289']")]
+        [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='289']/ProductType/ProductFilters[SortOrder='1']")]
+        [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='289']/ProductType/ProductFilters[SortOrder='1']/Title")]
         [Theory, Trait("DPathProcessor", "SingleResult")]
         public void DPathProcessor_WhenProductFounded_ShouldReturnArrayWithSingleElement(string expression, Article product)
         {
@@ -60,10 +61,25 @@ namespace QA.Core.DPC.Loader.Tests
             Assert.Equal(expectedResult, actualResult.Length);
         }
 
-        [XamlData(TestDataFile, "test_field1/test_field2/test_field3")]
-        [XamlData(TestDataFile, "MarketingProduct/Regions")]
-        [XamlData(TestDataFile, "MarketingProduct[test_filter_expression='test_value']")]
-        [XamlData(TestDataFile, "MarketingProduct[ProductType='test_value']")]
+        [XamlData(TestGeProductFile, "Parameters[Modifiers/Alias='ExcludeFromPdf']", 0)]
+        [XamlData(TestGeProductFile, "Parameters[!Modifiers/Alias='ExcludeFromPdf']", 8)]
+        [XamlData(TestGeProductFile, "Parameters[!test_filter_expression='test_value']", 8)]
+        [XamlData(TestGeProductFile, "test_field1[!test_filter_expression='test_value']", 0)]
+        [Theory, Trait("DPathProcessor", "MultipleResults")]
+        public void DPathProcessor_WhenProductFounded_ShouldReturnArrayWithMultipleElements(string expression, Article product, int expectedResult)
+        {
+            // Fixture setup
+            // Exercise system
+            var actualResult = DPathProcessor.Process(expression, product);
+
+            // Verify outcome
+            Assert.Equal(expectedResult, actualResult.Length);
+        }
+
+        [XamlData(TestSampleDataFile, "test_field1/test_field2/test_field3")]
+        [XamlData(TestSampleDataFile, "MarketingProduct/Regions")]
+        [XamlData(TestSampleDataFile, "MarketingProduct[test_filter_expression='test_value']")]
+        [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='test_value']")]
         [Theory, Trait("DPathProcessor", "NotExistingProducts")]
         public void DPathProcessor_WhenProductNotFounded_ShouldReturnEmptyArray(string expression, Article product)
         {
@@ -77,9 +93,9 @@ namespace QA.Core.DPC.Loader.Tests
             Assert.Equal(expectedResult, actualResult);
         }
 
-        [XamlData(TestDataFile, " !@#$_just_any_%^&_test_text_*()+ ")]
-        [XamlData(TestDataFile, "%MarketingProduct[ProductType='test_value']")]
-        [XamlData(TestDataFile, " P*DF ")]
+        [XamlData(TestSampleDataFile, " !@#$_just_any_%^&_test_text_*()+ ")]
+        [XamlData(TestSampleDataFile, "%MarketingProduct[ProductType='test_value']")]
+        [XamlData(TestSampleDataFile, " P*DF ")]
         [Theory, Trait("DPathProcessor", "NotExistingProducts")]
         public void DPathProcessor_GivenWrongExpression_ShouldThrowException(string expression, Article product)
         {
