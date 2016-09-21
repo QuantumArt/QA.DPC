@@ -106,42 +106,5 @@ namespace QA.Core.DPC.Loader.Tests
             // Verify outcome
             Assert.Throws<Exception>(actionResult);
         }
-
-        [XamlData(TestGeProductFile, "Parameters[Modifiers/Alias='ExcludeFromPdf']")]
-        [XamlData(TestGeProductFile, "Parameters[!Modifiers/Alias='ExcludeFromPdf']")]
-        [XamlData(TestGeProductFile, "Parameters[!test_filter_expression='test_value']")]
-        [XamlData(TestGeProductFile, "test_field1[!test_filter_expression='test_value']")]
-        [XamlData(TestSampleDataFile, " PDF ")]
-        [XamlData(TestSampleDataFile, "ProductWebEntities")]
-        [XamlData(TestSampleDataFile, "Type/ ")]
-        [XamlData(TestSampleDataFile, " Type/ProductFilters ")]
-        [XamlData(TestSampleDataFile, " /Regions")]
-        [XamlData(TestSampleDataFile, "Regions/Title")]
-        [XamlData(TestSampleDataFile, "MarketingProduct")]
-        [XamlData(TestSampleDataFile, "MarketingProduct/Family")]
-        [XamlData(TestSampleDataFile, "MarketingProduct/Categories")]
-        [XamlData(TestSampleDataFile, "MarketingProduct/ProductType")]
-        [XamlData(TestSampleDataFile, "MarketingProduct/UpSaleItems")]
-        [XamlData(TestSampleDataFile, "[Type='305']")]
-        [XamlData(TestSampleDataFile, "[Type='305'][Type='305']")]
-        [XamlData(TestSampleDataFile, "[!Type='306'][!Type='306']")]
-        [XamlData(TestSampleDataFile, "[!SortOrder='200'][SortOrder='300']")]
-        [XamlData(TestSampleDataFile, "MarketingProduct[ProductType/ProductFilters/SortOrder='1']")]
-        [XamlData(TestSampleDataFile, "MarketingProduct/ProductType/ProductFilters[SortOrder='1']")]
-        [XamlData(TestSampleDataFile, "MarketingProduct/ProductType/ProductFilters[SortOrder='1']/Title")]
-        [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='289']")]
-        [Theory, Trait("DPathProcessor", "MultipleResults")]
-        public void DPathProcessor_GivenDifferentProducts_ShouldReturnExpectedResult(string expression, Article product)
-        {
-            // Fixture setup
-            var normalizedExpression = DPathProcessor.NormalizeExpression(expression);
-            var oldCompatibleExpression = normalizedExpression.Remove(normalizedExpression.Length - 1, 1);
-
-            // Exercise system
-            var expectedResult = OldDPathProcessor.EvaluatePath(oldCompatibleExpression, product);
-            var actualResult = DPathProcessor.Process(oldCompatibleExpression, product);
-
-            actualResult.ShouldBeEquivalentTo(expectedResult);
-        }
     }
 }
