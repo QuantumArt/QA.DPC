@@ -25,7 +25,8 @@
     "AnalyzedFields": [
       "Title",
       "*Description"
-    ]
+    ],
+    "CreationDateField": "UpdateDate"
   },
 
   "Harvester": {

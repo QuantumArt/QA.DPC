@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Infrastructure;
 
-namespace QA.ProductCatalog.HighloadFront
+namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ArrayIndexer : IProductPostProcessor
     {
