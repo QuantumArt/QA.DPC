@@ -15,8 +15,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _arrayIndexingSettings = arrayIndexingSettings;
         }
 
-        public JObject Process(JObject product)
+        public JObject Process(ProductData data)
         {
+            var product = data.Product;
+
             foreach (var setting in _arrayIndexingSettings)
             {
                 JToken array = product.SelectToken(setting.Path);

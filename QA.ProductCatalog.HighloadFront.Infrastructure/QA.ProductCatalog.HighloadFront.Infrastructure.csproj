@@ -93,6 +93,7 @@
     <Compile Include="IProductPostProcessor.cs" />
     <Compile Include="OptionsManager.cs" />
     <Compile Include="OptionsContainerBuilderExtensions.cs" />
+    <Compile Include="ProductData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegionTag.cs" />
     <Compile Include="RegionTagValue.cs" />
@@ -112,4 +113,3 @@
   </Target>
   -->
 </Project>
-

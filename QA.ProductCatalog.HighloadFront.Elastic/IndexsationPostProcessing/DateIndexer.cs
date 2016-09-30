@@ -13,11 +13,13 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
         }
 
-        public JObject Process(JObject product)
+        public JObject Process(ProductData data)
         {
+            var product = data.Product;
+
             if (!string.IsNullOrEmpty(Options.CreationDateField))
-            {
-                product.Add(new JProperty(Options.CreationDateField, DateTime.Now));
+            {                
+                product.Add(new JProperty(Options.CreationDateField, data.Updated));
             }
 
             return product;

@@ -13,14 +13,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _processors = processors;
         }
 
-        public JObject Process(JObject product)
+        public JObject Process(ProductData data)
         {
             foreach (var processor in _processors)
             {
-                processor.Process(product);
+                data.Product = processor.Process(data);
             }
 
-            return product;
+            return data.Product;
         }
     }
 }
