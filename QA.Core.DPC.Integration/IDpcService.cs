@@ -19,5 +19,7 @@ namespace QA.Core.DPC.Integration
 		[OperationContract]
         string GetProduct(int id);
 
+        [OperationContract]
+        DAL.Product GetProductInfo(int id);      
     }
 }
