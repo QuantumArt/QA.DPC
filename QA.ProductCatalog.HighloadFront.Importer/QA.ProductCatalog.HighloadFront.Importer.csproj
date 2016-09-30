@@ -236,22 +236,9 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\DpcServiceReference\DpcProductService.wsdl" />
-    <None Include="Service References\DpcServiceReference\DpcService.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\DpcServiceReference\DpcService1.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Service References\DpcServiceReference\DpcService2.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadataStorage Include="Service References\DpcServiceReference\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Service References\DpcServiceReference\DpcService.disco" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Service References\DpcServiceReference\configuration91.svcinfo" />
@@ -260,6 +247,22 @@
     <None Include="Service References\DpcServiceReference\configuration.svcinfo" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Service References\DpcServiceReference\DpcProductService1.wsdl" />
+    <None Include="Service References\DpcServiceReference\DpcService3.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\DpcServiceReference\DpcService31.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\DpcServiceReference\DpcService32.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\DpcServiceReference\DpcService33.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Service References\DpcServiceReference\QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.Product.datasource">
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </None>
     <None Include="Service References\DpcServiceReference\Reference.svcmap">
       <Generator>WCF Proxy Generator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
@@ -279,6 +282,9 @@
       <Name>QA.ProductCatalog.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Service References\DpcServiceReference\DpcService1.disco" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
@@ -288,4 +294,3 @@
   </Target>
   -->
 </Project>
-
