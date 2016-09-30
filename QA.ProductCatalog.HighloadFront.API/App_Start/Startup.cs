@@ -17,10 +17,10 @@ using QA.ProductCatalog.HighloadFront.App_Core;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Filters;
 using QA.ProductCatalog.HighloadFront.Importer;
-using QA.ProductCatalog.HighloadFront.Importer.Service_References.DpcServiceReference;
 using QA.ProductCatalog.HighloadFront.Infrastructure;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference;
 
 namespace QA.ProductCatalog.HighloadFront
 {

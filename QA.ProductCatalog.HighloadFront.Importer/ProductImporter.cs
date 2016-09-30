@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using QA.Core;
-using QA.ProductCatalog.HighloadFront.Importer.Service_References.DpcServiceReference;
 using QA.ProductCatalog.HighloadFront.Infrastructure;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference;
 
 namespace QA.ProductCatalog.HighloadFront.Importer
 {
