@@ -260,7 +260,7 @@
     <None Include="Service References\DpcServiceReference\DpcService33.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Service References\DpcServiceReference\QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.Product.datasource">
+    <None Include="Service References\DpcServiceReference\QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductData.datasource">
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\DpcServiceReference\Reference.svcmap">

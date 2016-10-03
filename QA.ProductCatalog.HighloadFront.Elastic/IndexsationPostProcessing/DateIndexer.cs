@@ -13,7 +13,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
         }
 
-        public JObject Process(ProductData data)
+        public JObject Process(ProductPostProcessorData data)
         {
             var product = data.Product;
 

@@ -13,7 +13,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _processors = processors;
         }
 
-        public JObject Process(ProductData data)
+        public JObject Process(ProductPostProcessorData data)
         {
             foreach (var processor in _processors)
             {

@@ -55,12 +55,12 @@ namespace QA.ProductCatalog.HighloadFront.Importer
            
 
                 _logger.Info($"Запрашиваем порцию №{index}...");
-                var infoTasks = chunk.Select(Service.GetProductInfoAsync);
+                var dataTasks = chunk.Select(Service.GetProductDataAsync);
 
-                Product[] infos;
+                ProductData[] data;
                 try
                 {
-                    infos = await Task.WhenAll(infoTasks);
+                    data = await Task.WhenAll(dataTasks);
                 }
                 catch (Exception)
                 {
@@ -72,8 +72,8 @@ namespace QA.ProductCatalog.HighloadFront.Importer
                 _logger.Info("Продукты получены.");
 
                 _logger.Info("Начинаем разбор продуктов...");
-                var products = infos
-                    .Select(j => new ProductData(JsonConvert.DeserializeObject<DpcResponse>(j.Data).Product, j.Created, j.Updated))
+                var products = data
+                    .Select(j => new ProductPostProcessorData(JsonConvert.DeserializeObject<DpcResponse>(j.Product).Product, j.Created, j.Updated))
                     .ToArray();
 
                 _logger.Info("Продукты разобраны");

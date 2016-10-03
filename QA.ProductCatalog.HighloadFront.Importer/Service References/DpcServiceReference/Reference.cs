@@ -15,48 +15,21 @@ namespace QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference {
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="Product", Namespace="http://schemas.datacontract.org/2004/07/QA.Core.DPC.Integration.DAL")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ProductData", Namespace="http://schemas.datacontract.org/2004/07/QA.Core.DPC.Integration")]
     [System.SerializableAttribute()]
-    public partial class Product : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+    public partial class ProductData : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
         
         [System.NonSerializedAttribute()]
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string AliasField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.DateTime CreatedField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string DataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string HashField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int IdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<int> MarketingProductIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductRegion[] ProductRegionsField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string ProductTypeField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string TitleField;
+        private string ProductField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private System.DateTime UpdatedField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private string UserUpdatedField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private System.Nullable<int> UserUpdatedIdField;
         
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
@@ -65,19 +38,6 @@ namespace QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference {
             }
             set {
                 this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Alias {
-            get {
-                return this.AliasField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.AliasField, value) != true)) {
-                    this.AliasField = value;
-                    this.RaisePropertyChanged("Alias");
-                }
             }
         }
         
@@ -95,92 +55,14 @@ namespace QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Data {
+        public string Product {
             get {
-                return this.DataField;
+                return this.ProductField;
             }
             set {
-                if ((object.ReferenceEquals(this.DataField, value) != true)) {
-                    this.DataField = value;
-                    this.RaisePropertyChanged("Data");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Hash {
-            get {
-                return this.HashField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.HashField, value) != true)) {
-                    this.HashField = value;
-                    this.RaisePropertyChanged("Hash");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int Id {
-            get {
-                return this.IdField;
-            }
-            set {
-                if ((this.IdField.Equals(value) != true)) {
-                    this.IdField = value;
-                    this.RaisePropertyChanged("Id");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<int> MarketingProductId {
-            get {
-                return this.MarketingProductIdField;
-            }
-            set {
-                if ((this.MarketingProductIdField.Equals(value) != true)) {
-                    this.MarketingProductIdField = value;
-                    this.RaisePropertyChanged("MarketingProductId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductRegion[] ProductRegions {
-            get {
-                return this.ProductRegionsField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ProductRegionsField, value) != true)) {
-                    this.ProductRegionsField = value;
-                    this.RaisePropertyChanged("ProductRegions");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string ProductType {
-            get {
-                return this.ProductTypeField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ProductTypeField, value) != true)) {
-                    this.ProductTypeField = value;
-                    this.RaisePropertyChanged("ProductType");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string Title {
-            get {
-                return this.TitleField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.TitleField, value) != true)) {
-                    this.TitleField = value;
-                    this.RaisePropertyChanged("Title");
+                if ((object.ReferenceEquals(this.ProductField, value) != true)) {
+                    this.ProductField = value;
+                    this.RaisePropertyChanged("Product");
                 }
             }
         }
@@ -194,125 +76,6 @@ namespace QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference {
                 if ((this.UpdatedField.Equals(value) != true)) {
                     this.UpdatedField = value;
                     this.RaisePropertyChanged("Updated");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public string UserUpdated {
-            get {
-                return this.UserUpdatedField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.UserUpdatedField, value) != true)) {
-                    this.UserUpdatedField = value;
-                    this.RaisePropertyChanged("UserUpdated");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public System.Nullable<int> UserUpdatedId {
-            get {
-                return this.UserUpdatedIdField;
-            }
-            set {
-                if ((this.UserUpdatedIdField.Equals(value) != true)) {
-                    this.UserUpdatedIdField = value;
-                    this.RaisePropertyChanged("UserUpdatedId");
-                }
-            }
-        }
-        
-        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
-        
-        protected void RaisePropertyChanged(string propertyName) {
-            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
-            if ((propertyChanged != null)) {
-                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
-            }
-        }
-    }
-    
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
-    [System.Runtime.Serialization.DataContractAttribute(Name="ProductRegion", Namespace="http://schemas.datacontract.org/2004/07/QA.Core.DPC.Integration.DAL")]
-    [System.SerializableAttribute()]
-    public partial class ProductRegion : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
-        
-        [System.NonSerializedAttribute()]
-        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int IdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.Product ProductField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int ProductIdField;
-        
-        [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private int RegionIdField;
-        
-        [global::System.ComponentModel.BrowsableAttribute(false)]
-        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
-            get {
-                return this.extensionDataField;
-            }
-            set {
-                this.extensionDataField = value;
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int Id {
-            get {
-                return this.IdField;
-            }
-            set {
-                if ((this.IdField.Equals(value) != true)) {
-                    this.IdField = value;
-                    this.RaisePropertyChanged("Id");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.Product Product {
-            get {
-                return this.ProductField;
-            }
-            set {
-                if ((object.ReferenceEquals(this.ProductField, value) != true)) {
-                    this.ProductField = value;
-                    this.RaisePropertyChanged("Product");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int ProductId {
-            get {
-                return this.ProductIdField;
-            }
-            set {
-                if ((this.ProductIdField.Equals(value) != true)) {
-                    this.ProductIdField = value;
-                    this.RaisePropertyChanged("ProductId");
-                }
-            }
-        }
-        
-        [System.Runtime.Serialization.DataMemberAttribute()]
-        public int RegionId {
-            get {
-                return this.RegionIdField;
-            }
-            set {
-                if ((this.RegionIdField.Equals(value) != true)) {
-                    this.RegionIdField = value;
-                    this.RaisePropertyChanged("RegionId");
                 }
             }
         }
@@ -349,11 +112,11 @@ namespace QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference {
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetProduct", ReplyAction="http://tempuri.org/IDpcService/GetProductResponse")]
         System.Threading.Tasks.Task<string> GetProductAsync(int id);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetProductInfo", ReplyAction="http://tempuri.org/IDpcService/GetProductInfoResponse")]
-        QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.Product GetProductInfo(int id);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetProductData", ReplyAction="http://tempuri.org/IDpcService/GetProductDataResponse")]
+        QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductData GetProductData(int id);
         
-        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetProductInfo", ReplyAction="http://tempuri.org/IDpcService/GetProductInfoResponse")]
-        System.Threading.Tasks.Task<QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.Product> GetProductInfoAsync(int id);
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetProductData", ReplyAction="http://tempuri.org/IDpcService/GetProductDataResponse")]
+        System.Threading.Tasks.Task<QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductData> GetProductDataAsync(int id);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -407,12 +170,12 @@ namespace QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference {
             return base.Channel.GetProductAsync(id);
         }
         
-        public QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.Product GetProductInfo(int id) {
-            return base.Channel.GetProductInfo(id);
+        public QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductData GetProductData(int id) {
+            return base.Channel.GetProductData(id);
         }
         
-        public System.Threading.Tasks.Task<QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.Product> GetProductInfoAsync(int id) {
-            return base.Channel.GetProductInfoAsync(id);
+        public System.Threading.Tasks.Task<QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductData> GetProductDataAsync(int id) {
+            return base.Channel.GetProductDataAsync(id);
         }
     }
 }

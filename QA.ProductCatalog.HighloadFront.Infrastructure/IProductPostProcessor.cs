@@ -4,6 +4,6 @@ namespace QA.ProductCatalog.HighloadFront.Infrastructure
 {
     public interface IProductPostProcessor
     {
-        JObject Process(ProductData product);
+        JObject Process(ProductPostProcessorData product);
     }
 }

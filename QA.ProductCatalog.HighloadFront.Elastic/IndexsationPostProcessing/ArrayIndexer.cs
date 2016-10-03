@@ -15,7 +15,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _arrayIndexingSettings = arrayIndexingSettings;
         }
 
-        public JObject Process(ProductData data)
+        public JObject Process(ProductPostProcessorData data)
         {
             var product = data.Product;
 

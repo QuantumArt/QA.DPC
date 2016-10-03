@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace QA.ProductCatalog.HighloadFront.Infrastructure
 {
-    public class ProductData
+    public class ProductPostProcessorData
     {
-        public ProductData(JObject product)
+        public ProductPostProcessorData(JObject product)
             : this(product, DateTime.Now, DateTime.Now)
         {
         }
 
-        public ProductData(JObject product, DateTime created, DateTime updated)
+        public ProductPostProcessorData(JObject product, DateTime created, DateTime updated)
         {
             Product = product;
             Created = created;
