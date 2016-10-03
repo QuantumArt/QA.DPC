@@ -22,4 +22,13 @@ namespace QA.Core.DPC.Integration
         [OperationContract]
         ProductData GetProductData(int id);      
     }
+
+    public class ProductData
+    {
+        public string Product;
+
+        public DateTime Created;
+
+        public DateTime Updated;
+    }
 }
