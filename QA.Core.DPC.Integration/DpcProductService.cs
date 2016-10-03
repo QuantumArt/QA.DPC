@@ -204,12 +204,18 @@ namespace QA.Core.DPC.Integration
             }
         }
 
-        public DAL.Product GetProductInfo(int id)
+        public ProductData GetProductData(int id)
         {
             using (var ctx = new DpcModelDataContext())
             {
                 var p = ctx.Products.FirstOrDefault(x => x.Id == id);
-                return p;
+
+                return new ProductData
+                {
+                    Product = p.Data,
+                    Created = p.Created,
+                    Updated = p.Updated
+                };
             }
         }
     }

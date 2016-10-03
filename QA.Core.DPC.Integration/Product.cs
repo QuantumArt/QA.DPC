@@ -49,4 +49,15 @@ namespace QA.Core.DPC.Integration
         public string Alias { get; set; }
         
     }
+
+    [Serializable]
+    public class ProductData
+    {
+
+        public string Product { get; set; }
+
+        public DateTime Created { get; set; }
+
+        public DateTime Updated { get; set; } 
+    }
 }
