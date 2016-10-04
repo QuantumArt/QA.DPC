@@ -7,7 +7,7 @@ namespace QA.ProductCatalog.HighloadFront.App_Core
 {
     public class ProductOptionsParser
     {
-        private static Regex RangeFilterRegex { get; } = new Regex(@"\[(\d+),(\d+)\]");
+        private static Regex RangeFilterRegex { get; } = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
         private static string EscapeCharacter { get; } = "@";
 
         public static ProductsOptions Parse(IEnumerable<KeyValuePair<string, string>> properties)
@@ -48,8 +48,10 @@ namespace QA.ProductCatalog.HighloadFront.App_Core
                 result.RangeFilters = rangeFilters.Select(f =>
                 {
                     var match = RangeFilterRegex.Match(f.Value);
-                    return new Tuple<string, int, int>(f.Key, int.Parse(match.Groups[1].Value),
-                        int.Parse(match.Groups[2].Value));
+                    return new Tuple<string, string, string>(
+                        f.Key,
+                        match.Groups[1].Value,
+                        match.Groups[2].Value);
                 }).ToList();
             }
 

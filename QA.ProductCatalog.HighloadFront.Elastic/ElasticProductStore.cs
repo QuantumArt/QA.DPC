@@ -303,8 +303,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 current & new TermRangeQuery
                 {
                     Field = rf.Item1,
-                    GreaterThanOrEqualTo = rf.Item2.ToString(),
-                    LessThanOrEqualTo = rf.Item3.ToString(),
+                    GreaterThanOrEqualTo = rf.Item2 == "" ? null : rf.Item2,
+                    LessThanOrEqualTo = rf.Item3 == "" ? null : rf.Item3,
                 });
             }
 
