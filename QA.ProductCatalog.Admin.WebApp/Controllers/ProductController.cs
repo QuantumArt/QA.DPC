@@ -79,21 +79,30 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (includeRelevanceInfo)
             {
-                DateTime? lastPublished;
+                //DateTime? lastPublished;
 
-                string lastPublishedUserName;
+                //string lastPublishedUserName;
 
-                ProductRelevance relevance = ObjectFactoryBase.Resolve<IProductRelevanceService>().GetProductRelevance(product, live, out lastPublished, out lastPublishedUserName);
+                //ProductRelevance relevance = ObjectFactoryBase.Resolve<IProductRelevanceService>().GetProductRelevance(product, live, out lastPublished, out lastPublishedUserName);
 
-                string statusText = relevance == ProductRelevance.Missing
+                var relevanceInfo = ObjectFactoryBase.Resolve<IProductRelevanceService>().GetProductRelevance(product, live).FirstOrDefault();
+
+                if (relevanceInfo == null)
+                {
+                    throw new Exception("");
+                }
+
+
+
+                string statusText = relevanceInfo.Relevance == ProductRelevance.Missing
                     ? "Отсутствует на витрине"
-                    : relevance == ProductRelevance.Relevant ? "Актуален" : "Содержит неотправленные изменения";
+                    : relevanceInfo.Relevance == ProductRelevance.Relevant ? "Актуален" : "Содержит неотправленные изменения";
 
                 product
                     .AddPlainField("ConsumerStatusText", statusText, "Статус на витрине")
-                    .AddPlainField("ConsumerStatusCode", relevance.ToString(), "Код статуса на витрине")
-                    .AddPlainField("ConsumerLastPublished", lastPublished.ToString(), "Дата последней публикации")
-                    .AddPlainField("ConsumerLastPublishedUserName", lastPublishedUserName, "Опубликовал");
+                    .AddPlainField("ConsumerStatusCode", relevanceInfo.Relevance.ToString(), "Код статуса на витрине")
+                    .AddPlainField("ConsumerLastPublished", relevanceInfo.LastPublished.ToString(), "Дата последней публикации")
+                    .AddPlainField("ConsumerLastPublishedUserName", relevanceInfo.LastPublishedUserName, "Опубликовал");
             }
 
             IModelPostProcessor processor = new HierarchySorter(new HierarchySorterParameter

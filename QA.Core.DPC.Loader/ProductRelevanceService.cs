@@ -7,17 +7,18 @@ using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
+using System.Globalization;
 
 namespace QA.Core.DPC.Loader
 {
 
     public class ProductRelevanceService : IProductRelevanceService
     {
-		private readonly IArticleFormatter _formatter;
-		
-	    private readonly Func<bool, IConsumerMonitoringService> _consumerMonitoringServiceFunc;
+		private readonly IArticleFormatter _formatter;	
+        private readonly Func<bool, CultureInfo, IConsumerMonitoringService> _consumerMonitoringServiceFunc;
+        private readonly IProductLocalizationService _localisationService;
 
-	    private string GetHash(string data)
+        private string GetHash(string data)
         {
             MD5 alg = MD5.Create();
             byte[] inputBytes = Encoding.Unicode.GetBytes(data);
@@ -32,48 +33,73 @@ namespace QA.Core.DPC.Loader
             return sb.ToString();
         }
 
-		public ProductRelevanceService(IArticleFormatter formatter, Func<bool, IConsumerMonitoringService> consumerMonitoringServiceFunc)
+		public ProductRelevanceService(
+            IArticleFormatter formatter,
+            Func<bool, CultureInfo, IConsumerMonitoringService> consumerMonitoringServiceFunc,
+            IProductLocalizationService localisationService
+            )
         {
 			if (formatter == null)
-				throw new ArgumentNullException("formatter");
+				throw new ArgumentNullException(nameof(formatter));
 
 			_formatter = formatter;
-
-			_consumerMonitoringServiceFunc = consumerMonitoringServiceFunc;
+            _consumerMonitoringServiceFunc = consumerMonitoringServiceFunc;
+            _localisationService = localisationService;
         }
 
-		public ProductRelevance GetProductRelevance(Article product, bool isLive, out DateTime? lastPublished, out string lastPublishedUserName)
+        public RelevanceInfo[] GetProductRelevance(Article product, bool isLive)
         {
-			var productFromConsumer = _consumerMonitoringServiceFunc(isLive).GetProductInfo(product.Id);
+            return _localisationService.SplitLocalizations(product)
+                .Select(e => GetRelevance(e.Value, e.Key, isLive))
+                .ToArray();
+        }
 
-			if (productFromConsumer == null)
-			{
-				lastPublishedUserName = null;
+        private RelevanceInfo GetRelevance(Article localizedProduct, CultureInfo culture, bool isLive)
+        {
 
-				lastPublished = null;
+            var relevanceInfo = new RelevanceInfo
+            {
+                Culture = culture,
+                LastPublished = null,
+                LastPublishedUserName = null,
+                Relevance = ProductRelevance.Missing
+            };
 
-				return ProductRelevance.Missing;
-			}
+            var consumerMonitoringService = _consumerMonitoringServiceFunc(isLive, culture);
+            var consumerProductInfo = consumerMonitoringService.GetProductInfo(localizedProduct.Id);
 
-			lastPublishedUserName = productFromConsumer.LastPublishedUserName;
+            if (consumerProductInfo != null)
+            {
+                relevanceInfo.LastPublished = consumerProductInfo.Updated;
+                relevanceInfo.LastPublishedUserName = consumerProductInfo.LastPublishedUserName;
 
-			lastPublished = productFromConsumer.Updated;
+                var allArticlesNeededToCheck = GetAllProductChildAtriclesToPublish(localizedProduct).ToArray();
 
-			var allArticlesNeededToCheck = GetAllProductChildAtriclesToPublish(product).ToArray();
+                if (isLive && allArticlesNeededToCheck.Any(x => !x.IsPublished))
+                {
+                    relevanceInfo.Relevance = ProductRelevance.NotRelevant;
+                }
+                else if (allArticlesNeededToCheck.Max(x => x.Modified) > consumerProductInfo.Updated)
+                {
+                    relevanceInfo.Relevance = ProductRelevance.NotRelevant;
+                }
+                else
+                {
+                    string localizedProductData = _formatter.Serialize(localizedProduct, ArticleFilter.DefaultFilter, true);
+                    string localizedProductHash = GetHash(localizedProductData);
 
-            if (isLive && allArticlesNeededToCheck.Any(x => !x.IsPublished))
-                return ProductRelevance.NotRelevant;
+                    if (localizedProductHash == consumerProductInfo.Hash)
+                    {
+                        relevanceInfo.Relevance = ProductRelevance.Relevant;
+                    }
+                    else
+                    {
+                        relevanceInfo.Relevance = ProductRelevance.NotRelevant;
+                    }
+                }
+            }
 
-            DateTime maxProductArticlesModifiedDate = allArticlesNeededToCheck.Max(x => x.Modified);
-
-            if (maxProductArticlesModifiedDate > productFromConsumer.Updated)
-                return ProductRelevance.NotRelevant;
-
-			string productData = _formatter.Serialize(product, ArticleFilter.DefaultFilter, true);
-
-			string productHash = GetHash(productData);
-
-            return productHash == productFromConsumer.Hash ? ProductRelevance.Relevant : ProductRelevance.NotRelevant;
+            return relevanceInfo;
         }
 
         private IEnumerable<Article> GetProductArticlesNeededToPublish(Article product)
@@ -103,7 +129,6 @@ namespace QA.Core.DPC.Loader
                 foreach (var article in field)
                     foreach (var articlesInField in GetProductArticlesNeededToPublish(article))
                         yield return articlesInField;
-        }
-	   
+        }        
     }
 }
