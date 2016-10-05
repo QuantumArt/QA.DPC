@@ -51,11 +51,18 @@ namespace QA.Core.DPC.Loader
         {
             return _localisationService.SplitLocalizations(product)
                 .Select(e => GetRelevance(e.Value, e.Key, isLive))
+                .Where(r => r != null)
                 .ToArray();
         }
 
         private RelevanceInfo GetRelevance(Article localizedProduct, CultureInfo culture, bool isLive)
         {
+            var consumerMonitoringService = _consumerMonitoringServiceFunc(isLive, culture);
+
+            if (consumerMonitoringService == null)
+            {
+                return null;
+            }
 
             var relevanceInfo = new RelevanceInfo
             {
@@ -64,8 +71,7 @@ namespace QA.Core.DPC.Loader
                 LastPublishedUserName = null,
                 Relevance = ProductRelevance.Missing
             };
-
-            var consumerMonitoringService = _consumerMonitoringServiceFunc(isLive, culture);
+            
             var consumerProductInfo = consumerMonitoringService.GetProductInfo(localizedProduct.Id);
 
             if (consumerProductInfo != null)

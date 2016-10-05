@@ -71,7 +71,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                                 foreach (var relevanceItem in relevanceItems)
                                 {
                                     var consumerMonitoringService = _consumerMonitoringServiceFunc(true, relevanceItem.Culture);
-                                    consumerMonitoringService.InsertOrUpdateProductRelevanceStatus(productId, relevanceItem.Relevance, isLive);
+
+                                    if (consumerMonitoringService != null)
+                                    {
+                                        consumerMonitoringService.InsertOrUpdateProductRelevanceStatus(productId, relevanceItem.Relevance, isLive);
+                                    }
 
                                     if (TaskContext.IsCancellationRequested)
                                     {
