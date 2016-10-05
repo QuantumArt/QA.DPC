@@ -79,30 +79,26 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (includeRelevanceInfo)
             {
-                //DateTime? lastPublished;
+                var relevanceService = ObjectFactoryBase.Resolve<IProductRelevanceService>();
+                var relevanceItems = relevanceService.GetProductRelevance(product, live);
+                int id = 0;
 
-                //string lastPublishedUserName;
-
-                //ProductRelevance relevance = ObjectFactoryBase.Resolve<IProductRelevanceService>().GetProductRelevance(product, live, out lastPublished, out lastPublishedUserName);
-
-                var relevanceInfo = ObjectFactoryBase.Resolve<IProductRelevanceService>().GetProductRelevance(product, live).FirstOrDefault();
-
-                if (relevanceInfo == null)
+                foreach (var relevanceItem in relevanceItems)
                 {
-                    throw new Exception("");
-                }
+                    var relevanceField = new MultiArticleField() { FieldName = "Relevance" };
+                    product.AddField(relevanceField);
 
+                    var localizedRelevanceArticle = new Article();
+                    relevanceField.Items.Add(++id, localizedRelevanceArticle);
 
+                    AddRelevanceData(localizedRelevanceArticle, relevanceItem);
+                    
+                    if (id == 1) //обратная совместимость для старых карточек, где нет локализации
+                    {
+                        AddRelevanceData(product, relevanceItem);
+                    } 
 
-                string statusText = relevanceInfo.Relevance == ProductRelevance.Missing
-                    ? "Отсутствует на витрине"
-                    : relevanceInfo.Relevance == ProductRelevance.Relevant ? "Актуален" : "Содержит неотправленные изменения";
-
-                product
-                    .AddPlainField("ConsumerStatusText", statusText, "Статус на витрине")
-                    .AddPlainField("ConsumerStatusCode", relevanceInfo.Relevance.ToString(), "Код статуса на витрине")
-                    .AddPlainField("ConsumerLastPublished", relevanceInfo.LastPublished.ToString(), "Дата последней публикации")
-                    .AddPlainField("ConsumerLastPublishedUserName", relevanceInfo.LastPublishedUserName, "Опубликовал");
+                }            
             }
 
             IModelPostProcessor processor = new HierarchySorter(new HierarchySorterParameter
@@ -303,6 +299,21 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         #region Private methods
+        private void AddRelevanceData(Article article, RelevanceInfo relevanceInfo)
+        {
+
+            string statusText = relevanceInfo.Relevance == ProductRelevance.Missing
+                ? "Отсутствует на витрине"
+                : relevanceInfo.Relevance == ProductRelevance.Relevant ? "Актуален" : "Содержит неотправленные изменения";
+
+            article
+                .AddPlainField("ConsumerCulture", relevanceInfo.Culture.DisplayName, "Язык витрины")
+                .AddPlainField("ConsumerStatusText", statusText, "Статус на витрине")
+                .AddPlainField("ConsumerStatusCode", relevanceInfo.Relevance.ToString(), "Код статуса на витрине")
+                .AddPlainField("ConsumerLastPublished", relevanceInfo.LastPublished.ToString(), "Дата последней публикации")
+                .AddPlainField("ConsumerLastPublishedUserName", relevanceInfo.LastPublishedUserName, "Опубликовал");
+        }
+
         private JsonResult Error(ModelStateDictionary modelstate)
         {
             var errors = from fv in modelstate
