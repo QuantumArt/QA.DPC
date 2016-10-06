@@ -85,13 +85,10 @@ namespace QA.Core.DPC.Loader
                 {
                     relevanceInfo.Relevance = ProductRelevance.NotRelevant;
                 }
-                else if (allArticlesNeededToCheck.Max(x => x.Modified) > consumerProductInfo.Updated)
-                {
-                    relevanceInfo.Relevance = ProductRelevance.NotRelevant;
-                }
                 else
                 {
                     string localizedProductData = _formatter.Serialize(localizedProduct, ArticleFilter.DefaultFilter, true);
+
                     string localizedProductHash = GetHash(localizedProductData);
 
                     if (localizedProductHash == consumerProductInfo.Hash)

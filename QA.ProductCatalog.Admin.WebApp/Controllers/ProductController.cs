@@ -77,28 +77,38 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             product = ArticleFilteredCopier.Copy(product, allFilter);
 
+            
+
             if (includeRelevanceInfo)
             {
                 var relevanceService = ObjectFactoryBase.Resolve<IProductRelevanceService>();
                 var relevanceItems = relevanceService.GetProductRelevance(product, live);
+                var relevanceField = new MultiArticleField() { FieldName = "Relevance" };                          
                 int id = 0;
+
+                product.AddField(relevanceField);
 
                 foreach (var relevanceItem in relevanceItems)
                 {
-                    var relevanceField = new MultiArticleField() { FieldName = "Relevance" };
-                    product.AddField(relevanceField);
-
-                    var localizedRelevanceArticle = new Article();
-                    relevanceField.Items.Add(++id, localizedRelevanceArticle);
-
-                    AddRelevanceData(localizedRelevanceArticle, relevanceItem);
+                    var localizedRelevanceArticle = new Article();                    
                     
-                    if (id == 1) //обратная совместимость для старых карточек, где нет локализации
+                    if (relevanceItem.Culture == CultureInfo.InvariantCulture)
                     {
                         AddRelevanceData(product, relevanceItem);
-                    } 
+                    }
+                    else
+                    {
+                        relevanceField.Items.Add(++id, localizedRelevanceArticle);
+                        AddRelevanceData(localizedRelevanceArticle, relevanceItem);
+                    }
 
-                }            
+                }
+
+                bool isRelevant = relevanceItems.All(r => r.Culture == CultureInfo.InvariantCulture || r.Relevance == ProductRelevance.Relevant);
+                if (!isRelevant)
+                {
+                    product.AddPlainField("IsRelevant", isRelevant, "Актуальность продукта");
+                }
             }
 
             IModelPostProcessor processor = new HierarchySorter(new HierarchySorterParameter
@@ -307,7 +317,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 : relevanceInfo.Relevance == ProductRelevance.Relevant ? "Актуален" : "Содержит неотправленные изменения";
 
             article
-                .AddPlainField("ConsumerCulture", relevanceInfo.Culture.DisplayName, "Язык витрины")
+                .AddPlainField("ConsumerCulture", relevanceInfo.Culture.NativeName, "Язык витрины")
                 .AddPlainField("ConsumerStatusText", statusText, "Статус на витрине")
                 .AddPlainField("ConsumerStatusCode", relevanceInfo.Relevance.ToString(), "Код статуса на витрине")
                 .AddPlainField("ConsumerLastPublished", relevanceInfo.LastPublished.ToString(), "Дата последней публикации")
