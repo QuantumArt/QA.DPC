@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
+using System.Transactions;
 
 namespace QA.Core.ProductCatalog.Actions
 {
@@ -40,7 +41,10 @@ namespace QA.Core.ProductCatalog.Actions
             DeleteProducts(dictionary, product.Id, checkRootArticlePermissions);
 
             if (!doNotSendNotifications)
-				SendNotification(products, product.Id);
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    SendNotification(products, product.Id);
+                }
 		}
 
 		#region Private methods
