@@ -10,6 +10,7 @@ using QA.Core.DPC.Loader.Services;
 using QA.Core.Models.Configuration;
 using QA.Core.Models;
 using Quantumart.QP8.BLL.Services.DTO;
+using System.Transactions;
 
 namespace QA.Core.ProductCatalog.Actions
 {
@@ -136,8 +137,12 @@ namespace QA.Core.ProductCatalog.Actions
 			{
 				var stageProducts = new[] { stageProduct };
 				var liveProducts = new[] { sendSeparateLive ? Productservice.GetProductById(stageProduct.Id, true) : stageProduct };
-				DoWithLogging("NotificationService.SendProducts stage", transactionId, () => NotificationService.SendProducts(stageProducts, true, userName, userId, localize, channels));
-				DoWithLogging("NotificationService.SendProducts live", transactionId, () => NotificationService.SendProducts(liveProducts, false, userName, userId, localize, channels));
+
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    DoWithLogging("NotificationService.SendProducts stage", transactionId, () => NotificationService.SendProducts(stageProducts, true, userName, userId, localize, channels));
+                    DoWithLogging("NotificationService.SendProducts live", transactionId, () => NotificationService.SendProducts(liveProducts, false, userName, userId, localize, channels));
+                }
 			}
 			catch (Exception ex)
 			{
