@@ -55,27 +55,30 @@ namespace QA.ProductCatalog.HighloadFront
             var result = await ValidateProductInternal(product);
             if (!result.Succeeded) return result;
 
+             var data = new ProductPostProcessorData(product);
+
             if (_productPostProcessor != null)
-                product = _productPostProcessor.Process(product);
+                product = _productPostProcessor.Process(data);
 
             return await Store.CreateAsync(product);
         }
 
-        public async Task<SonicResult> BulkCreateAsync(JObject[] products)
+        public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data)
         {
             ThrowIfDisposed();
-            var result = await ValidateProductsInternal(products);
+            var result = await ValidateProductsInternal(data.Select(d => d.Product).ToArray());
             if (!result.Succeeded) return result;
             var store = GetProductBulkStore();
 
-            IEnumerable<JObject> productsToSave;
-
             if (_productPostProcessor != null)
-                productsToSave = products.Select(x => _productPostProcessor.Process(x));
-            else
-                productsToSave = products;
-
-            return await store.BulkCreateAsync(productsToSave);
+            {
+                foreach (var d in data)
+                {
+                    d.Product = _productPostProcessor.Process(d);
+                }
+            }
+        
+            return await store.BulkCreateAsync(data.Select(d => d.Product));
         }
 
 

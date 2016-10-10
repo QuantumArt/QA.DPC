@@ -48,5 +48,5 @@ namespace QA.Core.DPC.Integration
     
         public string Alias { get; set; }
         
-    }
+    }   
 }

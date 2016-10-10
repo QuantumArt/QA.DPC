@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Infrastructure;
 
-namespace QA.ProductCatalog.HighloadFront
+namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ArrayIndexer : IProductPostProcessor
     {
@@ -15,8 +15,10 @@ namespace QA.ProductCatalog.HighloadFront
             _arrayIndexingSettings = arrayIndexingSettings;
         }
 
-        public JObject Process(JObject product)
+        public JObject Process(ProductPostProcessorData data)
         {
+            var product = data.Product;
+
             foreach (var setting in _arrayIndexingSettings)
             {
                 JToken array = product.SelectToken(setting.Path);

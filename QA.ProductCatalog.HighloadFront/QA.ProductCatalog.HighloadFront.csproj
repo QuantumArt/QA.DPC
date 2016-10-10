@@ -222,7 +222,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayIndexer.cs" />
     <Compile Include="IProductBulkStore.cs" />
     <Compile Include="IProductStreamStore.cs" />
     <Compile Include="IProductValidator.cs" />
@@ -273,4 +272,3 @@
   </Target>
   -->
 </Project>
-

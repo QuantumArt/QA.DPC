@@ -8,8 +8,87 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace QA.ProductCatalog.HighloadFront.Importer.Service_References.DpcServiceReference {
+namespace QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference {
+    using System.Runtime.Serialization;
+    using System;
     
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="ProductData", Namespace="http://schemas.datacontract.org/2004/07/QA.Core.DPC.Integration")]
+    [System.SerializableAttribute()]
+    public partial class ProductData : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime CreatedField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string ProductField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime UpdatedField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime Created {
+            get {
+                return this.CreatedField;
+            }
+            set {
+                if ((this.CreatedField.Equals(value) != true)) {
+                    this.CreatedField = value;
+                    this.RaisePropertyChanged("Created");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string Product {
+            get {
+                return this.ProductField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ProductField, value) != true)) {
+                    this.ProductField = value;
+                    this.RaisePropertyChanged("Product");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime Updated {
+            get {
+                return this.UpdatedField;
+            }
+            set {
+                if ((this.UpdatedField.Equals(value) != true)) {
+                    this.UpdatedField = value;
+                    this.RaisePropertyChanged("Updated");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     [System.ServiceModel.ServiceContractAttribute(ConfigurationName="DpcServiceReference.IDpcService")]
@@ -21,20 +100,32 @@ namespace QA.ProductCatalog.HighloadFront.Importer.Service_References.DpcService
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetAllProductId", ReplyAction="http://tempuri.org/IDpcService/GetAllProductIdResponse")]
         System.Threading.Tasks.Task<int[]> GetAllProductIdAsync(int page, int pageSize);
         
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetLastProductId", ReplyAction="http://tempuri.org/IDpcService/GetLastProductIdResponse")]
+        int[] GetLastProductId(int page, int pageSize, System.DateTime date);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetLastProductId", ReplyAction="http://tempuri.org/IDpcService/GetLastProductIdResponse")]
+        System.Threading.Tasks.Task<int[]> GetLastProductIdAsync(int page, int pageSize, System.DateTime date);
+        
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetProduct", ReplyAction="http://tempuri.org/IDpcService/GetProductResponse")]
         string GetProduct(int id);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetProduct", ReplyAction="http://tempuri.org/IDpcService/GetProductResponse")]
         System.Threading.Tasks.Task<string> GetProductAsync(int id);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetProductData", ReplyAction="http://tempuri.org/IDpcService/GetProductDataResponse")]
+        QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductData GetProductData(int id);
+        
+        [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/IDpcService/GetProductData", ReplyAction="http://tempuri.org/IDpcService/GetProductDataResponse")]
+        System.Threading.Tasks.Task<QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductData> GetProductDataAsync(int id);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public interface IDpcServiceChannel : IDpcService, System.ServiceModel.IClientChannel {
+    public interface IDpcServiceChannel : QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.IDpcService, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class DpcServiceClient : System.ServiceModel.ClientBase<IDpcService>, IDpcService {
+    public partial class DpcServiceClient : System.ServiceModel.ClientBase<QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.IDpcService>, QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.IDpcService {
         
         public DpcServiceClient() {
         }
@@ -63,12 +154,28 @@ namespace QA.ProductCatalog.HighloadFront.Importer.Service_References.DpcService
             return base.Channel.GetAllProductIdAsync(page, pageSize);
         }
         
+        public int[] GetLastProductId(int page, int pageSize, System.DateTime date) {
+            return base.Channel.GetLastProductId(page, pageSize, date);
+        }
+        
+        public System.Threading.Tasks.Task<int[]> GetLastProductIdAsync(int page, int pageSize, System.DateTime date) {
+            return base.Channel.GetLastProductIdAsync(page, pageSize, date);
+        }
+        
         public string GetProduct(int id) {
             return base.Channel.GetProduct(id);
         }
         
         public System.Threading.Tasks.Task<string> GetProductAsync(int id) {
             return base.Channel.GetProductAsync(id);
+        }
+        
+        public QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductData GetProductData(int id) {
+            return base.Channel.GetProductData(id);
+        }
+        
+        public System.Threading.Tasks.Task<QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference.ProductData> GetProductDataAsync(int id) {
+            return base.Channel.GetProductDataAsync(id);
         }
     }
 }

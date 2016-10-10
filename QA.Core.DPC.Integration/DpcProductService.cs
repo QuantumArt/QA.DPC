@@ -203,5 +203,20 @@ namespace QA.Core.DPC.Integration
                 return p != null ? p.Data : "";
             }
         }
+
+        public ProductData GetProductData(int id)
+        {
+            using (var ctx = new DpcModelDataContext())
+            {
+                var p = ctx.Products.FirstOrDefault(x => x.Id == id);
+
+                return new ProductData
+                {
+                    Product = p.Data,
+                    Created = p.Created,
+                    Updated = p.Updated
+                };
+            }
+        }
     }
 }
