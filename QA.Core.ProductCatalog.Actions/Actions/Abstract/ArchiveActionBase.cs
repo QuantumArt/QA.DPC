@@ -6,6 +6,7 @@ using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
+using System.Transactions;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
@@ -40,8 +41,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			var dictionary = GetProductsToBeProcessed<DeletingMode>(product, definition, ef => ef.DeletingMode, DeletingMode.Delete);
 			bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
 			QA.Core.Models.Entities.Article[] notificationProducts = null;
-			if (!doNotSendNotifications)
-				notificationProducts = PrepareNotification(productId);
+            if (!doNotSendNotifications)
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    notificationProducts = PrepareNotification(productId);
+                }
 
 			ArchiveProducts(dictionary, product);
 

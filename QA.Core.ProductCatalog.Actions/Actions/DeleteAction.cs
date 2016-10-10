@@ -7,6 +7,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
+using System.Transactions;
+using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions
 {
@@ -34,13 +36,22 @@ namespace QA.Core.ProductCatalog.Actions
 
 	    public void DeleteProduct(Quantumart.QP8.BLL.Article product, ProductDefinition definition, bool doNotSendNotifications, bool checkRootArticlePermissions)
 	    {
-            var dictionary = GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete);
-			var products = doNotSendNotifications ? null : Productservice.GetSimpleProductsByIds(new[] { product.Id });
+            Dictionary<int, Product<DeletingMode>> dictionary;
+            Article[] products;
+
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
+            {
+                dictionary = GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete);
+                products = doNotSendNotifications ? null : Productservice.GetSimpleProductsByIds(new[] { product.Id });
+            }
 
             DeleteProducts(dictionary, product.Id, checkRootArticlePermissions);
 
             if (!doNotSendNotifications)
-				SendNotification(products, product.Id);
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    SendNotification(products, product.Id);
+                }
 		}
 
 		#region Private methods
