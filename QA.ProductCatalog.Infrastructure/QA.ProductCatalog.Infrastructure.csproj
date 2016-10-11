@@ -263,6 +263,7 @@
     <Compile Include="IFreezeService.cs" />
     <Compile Include="ILocalizationSettingsService.cs" />
     <Compile Include="INotesService.cs" />
+    <Compile Include="INotificationChannelService.cs" />
     <Compile Include="INotificationProvider.cs" />
     <Compile Include="IProductAPIService.cs" />
     <Compile Include="IProductLocalizationService.cs" />
@@ -281,6 +282,7 @@
     <Compile Include="LocalizationSetting.cs" />
     <Compile Include="NotificationChannel.cs" />
     <Compile Include="NotificationSenderConfig.cs" />
+    <Compile Include="NotificationSenderChannel.cs" />
     <Compile Include="ProductInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ISettingsService.cs" />
@@ -305,4 +307,3 @@
   </Target>
   -->
 </Project>
-
