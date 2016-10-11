@@ -190,6 +190,7 @@
     <Content Include="dbupdate\dbupdate002.sql" />
     <Content Include="dbupdate\dbupdate001.sql" />
     <Content Include="dbupdate\dbupdate003.sql" />
+    <Content Include="dbupdate\dbUpdate006.sql" />
     <Content Include="dbupdate\dbUpdate005.sql" />
     <Content Include="dbupdate\dbUpdate004.sql" />
   </ItemGroup>
