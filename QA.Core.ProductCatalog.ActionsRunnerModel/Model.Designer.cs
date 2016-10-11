@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\Sources\QA.Core\Features\DPC\Source\QA.Core.ProductCatalog.ActionsRunnerModel\Model.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Source\Repos\QA.DPC.Beeline.GE\QA.DPC\QA.Core.ProductCatalog.ActionsRunnerModel\Model.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.
