@@ -8,7 +8,7 @@ namespace QA.ProductCatalog.Infrastructure
 {
     public interface INotificationChannelService
     {
-        NotificationChannel[] GetNotificationChannels();
-        void UpdateNotificationChannel(string name, int productId, string publicationStatus);
+        NotificationChannelDescriptor[] GetNotificationChannels();
+        void UpdateNotificationChannel(string name, int productId, DateTime created, string publicationStatus);
     }
 }

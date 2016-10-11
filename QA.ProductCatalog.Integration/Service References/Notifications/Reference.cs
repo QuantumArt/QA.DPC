@@ -105,6 +105,12 @@ namespace QA.ProductCatalog.Integration.Notifications {
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private bool IsAtualField;
         
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string NotificationProviderField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.DateTime StartedField;
+        
         [global::System.ComponentModel.BrowsableAttribute(false)]
         public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
             get {
@@ -141,6 +147,32 @@ namespace QA.ProductCatalog.Integration.Notifications {
             }
         }
         
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string NotificationProvider {
+            get {
+                return this.NotificationProviderField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.NotificationProviderField, value) != true)) {
+                    this.NotificationProviderField = value;
+                    this.RaisePropertyChanged("NotificationProvider");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.DateTime Started {
+            get {
+                return this.StartedField;
+            }
+            set {
+                if ((this.StartedField.Equals(value) != true)) {
+                    this.StartedField = value;
+                    this.RaisePropertyChanged("Started");
+                }
+            }
+        }
+        
         public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
         
         protected void RaisePropertyChanged(string propertyName) {
@@ -161,6 +193,21 @@ namespace QA.ProductCatalog.Integration.Notifications {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CountField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<int> LastIdField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.DateTime> LastPublishedField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private System.Nullable<System.DateTime> LastQueuedField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private string LastStatusField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string NameField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
@@ -173,6 +220,71 @@ namespace QA.ProductCatalog.Integration.Notifications {
             }
             set {
                 this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int Count {
+            get {
+                return this.CountField;
+            }
+            set {
+                if ((this.CountField.Equals(value) != true)) {
+                    this.CountField = value;
+                    this.RaisePropertyChanged("Count");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<int> LastId {
+            get {
+                return this.LastIdField;
+            }
+            set {
+                if ((this.LastIdField.Equals(value) != true)) {
+                    this.LastIdField = value;
+                    this.RaisePropertyChanged("LastId");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.DateTime> LastPublished {
+            get {
+                return this.LastPublishedField;
+            }
+            set {
+                if ((this.LastPublishedField.Equals(value) != true)) {
+                    this.LastPublishedField = value;
+                    this.RaisePropertyChanged("LastPublished");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public System.Nullable<System.DateTime> LastQueued {
+            get {
+                return this.LastQueuedField;
+            }
+            set {
+                if ((this.LastQueuedField.Equals(value) != true)) {
+                    this.LastQueuedField = value;
+                    this.RaisePropertyChanged("LastQueued");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public string LastStatus {
+            get {
+                return this.LastStatusField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.LastStatusField, value) != true)) {
+                    this.LastStatusField = value;
+                    this.RaisePropertyChanged("LastStatus");
+                }
             }
         }
         

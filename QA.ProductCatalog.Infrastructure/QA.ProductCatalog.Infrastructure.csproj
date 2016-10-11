@@ -282,7 +282,7 @@
     <Compile Include="LocalizationSetting.cs" />
     <Compile Include="NotificationChannel.cs" />
     <Compile Include="NotificationSenderConfig.cs" />
-    <Compile Include="NotificationSenderChannel.cs" />
+    <Compile Include="NotificationChannelDescriptor.cs" />
     <Compile Include="ProductInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ISettingsService.cs" />

@@ -18,7 +18,8 @@ namespace QA.Core.DPC
 	{
 		static NotificationSenderConfig _config;
 		static INotificationProvider _configProvider;
-		static ILogger _logger;
+        static INotificationChannelService _channelService;
+        static ILogger _logger;
 
 	public ServiceHost serviceHost = null;
 
@@ -33,7 +34,9 @@ namespace QA.Core.DPC
 
 			_logger = ObjectFactoryBase.Resolve<ILogger>();
 			_configProvider = ObjectFactoryBase.Resolve<INotificationProvider>();
-		}
+            _channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
+
+        }
 
 		protected override void OnStart(string[] args)
 		{
@@ -196,15 +199,16 @@ namespace QA.Core.DPC
 					{
 						timer.Stop();
 						_logger.Info(
-						"Отправлено сообщение {1} для канала {0} по адресу {2}, ProductId = {3}, StatusCode = {4}, MsgId = {5}, TimeTaken = {6}",
-						channel.Name,
-						message.Method,
-						Uri.UnescapeDataString(url),
-						message.Key,
-						httpResponse.StatusCode,
-						message.Id,
-						timer.ElapsedMilliseconds);
-					};
+						    "Отправлено сообщение {1} для канала {0} по адресу {2}, ProductId = {3}, StatusCode = {4}, MsgId = {5}, TimeTaken = {6}",
+						    channel.Name,
+						    message.Method,
+						    Uri.UnescapeDataString(url),
+						    message.Key,
+						    httpResponse.StatusCode,
+						    message.Id,
+						    timer.ElapsedMilliseconds);
+                        _channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
+                    };
 					
 					service.RemoveMessage(message.Id);
 				}
@@ -230,7 +234,8 @@ namespace QA.Core.DPC
 							httpResponse.StatusCode,
 							message.Id,
 							timer.ElapsedMilliseconds);
-					}
+                        _channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
+                    }
 					else
 					{
 						_logger.Info(
@@ -242,7 +247,8 @@ namespace QA.Core.DPC
 							message.Key,
 							message.Id,
 							timer.ElapsedMilliseconds);
-					}
+                        _channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, ex.Status.ToString());
+                    }
 
 					_logger.ErrorException(
 						"Ошибка при отправке сообщения {0} для канала {1} по адресу {2}, ProductId = {3}, MsgId = {4}, TimeTaken = {5}",

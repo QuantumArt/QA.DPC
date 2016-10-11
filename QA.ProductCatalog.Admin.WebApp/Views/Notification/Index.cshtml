@@ -11,15 +11,50 @@
             </div>
         </fieldset>
     }
+    <fieldset>
+        <legend>Общие настройки</legend>
+        <div class="gr-wrapper">
+            <div class="group-panel-item">
+                <dl class="plain-field row">
+                    <dt title="Определяет, где задаются настройки каналов" class="plain-field-capture label " style="">Провайдер каналов</dt>
+                    <dd style="" class="plain-field-value field">
+                        <span title="" class="label None" style="">@Model.NotificationProvider</span>
+                    </dd>
+                </dl>
+                <dl class="plain-field row">
+                    <dt title="Время, когда был запущен сервис NotificationSender" class="plain-field-capture label " style="">Время запуска сервиса</dt>
+                    <dd style="" class="plain-field-value field">
+                        <span title="" class="label None" style="">@Model.Started</span>
+                    </dd>
+                </dl>
+            </div>
+         </div>
+</fieldset>
 
     <fieldset>
         <legend>Каналы</legend>
         <table class="inner-groupping-table">
+            <thead>
+                <tr>
+                    <th>Канал</th>
+                    <th>Очередь</th>
+                    <th>Время в очереди</th>
+                    <th>Время публикации</th>
+                    <th>Id продукта</th>
+                    <th>Статус публикации</th>
+                    <th>Статус канала</th>
+                </tr>
+            </thead>
             <tbody>
             @foreach (var channel in Model.Channels)
             {
                 <tr>
                     <td>@channel.Name</td>
+                    <td>@channel.Count</td>
+                    <td>@channel.LastQueued</td>
+                    <td>@channel.LastPublished</td>
+                    <td>@channel.LastId</td>
+                    <td>@channel.LastStatus</td>
                     @switch (channel.State)
                 {
                     case State.Actual:

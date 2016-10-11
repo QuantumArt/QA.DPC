@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace QA.ProductCatalog.Infrastructure
 {
-    public class NotificationSenderChannel
+    public class NotificationChannelDescriptor
     {
         public string Name { get; set; }
-        public int Count { get; set; }
         public string LastStatus { get; set; }
-        public DateTime? LastPublication { get; set; }
+
+        public DateTime? LastQueued { get; set; }
+        public DateTime? LastPublished { get; set; }
         public int? LastId { get; set; }
     }
 }
