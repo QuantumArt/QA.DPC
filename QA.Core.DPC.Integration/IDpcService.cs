@@ -19,5 +19,16 @@ namespace QA.Core.DPC.Integration
 		[OperationContract]
         string GetProduct(int id);
 
+        [OperationContract]
+        ProductData GetProductData(int id);      
+    }
+
+    public class ProductData
+    {
+        public string Product;
+
+        public DateTime Created;
+
+        public DateTime Updated;
     }
 }

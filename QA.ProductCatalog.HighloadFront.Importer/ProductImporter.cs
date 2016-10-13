@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using QA.Core;
-using QA.ProductCatalog.HighloadFront.Importer.Service_References.DpcServiceReference;
 using QA.ProductCatalog.HighloadFront.Infrastructure;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference;
 
 namespace QA.ProductCatalog.HighloadFront.Importer
 {
@@ -52,14 +52,15 @@ namespace QA.ProductCatalog.HighloadFront.Importer
 
                     return;
                 }
+           
 
                 _logger.Info($"Запрашиваем порцию №{index}...");
-                var jsonsTasks = chunk.Select(Service.GetProductAsync);
+                var dataTasks = chunk.Select(Service.GetProductDataAsync);
 
-                string[] jsons;
+                ProductData[] data;
                 try
                 {
-                    jsons = await Task.WhenAll(jsonsTasks);
+                    data = await Task.WhenAll(dataTasks);
                 }
                 catch (Exception)
                 {
@@ -71,8 +72,8 @@ namespace QA.ProductCatalog.HighloadFront.Importer
                 _logger.Info("Продукты получены.");
 
                 _logger.Info("Начинаем разбор продуктов...");
-                var products = jsons
-                    .Select(j => JsonConvert.DeserializeObject<DpcResponse>(j).Product)
+                var products = data
+                    .Select(j => new ProductPostProcessorData(JsonConvert.DeserializeObject<DpcResponse>(j.Product).Product, j.Created, j.Updated))
                     .ToArray();
 
                 _logger.Info("Продукты разобраны");

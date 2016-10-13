@@ -17,10 +17,10 @@ using QA.ProductCatalog.HighloadFront.App_Core;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Filters;
 using QA.ProductCatalog.HighloadFront.Importer;
-using QA.ProductCatalog.HighloadFront.Importer.Service_References.DpcServiceReference;
 using QA.ProductCatalog.HighloadFront.Infrastructure;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference;
 
 namespace QA.ProductCatalog.HighloadFront
 {
@@ -109,7 +109,14 @@ namespace QA.ProductCatalog.HighloadFront
 
             builder.RegisterType<ConfigurationService>().As<IConfigurationService>().SingleInstance();
 
-            builder.Register(c => new ArrayIndexer(c.Resolve<IConfigurationService>().GetConfiguration<ArrayIndexingSettings[]>())).As<IProductPostProcessor>();
+            builder.Register(c => new ArrayIndexer(c.Resolve<IConfigurationService>().GetConfiguration<ArrayIndexingSettings[]>())).Named<IProductPostProcessor>("array");
+            builder.RegisterType<DateIndexer>().Named<IProductPostProcessor>("date");
+
+            builder.Register(c => new IndexerDecorator(new[]
+            {
+                c.ResolveNamed<IProductPostProcessor>("array"),
+                c.ResolveNamed<IProductPostProcessor>("date")
+            })).As<IProductPostProcessor>();
 
             builder.RegisterType(typeof(ProductImporter)).InstancePerLifetimeScope();
 

@@ -11,5 +11,6 @@
         public int MaxResultWindow { get; set; }
         public string[] Types { get; set; }
         public string[] AnalyzedFields { get; set; }
+        public string CreationDateField { get; set; }
     }
 }

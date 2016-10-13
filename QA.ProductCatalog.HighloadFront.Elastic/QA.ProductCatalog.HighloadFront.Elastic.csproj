@@ -70,6 +70,9 @@
     <Compile Include="ElasticProductStore.cs" />
     <Compile Include="ElasticsearchSerializerExstensions.cs" />
     <Compile Include="ElasticsearchStreamSerializer.cs" />
+    <Compile Include="IndexsationPostProcessing\ArrayIndexer.cs" />
+    <Compile Include="IndexsationPostProcessing\DateIndexer.cs" />
+    <Compile Include="IndexsationPostProcessing\IndexerDecorator.cs" />
     <Compile Include="JsonFragmentExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SonicElasticStoreOptions.cs" />
@@ -98,4 +101,3 @@
   </Target>
   -->
 </Project>
-

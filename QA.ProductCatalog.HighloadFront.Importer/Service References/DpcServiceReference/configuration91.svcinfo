@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="IlTZ2LNVs2js7lTYpBaGHs1hIgA=">
+<SavedWcfConfigurationInformation xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" Version="9.1" CheckSum="ScbuH+6PejO0mPRdTEUJ7za7p4o=">
   <bindingConfigurations>
     <bindingConfiguration bindingType="basicHttpBinding" name="BasicHttpBinding_IDpcService">
       <properties>
@@ -112,10 +112,10 @@
     </bindingConfiguration>
   </bindingConfigurations>
   <endpoints>
-    <endpoint name="BasicHttpBinding_IDpcService" contract="DpcServiceReference.IDpcService" bindingType="basicHttpBinding" address="http://mscservices01:8029/DpcService.svc" bindingConfiguration="BasicHttpBinding_IDpcService">
+    <endpoint name="BasicHttpBinding_IDpcService" contract="DpcServiceReference.IDpcService" bindingType="basicHttpBinding" address="http://mscservices01:8031/DpcService.svc" bindingConfiguration="BasicHttpBinding_IDpcService">
       <properties>
         <property path="/address" isComplexType="false" isExplicitlyDefined="true" clrType="System.Uri, System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-          <serializedValue>http://mscservices01:8029/DpcService.svc</serializedValue>
+          <serializedValue>http://mscservices01:8031/DpcService.svc</serializedValue>
         </property>
         <property path="/behaviorConfiguration" isComplexType="false" isExplicitlyDefined="false" clrType="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
           <serializedValue />
