@@ -78,6 +78,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
 
 			ViewBag.IgnoredStatus = IgnoredStatus;
+            ViewBag.Localize = localize;
+
 
             if (ModelState.IsValid)
             {
