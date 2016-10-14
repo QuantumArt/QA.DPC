@@ -283,6 +283,17 @@ namespace QA.Core.DPC.Loader
                 ContentDisplayName = item.ContentDisplayName
             };
 
+            if(!string.IsNullOrEmpty(item.TypeAttributeName) && item.TypeAttributeName != item.ExtensionAttributeName)
+            {
+                product.Fields.Add(item.TypeAttributeName, new PlainArticleField
+                {
+                    ContentId = item.ContentId,
+                    FieldName = item.TypeAttributeName,
+                    Value = item.TypeAttributeValue,
+                    PlainFieldType = PlainFieldType.String
+                });
+            }
+
             if (!string.IsNullOrEmpty(item.ExtensionAttributeName))
             {
                 product.Fields.Add(item.ExtensionAttributeName, new ExtensionArticleField
@@ -395,16 +406,21 @@ namespace QA.Core.DPC.Loader
 	ec.CONTENT_ID [ExtensionContentId],
 	ec.NET_CONTENT_NAME [ExtensionName],
 	ec.CONTENT_NAME [ExtensionDisplayName]
+	ta.ATTRIBUTE_NAME [TypeAttributeName],
+	tv.[DATA] [TypeAttributeValue]
 FROM
 	@ids ids
 	LEFT JOIN CONTENT_ITEM itm ON ids.Id = itm.CONTENT_ITEM_ID
 	LEFT JOIN Content c ON itm.CONTENT_ID = c.CONTENT_ID
 	LEFT JOIN (select content_id, attribute_id, attribute_name from CONTENT_ATTRIBUTE where is_classifier = 1) cl on c.CONTENT_ID = cl.CONTENT_ID
 	LEFT JOIN CONTENT_DATA cd on cd.CONTENT_ITEM_ID = itm.CONTENT_ITEM_ID and cd.ATTRIBUTE_ID = cl.ATTRIBUTE_ID
-	LEFT JOIN content ec on cd.DATA = ec.CONTENT_ID";
+	LEFT JOIN content ec on cd.DATA = ec.CONTENT_IDLEFT JOIN CONTENT_ATTRIBUTE ta ON itm.CONTENT_ID = ta.CONTENT_ID AND ta.[ATTRIBUTE_NAME] = @typeField
+	LEFT JOIN CONTENT_DATA tv ON ta.[ATTRIBUTE_ID] = tv.[ATTRIBUTE_ID] AND itm.[CONTENT_ITEM_ID] = tv.CONTENT_ITEM_ID";
 
         public ProductInfo[] GetProductsInfo(int[] productIds)
         {
+            var typeField = _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
+
             using (var cs = new Qp8Bll.QPConnectionScope(ConfigurationManager.ConnectionStrings[KEY_CONNECTION_STRING].ConnectionString))
             {
                 var cnn = new DBConnector(cs.DbConnection);
@@ -412,6 +428,7 @@ FROM
                 {
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Add(new SqlParameter("@ids", SqlDbType.Structured) { TypeName = "Ids", Value = Quantumart.QP8.DAL.Common.IdsToDataTable(productIds) });
+                    cmd.Parameters.AddWithValue("@typeField", typeField);
                     var data = cnn.GetRealData(cmd);
                     return data.AsEnumerable().Select(row => Converter.ToModelFromDataRow<ProductInfo>(row)).ToArray();
                 }
@@ -430,6 +447,8 @@ FROM
             public int ExtensionContentId { get; set; }
             public string ExtensionName { get; set; }
             public string ExtensionDisplayName { get; set; }
+            public string TypeAttributeName { get; set; }
+            public string TypeAttributeValue { get; set; }
         }
         #endregion
 
