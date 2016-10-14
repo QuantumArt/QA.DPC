@@ -405,7 +405,7 @@ namespace QA.Core.DPC.Loader
 	cl.ATTRIBUTE_NAME ExtensionAttributeName,
 	ec.CONTENT_ID [ExtensionContentId],
 	ec.NET_CONTENT_NAME [ExtensionName],
-	ec.CONTENT_NAME [ExtensionDisplayName]
+	ec.CONTENT_NAME [ExtensionDisplayName],
 	ta.ATTRIBUTE_NAME [TypeAttributeName],
 	tv.[DATA] [TypeAttributeValue]
 FROM
@@ -414,7 +414,8 @@ FROM
 	LEFT JOIN Content c ON itm.CONTENT_ID = c.CONTENT_ID
 	LEFT JOIN (select content_id, attribute_id, attribute_name from CONTENT_ATTRIBUTE where is_classifier = 1) cl on c.CONTENT_ID = cl.CONTENT_ID
 	LEFT JOIN CONTENT_DATA cd on cd.CONTENT_ITEM_ID = itm.CONTENT_ITEM_ID and cd.ATTRIBUTE_ID = cl.ATTRIBUTE_ID
-	LEFT JOIN content ec on cd.DATA = ec.CONTENT_IDLEFT JOIN CONTENT_ATTRIBUTE ta ON itm.CONTENT_ID = ta.CONTENT_ID AND ta.[ATTRIBUTE_NAME] = @typeField
+	LEFT JOIN content ec on cd.DATA = ec.CONTENT_ID
+	LEFT JOIN CONTENT_ATTRIBUTE ta ON itm.CONTENT_ID = ta.CONTENT_ID AND ta.[ATTRIBUTE_NAME] = @typeField
 	LEFT JOIN CONTENT_DATA tv ON ta.[ATTRIBUTE_ID] = tv.[ATTRIBUTE_ID] AND itm.[CONTENT_ITEM_ID] = tv.CONTENT_ITEM_ID";
 
         public ProductInfo[] GetProductsInfo(int[] productIds)
