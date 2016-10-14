@@ -13,7 +13,7 @@
     <div class="formLayout">
 
         <div style="display: none" id="PartialSendLinkDiv">
-            <a href="@Url.Action("Index","PartialSend")?@string.Join("&", ((string[])ViewBag.IgnoredStatus).Select(n => string.Format("IgnoredStatus=" + n)))">Отправить новую порцию</a>
+            <a href="@Url.Action("Index","PartialSend")?Localize=@ViewBag.Localize.ToString()&@string.Join("&", ((string[])ViewBag.IgnoredStatus).Select(n => string.Format("IgnoredStatus=" + n)))">Отправить новую порцию</a>
         </div>
 
         <fieldset>
