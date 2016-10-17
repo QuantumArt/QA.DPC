@@ -291,6 +291,7 @@ namespace QA.Core.DPC.Loader
                     FieldId = 0,
                     FieldName = item.TypeAttributeName,
                     Value = item.TypeAttributeValue,
+                    NativeValue = item.TypeAttributeValue,
                     PlainFieldType = PlainFieldType.String
                 });
             }
