@@ -288,6 +288,7 @@ namespace QA.Core.DPC.Loader
                 product.Fields.Add(item.TypeAttributeName, new PlainArticleField
                 {
                     ContentId = item.ContentId,
+                    FieldId = 0,
                     FieldName = item.TypeAttributeName,
                     Value = item.TypeAttributeValue,
                     PlainFieldType = PlainFieldType.String
