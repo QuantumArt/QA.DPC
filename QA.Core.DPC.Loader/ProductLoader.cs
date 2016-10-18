@@ -22,6 +22,8 @@ using Quantumart.QPublishing.Database;
 using Quantumart.QPublishing.Info;
 using Content = QA.Core.Models.Configuration.Content;
 using Qp8Bll = Quantumart.QP8.BLL;
+using System.IO;
+using System.Text;
 
 namespace QA.Core.DPC.Loader
 {
@@ -42,6 +44,7 @@ namespace QA.Core.DPC.Loader
         private readonly IFieldService _fieldService;
         private readonly ISettingsService _settingsService;
         private readonly IConsumerMonitoringService _consumerMonitoringService;
+        private readonly IArticleFormatter _formatter;
 
         private IReadOnlyArticleService ArticleService { get; }
 
@@ -49,7 +52,7 @@ namespace QA.Core.DPC.Loader
         public ProductLoader(IContentDefinitionService definitionService, ILogger logger,
             IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher,
             IReadOnlyArticleService articleService, IFieldService fieldService, ISettingsService settingsService,
-            IConsumerMonitoringService consumerMonitoringService)
+            IConsumerMonitoringService consumerMonitoringService, IArticleFormatter formatter)
         {
             _definitionService = definitionService;
             _logger = logger;
@@ -59,6 +62,7 @@ namespace QA.Core.DPC.Loader
             _fieldService = fieldService;
             _settingsService = settingsService;
             _consumerMonitoringService = consumerMonitoringService;
+            _formatter = formatter;
 
             var connectinStringObject = ConfigurationManager.ConnectionStrings[KEY_CONNECTION_STRING];
             if (connectinStringObject == null)
@@ -318,9 +322,22 @@ namespace QA.Core.DPC.Loader
 
         private Article GetMissingProduct(IEnumerable<int> idsToСlarify, int id)
         {
-            var typeField = _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
+            if (idsToСlarify.Contains(id))
+            {
+                var productData = _consumerMonitoringService.GetProduct(id);
 
-            var product = new Article
+                if (!string.IsNullOrEmpty(productData))
+                {
+                    using (var prductStream = new MemoryStream(Encoding.UTF8.GetBytes(productData)))
+                    {
+                        var procTask = _formatter.Read(prductStream);
+                        procTask.Wait();
+                        return procTask.Result;
+                    }
+                }
+            }
+
+            return new Article
             {
                 Id = id,
                 ContentId = 0,
@@ -329,38 +346,6 @@ namespace QA.Core.DPC.Loader
                 ContentName = string.Empty,
                 IsPublished = true
             };
-
-            if (idsToСlarify.Contains(id))
-            {
-                var xml = _consumerMonitoringService.GetProductXml(id);
-                XDocument doc = null;
-                try
-                {
-                    doc = XDocument.Parse(xml);
-                }
-                catch (Exception)
-                {
-                    // ignored
-                }
-
-                var typeEl = doc?.Descendants("Product").Elements().FirstOrDefault(n => n.Name.LocalName == typeField);
-                if (typeEl != null)
-                {
-                    product.Fields.Add(typeField, new ExtensionArticleField
-                    {
-                        ContentId = 0,
-                        FieldName = typeField,
-                        Item = new Article
-                        {
-                            Visible = true,
-                            ContentId = 0,
-                            ContentName = typeEl.Value
-                        }
-                    });
-                }
-            }
-
-            return product;
         }
 
         /// <summary>

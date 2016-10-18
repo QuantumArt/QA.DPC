@@ -180,7 +180,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             var consumerMonitoringServiceFunc = ObjectFactoryBase.Resolve<Func<bool, IConsumerMonitoringService>>();
 
-            string xml = consumerMonitoringServiceFunc(live).GetProductXml(content_item_id);
+            string xml = consumerMonitoringServiceFunc(live).GetProduct(content_item_id);
 
             return View("GetXml", (object)xml);
         }
