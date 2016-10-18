@@ -249,21 +249,7 @@ namespace QA.Core.DPC.Loader
                     string.Format("Ошибка при генерации xml: ContentName у article не заполнен. ContentId={0} Id={1}",
                         article.ContentId, article.Id));
 
-			var node = new XElement(nodeName, fs);
-			if (addXsi)
-			{
-				ArticleField f;
-				if (article.Fields.TryGetValue("Type", out f))
-				{
-					XNamespace ns = "http://www.w3.org/2001/XMLSchema-instance";
-                    var sf = f as SingleArticleField;
-					if (sf != null && sf.Item != null)
-					{
-						node.Add(new XAttribute(ns + "type", sf.Item.ContentName));
-					}
-
-				}
-			}
+			var node = new XElement(nodeName, fs);		
 
             if (addXsi)
             {
