@@ -1,0 +1,13 @@
+<Article Status="{x:Null}" ContentDisplayName="Продукты" ContentId="288" ContentName="Product" Created="0001-01-01" Id="2266376" IsPublished="True" Modified="0001-01-01" PublishingMode="Publish" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Article.Fields>
+    <ExtensionArticleField FieldDisplayName="{x:Null}" FieldId="{x:Null}" SubContentId="{x:Null}" x:Key="Type" ContentId="305" FieldName="Type" Value="305">
+      <ExtensionArticleField.Item>
+        <Article Status="{x:Null}" ContentDisplayName="Мобильные тарифы B2C" ContentId="305" ContentName="MobileTariff" Created="0001-01-01" Id="0" IsPublished="False" Modified="0001-01-01" PublishingMode="Publish" Visible="True">
+          <Article.Fields>
+            <scg:Dictionary x:TypeArguments="x:String, ArticleField" />
+          </Article.Fields>
+        </Article>
+      </ExtensionArticleField.Item>
+    </ExtensionArticleField>
+  </Article.Fields>
+</Article>
