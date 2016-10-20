@@ -154,9 +154,21 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return View("GetXml", (object)xml);
         }
 
-        public ActionResult GetProductData(int content_item_id, string formatter, bool live = false, string lang = null)
+        public ActionResult GetProductData(int content_item_id, string formatter, bool live = false, string lang = null, bool simple = false)
         {
-            var product = ObjectFactoryBase.Resolve<IProductService>().GetProductById(content_item_id, live);
+            var service = ObjectFactoryBase.Resolve<IProductService>();
+
+            Article product = null;
+                
+            if (simple)
+            {
+                product = service.GetSimpleProductsByIds(new[] { content_item_id }, live).FirstOrDefault();
+            }
+            else
+            {
+                product = service.GetProductById(content_item_id, live);
+            }                
+
             if (product == null)
             {
                 ViewBag.Message = "Продукт не найден.";
