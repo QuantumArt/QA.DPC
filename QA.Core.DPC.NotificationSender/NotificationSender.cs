@@ -79,24 +79,27 @@ namespace QA.Core.DPC
 				{
 					var sender = items.First(itm => itm.Channel == channel.Name).Sender;
 					sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, _config.CheckInterval));
-				}
+                    _logger.Info("Updete sender for {0} whith delay {1} and interval {2}", channel.Name, delay, _config.CheckInterval);
+
+                }
 				else
 				{
 					_lockers.Add(channel.Name, new ChannelState { BlockState = null, ErrorsCount = 0 });
 					_senders.Add(new Timer((SendToOneChannel), channel.Name, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, _config.CheckInterval)));
-				}
+                    _logger.Info("Add sender for {0} whith delay {1} and interval {2}", channel.Name, delay, _config.CheckInterval);
+                }
 
 				delay++;
 			}
 
-			var sendersToStop = items
-				.Where(itm => !_config.Channels.Any(c => c.Name == itm.Channel && c.DegreeOfParallelism > 0))
-				.Select(itm => itm.Sender);
+			var itemsToStop = items
+				.Where(itm => !_config.Channels.Any(c => c.Name == itm.Channel && c.DegreeOfParallelism > 0));
 
-			foreach (var sender in sendersToStop)
+			foreach (var item in itemsToStop)
 			{
-				sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, _config.CheckInterval));
-			}
+				item.Sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, _config.CheckInterval));
+                _logger.Info("Stop sender for {0}", item.Channel, delay);
+            }
 		}
 		private void NotificationService_OnUpdateConfiguration(object sender, EventArgs e)
 		{
