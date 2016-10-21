@@ -73,7 +73,7 @@ namespace QA.Core.DPC
 			_config = _configProvider.GetConfiguration();
 			NotificationService._currentConfiguration = _config;
 
-			foreach (var channel in _config.Channels)
+			foreach (var channel in _config.Channels.Where(c => c.DegreeOfParallelism > 0))
 			{
 				if (_lockers.ContainsKey(channel.Name))
 				{
@@ -90,7 +90,7 @@ namespace QA.Core.DPC
 			}
 
 			var sendersToStop = items
-				.Where(itm => !_config.Channels.Any(c => c.Name == itm.Channel))
+				.Where(itm => !_config.Channels.Any(c => c.Name == itm.Channel && c.DegreeOfParallelism > 0))
 				.Select(itm => itm.Sender);
 
 			foreach (var sender in sendersToStop)
@@ -128,7 +128,7 @@ namespace QA.Core.DPC
                             if (res.IsSucceeded)
                             {
 								var channel = GetChannel(channelName);
-								var semaphore = new SemaphoreSlim(channel.DegreeOfParallelism);
+								var semaphore = new SemaphoreSlim(Math.Max(channel.DegreeOfParallelism, 1));
 								var localState = new ChannelState() { ErrorsCount = 0 };
 								var factoryMap = res.Result.Select(m => m.Key).Distinct().ToDictionary(k => k, k => new TaskFactory(new OrderedTaskScheduler()));
 								var tasks = res.Result.Select(m => SendOneMessage(channel, service, m, semaphore, factoryMap[m.Key], localState)).ToArray();
