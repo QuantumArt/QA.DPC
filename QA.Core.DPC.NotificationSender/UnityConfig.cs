@@ -36,6 +36,7 @@ namespace QA.Core.DPC
 			unityContainer.RegisterType<IServiceFactory, ServiceFactory>(new InjectionFactory(c => new ServiceFactory(connectionString, c.Resolve<IUserProvider>())));
 			unityContainer.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
 			unityContainer.RegisterType<IContextStorage, QpCachedContextStorage>();
+            unityContainer.RegisterType<INotificationChannelService, NotificationChannelService>(new ContainerControlledLifetimeManager());
 
 			unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>(
 				new InjectionFactory(
