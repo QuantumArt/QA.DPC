@@ -1,5 +1,7 @@
 ﻿using QA.Core.Web;
 using QA.ProductCatalog.Integration.Notifications;
+using System;
+using System.ServiceModel;
 using System.Web.Mvc;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
@@ -15,9 +17,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 		}
 		public ActionResult Index()
 		{
-			object model = _service.GetConfigurationInfo();
-
-			return View(model);
+            try
+            {
+                object model = _service.GetConfigurationInfo();
+                return View(model);
+            }
+            catch(EndpointNotFoundException)
+            {
+                return View((object)null);
+            }
 		}
 
 		public ActionResult UpdateConfiguration()

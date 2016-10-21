@@ -15,13 +15,15 @@ namespace QA.Core.DPC
 		internal static event EventHandler<EventArgs> OnUpdateConfiguration;
 
 		private readonly ILogger _logger;
-		private INotificationProvider _provider;
+		private readonly INotificationProvider _provider;
+        private INotificationChannelService _channelService;
 
-		public NotificationService()
+        public NotificationService()
 		{
 			_logger = ObjectFactoryBase.Resolve<ILogger>();
 			_provider = ObjectFactoryBase.Resolve<INotificationProvider>();
-		}
+            _channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
+        }
 		
 		public void PushNotifications(NotificationItem[] notifications, bool isStage, int userId, string userName, string method)
 		{
@@ -88,7 +90,7 @@ namespace QA.Core.DPC
 					}
 				
 					if (messages.Any())
-					{
+					{                     
 						ctx.Messages.InsertAllOnSubmit(messages);
 
 						needSubmit = true;
@@ -119,18 +121,38 @@ namespace QA.Core.DPC
                 .Union(_currentConfiguration.Channels.Select(c => c.Name))
                 .Distinct();
 
-            
+            Dictionary<string, int> countMap;
+
+            using (var ctx = new DAL.NotificationsModelDataContext())
+            {
+                countMap = ctx.Messages
+                    .GroupBy(m => m.Channel)
+                    .ToDictionary(g => g.Key, g => g.Count());
+            }         
+
+            var chennelsStatistic = _channelService.GetNotificationChannels();
 
             return new ConfigurationInfo
             {
+                Started = DateTime.Now,
+                NotificationProvider = _provider.GetType().Name,
                 IsAtual = actualConfiguration.Equals(_currentConfiguration),
-                Channels = channels.Select(name => new ChannelInfo
-                {
-                    Name = name,
-                    State = GetState(actualConfiguration.Channels.FirstOrDefault(c => c.Name == name), _currentConfiguration.Channels.FirstOrDefault(c => c.Name == name))
-                })
+                Channels = (from channel in channels
+                           join s in chennelsStatistic on channel equals s.Name into d
+                           from s in d.DefaultIfEmpty()
+                           select new ChannelInfo
+                           {
+                               Name = channel,
+                               State = GetState(actualConfiguration.Channels.FirstOrDefault(c => c.Name == channel), _currentConfiguration.Channels.FirstOrDefault(c => c.Name == channel)),
+                               Count = countMap.ContainsKey(channel) ? countMap[channel] : 0,
+                               LastId = s?.LastId,
+                               LastQueued = s?.LastQueued,
+                               LastPublished = s?.LastPublished,
+                               LastStatus = s?.LastStatus
+                           })
+                           .ToArray()
                 .ToArray()
-            };
+            };          
         }
 
         private State GetState(NotificationChannel actual, NotificationChannel current)
