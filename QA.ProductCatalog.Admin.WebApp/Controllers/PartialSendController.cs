@@ -29,9 +29,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _userProvider = userProvider;
         }
 
-        public ViewResult Index(string[] IgnoredStatus)
+        public ViewResult Index(string[] IgnoredStatus, bool localize = false)
         {
-			ViewBag.IgnoredStatus = IgnoredStatus ?? Enumerable.Empty<string>().ToArray();  
+            ViewBag.Localize = localize;
+            ViewBag.IgnoredStatus = IgnoredStatus ?? Enumerable.Empty<string>().ToArray();  
 			return View();
         }
 
@@ -54,7 +55,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Json(new { taskProcessingFinished, taskHtml = this.RenderRazorViewToString("ActionProps", new TaskModel(task)) }, JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult Send(string idsStr, bool proceedIgnoredStatus, string[] IgnoredStatus, bool stageOnly)
+        public ActionResult Send(string idsStr, bool proceedIgnoredStatus, string[] IgnoredStatus, bool stageOnly, bool localize = false)
         {
             int[] ids = null;
 			IgnoredStatus = IgnoredStatus ??  Enumerable.Empty<string>().ToArray();
@@ -77,6 +78,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
 
 			ViewBag.IgnoredStatus = IgnoredStatus;
+            ViewBag.Localize = localize;
+
 
             if (ModelState.IsValid)
             {
@@ -95,7 +98,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     parameters.Add("skipLive", true.ToString()); 
                 }
 
-	            string taskData =
+                parameters.Add("Localize", localize.ToString());
+
+                string taskData =
 		            ActionData.Serialize(new ActionData
 		            {
 			            ActionContext =

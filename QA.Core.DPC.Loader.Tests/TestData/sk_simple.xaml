@@ -1,0 +1,5 @@
+<Article Status="{x:Null}" ContentDisplayName="Маркетинговые продукты Shop" ContentId="435" ContentName="ProductShop" Created="0001-01-01" Id="2268201" IsPublished="True" Modified="0001-01-01" PublishingMode="Publish" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Article.Fields>
+    <PlainArticleField FieldDisplayName="{x:Null}" x:Key="Type" ContentId="435" FieldId="0" FieldName="Type" NativeValue="ShopProduct" PlainFieldType="String" Value="ShopProduct" />
+  </Article.Fields>
+</Article>

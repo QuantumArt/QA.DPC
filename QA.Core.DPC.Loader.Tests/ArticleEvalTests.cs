@@ -13,6 +13,8 @@ namespace QA.Core.DPC.Loader.Tests
     {
         private const string TestSampleDataFile = @"TestData\ReferenceDto.xaml";
         private const string TestGeProductFile = @"TestData\ge_product_click.xaml";
+        private const string SkSimpleArticleFile = @"TestData\sk_simple.xaml";
+        private const string SkSimpleArticleClassifierArticle = @"TestData\sk_simple_classifier.xaml";
 
         [MemberData(nameof(GetDPathExpressionData))]
         [Theory, Trait("DPathProcessor", "RegexParser")]
@@ -48,6 +50,8 @@ namespace QA.Core.DPC.Loader.Tests
         [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='289']")]
         [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='289']/ProductType/ProductFilters[SortOrder='1']")]
         [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='289']/ProductType/ProductFilters[SortOrder='1']/Title")]
+        [XamlData(SkSimpleArticleFile, "[Type='ShopProduct']")]
+        [XamlData(SkSimpleArticleClassifierArticle, "[Type='305']")]
         [Theory, Trait("DPathProcessor", "SingleResult")]
         public void DPathProcessor_WhenProductFounded_ShouldReturnArrayWithSingleElement(string expression, Article product)
         {
@@ -81,6 +85,8 @@ namespace QA.Core.DPC.Loader.Tests
         [XamlData(TestSampleDataFile, "MarketingProduct[test_filter_expression='test_value']")]
         [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='test_value']")]
         [Theory, Trait("DPathProcessor", "NotExistingProducts")]
+        [XamlData(SkSimpleArticleFile, "[Type='305']")]
+        [XamlData(SkSimpleArticleClassifierArticle, "[Type='ShopProduct']")]
         public void DPathProcessor_WhenProductNotFounded_ShouldReturnEmptyArray(string expression, Article product)
         {
             // Fixture setup
