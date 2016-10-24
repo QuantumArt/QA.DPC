@@ -73,30 +73,33 @@ namespace QA.Core.DPC
 			_config = _configProvider.GetConfiguration();
 			NotificationService._currentConfiguration = _config;
 
-			foreach (var channel in _config.Channels)
+			foreach (var channel in _config.Channels.Where(c => c.DegreeOfParallelism > 0))
 			{
 				if (_lockers.ContainsKey(channel.Name))
 				{
 					var sender = items.First(itm => itm.Channel == channel.Name).Sender;
 					sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, _config.CheckInterval));
-				}
+                    _logger.Info("Updete sender for {0} whith delay {1} and interval {2}", channel.Name, delay, _config.CheckInterval);
+
+                }
 				else
 				{
 					_lockers.Add(channel.Name, new ChannelState { BlockState = null, ErrorsCount = 0 });
 					_senders.Add(new Timer((SendToOneChannel), channel.Name, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, _config.CheckInterval)));
-				}
+                    _logger.Info("Add sender for {0} whith delay {1} and interval {2}", channel.Name, delay, _config.CheckInterval);
+                }
 
 				delay++;
 			}
 
-			var sendersToStop = items
-				.Where(itm => !_config.Channels.Any(c => c.Name == itm.Channel))
-				.Select(itm => itm.Sender);
+			var itemsToStop = items
+				.Where(itm => !_config.Channels.Any(c => c.Name == itm.Channel && c.DegreeOfParallelism > 0));
 
-			foreach (var sender in sendersToStop)
+			foreach (var item in itemsToStop)
 			{
-				sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, _config.CheckInterval));
-			}
+				item.Sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, _config.CheckInterval));
+                _logger.Info("Stop sender for {0}", item.Channel, delay);
+            }
 		}
 		private void NotificationService_OnUpdateConfiguration(object sender, EventArgs e)
 		{
@@ -128,7 +131,7 @@ namespace QA.Core.DPC
                             if (res.IsSucceeded)
                             {
 								var channel = GetChannel(channelName);
-								var semaphore = new SemaphoreSlim(channel.DegreeOfParallelism);
+								var semaphore = new SemaphoreSlim(Math.Max(channel.DegreeOfParallelism, 1));
 								var localState = new ChannelState() { ErrorsCount = 0 };
 								var factoryMap = res.Result.Select(m => m.Key).Distinct().ToDictionary(k => k, k => new TaskFactory(new OrderedTaskScheduler()));
 								var tasks = res.Result.Select(m => SendOneMessage(channel, service, m, semaphore, factoryMap[m.Key], localState)).ToArray();
