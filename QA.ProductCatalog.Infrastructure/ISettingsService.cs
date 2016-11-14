@@ -21,7 +21,8 @@ namespace QA.ProductCatalog.Infrastructure
 		PRODUCT_TYPES_FIELD_NAME,	//Название поле продукта, определяющего тип продукта
 		REGIONAL_TAGS_CONTENT_ID,    //Идентификатор контента Региональные теги
 		REGIONAL_TAGS_VALUES_CONTENT_ID,    //Идентификатор контента Значения региональных тегов
-		REGIONS_CONTENT_ID,    //Идентификатор контента Регионы
+        REGIONAL_TAGS_RECURSIVE_DEPTH, //Глубина рекурсивных замен внутри самих тэгов,
+        REGIONS_CONTENT_ID,    //Идентификатор контента Регионы
 		MARKETING_PRODUCT_CONTENT_ID, //Идентификатор контента Марекетинговые регионы
 		PRODUCTS_CONTENT_ID,        //Идентификатор контента Продукты
 		PRODUCT_RELATIONS_CONTENT_ID, //Идентификатор контента Матрица связей продуктов
