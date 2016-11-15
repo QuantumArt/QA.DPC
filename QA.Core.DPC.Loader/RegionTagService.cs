@@ -72,6 +72,16 @@ namespace QA.Core.DPC.Loader
                 tags = tags.Where(t => !exceptions.Contains(t.Tag)).ToList();
             }
 
+            int depth = GetRecursiveDepth();
+
+            for (int i = 0; i < depth; i++)
+            {
+                foreach (var tag in tags)
+                {
+                    tag.Value = Replace(tag.Value, tags);
+                }
+            }
+
             return Replace(text, tags);
         }
 
@@ -193,17 +203,7 @@ namespace QA.Core.DPC.Loader
 
         #region Закрытые методы
         private string Replace(string text, List<RegionTag> tags)
-        {
-            int depth = GetRecursiveDepth();
-
-            for (int i = 0; i < depth; i++)
-            {
-                foreach (var tag in tags)
-                {
-                    Replace(tag.Value, tags);
-                }
-            }
-
+        {         
             var result = DefaultRegex.Replace(text, (MatchEvaluator)(match =>
             {
                 if (match.Groups.Count > 1)
