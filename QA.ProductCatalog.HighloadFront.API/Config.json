@@ -22,9 +22,10 @@
       "Tariff",
       "Service"
     ],
-    "AnalyzedFields": [
-      "Title",
-      "*Description"
+    "NotAnalyzedFields": [
+      "GlobalCode",
+      "Alias",
+      "ForisId"
     ],
     "CreationDateField": "UpdateDate"
   },

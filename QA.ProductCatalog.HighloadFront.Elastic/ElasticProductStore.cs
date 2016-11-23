@@ -221,7 +221,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     _client.ConnectionSettings.DefaultIndex,
                     index => index
                         .Settings(s => s.Setting("max_result_window", Options.MaxResultWindow))
-                        .Mappings(m => m.MapAnalyzed(Options.Types, Options.AnalyzedFields))                 
+                        .Mappings(m => m.MapNotAnalyzed(Options.Types, Options.NotAnalyzedFields))                 
                 );
 
                 return SonicResult.Success;
@@ -283,17 +283,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 query = productsOptions.Filters.Where(f => f.Item1 != Options.TypePath).Aggregate(query, (current, sf) =>
 
-                IsAnalyzedField(sf.Item1) ?
+                IsNotAnalyzedField(sf.Item1) ?
+                current & +new TermQuery
+                {
+                    Field = sf.Item1,
+                    Value = sf.Item2.ToLowerInvariant()
+                } :
                 current & +new MatchPhraseQuery
                 {
                     Field = sf.Item1,
                     Query = sf.Item2,
                     Operator = Operator.And
-                } :
-                current & +new TermQuery
-                {
-                    Field = sf.Item1,
-                    Value = sf.Item2.ToLowerInvariant()
                 });
             }
 
@@ -438,9 +438,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await _client.SearchStreamAsync(request);
         }
 
-        private bool IsAnalyzedField(string pathField)
+        private bool IsNotAnalyzedField(string pathField)
         {
-            return Options.AnalyzedFields.Any(mask => {
+            return Options.NotAnalyzedFields.Any(mask => {
                 var field = pathField.Split(new[] { '.' }).Last();
 
                 bool startsWithMask = mask.StartsWith("*");

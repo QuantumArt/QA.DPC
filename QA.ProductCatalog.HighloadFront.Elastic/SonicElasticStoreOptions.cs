@@ -10,7 +10,7 @@
         public string[] DefaultFields { get; set; }
         public int MaxResultWindow { get; set; }
         public string[] Types { get; set; }
-        public string[] AnalyzedFields { get; set; }
+        public string[] NotAnalyzedFields { get; set; }
         public string CreationDateField { get; set; }
     }
 }
