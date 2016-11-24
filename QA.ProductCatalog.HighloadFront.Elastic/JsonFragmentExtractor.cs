@@ -76,7 +76,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                             inside = !inside;
                     }
 
-                    if (!findInWhole && depth >= deep)
+                    if (!startExport && !findInWhole && depth >= deep)
                     {
                         if (found < textToSearch.Length && c == textToSearch[found])
                         {
