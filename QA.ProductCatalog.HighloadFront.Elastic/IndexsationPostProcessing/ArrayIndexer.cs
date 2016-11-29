@@ -45,8 +45,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     if (string.IsNullOrEmpty(keyValue))
                         continue;
 
-                    RemoveProperties(topKeyTokensWithArrayItem);
-
                     foreach (string keyPart in setting.Keys.Skip(1))
                     {
                         var keyTokens = arrayItem.SelectTokens(keyPart);
@@ -54,8 +52,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                         if (keyTokens.Any())
                         {
                             keyValue += setting.CompositeKeySeparator + GetKeyValue(keyTokens, setting.KeyPartsSeparator);
-
-                            RemoveProperties(keyTokens);
                         }
                     }
 
