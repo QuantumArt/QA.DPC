@@ -46,7 +46,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
                 {
                     var result = await Manager.CreateAsync(product);
 
-                    return CreateResult(result);
+                    return CreateResult(result, Logger);
                 }
                 finally
                 {
@@ -74,7 +74,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
                 {
                     var result = await Manager.DeleteAsync(product);
 
-                    return CreateResult(result);
+                    return CreateResult(result, Logger);
                 }
                 finally
                 {
@@ -105,13 +105,17 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
             return _taskService.GetTask(id);
         }
 
-        private static HttpResponseMessage CreateResult(SonicResult results)
+        private static HttpResponseMessage CreateResult(SonicResult results, ILogger logger)
         {
             if (!results.Succeeded)
+            {
+                logger.ErrorException(results.ToString(), results.GetException());
+
                 return new HttpResponseMessage(HttpStatusCode.InternalServerError)
                 {
                     Content = new StringContent(results.ToString())
                 };
+            }
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }

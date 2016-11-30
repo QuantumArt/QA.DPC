@@ -67,31 +67,22 @@ namespace QA.Core.DPC.Loader
                 tags = GetRegionTags(currenrRegion);
             }
 
-            var result = DefaultRegex.Replace(text, (MatchEvaluator)(match =>
+            if (exceptions != null)
             {
-                if (match.Groups.Count > 1)
+                tags = tags.Where(t => !exceptions.Contains(t.Tag)).ToList();
+            }
+
+            int depth = GetRecursiveDepth();
+
+            for (int i = 0; i < depth; i++)
+            {
+                foreach (var tag in tags)
                 {
-                    var group = match.Groups[1];
-                    if (group.Success)
-                    {
-                        var tag = group.Value;
-
-
-                        if (exceptions != null && exceptions.Contains(tag)) //тег в списке исключений
-                            return match.ToString();
-                        var replacement = tags
-                            .FirstOrDefault(x => x.Tag.Equals(tag, StringComparison.InvariantCulture));
-
-                        if (replacement != null)
-                        {
-                            return replacement.Value;
-                        }
-                    }
+                    tag.Value = Replace(tag.Value, tags);
                 }
-                return string.Empty;
-            }));
+            }
 
-            return result;
+            return Replace(text, tags);
         }
 
         public string[] GetTags(string text)
@@ -211,6 +202,37 @@ namespace QA.Core.DPC.Loader
         #endregion
 
         #region Закрытые методы
+        private string Replace(string text, List<RegionTag> tags)
+        {         
+            var result = DefaultRegex.Replace(text, (MatchEvaluator)(match =>
+            {
+                if (match.Groups.Count > 1)
+                {
+                    var group = match.Groups[1];
+                    if (group.Success)
+                    {
+                        var tag = group.Value;
+
+
+                        var replacement = tags
+                            .FirstOrDefault(x => x.Tag.Equals(tag, StringComparison.InvariantCulture));
+
+                        if (replacement != null)
+                        {
+                            return replacement.Value;
+                        }
+                        else
+                        {
+                            return match.ToString(); //тег в списке исключений
+                        }
+                    }
+                }
+                return string.Empty;
+            }));
+
+            return result;
+        }
+
         /// <summary>
         /// Получение всех региональных тегов (контент Региональные теги). Без значений.
         /// </summary>
@@ -267,6 +289,19 @@ namespace QA.Core.DPC.Loader
 
                 return res;
             });
+        }
+
+        private int GetRecursiveDepth()
+        {
+            int depth = 0;
+            string value = _settingsService.GetSetting(SettingsTitles.REGIONAL_TAGS_RECURSIVE_DEPTH);
+
+            if (value != null && int.TryParse(value, out depth))
+            {
+                return depth;
+            }
+
+            return 0;
         }
         #endregion
     }
