@@ -25,24 +25,24 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
         [RateLimit("GetByType")]
         [ResponseCache(Location = ResponseCacheLocation.None)]
-        [Route("products/{type}"), Route("{lang}/{config}/products/{type}")]
-        public async Task<HttpResponseMessage> GetByType(string type, string lang = "ru", string config = "live")
+        [Route("products/{type}"), Route("{language}/{state}/products/{type}")]
+        public async Task<HttpResponseMessage> GetByType(string type, string language = "invariant", string state = "live")
         {
             type = type?.TrimStart('@');
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
-            var stream = await Manager.GetProductsInTypeStream(type, options);
+            var stream = await Manager.GetProductsInTypeStream(type, options, language, state);
             return GetResponse(stream);
         }     
 
-        [RateLimit("GetById"), Route("{lang}/{config}/products/{id:int}"), Route("products/{id:int}")]
+        [RateLimit("GetById"), Route("{language}/{state}/products/{id:int}"), Route("products/{id:int}")]
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
-        public async Task<HttpResponseMessage> GetById(string id, string lang = "ru", string config = "live")
+        public async Task<HttpResponseMessage> GetById(string id, string language = "invariant", string state = "live")
         {
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
 
             try
             {
-                var elasticResponse = await Manager.FindStreamByIdAsync(id, options);
+                var elasticResponse = await Manager.FindStreamByIdAsync(id, options, language, state);
                 return GetResponse(elasticResponse.Body, false);
             }
             catch (ElasticsearchClientException ex) when (ex.Response.HttpStatusCode == 404)
@@ -51,12 +51,12 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
             }
         }
 
-        [Route("{lang}/{config}/products/search"), Route("products/search"), RateLimit("Search"), HttpGet]
+        [Route("{language}/{state}/products/search"), Route("products/search"), RateLimit("Search"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.None)]
-        public async Task<HttpResponseMessage> Search([FromUri] string q, string lang = "ru", string config = "live")
+        public async Task<HttpResponseMessage> Search([FromUri] string q, string language = "invariant", string state = "live")
         {
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
-            var stream = await Manager.SearchStreamAsync(q, options);
+            var stream = await Manager.SearchStreamAsync(q, options, language, state);
             return GetResponse(stream);
         }
 

@@ -44,14 +44,14 @@
       {
         "Adress": "http://mscnosql01:9200",
         "Index": "products",
-        "Lang": "invariant",
-        "IsLive": true
+        "Language": "invariant",
+        "State": "live"
       },
       {
-        "Adress": "http://mscnosql02:9200",
-        "Index": "products-stage",
-        "Lang": "invariant",
-        "IsLive": false
+        "Adress": "http://mscnosql01:9200",
+        "Index": "products",
+        "Language": "invariant",
+        "State": "stage"
       }
     ]
   },

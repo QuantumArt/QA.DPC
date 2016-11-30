@@ -12,19 +12,19 @@ namespace QA.ProductCatalog.HighloadFront.Importer
     public class ProductImporter
     {
         private readonly ILogger _logger;
-        public IDpcService Service { get; set; }
+        public Func<string, string, IDpcService> GetService { get; set; }
         public ProductManager Manager { get; set; }
         public HarvesterOptions Options { get; }
 
-        public ProductImporter(IOptions<HarvesterOptions> optionsAccessor, IDpcService service, ProductManager manager, ILogger logger)
+        public ProductImporter(IOptions<HarvesterOptions> optionsAccessor, Func<string, string, IDpcService> getService, ProductManager manager, ILogger logger)
         {
             _logger = logger;
-            Service = service;
+            GetService = getService;
             Manager = manager;
             Options = optionsAccessor?.Value ?? new HarvesterOptions();
         }
 
-        public async Task ImportAsync(ITaskExecutionContext executionContext)
+        public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state)
         {
             if(executionContext.IsCancellationRequested)
             {
@@ -34,9 +34,9 @@ namespace QA.ProductCatalog.HighloadFront.Importer
             }
             
             ThrowIfDisposed();
-
+            var service = GetService(language, state);
             _logger.Info("Начинаем импорт данных. Запрашиваем список продуктов...");
-            var ids = await Service.GetAllProductIdAsync(0, int.MaxValue);
+            var ids = await service.GetAllProductIdAsync(0, int.MaxValue);
             _logger.Info($"Получен список продуктов. Количество: {ids.Length}");
             _logger.Info($"Бьем продукты на порции по {Options.ChunkSize}...");
             var chunks = ids.Chunk(Options.ChunkSize).ToArray();
@@ -55,7 +55,7 @@ namespace QA.ProductCatalog.HighloadFront.Importer
            
 
                 _logger.Info($"Запрашиваем порцию №{index}...");
-                var dataTasks = chunk.Select(Service.GetProductDataAsync);
+                var dataTasks = chunk.Select(service.GetProductDataAsync);
 
                 ProductData[] data;
                 try
@@ -80,7 +80,7 @@ namespace QA.ProductCatalog.HighloadFront.Importer
 
                 _logger.Info("Начинаем запись...");
 
-                var result = await Manager.BulkCreateAsync(products);
+                var result = await Manager.BulkCreateAsync(products, language, state);
 
                 if (result.Succeeded)
                 {

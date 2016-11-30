@@ -31,8 +31,8 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
             _taskService = taskService;
         }
 
-        [Route("")]
-        public async Task<HttpResponseMessage> Put([FromBody]PushMessage message)
+        [Route("{language}/{state}")]
+        public async Task<HttpResponseMessage> Put([FromBody]PushMessage message, string language = "invariant", string state = "live")
         {
             var product = message.Product;
 
@@ -44,7 +44,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
             {
                 try
                 {
-                    var result = await Manager.CreateAsync(product);
+                    var result = await Manager.CreateAsync(product, language, state);
 
                     return CreateResult(result, Logger);
                 }
@@ -59,8 +59,8 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
 
 
-        [Route("")]
-        public async Task<object> Delete([FromBody]PushMessage message)
+        [Route("{language}/{state}")]
+        public async Task<object> Delete([FromBody]PushMessage message, string language = "invariant", string state = "live")
         {
             var product = message.Product;
 
@@ -72,7 +72,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
             {
                 try
                 {
-                    var result = await Manager.DeleteAsync(product);
+                    var result = await Manager.DeleteAsync(product, language, state);
 
                     return CreateResult(result, Logger);
                 }
@@ -85,13 +85,13 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
                 throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {_lockTimeoutInMs} миллисекунд");
         }
 
-        [Route("reset"), HttpPost]
-        public HttpResponseMessage Reset()
+        [Route("{language}/{state}/reset"), HttpPost]
+        public HttpResponseMessage Reset(string language = "invariant", string state = "live")
         {
             if (!_syncer.AnySlotsLeft)
                 throw new Exception("Нет свободных слотов, дождитесь завершения предыдущих операций");
 
-            int taskId = _taskService.AddTask("ReindexAllTask", null, 0, null, "ReindexAllTask");
+            int taskId = _taskService.AddTask("ReindexAllTask", $"{language}/{state}", 0, null, "ReindexAllTask");
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {

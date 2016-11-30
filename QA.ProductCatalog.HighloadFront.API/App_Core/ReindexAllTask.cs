@@ -28,9 +28,13 @@ namespace QA.ProductCatalog.HighloadFront.App_Core
             {
                 try
                 {
-                    _manager.DeleteAllASync().Wait();
+                    var itms = data.Split('/');
+                    string language = itms[0];
+                    string state = itms[1];
 
-                    _importer.ImportAsync(executionContext).Wait();
+                    _manager.DeleteAllASync(language, state).Wait();
+
+                    _importer.ImportAsync(executionContext, language, state).Wait();
                 }
                 finally
                 {

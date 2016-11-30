@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Caching;
 using System.Web.Http;
@@ -66,16 +67,26 @@ namespace QA.ProductCatalog.HighloadFront
 
             builder.Configure<HarvesterOptions>(_config.GetSection("Harvester"));
 
+            builder.Configure<DataOptions>(_config.GetSection("Data"));
+
             builder.Configure<SonicElasticStoreOptions>(_config.GetSection("sonicElasticStore"));
 
-            foreach (var x in new[] { "" })
-            {
-                var client = GetElasticClient(x, x);
-                var key = GetKey(x, x);
-                builder.RegisterInstance<IElasticClient>(client).Named<IElasticClient>(key);
+            //foreach (var option in GetOptions<DataOptions>("Data").Elastic2)
+            //{
+            //    var client = GetElasticClient(option.Index, option.Adress);
+            //    var key = GetKey(option.Language, option.State);
+            //    builder.RegisterInstance<IElasticClient>(client).Named<IElasticClient>(key);                
+            //}
 
-                builder.Register<Func<string, string, IElasticClient>>(r => (a ,b) => r.ResolveNamed<IElasticClient>(GetKey(a, b)));
-            }
+            var list = GetOptions<DataOptions>("Data").Elastic2;
+
+            var dict = list.ToDictionary(item => GetKey(item.Language, item.State), item => GetElasticClient(item.Index, item.Adress));
+
+            builder.Register<Func<string, string, IDpcService>>(c => (language, state) => new DpcServiceClient(GetKey(language, state)));
+
+            //builder.Register<Func<string, string, IElasticClient>>(c => (language, state) => c.ResolveNamed<IElasticClient>(GetKey(language, state)));
+
+            builder.Register<Func<string, string, IElasticClient>>(c => (language, state) => dict[GetKey(language, state)]);
 
             builder.RegisterSingleton<IElasticClient>(context =>
             {
@@ -140,14 +151,23 @@ namespace QA.ProductCatalog.HighloadFront
             return builder.Build();
         }
 
-        private string GetKey(string index, string address)
+        private TOptions GetOptions<TOptions>(string name)
+            where TOptions : class, new()
         {
-            return $"{index}-{address}";
+            var section =_config.GetSection(name);
+            var options = new ConfigureFromConfigurationOptions<TOptions>(section);
+            var manager = new OptionsManager<TOptions>(new[] { options });
+            return manager.Value;
+        }
+
+        private string GetKey(string language, string state)
+        {
+            return $"{language}-{state}";
         }
 
         private IElasticClient GetElasticClient(string index, string address)
         {
-            var node = new Uri(_config[address]);
+            var node = new Uri(address);
 
             var connectionPool = new SingleNodeConnectionPool(node);
 
