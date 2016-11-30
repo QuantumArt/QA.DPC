@@ -38,7 +38,22 @@
     "Elastic": {
       "Adress": "http://mscnosql01:9200",
       "Index": "products"
-    }
+    },
+
+    "Elastic2": [
+      {
+        "Adress": "http://mscnosql01:9200",
+        "Index": "products",
+        "Lang": "invariant",
+        "IsLive": true
+      },
+      {
+        "Adress": "http://mscnosql02:9200",
+        "Index": "products-stage",
+        "Lang": "invariant",
+        "IsLive": false
+      }
+    ]
   },
 
   "RateLimits": {
