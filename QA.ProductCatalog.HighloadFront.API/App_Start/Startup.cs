@@ -68,6 +68,15 @@ namespace QA.ProductCatalog.HighloadFront
 
             builder.Configure<SonicElasticStoreOptions>(_config.GetSection("sonicElasticStore"));
 
+            foreach (var x in new[] { "" })
+            {
+                var client = GetElasticClient(x, x);
+                var key = GetKey(x, x);
+                builder.RegisterInstance<IElasticClient>(client).Named<IElasticClient>(key);
+
+                builder.Register<Func<string, string, IElasticClient>>(r => (a ,b) => r.ResolveNamed<IElasticClient>(GetKey(a, b)));
+            }
+
             builder.RegisterSingleton<IElasticClient>(context =>
             {
                 var node = new Uri(_config["Data:Elastic:Adress"]);
@@ -129,6 +138,26 @@ namespace QA.ProductCatalog.HighloadFront
 
 
             return builder.Build();
+        }
+
+        private string GetKey(string index, string address)
+        {
+            return $"{index}-{address}";
+        }
+
+        private IElasticClient GetElasticClient(string index, string address)
+        {
+            var node = new Uri(_config[address]);
+
+            var connectionPool = new SingleNodeConnectionPool(node);
+
+            var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
+                            .DefaultIndex(index)
+                            .DisableDirectStreaming()
+                            //.EnableTrace()
+                            .ThrowExceptions();
+
+            return new ElasticClient(settings);
         }
     }
 }

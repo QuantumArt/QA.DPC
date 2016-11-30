@@ -11,7 +11,7 @@ using QA.ProductCatalog.HighloadFront.Filters;
 
 namespace QA.ProductCatalog.HighloadFront.Controllers
 {
-    [RoutePrefix("api/1.0/products")]
+    [RoutePrefix("api/1.0")]
     [OnlyAuthUsers]
     public class ProductsController : ApiController
     {
@@ -25,8 +25,8 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
         [RateLimit("GetByType")]
         [ResponseCache(Location = ResponseCacheLocation.None)]
-        [Route("{type}")]
-        public async Task<HttpResponseMessage> GetByType(string type)
+        [Route("products/{type}"), Route("{lang}/{config}/products/{type}")]
+        public async Task<HttpResponseMessage> GetByType(string type, string lang = "ru", string config = "live")
         {
             type = type?.TrimStart('@');
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
@@ -34,9 +34,9 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
             return GetResponse(stream);
         }     
 
-        [RateLimit("GetById"), Route("{id:int}")]
+        [RateLimit("GetById"), Route("{lang}/{config}/products/{id:int}"), Route("products/{id:int}")]
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
-        public async Task<HttpResponseMessage> GetById(string id)
+        public async Task<HttpResponseMessage> GetById(string id, string lang = "ru", string config = "live")
         {
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
 
@@ -51,9 +51,9 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
             }
         }
 
-        [Route("search"), RateLimit("Search"), HttpGet]
+        [Route("{lang}/{config}/products/search"), Route("products/search"), RateLimit("Search"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.None)]
-        public async Task<HttpResponseMessage> Search([FromUri] string q)
+        public async Task<HttpResponseMessage> Search([FromUri] string q, string lang = "ru", string config = "live")
         {
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
             var stream = await Manager.SearchStreamAsync(q, options);
