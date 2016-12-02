@@ -11,7 +11,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 		}
 		public ActionResult Index(string url)
 		{
-            return View(url);
+            return View("Index", url);
 		}	
 	}
 }
