@@ -8,37 +8,39 @@ namespace QA.ProductCatalog.HighloadFront.App_Core
     {
         private readonly ProductImporter _importer;
         private readonly ProductManager _manager;
-        private readonly IndexOperationSyncer _syncer;
+        private readonly Func<string, string, IndexOperationSyncer> _getSyncer;
 
         private const int _lockTimeoutInMs = 5000;
 
-        public ReindexAllTask(ProductImporter importer, ProductManager manager, IndexOperationSyncer syncer)
+        public ReindexAllTask(ProductImporter importer, ProductManager manager, Func<string, string, IndexOperationSyncer> getSyncer)
         {
             _importer = importer;
 
             _manager = manager;
 
-            _syncer = syncer;
+            _getSyncer = getSyncer;
         }
 
 
         public void Run(string data, string config, byte[] binData, ITaskExecutionContext executionContext)
         {
-            if (_syncer.EnterSyncAll(_lockTimeoutInMs))
+            var itms = data.Split('/');
+            string language = itms[0];
+            string state = itms[1];
+
+            var syncer = _getSyncer(language, state);
+
+            if (syncer.EnterSyncAll(_lockTimeoutInMs))
             {
                 try
                 {
-                    var itms = data.Split('/');
-                    string language = itms[0];
-                    string state = itms[1];
-
                     _manager.DeleteAllASync(language, state).Wait();
 
                     _importer.ImportAsync(executionContext, language, state).Wait();
                 }
                 finally
                 {
-                    _syncer.LeaveSyncAll();
+                    syncer.LeaveSyncAll();
                 }
             }
             else

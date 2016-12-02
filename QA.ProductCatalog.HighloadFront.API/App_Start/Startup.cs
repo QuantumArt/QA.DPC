@@ -71,38 +71,33 @@ namespace QA.ProductCatalog.HighloadFront
 
             builder.Configure<SonicElasticStoreOptions>(_config.GetSection("sonicElasticStore"));
 
-            //foreach (var option in GetOptions<DataOptions>("Data").Elastic2)
-            //{
-            //    var client = GetElasticClient(option.Index, option.Adress);
-            //    var key = GetKey(option.Language, option.State);
-            //    builder.RegisterInstance<IElasticClient>(client).Named<IElasticClient>(key);                
-            //}
+            var elasticOptions = GetOptions<DataOptions>("Data").Elastic;
 
-            var list = GetOptions<DataOptions>("Data").Elastic2;
+            var elasticClientMap = elasticOptions.ToDictionary(
+                    option => GetElasticKey(option.Language, option.State),
+                    option => GetElasticClient(option.Index, option.Adress)
+                );
 
-            var dict = list.ToDictionary(item => GetKey(item.Language, item.State), item => GetElasticClient(item.Index, item.Adress));
+            var syncerMap = elasticOptions.ToDictionary(
+                    option => GetElasticKey(option.Language, option.State),
+                    option => new IndexOperationSyncer()
+                );
 
-            builder.Register<Func<string, string, IDpcService>>(c => (language, state) => new DpcServiceClient(GetKey(language, state)));
+            var defaultElasticOption = elasticOptions.FirstOrDefault(option => option.IsDefault);
 
-            //builder.Register<Func<string, string, IElasticClient>>(c => (language, state) => c.ResolveNamed<IElasticClient>(GetKey(language, state)));
-
-            builder.Register<Func<string, string, IElasticClient>>(c => (language, state) => dict[GetKey(language, state)]);
-
-            builder.RegisterSingleton<IElasticClient>(context =>
+            if (defaultElasticOption != null)
             {
-                var node = new Uri(_config["Data:Elastic:Adress"]);
+                var defaultKey = GetElasticKey(null, null);
+                var actualKey = GetElasticKey(defaultElasticOption.Language, defaultElasticOption.State);
+                elasticClientMap[defaultKey] = elasticClientMap[actualKey];
+                builder.RegisterSingleton<IElasticClient>(c => elasticClientMap[actualKey]);
+                builder.RegisterInstance(syncerMap[actualKey]);
+                builder.Register<IDpcService>(c => new DpcServiceClient(actualKey));
+            }
 
-                var connectionPool = new SingleNodeConnectionPool(node);
-
-                var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
-                                .DefaultIndex(_config["Data:Elastic:Index"])
-                                .DisableDirectStreaming()
-                                //.EnableTrace()
-                                .ThrowExceptions();
-                
-                return new ElasticClient(settings);
-            });
-
+            builder.Register<Func<string, string, IElasticClient>>(c => (language, state) => elasticClientMap[GetElasticKey(language, state)]);
+            builder.Register<Func<string, string, IDpcService>>(c => (language, state) => new DpcServiceClient(GetElasticKey(language, state)));
+            builder.Register<Func<string, string, IndexOperationSyncer>>(c => (language, state) => syncerMap[GetElasticKey(language, state)]);
 
             builder.RegisterType<TasksRunner>().As<ITasksRunner>().SingleInstance();
 
@@ -119,9 +114,6 @@ namespace QA.ProductCatalog.HighloadFront
             builder.Register<Func<string, int, ITask>>(c => { var reindexTask = c.ResolveNamed<ITask>("ReindexAllTask"); return (key, userId) => key == "ReindexAllTask" ? reindexTask : null; }).SingleInstance();
 
             builder.RegisterType<ReindexAllTask>().Named<ITask>("ReindexAllTask");
-
-            builder.RegisterInstance(new IndexOperationSyncer());
-
 
             builder.RegisterInstance<ILogger>(new NLogLogger("NLog.config"));
 
@@ -160,9 +152,16 @@ namespace QA.ProductCatalog.HighloadFront
             return manager.Value;
         }
 
-        private string GetKey(string language, string state)
+        private string GetElasticKey(string language, string state)
         {
-            return $"{language}-{state}";
+            if (language == null && state == null)
+            {
+                return "default";
+            }
+            else
+            {
+                return $"{language}-{state}";
+            }
         }
 
         private IElasticClient GetElasticClient(string index, string address)
