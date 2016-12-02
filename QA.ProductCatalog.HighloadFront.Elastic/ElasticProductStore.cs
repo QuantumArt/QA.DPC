@@ -297,7 +297,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 current & +new TermQuery
                 {
                     Field = sf.Item1,
-                    Value = sf.Item2
+                    Value = sf.Item2.ToLowerInvariant()
                 } :
                 current & +new MatchPhraseQuery
                 {
