@@ -2,6 +2,27 @@
 <div class="formLayout">
     <fieldset>
         <legend>HighloadFront</legend>
-        <div>@ViewBag.Url</div>
-    </fieldset>
+        <table id="tasks" class="inner-groupping-table">
+            <thead>
+                <tr>
+                    <th>Язык</th>
+                    <th>Тип витрины</th>
+                    <th>Прогресс</th>
+                    <th>Статус</th>
+                    <th>Команда</th>
+                </tr>
+            </thead>
+            <tbody>               
+            </tbody>
+        </table>
+</fieldset>
 </div>
+
+@section scripts{
+    @Scripts.Render("~/Scripts/HighloadFront.js")
+    <script>
+        $(document).ready(function () {
+            updateTasks('@ViewBag.Url');
+        });
+    </script>
+}

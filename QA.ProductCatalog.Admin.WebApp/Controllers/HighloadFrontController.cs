@@ -3,7 +3,6 @@ using System.Web.Mvc;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [RequireCustomAction]
     public class HighloadFrontController : Controller
 	{
 		public HighloadFrontController()
