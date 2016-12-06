@@ -31,6 +31,10 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 .Include("~/scripts/jquery/jquery-1.11.1.js")
                 );
 
+            bundles.Add(new ScriptBundle("~/bundles/knockout")
+              .Include("~/scripts/knockout/knockout-3.4.1.js")
+              );
+
             bundles.Add(new ScriptBundle("~/bundles/scripts")
                 .Include("~/scripts/vanilla.helpers.js")
                 .Include("~/scripts/jq.trottle.js")

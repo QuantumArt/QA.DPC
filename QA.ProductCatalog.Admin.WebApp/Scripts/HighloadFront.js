@@ -1,17 +1,37 @@
-﻿$(document).ready(function () {
+﻿var model = new TasksViewModel();
+
+$(document).ready(function () {
+    ko.applyBindings(model);
     updateTasks();
 });
 
+function TasksViewModel() {
+    var self = this;
+    self.tasks = ko.observableArray();
+
+    self.index = function (task, event) {
+        $(event.target).hide();
+        $(event.target).parent().find('img').show();
+        IndexChanel(task.ChannelLanguage, task.ChannelState);
+    };
+
+    self.getState = function (task) {
+        return getTaskStateDescription(task.TaskState);
+    };
+
+    self.getStateLogo = function (task) {
+        return getTaskStateLogo(task.TaskState);
+    };
+
+    self.isButtonVisible = function (task) {
+        return task.TaskState != 1 && task.TaskState != 2;
+    }
+}
+
 function updateTasks() {
 
-    $.getJSON(Url.Content('~/HighloadFront/GetSettings?url=sync/settings'), function (json) {
-
-        clearTasks();
-
-        $.each(json, function (i, task) {
-            addTask(task, i);
-        });
-
+    $.getJSON(Url.Content('~/HighloadFront/GetSettings?url=sync/settings'), function (json) {        
+        model.tasks(json);
     })
 
     setTimeout(function () {
@@ -19,36 +39,35 @@ function updateTasks() {
     }, 5000);
 }
 
-function IndexChanel(language, state, id) {
+function IndexChanel(language, state) {
     $.post(Url.Content('~/HighloadFront/IndexChanel?url=sync/' + language + '/' + state + '/reset'), function (data) {
+        console.log(data);
         updateTasks();
     });
 }
 
-function clearTasks() {
-    $("#tasks")
-        .find('tbody').empty();
-}
 
-function addTask(task, id) {
-    $("#tasks")
-        .find('tbody')
-        .append(
-            '<tr><td>' +
-                task.ChannelLanguage +
-            '</td><td>' +
-                task.ChannelState +
-            '</td><td>' +
-                task.TaskProgress +
-            '</td><td>' +
-                getTaskStateDescription(task.TaskState) +
-              '</td><td>' +
-                '<input Id="index' + id +'" ' + task.TaskId + ' type="button" value="индексировать" />' +
-            '</td></tr>');
+function getTaskStateLogo(state) {
+    if (state == null) {
+        return 'Content/img/icons/0.gif';
+    }
+    else if (state == 1) {
+        return 'Content/img/TaskStates/New16.png';
+    }
+    else if (state == 2) {
+        return 'Content/img/TaskStates/Running16.png';
+    }
+    else if (state == 3) {
+        return 'Content/img/TaskStates/Done16.png';
+    }
+    else if (state == 4) {
+        return 'Content/img/TaskStates/Failed16.png';
+    }
+    else if (state == 5) {
+        return 'Content/img/TaskStates/Cancelled16.png';
+    }
 
-    $('#index' + id).click(function () {
-        IndexChanel(task.ChannelLanguage, task.ChannelState, 0);
-    });
+    return 'Content/img/icons/0.gif';
 }
 
 function getTaskStateDescription(state) {

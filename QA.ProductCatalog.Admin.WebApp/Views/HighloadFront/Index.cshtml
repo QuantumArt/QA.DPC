@@ -5,19 +5,36 @@
         <table id="tasks" class="inner-groupping-table">
             <thead>
                 <tr>
+                    <th>Базовый</th>
                     <th>Язык</th>
                     <th>Тип витрины</th>
-                    <th>Прогресс</th>
-                    <th>Статус</th>
-                    <th>Команда</th>
+                    <th>Прогресс</th>                    
+                    <th></th>
+                    <th></th>
                 </tr>
             </thead>
-            <tbody>               
+            <tbody data-bind="foreach: tasks">
+                <tr>
+                    <td>
+                        <input type="checkbox" disabled  data-bind="checked: IsDefault"/>
+                    </td>
+                    <td data-bind="text: ChannelLanguage"></td>
+                    <td data-bind="text: ChannelState"></td>
+                    <td data-bind="text: TaskProgress"></td>
+                    <td>
+                        <img data-bind="attr: { src: $parent.getStateLogo($data) }" src="~/Content/img/icons/0.gif"/>
+                    </td>
+                    <td>
+                        <img src="~/Content/KendoUI/Default/loading.gif" style="display:none" />
+                        <a href="#" class="js" data-bind="click: $parent.index, visible: $parent.isButtonVisible($data)">индексировать</a>
+                    </td>
+                </tr>          
             </tbody>
         </table>
 </fieldset>
 </div>
 
 @section scripts{
+    @Scripts.Render("~/bundles/knockout")
     @Scripts.Render("~/Scripts/HighloadFront.js")
 }

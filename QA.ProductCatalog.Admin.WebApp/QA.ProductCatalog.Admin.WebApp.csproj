@@ -466,6 +466,7 @@
     <Content Include="Scripts\KendoUI\kendo.culture.ru-RU.min.js" />
     <Content Include="Scripts\KendoUI\kendo.messages.ru-RU.min.js" />
     <Content Include="Scripts\KendoUI\kendo.web.min.js" />
+    <Content Include="Scripts\knockout\knockout-3.4.1.js" />
     <Content Include="Scripts\pmrpc.js" />
     <Content Include="Scripts\product\index.js" />
     <Content Include="Scripts\product\tabstrip.js" />
