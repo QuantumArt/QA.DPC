@@ -26,7 +26,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         [RateLimit("GetByType")]
         [ResponseCache(Location = ResponseCacheLocation.None)]
         [Route("products/{type}"), Route("{language}/{state}/products/{type}")]
-        public async Task<HttpResponseMessage> GetByType(string type, string language, string state)
+        public async Task<HttpResponseMessage> GetByType(string type, string language = null, string state = null)
         {
             type = type?.TrimStart('@');
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
@@ -36,7 +36,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
         [RateLimit("GetById"), Route("{language}/{state}/products/{id:int}"), Route("products/{id:int}")]
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
-        public async Task<HttpResponseMessage> GetById(string id, string language, string state)
+        public async Task<HttpResponseMessage> GetById(string id, string language = null, string state = null)
         {
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
 
@@ -53,7 +53,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
         [Route("{language}/{state}/products/search"), Route("products/search"), RateLimit("Search"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.None)]
-        public async Task<HttpResponseMessage> Search([FromUri] string q, string language, string state)
+        public async Task<HttpResponseMessage> Search([FromUri] string q, string language = null, string state = null)
         {
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
             var stream = await Manager.SearchStreamAsync(q, options, language, state);

@@ -453,6 +453,7 @@
     <Content Include="Scripts\ContentIncludes\DefinitionEditorButton.js" />
     <Content Include="Scripts\ContentIncludes\Transliterate.js" />
     <Content Include="Scripts\DefinitionEditor.js" />
+    <Content Include="Scripts\HighloadFront.js" />
     <Content Include="Scripts\jqCron.en.js" />
     <Content Include="Scripts\jqCron.js" />
     <Content Include="Scripts\jquery.scrollto.js" />

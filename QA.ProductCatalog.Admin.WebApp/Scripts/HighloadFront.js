@@ -1,22 +1,26 @@
-﻿function updateTasks(url) {
-    $.getJSON(url + 'sync/settings', function (json) {
+﻿function updateTasks() {
+    var url = window.location.href;
+
+    $.getJSON(url + '/GetSettings?url=sync/settings', function (json) {
 
         clearTasks();
 
         $.each(json, function (i, task) {
-            addTask(url, task, i);
+            addTask(task, i);
         });
 
     })
 
-    setInterval(function () {
-        updateTasks(url);
-    }, 4000);
+    setTimeout(function () {
+        updateTasks();
+    }, 5000);
 }
 
-function IndexChanel(url, language, state, id) {
-    $.post(url + 'sync/' + language + '/' + state + '/reset', function (data) {
-        updateTasks(url);
+function IndexChanel(language, state, id) {
+    var url = window.location.href;
+
+    $.post(url + '/IndexChanel?url=sync/' + language + '/' + state + '/reset', function (data) {
+        updateTasks();
     });
 }
 
@@ -25,7 +29,7 @@ function clearTasks() {
         .find('tbody').empty();
 }
 
-function addTask(url, task, id) {
+function addTask(task, id) {
     $("#tasks")
         .find('tbody')
         .append(
@@ -42,7 +46,7 @@ function addTask(url, task, id) {
             '</td></tr>');
 
     $('#index' + id).click(function () {
-        IndexChanel(url, task.ChannelLanguage, task.ChannelState, 0);
+        IndexChanel(task.ChannelLanguage, task.ChannelState, 0);
     });
 }
 
