@@ -481,6 +481,7 @@
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <None Include="Scripts\_references.js" />
     <Content Include="Scripts\Schedule.js" />
+    <Content Include="Scripts\vanilla.helpers.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>

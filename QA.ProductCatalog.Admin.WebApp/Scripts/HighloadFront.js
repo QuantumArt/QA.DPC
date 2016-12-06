@@ -1,7 +1,10 @@
-﻿function updateTasks() {
-    var url = window.location.href;
+﻿$(document).ready(function () {
+    updateTasks();
+});
 
-    $.getJSON(url + '/GetSettings?url=sync/settings', function (json) {
+function updateTasks() {
+
+    $.getJSON(Url.Content('~/GetSettings?url=sync/settings'), function (json) {
 
         clearTasks();
 
@@ -17,9 +20,7 @@
 }
 
 function IndexChanel(language, state, id) {
-    var url = window.location.href;
-
-    $.post(url + '/IndexChanel?url=sync/' + language + '/' + state + '/reset', function (data) {
+    $.post(Url.Content('~/IndexChanel?url=sync/' + language + '/' + state + '/reset'), function (data) {
         updateTasks();
     });
 }

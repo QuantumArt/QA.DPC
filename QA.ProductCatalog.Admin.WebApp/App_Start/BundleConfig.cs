@@ -32,6 +32,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 );
 
             bundles.Add(new ScriptBundle("~/bundles/scripts")
+                .Include("~/scripts/vanilla.helpers.js")
                 .Include("~/scripts/jq.trottle.js")
                 .Include("~/scripts/jquery.scrollto.js")
                 .Include("~/scripts/json2.js")
