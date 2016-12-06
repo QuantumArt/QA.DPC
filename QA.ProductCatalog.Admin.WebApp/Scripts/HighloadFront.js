@@ -4,7 +4,7 @@
 
 function updateTasks() {
 
-    $.getJSON(Url.Content('~/GetSettings?url=sync/settings'), function (json) {
+    $.getJSON(Url.Content('~/HighloadFront/GetSettings?url=sync/settings'), function (json) {
 
         clearTasks();
 
@@ -20,7 +20,7 @@ function updateTasks() {
 }
 
 function IndexChanel(language, state, id) {
-    $.post(Url.Content('~/IndexChanel?url=sync/' + language + '/' + state + '/reset'), function (data) {
+    $.post(Url.Content('~/HighloadFront/IndexChanel?url=sync/' + language + '/' + state + '/reset'), function (data) {
         updateTasks();
     });
 }
