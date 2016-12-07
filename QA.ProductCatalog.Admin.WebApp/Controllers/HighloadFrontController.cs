@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QA.Core.Web;
+using System;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -16,7 +17,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [HttpGet]
-		public ActionResult Index(string url)
+        [RequireCustomAction]
+        public ActionResult Index(string url)
 		{
             return View();
 		}
