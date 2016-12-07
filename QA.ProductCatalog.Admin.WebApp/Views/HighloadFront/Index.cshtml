@@ -2,41 +2,48 @@
 <div class="formLayout">
     <fieldset>
         <legend>HighloadFront</legend>
-        <table id="tasks" class="inner-groupping-table">
+        <table border="0" id="tasks" class="inner-groupping-table">
             <thead>
                 <tr>
-                    <th>Базовый</th>
-                    <th>Язык</th>
-                    <th>Тип</th>
-                    <th>Прогресс</th>                    
-                    <th></th>
-                    <th></th>
+                    <th>По умолчанию</th>
+                    <th width="100px" align="center">Язык</th>
+                    <th width="130px">Тип</th>
+                    <th colspan="2">Обработка</th>
+                    <th width="200px">Обновление</th>
+                    <th width="300px"></th>
                 </tr>
             </thead>
             <tbody data-bind="foreach: tasks">
                 <tr>
-                    <td>
+                    <td align="center">
                         <input type="checkbox" disabled  data-bind="checked: IsDefault"/>
                     </td>
-                    <td data-bind="text: ChannelLanguage"></td>
-                    <td data-bind="text: ChannelState"></td>
-                    <td data-bind="text: TaskProgress"></td>
-                    <td>
-                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" title="rrr" src="~/Content/img/icons/0.gif"/>
+                    <td align="center" data-bind="text: ChannelLanguage"></td>
+                    <td align="center" data-bind="text: ChannelState"></td>                    
+                    <td width="20" align="center">
+                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/Content/img/icons/0.gif"/>
                     </td>
-                    <td>
+                    <td width="100">
                         <img src="~/Content/KendoUI/Default/loading.gif" style="display:none" />
                         <a href="#" class="js" data-bind="click: $parent.index, visible: $parent.isButtonVisible($data)">индексировать</a>
                     </td>
-                    <td data-bind="text: getTimePassed(TaskStart, TaskEnd)"></td>
+                    <td align="center" data-bind="text: getTimePassed(TaskStart, TaskEnd)"></td>
+                    <td>
+                        <div data-bind="updateProgress: TaskProgress"></div>
+                    </td>
                 </tr>          
             </tbody>
         </table>
 </fieldset>
 </div>
 
+@section head{
+    @Styles.Render("~/content/KendoUI/KendoUIStyles")
+}
+
 @section scripts{
     @Scripts.Render("~/bundles/moment")
     @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/KendoUI")
     @Scripts.Render("~/Scripts/HighloadFront.js")
 }

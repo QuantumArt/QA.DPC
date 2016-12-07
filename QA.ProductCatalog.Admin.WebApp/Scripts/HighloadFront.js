@@ -1,9 +1,24 @@
 ﻿var model = new TasksViewModel();
 
+ko.bindingHandlers.updateProgress = {
+    init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        $(element).kendoProgressBar({
+            value: viewModel.TaskProgress,
+            type: "percent"
+        });
+    },
+    update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
+        $(element).kendoProgressBar({
+            value: viewModel.TaskProgress,
+            type: "percent"
+        });
+    }
+};
+
 $(document).ready(function () {
     moment.locale('ru');
     ko.applyBindings(model);
-    updateTasks();
+    updateTasks(true);
 });
 
 function TasksViewModel() {
@@ -13,7 +28,7 @@ function TasksViewModel() {
     self.index = function (task, event) {
         $(event.target).hide();
         $(event.target).parent().find('img').show();
-        IndexChanel(task.ChannelLanguage, task.ChannelState);
+        indexChanel(task.ChannelLanguage, task.ChannelState);
     };
 
     self.getState = function (task) {
@@ -26,24 +41,25 @@ function TasksViewModel() {
 
     self.isButtonVisible = function (task) {
         return task.TaskState != 1 && task.TaskState != 2;
-    }
+    };
 }
 
-function updateTasks() {
+function updateTasks(loop) {
 
     $.getJSON(Url.Content('~/HighloadFront/GetSettings?url=sync/settings'), function (json) {        
         model.tasks(json);
     })
 
-    setTimeout(function () {
-        updateTasks();
-    }, 5000);
+    if (loop) {
+        setTimeout(function () {
+            updateTasks(loop);
+        }, 5000);
+    }
 }
 
-function IndexChanel(language, state) {
-    $.post(Url.Content('~/HighloadFront/IndexChanel?url=sync/' + language + '/' + state + '/reset'), function (data) {
-        console.log(data);
-        updateTasks();
+function indexChanel(language, state) {
+    $.post(Url.Content('~/HighloadFront/IndexChanel?url=sync/' + language + '/' + state + '/reset')).done(function () {
+        updateTasks(false);
     });
 }
 

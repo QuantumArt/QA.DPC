@@ -102,7 +102,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
             return new HttpResponseMessage(HttpStatusCode.OK)
             {
-                Content = new StringContent($"Background task id={taskId} was created...")
+                Content = new StringContent("{ \"taskId\":" + taskId + " }")
             };
         }
 
