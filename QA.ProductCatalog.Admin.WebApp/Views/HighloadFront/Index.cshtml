@@ -7,7 +7,7 @@
                 <tr>
                     <th>Базовый</th>
                     <th>Язык</th>
-                    <th>Тип витрины</th>
+                    <th>Тип</th>
                     <th>Прогресс</th>                    
                     <th></th>
                     <th></th>
@@ -22,12 +22,13 @@
                     <td data-bind="text: ChannelState"></td>
                     <td data-bind="text: TaskProgress"></td>
                     <td>
-                        <img data-bind="attr: { src: $parent.getStateLogo($data) }" src="~/Content/img/icons/0.gif"/>
+                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" title="rrr" src="~/Content/img/icons/0.gif"/>
                     </td>
                     <td>
                         <img src="~/Content/KendoUI/Default/loading.gif" style="display:none" />
                         <a href="#" class="js" data-bind="click: $parent.index, visible: $parent.isButtonVisible($data)">индексировать</a>
                     </td>
+                    <td data-bind="text: getTimePassed(TaskStart, TaskEnd)"></td>
                 </tr>          
             </tbody>
         </table>
@@ -35,6 +36,7 @@
 </div>
 
 @section scripts{
+    @Scripts.Render("~/bundles/moment")
     @Scripts.Render("~/bundles/knockout")
     @Scripts.Render("~/Scripts/HighloadFront.js")
 }

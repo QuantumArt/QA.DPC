@@ -1,6 +1,7 @@
 ﻿var model = new TasksViewModel();
 
 $(document).ready(function () {
+    moment.locale('ru');
     ko.applyBindings(model);
     updateTasks();
 });
@@ -46,6 +47,14 @@ function IndexChanel(language, state) {
     });
 }
 
+function getTimePassed(time1, time2) {
+    var timePassed = time1 || time1;
+    if (timePassed) {
+        return moment(timePassed).fromNow()
+    }
+
+    return null;
+}
 
 function getTaskStateLogo(state) {
     if (state == null) {

@@ -130,7 +130,10 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
                     IsDefault = o.IsDefault,
                     TaskId = t?.ID,
                     TaskProgress = t?.Progress,
-                    TaskState = (State?)t?.StateID
+                    TaskState = (State?)t?.StateID,
+                    TaskStart = t?.CreatedTime,
+                    TaskEnd = t?.LastStatusChangeTime,
+                    TaskMessage = t?.Message
                 };
 
             return r.ToArray();

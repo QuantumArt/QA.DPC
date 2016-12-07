@@ -35,6 +35,10 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
               .Include("~/scripts/knockout/knockout-3.4.1.js")
               );
 
+            bundles.Add(new ScriptBundle("~/bundles/moment")
+                .Include("~/scripts/moment-with-locales.min.js")
+                );
+
             bundles.Add(new ScriptBundle("~/bundles/scripts")
                 .Include("~/scripts/vanilla.helpers.js")
                 .Include("~/scripts/jq.trottle.js")

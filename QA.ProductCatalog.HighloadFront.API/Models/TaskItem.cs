@@ -14,6 +14,9 @@ namespace QA.ProductCatalog.HighloadFront.Models
         public int? TaskId { get; set; }
         public State? TaskState { get; set; }
         public int? TaskProgress { get; set; }
+        public DateTime? TaskStart { get; set; }
+        public DateTime? TaskEnd { get; set; }
+        public string TaskMessage { get; set; }
 
     }
 }

@@ -17,7 +17,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [HttpGet]
-        [RequireCustomAction]
+        //[RequireCustomAction]
         public ActionResult Index(string url)
 		{
             return View();
