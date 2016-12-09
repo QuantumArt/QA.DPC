@@ -97,8 +97,11 @@ if (!$p) {
 $s = New-Item "IIS:\sites\$siteName" -bindings @{protocol="http";bindingInformation="*:${port}:"} -physicalPath $sitePath -type Site
 $s | Set-ItemProperty -Name applicationPool -Value $siteName
 
+if ($sqlAdminLogin) { 
 
 Invoke-Expression "CreateLogin.ps1 -Login '$dbLogin' -Password '$dbPassword' -DbServerName '$dbServerName' -AdminLogin '$sqlAdminLogin' -AdminPassword '$sqlAdminPassword'"
 
 $scriptPath = Join-Path $currentPath "dpc_SiteSync.sql"
-Invoke-Expression "CreateDb.ps1 -ScriptPath '$scriptPath' -Login '$dbLogin' -Password '$dbPassword' -DbName '$dbName' -DbServerName '$dbServerName' -AdminLogin '$sqlAdminLogin' -AdminPassword '$sqlAdminPassword' " 
+Invoke-Expression "CreateDb.ps1 -ScriptPath '$scriptPath' -Login '$dbLogin' -Password '$dbPassword' -DbName '$siteDbName' -DbServerName '$dbServerName' -AdminLogin '$sqlAdminLogin' -AdminPassword '$sqlAdminPassword' "
+
+} 
