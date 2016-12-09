@@ -1,0 +1,68 @@
+{
+  "product": {
+    "Id": 1837319,
+    "Parameters": [
+      {
+        "Id": 1837532,
+        "Title": "Исходящие звонки на российские номера",
+        "SortOrder": 8,
+        "NumValue": 85.00,
+        "OldPointId": 29,
+        "BaseParameter": {
+          "Id": 8478,
+          "Title": "Исходящие звонки",
+          "Alias": "OutgoingCalls"
+        },
+        "Direction": {
+          "Id": 8552,
+          "Title": "Направление: Вся Россия",
+          "Alias": "Russia"
+        },
+        "Unit": {
+          "Id": 8543,
+          "Title": "рублей",
+          "Display": "руб."
+        },
+        "Group": {
+          "Id": 1837521,
+          "Title": "Исходящие звонки в Россию (за минуту)",
+          "SortOrder": 3,
+          "OldSiteId": 3
+        }
+      },
+      {
+        "Id": 1837526,
+        "Title": "Исходящие звонки на номера остальных стран",
+        "SortOrder": 2,
+        "NumValue": 135.00,
+        "OldPointId": 33,
+        "BaseParameter": {
+          "Id": 8478,
+          "Title": "Исходящие звонки",
+          "Alias": "OutgoingCalls"
+        },
+        "Direction": {
+          "Id": 8584,
+          "Title": "Направление: Другие страны",
+          "Alias": "OtherCountries"
+        },
+        "Unit": {
+          "Id": 8543,
+          "Title": "рублей",
+          "Display": "руб."
+        },
+        "Group": {
+          "Id": 1814872,
+          "Title": "Звонки в другие страны (за минуту)",
+          "SortOrder": 5,
+          "OldSiteId": 5,
+          "ImageSvg": {
+            "Name": "b-icon_mobile-roaming.svg",
+            "FileSizeBytes": 1341,
+            "AbsoluteUrl": "http://static.mts.ru/dpc_upload/contents/378/b-icon_mobile-roaming.svg"
+          }
+        }
+      }
+    ]
+  }
+}
