@@ -5,6 +5,8 @@
     [String] $dbServerName ='',
     [String] $dbLogin ='',
     [String] $dbPassword = '',
+    [String] $sqlAdminLogin ='',
+    [String] $sqlAdminPassword = '',
     [String] $productSerializer = ''
 )
 
@@ -58,6 +60,8 @@ $var.value = "C:\Logs\" + $siteName
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
 
+$sqlAdminLogin = Read-Or-Default $sqlAdminLogin "Please enter admin login name for creating databases"
+$sqlAdminPassword = Read-Or-Default $sqlAdminPassword "Please enter admin password for creating databases"
 $dbServerName = Read-Or-Default $dbServerName "Please enter db server name to connect"
 $dbLogin = Read-Or-Default $dbLogin "Please enter login name to connect databases"
 $dbPassword = Read-Or-Default $dbPassword "Please enter password to connect databases"
@@ -92,3 +96,9 @@ if (!$p) {
 
 $s = New-Item "IIS:\sites\$siteName" -bindings @{protocol="http";bindingInformation="*:${port}:"} -physicalPath $sitePath -type Site
 $s | Set-ItemProperty -Name applicationPool -Value $siteName
+
+
+Invoke-Expression "CreateLogin.ps1 -Login '$dbLogin' -Password '$dbPassword' -DbServerName '$dbServerName' -AdminLogin '$sqlAdminLogin' -AdminPassword '$sqlAdminPassword'"
+
+$scriptPath = Join-Path $currentPath "dpc_SiteSync.sql"
+Invoke-Expression "CreateDb.ps1 -ScriptPath '$scriptPath' -Login '$dbLogin' -Password '$dbPassword' -DbName '$dbName' -DbServerName '$dbServerName' -AdminLogin '$sqlAdminLogin' -AdminPassword '$sqlAdminPassword' " 
