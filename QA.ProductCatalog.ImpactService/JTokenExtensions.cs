@@ -21,5 +21,16 @@ namespace QA.ProductCatalog.ImpactService
             param["Changed"] = true;
             return param;
         }
+
+        public static JToken PrepareForAdd(this JToken param)
+        {
+            var newParam = param.DeepClone();
+            SetChanged(newParam);
+            newParam["BaseParameter"] = null;
+            newParam["Zone"] = null;
+            newParam["Direction"] = null;
+            newParam["BaseParameterModifiers"] = null;
+            return newParam;
+        }
     }
 }

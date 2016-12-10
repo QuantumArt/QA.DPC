@@ -21,39 +21,69 @@ namespace QA.ProductCatalog.ImpactService
 
         public void Calculate(JObject product, JObject option)
         {
-            var optionParameters = (JArray)option.SelectToken("product.Parameters");
+            var optionParametersRoot = option.SelectToken("product.Parameters");
             var optionId = (int)option.SelectToken("product.Id");
-            var linkParameters = product.SelectTokens($"product.{LinkName}.[?(@.Service)]")
-                .Where(n => (int)n["Service"]["Id"] == optionId)
-                .Where(n => n.SelectTokens("Parent.Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).ToArray().Contains(LinkModifierName))
-                .Select(n => n["Parent"]["Parameters"]);
-            MergeLinkWithOption(optionParameters, linkParameters);
-            ProcessBasicImpact(product, option);
+            MergeLinkImpactToOption(optionParametersRoot, product, optionId);
+
+            var parametersRoot = product.SelectToken("product.Parameters");
+            var optionParameters1 = optionParametersRoot.Where(n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).ToArray().Contains(ParameterModifierName)).ToArray();
+            CalculateImpact(parametersRoot, optionParameters1);
         }
 
-        private void ProcessBasicImpact(JObject product, JObject option)
+        private void MergeLinkImpactToOption(JToken optionParametersRoot, JObject product, int optionId)
         {
-            var parametersRoot = product.SelectToken("product.Parameters");
-            var optionParameters = option.SelectToken("product.Parameters").Where(n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).ToArray().Contains(ParameterModifierName)).ToArray();
+            var linkParameters = product.SelectTokens($"product.{LinkName}.[?(@.Service)]")
+                .Where(n => (int) n["Service"]["Id"] == optionId)
+                .Where(
+                    n =>
+                        n.SelectTokens("Parent.Modifiers.[?(@.Alias)].Alias")
+                            .Select(m => m.ToString())
+                            .ToArray()
+                            .Contains(LinkModifierName))
+                .Select(n => n["Parent"]["Parameters"]);
 
+            foreach (var linkParameter in linkParameters)
+            {
+                bool processed = false;
+                if (linkParameter["BaseParameter"] != null)
+                {
+                    var key = linkParameter.ExtractDirection().GetKey(false);
+                    var parametersToProcess = FindByKey(optionParametersRoot, key, false).ToArray();
+                    processed = parametersToProcess.Any();
+                    foreach (var p in parametersToProcess)
+                    {
+                        p.Replace(linkParameter.DeepClone());
+                    }
+                }
+
+                if (!processed)
+                {
+                    ((JArray)optionParametersRoot).Add(linkParameter);
+                }
+
+            }
+        }
+
+        private void CalculateImpact(JToken parametersRoot, JToken[] optionParameters1)
+        {
             var parametersToAppendInsteadOfChange = new List<JToken>();
-            ProcessRemove(parametersRoot, optionParameters);
-            ChangeParameters(parametersRoot, optionParameters, parametersToAppendInsteadOfChange);
-
-            ProcessPackages(parametersRoot, optionParameters);
-            ProcessTarifficationSteps(parametersRoot, optionParameters);
-            ProcessAppend((JArray)parametersRoot, optionParameters, parametersToAppendInsteadOfChange);
+            ProcessRemove(parametersRoot, optionParameters1);
+            ChangeParameters(parametersRoot, optionParameters1, parametersToAppendInsteadOfChange);
+            ProcessPackages(parametersRoot, optionParameters1);
+            ProcessTarifficationSteps(parametersRoot, optionParameters1);
+            ProcessAppend((JArray) parametersRoot, optionParameters1, parametersToAppendInsteadOfChange);
         }
 
         private void ProcessRemove(JToken parameters, JToken[] optionParameters)
         {
             var removeParameters =
                 optionParameters.Where(
-                    n => n.SelectTokens("BaseParameterModifiers.[?(@.Alias)].Alias").Any(m => m.ToString() == "Remove")).ToArray();
+                    n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Any(m => m.ToString() == "Remove")).ToArray();
 
             foreach (var param in removeParameters)
             {
-                foreach (var jToken in FindByKey(parameters, param.ExtractDirection().GetKey()))
+                var jTokens = FindByKey(parameters, param.ExtractDirection().GetKey()).ToArray();
+                foreach (var jToken in jTokens)
                 {
                     jToken.Remove();
                 }
@@ -64,16 +94,17 @@ namespace QA.ProductCatalog.ImpactService
         {
             foreach (var param in parametersToAppendInsteadOfChange)
             {
-                parameters.Add(param.DeepClone().SetChanged());
+                parameters.Add(param.PrepareForAdd());
             }
 
             var addParameters =
                 optionParameters.Where(
-                    n => n.SelectTokens("BaseParameterModifiers.[?(@.Alias)].Alias").Any(m => m.ToString() == "Append")).ToArray();
+                    n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Any(m => m.ToString() == "Append")).ToArray();
 
             foreach (var param in addParameters)
             {
-                parameters.Add(param.DeepClone().SetChanged());
+
+                parameters.Add(param.PrepareForAdd());
             }
         }
 
@@ -233,31 +264,6 @@ namespace QA.ProductCatalog.ImpactService
                     c[key].Add(modifier, wp);
                 }
             }
-        }
-
-        private void MergeLinkWithOption(JArray optionParameters, IEnumerable<JToken> linkParameters)
-        {
-            foreach (var linkParameter in linkParameters)
-            {
-                bool processed = false;
-                if (linkParameter["BaseParameter"] != null)
-                {
-                    var key = linkParameter.ExtractDirection().GetKey(false);
-                    var parametersToProcess = FindByKey(optionParameters, key, false).ToArray();
-                    processed = parametersToProcess.Any();
-                    foreach (var p in parametersToProcess)
-                    {
-                        p.Replace(linkParameter.DeepClone());
-                    }
-                }
-
-                if (!processed)
-                {
-                    optionParameters.Add(linkParameter);
-                }
-
-            }
-
         }
 
         public IEnumerable<JToken> FindByKey(JToken parametersRoot, string key, bool excludeSpecial = true, bool excludeZone = false)
