@@ -23,45 +23,56 @@ namespace QA.ProductCatalog.ImpactService
         {
             var optionParametersRoot = option.SelectToken("product.Parameters");
             var optionId = (int)option.SelectToken("product.Id");
-            MergeLinkImpactToOption(optionParametersRoot, product, optionId);
+            bool hasImpact = MergeLinkImpactToOption(optionParametersRoot, product, optionId);
 
-            var parametersRoot = product.SelectToken("product.Parameters");
-            var optionParameters1 = optionParametersRoot.Where(n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).ToArray().Contains(ParameterModifierName)).ToArray();
-            CalculateImpact(parametersRoot, optionParameters1);
+            if (hasImpact)
+            {
+                var parametersRoot = product.SelectToken("product.Parameters");
+                var optionParameters1 = optionParametersRoot.Where(n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).ToArray().Contains(ParameterModifierName)).ToArray();
+                CalculateImpact(parametersRoot, optionParameters1);
+            }
         }
 
-        private void MergeLinkImpactToOption(JToken optionParametersRoot, JObject product, int optionId)
+        private bool MergeLinkImpactToOption(JToken optionParametersRoot, JObject product, int optionId)
         {
-            var linkParameters = product.SelectTokens($"product.{LinkName}.[?(@.Service)]")
+            var link = product.SelectTokens($"product.{LinkName}.[?(@.Service)]")
                 .Where(n => (int) n["Service"]["Id"] == optionId)
-                .Where(
+                .SingleOrDefault(
                     n =>
                         n.SelectTokens("Parent.Modifiers.[?(@.Alias)].Alias")
                             .Select(m => m.ToString())
                             .ToArray()
-                            .Contains(LinkModifierName))
-                .Select(n => n["Parent"]["Parameters"]);
+                            .Contains(LinkModifierName));
 
-            foreach (var linkParameter in linkParameters)
+            var hasImpact = link != null;
+
+            if (hasImpact)
             {
-                bool processed = false;
-                if (linkParameter["BaseParameter"] != null)
+                var linkParameters = link.SelectTokens("Parent.Parameters");
+
+                foreach (var linkParameter in linkParameters)
                 {
-                    var key = linkParameter.ExtractDirection().GetKey(false);
-                    var parametersToProcess = FindByKey(optionParametersRoot, key, false).ToArray();
-                    processed = parametersToProcess.Any();
-                    foreach (var p in parametersToProcess)
+                    bool processed = false;
+                    if (linkParameter["BaseParameter"] != null)
                     {
-                        p.Replace(linkParameter.DeepClone());
+                        var key = linkParameter.ExtractDirection().GetKey(false);
+                        var parametersToProcess = FindByKey(optionParametersRoot, key, false).ToArray();
+                        processed = parametersToProcess.Any();
+                        foreach (var p in parametersToProcess)
+                        {
+                            p.Replace(linkParameter.DeepClone());
+                        }
                     }
-                }
 
-                if (!processed)
-                {
-                    ((JArray)optionParametersRoot).Add(linkParameter);
-                }
+                    if (!processed)
+                    {
+                        ((JArray) optionParametersRoot).Add(linkParameter);
+                    }
 
+                }
             }
+
+            return hasImpact;
         }
 
         private void CalculateImpact(JToken parametersRoot, JToken[] optionParameters1)
@@ -112,63 +123,67 @@ namespace QA.ProductCatalog.ImpactService
         {
             foreach (var optionParam in optionParameters.Where(n => !n.SelectTokens("BaseParameterModifiers.[?(@.Alias)].Alias").Any(m => TariffDirection.SpecialModifiers.Contains(m.ToString()))))
             {
-                var key = optionParam.ExtractDirection().GetKey();
-                var parametersToProcess = FindByKey(parametersRoot, key).ToArray();
                 var modifiers = new HashSet<string>(optionParam.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()));
-                var appendOrReplace = modifiers.Contains("AppendOrReplace");
-                var optionHasNumValue = optionParam["NumValue"] != null;
-                var optionHasValue = optionParam["Value"] != null;
-                foreach (var param in parametersToProcess)
+                if (!modifiers.Contains("Append"))
                 {
-                    var productHasNumValue = param["NumValue"] != null;
-                    var skipProcessing = productHasNumValue && optionHasNumValue && (decimal)param["NumValue"] < (decimal)optionParam["NumValue"] && !modifiers.Contains("ForcedInfluence");
-
-                    if (optionHasNumValue && !modifiers.Contains("DoNotChangeValue"))
+                    var key = optionParam.ExtractDirection().GetKey();
+                    var parametersToProcess = FindByKey(parametersRoot, key).ToArray();
+                    var appendOrReplace = modifiers.Contains("AppendOrReplace");
+                    var optionHasNumValue = optionParam["NumValue"] != null;
+                    var optionHasValue = optionParam["Value"] != null;
+                    foreach (var param in parametersToProcess)
                     {
-                        if (modifiers.Contains("Add") && productHasNumValue)
-                        {
-                            param["NumValue"] = (decimal)optionParam["NumValue"] + (decimal)param["NumValue"];
-                            param.SetChanged();
-                        }
-                        else if (modifiers.Contains("Discount"))
-                        {
-                            param["NumValue"] = (decimal)param["NumValue"] *
-                                                (1 - (decimal)optionParam["NumValue"]);
-                            param.SetChanged();
+                        var productHasNumValue = param["NumValue"] != null;
+                        var skipProcessing = productHasNumValue && optionHasNumValue && (decimal)param["NumValue"] < (decimal)optionParam["NumValue"] && !modifiers.Contains("ForcedInfluence");
 
-                        }
-                        else
+                        if (optionHasNumValue && !modifiers.Contains("DoNotChangeValue"))
                         {
-                            if (!skipProcessing)
+                            if (modifiers.Contains("Add") && productHasNumValue)
                             {
-                                param["NumValue"] = optionParam["NumValue"];
+                                param["NumValue"] = (decimal)optionParam["NumValue"] + (decimal)param["NumValue"];
+                                param.SetChanged();
+                            }
+                            else if (modifiers.Contains("Discount"))
+                            {
+                                param["NumValue"] = (decimal)param["NumValue"] *
+                                                    (1 - (decimal)optionParam["NumValue"]);
                                 param.SetChanged();
 
                             }
+                            else
+                            {
+                                if (!skipProcessing)
+                                {
+                                    param["NumValue"] = optionParam["NumValue"];
+                                    param.SetChanged();
+
+                                }
+                            }
                         }
+
+                        if (optionHasValue && !modifiers.Contains("DoNotChangeValue"))
+                        {
+                            param["Value"] = optionParam["Value"];
+                            param.SetChanged();
+
+                        }
+
+                        if (modifiers.Contains("ChangeName"))
+                        {
+                            param["Title"] = optionParam["Title"];
+                            param.SetChanged();
+
+                        }
+
+
+
                     }
 
-                    if (optionHasValue && !modifiers.Contains("DoNotChangeValue"))
-                    {
-                        param["Value"] = optionParam["Value"];
-                        param.SetChanged();
-
-                    }
-
-                    if (modifiers.Contains("ChangeName"))
-                    {
-                        param["Title"] = optionParam["Title"];
-                        param.SetChanged();
-
-                    }
-
+                    if (!parametersToProcess.Any() && appendOrReplace)
+                        parametersToAdd.Add(optionParam);
 
 
                 }
-
-                if (!parametersToProcess.Any() && appendOrReplace)
-                    parametersToAdd.Add(optionParam);
-
             }
 
 
@@ -188,7 +203,7 @@ namespace QA.ProductCatalog.ImpactService
             foreach (var key in c.Keys)
             {
                 var collection = c[key];
-                if (c.Count >= 2)
+                if (collection.Count >= 2)
                 {
                     var targetParams = FindByKey(productParametersRoot, key).ToArray();
                     if (targetParams.Any())

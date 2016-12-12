@@ -63,6 +63,42 @@
           }
         }
       }
+    ],
+    "ServicesOnRoamingScale": [
+      {
+        "Id": 1893691,
+        "Service": {
+          "Id": 2000,
+          "MarketingProduct": {
+            "Id": 2001,
+            "Title": "Просто опция",
+            "Alias": "simple_option",
+            "SortOrder": 2,
+            "Groups": [
+              {
+                "Id": 23579,
+                "Title": "Звонки",
+                "SortOrder": 0,
+                "OldSiteId": 31
+              }
+            ],
+            "Link": "/mob_connect/roaming/i_roaming/simple_option/",
+            "Description": "Бесплатные входящие в поездках по миру."
+          }
+        },
+        "Parent": {
+          "Id": 2002,
+          "Title": "Услуга 'Ноль без границ' на роуминговой сетке 'Зона 1' в регионе 'Россия'",
+          "Type": 444.0,
+          "Modifiers": [
+            {
+              "Id": 1838315,
+              "Title": "Участвует в калькуляторе роуминга",
+              "Alias": "CalculateInRoaming"
+            }
+          ]
+        }
+      }
     ]
   }
 }

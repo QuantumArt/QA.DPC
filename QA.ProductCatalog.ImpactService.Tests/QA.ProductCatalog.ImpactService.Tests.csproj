@@ -90,6 +90,12 @@
     <None Include="TestData\50sms.json" />
     <None Include="TestData\bit.json" />
     <None Include="TestData\free.json" />
+    <Content Include="TestData\simple2_option.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\simple3_option.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="TestData\zero.json" />
   </ItemGroup>
   <Choose>

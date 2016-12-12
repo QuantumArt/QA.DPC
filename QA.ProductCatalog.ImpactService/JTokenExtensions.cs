@@ -26,10 +26,10 @@ namespace QA.ProductCatalog.ImpactService
         {
             var newParam = param.DeepClone();
             SetChanged(newParam);
-            newParam["BaseParameter"] = null;
-            newParam["Zone"] = null;
-            newParam["Direction"] = null;
-            newParam["BaseParameterModifiers"] = null;
+            newParam.SelectToken("BaseParameter")?.Parent.Remove();
+            newParam.SelectToken("Zone")?.Parent.Remove();
+            newParam.SelectToken("Direction")?.Parent.Remove();
+            newParam.SelectToken("BaseParameterModifiers")?.Parent.Remove();
             return newParam;
         }
     }
