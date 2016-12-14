@@ -18,14 +18,12 @@
       "Modifiers.Alias"
     ],
     "Types": [
-      "Action",
-      "Tariff",
-      "Service"
+      "_default_"
     ],
     "NotAnalyzedFields": [
       "GlobalCode",
       "Alias",
-      "ForisId"
+      "ForisID"
     ],
     "CreationDateField": "UpdateDate"
   },
