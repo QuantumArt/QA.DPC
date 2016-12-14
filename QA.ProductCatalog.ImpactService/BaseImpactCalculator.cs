@@ -21,13 +21,13 @@ namespace QA.ProductCatalog.ImpactService
 
         public void Calculate(JObject product, JObject option)
         {
-            var optionParametersRoot = option.SelectToken("product.Parameters");
-            var optionId = (int)option.SelectToken("product.Id");
+            var optionParametersRoot = option.SelectToken("Parameters");
+            var optionId = (int)option.SelectToken("Id");
             bool hasImpact = MergeLinkImpactToOption(optionParametersRoot, product, optionId);
 
             if (hasImpact)
             {
-                var parametersRoot = product.SelectToken("product.Parameters");
+                var parametersRoot = product.SelectToken("Parameters");
                 var optionParameters1 = optionParametersRoot.Where(n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).ToArray().Contains(ParameterModifierName)).ToArray();
                 CalculateImpact(parametersRoot, optionParameters1);
             }
@@ -35,16 +35,13 @@ namespace QA.ProductCatalog.ImpactService
 
         private bool MergeLinkImpactToOption(JToken optionParametersRoot, JObject product, int optionId)
         {
-            var link = product.SelectTokens($"product.{LinkName}.[?(@.Service)]")
-                .Where(n => (int) n["Service"]["Id"] == optionId)
-                .SingleOrDefault(
-                    n =>
-                        n.SelectTokens("Parent.Modifiers.[?(@.Alias)].Alias")
-                            .Select(m => m.ToString())
-                            .ToArray()
-                            .Contains(LinkModifierName));
+            var link = product.SelectTokens($"{LinkName}.[?(@.Service)]")
+            .SingleOrDefault(n => (decimal)n["Service"]["Id"] == optionId);
 
-            var hasImpact = link != null;
+            if (link == null)
+                return false;
+
+            var hasImpact = link.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{LinkModifierName}')]").Any();
 
             if (hasImpact)
             {

@@ -1,40 +1,38 @@
 {
-  "product": {
-    "Id": 2000,
-    "Parameters": [
-      {
-        "Id": 3000,
-        "Title": "Новый заголовок",
-        "NumValue": 45.00,
-        "BaseParameter": {
-          "Id": 8478,
-          "Title": "Исходящие звонки",
-          "Alias": "OutgoingCalls"
-        },
-        "Direction": {
-          "Id": 8552,
-          "Title": "Направление: Вся Россия",
-          "Alias": "Russia"
-        },
-        "Unit": {
-          "Id": 8543,
-          "Title": "рублей",
-          "Display": "руб."
-        },
-        "Group": {
-          "Id": 1837521,
-          "Title": "Исходящие звонки в Россию (за минуту)",
-          "SortOrder": 3,
-          "OldSiteId": 3
-        },
-        "Modifiers": [
-          {
-            "Id": 1852272,
-            "Title": "Использовать для калькулятора роуминга",
-            "Alias": "UseForRoamingCalculator"
-          }
-        ]
-      }
-    ]
-  }
+  "Id": 2000,
+  "Parameters": [
+    {
+      "Id": 3000,
+      "Title": "Новый заголовок",
+      "NumValue": 45.00,
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8552,
+        "Title": "Направление: Вся Россия",
+        "Alias": "Russia"
+      },
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      },
+      "Modifiers": [
+        {
+          "Id": 1852272,
+          "Title": "Использовать для калькулятора роуминга",
+          "Alias": "UseForRoamingCalculator"
+        }
+      ]
+    }
+  ]
 }
