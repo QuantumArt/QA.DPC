@@ -230,7 +230,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
             Assert.That((decimal)result2["NumValue"], Is.EqualTo(45));
             Assert.That(result[0]["Changed"], Is.Null);
-            Assert.That(result2["BaseParameter"], Is.Null);
+           // Assert.That(result2["BaseParameter"], Is.Null);
             Assert.That((bool)result2["Changed"], Is.True);
             Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
         }
@@ -374,6 +374,108 @@ namespace QA.ProductCatalog.ImpactService.Tests
             Assert.That((bool)result[2]["Changed"], Is.True);
             Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(3));
 
+        }
+
+        [Test]
+        public void FilterByCountryCode_ExistingFilter_Filtered()
+        {
+            var tariff = GetJsonFromFile("simple1_tariff.json");
+            var option = GetJsonFromFile("simple4_option.json");
+            var calculator = new InternationalRoamingCalculator();
+            string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
+            var cntOption = option.SelectTokens(feeQuery).Count();
+            calculator.Calculate(tariff, new [] { option }, "UA");
+
+
+            var cnt = tariff.SelectTokens(feeQuery).Count();
+
+            var specialCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'UA')]").Count();
+            var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
+
+            Assert.That(cnt, Is.LessThan(cntOption));
+            Assert.That(cnt, Is.EqualTo(2));
+            Assert.That(specialCnt, Is.EqualTo(2));
+            Assert.That(generalCnt, Is.EqualTo(1));
+
+        }
+
+        [Test]
+        public void FilterByCountryCode_ExistingFilterWithMissingWorldExceptRussia_Filtered()
+        {
+            var tariff = GetJsonFromFile("simple1_tariff.json");
+            var option = GetJsonFromFile("simple4_option.json");
+            var calculator = new InternationalRoamingCalculator();
+
+            var dir = new TariffDirection("SubscriptionFee", "WorldExceptRussia", null, null);
+            var toRemove = calculator.FindByKey(option.SelectToken("Parameters"), dir.GetKey()).ToArray();
+            foreach (JToken jToken in toRemove)
+            {
+                jToken.Remove();
+            }
+            string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
+            var cntOption = option.SelectTokens(feeQuery).Count();
+
+            
+            calculator.Calculate(tariff, new[] { option }, "UA");
+
+
+            var cnt = tariff.SelectTokens(feeQuery).Count();
+
+            var specialCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'UA')]").Count();
+            var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
+
+            Assert.That(cnt, Is.LessThan(cntOption));
+            Assert.That(cnt, Is.EqualTo(2));
+            Assert.That(specialCnt, Is.EqualTo(2));
+            Assert.That(generalCnt, Is.EqualTo(1));
+
+        }
+
+        [Test]
+        public void FilterByCountryCode_PartialExistingFilter_Filtered()
+        {
+            var tariff = GetJsonFromFile("simple1_tariff.json");
+            var option = GetJsonFromFile("simple4_option.json");
+            var calculator = new InternationalRoamingCalculator();
+            string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
+            var cntOption = option.SelectTokens(feeQuery).Count();
+            calculator.Calculate(tariff, new[] { option }, "HU");
+
+
+            var cnt = tariff.SelectTokens(feeQuery).Count();
+            var specials = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'HU')]").ToArray();
+            var specialCnt = specials.Count();
+            var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
+
+
+            Assert.That(cnt, Is.LessThan(cntOption));
+            Assert.That(cnt, Is.EqualTo(2));
+            Assert.That(specialCnt, Is.EqualTo(1));
+            Assert.That(generalCnt, Is.EqualTo(2));
+            Assert.That((string) specials.First()["Value"], Is.EqualTo("безлимитный"));
+        }
+
+        [Test]
+        public void FilterByCountryCode_NonExistingFilter_Filtered()
+        {
+            var tariff = GetJsonFromFile("simple1_tariff.json");
+            var option = GetJsonFromFile("simple4_option.json");
+            var calculator = new InternationalRoamingCalculator();
+            string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
+            var cntOption = option.SelectTokens(feeQuery).Count();
+            calculator.Calculate(tariff, new[] { option }, "LT");
+
+
+            var cnt = tariff.SelectTokens(feeQuery).Count();
+            var specials = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'LT')]").ToArray();
+            var specialCnt = specials.Count();
+            var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
+
+
+            Assert.That(cnt, Is.LessThan(cntOption));
+            Assert.That(cnt, Is.EqualTo(2));
+            Assert.That(specialCnt, Is.EqualTo(0));
+            Assert.That(generalCnt, Is.EqualTo(3));
         }
 
 

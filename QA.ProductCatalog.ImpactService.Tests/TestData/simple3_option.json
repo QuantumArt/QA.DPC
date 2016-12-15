@@ -1,127 +1,128 @@
 {
-  "Id": 2000,
-  "Parameters": [
-    {
-      "Id": 4000,
-      "Title": "Новый заголовок (второй шаг)",
-      "NumValue": 45,
-      "BaseParameter": {
-        "Id": 8478,
-        "Title": "Исходящие звонки",
-        "Alias": "OutgoingCalls"
+    "Id": 2000,
+    "Parameters": [
+      {
+        "Id": 4000,
+        "Title": "Новый заголовок (второй шаг)",
+        "NumValue": 45,
+        "BaseParameter": {
+          "Id": 8478,
+          "Title": "Исходящие звонки",
+          "Alias": "OutgoingCalls"
+        },
+        "Direction": {
+          "Id": 8552,
+          "Title": "Направление: Вся Россия",
+          "Alias": "Russia"
+        },
+        "BaseParameterModifiers": [
+          {
+            "Id": 1171923,
+            "Title": "Второй шаг",
+            "Alias": "SecondStep",
+            "Type": "Step"
+          }
+        ],
+        "Unit": {
+          "Id": 8543,
+          "Title": "рублей",
+          "Display": "руб."
+        },
+        "Group": {
+          "Id": 1837521,
+          "Title": "Исходящие звонки в Россию (за минуту)",
+          "SortOrder": 3,
+          "OldSiteId": 3
+        },
+        "Modifiers": [
+          {
+            "Id": 1852272,
+            "Title": "Использовать для калькулятора роуминга",
+            "Alias": "UseForRoamingCalculator"
+          }
+        ]
       },
-      "Direction": {
-        "Id": 8552,
-        "Title": "Направление: Вся Россия",
-        "Alias": "Russia"
+      {
+        "Id": 3000,
+        "Title": "Новый заголовок (первый шаг)",
+        "BaseParameter": {
+          "Id": 8478,
+          "Title": "Исходящие звонки",
+          "Alias": "OutgoingCalls"
+        },
+        "Direction": {
+          "Id": 8552,
+          "Title": "Направление: Вся Россия",
+          "Alias": "Russia"
+        },
+        "BaseParameterModifiers": [
+          {
+            "Id": 1171922,
+            "Title": "Первый шаг",
+            "Alias": "FirstStep",
+            "Type": "Step"
+          }
+        ],
+        "Unit": {
+          "Id": 8543,
+          "Title": "рублей",
+          "Display": "руб."
+        },
+        "Group": {
+          "Id": 1837521,
+          "Title": "Исходящие звонки в Россию (за минуту)",
+          "SortOrder": 3,
+          "OldSiteId": 3
+        },
+        "Modifiers": [
+          {
+            "Id": 1852272,
+            "Title": "Использовать для калькулятора роуминга",
+            "Alias": "UseForRoamingCalculator"
+          }
+        ]
       },
-      "BaseParameterModifiers": [
-        {
-          "Id": 1171923,
-          "Title": "Второй шаг",
-          "Alias": "SecondStep",
-          "Type": "Step"
-        }
-      ],
-      "Unit": {
-        "Id": 8543,
-        "Title": "рублей",
-        "Display": "руб."
-      },
-      "Group": {
-        "Id": 1837521,
-        "Title": "Исходящие звонки в Россию (за минуту)",
-        "SortOrder": 3,
-        "OldSiteId": 3
-      },
-      "Modifiers": [
-        {
-          "Id": 1852272,
-          "Title": "Использовать для калькулятора роуминга",
-          "Alias": "UseForRoamingCalculator"
-        }
-      ]
-    },
-    {
-      "Id": 3000,
-      "Title": "Новый заголовок (первый шаг)",
-      "BaseParameter": {
-        "Id": 8478,
-        "Title": "Исходящие звонки",
-        "Alias": "OutgoingCalls"
-      },
-      "Direction": {
-        "Id": 8552,
-        "Title": "Направление: Вся Россия",
-        "Alias": "Russia"
-      },
-      "BaseParameterModifiers": [
-        {
-          "Id": 1171922,
-          "Title": "Первый шаг",
-          "Alias": "FirstStep",
-          "Type": "Step"
-        }
-      ],
-      "Unit": {
-        "Id": 8543,
-        "Title": "рублей",
-        "Display": "руб."
-      },
-      "Group": {
-        "Id": 1837521,
-        "Title": "Исходящие звонки в Россию (за минуту)",
-        "SortOrder": 3,
-        "OldSiteId": 3
-      },
-      "Modifiers": [
-        {
-          "Id": 1852272,
-          "Title": "Использовать для калькулятора роуминга",
-          "Alias": "UseForRoamingCalculator"
-        }
-      ]
-    },
-    {
-      "Id": 5000,
-      "Title": "Новый заголовок (третий шаг)",
-      "BaseParameter": {
-        "Id": 8478,
-        "Title": "Исходящие звонки",
-        "Alias": "OutgoingCalls"
-      },
-      "Direction": {
-        "Id": 8552,
-        "Title": "Направление: Вся Россия",
-        "Alias": "Russia"
-      },
-      "BaseParameterModifiers": [
-        {
-          "Id": 1171924,
-          "Title": "Третий шаг",
-          "Alias": "ThirdStep",
-          "Type": "Step"
-        }
-      ],
-      "Unit": {
-        "Id": 8543,
-        "Title": "рублей",
-        "Display": "руб."
-      },
-      "Group": {
-        "Id": 1837521,
-        "Title": "Исходящие звонки в Россию (за минуту)",
-        "SortOrder": 3,
-        "OldSiteId": 3
-      },
-      "Modifiers": [
-        {
-          "Id": 1852272,
-          "Title": "Использовать для калькулятора роуминга",
-          "Alias": "UseForRoamingCalculator"
-        }
-      ]
-    }
+      {
+        "Id": 5000,
+        "Title": "Новый заголовок (третий шаг)",
+        "BaseParameter": {
+          "Id": 8478,
+          "Title": "Исходящие звонки",
+          "Alias": "OutgoingCalls"
+        },
+        "Direction": {
+          "Id": 8552,
+          "Title": "Направление: Вся Россия",
+          "Alias": "Russia"
+        },
+        "BaseParameterModifiers": [
+          {
+            "Id": 1171924,
+            "Title": "Третий шаг",
+            "Alias": "ThirdStep",
+            "Type": "Step"
+          }
+        ],
+        "Unit": {
+          "Id": 8543,
+          "Title": "рублей",
+          "Display": "руб."
+        },
+        "Group": {
+          "Id": 1837521,
+          "Title": "Исходящие звонки в Россию (за минуту)",
+          "SortOrder": 3,
+          "OldSiteId": 3
+        },
+        "Modifiers": [
+          {
+            "Id": 1852272,
+            "Title": "Использовать для калькулятора роуминга",
+            "Alias": "UseForRoamingCalculator"
+          }
+        ]
+      }
 
-  ]
+    ]
+
 }

@@ -10,16 +10,16 @@ namespace QA.ProductCatalog.ImpactService
 
         public string BaseParameter { get; }
 
-        public string Zone { get; }
+        public string Zone { get; set; }
 
-        public string Direction { get; }
+        public string Direction { get; set; }
 
         public string[] BaseParameterModifiers { get; }
 
         public static HashSet<string> SpecialModifiers { get; } = new HashSet<string>(new[]
         {
             "WithinPackage", "OverPackage", "FirstStep", "SecondStep", "ThirdStep", "FourthStep", "FifthStep",
-            "ZoneExpansion"
+            "ZoneExpansion", "Unlimited"
         });
 
         public TariffDirection(string baseParameter, string zone, string direction, string[] baseParameterModifiers)

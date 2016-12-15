@@ -26,26 +26,42 @@ namespace QA.ProductCatalog.ImpactService
         {
             foreach (var param in option["Parameters"])
             {
-                if (param.SelectTokens("BaseParameterModifiers.Alias").Any(n => n.ToString() == "Unlimited"))
+                var title = param.SelectToken("BaseParameterModifiers[?(@.Alias == 'Unlimited')].Title")?.ToString();
+                if (title != null)
                 {
-                    param["Value"] = "безлимитный";
+                    param["Value"] = title.ToLowerInvariant();
                 }
             }
         }
 
         private void FilterByCountryCode(JObject option, string countryCode)
         {
-            var optionParametersToRemove = option.SelectToken("Parameters").Where(n =>
-            {
-                var a = n.SelectTokens("Zone.RoamingCountries.Country.Code").ToArray();
-                return !a.Any() || a.All(m => m.ToString() != countryCode);
-            });
 
-            foreach (var param in optionParametersToRemove)
+            var zoneParameters = option.SelectTokens("Parameters.[?(@.Zone)]").ToArray();
+
+            var worldExceptRussiaParams = zoneParameters.Where(n => n.SelectToken("Zone.Alias").ToString() == "WorldExceptRussia").ToArray();
+
+            var countryParams = zoneParameters.Where(n => n.SelectToken("Zone.Alias").ToString() == countryCode)
+                .ToDictionary(k => (int)k["Id"], p => p);
+
+            var preservedParams = new Dictionary<int, JToken>(countryParams);
+
+            foreach (var p in worldExceptRussiaParams)
             {
-                param.Remove();
+                var dir = p.ExtractDirection();
+                dir.Zone = countryCode;
+                var specialExists = FindByKey(option.SelectToken("Parameters"), dir.GetKey()).Any();
+                if (!specialExists)
+                    preservedParams.Add((int)p["Id"], p);
             }
 
+            foreach (var zp in zoneParameters)
+            {
+                if (!preservedParams.ContainsKey((int) zp["Id"]))
+                {
+                    zp.Remove();
+                }
+            }
         }
     }
 }

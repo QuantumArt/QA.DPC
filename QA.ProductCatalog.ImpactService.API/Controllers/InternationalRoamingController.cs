@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +20,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, string country = "WorldExceptRussia")
         {
 
             var a = new[] {id}.Union(serviceIds).ToArray();
@@ -37,19 +38,22 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 return NotFound($"Product {id} is not found");
 
             var calc = new InternationalRoamingCalculator();
+            var services = new List<JObject>();
             foreach (var serviceId in serviceIds)
             {
                 var service = results.FirstOrDefault(m => (int)m["Id"] == serviceId);
                 if (service == null)
                     return NotFound($"Service {serviceId} is not found");
-                try
-                {
-                    calc.Calculate(product, service);
-                }
-                catch (Exception ex)
-                {
-                    return BadRequest($"Exception occurs while calculating impact: {ex.Message}");
-                }
+                services.Add(service);
+            }
+
+            try
+            {
+                calc.Calculate(product, services.ToArray(), country);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Exception occurs while calculating impact: {ex.Message}");
             }
             return Content(  product.ToString()) ;
 
