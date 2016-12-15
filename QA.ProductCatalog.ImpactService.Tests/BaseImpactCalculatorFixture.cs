@@ -42,6 +42,26 @@ namespace QA.ProductCatalog.ImpactService.Tests
             Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
         }
 
+
+        [Test]
+        public void ChangeParameters_NumValueSmallerWithLinkMerging_Changed()
+        {
+            var tariff = GetJsonFromFile("simple2_tariff.json");
+            var option = GetJsonFromFile("simple1_option.json");
+            var calculator = new InternationalRoamingCalculator();
+
+            calculator.Calculate(tariff, option);
+
+            var root = tariff.SelectToken("Parameters");
+            var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
+            var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
+            Assert.That(result.Length, Is.EqualTo(1));
+            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(65));
+            Assert.That((string)result[0]["Title"], Is.Not.EqualTo("Новый заголовок"));
+            Assert.That((bool)result[0]["Changed"], Is.True);
+            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
+        }
+
         [Test]
         public void ChangeParameters_NumValueSmallerWithoutCalculateModifier_NotChanged()
         {
@@ -187,6 +207,35 @@ namespace QA.ProductCatalog.ImpactService.Tests
             Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
             Assert.That(cntAfter, Is.EqualTo(cntBefore + 1));
         }
+
+        [Test]
+        public void ProcessAppend_HasAppendModifierWithLinkMerging_Appended()
+        {
+            var tariff = GetJsonFromFile("simple2_tariff.json");
+            var option = GetJsonFromFile("simple1_option.json");
+            var calculator = new InternationalRoamingCalculator();
+            var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
+            var optionRoot = tariff.SelectTokens($"{calculator.LinkName}.[?(@.Id)].Parent.Parameters").First();
+            var obj = new JObject
+            {
+                ["Id"] = 1000,
+                ["Alias"] = "Append",
+                ["Title"] = "Добавить"
+
+            };
+            ((JArray)calculator.FindByKey(optionRoot, direction.GetKey()).First().SelectToken("Modifiers")).Add(obj);
+            var cntBefore = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
+
+            calculator.Calculate(tariff, option);
+
+            var cntAfter = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
+            var root = tariff.SelectToken("Parameters");
+            var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
+            Assert.That(result.Length, Is.EqualTo(1));
+            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
+            Assert.That(cntAfter, Is.EqualTo(cntBefore + 1));
+        }
+
 
         [Test]
         public void ProcessAppend_HasAppendOrReplaceModifierAndDirectionDoesntExist_Appended()

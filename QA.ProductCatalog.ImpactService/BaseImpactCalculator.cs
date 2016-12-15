@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 
@@ -45,7 +46,7 @@ namespace QA.ProductCatalog.ImpactService
 
             if (hasImpact)
             {
-                var linkParameters = link.SelectTokens("Parent.Parameters");
+                var linkParameters = link.SelectTokens("Parent.Parameters[?(@.Id)]");
 
                 foreach (var linkParameter in linkParameters)
                 {
@@ -102,7 +103,7 @@ namespace QA.ProductCatalog.ImpactService
         {
             foreach (var param in parametersToAppendInsteadOfChange)
             {
-                parameters.Add(param.PrepareForAdd());
+                AppendParameter(parameters, param);
             }
 
             var addParameters =
@@ -111,9 +112,15 @@ namespace QA.ProductCatalog.ImpactService
 
             foreach (var param in addParameters)
             {
-
-                parameters.Add(param.PrepareForAdd());
+                AppendParameter(parameters, param);
             }
+        }
+
+        private void AppendParameter(JArray parameters, JToken param)
+        {
+            var key = param.ExtractDirection().GetKey();
+            var clearTariffDirection = !String.IsNullOrEmpty(key) && FindByKey(parameters, key).Any();
+            parameters.Add(param.PrepareForAdd(clearTariffDirection));
         }
 
         private void ChangeParameters(JToken parametersRoot, IEnumerable<JToken> optionParameters, List<JToken> parametersToAdd)

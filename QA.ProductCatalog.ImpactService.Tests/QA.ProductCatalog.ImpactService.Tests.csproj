@@ -81,7 +81,9 @@
     <Content Include="TestData\simple1_tariff.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="TestData\simple3_option.json" />
+    <Content Include="TestData\simple3_option.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestData\simple4_option.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -95,6 +97,9 @@
     <None Include="TestData\bit.json" />
     <None Include="TestData\free.json" />
     <Content Include="TestData\simple2_option.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestData\simple2_tariff.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="TestData\zero.json" />

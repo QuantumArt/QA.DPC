@@ -22,14 +22,17 @@ namespace QA.ProductCatalog.ImpactService
             return param;
         }
 
-        public static JToken PrepareForAdd(this JToken param)
+        public static JToken PrepareForAdd(this JToken param, bool clearTariffDirection)
         {
             var newParam = param.DeepClone();
             SetChanged(newParam);
-            //newParam.SelectToken("BaseParameter")?.Parent.Remove();
-            //newParam.SelectToken("Zone")?.Parent.Remove();
-            //newParam.SelectToken("Direction")?.Parent.Remove();
-            //newParam.SelectToken("BaseParameterModifiers")?.Parent.Remove();
+            if (clearTariffDirection)
+            {
+                newParam.SelectToken("BaseParameter")?.Parent.Remove();
+                newParam.SelectToken("Zone")?.Parent.Remove();
+                newParam.SelectToken("Direction")?.Parent.Remove();
+                newParam.SelectToken("BaseParameterModifiers")?.Parent.Remove();
+            }
             return newParam;
         }
     }
