@@ -50,7 +50,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
             {
                 try
                 {
-                    var result = await Manager.CreateAsync(product, language, state);
+                    var result = await Manager.CreateAsync(product, message.RegionTags, language, state);
 
                     return CreateResult(result, Logger);
                 }

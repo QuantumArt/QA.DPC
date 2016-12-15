@@ -73,7 +73,8 @@ namespace QA.ProductCatalog.HighloadFront.Importer
 
                 _logger.Info("Начинаем разбор продуктов...");
                 var products = data
-                    .Select(j => new ProductPostProcessorData(JsonConvert.DeserializeObject<DpcResponse>(j.Product).Product, j.Created, j.Updated))
+                    .Select(j => new { Response = JsonConvert.DeserializeObject<DpcResponse>(j.Product), j.Created, j.Updated })
+                    .Select(j => new ProductPostProcessorData(j.Response.Product, j.Response.RegionTags, j.Created, j.Updated))
                     .ToArray();
 
                 _logger.Info("Продукты разобраны");

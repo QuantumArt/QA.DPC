@@ -216,6 +216,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
+        public async Task<bool> Exists(JObject product, string language, string state)
+        {
+            ThrowIfDisposed();
+
+            string id = GetId(product);
+            string type = GetType(product);
+
+            var existsRequest = new DocumentExistsRequest(_client.ConnectionSettings.DefaultIndex, type, id);
+            var existsResponse = await _client.DocumentExistsAsync(existsRequest);
+
+            return existsResponse.Exists;
+        }
+
         public async Task<SonicResult> ResetAsync(string language, string state)
         {
             ThrowIfDisposed();
@@ -224,10 +237,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 var client = _getClient(language, state);
 
-                var response = await _client.DeleteIndexAsync(_client.ConnectionSettings.DefaultIndex);
+                var response = await client.DeleteIndexAsync(client.ConnectionSettings.DefaultIndex);
 
-                var r = await _client.CreateIndexAsync(
-                    _client.ConnectionSettings.DefaultIndex,
+                var r = await client.CreateIndexAsync(
+                    client.ConnectionSettings.DefaultIndex,
                     index => index
                         .Settings(s => s.Setting("max_result_window", Options.MaxResultWindow))
                         .Mappings(m => m.MapNotAnalyzed(Options.Types, Options.NotAnalyzedFields))                 
@@ -276,7 +289,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 .Size(options?.PerPage ?? Options.DefaultSize)
                 .Query(q => Filter(q, options));
 
-            SetPropertyFilter(request, options);
+            SetPropertyFilter(request, options, type);
             SetSorting(request, options);
 
             var client = _getClient(language, state);
@@ -292,18 +305,34 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (productsOptions.Filters != null)
             {
                 query = productsOptions.Filters.Where(f => f.Item1 != Options.TypePath).Aggregate(query, (current, sf) =>
+                {
 
-                IsNotAnalyzedField(sf.Item1) ?
-                current & +new TermQuery
-                {
-                    Field = sf.Item1,
-                    Value = sf.Item2
-                } :
-                current & +new MatchPhraseQuery
-                {
-                    Field = sf.Item1,
-                    Query = sf.Item2,
-                    Operator = Operator.And
+                    if ((sf.Item1 == Options.IdPath || sf.Item1 == "ProductId") && sf.Item2.Contains(","))
+                    {
+                        current = current & +new TermsQuery
+                        {
+                            Field = sf.Item1,
+                            Terms = sf.Item2.Split(',')
+                        };
+                    }
+                    else
+                    {
+                        current =
+                        IsNotAnalyzedField(sf.Item1) ?
+                        current & +new TermQuery
+                        {
+                            Field = sf.Item1,
+                            Value = sf.Item2
+                        } :
+                        current & +new MatchPhraseQuery
+                        {
+                            Field = sf.Item1,
+                            Query = sf.Item2,
+                            Operator = Operator.And
+                        };
+                    }
+
+                    return current;
                 });
             }
 
@@ -330,13 +359,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return query;
         }
 
-        private void SetPropertyFilter(SearchDescriptor<StreamData> request, ProductsOptions options)
+        private void SetPropertyFilter(SearchDescriptor<StreamData> request, ProductsOptions options, string type = null)
         {
             string[] fields = null;
 
             if (options?.PropertiesFilter?.Any() == true)
             {
                 fields = options.PropertiesFilter.ToArray();
+            }
+            else if (type == "RegionTags")
+            {
+                fields = new[] { "ProductId", "Type", "RegionTags" };
             }
             else if (Options.DefaultFields?.Any() == true)
             {
@@ -419,7 +452,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return respons.Documents.ToList();
         }
 
-        public async Task<Stream> SearchStreamAsync(string q, ProductsOptions options)
+        public async Task<Stream> SearchStreamAsync(string q, ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
 
@@ -445,7 +478,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             SetPropertyFilter(request, options);
             SetSorting(request, options);
 
-            return await _client.SearchStreamAsync(request);
+            var client = _getClient(language, state);
+            return await client.SearchStreamAsync(request);
         }
 
         private bool IsNotAnalyzedField(string pathField)

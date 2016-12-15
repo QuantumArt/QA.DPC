@@ -13,5 +13,6 @@ namespace QA.ProductCatalog.HighloadFront
         Task<SonicResult> UpdateAsync(JObject product, string language, string state, CancellationToken cancellationToken = default(CancellationToken));
         Task<SonicResult> DeleteAsync(JObject product, string language, string state);
         Task<SonicResult> ResetAsync(string language, string state);
+        Task<bool> Exists(JObject product, string language, string state);
     }
 }
