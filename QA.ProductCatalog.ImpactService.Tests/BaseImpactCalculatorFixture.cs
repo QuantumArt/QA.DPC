@@ -37,6 +37,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
             Assert.That(result.Length, Is.EqualTo(1));
             Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(45));
+            Assert.That((decimal)result[0]["OldNumValue"], Is.EqualTo(85));
             Assert.That((string)result[0]["Title"], Is.Not.EqualTo("Новый заголовок"));
             Assert.That((bool)result[0]["Changed"], Is.True);
             Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
@@ -279,7 +280,6 @@ namespace QA.ProductCatalog.ImpactService.Tests
             Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
             Assert.That((decimal)result2["NumValue"], Is.EqualTo(45));
             Assert.That(result[0]["Changed"], Is.Null);
-           // Assert.That(result2["BaseParameter"], Is.Null);
             Assert.That((bool)result2["Changed"], Is.True);
             Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
         }
@@ -371,6 +371,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
             Assert.That(result.Length, Is.EqualTo(1));
             Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(42.5));
+            Assert.That((decimal)result[0]["OldNumValue"], Is.EqualTo(85));
             Assert.That((bool)result[0]["Changed"], Is.True);
         }
 

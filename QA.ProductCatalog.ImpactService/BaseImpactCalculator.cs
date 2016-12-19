@@ -149,6 +149,8 @@ namespace QA.ProductCatalog.ImpactService
                             }
                             else if (modifiers.Contains("Discount"))
                             {
+                                if (param["OldNumValue"] == null)
+                                    param["OldNumValue"] = param["NumValue"];
                                 param["NumValue"] = (decimal)param["NumValue"] *
                                                     (1 - (decimal)optionParam["NumValue"]);
                                 param.SetChanged();
@@ -158,6 +160,8 @@ namespace QA.ProductCatalog.ImpactService
                             {
                                 if (!skipProcessing)
                                 {
+                                    if (param["OldNumValue"] == null)
+                                        param["OldNumValue"] = param["NumValue"];
                                     param["NumValue"] = optionParam["NumValue"];
                                     param.SetChanged();
 
