@@ -19,6 +19,7 @@ namespace QA.ProductCatalog.ImpactService
                 SetUnlimitedValues(option);
                 Calculate(roamingScale, option);
             }
+            Reorder(roamingScale);
             return roamingScale;
         }
 

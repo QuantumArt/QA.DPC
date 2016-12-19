@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "Newtonsoft.Json": "9.0.1",
+    "NUnit": "3.5.0"
+  },
+
+  "frameworks": {
+    "net452": {}
+  },
+
+  "runtimes": { "win": {} },
+  "testRunner": "nunit"
+}

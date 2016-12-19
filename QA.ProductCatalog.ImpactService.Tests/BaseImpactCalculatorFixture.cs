@@ -24,6 +24,22 @@ namespace QA.ProductCatalog.ImpactService.Tests
         }
 
         [Test]
+        public void ChangeParameters_MixedOrder_Reordered()
+        {
+            var tariff = GetJsonFromFile("simple_tariff_order.json");
+            var calculator = new InternationalRoamingCalculator();
+
+            calculator.Calculate(tariff, new JObject[] {}, null);
+
+            var orders = new[] {34, 33, 32, 1000, 11, 12, 2000, 21, 22, 1};
+
+            var resultOrders = tariff.SelectTokens("Parameters.[?(@.Id)].Id").Select(n => (int) n).ToArray();
+
+            Assert.That(resultOrders, Is.EqualTo(orders));
+
+        }
+
+        [Test]
         public void ChangeParameters_NumValueSmaller_Changed()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -200,12 +216,15 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var cntBefore = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
 
             calculator.Calculate(tariff, option);
+            calculator.Reorder(tariff);
 
             var cntAfter = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
             Assert.That(result.Length, Is.EqualTo(1));
             Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
+            Assert.That(result[0].Previous["Changed"], Is.Not.Null);
+
             Assert.That(cntAfter, Is.EqualTo(cntBefore + 1));
         }
 
