@@ -64,7 +64,7 @@ namespace QA.ProductCatalog.HighloadFront
 
             if (tagsProduct != null)
             {
-                var tagsResult = await Store.CreateAsync(product, language, state);
+                var tagsResult = await Store.CreateAsync(tagsProduct, language, state);
 
                 if (!tagsResult.Succeeded)
                 {
