@@ -118,7 +118,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             ThrowIfDisposed();
 
             var client = _getClient(language, state);
-            var response = await client.LowLevel.GetSourceAsync<Stream>(_client.ConnectionSettings.DefaultIndex, "_all", id, p =>
+            var response = await client.LowLevel.GetSourceAsync<Stream>(client.ConnectionSettings.DefaultIndex, "_all", id, p =>
             {
                 if (options?.PropertiesFilter != null)
                 {
