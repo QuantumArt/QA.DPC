@@ -6,22 +6,20 @@ using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
+using System.Globalization;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
     public class ProductRelevanceAction : ActionTaskBase
     {
-        private readonly IConsumerMonitoringService _consumerMonitoringService;
-
+        private readonly Func<bool, CultureInfo, IConsumerMonitoringService> _consumerMonitoringServiceFunc;
         private readonly ISettingsService _settingsService;
         private readonly IArticleService _articleService;
 
-        public ProductRelevanceAction(IConsumerMonitoringService consumerMonitoringService, ISettingsService settingsService, IArticleService articleService)
+        public ProductRelevanceAction(Func<bool, CultureInfo, IConsumerMonitoringService> consumerMonitoringServiceFunc, ISettingsService settingsService, IArticleService articleService)
         {
-            _consumerMonitoringService = consumerMonitoringService;
-
+            _consumerMonitoringServiceFunc = consumerMonitoringServiceFunc;
             _settingsService = settingsService;
-
             _articleService = articleService;
         }
 
@@ -61,30 +59,35 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     productIdsInSection =>
                     {
                         var productRelevanceService = ObjectFactoryBase.Resolve<IProductRelevanceService>();
-
 						var productService = ObjectFactoryBase.Resolve<IProductService>();
 
-                        foreach (int productId in (IList<int>) productIdsInSection)
-                        {
-							var productStage = productService.GetProductById(productId);
+                        foreach (int productId in (IList<int>)productIdsInSection)
+                        {                            
+                            foreach (var isLive in new[] { true, false })
+                            {
+                                var product = productService.GetProductById(productId, isLive);
+                                var relevanceItems = productRelevanceService.GetProductRelevance(product, isLive);
 
-	                        DateTime? trash1;
-	                        string trash2;
+                                foreach (var relevanceItem in relevanceItems)
+                                {
+                                    var consumerMonitoringService = _consumerMonitoringServiceFunc(true, relevanceItem.Culture);
 
-							var productRelevanceStage = productRelevanceService.GetProductRelevance(productStage, false, out trash1, out trash2);
+                                    if (consumerMonitoringService != null)
+                                    {
+                                        consumerMonitoringService.InsertOrUpdateProductRelevanceStatus(productId, relevanceItem.Relevance, isLive);
+                                    }
 
-	                        var productLive = productStage.Splitted ? productService.GetProductById(productId, true): productStage;
-
-							var productRelevanceLive = productRelevanceService.GetProductRelevance(productLive, true, out trash1, out trash2);
-
-							_consumerMonitoringService.InsertOrUpdateProductRelevanceStatus(productId, productRelevanceLive, true);
-
-							_consumerMonitoringService.InsertOrUpdateProductRelevanceStatus(productId, productRelevanceStage, false);
+                                    if (TaskContext.IsCancellationRequested)
+                                    {
+                                        TaskContext.IsCancelled = true;
+                                        return;
+                                    }
+                                }
+                            }
 
                             if (TaskContext.IsCancellationRequested)
                             {
                                 TaskContext.IsCancelled = true;
-
                                 return;
                             }
 
@@ -93,8 +96,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                                 currentPercent += percentPerProduct;
                             }
 
-                            TaskContext.SetProgress((byte) currentPercent);
-                        }
+                            TaskContext.SetProgress((byte)currentPercent);
+                        }                       
                     },
                     x,
                     TaskCreationOptions.LongRunning))

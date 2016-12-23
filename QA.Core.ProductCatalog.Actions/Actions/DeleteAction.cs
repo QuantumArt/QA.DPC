@@ -26,18 +26,19 @@ namespace QA.Core.ProductCatalog.Actions
 		#region Overrides
 		protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
 		{
-			var product = ArticleService.Read(productId);
+            string[] channels = actionParameters.GetChannels();
+            var product = ArticleService.Read(productId);
             var definition = Productservice.GetProductDefinition(0, product.ContentId);
 			bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
 
-            DeleteProduct(product, definition, doNotSendNotifications, true);
+            DeleteProduct(product, definition, doNotSendNotifications, true, channels);
 		}
 		#endregion
 
-	    public void DeleteProduct(Quantumart.QP8.BLL.Article product, ProductDefinition definition, bool doNotSendNotifications, bool checkRootArticlePermissions)
+	    public void DeleteProduct(Quantumart.QP8.BLL.Article product, ProductDefinition definition, bool doNotSendNotifications, bool checkRootArticlePermissions, string[] channels)
 	    {
             Dictionary<int, Product<DeletingMode>> dictionary;
-            Article[] products;
+            Article[] products;            
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
             {
@@ -50,7 +51,7 @@ namespace QA.Core.ProductCatalog.Actions
             if (!doNotSendNotifications)
                 using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
                 {
-                    SendNotification(products, product.Id);
+                    SendNotification(products, product.Id, channels);
                 }
 		}
 
@@ -70,11 +71,11 @@ namespace QA.Core.ProductCatalog.Actions
             ArticleService.SimpleDelete(articleIds);
 		}
 
-		private void SendNotification(Models.Entities.Article[] products, int productId)
+		private void SendNotification(Models.Entities.Article[] products, int productId, string[] channels)
 		{
 			try
 			{
-				NotificationService.DeleteProducts(products, UserName, UserId);
+				NotificationService.DeleteProducts(products, UserName, UserId, channels);
 			}
 			catch (Exception ex)
 			{

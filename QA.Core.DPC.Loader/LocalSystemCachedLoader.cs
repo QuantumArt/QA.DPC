@@ -31,8 +31,9 @@ namespace QA.Core.DPC.Loader
             IReadOnlyArticleService articleService,
             IFieldService fieldService,
             ISettingsService settingsService,
-            IConsumerMonitoringService consumerMonitoringService) : base(definitionService,
-                logger, cacheProvider, cacheItemWatcher, articleService, fieldService, settingsService, consumerMonitoringService)
+            IConsumerMonitoringService consumerMonitoringService,
+            IArticleFormatter formatter) : base(definitionService,
+                logger, cacheProvider, cacheItemWatcher, articleService, fieldService, settingsService, consumerMonitoringService, formatter)
         {
             DataDirectory = AppDomain.CurrentDomain.GetData("DataDirectory") as string;
             if (DataDirectory == null)

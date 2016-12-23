@@ -77,23 +77,38 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             product = ArticleFilteredCopier.Copy(product, allFilter);
 
+            
+
             if (includeRelevanceInfo)
             {
-                DateTime? lastPublished;
+                var relevanceService = ObjectFactoryBase.Resolve<IProductRelevanceService>();
+                var relevanceItems = relevanceService.GetProductRelevance(product, live);
+                var relevanceField = new MultiArticleField() { FieldName = "Relevance" };                          
+                int id = 0;
 
-                string lastPublishedUserName;
+                product.AddField(relevanceField);
 
-                ProductRelevance relevance = ObjectFactoryBase.Resolve<IProductRelevanceService>().GetProductRelevance(product, live, out lastPublished, out lastPublishedUserName);
+                foreach (var relevanceItem in relevanceItems)
+                {
+                    var localizedRelevanceArticle = new Article();                    
+                    
+                    if (relevanceItem.Culture == CultureInfo.InvariantCulture)
+                    {
+                        AddRelevanceData(product, relevanceItem);
+                    }
+                    else
+                    {
+                        relevanceField.Items.Add(++id, localizedRelevanceArticle);
+                        AddRelevanceData(localizedRelevanceArticle, relevanceItem);
+                    }
 
-                string statusText = relevance == ProductRelevance.Missing
-                    ? "Отсутствует на витрине"
-                    : relevance == ProductRelevance.Relevant ? "Актуален" : "Содержит неотправленные изменения";
+                }
 
-                product
-                    .AddPlainField("ConsumerStatusText", statusText, "Статус на витрине")
-                    .AddPlainField("ConsumerStatusCode", relevance.ToString(), "Код статуса на витрине")
-                    .AddPlainField("ConsumerLastPublished", lastPublished.ToString(), "Дата последней публикации")
-                    .AddPlainField("ConsumerLastPublishedUserName", lastPublishedUserName, "Опубликовал");
+                bool isRelevant = relevanceItems.All(r => r.Culture == CultureInfo.InvariantCulture || r.Relevance == ProductRelevance.Relevant);
+                if (!isRelevant)
+                {
+                    product.AddPlainField("IsRelevant", isRelevant, "Актуальность продукта");
+                }
             }
 
             IModelPostProcessor processor = new HierarchySorter(new HierarchySorterParameter
@@ -139,9 +154,21 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return View("GetXml", (object)xml);
         }
 
-        public ActionResult GetProductData(int content_item_id, string formatter, bool live = false, string lang = null)
+        public ActionResult GetProductData(int content_item_id, string formatter, bool live = false, string lang = null, bool simple = false)
         {
-            var product = ObjectFactoryBase.Resolve<IProductService>().GetProductById(content_item_id, live);
+            var service = ObjectFactoryBase.Resolve<IProductService>();
+
+            Article product = null;
+                
+            if (simple)
+            {
+                product = service.GetSimpleProductsByIds(new[] { content_item_id }, live).FirstOrDefault();
+            }
+            else
+            {
+                product = service.GetProductById(content_item_id, live);
+            }                
+
             if (product == null)
             {
                 ViewBag.Message = "Продукт не найден.";
@@ -165,7 +192,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             var consumerMonitoringServiceFunc = ObjectFactoryBase.Resolve<Func<bool, IConsumerMonitoringService>>();
 
-            string xml = consumerMonitoringServiceFunc(live).GetProductXml(content_item_id);
+            string xml = consumerMonitoringServiceFunc(live).GetProduct(content_item_id);
 
             return View("GetXml", (object)xml);
         }
@@ -294,6 +321,21 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         #region Private methods
+        private void AddRelevanceData(Article article, RelevanceInfo relevanceInfo)
+        {
+
+            string statusText = relevanceInfo.Relevance == ProductRelevance.Missing
+                ? "Отсутствует на витрине"
+                : relevanceInfo.Relevance == ProductRelevance.Relevant ? "Актуален" : "Содержит неотправленные изменения";
+
+            article
+                .AddPlainField("ConsumerCulture", relevanceInfo.Culture.NativeName, "Язык витрины")
+                .AddPlainField("ConsumerStatusText", statusText, "Статус на витрине")
+                .AddPlainField("ConsumerStatusCode", relevanceInfo.Relevance.ToString(), "Код статуса на витрине")
+                .AddPlainField("ConsumerLastPublished", relevanceInfo.LastPublished.ToString(), "Дата последней публикации")
+                .AddPlainField("ConsumerLastPublishedUserName", relevanceInfo.LastPublishedUserName, "Опубликовал");
+        }
+
         private JsonResult Error(ModelStateDictionary modelstate)
         {
             var errors = from fv in modelstate

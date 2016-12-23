@@ -29,7 +29,7 @@ namespace QA.ProductCatalog.Integration
 	   {
 	   }
 
-	   public string GetProductXml(int id)
+	   public string GetProduct(int id)
 	   {
 		   throw new NotImplementedException();
 	   }

@@ -22,16 +22,15 @@ namespace QA.Core.DPC.Loader
 		public const string RENDER_TEXT_FIELD_AS_XML_NAME = "RenderTextFieldAsXml";
 
 		private readonly ILogger _logger;
-        private IReadOnlyArticleService _readOnlyArticleService;
-        private IFieldService _fieldService;
-        private ContentService _contentService;
+        private readonly ISettingsService _settingsService;
 
-		public XmlProductService(ILogger logger)
-		{
-			_logger = logger;
-		}
+        public XmlProductService(ILogger logger, ISettingsService settingsService)
+        {
+            _logger = logger;
+            _settingsService = settingsService;
+        }
 
-		public string GetProductXml(Article article, IArticleFilter filter)
+        public string GetProductXml(Article article, IArticleFilter filter)
 		{
 			return ProcessProductWithTags(filter, article);
 		}
@@ -250,22 +249,37 @@ namespace QA.Core.DPC.Loader
                     string.Format("Ошибка при генерации xml: ContentName у article не заполнен. ContentId={0} Id={1}",
                         article.ContentId, article.Id));
 
-			var node = new XElement(nodeName, fs);
-			if (addXsi)
-			{
-				ArticleField f;
-				if (article.Fields.TryGetValue("Type", out f))
-				{
-					XNamespace ns = "http://www.w3.org/2001/XMLSchema-instance";
-                    var sf = f as SingleArticleField;
-					if (sf != null && sf.Item != null)
-					{
-						node.Add(new XAttribute(ns + "type", sf.Item.ContentName));
-					}
+			var node = new XElement(nodeName, fs);		
 
-				}
-			}
-			return node;
+            if (addXsi)
+            {
+                var typeField = _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
+
+                ArticleField f;
+
+                if (!string.IsNullOrEmpty(typeField))
+                {
+                    typeField = "Type";
+                }
+
+                if (article.Fields.TryGetValue(typeField, out f))
+                {
+                    XNamespace ns = "http://www.w3.org/2001/XMLSchema-instance";
+                    var sf = f as SingleArticleField;
+                    var pf = f as PlainArticleField;
+
+                    if (sf != null && sf.Item != null)
+                    {
+                        node.Add(new XAttribute(ns + "type", sf.Item.ContentName));
+                    }
+                    else if (pf != null && !string.IsNullOrEmpty(pf.Value))
+                    {
+                        node.Add(new XAttribute(ns + "type", pf.Value));
+                    }
+
+                }
+            }
+            return node;
 		}
 
         private IEnumerable<object> GetFields(Article article, CallContext ctx, bool omitId = false)

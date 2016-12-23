@@ -12,10 +12,12 @@ namespace QA.Core.DPC.Loader.Services
     class ProductLocalizationService : IProductLocalizationService
     {
         private readonly ILocalizationSettingsService _settingsService;
+        private readonly IContentProvider<NotificationChannel> _channelProvider;
 
-        public ProductLocalizationService(ILocalizationSettingsService settingsService)
+        public ProductLocalizationService(ILocalizationSettingsService settingsService, IContentProvider<NotificationChannel> channelProvider)
         {
             _settingsService = settingsService;
+            _channelProvider = channelProvider;
         }
 
         #region IProductLocalizationService implementation
@@ -77,7 +79,10 @@ namespace QA.Core.DPC.Loader.Services
 
         public Dictionary<CultureInfo, Article> SplitLocalizations(Article product)
         {
-            throw new NotImplementedException();
+            var channels = _channelProvider.GetArticles();
+            var cultures = channels.Select(c => c.Culture).Distinct().ToArray();
+
+            return SplitLocalizations(product, cultures);
         }
 
         public Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures)
