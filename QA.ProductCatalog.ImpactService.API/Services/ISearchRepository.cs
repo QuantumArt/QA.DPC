@@ -10,6 +10,8 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         Task<JObject[]> GetProducts(int[] productIds);
 
+        void SetHomeRegionId(int homeRegionId);
+
 
     }
 }

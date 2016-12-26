@@ -20,7 +20,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         // GET api/values/5
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, string country = "WorldExceptRussia")
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string country = "WorldExceptRussia")
         {
 
             var a = new[] {id}.Union(serviceIds).ToArray();
@@ -37,7 +37,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             if (product == null)
                 return NotFound($"Product {id} is not found");
 
-            var calc = new InternationalRoamingCalculator();
+
             var services = new List<JObject>();
             foreach (var serviceId in serviceIds)
             {
@@ -49,7 +49,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             try
             {
-                calc.Calculate(product, services.ToArray(), country);
+                new InternationalRoamingCalculator().Calculate(product, services.ToArray(), country);
             }
             catch (Exception ex)
             {
