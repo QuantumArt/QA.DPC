@@ -96,15 +96,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     {
                         AddRelevanceData(product, relevanceItem);
                     }
-                    else
-                    {
-                        relevanceField.Items.Add(++id, localizedRelevanceArticle);
-                        AddRelevanceData(localizedRelevanceArticle, relevanceItem);
-                    }
 
+                    relevanceField.Items.Add(++id, localizedRelevanceArticle);
+                    AddRelevanceData(localizedRelevanceArticle, relevanceItem);
                 }
 
-                bool isRelevant = relevanceItems.All(r => r.Culture == CultureInfo.InvariantCulture || r.Relevance == ProductRelevance.Relevant);
+                bool isRelevant = relevanceItems.All(r => r.Relevance == ProductRelevance.Relevant);
+
                 if (!isRelevant)
                 {
                     product.AddPlainField("IsRelevant", isRelevant, "Актуальность продукта");
