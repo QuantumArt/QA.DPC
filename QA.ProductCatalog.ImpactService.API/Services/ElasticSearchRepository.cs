@@ -13,9 +13,6 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 {
     public class ElasticSearchRepository : ISearchRepository
     {
-        private string baseAddress = "http://mscnosql01:9200/products/_search";
-
-        private int _homeRegionId;
         private string _sourceQuery = "hits.hits.[?(@._source)]._source";
 
 
@@ -24,9 +21,9 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return new Regex($@"[<\[]replacement[>\]]tag={tag}[<\[]/replacement[>\]]");
         }
 
-        public async Task<DateTimeOffset> GetLastUpdated(int[] productIds)
+        public async Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options)
         {
-            var result = await GetContent(GetJsonQuery(productIds, true));
+            var result = await GetContent(GetJsonQuery(productIds, true), options);
             var dates = JObject.Parse(result).SelectTokens("hits.hits.[?(@.UpdateDate)].UpdateDate").Select(n => DateTimeOffset.Parse(n.ToString() ,CultureInfo.InvariantCulture)).ToArray();
             //if (dates.Length < productIds.Length)
             //    throw new ApplicationException("Some products not found");
@@ -41,21 +38,21 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return query;
         }
 
-        public async Task<JObject[]> GetProducts(int[] productIds)
+        public async Task<JObject[]> GetProducts(int[] productIds, SearchOptions options)
         {
-            var result = await GetContent(GetJsonQuery(productIds));
+            var result = await GetContent(GetJsonQuery(productIds), options);
 
-            result = await ProcessRegionTags(productIds, result);
+            result = await ProcessRegionTags(productIds, result, options);
 
             var hits = JObject.Parse(result).SelectTokens(_sourceQuery).ToArray();
 
             return hits.Select(n => (JObject)n).ToArray();
         }
 
-        private async Task<string> ProcessRegionTags(int[] productIds, string input)
+        private async Task<string> ProcessRegionTags(int[] productIds, string input, SearchOptions options)
         {
             var result = input;
-            var tagsToProcess = await GetTagsToProcess(productIds);
+            var tagsToProcess = await GetTagsToProcess(productIds, options);
             for (var i = 1; i <= 2; i++)
             {
                 foreach (var tag in tagsToProcess)
@@ -66,10 +63,10 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return result;
         }
 
-        private async Task<Dictionary<string, string>> GetTagsToProcess(int[] productIds)
+        private async Task<Dictionary<string, string>> GetTagsToProcess(int[] productIds, SearchOptions options)
         {
             var regionTagIds = productIds.Select(n => 0 - n).ToArray();
-            var tagResult = await GetContent(GetJsonQuery(regionTagIds));
+            var tagResult = await GetContent(GetJsonQuery(regionTagIds), options);
             var tags =
                 JObject.Parse(tagResult)
                     .SelectTokens(_sourceQuery)
@@ -81,8 +78,8 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             {
                 var title = tag["Title"].ToString();
                 if (tagsToProcess.ContainsKey(title)) continue;
-                var value = String.Empty;
-                if (_homeRegionId == 0)
+                string value;
+                if (options.HomeRegionId == 0)
                 {
                     value = tag["Values"][0]["Value"].ToString();
                 }
@@ -91,7 +88,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                     value =
                         tag
                             .SelectTokens("[?(@.Title]")
-                            .SingleOrDefault(n => ((JArray) n["RegionsId"]).Any(m => (int) m == _homeRegionId))?
+                            .SingleOrDefault(n => ((JArray) n["RegionsId"]).Any(m => (int) m == options.HomeRegionId))?
                             .ToString();
                 }
                 value = JsonConvert.ToString(value);
@@ -100,21 +97,16 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return tagsToProcess;
         }
 
-        public void SetHomeRegionId(int homeRegionId)
+        public async Task<string> GetContent(string json, SearchOptions options)
         {
-            _homeRegionId = homeRegionId;
-        }
-
-
-        public async Task<string> GetContent(string json)
-        {
-            var result = String.Empty;
+            var result = string.Empty;
             using (var client = new HttpClient())
             {
-                client.BaseAddress = new Uri(baseAddress);
+                var address = $"{options.BaseAddress}/{options.IndexName}/_search";
+                client.BaseAddress = new Uri(address);
                 client.DefaultRequestHeaders.Accept.Clear();
                 var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync(baseAddress, httpContent);
+                var response = await client.PostAsync(address, httpContent);
                 if (response.IsSuccessStatusCode)
                 {
                     result = await response.Content.ReadAsStringAsync();

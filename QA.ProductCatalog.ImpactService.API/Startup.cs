@@ -38,11 +38,16 @@ namespace QA.ProductCatalog.ImpactService.API
             // Add framework services.
             services.AddApplicationInsightsTelemetry(Configuration);
 
+            services.AddOptions();
+
+            services.Configure<ConfigurationOptions>(Configuration);
+
             services.AddMvc();
 
             services.AddMemoryCache();
 
             services.AddScoped(typeof(ISearchRepository), typeof(ElasticSearchRepository));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

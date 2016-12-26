@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.ImpactService.API.Services;
 using QA.ProductCatalog.ImpactService;
@@ -14,20 +15,30 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
     {
         private readonly ISearchRepository _searchRepo;
 
-        public InRoamingController(ISearchRepository searchRepo)
+        private readonly ConfigurationOptions _configurationOptions;
+
+        public InRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor)
         {
             _searchRepo = searchRepo;
+            _configurationOptions = elasticIndexOptionsAccessor.Value;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] int regionId)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] int regionId, int homeRegionId, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
         {
 
-            var a = new[] {id}.Union(serviceIds).ToArray();
+            var allProductIds = new[] {id}.Union(serviceIds).ToArray();
+            var searchOptions = new SearchOptions()
+            {
+                BaseAddress = _configurationOptions.ElasticBaseAddress,
+                IndexName = _configurationOptions.GetIndexName(state, language),
+                HomeRegionId = homeRegionId
+            };
+
             JObject[] results;
             try
             {
-                results = await _searchRepo.GetProducts(a);
+                results = await _searchRepo.GetProducts(allProductIds, searchOptions);
             }
             catch (Exception ex)
             {

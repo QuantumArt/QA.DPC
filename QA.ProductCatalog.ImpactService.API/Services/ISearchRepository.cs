@@ -6,12 +6,9 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 {
     public interface ISearchRepository
     {
-        Task<DateTimeOffset> GetLastUpdated(int[] productIds);
+        Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options);
 
-        Task<JObject[]> GetProducts(int[] productIds);
-
-        void SetHomeRegionId(int homeRegionId);
-
+        Task<JObject[]> GetProducts(int[] productIds, SearchOptions options);
 
     }
 }
