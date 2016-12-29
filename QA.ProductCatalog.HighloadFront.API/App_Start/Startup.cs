@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Caching;
 using System.Web.Http;
@@ -66,23 +67,37 @@ namespace QA.ProductCatalog.HighloadFront
 
             builder.Configure<HarvesterOptions>(_config.GetSection("Harvester"));
 
+            builder.Configure<DataOptions>(_config.GetSection("Data"));
+
             builder.Configure<SonicElasticStoreOptions>(_config.GetSection("sonicElasticStore"));
 
-            builder.RegisterSingleton<IElasticClient>(context =>
+            var elasticOptions = GetOptions<DataOptions>("Data").Elastic;
+
+            var elasticClientMap = elasticOptions.ToDictionary(
+                    option => GetElasticKey(option.Language, option.State),
+                    option => GetElasticClient(option.Index, option.Adress)
+                );
+
+            var syncerMap = elasticOptions.ToDictionary(
+                    option => GetElasticKey(option.Language, option.State),
+                    option => new IndexOperationSyncer()
+                );
+
+            var defaultElasticOption = elasticOptions.FirstOrDefault(option => option.IsDefault);
+
+            if (defaultElasticOption != null)
             {
-                var node = new Uri(_config["Data:Elastic:Adress"]);
+                var defaultKey = GetElasticKey(null, null);
+                var actualKey = GetElasticKey(defaultElasticOption.Language, defaultElasticOption.State);
+                elasticClientMap[defaultKey] = elasticClientMap[actualKey];
+                builder.RegisterSingleton<IElasticClient>(c => elasticClientMap[actualKey]);
+                builder.RegisterInstance(syncerMap[actualKey]);
+                builder.Register<IDpcService>(c => new DpcServiceClient(actualKey));
+            }
 
-                var connectionPool = new SingleNodeConnectionPool(node);
-
-                var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
-                                .DefaultIndex(_config["Data:Elastic:Index"])
-                                .DisableDirectStreaming()
-                                //.EnableTrace()
-                                .ThrowExceptions();
-                
-                return new ElasticClient(settings);
-            });
-
+            builder.Register<Func<string, string, IElasticClient>>(c => (language, state) => elasticClientMap[GetElasticKey(language, state)]);
+            builder.Register<Func<string, string, IDpcService>>(c => (language, state) => new DpcServiceClient(GetElasticKey(language, state)));
+            builder.Register<Func<string, string, IndexOperationSyncer>>(c => (language, state) => syncerMap[GetElasticKey(language, state)]);
 
             builder.RegisterType<TasksRunner>().As<ITasksRunner>().SingleInstance();
 
@@ -99,9 +114,6 @@ namespace QA.ProductCatalog.HighloadFront
             builder.Register<Func<string, int, ITask>>(c => { var reindexTask = c.ResolveNamed<ITask>("ReindexAllTask"); return (key, userId) => key == "ReindexAllTask" ? reindexTask : null; }).SingleInstance();
 
             builder.RegisterType<ReindexAllTask>().Named<ITask>("ReindexAllTask");
-
-            builder.RegisterInstance(new IndexOperationSyncer());
-
 
             builder.RegisterInstance<ILogger>(new NLogLogger("NLog.config"));
 
@@ -129,6 +141,42 @@ namespace QA.ProductCatalog.HighloadFront
 
 
             return builder.Build();
+        }
+
+        private TOptions GetOptions<TOptions>(string name)
+            where TOptions : class, new()
+        {
+            var section =_config.GetSection(name);
+            var options = new ConfigureFromConfigurationOptions<TOptions>(section);
+            var manager = new OptionsManager<TOptions>(new[] { options });
+            return manager.Value;
+        }
+
+        private string GetElasticKey(string language, string state)
+        {
+            if (language == null && state == null)
+            {
+                return "default";
+            }
+            else
+            {
+                return $"{language}-{state}";
+            }
+        }
+
+        private IElasticClient GetElasticClient(string index, string address)
+        {
+            var node = new Uri(address);
+
+            var connectionPool = new SingleNodeConnectionPool(node);
+
+            var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
+                            .DefaultIndex(index)
+                            .DisableDirectStreaming()
+                            //.EnableTrace()
+                            .ThrowExceptions();
+
+            return new ElasticClient(settings);
         }
     }
 }

@@ -14,6 +14,6 @@ namespace QA.ProductCatalog.Infrastructure
 
        void InsertOrUpdateProductRelevanceStatus(int productId, ProductRelevance productRelevance, bool isLive);
 
-	   string GetProductXml(int id);
+	   string GetProduct(int id);
     }
 }

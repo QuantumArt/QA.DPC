@@ -18,14 +18,12 @@
       "Modifiers.Alias"
     ],
     "Types": [
-      "Action",
-      "Tariff",
-      "Service"
+      "_default_"
     ],
     "NotAnalyzedFields": [
       "GlobalCode",
       "Alias",
-      "ForisId"
+      "ForisID"
     ],
     "CreationDateField": "UpdateDate"
   },
@@ -35,10 +33,21 @@
   },
 
   "Data": {
-    "Elastic": {
-      "Adress": "http://mscnosql01:9200",
-      "Index": "products"
-    }
+    "Elastic": [
+      {
+        "Adress": "http://mscnosql01:9200",
+        "Index": "products",
+        "Language": "invariant",
+        "State": "live",
+        "IsDefault":  true 
+      },
+      {
+        "Adress": "http://mscnosql01:9200",
+        "Index": "products-stage",
+        "Language": "invariant",
+        "State": "stage"
+      }
+    ]
   },
 
   "RateLimits": {

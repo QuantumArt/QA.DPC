@@ -274,6 +274,7 @@
     <Compile Include="App_Start\TaskContainerConfiguration.cs" />
     <Compile Include="Binders\ContentBinder.cs" />
     <Compile Include="Controllers\DefinitionEditorController.cs" />
+    <Compile Include="Controllers\HighloadFrontController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Core\Adapters\ActionAdapterBase.cs" />
     <Compile Include="Core\Adapters\CountActionAdapter.cs" />
@@ -452,6 +453,7 @@
     <Content Include="Scripts\ContentIncludes\DefinitionEditorButton.js" />
     <Content Include="Scripts\ContentIncludes\Transliterate.js" />
     <Content Include="Scripts\DefinitionEditor.js" />
+    <Content Include="Scripts\HighloadFront.js" />
     <Content Include="Scripts\jqCron.en.js" />
     <Content Include="Scripts\jqCron.js" />
     <Content Include="Scripts\jquery.scrollto.js" />
@@ -464,6 +466,8 @@
     <Content Include="Scripts\KendoUI\kendo.culture.ru-RU.min.js" />
     <Content Include="Scripts\KendoUI\kendo.messages.ru-RU.min.js" />
     <Content Include="Scripts\KendoUI\kendo.web.min.js" />
+    <Content Include="Scripts\knockout\knockout-3.4.1.js" />
+    <Content Include="Scripts\moment-with-locales.min.js" />
     <Content Include="Scripts\pmrpc.js" />
     <Content Include="Scripts\product\index.js" />
     <Content Include="Scripts\product\tabstrip.js" />
@@ -479,6 +483,7 @@
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <None Include="Scripts\_references.js" />
     <Content Include="Scripts\Schedule.js" />
+    <Content Include="Scripts\vanilla.helpers.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -518,6 +523,7 @@
     <Content Include="Views\Shared\DisplayTemplates\ArticleCollection.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\DisplayField.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\FileLink.cshtml" />
+    <Content Include="Views\HighloadFront\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Core\" />

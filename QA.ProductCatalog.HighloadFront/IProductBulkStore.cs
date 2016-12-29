@@ -6,6 +6,6 @@ namespace QA.ProductCatalog.HighloadFront
 {
     public interface IProductBulkStore
     {
-        Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> product);
+        Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> product, string language, string state);
     }
 }

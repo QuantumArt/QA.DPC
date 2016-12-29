@@ -35,7 +35,7 @@ namespace QA.ProductCatalog.ImpactService
 
                 MergeLinkImpact(scaleParameters, scaleLinkParameters);
                 var toRemove =
-                    scaleLinkParameters.Where(
+                    scaleParameters.Where(
                             n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains("Remove"))
                         .ToArray();
 

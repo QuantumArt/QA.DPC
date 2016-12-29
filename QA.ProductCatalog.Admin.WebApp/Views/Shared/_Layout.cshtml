@@ -15,7 +15,8 @@
 
 	@Scripts.Render("~/bundles/scripts")
 	@RenderSection("head", false)
-	<script type="text/javascript">
+	<script>
+        Url.SetRootPath("@Url.Content("~/")");
 		if (!window.console) {
 			window.console = {};
 			window.console.log = function () { };

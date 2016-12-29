@@ -73,7 +73,7 @@ namespace QA.Core.DPC.API.Update
                     {
                         var qpArticle = _articleService.Read(articleToDeleteKv.Key);
 
-                        _deleteAction.DeleteProduct(qpArticle, new ProductDefinition { StorageSchema = articleToDeleteKv.Value }, true, false);
+                        _deleteAction.DeleteProduct(qpArticle, new ProductDefinition { StorageSchema = articleToDeleteKv.Value }, true, false, null);
                     }
                     catch (MessageResultException ex)
                     {

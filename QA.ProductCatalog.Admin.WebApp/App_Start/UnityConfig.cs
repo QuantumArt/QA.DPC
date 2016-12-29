@@ -28,6 +28,7 @@ using QA.Core.DPC.Notification.Services;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Xaml;
 using Quantumart.QP8.BLL;
+using System.Globalization;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Start
 {
@@ -112,7 +113,35 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 							        ? liveConsumerMonitoringConnString
 							        : stageConsumerMonitoringConnString))));
 
-			container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
+            container.RegisterType<Func<bool, CultureInfo, IConsumerMonitoringService>>(
+               new InjectionFactory(c => new Func<bool, CultureInfo, IConsumerMonitoringService>(
+                   (isLive, culture) =>
+                   {
+                       string connectionName = "consumer_monitoring";
+
+                       if (!isLive)
+                       {
+                           connectionName += "Stage";
+                       }
+
+                       if (culture != CultureInfo.InvariantCulture)
+                       {
+                           connectionName += "_" + culture.Name;
+                       }
+
+                       var connection = ConfigurationManager.ConnectionStrings[connectionName];
+
+                       if (connection == null || string.IsNullOrEmpty(connection.ConnectionString) || connection.ConnectionString == "none")
+                       {
+                           return null;
+                       }
+                       else
+                       {
+                           return new ConsumerMonitoringService(connection.ConnectionString);
+                       }
+                   })));
+
+            container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
 
             var entitiesAssembly = typeof(IArticleFilter).Assembly;
 
@@ -129,6 +158,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 					var notificator = new ProductChangeNotificator(x.Resolve<ILogger>());
 
 			        notificator.AddSubscribers(x.ResolveAll<IProductChangeSubscriber>());
+
 
 			        return notificator;
 		        }));

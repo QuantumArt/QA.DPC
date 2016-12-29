@@ -53,7 +53,7 @@ namespace QA.ProductCatalog.Integration
                 .ToArray();
         }
 
-	    public string GetProductXml(int id)
+	    public string GetProduct(int id)
 	    {
 		    return new MonitoringRepository(_connectionString).GetProductXml(id);
 	    }

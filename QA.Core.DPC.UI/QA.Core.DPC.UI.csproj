@@ -241,6 +241,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\FileLink.cs" />
+    <Compile Include="Converters\NegativeConverter.cs" />
     <Compile Include="Converters\YieldConverter.cs" />
     <Compile Include="TypeConverters\QPBehaviorTypeConverter.cs" />
     <Compile Include="TypeConverters\ArrayFromStringConverter.cs" />
@@ -317,4 +318,3 @@
   </Target>
   -->
 </Project>
-

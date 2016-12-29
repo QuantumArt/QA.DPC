@@ -28,15 +28,15 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		{
 			return null;
 		}
-		protected virtual void SendNotification(QA.Core.Models.Entities.Article[] products, int productId)
+		protected virtual void SendNotification(QA.Core.Models.Entities.Article[] products, int productId, string[] channels)
 		{
 		}
 		#endregion
 
 		#region Overrides
 		protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
-		{
-			var product = ArticleService.Read(productId);
+		{            
+            var product = ArticleService.Read(productId);
 			var definition = Productservice.GetProductDefinition(0, product.ContentId);
 			var dictionary = GetProductsToBeProcessed<DeletingMode>(product, definition, ef => ef.DeletingMode, DeletingMode.Delete);
 			bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
@@ -49,9 +49,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
 			ArchiveProducts(dictionary, product);
 
-			
-			if (!doNotSendNotifications)
-				SendNotification(notificationProducts, productId);
+            if (!doNotSendNotifications)
+            {
+                string[] channels = actionParameters.GetChannels();
+                SendNotification(notificationProducts, productId, channels);
+            }
 		}
 		#endregion
 
