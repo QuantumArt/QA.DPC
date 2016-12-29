@@ -33,11 +33,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 		}
 
-		protected override void SendNotification(Article[] products, int productId)
+		protected override void SendNotification(Article[] products, int productId, string[] channels)
 		{
 			try
 			{
-				NotificationService.DeleteProducts(products, UserName, UserId);
+				NotificationService.DeleteProducts(products, UserName, UserId, channels);
 			}
 			catch (Exception ex)
 			{

@@ -96,7 +96,8 @@ namespace QA.Core.DPC.Loader.Container
                     new ResolvedParameter<IReadOnlyArticleService>("CachedReadOnlyArticleServiceAdapter"),
                     new ResolvedParameter<IFieldService>("FieldServiceAdapterAlwaysAdmin"),
                     typeof(ISettingsService),
-                    typeof(IConsumerMonitoringService)
+                    typeof(IConsumerMonitoringService),
+                    typeof(IArticleFormatter)
                 ));
 
             Container.RegisterType<ILocalizationSettingsService, LocalizationSettingsService>();

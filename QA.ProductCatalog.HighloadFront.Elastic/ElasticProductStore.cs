@@ -20,12 +20,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         IProductSearchStore
     {
         private IElasticClient _client { get; }
+        private Func<string, string, IElasticClient> _getClient { get; }
 
         private SonicElasticStoreOptions Options { get; set; }
 
-        public ElasticProductStore(IElasticClient client, IOptions<SonicElasticStoreOptions> optionsAccessor)
+        public ElasticProductStore(IElasticClient client, Func<string, string, IElasticClient> getClient, IOptions<SonicElasticStoreOptions> optionsAccessor)
         {
             _client = client;
+            _getClient = getClient;
             Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
         }
 
@@ -49,13 +51,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return type;
         }
 
-        public async Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> products)
+        public async Task<SonicResult> BulkCreateAsync(IEnumerable<JObject> products, string language, string state)
         {
             ThrowIfDisposed();
 
             if (products == null) throw new ArgumentNullException(nameof(products));
 
             var failedResult = new List<SonicError>();
+            var client = _getClient(language, state);
 
             var commands = products.Select(p =>
             {
@@ -75,14 +78,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                 var json = JsonConvert.SerializeObject(p);
 
-                return $"{{\"index\":{{\"_index\":\"{_client.ConnectionSettings.DefaultIndex}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}\n{json}\n";
+                return $"{{\"index\":{{\"_index\":\"{client.ConnectionSettings.DefaultIndex}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}\n{json}\n";
             });
 
             if (failedResult.Any()) return SonicResult.Failed(failedResult.ToArray());
 
             try
             {
-                var response = await _client.LowLevel.BulkAsync<VoidResponse>(string.Join(string.Empty, commands));
+                var response = await client.LowLevel.BulkAsync<VoidResponse>(string.Join(string.Empty, commands));
                 return response.Success
                     ? SonicResult.Success
                     : SonicResult.Failed(SonicErrorDescriber
@@ -110,11 +113,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return response;
         }
 
-        public async Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(string id, ProductsOptions options)
+        public async Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(string id, ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
 
-            var response = await _client.LowLevel.GetSourceAsync<Stream>(_client.ConnectionSettings.DefaultIndex, "_all", id, p =>
+            var client = _getClient(language, state);
+            var response = await client.LowLevel.GetSourceAsync<Stream>(client.ConnectionSettings.DefaultIndex, "_all", id, p =>
             {
                 if (options?.PropertiesFilter != null)
                 {
@@ -127,7 +131,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         }
 
 
-        public async Task<SonicResult> CreateAsync(JObject product)
+        public async Task<SonicResult> CreateAsync(JObject product, string language, string state)
         {
             ThrowIfDisposed();
 
@@ -147,7 +151,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                var response = await _client.LowLevel.IndexAsync<VoidResponse>(_client.ConnectionSettings.DefaultIndex, type, id, json);
+                var client = _getClient(language, state);
+                var response = await client.LowLevel.IndexAsync<VoidResponse>(client.ConnectionSettings.DefaultIndex, type, id, json);
                 return response.Success
                     ? SonicResult.Success
                     : SonicResult.Failed(SonicErrorDescriber
@@ -160,7 +165,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         }
 
-        public async Task<SonicResult> UpdateAsync(JObject product, CancellationToken cancellationToken)
+        public async Task<SonicResult> UpdateAsync(JObject product, string language, string state, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             ThrowIfDisposed();
@@ -179,7 +184,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     .StoreFailure($"Product {id} has no type"));
             }
 
-            var response = await _client.UpdateAsync<JObject>(id, d => d.Upsert(product).Type(type));
+            var client = _getClient(language, state);
+            var response = await client.UpdateAsync<JObject>(id, d => d.Upsert(product).Type(type));
 
             return response.IsValid
                 ? SonicResult.Success
@@ -187,7 +193,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     .StoreFailure(response.OriginalException.Message));
         }
 
-        public async Task<SonicResult> DeleteAsync(JObject product)
+        public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)
         {
             ThrowIfDisposed();
 
@@ -197,7 +203,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             try
             {
                 var request = new DeleteRequest("products", type, id);
-                var response = await _client.DeleteAsync(request);
+                var client = _getClient(language, state);
+                var response = await client.DeleteAsync(request);
 
                 return response.IsValid
                     ? SonicResult.Success
@@ -209,16 +216,31 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<SonicResult> ResetAsync()
+        public async Task<bool> Exists(JObject product, string language, string state)
+        {
+            ThrowIfDisposed();
+
+            string id = GetId(product);
+            string type = GetType(product);
+
+            var existsRequest = new DocumentExistsRequest(_client.ConnectionSettings.DefaultIndex, type, id);
+            var existsResponse = await _client.DocumentExistsAsync(existsRequest);
+
+            return existsResponse.Exists;
+        }
+
+        public async Task<SonicResult> ResetAsync(string language, string state)
         {
             ThrowIfDisposed();
 
             try
             {
-                var response = await _client.DeleteIndexAsync(_client.ConnectionSettings.DefaultIndex);
+                var client = _getClient(language, state);
 
-                var r = await _client.CreateIndexAsync(
-                    _client.ConnectionSettings.DefaultIndex,
+                var response = await client.DeleteIndexAsync(client.ConnectionSettings.DefaultIndex);
+
+                var r = await client.CreateIndexAsync(
+                    client.ConnectionSettings.DefaultIndex,
                     index => index
                         .Settings(s => s.Setting("max_result_window", Options.MaxResultWindow))
                         .Mappings(m => m.MapNotAnalyzed(Options.Types, Options.NotAnalyzedFields))                 
@@ -255,7 +277,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return response.Documents.ToList();
         }
 
-        public async Task<Stream> GetProductsInTypeStreamAsync(string type, ProductsOptions options = null)
+        public async Task<Stream> GetProductsInTypeStreamAsync(string type, ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
 
@@ -267,10 +289,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 .Size(options?.PerPage ?? Options.DefaultSize)
                 .Query(q => Filter(q, options));
 
-            SetPropertyFilter(request, options);
+            SetPropertyFilter(request, options, type);
             SetSorting(request, options);
 
-            return await _client.SearchStreamAsync(request);
+            var client = _getClient(language, state);
+            return await client.SearchStreamAsync(request);
         }
 
         private QueryContainer Filter(QueryContainer query, ProductsOptions productsOptions)
@@ -282,18 +305,34 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (productsOptions.Filters != null)
             {
                 query = productsOptions.Filters.Where(f => f.Item1 != Options.TypePath).Aggregate(query, (current, sf) =>
+                {
 
-                IsNotAnalyzedField(sf.Item1) ?
-                current & +new TermQuery
-                {
-                    Field = sf.Item1,
-                    Value = sf.Item2
-                } :
-                current & +new MatchPhraseQuery
-                {
-                    Field = sf.Item1,
-                    Query = sf.Item2,
-                    Operator = Operator.And
+                    if ((sf.Item1 == Options.IdPath || sf.Item1 == "ProductId") && sf.Item2.Contains(","))
+                    {
+                        current = current & +new TermsQuery
+                        {
+                            Field = sf.Item1,
+                            Terms = sf.Item2.Split(',')
+                        };
+                    }
+                    else
+                    {
+                        current =
+                        IsNotAnalyzedField(sf.Item1) ?
+                        current & +new TermQuery
+                        {
+                            Field = sf.Item1,
+                            Value = sf.Item2
+                        } :
+                        current & +new MatchPhraseQuery
+                        {
+                            Field = sf.Item1,
+                            Query = sf.Item2,
+                            Operator = Operator.And
+                        };
+                    }
+
+                    return current;
                 });
             }
 
@@ -320,13 +359,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return query;
         }
 
-        private void SetPropertyFilter(SearchDescriptor<StreamData> request, ProductsOptions options)
+        private void SetPropertyFilter(SearchDescriptor<StreamData> request, ProductsOptions options, string type = null)
         {
             string[] fields = null;
 
             if (options?.PropertiesFilter?.Any() == true)
             {
                 fields = options.PropertiesFilter.ToArray();
+            }
+            else if (type == "RegionTags")
+            {
+                fields = new[] { "ProductId", "Type", "RegionTags" };
             }
             else if (Options.DefaultFields?.Any() == true)
             {
@@ -409,7 +452,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return respons.Documents.ToList();
         }
 
-        public async Task<Stream> SearchStreamAsync(string q, ProductsOptions options)
+        public async Task<Stream> SearchStreamAsync(string q, ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
 
@@ -435,7 +478,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             SetPropertyFilter(request, options);
             SetSorting(request, options);
 
-            return await _client.SearchStreamAsync(request);
+            var client = _getClient(language, state);
+            return await client.SearchStreamAsync(request);
         }
 
         private bool IsNotAnalyzedField(string pathField)

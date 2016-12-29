@@ -42,14 +42,14 @@ namespace QA.ProductCatalog.HighloadFront
             return store.FindByIdAsync(id, options);
         }
 
-        public Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(string id, ProductsOptions options)
+        public Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(string id, ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
             var store = GetProductStreamStore();
-            return store.FindStreamByIdAsync(id, options);
+            return store.FindStreamByIdAsync(id, options, language, state);
         }
 
-        public async Task<SonicResult> CreateAsync(JObject product)
+        public async Task<SonicResult> CreateAsync(JObject product, RegionTag[] regionTags, string language, string state)
         {
             ThrowIfDisposed();
             var result = await ValidateProductInternal(product);
@@ -60,10 +60,36 @@ namespace QA.ProductCatalog.HighloadFront
             if (_productPostProcessor != null)
                 product = _productPostProcessor.Process(data);
 
-            return await Store.CreateAsync(product);
+            var tagsProduct = GetRegionTagsProduct(product, regionTags);
+
+            if (tagsProduct != null)
+            {
+                var tagsResult = await Store.CreateAsync(tagsProduct, language, state);
+
+                if (!tagsResult.Succeeded)
+                {
+                    return tagsResult;
+                }
+            }
+            else
+            {
+                tagsProduct = GetRegionTagsProduct(product, new RegionTag[] { new RegionTag() });
+
+                if (await Store.Exists(tagsProduct, language, state))
+                {
+                    var deleteTagsResult = await Store.DeleteAsync(tagsProduct, language, state);
+
+                    if (!deleteTagsResult.Succeeded)
+                    {
+                        return deleteTagsResult;
+                    }
+                }
+            }
+
+            return await Store.CreateAsync(product, language, state);
         }
 
-        public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data)
+        public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state)
         {
             ThrowIfDisposed();
             var result = await ValidateProductsInternal(data.Select(d => d.Product).ToArray());
@@ -77,8 +103,11 @@ namespace QA.ProductCatalog.HighloadFront
                     d.Product = _productPostProcessor.Process(d);
                 }
             }
-        
-            return await store.BulkCreateAsync(data.Select(d => d.Product));
+
+            var regionTagProducts = data.Select(d => GetRegionTagsProduct(d.Product, d.RegionTags)).Where(d => d != null);
+            var products = data.Select(d => d.Product).Concat(regionTagProducts);
+
+            return await store.BulkCreateAsync(products, language, state);
         }
 
 
@@ -126,12 +155,12 @@ namespace QA.ProductCatalog.HighloadFront
             return store.SearchAsync(query, options ?? Options.Product);
         }
 
-        public Task<Stream> SearchStreamAsync(string query, ProductsOptions options = null)
+        public Task<Stream> SearchStreamAsync(string query, ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
             var store = GetProductSearchStore();
 
-            return store.SearchStreamAsync(query, options ?? Options.Product);
+            return store.SearchStreamAsync(query, options ?? Options.Product, language, state);
         }
 
         public Task<IList<JObject>> GetProductsInTypeAsync(string type, ProductsOptions options)
@@ -146,7 +175,7 @@ namespace QA.ProductCatalog.HighloadFront
             return store.GetProductsInTypeAsync(type, options ?? Options.Product);
         }
 
-        public Task<Stream> GetProductsInTypeStream(string type, ProductsOptions options)
+        public Task<Stream> GetProductsInTypeStream(string type, ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
             if (type == null)
@@ -155,15 +184,15 @@ namespace QA.ProductCatalog.HighloadFront
             }
             var store = GetProductTypeStore();
 
-            return store.GetProductsInTypeStreamAsync(type, options ?? Options.Product);
+            return store.GetProductsInTypeStreamAsync(type, options ?? Options.Product, language, state);
         }
 
 
 
-        public Task<SonicResult> DeleteAllASync()
+        public Task<SonicResult> DeleteAllASync(string language, string state)
         {
             ThrowIfDisposed();
-            return Store.ResetAsync();
+            return Store.ResetAsync(language, state);
         }
 
         private IProductTypeStore GetProductTypeStore()
@@ -206,11 +235,47 @@ namespace QA.ProductCatalog.HighloadFront
             return cast;
         }
 
-        public Task<SonicResult> DeleteAsync(JObject product)
+        public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)
         {
             ThrowIfDisposed();
-            return Store.DeleteAsync(product);
+
+            var tagsProduct = GetRegionTagsProduct(product, new RegionTag[] { new RegionTag() });
+
+            if (await Store.Exists(tagsProduct, language, state))
+            {
+                var deleteTagsResult = await Store.DeleteAsync(tagsProduct, language, state);
+
+                if (!deleteTagsResult.Succeeded)
+                {
+                    return deleteTagsResult;
+                }
+            }
+
+            return await Store.DeleteAsync(product, language, state);
         }
+
+        JObject GetRegionTagsProduct(JObject product, RegionTag[] regionTags)
+        {
+            if (regionTags == null || !regionTags.Any())
+            {
+                return null;
+            }
+            else
+            {
+                var id = int.Parse(GetProductId(product));
+
+                var tags = JObject.FromObject(new
+                {
+                    Id = -id,
+                    ProductId = id,
+                    Type = "RegionTags",
+                    RegionTags = regionTags
+                });
+
+                return tags;
+            }
+        }
+
 
         #region IDisposable Support
 

@@ -305,6 +305,7 @@
     <Compile Include="App_Core\FixContentTypeHeader.cs" />
     <Compile Include="App_Core\IndexOperationSyncer.cs" />
     <Compile Include="App_Core\ReindexAllTask.cs" />
+    <Compile Include="Models\TaskItem.cs" />
     <Compile Include="Controllers\SyncController.cs" />
     <Compile Include="Filters\GlobalExceptionLogger.cs" />
     <Compile Include="Filters\OnlyAuthUsersAttribute.cs" />
@@ -403,4 +404,3 @@
   </Target>
   -->
 </Project>
-
