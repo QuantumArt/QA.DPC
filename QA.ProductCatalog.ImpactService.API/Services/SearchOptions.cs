@@ -8,5 +8,6 @@
 
         public string IndexName { get; set; }
 
+
     }
 }

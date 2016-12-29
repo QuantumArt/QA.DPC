@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseImpactCalculator.cs" />
+    <Compile Include="InternationalCallsCalclulator.cs" />
     <Compile Include="InternationalRoamingCalculator.cs" />
     <Compile Include="IntranetRoamingCalculator.cs" />
     <Compile Include="JTokenExtensions.cs" />

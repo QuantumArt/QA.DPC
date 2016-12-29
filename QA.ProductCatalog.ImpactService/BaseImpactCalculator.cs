@@ -160,31 +160,38 @@ namespace QA.ProductCatalog.ImpactService
 
             if (hasImpact)
             {
-                var linkParameters = link.SelectTokens("Parent.Parameters[?(@.Id)]");
-
-                foreach (var linkParameter in linkParameters)
+                var linkParameters = link.SelectToken("Parent.Parameters");
+                if (linkParameters != null)
                 {
-                    bool processed = false;
-                    if (linkParameter["BaseParameter"] != null)
-                    {
-                        var key = linkParameter.ExtractDirection().GetKey(false);
-                        var parametersToProcess = FindByKey(optionParametersRoot, key, false).ToArray();
-                        processed = parametersToProcess.Any();
-                        foreach (var p in parametersToProcess)
-                        {
-                            p.Replace(linkParameter.DeepClone());
-                        }
-                    }
-
-                    if (!processed)
-                    {
-                        ((JArray) optionParametersRoot).Add(linkParameter);
-                    }
-
+                    MergeLinkImpact((JArray)optionParametersRoot, (JArray)linkParameters);
                 }
+
             }
 
             return hasImpact;
+        }
+
+        public void MergeLinkImpact(JArray optionParametersRoot, JArray linkParameters)
+        {
+            foreach (var linkParameter in linkParameters)
+            {
+                bool processed = false;
+                if (linkParameter["BaseParameter"] != null)
+                {
+                    var key = linkParameter.ExtractDirection().GetKey(false);
+                    var parametersToProcess = FindByKey(optionParametersRoot, key, false).ToArray();
+                    processed = parametersToProcess.Any();
+                    foreach (var p in parametersToProcess)
+                    {
+                        p.Replace(linkParameter.DeepClone());
+                    }
+                }
+
+                if (!processed)
+                {
+                    ( optionParametersRoot).Add(linkParameter);
+                }
+            }
         }
 
         private void CalculateImpact(JToken parametersRoot, JToken[] optionParameters1)
@@ -412,6 +419,16 @@ namespace QA.ProductCatalog.ImpactService
                     parametersRoot.SelectTokens("[?(@.BaseParameter)]").Where(n => n.ExtractDirection().GetKey(excludeSpecial, excludeZone) == key);
             }
             return defaultResult;
+        }
+
+        public virtual JObject Calculate(JObject tariff, JObject[] options)
+        {
+            foreach (var option in options)
+            {
+                Calculate(tariff, option);
+            }
+            Reorder(tariff);
+            return tariff;
         }
     }
 }

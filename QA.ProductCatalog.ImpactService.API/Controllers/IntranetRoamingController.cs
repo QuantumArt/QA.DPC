@@ -44,6 +44,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             {
                 return BadRequest($"Exception occurs while using Elastic Search: {ex.Message}");
             }
+
             var product = results.FirstOrDefault(n => (int) n["Id"] == id);
             if (product == null)
                 return NotFound($"Product {id} is not found");
@@ -57,15 +58,65 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 services.Add(service);
             }
 
+            var scaleIds = product.SelectTokens("RoamingScalesOnTariff.[?(@.Id)].RoamingScale.Id").Select(n => (int) n).ToArray();
+
+            JObject[] results2;
             try
             {
-                new IntranetRoamingCalculator().Calculate(product, services.ToArray());
+                results2 = await _searchRepo.GetProducts(scaleIds, searchOptions);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Exception occurs while using Elastic Search: {ex.Message}");
+            }
+
+            var scale =
+                results2.SingleOrDefault(n => n.SelectTokens("MarketingProduct.Regions.[?(@.Id)].Id").Select(m => (int) m).Contains(regionId)) ??
+                results2.SingleOrDefault(n => n.SelectToken("MarketingProduct.Regions") == null);
+
+            if (scale == null)
+                return NotFound($"Roaming scale is not found for tariff {id} in regions: {regionId}, {_configurationOptions.RootRegionId}");
+
+            var calc = new IntranetRoamingCalculator();
+
+
+            var useTariffData = calc.MergeLinkImpactToRoamingScale(scale, product);
+
+            IEnumerable<JToken> parameters = (!useTariffData)
+                    ? scale.SelectToken("Parameters")
+                    : FilterForRoaming((JArray) product.SelectToken("Parameters"));
+
+
+            product["Parameters"] = parameters as JArray ?? new JArray(parameters);
+
+            try
+            {
+                calc.Calculate(product, services.ToArray());
             }
             catch (Exception ex)
             {
                 return BadRequest($"Exception occurs while calculating impact: {ex.Message}");
             }
             return Content(product.ToString());
+
+        }
+
+        private IEnumerable<JToken> FilterForRoaming(JArray root)
+        {
+            var allRussiaParams = root.Where(n => n.SelectToken("Zone.Alias")?.ToString() == "Russia").ToArray();
+            var vsrParams = root.Where(n => n.SelectToken("Zone.Alias")?.ToString() == "RussiaExceptHome").ToArray();
+            var parentParamIds = new HashSet<int>(allRussiaParams.Union(vsrParams)
+                .Select(n => n.SelectToken("Parent.Id"))
+                .Where(n => n != null)
+                .Select(n => (int) n));
+
+            var parentParams = root.Where(n => parentParamIds.Contains((int) n["Id"]) && n["Zone"] == null).ToArray();
+
+            return allRussiaParams.Union(vsrParams).Union(parentParams).ToArray();
+
+
+
+
 
         }
     }

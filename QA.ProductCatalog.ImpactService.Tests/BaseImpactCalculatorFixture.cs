@@ -198,6 +198,33 @@ namespace QA.ProductCatalog.ImpactService.Tests
         }
 
         [Test]
+        public void ProcessRemove_HasRemoveModifierWithLinkMerging_Removed()
+        {
+            var tariff = GetJsonFromFile("simple2_tariff.json");
+            var option = GetJsonFromFile("simple1_option.json");
+            var calculator = new InternationalRoamingCalculator();
+            var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
+            var optionRoot = tariff.SelectTokens($"{calculator.LinkName}.[?(@.Id)].Parent.Parameters").First();
+            var obj = new JObject
+            {
+                ["Id"] = 1000,
+                ["Alias"] = "Remove",
+                ["Title"] = "Удалить"
+
+            };
+            ((JArray)calculator.FindByKey(optionRoot, direction.GetKey()).First().SelectToken("Modifiers")).Add(obj);
+            var cntBefore = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
+
+            calculator.Calculate(tariff, option);
+
+            var cntAfter = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
+            var root = tariff.SelectToken("Parameters");
+            var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
+            Assert.That(result.Length, Is.EqualTo(0));
+            Assert.That(cntAfter, Is.EqualTo(cntBefore - 1));
+        }
+
+        [Test]
         public void ProcessAppend_HasAppendModifier_Appended()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -255,6 +282,8 @@ namespace QA.ProductCatalog.ImpactService.Tests
             Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
             Assert.That(cntAfter, Is.EqualTo(cntBefore + 1));
         }
+
+
 
 
         [Test]
