@@ -80,7 +80,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var calc = new IntranetRoamingCalculator();
 
 
-            var useTariffData = calc.MergeLinkImpactToRoamingScale(scale, product);
+            var useTariffData = calc.MergeLinkImpactToRoamingScale(scale, product, regionId);
 
             IEnumerable<JToken> parameters = (!useTariffData)
                     ? scale.SelectToken("Parameters")

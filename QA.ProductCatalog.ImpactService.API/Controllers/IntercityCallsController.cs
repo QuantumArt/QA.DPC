@@ -10,21 +10,21 @@ using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
 {
-    [Route("api/mn")]
-    public class InternationalCallsController : Controller
+    [Route("api/mg")]
+    public class IntercityCallsController : Controller
     {
         private readonly ISearchRepository _searchRepo;
 
         private readonly ConfigurationOptions _configurationOptions;
 
-        public InternationalCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor)
+        public IntercityCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor)
         {
             _searchRepo = searchRepo;
             _configurationOptions = elasticIndexOptionsAccessor.Value;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode, int homeRegionId, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] int regionId, int homeRegionId, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
         {
 
             var allProductIds = new[] { id }.Union(serviceIds).ToArray();
@@ -60,12 +60,12 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var services = servicesList.ToArray();
 
 
-            var calc = new InternationalCallsCalclulator();
+            var calc = new IntercityCallsCalculator();
             IEnumerable<JToken> parameters;
 
             try
             {
-                calc.FilterServicesParameters(services, countryCode);
+                calc.FilterServicesParameters(services, regionId);
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             try
             {
-                parameters = calc.FilterProductParameters((JArray)product.SelectToken("Parameters"), countryCode);
+                parameters = calc.FilterProductParameters((JArray)product.SelectToken("Parameters"), regionId);
             }
             catch (Exception ex)
             {

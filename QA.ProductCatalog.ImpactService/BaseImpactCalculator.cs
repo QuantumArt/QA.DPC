@@ -7,11 +7,12 @@ namespace QA.ProductCatalog.ImpactService
 {
     public class BaseImpactCalculator
     {
-        public BaseImpactCalculator(string parameterModifierName, string linkModifierName, string linkName)
+        public BaseImpactCalculator(string parameterModifierName, string linkModifierName, string linkName, bool restrictedImpact)
         {
             ParameterModifierName = parameterModifierName;
             LinkModifierName = linkModifierName;
             LinkName = linkName;
+            RestrictedImpact = restrictedImpact;
         }
 
         public string ParameterModifierName { get; }
@@ -19,6 +20,8 @@ namespace QA.ProductCatalog.ImpactService
         public string LinkModifierName { get; }
 
         public string LinkName { get; }
+
+        public bool RestrictedImpact { get; }
 
         private int _maxSiblings;
 
@@ -197,6 +200,9 @@ namespace QA.ProductCatalog.ImpactService
         private void CalculateImpact(JToken parametersRoot, JToken[] optionParameters1)
         {
             var parametersToAppendInsteadOfChange = new List<JToken>();
+
+
+
             ProcessRemove(parametersRoot, optionParameters1);
             ChangeParameters(parametersRoot, optionParameters1, parametersToAppendInsteadOfChange);
             ProcessPackages(parametersRoot, optionParameters1);
@@ -256,8 +262,14 @@ namespace QA.ProductCatalog.ImpactService
                     var appendOrReplace = modifiers.Contains("AppendOrReplace");
                     var optionHasNumValue = optionParam["NumValue"] != null;
                     var optionHasValue = optionParam["Value"] != null;
+                    var anyParameterProcessed = false;
                     foreach (var param in parametersToProcess)
                     {
+                        if (RestrictedImpact && !param.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()).ToArray().Contains(ParameterModifierName))
+                            continue;
+
+                        anyParameterProcessed = true;
+
                         var productHasNumValue = param["NumValue"] != null;
                         var skipProcessing = productHasNumValue && optionHasNumValue && (decimal)param["NumValue"] < (decimal)optionParam["NumValue"] && !modifiers.Contains("ForcedInfluence");
 
@@ -308,7 +320,7 @@ namespace QA.ProductCatalog.ImpactService
 
                     }
 
-                    if (!parametersToProcess.Any() && appendOrReplace)
+                    if (!anyParameterProcessed && appendOrReplace)
                         parametersToAdd.Add(optionParam);
 
 
@@ -415,8 +427,12 @@ namespace QA.ProductCatalog.ImpactService
             var defaultResult = Enumerable.Empty<JToken>();
             if (!string.IsNullOrEmpty(key) && parametersRoot != null)
             {
-                return
+                var abc =
                     parametersRoot.SelectTokens("[?(@.BaseParameter)]").Where(n => n.ExtractDirection().GetKey(excludeSpecial, excludeZone) == key);
+
+
+
+                return abc;
             }
             return defaultResult;
         }

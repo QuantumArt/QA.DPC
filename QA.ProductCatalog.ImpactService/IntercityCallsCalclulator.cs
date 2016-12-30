@@ -5,15 +5,15 @@ using Newtonsoft.Json.Linq;
 
 namespace QA.ProductCatalog.ImpactService
 {
-    public class InternationalCallsCalclulator : BaseImpactCalculator
+    public class IntercityCallsCalculator : BaseImpactCalculator
     {
-        public InternationalCallsCalclulator()
-            : base("UseForInternationalCallsCalculator", "CalculateInInternationalCalls", "ServicesOnTariff", true)
+        public IntercityCallsCalculator()
+            : base("UseForIntercityCallsCalculator", "CalculateInIntercityCalls", "ServicesOnTariff", true)
         {
 
         }
 
-        public IEnumerable<JToken> FilterProductParameters(JArray root, string countryCode)
+        public IEnumerable<JToken> FilterProductParameters(JArray root, int regionId)
         {
 
             var markedParams = root
@@ -22,34 +22,34 @@ namespace QA.ProductCatalog.ImpactService
                         n.SelectTokens("Modifiers.[?(@.Alias)].Alias")
                             .Select(m => m.ToString())
                             .Contains(ParameterModifierName)).ToArray();
-            var countryParams = markedParams
-                .Where(n => n.SelectTokens("Direction.Countries.[?(@.Code)].Code").Select(m => m.ToString()).Contains(countryCode)).ToArray();
+            var regionParams = markedParams
+                .Where(n => n.SelectTokens("Direction.Regions.[?(@.Id)].Id").Select(m => (int)m).Contains(regionId)).ToArray();
 
-            if (countryParams.Length == 0)
+            if (regionParams.Length == 0)
             {
-                countryParams =
-                    markedParams.Where(n => n.SelectToken("[?(@.Direction.Alias == 'OtherCountries')]") != null).ToArray();
-
+                regionParams =
+                    markedParams.Where(n => n.SelectToken("Direction.Alias")?.ToString() == "Russia").ToArray();
             }
-            else if (countryParams.Length > 1)
+
+            else if (regionParams.Length > 1)
             {
                 var dirCount = new Dictionary<string, JToken>();
                 var toDelete = new List<JToken>();
-                foreach (var countryParam in countryParams)
+                foreach (var regionParam in regionParams)
                 {
-                    var key = countryParam.ExtractDirection().GetKey();
+                    var key = regionParam.ExtractDirection().GetKey();
 
                     if (!dirCount.ContainsKey(key))
                     {
-                        dirCount.Add(key, countryParam);
+                        dirCount.Add(key, regionParam);
                     }
                     else
                     {
                         var saved = dirCount[key];
-                        if (CountDirectionCountries(countryParam) < CountDirectionCountries(saved))
+                        if (CountDirectionRegions(regionParam) < CountDirectionRegions(saved))
                         {
                             toDelete.Add(saved);
-                            dirCount[key] = countryParam;
+                            dirCount[key] = regionParam;
                         }
                     }
                 }
@@ -60,38 +60,36 @@ namespace QA.ProductCatalog.ImpactService
                 }
             }
 
-            foreach (var p in countryParams)
+            foreach (var p in regionParams)
             {
                 p["Title"] = GenerateNewTitle(p);
                 p["SpecialDirection"] = true;
             }
 
-            countryParams = countryParams.Union(markedParams.Where(n => n["Direction"] == null)).ToArray();
 
-            return countryParams;
+            regionParams = regionParams.Union(markedParams.Where(n => n["Direction"] == null)).ToArray();
+
+            return regionParams;
         }
 
         private static string GenerateNewTitle(JToken p)
         {
-            var newTitle = p["Title"].ToString();
+            var title = p["Title"].ToString();
             var roamingTitle = p["TitleForIcin"]?.ToString();
-            var pos = newTitle.IndexOf(" (", StringComparison.InvariantCulture);
-            var bpTitle = p.SelectToken("BaseParameter.Title").ToString();
-            newTitle = roamingTitle ?? ((pos == -1) ? bpTitle : bpTitle + newTitle.Substring(pos));
-            return newTitle;
+            return roamingTitle ?? title;
         }
 
-        private static int CountDirectionCountries(JToken countryParam)
+        private static int CountDirectionRegions(JToken countryParam)
         {
-            return countryParam.SelectTokens("Direction.Countries").Count();
+            return countryParam.SelectTokens("Direction.Regions").Count();
         }
 
-        public void FilterServicesParameters(JObject[] services, string countryCode)
+        public void FilterServicesParameters(JObject[] services, int regionId)
         {
             foreach (var service in services)
             {
                 var root = (JArray)service.SelectToken("Parameters");
-                var countryParams = FilterProductParameters(root, countryCode);
+                var countryParams = FilterProductParameters(root, regionId);
                 service["Parameters"] = new JArray(countryParams);
             }
         }

@@ -6,7 +6,7 @@ namespace QA.ProductCatalog.ImpactService
 {
     public class InternationalRoamingCalculator : BaseImpactCalculator
     {
-        public InternationalRoamingCalculator() : base("UseForRoamingCalculator", "CalculateInRoaming", "ServicesOnRoamingScale")
+        public InternationalRoamingCalculator() : base("UseForRoamingCalculator", "CalculateInRoaming", "ServicesOnRoamingScale", false)
         {
 
         }

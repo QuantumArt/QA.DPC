@@ -10,21 +10,21 @@ using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
 {
-    [Route("api/mn")]
-    public class InternationalCallsController : Controller
+    [Route("api/base")]
+    public class TariffOptionController : Controller
     {
         private readonly ISearchRepository _searchRepo;
 
         private readonly ConfigurationOptions _configurationOptions;
 
-        public InternationalCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor)
+        public TariffOptionController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor)
         {
             _searchRepo = searchRepo;
             _configurationOptions = elasticIndexOptionsAccessor.Value;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode, int homeRegionId, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, int homeRegionId, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
         {
 
             var allProductIds = new[] { id }.Union(serviceIds).ToArray();
@@ -60,20 +60,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var services = servicesList.ToArray();
 
 
-            var calc = new InternationalCallsCalclulator();
-            IEnumerable<JToken> parameters;
-
-            try
-            {
-                calc.FilterServicesParameters(services, countryCode);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Exception occurs while filtering parameters: {ex.Message}");
-            }
-
-
-
+            var calc = new TariffOptionCalculator();
             try
             {
                 calc.Calculate(product, services);
@@ -83,21 +70,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 return BadRequest($"Exception occurs while calculating impact: {ex.Message}");
             }
 
-
-            try
-            {
-                parameters = calc.FilterProductParameters((JArray)product.SelectToken("Parameters"), countryCode);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest($"Exception occurs while filtering parameters: {ex.Message}");
-            }
-
-
-            var newProduct = new JObject(new JProperty("Parameters", new JArray(parameters)));
-            calc.Reorder(newProduct);
-
-            return Content(newProduct.ToString());
+            return Content(product.ToString());
 
         }
 
