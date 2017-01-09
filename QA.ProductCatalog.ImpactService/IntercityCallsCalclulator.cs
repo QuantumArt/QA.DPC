@@ -13,7 +13,7 @@ namespace QA.ProductCatalog.ImpactService
 
         }
 
-        public IEnumerable<JToken> FilterProductParameters(JArray root, int regionId)
+        public IEnumerable<JToken> FilterProductParameters(JArray root, string region)
         {
 
             var markedParams = root
@@ -23,7 +23,7 @@ namespace QA.ProductCatalog.ImpactService
                             .Select(m => m.ToString())
                             .Contains(ParameterModifierName)).ToArray();
             var regionParams = markedParams
-                .Where(n => n.SelectTokens("Direction.Regions.[?(@.Id)].Id").Select(m => (int)m).Contains(regionId)).ToArray();
+                .Where(n => n.SelectTokens("Direction.Regions.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains(region)).ToArray();
 
             if (regionParams.Length == 0)
             {
@@ -84,12 +84,12 @@ namespace QA.ProductCatalog.ImpactService
             return countryParam.SelectTokens("Direction.Regions").Count();
         }
 
-        public void FilterServicesParameters(JObject[] services, int regionId)
+        public void FilterServicesParameters(JObject[] services, string region)
         {
             foreach (var service in services)
             {
                 var root = (JArray)service.SelectToken("Parameters");
-                var countryParams = FilterProductParameters(root, regionId);
+                var countryParams = FilterProductParameters(root, region);
                 service["Parameters"] = new JArray(countryParams);
             }
         }

@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode, int homeRegionId, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode, string homeRegion, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
         {
 
             var allProductIds = new[] { id }.Union(serviceIds).ToArray();
@@ -32,7 +32,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             {
                 BaseAddress = _configurationOptions.ElasticBaseAddress,
                 IndexName = _configurationOptions.GetIndexName(state, language),
-                HomeRegionId = homeRegionId
+                HomeRegion = homeRegion
             };
 
             JObject[] results;

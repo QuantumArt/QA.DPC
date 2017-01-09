@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] int regionId, int homeRegionId, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string region, string homeRegion, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
         {
 
             var allProductIds = new[] {id}.Union(serviceIds).ToArray();
@@ -32,7 +32,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             {
                 BaseAddress = _configurationOptions.ElasticBaseAddress,
                 IndexName = _configurationOptions.GetIndexName(state, language),
-                HomeRegionId = homeRegionId
+                HomeRegion = homeRegion
             };
 
             JObject[] results;
@@ -71,16 +71,16 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
 
             var scale =
-                results2.SingleOrDefault(n => n.SelectTokens("MarketingProduct.Regions.[?(@.Id)].Id").Select(m => (int) m).Contains(regionId)) ??
+                results2.SingleOrDefault(n => n.SelectTokens("MarketingProduct.Regions.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains(region)) ??
                 results2.SingleOrDefault(n => n.SelectToken("MarketingProduct.Regions") == null);
 
             if (scale == null)
-                return NotFound($"Roaming scale is not found for tariff {id} in regions: {regionId}, {_configurationOptions.RootRegionId}");
+                return NotFound($"Roaming scale is not found for tariff {id} in regions: {region}, {_configurationOptions.RootRegionId}");
 
             var calc = new IntranetRoamingCalculator();
 
 
-            var useTariffData = calc.MergeLinkImpactToRoamingScale(scale, product, regionId);
+            var useTariffData = calc.MergeLinkImpactToRoamingScale(scale, product, region);
 
             IEnumerable<JToken> parameters = (!useTariffData)
                     ? scale.SelectToken("Parameters")

@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] int regionId, int homeRegionId, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string region, string homeRegion, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
         {
 
             var allProductIds = new[] { id }.Union(serviceIds).ToArray();
@@ -32,7 +32,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             {
                 BaseAddress = _configurationOptions.ElasticBaseAddress,
                 IndexName = _configurationOptions.GetIndexName(state, language),
-                HomeRegionId = homeRegionId
+                HomeRegion = homeRegion
             };
 
             JObject[] results;
@@ -65,7 +65,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             try
             {
-                calc.FilterServicesParameters(services, regionId);
+                calc.FilterServicesParameters(services, region);
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             try
             {
-                parameters = calc.FilterProductParameters((JArray)product.SelectToken("Parameters"), regionId);
+                parameters = calc.FilterProductParameters((JArray)product.SelectToken("Parameters"), region);
             }
             catch (Exception ex)
             {

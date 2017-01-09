@@ -2,7 +2,7 @@
 {
     public class SearchOptions
     {
-        public int HomeRegionId { get; set; }
+        public string HomeRegion { get; set; }
 
         public string BaseAddress { get; set; }
 

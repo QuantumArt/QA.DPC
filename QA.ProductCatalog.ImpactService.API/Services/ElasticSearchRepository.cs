@@ -79,7 +79,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                 var title = tag["Title"].ToString();
                 if (tagsToProcess.ContainsKey(title)) continue;
                 string value;
-                if (options.HomeRegionId == 0)
+                if (string.IsNullOrEmpty(options.HomeRegion))
                 {
                     value = tag["Values"][0]["Value"].ToString();
                 }
@@ -88,7 +88,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                     value =
                         tag
                             .SelectTokens("[?(@.Title]")
-                            .SingleOrDefault(n => ((JArray) n["RegionsId"]).Any(m => (int) m == options.HomeRegionId))?
+                            .SingleOrDefault(n => ((JArray) n["RegionsId"]).Any(m => m.ToString() == options.HomeRegion))?
                             .ToString();
                 }
                 value = JsonConvert.ToString(value);

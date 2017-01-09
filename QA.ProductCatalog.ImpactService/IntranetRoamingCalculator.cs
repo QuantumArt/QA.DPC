@@ -14,7 +14,7 @@ namespace QA.ProductCatalog.ImpactService
 
         }
 
-        public bool MergeLinkImpactToRoamingScale(JObject scale, JObject product, int regionId)
+        public bool MergeLinkImpactToRoamingScale(JObject scale, JObject product, string region)
         {
             int scaleId = (int) scale["Id"];
 
@@ -25,9 +25,9 @@ namespace QA.ProductCatalog.ImpactService
 
             var modifiersRoot = link.SelectToken("Modifiers");
 
-            var useTariffDataForRegion = link.SelectToken($"UseTariffDataInRegions.[?(@.Id == {regionId})]") != null;
+            var useTariffDataInRegion = link.SelectToken($"UseTariffDataInRegions.[?(@.Alias == '{region}')]") != null;
 
-            var useTariffData = useTariffDataForRegion || modifiersRoot != null && modifiersRoot.SelectTokens("[?(@.Alias)].Alias").Select(n => n.ToString()).ToArray().Contains("UseTariffData");
+            var useTariffData = useTariffDataInRegion || modifiersRoot != null && modifiersRoot.SelectTokens("[?(@.Alias)].Alias").Select(n => n.ToString()).ToArray().Contains("UseTariffData");
 
             if (!useTariffData)
             {
