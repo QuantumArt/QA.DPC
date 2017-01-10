@@ -446,5 +446,14 @@ namespace QA.ProductCatalog.ImpactService
             Reorder(tariff);
             return tariff;
         }
+
+        public IEnumerable<JToken> FilterServicesOnTariff(JArray root)
+        {
+            return root
+                .Where(n => n.SelectTokens("Parent.Modifiers.[?(@.Alias)].Alias")
+                    .Select(m => m.ToString())
+                    .Contains(LinkModifierName))
+                .ToArray();
+        }
     }
 }

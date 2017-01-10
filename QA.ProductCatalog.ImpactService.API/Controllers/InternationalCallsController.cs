@@ -62,6 +62,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             var calc = new InternationalCallsCalclulator();
             IEnumerable<JToken> parameters;
+            IEnumerable<JToken> servicesOnTariff;
 
             try
             {
@@ -93,8 +94,17 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 return BadRequest($"Exception occurs while filtering parameters: {ex.Message}");
             }
 
+            try
+            {
+                servicesOnTariff = calc.FilterServicesOnTariff((JArray)product.SelectToken("ServicesOnTariff"));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"Exception occurs while filtering services: {ex.Message}");
+            }
 
-            var newProduct = new JObject(new JProperty("Parameters", new JArray(parameters)));
+
+            var newProduct = new JObject(new JProperty("Parameters", new JArray(parameters)), new JProperty("ServicesOnTariff", servicesOnTariff));
             calc.Reorder(newProduct);
 
             return Content(newProduct.ToString());
