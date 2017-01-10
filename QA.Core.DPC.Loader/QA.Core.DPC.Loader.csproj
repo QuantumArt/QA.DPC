@@ -221,7 +221,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Resources, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.1.0\lib\net45\Quantumart.QP8.Resources.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.0.4.0\lib\net45\Quantumart.QP8.Resources.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Security, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
