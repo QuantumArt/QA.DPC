@@ -50,5 +50,43 @@ namespace QA.ProductCatalog.ImpactService
 
             return useTariffData;
         }
+
+
+        public IEnumerable<JToken> FilterForRoaming(JArray root)
+        {
+            var allRussiaParams = root.Where(n => n.SelectToken("Zone.Alias")?.ToString() == "Russia").ToArray();
+            var vsrParams = root.Where(n => n.SelectToken("Zone.Alias")?.ToString() == "RussiaExceptHome").ToArray();
+            var parentParamIds = new HashSet<int>(allRussiaParams.Union(vsrParams)
+                .Select(n => n.SelectToken("Parent.Id"))
+                .Where(n => n != null)
+                .Select(n => (int)n));
+
+            var parentParams = root.Where(n => parentParamIds.Contains((int)n["Id"]) && n["Zone"] == null).ToArray();
+
+            return allRussiaParams.Union(vsrParams).Union(parentParams).ToArray();
+
+        }
+
+        public JObject FilterScale(string region, JObject[] scales)
+        {
+            return scales.SingleOrDefault(
+                       n =>
+                           n.SelectTokens("MarketingProduct.Regions.[?(@.Alias)].Alias")
+                               .Select(m => m.ToString())
+                               .Contains(region)) ??
+                   scales.SingleOrDefault(n => n.SelectToken("MarketingProduct.Regions") == null);
+        }
+
+        public JArray GetResultParameters(JObject scale, JObject product, string region)
+        {
+            var useTariffData = MergeLinkImpactToRoamingScale(scale, product, region);
+
+            IEnumerable<JToken> parameters = (!useTariffData)
+                ? scale.SelectToken("Parameters")
+                : FilterForRoaming((JArray)product.SelectToken("Parameters"));
+
+            var resultParameters = parameters as JArray ?? new JArray(parameters);
+            return resultParameters;
+        }
     }
 }

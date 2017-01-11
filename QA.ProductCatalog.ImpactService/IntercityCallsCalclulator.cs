@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace QA.ProductCatalog.ImpactService
 {
-    public class IntercityCallsCalculator : BaseImpactCalculator
+    public class IntercityCallsCalculator : BaseCallsImpactCalculator
     {
         public IntercityCallsCalculator()
             : base("UseForIntercityCallsCalculator", "CalculateInIntercityCalls", "ServicesOnTariff", true)
@@ -13,7 +13,7 @@ namespace QA.ProductCatalog.ImpactService
 
         }
 
-        public IEnumerable<JToken> FilterProductParameters(JArray root, string region)
+        public override IEnumerable<JToken> FilterProductParameters(JArray root, string region)
         {
 
             var markedParams = root
@@ -82,16 +82,6 @@ namespace QA.ProductCatalog.ImpactService
         private static int CountDirectionRegions(JToken countryParam)
         {
             return countryParam.SelectTokens("Direction.Regions").Count();
-        }
-
-        public void FilterServicesParameters(JObject[] services, string region)
-        {
-            foreach (var service in services)
-            {
-                var root = (JArray)service.SelectToken("Parameters");
-                var countryParams = FilterProductParameters(root, region);
-                service["Parameters"] = new JArray(countryParams);
-            }
         }
 
         public override JObject Calculate(JObject tariff, JObject[] options)

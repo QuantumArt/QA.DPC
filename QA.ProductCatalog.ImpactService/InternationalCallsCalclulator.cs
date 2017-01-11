@@ -5,7 +5,7 @@ using Newtonsoft.Json.Linq;
 
 namespace QA.ProductCatalog.ImpactService
 {
-    public class InternationalCallsCalclulator : BaseImpactCalculator
+    public class InternationalCallsCalclulator : BaseCallsImpactCalculator
     {
         public InternationalCallsCalclulator()
             : base("UseForInternationalCallsCalculator", "CalculateInInternationalCalls", "ServicesOnTariff", true)
@@ -13,7 +13,7 @@ namespace QA.ProductCatalog.ImpactService
 
         }
 
-        public IEnumerable<JToken> FilterProductParameters(JArray root, string countryCode)
+        public override IEnumerable<JToken> FilterProductParameters(JArray root, string countryCode)
         {
 
             var markedParams = root
@@ -84,16 +84,6 @@ namespace QA.ProductCatalog.ImpactService
         private static int CountDirectionCountries(JToken countryParam)
         {
             return countryParam.SelectTokens("Direction.Countries").Count();
-        }
-
-        public void FilterServicesParameters(JObject[] services, string countryCode)
-        {
-            foreach (var service in services)
-            {
-                var root = (JArray)service.SelectToken("Parameters");
-                var countryParams = FilterProductParameters(root, countryCode);
-                service["Parameters"] = new JArray(countryParams);
-            }
         }
 
         public override JObject Calculate(JObject tariff, JObject[] options)
