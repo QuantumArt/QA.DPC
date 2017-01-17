@@ -54,7 +54,9 @@ namespace QA.Core.DPC.Loader.Tests
         [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='289']/ProductType/ProductFilters[SortOrder='1']/Title")]
         [XamlData(SkSimpleArticleFile, "[Type='ShopProduct']")]
         [XamlData(SkSimpleArticleClassifierArticle, "[Type='305']")]
+        [XamlData(SkSimpleArticleClassifierArticle, "[Type='MobileTariff']")]
         [XamlData(TestSampleDataFile, "[Atype = '']")]
+
         [Theory, Trait("DPathProcessor", "SingleResult")]
         public void DPathProcessor_WhenProductFounded_ShouldReturnArrayWithSingleElement(string expression, Article product)
         {

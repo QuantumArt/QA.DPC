@@ -203,12 +203,15 @@ namespace QA.Core.Models.Processors
                 throw new Exception("May be filter expression was wrong (should implement IGetFieldStringValue interface)");
             }
 
-            if (filterData.IsInversed)
+            var result = articleToCheck.Value == filterData.Value;
+
+            var ext = articleToCheck as ExtensionArticleField;
+            if (ext != null)
             {
-                return articleToCheck.Value != filterData.Value;
+                result |= ext.Item?.ContentName == filterData.Value;
             }
 
-            return articleToCheck.Value == filterData.Value;
+            return (filterData.IsInversed) ? !result : result;
         }
 
         private static IEnumerable<ModelObjectWithParent> GetResultForSingleOrMultiArticleByFieldName(IList<ModelObjectWithParent> resultData, string fieldName)
