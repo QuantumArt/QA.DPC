@@ -73,6 +73,10 @@ namespace QA.Core.DPC.Loader.Services
 			return ArticleService.CheckRelationSecurity(contentId, ids, isDeletable);
 		}
 
-		#endregion
-	}
+        public RulesException XamlValidationById(int articleId)
+        {
+             return ArticleService.ValidateXamlById(articleId);
+        }
+        #endregion
+    }
 }

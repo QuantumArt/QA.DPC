@@ -10,12 +10,12 @@ using Quantumart.QPublishing;
 using Quantumart.QPublishing.Database;
 using Qp8Bll = Quantumart.QP8.BLL;
 using QA.Core.Cache;
-using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Services;
 using Content = QA.Core.Models.Configuration.Content;
 using QA.Core.Models.Configuration;
 using System.Collections.Generic;
 using Quantumart.QPublishing.Info;
+using IArticleService = QA.Core.DPC.Loader.Services.IArticleService;
 
 namespace QA.Core.DPC.Loader
 {

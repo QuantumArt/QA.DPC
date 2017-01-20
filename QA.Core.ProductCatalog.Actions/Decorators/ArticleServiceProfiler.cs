@@ -186,5 +186,12 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public RulesException XamlValidationById(int articleId)
+        {
+            return null;
+        }
+
+
+    }
 }
