@@ -11,7 +11,6 @@ using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
 using QA.Core.ProductCatalog;
 using QA.Core.Cache;
-using IArticleService = QA.Core.DPC.Loader.Services.IArticleService;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Models;
 using Quantumart.QP8.BLL;

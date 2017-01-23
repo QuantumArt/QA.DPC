@@ -15,7 +15,7 @@ using Content = QA.Core.Models.Configuration.Content;
 using QA.Core.Models.Configuration;
 using System.Collections.Generic;
 using Quantumart.QPublishing.Info;
-using IArticleService = QA.Core.DPC.Loader.Services.IArticleService;
+using QA.Core.DPC.Loader.Services;
 
 namespace QA.Core.DPC.Loader
 {

@@ -12,7 +12,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Data;
 using QA.Core.ProductCatalog.Actions.Services;
-using IArticleService = QA.Core.DPC.Loader.Services.IArticleService;
+using QA.Core.DPC.Loader.Services;
 
 namespace QA.Core.DPC.Loader
 {
