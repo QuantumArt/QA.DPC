@@ -30,6 +30,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
             Article = (Article)Activator.CreateInstance(typeof(Article), true);
             FieldModes = new Dictionary<int, CloningMode>();
             FieldModes.Add(FieldId, Mode);
+            Article.FieldValues = new List<FieldValue>();
             BackwardFieldValues = new List<FieldValue>();
             Field = new Quantumart.QP8.BLL.Field();
         }

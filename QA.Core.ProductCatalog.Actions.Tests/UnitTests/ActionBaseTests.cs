@@ -2,7 +2,6 @@
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.ProductCatalog.Actions.Tests.Fakes;
-using Quantumart.QP8.BLL.Services.API;
 using System;
 using QA.Core.DPC.Loader.Services;
 
@@ -31,7 +30,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 		{
 			ArticleService = new ArticleServiceFake();
 			FieldService = new FieldServiceFake();
-			ProductService = new ProductServiceFake();
+            ProductService = new ProductServiceFake();
 			Logger = new LoggerFake();
 			TransactionFactory = () => new TransactionFake();
 			Action = new ActionBaseFake(ArticleService, FieldService, ProductService, Logger, TransactionFactory);

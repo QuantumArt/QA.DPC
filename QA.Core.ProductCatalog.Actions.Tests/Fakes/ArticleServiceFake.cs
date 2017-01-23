@@ -166,5 +166,10 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public RulesException XamlValidationById(int articleId)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
