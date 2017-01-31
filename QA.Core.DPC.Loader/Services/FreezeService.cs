@@ -264,7 +264,7 @@ namespace QA.Core.DPC.Loader.Services
 
                 var values = g.Select(p => new Dictionary<string, string>
                 {
-                    { FieldName.CONTENT_ITEM_ID, p.Id.ToString() },
+                    { FieldName.ContentItemId, p.Id.ToString() },
                     { freezeField, string.Empty }
                 } ).ToArray();
 
