@@ -17,6 +17,10 @@ namespace QA.Core.DPC.Loader.Services
         private const string UnfrosenProductsQuery =
         @"declare @query nvarchar(max) = ''
 
+        declare @contentds Ids
+        declare @contentQuery nvarchar(1000) = 'select distinct Content from content_' + cast(@definitionContentId as nvarchar(100)) + '_united where visible = 1 and archive = 0 and content <> @contentId'
+        insert into @contentds exec sp_executesql @contentQuery, N'@contentId int', @contentId
+
         select
             @query = @query +
 	        '
@@ -35,6 +39,22 @@ namespace QA.Core.DPC.Loader.Services
 	        base.content_id = @contentId and
 	        base.ATTRIBUTE_NAME = @typeField and
             f.ATTRIBUTE_NAME = @freezeField
+
+	    select
+			@query = @query +
+			'
+			select
+				CONTENT_ITEM_ID Id
+			from
+				content_' + cast(c.ID as nvarchar(100)) +'_united
+			where
+				FreezeDate < @date
+			union'
+		from
+			@contentds c
+			join content_attribute f on c.ID = f.CONTENT_ID
+		where
+			f.ATTRIBUTE_NAME = @freezeField
         
         if @query<> ''
         begin
@@ -44,6 +64,10 @@ namespace QA.Core.DPC.Loader.Services
 
         private const string FrosenProductsQuery =
         @"declare @query nvarchar(max) = ''
+
+        declare @contentds Ids
+        declare @contentQuery nvarchar(1000) = 'select distinct Content from content_' + cast(@definitionContentId as nvarchar(100)) + '_united where visible = 1 and archive = 0 and content <> @contentId'
+        insert into @contentds exec sp_executesql @contentQuery, N'@contentId int', @contentId
 
         select
 	        @query = @query +
@@ -65,6 +89,23 @@ namespace QA.Core.DPC.Loader.Services
 	        base.ATTRIBUTE_NAME = @typeField and
 	        f.ATTRIBUTE_NAME = @freezeField
 
+        select
+			@query = @query +
+			'
+			select
+				CONTENT_ITEM_ID Id
+			from
+				content_' + cast(c.ID as nvarchar(100)) +'_united
+			where
+				FreezeDate >= @date and
+		        CONTENT_ITEM_ID in (select Id from @ids)
+			union'
+		from
+			@contentds c
+			join content_attribute f on c.ID = f.CONTENT_ID
+		where
+			f.ATTRIBUTE_NAME = @freezeField
+
         if @query <> ''
         begin
          set @query = left(@query, len(@query) - len('union'))
@@ -73,6 +114,10 @@ namespace QA.Core.DPC.Loader.Services
 
         private const string FreezeStateQuery =
         @"declare @query nvarchar(max) = ''
+
+        declare @contentds Ids
+        declare @contentQuery nvarchar(1000) = 'select distinct Content from content_' + cast(@definitionContentId as nvarchar(100)) + '_united where visible = 1 and archive = 0 and content <> @contentId'
+        insert into @contentds exec sp_executesql @contentQuery, N'@contentId int', @contentId
 
         select
 	        @query = @query +
@@ -94,6 +139,23 @@ namespace QA.Core.DPC.Loader.Services
 	        base.ATTRIBUTE_NAME = @typeField and
 	        f.ATTRIBUTE_NAME = @freezeField
 
+        select
+			@query = @query +
+			'
+			select
+				FreezeDate
+			from
+				content_' + cast(c.ID as nvarchar(100)) +'_united
+			where
+				CONTENT_ITEM_ID = @id and
+				FreezeDate is not null
+			union'
+		from
+			@contentds c
+			join content_attribute f on c.ID = f.CONTENT_ID
+		where
+			f.ATTRIBUTE_NAME = @freezeField
+
         if @query <> ''
         begin
          set @query = left(@query, len(@query) - len('union'))
@@ -102,6 +164,10 @@ namespace QA.Core.DPC.Loader.Services
 
         private const string ResetFreezingQuery =
         @"declare @query nvarchar(max) = ''
+
+        declare @contentds Ids
+        declare @contentQuery nvarchar(1000) = 'select distinct Content from content_' + cast(@definitionContentId as nvarchar(100)) + '_united where visible = 1 and archive = 0 and content <> @contentId'
+        insert into @contentds exec sp_executesql @contentQuery, N'@contentId int', @contentId
 
         select
 	        @query = @query +
@@ -124,6 +190,24 @@ namespace QA.Core.DPC.Loader.Services
 	        base.ATTRIBUTE_NAME = @typeField and
 	        f.ATTRIBUTE_NAME = @freezeField
 
+        select
+	        @query = @query +
+	        '
+	        select
+		        ' + cast(c.ID as nvarchar(100)) + ' ContentId,
+		        CONTENT_ITEM_ID Id,
+		        ' + cast(f.ATTRIBUTE_ID as nvarchar(100)) + ' FieldId
+	        from
+		        content_' + cast(c.ID as nvarchar(100)) +'_united
+	        where
+		        CONTENT_ITEM_ID in (select Id from @ids)
+	        union'
+        from
+	        @contentds c
+	        join content_attribute f on c.ID = f.CONTENT_ID
+        where
+	        f.ATTRIBUTE_NAME = @freezeField
+
         if @query <> ''
         begin
          set @query = left(@query, len(@query) - len('union'))
@@ -144,6 +228,7 @@ namespace QA.Core.DPC.Loader.Services
         public FreezeState GetFreezeState(int productId)
         {
             int productContentId = GetProductContentId();
+            int definitionContentId = GetDefinitionContentId();
             string typeField = GetTypeFieldName();
             string freezeField = GetFreezeFieldName();
 
@@ -156,6 +241,7 @@ namespace QA.Core.DPC.Loader.Services
             var sqlCommand = new SqlCommand(FreezeStateQuery);
 
             sqlCommand.Parameters.AddWithValue("@contentId", productContentId);
+            sqlCommand.Parameters.AddWithValue("@definitionContentId", definitionContentId);
             sqlCommand.Parameters.AddWithValue("@typeField", typeField);
             sqlCommand.Parameters.AddWithValue("@freezeField", freezeField);
             sqlCommand.Parameters.AddWithValue("@id", productId);            
@@ -184,6 +270,7 @@ namespace QA.Core.DPC.Loader.Services
         public int[] GetFrosenProductIds(int[] productIds)
         {
             int productContentId = GetProductContentId();
+            int definitionContentId = GetDefinitionContentId();
             string typeField = GetTypeFieldName();
             string freezeField = GetFreezeFieldName();
 
@@ -196,6 +283,7 @@ namespace QA.Core.DPC.Loader.Services
             var sqlCommand = new SqlCommand(FrosenProductsQuery);
 
             sqlCommand.Parameters.AddWithValue("@contentId", productContentId);
+            sqlCommand.Parameters.AddWithValue("@definitionContentId", definitionContentId);
             sqlCommand.Parameters.AddWithValue("@typeField", typeField);
             sqlCommand.Parameters.AddWithValue("@freezeField", freezeField);            
             sqlCommand.Parameters.AddWithValue("@date", DateTime.Now);
@@ -209,6 +297,7 @@ namespace QA.Core.DPC.Loader.Services
         public int[] GetUnfrosenProductIds()
         {
             int productContentId = GetProductContentId();
+            int definitionContentId = GetDefinitionContentId();
             string typeField = GetTypeFieldName();
             string freezeField = GetFreezeFieldName();
 
@@ -222,6 +311,7 @@ namespace QA.Core.DPC.Loader.Services
             var sqlCommand = new SqlCommand(UnfrosenProductsQuery);
 
             sqlCommand.Parameters.AddWithValue("@contentId", productContentId);
+            sqlCommand.Parameters.AddWithValue("@definitionContentId", definitionContentId);
             sqlCommand.Parameters.AddWithValue("@typeField", typeField);
             sqlCommand.Parameters.AddWithValue("@freezeField", freezeField);
             sqlCommand.Parameters.AddWithValue("@date", DateTime.Now);
@@ -235,6 +325,7 @@ namespace QA.Core.DPC.Loader.Services
         {
             int userId = _userProvider.GetUserId();
             int productContentId = GetProductContentId();
+            int definitionContentId = GetDefinitionContentId();
             string typeField = GetTypeFieldName();
             string freezeField = GetFreezeFieldName();
 
@@ -247,6 +338,7 @@ namespace QA.Core.DPC.Loader.Services
             var sqlCommand = new SqlCommand(ResetFreezingQuery);
 
             sqlCommand.Parameters.AddWithValue("@contentId", productContentId);
+            sqlCommand.Parameters.AddWithValue("@definitionContentId", definitionContentId);
             sqlCommand.Parameters.AddWithValue("@typeField", typeField);
             sqlCommand.Parameters.AddWithValue("@freezeField", freezeField);
             sqlCommand.Parameters.Add(Common.GetIdsTvp(productIds, "@Ids"));
@@ -300,6 +392,11 @@ namespace QA.Core.DPC.Loader.Services
         private int GetProductContentId()
         {
             return int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCTS_CONTENT_ID));
+        }
+
+        private int GetDefinitionContentId()
+        {
+            return int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
         }
 
         private int[] GetIds(DataTable dt)

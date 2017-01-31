@@ -19,16 +19,16 @@ namespace QA.Core.Models.Processors
         private static readonly string ExpressionRegexString = $@"
         (?:\s*
             (?<{FieldRegexGroupName}>\w*)
-		    (?<{FilterExpressionRegexGroupName}>
-		    \s*\[\s*
-                (?<{FilterLogicalRegexGroupName}>[\||\&]?)\s*
+            (?<{FilterExpressionRegexGroupName}>
+            \s*\[\s*
+                (?<{FilterLogicalRegexGroupName}>[\|\&]?)\s*
                 (?<{FilterInverseRegexGroupName}>!?)\s*
                 (?<{FilterPathRegexGroupName}>(?:\s*\w+\s*\/?)+)\s*
                 =\s*
-                '\s*(?<{FilterValueRegexGroupName}>\w*?)\s*'
+                '(?<{FilterValueRegexGroupName}>[^']*)'
             \s*\]\s*
-		    )*\s*\/\s*
-	    )";
+            )*\s*\/\s*
+        )";
 
         private static readonly Regex ExpressionRegex = new Regex(ExpressionRegexString, RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
         private static readonly Regex ExpressionRegexToValidate = new Regex($"^{ExpressionRegexString}+$", RegexOptions.IgnoreCase | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
@@ -70,6 +70,7 @@ namespace QA.Core.Models.Processors
             }
 
             var normalizedExpression = NormalizeExpression(expression);
+
             if (!IsExpressionValid(normalizedExpression))
             {
                 throw new Exception($"Wrong expression data: {normalizedExpression}");
@@ -141,7 +142,35 @@ namespace QA.Core.Models.Processors
                 var childArticlesOrSelf = GetChildArticlesOrSelf(resultEntry.ModelObject);
                 foreach (var article in childArticlesOrSelf)
                 {
-                    if (articleFiltersData.All(filter => IsArticlePassFilter(article, filter)))
+                    var disjunctionResults = new List<bool>();
+                    var conjunctionResult = true;
+
+                    foreach (var t in articleFiltersData)
+                    {
+                        var partialResult = IsArticlePassFilter(article, t);
+                        if (!t.IsDisjuncted)
+                        {
+                            conjunctionResult &= partialResult;
+                        }
+                        else
+                        {
+                            disjunctionResults.Add(conjunctionResult);
+                            conjunctionResult = partialResult;
+                        }
+                    }
+
+                    bool result;
+                    if (disjunctionResults.Any())
+                    {
+                        disjunctionResults.Add(conjunctionResult);
+                        result = disjunctionResults.Any(n => n);
+                    }
+                    else
+                    {
+                        result = conjunctionResult;
+                    }
+
+                    if (result)
                     {
                         yield return new ModelObjectWithParent
                         {
@@ -156,7 +185,7 @@ namespace QA.Core.Models.Processors
         private static bool IsArticlePassFilter(Article article, DPathFilterData filterData)
         {
             var articlesInFilter = Process(filterData.Expression, article);
-            if (!articlesInFilter.Any() && filterData.IsInversed)
+            if (!articlesInFilter.Any() && (filterData.IsInversed || string.IsNullOrEmpty(filterData.Value)))
             {
                 return true;
             }
@@ -174,12 +203,15 @@ namespace QA.Core.Models.Processors
                 throw new Exception("May be filter expression was wrong (should implement IGetFieldStringValue interface)");
             }
 
-            if (filterData.IsInversed)
+            var result = articleToCheck.Value == filterData.Value;
+
+            var ext = articleToCheck as ExtensionArticleField;
+            if (ext != null)
             {
-                return articleToCheck.Value != filterData.Value;
+                result |= ext.Item?.ContentName == filterData.Value;
             }
 
-            return articleToCheck.Value == filterData.Value;
+            return (filterData.IsInversed) ? !result : result;
         }
 
         private static IEnumerable<ModelObjectWithParent> GetResultForSingleOrMultiArticleByFieldName(IList<ModelObjectWithParent> resultData, string fieldName)

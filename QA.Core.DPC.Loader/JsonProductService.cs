@@ -27,7 +27,6 @@ namespace QA.Core.DPC.Loader
 		private readonly DBConnector _dbConnector;
 		private readonly VirtualFieldPathEvaluator _virtualFieldPathEvaluator;
 
-		public bool RemoveSchemaFromUrls { get; set; }
 	    public Article DeserializeProduct(string productJson, Content definition)
 	    {
 	        var rootArticleDictionary = JsonConvert.DeserializeObject<JObject>(productJson);
@@ -492,7 +491,7 @@ namespace QA.Core.DPC.Loader
 									: plainArticleField.Value,
 							FileSizeBytes = size,
 							AbsoluteUrl = string.Format(@"{0}/{1}",
-								_dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, RemoveSchemaFromUrls),
+								_dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
 								plainArticleField.Value)
 						};
 					}
@@ -503,7 +502,7 @@ namespace QA.Core.DPC.Loader
 						return null;
 
 					return string.Format(@"{0}/{1}",
-						_dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, RemoveSchemaFromUrls),
+						_dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
 						plainArticleField.Value);
 
 				case PlainFieldType.Boolean:
