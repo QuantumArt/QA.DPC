@@ -3,7 +3,6 @@ using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;

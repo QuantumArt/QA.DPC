@@ -18,5 +18,6 @@ namespace QA.Core.DPC.Loader.Services
 		InsertData[] BatchUpdate(IEnumerable<ArticleData> articles);
 		InsertData[] BatchUpdate(IEnumerable<Article> articles);
 		Dictionary<int, bool> CheckRelationSecurity(int contentId, int[] ids, bool isDeletable);
+	    RulesException XamlValidationById(int articleId);
 	}
 }

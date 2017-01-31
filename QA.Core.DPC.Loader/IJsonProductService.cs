@@ -8,7 +8,6 @@ namespace QA.Core.DPC.Loader
 	{
 		string SerializeProduct(Article article, IArticleFilter filter, bool includeRegionTags = false);
         JSchema GetSchema(Content definition, bool forList = false, bool includeRegionTags = false);
-        bool RemoveSchemaFromUrls { get; set; }
 
 	    Article DeserializeProduct(string productJson, Content definition);
 	}
