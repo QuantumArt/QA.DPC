@@ -28,7 +28,7 @@ namespace QA.ProductCatalog.ImpactService
             if (countryParams.Length == 0)
             {
                 countryParams =
-                    markedParams.Where(n => n.SelectToken("[?(@.Direction.Alias == 'OtherCountries')]") != null).ToArray();
+                    markedParams.Where(n => n.SelectToken("Direction.Alias")?.ToString() == "OtherCountries").ToArray();
 
             }
             else if (countryParams.Length > 1)
