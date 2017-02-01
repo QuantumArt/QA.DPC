@@ -44,6 +44,8 @@ namespace QA.Core.DPC.Loader.Tests
         [XamlData(TestSampleDataFile, "[!Type='306'][!Type='306']")]
         [XamlData(TestSampleDataFile, "[SortOrder='300'][!SortOrder='200']")]
         [XamlData(TestSampleDataFile, "[!SortOrder='200'][SortOrder='300']")]
+        [XamlData(TestSampleDataFile, "[SortOrder='300'][| SortOrder='400']")]
+        [XamlData(TestSampleDataFile, "[SortOrder='400'][| SortOrder='300']")]
         [XamlData(TestSampleDataFile, "MarketingProduct[ProductType/ProductFilters/SortOrder='1']")]
         [XamlData(TestSampleDataFile, "MarketingProduct/ProductType/ProductFilters[SortOrder='1']")]
         [XamlData(TestSampleDataFile, "MarketingProduct/ProductType/ProductFilters[SortOrder='1']/Title")]
@@ -52,6 +54,9 @@ namespace QA.Core.DPC.Loader.Tests
         [XamlData(TestSampleDataFile, "MarketingProduct[ProductType='289']/ProductType/ProductFilters[SortOrder='1']/Title")]
         [XamlData(SkSimpleArticleFile, "[Type='ShopProduct']")]
         [XamlData(SkSimpleArticleClassifierArticle, "[Type='305']")]
+        [XamlData(SkSimpleArticleClassifierArticle, "[Type='MobileTariff']")]
+        [XamlData(TestSampleDataFile, "[Atype = '']")]
+
         [Theory, Trait("DPathProcessor", "SingleResult")]
         public void DPathProcessor_WhenProductFounded_ShouldReturnArrayWithSingleElement(string expression, Article product)
         {
@@ -69,6 +74,10 @@ namespace QA.Core.DPC.Loader.Tests
         [XamlData(TestGeProductFile, "Parameters[!Modifiers/Alias='ExcludeFromPdf']", 8)]
         [XamlData(TestGeProductFile, "Parameters[!test_filter_expression='test_value']", 8)]
         [XamlData(TestGeProductFile, "test_field1[!test_filter_expression='test_value']", 0)]
+        [XamlData(TestGeProductFile, "Parameters[BaseParameter/Alias = 'USSD'][| BaseParameter/Alias = 'BeeNumber']", 3)]
+        [XamlData(TestGeProductFile, "Parameters[BaseParameter/Alias = 'USSD'][BaseParameter/Title = 'USSD для перехода'][| BaseParameter/Alias = 'BeeNumber'][ BaseParameter/ Title = 'Биномер для перехода']", 3)]
+        [XamlData(TestGeProductFile, "Parameters[BaseParameter/Alias = '']", 5)]
+
         [Theory, Trait("DPathProcessor", "MultipleResults")]
         public void DPathProcessor_WhenProductFounded_ShouldReturnArrayWithMultipleElements(string expression, Article product, int expectedResult)
         {

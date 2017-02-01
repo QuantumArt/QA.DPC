@@ -11,8 +11,8 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Data;
-using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Services;
+using QA.Core.DPC.Loader.Services;
 
 namespace QA.Core.DPC.Loader
 {

@@ -62,7 +62,11 @@ namespace QA.Core.ProductCatalog.Actions
                 ValidateMessageResult(product.Id, MessageResult.Error("продукт заморожен"));
             }
 
-			var allArticles = GetAllArticles(new[] { product });
+            var xamlValidationErrors = DoWithLogging("ValidateXaml", transactionId, () => ArticleService.XamlValidationById(product.Id));
+            if (!xamlValidationErrors.IsEmpty)
+                ValidateMessageResult(product.Id, MessageResult.Error(string.Join(@";" + Environment.NewLine, xamlValidationErrors.Errors.Select(s=>s.Message))));
+
+            var allArticles = GetAllArticles(new[] { product });
 			bool containsIgnored = allArticles.Any(a => ignoredStatuses.Contains(a.Status));
 
             var articleIds = DoWithLogging("GetAllArticles", transactionId, () => allArticles.Where(a => a.Id != productId && !a.IsPublished && !ignoredStatuses.Contains(a.Status)).Select(a => a.Id).Distinct().ToArray());

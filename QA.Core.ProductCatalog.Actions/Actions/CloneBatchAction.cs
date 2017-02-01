@@ -9,7 +9,6 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Services.API;
 
 namespace QA.Core.ProductCatalog.Actions
 {
