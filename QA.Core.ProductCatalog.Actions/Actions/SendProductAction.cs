@@ -15,6 +15,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 {
     public class SendProductAction : ActionTaskBase
     {
+        private const int DefaultBundleSize = 15;
+        private const int DefaultMaxDegreeOfParallelism = 12;
+
+
         private readonly ISettingsService _settingsService;
         private readonly IArticleService _articleService;
         private readonly ILogger _logger;
