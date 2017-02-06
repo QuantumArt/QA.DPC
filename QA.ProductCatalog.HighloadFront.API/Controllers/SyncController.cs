@@ -39,10 +39,16 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         [Route("{language}/{state}")]
         public async Task<HttpResponseMessage> Put([FromBody]PushMessage message, string language, string state)
         {
+
             var syncer = _getSyncer(language, state);
             var product = message.Product;
-
             string id = Manager.GetProductId(message.Product);
+
+            if (!_dataOptions.CanUpdate)
+            {
+                throw new Exception($"Невозможно создать или обновить продукт {id}. Данный экземпляр API предназначен только для чтения.");
+            }
+
 
             Logger.Info($"Получен запрос на обновление/добавление продукта: {id}");
 
@@ -71,6 +77,11 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
             var id = Manager.GetProductId(message.Product);
 
+            if (!_dataOptions.CanUpdate)
+            {
+                throw new Exception($"Невозможно удалить продукт {id}. Данный экземпляр API предназначен только для чтения.");
+            }
+
             Logger.Info("Получен запрос на удаление продукта: " + id);
 
             if (await syncer.EnterSingleCRUDAsync(_lockTimeoutInMs))
@@ -93,6 +104,12 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         [Route("{language}/{state}/reset"), HttpPost]
         public HttpResponseMessage Reset(string language, string state)
         {
+
+            if (!_dataOptions.CanUpdate)
+            {
+                throw new Exception($"Невозможно выполнить операцию пересоздания индекса. Данный экземпляр API предназначен только для чтения.");
+            }
+
             var syncer = _getSyncer(language, state);
 
             if (!syncer.AnySlotsLeft)
