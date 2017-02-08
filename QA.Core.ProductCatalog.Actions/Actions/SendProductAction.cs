@@ -15,6 +15,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 {
     public class SendProductAction : ActionTaskBase
     {
+        private const int DefaultBundleSize = 15;
+        private const int DefaultMaxDegreeOfParallelism = 12;
+
+
         private readonly ISettingsService _settingsService;
         private readonly IArticleService _articleService;
         private readonly ILogger _logger;
@@ -39,6 +43,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
         public override string Process(ActionContext context)
         {
+            int bundleSize = GetBundleSize();
+            int maxDegreeOfParallelism = GetMaxDegreeOfParallelism();
+
             string[] channels = context.Parameters.GetChannels();
             bool localize = context.Parameters.GetLocalize();
 
@@ -90,7 +97,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             string ignoredStatus = (context.Parameters.ContainsKey(ignoredStatusKey)) ? context.Parameters[ignoredStatusKey] : null;
 
-            const byte bundleSize = 15;
 
             float currentPercent = 0;
 
@@ -112,7 +118,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             const string cancelledMessage = "Действие отменено";
 
-            Parallel.ForEach(parts, new ParallelOptions { MaxDegreeOfParallelism = 12 },
+            Parallel.ForEach(parts, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
                 () =>
                 {
                     UserProvider.ForcedUserId = context.UserId;
@@ -452,5 +458,36 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 }
             }
         }
+
+        private int GetBundleSize()
+        {
+            var setting = _settingsService.GetSetting(SettingsTitles.PUBLISH_BUNDLE_SIZE);
+            int bundleSize;
+
+            if (!string.IsNullOrEmpty(setting) && int.TryParse(setting, out bundleSize))
+            {
+                return bundleSize;
+            }
+            else
+            {
+                return DefaultBundleSize;
+            }
+        }
+
+        private int GetMaxDegreeOfParallelism()
+        {
+            var setting = _settingsService.GetSetting(SettingsTitles.PUBLISH_DEGREE_OF_PARALLELISM);
+            int maxDegreeOfParallelism;
+
+            if (!string.IsNullOrEmpty(setting) && int.TryParse(setting, out maxDegreeOfParallelism))
+            {
+                return maxDegreeOfParallelism;
+            }
+            else
+            {
+                return DefaultMaxDegreeOfParallelism;
+            }
+        }
+
     }
 }
