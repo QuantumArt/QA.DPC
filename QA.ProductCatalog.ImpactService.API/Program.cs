@@ -16,6 +16,8 @@ namespace QA.ProductCatalog.ImpactService.API
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
+                .CaptureStartupErrors(true)
+                .UseSetting("detailedErrors", "true")
                 .UseStartup<Startup>()
                 .Build();
 
