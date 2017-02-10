@@ -97,22 +97,22 @@ namespace QA.ProductCatalog.Validation.Validators
         public void IsProductsRegionsWithModifierIntersectionsExist(ArticleService articleService, int productId, int[] regionsIds, int[] productsIds,
                         string regionsName, string modifiersName, int dataOptionId)
         {
+
             int contentId = GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID);
-
-            Dictionary<int, int[]> productToRegions = articleService.List(contentId, productsIds).Where(w=>!w.Archived)
-                  .ToDictionary<Article, int, int[]>(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == regionsName).Single().RelatedItems.ToArray());
-
-            Dictionary<int, int[]> modifiersToProducts = articleService.List(contentId, productsIds).Where(w => !w.Archived)
-                  .ToDictionary<Article, int, int[]>(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == modifiersName).Single().RelatedItems.ToArray());
-
+            var productsList = articleService.List(contentId, productsIds).Where(w => !w.Archived);
+            
+           Lookup<int, int[]> productToRegions = (Lookup<int, int[]>)productsList
+                 .ToLookup(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == regionsName).Single().RelatedItems.ToArray());
+           Lookup<int, int[]> modifiersToProducts = (Lookup<int, int[]>)productsList
+                  .ToLookup(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == modifiersName).Single().RelatedItems.ToArray());
             var resultIds = new List<int>();
             foreach (var item in productToRegions)
             {
                 if (item.Key != productId)
                 {
-                    if (!modifiersToProducts[item.Key].Any() || !modifiersToProducts[item.Key].Contains(dataOptionId))
+                    if (!modifiersToProducts[item.Key].Any() || !modifiersToProducts[item.Key].Contains(new [] { dataOptionId}))
                     {
-                        if (regionsIds.Intersect(item.Value).Any())
+                        if (regionsIds.Intersect(item.SelectMany(s=>s)).Any())
                         {
                             resultIds.Add(item.Key);
                         }
@@ -167,7 +167,7 @@ namespace QA.ProductCatalog.Validation.Validators
         {
             var fieldParentName = GetSettingStringValue(SettingsTitles.FIELD_PARENT_NAME);
             //получение id статей матрицы отношений из услуги на тарифах
-            var relationMatrixList = articleService.List(contentProductsId, relationsIds).Where(w=>!w.Archived)
+            var relationMatrixList = articleService.List(contentProductsId, relationsIds).Where(w => !w.Archived)
                                                    .Select(x =>
                                                                 x.FieldValues
                                                                 .Single(a => a.Field.Name == fieldParentName)
@@ -194,30 +194,34 @@ namespace QA.ProductCatalog.Validation.Validators
                     .Select(v => int.Parse(v)).ToArray();
 
             CheckTariffAreaDuplicateExist(articleService, contentId, parametersList, parametersFieldName);
-
         }
 
 
         public void CheckTariffAreaDuplicateExist(ArticleService articleService, int contentId, int[] parametersList, string parametersFieldName)
         {
-
-            Dictionary<int, int[]> tariffAreaLists = articleService.List(contentId, parametersList).Where(w => !w.Archived)
-                                              .ToDictionary<Article, int, int[]>(s => s.Id, s => s.FieldValues
-                                                            .Where(w => GetListOfParametersNames().Contains(w.Field.Name) && w.RelatedItems.Any())
-                                                            .SelectMany(r => r.RelatedItems).ToArray());
+            Lookup<int, int[]> tariffAreaLists = (Lookup<int, int[]>)articleService.List(contentId, parametersList).Where(w => !w.Archived)
+                .ToLookup(s => s.Id, s => s.FieldValues
+                    .Where(w => GetListOfParametersNames().Contains(w.Field.Name) )
+                    .SelectMany(r => r.RelatedItems).ToArray());
+            
             var resultIds = new List<int>();
-            foreach (var tariffArea in tariffAreaLists)
+            for (int i = 0; i < tariffAreaLists.Count; i++)
             {
-                var count = tariffAreaLists.Count(w => w.Value.Any() && w.Value.SequenceEqual(tariffArea.Value));
-                if (count > 1)
+                for (int j = i + 1; j < tariffAreaLists.Count; j++)
                 {
-                    resultIds.Add(tariffArea.Key);
+                    var element1 = tariffAreaLists.ElementAtOrDefault(i);
+                    var element2 = tariffAreaLists.ElementAtOrDefault(j);
+                    if (element1.SelectMany(s => s).Any() && element1.SelectMany(s => s).SequenceEqual(element2.SelectMany(s1 => s1)))
+                    {
+                        resultIds.Add(element1.Key);
+                        resultIds.Add(element2.Key);
+                    }
                 }
             }
             if (resultIds.Any())
             {
                 result.AddModelError(GetPropertyName(parametersFieldName),
-                        string.Format(RemoteValidationMessages.DuplicateTariffsAreas, String.Join(", ", resultIds)));
+                        string.Format(RemoteValidationMessages.DuplicateTariffsAreas, String.Join(", ", resultIds.Distinct())));
             }
         }
 

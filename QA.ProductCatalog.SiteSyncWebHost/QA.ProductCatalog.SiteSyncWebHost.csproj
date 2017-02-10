@@ -285,6 +285,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\UnityConfig.cs" />
+    <Compile Include="Controllers\HealthCheckController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -308,6 +309,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
+    <Folder Include="Views\HealthCheck\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
@@ -420,4 +422,3 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
-

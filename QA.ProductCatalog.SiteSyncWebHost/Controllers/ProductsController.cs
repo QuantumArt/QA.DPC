@@ -3,8 +3,11 @@ using QA.Core;
 using QA.Core.DPC.Integration;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
@@ -40,45 +43,45 @@ namespace QA.ProductCatalog.SiteSyncWebHost.Controllers
                     logger.Info("Сообщение разобрано, создаем/обновляем продукты... ");
                     foreach (var p in res1.Result.Products)
                     {
-						logger.Info("Проверяем, нужно ли создавать/обновлять продукт {0} ", p.Id);
-						var res2 = service.HasProductChanged(p.Id, data);
-						if (!res2.IsSucceeded)
-						{
-							logger.Info("Ошибка при проверке продукта {0}: {1}", p.Id, res2.Error.Message);
-							throw new Exception(res2.Error.Message);
-						}
-						else if (!res2.Result)
-						{
-							logger.Info("Продукт {0} не требует создания/обновления", p.Id);
-						}
+                        logger.Info("Проверяем, нужно ли создавать/обновлять продукт {0} ", p.Id);
+                        var res2 = service.HasProductChanged(p.Id, data);
+                        if (!res2.IsSucceeded)
+                        {
+                            logger.Info("Ошибка при проверке продукта {0}: {1}", p.Id, res2.Error.Message);
+                            throw new Exception(res2.Error.Message);
+                        }
+                        else if (!res2.Result)
+                        {
+                            logger.Info("Продукт {0} не требует создания/обновления", p.Id);
+                        }
                         else 
-						{
-							logger.Info("Создаем/обновляем продукт {0}", p.Id);
+                        {
+                            logger.Info("Создаем/обновляем продукт {0}", p.Id);
 
-							int userId = 0;
-							int.TryParse(Request.Params["UserId"], out userId);
-							var res3 = service.UpdateProduct(p, data, Request.Params["UserName"], userId);
-							if (res3.IsSucceeded)
-							{
-								logger.Info("Продукт {0} успешно создан/обновлен", p.Id);
-							}
-							else
-							{
-								logger.Info("Ошибка при создании/обновлении продукта {0}: {1}", p.Id, res3.Error.Message);
-								throw new Exception(res3.Error.Message);
-							}
-						}
+                            int userId = 0;
+                            int.TryParse(Request.Params["UserId"], out userId);
+                            var res3 = service.UpdateProduct(p, data, Request.Params["UserName"], userId);
+                            if (res3.IsSucceeded)
+                            {
+                                logger.Info("Продукт {0} успешно создан/обновлен", p.Id);
+                            }
+                            else
+                            {
+                                logger.Info("Ошибка при создании/обновлении продукта {0}: {1}", p.Id, res3.Error.Message);
+                                throw new Exception(res3.Error.Message);
+                            }
+                        }
                     }
                 }
                 else 
                 {
                     logger.Info("Не удалось разобрать сообщение в продукты: {0}", data);
-					if (!res1.IsSucceeded)
-						throw new Exception(res1.Error.Message);
-					else
-						throw new Exception("Не удалось разобрать сообщение в продукты");
+                    if (!res1.IsSucceeded)
+                        throw new Exception(res1.Error.Message);
+                    else
+                        throw new Exception("Не удалось разобрать сообщение в продукты");
 
-				}
+                }
             }
             else if (Request.HttpMethod == "DELETE")
             {
@@ -91,25 +94,25 @@ namespace QA.ProductCatalog.SiteSyncWebHost.Controllers
                     {
                         logger.Info("Удаляем продукт {0}", p.Id);
                         var res2 = service.DeleteProduct(p.Id);
-						if (res2.IsSucceeded)
-						{
-							logger.Info("Продукт {0} успешно удален", p.Id);
-						}
-						else
-						{
-							logger.Info("Ошибка при удалении продукта {0}: {1}", p.Id, res2.Error.Message);
-							throw new Exception(res2.Error.Message);
-						}
-					}
+                        if (res2.IsSucceeded)
+                        {
+                            logger.Info("Продукт {0} успешно удален", p.Id);
+                        }
+                        else
+                        {
+                            logger.Info("Ошибка при удалении продукта {0}: {1}", p.Id, res2.Error.Message);
+                            throw new Exception(res2.Error.Message);
+                        }
+                    }
                 }
                 else  
                 {
                     logger.Info("Не удалось разобрать сообщение в продукты: {0}", data);
-					if (!res1.IsSucceeded)
-						throw new Exception(res1.Error.Message);
-					else
-						throw new Exception("Не удалось разобрать сообщение в продукты");
-				}
+                    if (!res1.IsSucceeded)
+                        throw new Exception(res1.Error.Message);
+                    else
+                        throw new Exception("Не удалось разобрать сообщение в продукты");
+                }
 
             }
 
@@ -119,16 +122,7 @@ namespace QA.ProductCatalog.SiteSyncWebHost.Controllers
 
         public ActionResult Index()
         {
-            IDpcProductService service = ObjectFactoryBase.Resolve<IDpcProductService>();
-            string data = System.IO.File.ReadAllText("c:\\temp\\tst.xml");
-            var res1 = service.Parse(data);
             return View();
-            
         }
-       
-
-        
-        
-
     }
 }

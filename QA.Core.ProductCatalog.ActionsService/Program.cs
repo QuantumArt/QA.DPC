@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Linq;
 using System.ServiceProcess;
+using QA.Validation.Xaml.Extensions.Rules;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -12,12 +13,12 @@ namespace QA.Core.ProductCatalog.ActionsService
         /// </summary>
         static void Main()
         {
-			AppDomain.CurrentDomain.UnhandledException += (o, e) =>
-			{
-				var log = new EventLog { Source = "ActionsService" };
+            AppDomain.CurrentDomain.UnhandledException += (o, e) =>
+            {
+                var log = new EventLog { Source = "ActionsService" };
 
-				log.WriteEntry(string.Join(" -> ", ((Exception)e.ExceptionObject).Flat().Select(x => x.Message)), EventLogEntryType.Error);
-			};
+                log.WriteEntry(string.Join(" -> ", ((Exception)e.ExceptionObject).Flat().Select(x => x.Message)), EventLogEntryType.Error);
+            };
 
             ServiceBase[] ServicesToRun;
             ServicesToRun = new ServiceBase[] 
@@ -25,6 +26,11 @@ namespace QA.Core.ProductCatalog.ActionsService
                 new ActionsService() 
             };
             ServiceBase.Run(ServicesToRun);
+        }
+
+        internal static RemoteValidationResult ProceedRemoteValidation()
+        {
+            return new RemoteValidationResult();
         }
     }
 }
