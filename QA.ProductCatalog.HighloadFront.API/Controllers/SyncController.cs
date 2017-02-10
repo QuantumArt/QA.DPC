@@ -21,7 +21,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         private ProductManager Manager { get; }
 
 
-        private const int _lockTimeoutInMs = 1000;
+        private const int LockTimeoutInMs = 1000;
 
         private readonly Func<string, string, IndexOperationSyncer> _getSyncer;
         private readonly ITaskService _taskService;
@@ -52,7 +52,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
             Logger.Info($"Получен запрос на обновление/добавление продукта: {id}");
 
-            if (await syncer.EnterSingleCRUDAsync(_lockTimeoutInMs))
+            if (await syncer.EnterSingleCRUDAsync(LockTimeoutInMs))
             {
                 try
                 {
@@ -66,7 +66,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
                 }
             }
             else
-                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {_lockTimeoutInMs} миллисекунд");
+                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {LockTimeoutInMs} миллисекунд");
         }
 
         [Route("{language}/{state}")]
@@ -84,7 +84,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
             Logger.Info("Получен запрос на удаление продукта: " + id);
 
-            if (await syncer.EnterSingleCRUDAsync(_lockTimeoutInMs))
+            if (await syncer.EnterSingleCRUDAsync(LockTimeoutInMs))
             {
                 try
                 {
@@ -98,7 +98,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
                 }
             }
             else
-                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {_lockTimeoutInMs} миллисекунд");
+                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {LockTimeoutInMs} миллисекунд");
         }
 
         [Route("{language}/{state}/reset"), HttpPost]
@@ -124,7 +124,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         }
 
         [Route("task"), HttpGet]
-        public QA.Core.ProductCatalog.ActionsRunnerModel.Task Task(int id)
+        public Core.ProductCatalog.ActionsRunnerModel.Task Task(int id)
         {
             return _taskService.GetTask(id);
         }
