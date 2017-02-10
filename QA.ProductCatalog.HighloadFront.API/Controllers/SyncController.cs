@@ -21,7 +21,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         private ProductManager Manager { get; }
 
 
-        private const int _lockTimeoutInMs = 1000;
+        private const int LockTimeoutInMs = 1000;
 
         private readonly Func<string, string, IndexOperationSyncer> _getSyncer;
         private readonly ITaskService _taskService;
@@ -39,14 +39,20 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         [Route("{language}/{state}")]
         public async Task<HttpResponseMessage> Put([FromBody]PushMessage message, string language, string state)
         {
+
             var syncer = _getSyncer(language, state);
             var product = message.Product;
-
             string id = Manager.GetProductId(message.Product);
+
+            if (!_dataOptions.CanUpdate)
+            {
+                throw new Exception($"Невозможно создать или обновить продукт {id}. Данный экземпляр API предназначен только для чтения.");
+            }
+
 
             Logger.Info($"Получен запрос на обновление/добавление продукта: {id}");
 
-            if (await syncer.EnterSingleCRUDAsync(_lockTimeoutInMs))
+            if (await syncer.EnterSingleCRUDAsync(LockTimeoutInMs))
             {
                 try
                 {
@@ -60,7 +66,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
                 }
             }
             else
-                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {_lockTimeoutInMs} миллисекунд");
+                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {LockTimeoutInMs} миллисекунд");
         }
 
         [Route("{language}/{state}")]
@@ -71,9 +77,14 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
 
             var id = Manager.GetProductId(message.Product);
 
+            if (!_dataOptions.CanUpdate)
+            {
+                throw new Exception($"Невозможно удалить продукт {id}. Данный экземпляр API предназначен только для чтения.");
+            }
+
             Logger.Info("Получен запрос на удаление продукта: " + id);
 
-            if (await syncer.EnterSingleCRUDAsync(_lockTimeoutInMs))
+            if (await syncer.EnterSingleCRUDAsync(LockTimeoutInMs))
             {
                 try
                 {
@@ -87,12 +98,18 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
                 }
             }
             else
-                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {_lockTimeoutInMs} миллисекунд");
+                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {LockTimeoutInMs} миллисекунд");
         }
 
         [Route("{language}/{state}/reset"), HttpPost]
         public HttpResponseMessage Reset(string language, string state)
         {
+
+            if (!_dataOptions.CanUpdate)
+            {
+                throw new Exception($"Невозможно выполнить операцию пересоздания индекса. Данный экземпляр API предназначен только для чтения.");
+            }
+
             var syncer = _getSyncer(language, state);
 
             if (!syncer.AnySlotsLeft)
@@ -107,7 +124,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         }
 
         [Route("task"), HttpGet]
-        public QA.Core.ProductCatalog.ActionsRunnerModel.Task Task(int id)
+        public Core.ProductCatalog.ActionsRunnerModel.Task Task(int id)
         {
             return _taskService.GetTask(id);
         }

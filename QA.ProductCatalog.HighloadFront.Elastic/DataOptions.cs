@@ -2,7 +2,9 @@
 {
     public class DataOptions
     {
-        public ElasticOption[] Elastic { get; set; }    
+        public ElasticOption[] Elastic { get; set; } 
+        
+        public bool CanUpdate { get; set; }   
     }
 
     public class ElasticOption
