@@ -23,6 +23,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected JObject[] Services;
 
+        protected JObject[] ParameterGroups;
+
         protected BaseController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory)
         {
             SearchRepo = searchRepo;
