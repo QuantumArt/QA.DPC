@@ -225,7 +225,7 @@ namespace QA.ProductCatalog.Validation.Validators
             }
         }
 
-        public void CheckRelationProductsDuplicate(ArticleService articleService, int contentProductsId, int[] relationsIds)
+        public void CheckRelationProductsDuplicate(ArticleService articleService, string idFieldName, int contentProductsId, int[] relationsIds)
         {
             var servicesFieldName = GetSettingStringValue(SettingsTitles.SERVICE_FIELD_NAME);
             var relatedProductsIds = articleService.List(contentProductsId, relationsIds).Where(w => !w.Archived).Select(x =>
@@ -234,7 +234,7 @@ namespace QA.ProductCatalog.Validation.Validators
             var duplicateServices = relatedProductsIds.Where(relId => relatedProductsIds.Count(r => r == relId) > 1).Distinct();
             if (duplicateServices.Any())
             {
-                result.AddModelError(GetPropertyName(servicesFieldName),
+                result.AddModelError(GetPropertyName(idFieldName),
                 string.Format(RemoteValidationMessages.DuplicateRelationsProducts, String.Join(", ", duplicateServices)));
             }
         }
