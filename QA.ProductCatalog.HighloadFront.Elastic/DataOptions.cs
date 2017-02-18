@@ -14,5 +14,7 @@
         public string Language { get; set; }
         public string State { get; set; }
         public bool IsDefault { get; set; }
+
+        public int Timeout { get; set; } = 20;
     }
 }

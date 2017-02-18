@@ -75,7 +75,7 @@ namespace QA.ProductCatalog.HighloadFront
 
             var elasticClientMap = elasticOptions.ToDictionary(
                     option => GetElasticKey(option.Language, option.State),
-                    option => GetElasticClient(option.Index, option.Adress)
+                    option => GetElasticClient(option.Index, option.Adress, option.Timeout)
                 );
 
             var syncerMap = elasticOptions.ToDictionary(
@@ -164,7 +164,7 @@ namespace QA.ProductCatalog.HighloadFront
             }
         }
 
-        private IElasticClient GetElasticClient(string index, string address)
+        private IElasticClient GetElasticClient(string index, string address, int timeout)
         {
             var node = new Uri(address);
 
@@ -172,7 +172,9 @@ namespace QA.ProductCatalog.HighloadFront
 
             var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
                             .DefaultIndex(index)
+                            .RequestTimeout(TimeSpan.FromSeconds(timeout))
                             .DisableDirectStreaming()
+                           
                             //.EnableTrace()
                             .ThrowExceptions();
 
