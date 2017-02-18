@@ -44,8 +44,10 @@
       "wwwroot",
       "**/*.cshtml",
       "appsettings.json",
+      "appsettings.*.json",
       "web.config",
-      "nlog.config"
+      "nlog.config",
+      "nlog.*.config"
     ]
   },
 
