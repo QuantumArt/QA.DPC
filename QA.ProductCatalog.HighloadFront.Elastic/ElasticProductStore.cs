@@ -202,8 +202,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                var request = new DeleteRequest("products", type, id);
                 var client = _getClient(language, state);
+
+                var request = new DeleteRequest(client.ConnectionSettings.DefaultIndex, type, id);
+
                 var response = await client.DeleteAsync(request);
 
                 return response.IsValid
