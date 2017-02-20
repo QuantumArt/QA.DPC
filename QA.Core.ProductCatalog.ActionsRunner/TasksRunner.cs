@@ -23,7 +23,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
             _logger = logger;
         }
-       
+
         private readonly object _stateLoker = new object();
 
         public StateEnum State { get; private set; }
@@ -55,6 +55,11 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         /// </summary>
         public int MillisecondsToSleepIfNoTasks = 1000;
 
+        /// <summary>
+        /// пауза между запросами к бд если бд недоступна
+        /// </summary>
+        public int MillisecondsToSleepIfNotAccessDB = 30000;
+
         private readonly Func<string, int, ITask> _taskFactoryMethod;
         private readonly Func<ITaskService> _taskServiceFactoryMethod;
 
@@ -63,7 +68,8 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             if (_logger != null)
                 _logger.Info("Run called");
 
-            if (Debugger.IsAttached) {
+            if (Debugger.IsAttached)
+            {
                 Debugger.Break();
             }
 
@@ -90,8 +96,11 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                         catch (Exception ex)
                         {
                             if (_logger != null)
+                            {
                                 _logger.ErrorException("Error getting task ID to process", ex);
+                            }
 
+                            Thread.Sleep(MillisecondsToSleepIfNotAccessDB);
                             continue;
                         }
 
@@ -115,7 +124,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                 if (task == null)
                                     throw new Exception(string.Format("ITask for task {0} with name '{1}' not found", taskIdToRun, taskFromQueueInfo.Name));
 
-                                var executionContext = new ExecutionContext(this, taskIdToRun.Value);                                
+                                var executionContext = new ExecutionContext(this, taskIdToRun.Value);
                                 task.Run(taskFromQueueInfo.Data, taskFromQueueInfo.Config, taskFromQueueInfo.BinData, executionContext);
 
                                 taskService.ChangeTaskState(taskIdToRun.Value, executionContext.IsCancelled ? ActionsRunnerModel.State.Cancelled : ActionsRunnerModel.State.Done, executionContext.Message);
@@ -130,7 +139,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                 if (ex.InnerException != null)
                                     errMessage += " " + ex.InnerException.Message;
 
-								taskService.ChangeTaskState(taskIdToRun.Value, ActionsRunnerModel.State.Failed, errMessage);
+                                taskService.ChangeTaskState(taskIdToRun.Value, ActionsRunnerModel.State.Failed, errMessage);
 
                                 if (_logger != null)
                                     _logger.ErrorException("Задача {0} не выполнилась", ex, taskIdToRun);
@@ -145,7 +154,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                         if (_logger != null)
                             _logger.ErrorException("Общая ошибка в работе сервиса", ex);
                     }
-                    catch{}
+                    catch { }
 
                     InitStop();
                 }
