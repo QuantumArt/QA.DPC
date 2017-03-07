@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.Infrastructure;
+using System.Configuration;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {
@@ -58,7 +59,9 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         /// <summary>
         /// пауза между запросами к бд если бд недоступна
         /// </summary>
-        public int MillisecondsToSleepIfNotAccessDB = 30000;
+        public int MillisecondsToSleepIfNotAccessDB = string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["MillisecondsToSleepIfNotAccessDB"]) 
+            ? 30000
+            : Convert.ToInt32(ConfigurationManager.AppSettings["MillisecondsToSleepIfNotAccessDB"]);
 
         private readonly Func<string, int, ITask> _taskFactoryMethod;
         private readonly Func<ITaskService> _taskServiceFactoryMethod;
