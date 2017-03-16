@@ -76,7 +76,7 @@
 
     foreach (var param in root.SelectTokens("[?(@.Id)]"))
     {
-        var groupName = param.SelectToken("Group.Title").ToString();
+        var groupName = param.SelectToken("Group.Title")?.ToString();
         var numValue = param.SelectToken("NumValue")?.ToString();
         var oldNumValue = param.SelectToken("OldNumValue")?.ToString();
         var unit = param.SelectToken("Unit.Display")?.ToString() ?? "";

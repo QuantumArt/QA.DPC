@@ -178,6 +178,15 @@ namespace QA.ProductCatalog.ImpactService
         {
             foreach (var linkParameter in linkParameters)
             {
+                // fix errors in definition
+                var pg = linkParameter.Children<JProperty>().FirstOrDefault(n => n.Name == "ParameterGroup");
+                if (pg != null)
+                {
+                    var g = linkParameter.Children<JProperty>().FirstOrDefault(n => n.Name == "Group");
+                    g?.Replace(new JProperty("ProductGroup", g.Value));
+                    pg.Replace(new JProperty("Group", pg.Value));
+                }
+
                 bool processed = false;
                 if (linkParameter["BaseParameter"] != null)
                 {
