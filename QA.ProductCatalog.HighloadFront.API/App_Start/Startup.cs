@@ -175,10 +175,7 @@ namespace QA.ProductCatalog.HighloadFront
                             .DefaultIndex(index)
                             .RequestTimeout(TimeSpan.FromSeconds(timeout))
                             .DisableDirectStreaming()
-                            .EnableTrace(msg =>
-                            {
-                                logger.Log(() => msg, EventLevel.Trace);
-                            }, doTrace)
+                            .EnableTrace(msg => logger.Log(() => msg, EventLevel.Trace), doTrace)
                             //.EnableTrace(msg => Debug.WriteLine(msg), doTrace)
                             .ThrowExceptions();
 

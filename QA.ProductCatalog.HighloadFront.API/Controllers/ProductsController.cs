@@ -16,12 +16,10 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
     public class ProductsController : ApiController
     {
         private ProductManager Manager { get; }
-        private Core.ILogger Logger { get; }
 
-        public ProductsController(ProductManager manager, Core.ILogger logger)
+        public ProductsController(ProductManager manager)
         {
             Manager = manager;
-            Logger = logger;
         }
 
 
@@ -30,7 +28,6 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         [Route("products/{type}"), Route("{language}/{state}/products/{type}")]
         public async Task<HttpResponseMessage> GetByType(string type, string language = null, string state = null)
         {
-            Logger.Log(() => "GetByType", Core.EventLevel.Trace);
             type = type?.TrimStart('@');
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
             var stream = await Manager.GetProductsInTypeStream(type, options, language, state);
