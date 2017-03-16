@@ -49,19 +49,21 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         }
 
         private readonly ILogger _logger;
-
-        /// <summary>
-        /// пауза между запросами к бд если нет задач на исполнение
-        /// иначе если непрерывно запрашивать то этот спам запрос выжрет у бд ресурсы
-        /// </summary>
-        public int MillisecondsToSleepIfNoTasks = 1000;
-
+        
         /// <summary>
         /// пауза между запросами к бд если бд недоступна
         /// </summary>
         public int MillisecondsToSleepIfNotAccessDB = string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["MillisecondsToSleepIfNotAccessDB"]) 
             ? 30000
             : Convert.ToInt32(ConfigurationManager.AppSettings["MillisecondsToSleepIfNotAccessDB"]);
+
+        /// <summary>
+        /// пауза между запросами к бд если нет задач на исполнение
+        /// иначе если непрерывно запрашивать то этот спам запрос выжрет у бд ресурсы
+        /// </summary>
+        public int MillisecondsToSleepIfNoTasks = string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["MillisecondsToSleepIfNoTasks"])
+           ? 1000
+           : Convert.ToInt32(ConfigurationManager.AppSettings["MillisecondsToSleepIfNoTasks"]);
 
         private readonly Func<string, int, ITask> _taskFactoryMethod;
         private readonly Func<ITaskService> _taskServiceFactoryMethod;
