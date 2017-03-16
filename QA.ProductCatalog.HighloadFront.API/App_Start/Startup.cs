@@ -71,11 +71,14 @@ namespace QA.ProductCatalog.HighloadFront
 
             builder.Configure<SonicElasticStoreOptions>(_config.GetSection("sonicElasticStore"));
 
+            ILogger logger = new NLogLogger("NLog.config");
+            builder.RegisterInstance<ILogger>(logger);
+
             var elasticOptions = GetOptions<DataOptions>("Data").Elastic;
 
             var elasticClientMap = elasticOptions.ToDictionary(
                     option => GetElasticKey(option.Language, option.State),
-                    option => GetElasticClient(option.Index, option.Adress, option.Timeout)
+                    option => GetElasticClient(option.Index, option.Adress, option.Timeout, logger, option.DoTrace)
                 );
 
             var syncerMap = elasticOptions.ToDictionary(
@@ -114,8 +117,6 @@ namespace QA.ProductCatalog.HighloadFront
             builder.Register<Func<string, int, ITask>>(c => { var reindexTask = c.ResolveNamed<ITask>("ReindexAllTask"); return (key, userId) => key == "ReindexAllTask" ? reindexTask : null; }).SingleInstance();
 
             builder.RegisterType<ReindexAllTask>().Named<ITask>("ReindexAllTask");
-
-            builder.RegisterInstance<ILogger>(new NLogLogger("NLog.config"));
 
             builder.RegisterScoped<IDpcService, DpcServiceClient>();
 
@@ -164,7 +165,7 @@ namespace QA.ProductCatalog.HighloadFront
             }
         }
 
-        private IElasticClient GetElasticClient(string index, string address, int timeout)
+        private IElasticClient GetElasticClient(string index, string address, int timeout, ILogger logger, bool doTrace)
         {
             var node = new Uri(address);
 
@@ -174,8 +175,11 @@ namespace QA.ProductCatalog.HighloadFront
                             .DefaultIndex(index)
                             .RequestTimeout(TimeSpan.FromSeconds(timeout))
                             .DisableDirectStreaming()
-                           
-                            //.EnableTrace()
+                            .EnableTrace(msg =>
+                            {
+                                logger.Log(() => msg, EventLevel.Trace);
+                            }, doTrace)
+                            //.EnableTrace(msg => Debug.WriteLine(msg), doTrace)
                             .ThrowExceptions();
 
             return new ElasticClient(settings);

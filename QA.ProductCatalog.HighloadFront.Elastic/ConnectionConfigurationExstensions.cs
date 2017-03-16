@@ -1,37 +1,43 @@
-﻿using System.Diagnostics;
-using System.Text;
+﻿using System.Text;
 using Nest;
+using System;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public static class ConnectionConfigurationExstensions
     {
-        public static TConnectionSettings EnableTrace<TConnectionSettings>(this TConnectionSettings settings)
+        public static TConnectionSettings EnableTrace<TConnectionSettings>(this TConnectionSettings settings, Action<string> write, bool doTrace)
             where TConnectionSettings : ConnectionSettingsBase<TConnectionSettings>
         {
-            return settings.OnRequestCompleted(details =>
-               {
-                   Write("### ES Uri ###");
-                   Write(details.HttpMethod.ToString());
-                   Write(details.Uri.ToString());
-                   Write("### ES REQEUST ###");
-                   if (details.RequestBodyInBytes != null) Write(details.RequestBodyInBytes);
-                   Write("### ES RESPONSE ###");
-                   if (details.ResponseBodyInBytes != null) Write(details.ResponseBodyInBytes);
-               })
-               .PrettyJson();
+            if (doTrace)
+            {
+                return settings.OnRequestCompleted(details =>
+                {
+                    var sb = new StringBuilder();
+
+                    sb.AppendLine("### ES Uri ###");
+                    sb.AppendLine(details.HttpMethod.ToString());
+                    sb.AppendLine(details.Uri.ToString());
+                    sb.AppendLine("### ES REQEUST ###");
+                    if (details.RequestBodyInBytes != null) WriteBinary(details.RequestBodyInBytes, sb);
+                    sb.AppendLine("### ES RESPONSE ###");
+                    if (details.ResponseBodyInBytes != null) WriteBinary(details.ResponseBodyInBytes, sb);
+
+                    write(sb.ToString());
+                })
+                   .PrettyJson();
+            }
+            else
+            {
+                return settings;
+            }
         }
 
-        private static void Write(string text)
-        {
-            Debug.WriteLine(text);
-        }
-
-        private static void Write(byte[] data)
+        private static void WriteBinary(byte[] data, StringBuilder sb)
         {
             if (data != null && data.Length > 0)
             {
-                Write(Encoding.UTF8.GetString(data));
+                sb.AppendLine(Encoding.UTF8.GetString(data));
             }
         }
     }

@@ -25,7 +25,8 @@
       "Alias",
       "ForisID"
     ],
-    "CreationDateField": "UpdateDate"
+    "CreationDateField": "UpdateDate",
+    "ValueSeparator":  ","
   },
 
   "Harvester": {
@@ -39,13 +40,22 @@
         "Index": "products",
         "Language": "invariant",
         "State": "live",
-        "IsDefault":  true 
+        "IsDefault": true,
+        "DoTrace": true
       },
       {
         "Adress": "http://mscnosql01:9200",
         "Index": "products-stage",
         "Language": "invariant",
-        "State": "stage"
+        "State": "stage",
+        "DoTrace": true
+      },
+      {
+        "Adress": "http://mscnosql02:9200",
+        "Index": "conversations",
+        "Language": "invariant",
+        "State": "bot",
+        "DoTrace": true
       }
     ]
   },
