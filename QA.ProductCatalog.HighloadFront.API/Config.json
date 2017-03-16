@@ -45,10 +45,25 @@
       },
       {
         "Adress": "http://mscnosql01:9200",
+        "Index": "products",
+        "Language": "invariant",
+        "State": "live-trace",
+        "IsDefault": true,
+        "DoTrace": true
+      },
+      {
+        "Adress": "http://mscnosql01:9200",
         "Index": "products-stage",
         "Language": "invariant",
         "State": "stage",
         "DoTrace": false
+      },
+      {
+        "Adress": "http://mscnosql01:9200",
+        "Index": "products-stage",
+        "Language": "invariant",
+        "State": "stage-trace",
+        "DoTrace": true
       }
     ]
   },
