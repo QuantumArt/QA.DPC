@@ -19,6 +19,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         IProductStreamStore,
         IProductSearchStore
     {
+        private const string BaseSeparator = ",";
+        private const string ProductIdField = "ProductId";
+
         private IElasticClient _client { get; }
         private Func<string, string, IElasticClient> _getClient { get; }
 
@@ -300,38 +303,104 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private QueryContainer Filter(QueryContainer query, ProductsOptions productsOptions)
         {
-
-
             if (productsOptions == null) return query;
 
             if (productsOptions.Filters != null)
             {
                 query = productsOptions.Filters.Where(f => f.Item1 != Options.TypePath).Aggregate(query, (current, sf) =>
                 {
+                    var field = sf.Item1;
+                    var value = sf.Item2;
+                    var separator = Options.ValueSeparator;
+                    var isBaseField = field == Options.IdPath || field == ProductIdField;
 
-                    if ((sf.Item1 == Options.IdPath || sf.Item1 == "ProductId") && sf.Item2.Contains(","))
+                    if (isBaseField)
                     {
-                        current = current & +new TermsQuery
+
+                        if (value.Contains(BaseSeparator))
                         {
-                            Field = sf.Item1,
-                            Terms = sf.Item2.Split(',')
-                        };
-                    }
+                            var values = value.Split(new string[] { BaseSeparator }, StringSplitOptions.None);
+
+                            current = current & +new TermsQuery
+                            {
+                                Field = field,
+                                Terms = values
+                            };
+                        }
+                        else if (!string.IsNullOrWhiteSpace(separator) && value.Contains(separator))
+                        {
+                            var values = value.Split(new string[] { separator }, StringSplitOptions.None);
+
+                            current = current & +new TermsQuery
+                            {
+                                Field = field,
+                                Terms = values
+                            };
+                        }
+                        else
+                        {
+                            current = current & +new TermQuery
+                            {
+                                Field = field,
+                                Value = value
+                            };
+                        }
+                    }                 
                     else
-                    {
-                        current =
-                        IsNotAnalyzedField(sf.Item1) ?
-                        current & +new TermQuery
+                    {                        
+                        var notAnalized = IsNotAnalyzedField(field);
+                        var separated = !string.IsNullOrWhiteSpace(separator) && value.Contains(separator);
+                        var values = new string[0];
+
+                        if (separated)
                         {
-                            Field = sf.Item1,
-                            Value = sf.Item2
-                        } :
-                        current & +new MatchPhraseQuery
+                            values = value.Split(new string[] { separator }, StringSplitOptions.None);
+                        }
+
+                        if (notAnalized)
                         {
-                            Field = sf.Item1,
-                            Query = sf.Item2,
-                            Operator = Operator.And
-                        };
+                            if (separated)
+                            {
+                                current = current & +new TermsQuery
+                                {
+                                    Field = field,
+                                    Terms = values
+                                };
+                            }
+                            else
+                            {
+                                current = current & +new TermQuery
+                                {
+                                    Field = field,
+                                    Value = value
+                                };
+                            }
+                        }
+                        else
+                        {
+                            if (separated)
+                            {
+                                current = current & +new BoolQuery
+                                {
+                                    Should = values.Select(v => (QueryContainer)
+                                        new MatchPhraseQuery
+                                        {
+                                            Field = field,
+                                            Query = v,
+                                            Operator = Operator.And
+                                        })
+                                };
+                            }
+                            else
+                            {
+                                current = current & +new MatchPhraseQuery
+                                {
+                                    Field = field,
+                                    Query = value,
+                                    Operator = Operator.And
+                                };
+                            }
+                        }                      
                     }
 
                     return current;

@@ -12,5 +12,6 @@
         public string[] Types { get; set; }
         public string[] NotAnalyzedFields { get; set; }
         public string CreationDateField { get; set; }
+        public string ValueSeparator { get; set; }
     }
 }
