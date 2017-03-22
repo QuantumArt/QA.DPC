@@ -178,7 +178,7 @@ namespace QA.ProductCatalog.ImpactService
         {
             foreach (var linkParameter in linkParameters)
             {
-                // fix errors in definition
+                // fix name mismatching in definition
                 var pg = linkParameter.Children<JProperty>().FirstOrDefault(n => n.Name == "ParameterGroup");
                 if (pg != null)
                 {

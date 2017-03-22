@@ -29,9 +29,12 @@ namespace QA.ProductCatalog.ImpactService
 
             var useTariffData = useTariffDataInRegion || modifiersRoot != null && modifiersRoot.SelectTokens("[?(@.Alias)].Alias").Select(n => n.ToString()).ToArray().Contains("UseTariffData");
 
+            var scaleLinkParameters = (JArray)link.SelectToken("Parameters");
+
+            if (scaleLinkParameters == null) return useTariffData;
+
             if (!useTariffData)
             {
-                var scaleLinkParameters = (JArray)link.SelectToken("Parameters");
                 var scaleParameters = (JArray)scale.SelectToken("Parameters");
 
 
@@ -46,6 +49,11 @@ namespace QA.ProductCatalog.ImpactService
                     t.Remove();
                 }
 
+            }
+            else
+            {
+                var tariffParameters = (JArray)product.SelectToken("Parameters");
+                MergeLinkImpact(tariffParameters, scaleLinkParameters);
             }
 
             return useTariffData;

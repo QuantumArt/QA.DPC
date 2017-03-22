@@ -57,7 +57,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 }
                 catch (Exception ex)
                 {
-                    result = BadRequest($"Exception occurs while merging scale and tariff: {ex.Message}");
+                    var message = $"Exception occurs while merging scale and tariff: {ex.Message}";
+                    Logger.LogError(1, ex, message);
+                    result = BadRequest(message);
                 }
 
             }
@@ -76,7 +78,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Exception occurs while getting scales: {ex.Message}");
+                var message = $"Exception occurs while getting scales: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
             }
 
             Scale = _calc.FilterScale(region, scales);

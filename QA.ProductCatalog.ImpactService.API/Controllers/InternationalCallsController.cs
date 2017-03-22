@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         public InternationalCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory)
         {
-            _calc = new InternationalCallsCalclulator();
+            _calc = new InternationalCallsCalclulator(ConfigurationOptions.ConsolidateCallGroupsForIcin);
         }
 
         [HttpGet("{id}")]

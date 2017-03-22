@@ -88,7 +88,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Exception occurs while calculating impact: {ex.Message}");
+                var message = $"Exception occurs while calculating impact: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
             }
             return null;
         }

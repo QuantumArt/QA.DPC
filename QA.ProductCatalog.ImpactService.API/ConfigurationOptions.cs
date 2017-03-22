@@ -13,6 +13,8 @@ namespace QA.ProductCatalog.ImpactService.API
 
         public ElasticIndex[] ElasticIndexes { get; set; }
 
+        public bool ConsolidateCallGroupsForIcin { get; set; }
+
         public string ElasticBaseAddress { get; set; }
 
         public int RootRegionId { get; set; }

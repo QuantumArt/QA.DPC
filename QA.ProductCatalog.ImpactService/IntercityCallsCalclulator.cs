@@ -7,8 +7,8 @@ namespace QA.ProductCatalog.ImpactService
 {
     public class IntercityCallsCalculator : BaseCallsImpactCalculator
     {
-        public IntercityCallsCalculator()
-            : base("UseForIntercityCallsCalculator", "CalculateInIntercityCalls", "ServicesOnTariff", true)
+        public IntercityCallsCalculator(bool consolidateCallGroups = false)
+             : base("UseForIntercityCallsCalculator", "CalculateInInterCityCalls", "ServicesOnTariff", true, consolidateCallGroups)
         {
 
         }
@@ -69,10 +69,14 @@ namespace QA.ProductCatalog.ImpactService
 
             regionParams = regionParams.Union(markedParams.Where(n => n["Direction"] == null)).ToArray();
 
+            regionParams = AppendParents(root, regionParams);
+
+            ChangeGroupNamesForIcin(regionParams);
+
             return regionParams;
         }
 
-        private static string GenerateNewTitle(JToken p)
+        protected override string GenerateNewTitle(JToken p)
         {
             var title = p["Title"].ToString();
             var roamingTitle = p["TitleForIcin"]?.ToString();

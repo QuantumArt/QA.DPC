@@ -43,7 +43,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Exception occurs while filtering parameters: {ex.Message}");
+                var message = $"Exception occurs while filtering parameters: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
             }
             return null;
         }
@@ -56,7 +58,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Exception occurs while filtering parameters: {ex.Message}");
+                var message = $"Exception occurs while filtering parameters: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
             }
             return null;
         }
@@ -69,7 +73,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest($"Exception occurs while filtering services: {ex.Message}");
+                var message = $"Exception occurs while filtering services: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
             }
             return null;
         }

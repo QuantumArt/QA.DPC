@@ -7,10 +7,10 @@ namespace QA.ProductCatalog.ImpactService
 {
     public class InternationalCallsCalclulator : BaseCallsImpactCalculator
     {
-        public InternationalCallsCalclulator()
-            : base("UseForInternationalCallsCalculator", "CalculateInInternationalCalls", "ServicesOnTariff", true)
+        public InternationalCallsCalclulator(bool consolidateCallGroups = false)
+             : base("UseForInternationalCallsCalculator", "CalculateInInternationalCalls", "ServicesOnTariff", true, consolidateCallGroups)
         {
-
+            
         }
 
         public override IEnumerable<JToken> FilterProductParameters(JArray root, string countryCode)
@@ -68,17 +68,14 @@ namespace QA.ProductCatalog.ImpactService
 
             countryParams = countryParams.Union(markedParams.Where(n => n["Direction"] == null)).ToArray();
 
-            return countryParams;
-        }
+            countryParams = AppendParents(root, countryParams);
 
-        private static string GenerateNewTitle(JToken p)
-        {
-            var newTitle = p["Title"].ToString();
-            var roamingTitle = p["TitleForIcin"]?.ToString();
-            var pos = newTitle.IndexOf(" (", StringComparison.InvariantCulture);
-            var bpTitle = p.SelectToken("BaseParameter.Title").ToString();
-            newTitle = roamingTitle ?? ((pos == -1) ? bpTitle : bpTitle + newTitle.Substring(pos));
-            return newTitle;
+            СonsolidateGroupForCalls(countryParams);
+
+            ChangeGroupNamesForIcin(countryParams);
+
+
+            return countryParams;
         }
 
         private static int CountDirectionCountries(JToken countryParam)

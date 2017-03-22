@@ -20,7 +20,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         public IntercityCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory): base(searchRepo, elasticIndexOptionsAccessor, loggerFactory)
         {
-            _calc = new IntercityCallsCalculator();
+            _calc = new IntercityCallsCalculator(ConfigurationOptions.ConsolidateCallGroupsForIcin);
         }
 
         protected override BaseImpactCalculator Calculator => _calc;
