@@ -68,18 +68,5 @@ namespace QA.ProductCatalog.ImpactService
             }
 
         }
-
-        protected JToken[] AppendParents(JArray root, JToken[] inParams)
-        {
-            var countryParamIds = new HashSet<int>(inParams.Select(n => (int)n["Id"]));
-            var parentParamIds = new HashSet<int>(inParams
-                .Select(n => n.SelectToken("Parent.Id"))
-                .Where(n => n != null)
-                .Select(n => (int)n)
-            );
-
-            var parentParams = root.Where(n => parentParamIds.Contains((int)n["Id"]) && !countryParamIds.Contains((int)n["Id"])).ToArray();
-            return inParams.Union(parentParams).ToArray();
-        }
     }
 }
