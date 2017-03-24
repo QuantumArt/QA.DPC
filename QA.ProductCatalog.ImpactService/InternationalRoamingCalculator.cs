@@ -51,7 +51,7 @@ namespace QA.ProductCatalog.ImpactService
             {
                 var dir = p.ExtractDirection();
                 dir.Zone = countryCode;
-                var specialExists = FindByKey(option.SelectToken("Parameters"), dir.GetKey()).Any();
+                var specialExists = FindByKey(option.SelectToken("Parameters"), dir.GetKey(), new DirectionExclusion(new [] {"Unlimited"})).Any();
                 if (!specialExists)
                     preservedParams.Add((int)p["Id"], p);
             }

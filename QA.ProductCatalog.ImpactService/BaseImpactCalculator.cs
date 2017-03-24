@@ -227,7 +227,7 @@ namespace QA.ProductCatalog.ImpactService
 
             foreach (var param in removeParameters)
             {
-                var jTokens = FindByKey(parameters, param.ExtractDirection().GetKey()).ToArray();
+                var jTokens = FindByKey(parameters, param.ExtractDirection().GetKey(), false).ToArray();
                 foreach (var jToken in jTokens)
                 {
                     jToken.Remove();
@@ -255,88 +255,142 @@ namespace QA.ProductCatalog.ImpactService
         private void AppendParameter(JArray parameters, JToken param)
         {
             var key = param.ExtractDirection().GetKey();
-            var clearTariffDirection = !String.IsNullOrEmpty(key) && FindByKey(parameters, key).Any();
+            var clearTariffDirection = !String.IsNullOrEmpty(key) && FindByKey(parameters, key, false).Any();
             parameters.Add(param.PrepareForAdd(clearTariffDirection));
         }
 
         private void ChangeParameters(JToken parametersRoot, IEnumerable<JToken> optionParameters, List<JToken> parametersToAdd)
         {
-            foreach (var optionParam in optionParameters.Where(n => !n.SelectTokens("BaseParameterModifiers.[?(@.Alias)].Alias").Any(m => TariffDirection.SpecialModifiers.Contains(m.ToString()))))
+            foreach (var optionParam in optionParameters)
             {
+
                 var modifiers = new HashSet<string>(optionParam.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()));
-                if (!modifiers.Contains("Append"))
+                var bpModifiers = new HashSet<string>(optionParam.SelectTokens("BaseParameterModifiers.[?(@.Alias)].Alias").Select(n => n.ToString()));
+                var forcedInfluence = modifiers.Contains("ForcedInfluence");
+                if (modifiers.Contains("Append") || bpModifiers.Any(n => TariffDirection.SpecialModifiers.Contains(n)) && !forcedInfluence)
+                    continue;
+
+                var optionEx = GetOptionDirectionExclusion(bpModifiers, modifiers);
+                var key = optionParam.ExtractDirection().GetKey(optionEx);
+
+                if (string.IsNullOrEmpty(key))
+                    continue;
+
+
+                var tariffEx = GetTariffDirectionExclusion(bpModifiers, modifiers);
+                var parametersToProcess = GetParametersToProcess(parametersRoot, key, tariffEx);
+                var anyParameterProcessed = false;
+
+                foreach (var param in parametersToProcess)
                 {
-                    var key = optionParam.ExtractDirection().GetKey();
-                    var parametersToProcess = FindByKey(parametersRoot, key).ToArray();
-                    var appendOrReplace = modifiers.Contains("AppendOrReplace");
+                    if (RestrictedImpact && !param.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()).ToArray().Contains(ParameterModifierName))
+                        continue;
+                
+                    anyParameterProcessed = true;
+                
+                    var paramHasNumValue = param["NumValue"] != null;
                     var optionHasNumValue = optionParam["NumValue"] != null;
-                    var optionHasValue = optionParam["Value"] != null;
-                    var anyParameterProcessed = false;
-                    foreach (var param in parametersToProcess)
+
+                    var isEqualUnits = param.SelectToken("Unit.Id")?.ToString() == optionParam.SelectToken("Unit.Id")?.ToString();
+                
+                    var skipProcessing = paramHasNumValue && optionHasNumValue && (decimal)param["NumValue"] < (decimal)optionParam["NumValue"] && !forcedInfluence;
+                
+                    if (optionHasNumValue && !modifiers.Contains("DoNotChangeValue"))
                     {
-                        if (RestrictedImpact && !param.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()).ToArray().Contains(ParameterModifierName))
-                            continue;
-
-                        anyParameterProcessed = true;
-
-                        var productHasNumValue = param["NumValue"] != null;
-                        var skipProcessing = productHasNumValue && optionHasNumValue && (decimal)param["NumValue"] < (decimal)optionParam["NumValue"] && !modifiers.Contains("ForcedInfluence");
-
-                        if (optionHasNumValue && !modifiers.Contains("DoNotChangeValue"))
+                        if (modifiers.Contains("Add") && paramHasNumValue && isEqualUnits)
                         {
-                            if (modifiers.Contains("Add") && productHasNumValue)
-                            {
-                                param["NumValue"] = (decimal)optionParam["NumValue"] + (decimal)param["NumValue"];
-                                param.SetChanged();
-                            }
-                            else if (modifiers.Contains("Discount"))
+                            param["NumValue"] = (decimal)optionParam["NumValue"] + (decimal)param["NumValue"];
+                            param.SetChanged();
+                        }
+                        else if (modifiers.Contains("Discount") && isEqualUnits)
+                        {
+                            if (param["OldNumValue"] == null)
+                                param["OldNumValue"] = param["NumValue"];
+                            param["NumValue"] = (decimal)param["NumValue"] *
+                                                (1 - (decimal)optionParam["NumValue"]);
+                            param.SetChanged();
+                
+                        }
+                        else
+                        {
+                            if (!skipProcessing)
                             {
                                 if (param["OldNumValue"] == null)
                                     param["OldNumValue"] = param["NumValue"];
-                                param["NumValue"] = (decimal)param["NumValue"] *
-                                                    (1 - (decimal)optionParam["NumValue"]);
+                                param["NumValue"] = optionParam["NumValue"];
                                 param.SetChanged();
-
-                            }
-                            else
-                            {
-                                if (!skipProcessing)
-                                {
-                                    if (param["OldNumValue"] == null)
-                                        param["OldNumValue"] = param["NumValue"];
-                                    param["NumValue"] = optionParam["NumValue"];
-                                    param.SetChanged();
-
-                                }
+                
                             }
                         }
-
-                        if (optionHasValue && !modifiers.Contains("DoNotChangeValue"))
-                        {
-                            param["Value"] = optionParam["Value"];
-                            param.SetChanged();
-
-                        }
-
-                        if (modifiers.Contains("ChangeName"))
-                        {
-                            param["Title"] = optionParam["Title"];
-                            param.SetChanged();
-
-                        }
-
-
-
                     }
-
-                    if (!anyParameterProcessed && appendOrReplace)
-                        parametersToAdd.Add(optionParam);
-
-
+                
+                    if (optionParam["Value"] != null && !modifiers.Contains("DoNotChangeValue"))
+                    {
+                        param["Value"] = optionParam["Value"];
+                        param.SetChanged();
+                
+                    }
+                
+                    if (modifiers.Contains("ChangeName"))
+                    {
+                        param["Title"] = optionParam["Title"];
+                        param.SetChanged();
+                
+                    }
+                
+                
+                
                 }
+                
+                if (!anyParameterProcessed && modifiers.Contains("AppendOrReplace"))
+                        parametersToAdd.Add(optionParam);
             }
 
 
+        }
+
+        private JToken[] GetParametersToProcess(JToken parametersRoot, string key, DirectionExclusion ex)
+        {
+            var parametersToProcess = FindByKey(parametersRoot, key, ex).ToArray();
+
+            if (key == TariffDirection.FeeKey)
+            {
+                var cityParams = FindByKey(parametersRoot, TariffDirection.CityFeeKey, false);
+                var federalParams = FindByKey(parametersRoot, TariffDirection.FederalFeeKey, false);
+                parametersToProcess = parametersToProcess.Union(cityParams).Union(federalParams).ToArray();
+            }
+            return parametersToProcess;
+        }
+
+        private static DirectionExclusion GetTariffDirectionExclusion(HashSet<string> bpModifiers, HashSet<string> modifiers)
+        {
+            var ex = new DirectionExclusion(new[] {"OverPackage"});
+
+            if (bpModifiers.Contains("ZoneExpansion"))
+            {
+                ex.Modifiers.Add("WithinPackage");
+                ex.Zone = true;
+            }
+
+            if (modifiers.Contains("ForceWithAdditionalInfluence") || modifiers.Contains("ForcedInfluence"))
+            {
+                ex.Modifiers.Add("WithAdditionalOption");
+                ex.Modifiers.Add("WithAdditionalPackage");
+            }
+            return ex;
+        }
+
+        private static DirectionExclusion GetOptionDirectionExclusion(HashSet<string> bpModifiers, HashSet<string> modifiers)
+        {
+            var ex = new DirectionExclusion(null);
+
+            if (bpModifiers.Contains("ZoneExpansion"))
+            {
+                ex.Modifiers.Add("ZoneExpansion");
+                ex.Zone = true;
+            }
+
+            return ex;
         }
 
         private void ProcessTarifficationSteps(JToken productParametersRoot, IEnumerable<JToken> optionParameters)
@@ -355,7 +409,7 @@ namespace QA.ProductCatalog.ImpactService
                 var collection = c[key];
                 if (collection.Count >= 2)
                 {
-                    var targetParams = FindByKey(productParametersRoot, key).ToArray();
+                    var targetParams = FindByKey(productParametersRoot, key, false).ToArray();
                     if (targetParams.Any())
                     {
                         var targetParam = targetParams[0];
@@ -431,13 +485,23 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
 
-        public IEnumerable<JToken> FindByKey(JToken parametersRoot, string key, bool excludeSpecial = true, bool excludeZone = false)
+        public IEnumerable<JToken> FindByKey(JToken parametersRoot, string key, bool excludeSpecial = false,
+            bool excludeZone = false)
+        {
+            return FindByKey(parametersRoot, key,
+                new DirectionExclusion((excludeSpecial) ? TariffDirection.SpecialModifiers : null)
+                {
+                    Zone = excludeZone
+                });
+        }
+
+        public IEnumerable<JToken> FindByKey(JToken parametersRoot, string key, DirectionExclusion exclusion)
         {
             var defaultResult = Enumerable.Empty<JToken>();
             if (!string.IsNullOrEmpty(key) && parametersRoot != null)
             {
                 var abc =
-                    parametersRoot.SelectTokens("[?(@.BaseParameter)]").Where(n => n.ExtractDirection().GetKey(excludeSpecial, excludeZone) == key);
+                    parametersRoot.SelectTokens("[?(@.BaseParameter)]").Where(n => n.ExtractDirection().GetKey(exclusion) == key);
 
 
 

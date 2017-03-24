@@ -18,8 +18,7 @@ namespace QA.ProductCatalog.ImpactService
 
         public static HashSet<string> SpecialModifiers { get; } = new HashSet<string>(new[]
         {
-            "WithinPackage", "OverPackage", "FirstStep", "SecondStep", "ThirdStep", "FourthStep", "FifthStep",
-            "ZoneExpansion", "Unlimited"
+            "WithinPackage", "OverPackage", "FirstStep", "SecondStep", "ThirdStep", "FourthStep", "FifthStep"
         });
 
         public TariffDirection(string baseParameter, string zone, string direction, string[] baseParameterModifiers)
@@ -30,25 +29,36 @@ namespace QA.ProductCatalog.ImpactService
             BaseParameterModifiers = baseParameterModifiers?.OrderBy(n => n).ToArray();
         }
 
+        public static string FeeKey = new TariffDirection("SubscriptionFee", null, null, null).GetKey();
+
+        public static string FederalFeeKey = new TariffDirection("SubscriptionFee", null, null, new[] { "Federal" }).GetKey();
+
+        public static string CityFeeKey = new TariffDirection("SubscriptionFee", null, null, new[] { "City" }).GetKey();
+
         public string GetKey(bool excludeSpecial = true, bool excludeZone = false)
+        {
+            return GetKey(new DirectionExclusion((excludeSpecial) ? SpecialModifiers : null) {Zone = excludeZone});
+        }
+
+        public string GetKey(DirectionExclusion exclusion)
         {
             var sb = new StringBuilder();
             if (BaseParameter != null)
             {
                 sb.Append($"BaseParameter: {BaseParameter}; ");
-                var zone = (excludeZone) ? String.Empty : (Zone ?? string.Empty);
+                var zone = (exclusion.Zone) ? String.Empty : (Zone ?? string.Empty);
                 sb.Append($"Zone: {zone}; ");
-                sb.Append($"Direction: {Direction ?? string.Empty}; ");
+                var direction = (exclusion.Direction) ? String.Empty : (Direction ?? string.Empty);
+                sb.Append($"Direction: {direction}; ");
                 IEnumerable<string> modifiers = BaseParameterModifiers ?? Enumerable.Empty<string>();
-                if (excludeSpecial)
-                    modifiers = modifiers.Where(n => !SpecialModifiers.Contains(n));
+                if (exclusion.Modifiers != null)
+                    modifiers = modifiers.Where(n => !exclusion.Modifiers.Contains(n));
                 sb.Append($"BaseParameterModifiers: {string.Join(",", modifiers)};");
 
             }
             return sb.ToString();
 
         }
-
 
     }
 }

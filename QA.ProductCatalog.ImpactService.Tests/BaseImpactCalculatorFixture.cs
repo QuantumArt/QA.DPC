@@ -435,7 +435,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var root = tariff.SelectToken("Parameters");
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
-            var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
+            var result = calculator.FindByKey(root, direction.GetKey(), true).ToArray();
             Assert.That(result.Length, Is.EqualTo(2));
             Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(0));
             Assert.That((decimal)result[1]["NumValue"], Is.EqualTo(85));
@@ -457,7 +457,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var root = tariff.SelectToken("Parameters");
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
-            var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
+            var result = calculator.FindByKey(root, direction.GetKey(), true).ToArray();
             Assert.That(result.Length, Is.EqualTo(3));
             Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
             Assert.That((decimal)result[1]["NumValue"], Is.EqualTo(45));

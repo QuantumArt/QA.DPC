@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="BaseCallsImpactCalculator.cs" />
     <Compile Include="BaseImpactCalculator.cs" />
+    <Compile Include="DirectionExclusion.cs" />
     <Compile Include="IntercityCallsCalclulator.cs" />
     <Compile Include="InternationalCallsCalclulator.cs" />
     <Compile Include="InternationalRoamingCalculator.cs" />

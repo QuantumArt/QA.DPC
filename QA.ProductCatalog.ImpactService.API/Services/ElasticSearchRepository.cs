@@ -38,6 +38,12 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return query;
         }
 
+        private string GetRegionQuery(string regionAlias)
+        {
+            return $@"{{ _source: [""Region.Id""], ""query"" : {{ ""term"" : {{ ""Region.Alias"" : ""{regionAlias}"" }}}}}}";
+        }
+
+        
         public async Task<JObject[]> GetProducts(int[] productIds, SearchOptions options)
         {
             var result = await GetContent(GetJsonQuery(productIds), options);
@@ -67,34 +73,53 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var regionTagIds = productIds.Select(n => 0 - n).ToArray();
             var tagResult = await GetContent(GetJsonQuery(regionTagIds), options);
-            var tags =
-                JObject.Parse(tagResult)
-                    .SelectTokens(_sourceQuery)
+            var documents = JObject.Parse(tagResult).SelectTokens(_sourceQuery).ToArray();
+            var tags = documents
                     .SelectMany(n => (JArray)n.SelectToken("RegionTags"))
                     .ToArray();
+
+            var homeRegionId = await GetHomeRegionId(options);
+
             var tagsToProcess = new Dictionary<string, string>();
 
             foreach (var tag in tags)
             {
                 var title = tag["Title"].ToString();
+
                 if (tagsToProcess.ContainsKey(title)) continue;
-                string value;
-                if (string.IsNullOrEmpty(options.HomeRegion))
-                {
-                    value = tag["Values"][0]["Value"].ToString();
-                }
-                else
-                {
-                    value =
-                        tag
-                            .SelectTokens("[?(@.Title]")
-                            .SingleOrDefault(n => ((JArray) n["RegionsId"]).Any(m => m.ToString() == options.HomeRegion))?
-                            .ToString();
-                }
-                value = JsonConvert.ToString(value);
+
+                var value = GetTagValue(homeRegionId, tag);
+
                 tagsToProcess.Add(title, value.Substring(1, value.Length - 2));
             }
+
             return tagsToProcess;
+        }
+
+        private async Task<int> GetHomeRegionId(SearchOptions options)
+        {
+            if (options.HomeRegion == null) return 0;
+
+            var newOptions = options.Clone();
+            newOptions.TypeName = "RoamingRegion";
+            var regionResult = await GetContent(GetRegionQuery(newOptions.HomeRegion), newOptions);
+            var homeRegionIdToken = JObject.Parse(regionResult)
+                .SelectTokens(_sourceQuery)?.FirstOrDefault()?.SelectToken("Region.Id");
+            return homeRegionIdToken != null ? (int) homeRegionIdToken : 0;
+        }
+
+        private static string GetTagValue(int homeRegionId, JToken tag)
+        {
+            string value = null;
+            if (homeRegionId != 0)
+            {
+                var values = tag["Values"].SelectTokens("[?(@.Value)]");
+                value = values.FirstOrDefault(n => ((JArray)n["RegionsId"]).Select(m => (int)m).Contains(homeRegionId))
+                   ?.SelectToken("Value")?.ToString();
+                     
+            }
+            value = JsonConvert.ToString(value ?? tag["Values"][0]["Value"].ToString());
+            return value;
         }
 
         public async Task<string> GetContent(string json, SearchOptions options)
@@ -103,10 +128,15 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             using (var client = new HttpClient())
             {
                 var address = $"{options.BaseAddress}/{options.IndexName}/_search";
+                if (options.TypeName != null)
+                {
+                    address = $"{options.BaseAddress}/{options.IndexName}/{options.TypeName}/_search";
+                }
                 client.BaseAddress = new Uri(address);
                 client.DefaultRequestHeaders.Accept.Clear();
                 var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await client.PostAsync(address, httpContent);
+             
                 if (response.IsSuccessStatusCode)
                 {
                     result = await response.Content.ReadAsStringAsync();
