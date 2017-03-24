@@ -9,7 +9,7 @@ namespace QA.ProductCatalog.ImpactService
 {
     public abstract class BaseCallsImpactCalculator : BaseImpactCalculator
     {
-        protected BaseCallsImpactCalculator(string parameterModifierName, string linkModifierName, string linkName, bool restrictedImpact, bool consolidateCallGroups) : base(parameterModifierName, linkModifierName, linkName, restrictedImpact)
+        protected BaseCallsImpactCalculator(string parameterModifierName, string linkModifierName, string linkName, bool consolidateCallGroups) : base(parameterModifierName, linkModifierName, linkName)
         {
             ConsolidateCallGroups = consolidateCallGroups;
         }

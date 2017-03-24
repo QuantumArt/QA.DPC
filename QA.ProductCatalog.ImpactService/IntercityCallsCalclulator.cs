@@ -8,7 +8,7 @@ namespace QA.ProductCatalog.ImpactService
     public class IntercityCallsCalculator : BaseCallsImpactCalculator
     {
         public IntercityCallsCalculator(bool consolidateCallGroups = false)
-             : base("UseForIntercityCallsCalculator", "CalculateInInterCityCalls", "ServicesOnTariff", true, consolidateCallGroups)
+             : base("UseForIntercityCallsCalculator", "CalculateInInterCityCalls", "ServicesOnTariff", consolidateCallGroups)
         {
 
         }

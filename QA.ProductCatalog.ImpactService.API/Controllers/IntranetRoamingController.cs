@@ -20,6 +20,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected JObject Scale;
 
+        protected JArray InitialTariffProperties;
+
 
         public InRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory)
         {
@@ -53,6 +55,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             {
                 try
                 {
+                    InitialTariffProperties = (JArray)Product["Parameters"];
                     Product["Parameters"] = _calc.GetResultParameters(Scale, Product, region);
                 }
                 catch (Exception ex)
@@ -86,6 +89,26 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             Scale = _calc.FilterScale(region, scales);
 
             return Scale == null ? NotFound($"Roaming scale is not found for tariff {id} in regions: {region}, {ConfigurationOptions.RootRegionId}") : null;
+        }
+
+        protected override ActionResult CalculateImpact()
+        {
+            try
+            {
+                foreach (var service in Services)
+                {
+                    _calc.MergeValuesFromTariff(service, InitialTariffProperties);   
+                }
+
+                _calc.Calculate(Product, Services.ToArray());
+            }
+            catch (Exception ex)
+            {
+                var message = $"Exception occurs while calculating impact: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
+            }
+            return null;
         }
 
     }

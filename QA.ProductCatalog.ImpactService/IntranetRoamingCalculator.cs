@@ -9,7 +9,7 @@ namespace QA.ProductCatalog.ImpactService
 {
     public class IntranetRoamingCalculator : BaseImpactCalculator
     {
-        public IntranetRoamingCalculator() : base("UseForRoamingCalculator", "CalculateInRoaming", "ServicesOnTariff", true)
+        public IntranetRoamingCalculator() : base("UseForRoamingCalculator", "CalculateInRoaming", "ServicesOnTariff")
         {
 
         }
@@ -60,12 +60,12 @@ namespace QA.ProductCatalog.ImpactService
         }
 
 
-        public IEnumerable<JToken> FilterForRoaming(JArray root)
+        public IEnumerable<JToken> FilterProductParameters(JArray root)
         {
             var russiaParams =
                 root.Where(n => 
                     new[] {"Russia", "RussiaExceptHome"}.Contains(n.SelectToken("Zone.Alias")?.ToString()) ||
-                    n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains("UseForRoamingCalculator")
+                    n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains(ParameterModifierName)
                 ).ToArray();
 
             return AppendParents(root, russiaParams);
@@ -87,10 +87,37 @@ namespace QA.ProductCatalog.ImpactService
 
             IEnumerable<JToken> parameters = (!useTariffData)
                 ? scale.SelectToken("Parameters")
-                : FilterForRoaming((JArray)product.SelectToken("Parameters"));
+                : FilterProductParameters((JArray)product.SelectToken("Parameters"));
 
             var resultParameters = parameters as JArray ?? new JArray(parameters);
             return resultParameters;
+        }
+
+        public void MergeValuesFromTariff(JObject option, JArray tariffRoot)
+        {
+            foreach (var parameter in (JArray)option.SelectToken("Parameters"))
+            {
+                var modifiers = new HashSet<string>(
+                    parameter.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString())
+                );
+
+                if (!modifiers.Contains("UseValueFromTariff")) continue;
+
+                var ex = new DirectionExclusion(null) { Zone = modifiers.Contains("ExcludeZoneWhileSearchingValue") };
+                var searchResult = FindByKey(tariffRoot, parameter.ExtractDirection().GetKey(ex), ex).FirstOrDefault();
+
+                if (searchResult == null) continue;
+
+                if (searchResult["NumValue"] != null)
+                {
+                    parameter["NumValue"] = searchResult["NumValue"];
+                }
+
+                if (searchResult["Value"] != null)
+                {
+                    parameter["Value"] = searchResult["Value"];
+                }
+            }
         }
     }
 }

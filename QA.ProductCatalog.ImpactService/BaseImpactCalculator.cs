@@ -7,12 +7,11 @@ namespace QA.ProductCatalog.ImpactService
 {
     public class BaseImpactCalculator
     {
-        public BaseImpactCalculator(string parameterModifierName, string linkModifierName, string linkName, bool restrictedImpact)
+        public BaseImpactCalculator(string parameterModifierName, string linkModifierName, string linkName)
         {
             ParameterModifierName = parameterModifierName;
             LinkModifierName = linkModifierName;
             LinkName = linkName;
-            RestrictedImpact = restrictedImpact;
         }
 
         public string ParameterModifierName { get; }
@@ -20,8 +19,6 @@ namespace QA.ProductCatalog.ImpactService
         public string LinkModifierName { get; }
 
         public string LinkName { get; }
-
-        public bool RestrictedImpact { get; }
 
         private int _maxSiblings;
 
@@ -191,7 +188,7 @@ namespace QA.ProductCatalog.ImpactService
                 if (linkParameter["BaseParameter"] != null)
                 {
                     var key = linkParameter.ExtractDirection().GetKey(false);
-                    var parametersToProcess = FindByKey(optionParametersRoot, key, false).ToArray();
+                    var parametersToProcess = FindByKey(optionParametersRoot, key).ToArray();
                     processed = parametersToProcess.Any();
                     foreach (var p in parametersToProcess)
                     {
@@ -227,7 +224,7 @@ namespace QA.ProductCatalog.ImpactService
 
             foreach (var param in removeParameters)
             {
-                var jTokens = FindByKey(parameters, param.ExtractDirection().GetKey(), false).ToArray();
+                var jTokens = FindByKey(parameters, param.ExtractDirection().GetKey()).ToArray();
                 foreach (var jToken in jTokens)
                 {
                     jToken.Remove();
@@ -255,7 +252,7 @@ namespace QA.ProductCatalog.ImpactService
         private void AppendParameter(JArray parameters, JToken param)
         {
             var key = param.ExtractDirection().GetKey();
-            var clearTariffDirection = !String.IsNullOrEmpty(key) && FindByKey(parameters, key, false).Any();
+            var clearTariffDirection = !String.IsNullOrEmpty(key) && FindByKey(parameters, key).Any();
             parameters.Add(param.PrepareForAdd(clearTariffDirection));
         }
 
@@ -270,7 +267,7 @@ namespace QA.ProductCatalog.ImpactService
                 if (modifiers.Contains("Append") || bpModifiers.Any(n => TariffDirection.SpecialModifiers.Contains(n)) && !forcedInfluence)
                     continue;
 
-                var optionEx = GetOptionDirectionExclusion(bpModifiers, modifiers);
+                var optionEx = GetOptionDirectionExclusion(bpModifiers);
                 var key = optionParam.ExtractDirection().GetKey(optionEx);
 
                 if (string.IsNullOrEmpty(key))
@@ -279,14 +276,10 @@ namespace QA.ProductCatalog.ImpactService
 
                 var tariffEx = GetTariffDirectionExclusion(bpModifiers, modifiers);
                 var parametersToProcess = GetParametersToProcess(parametersRoot, key, tariffEx);
-                var anyParameterProcessed = false;
+                var anyParameterProcessed = parametersToProcess.Any();
 
                 foreach (var param in parametersToProcess)
                 {
-                    if (RestrictedImpact && !param.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()).ToArray().Contains(ParameterModifierName))
-                        continue;
-                
-                    anyParameterProcessed = true;
                 
                     var paramHasNumValue = param["NumValue"] != null;
                     var optionHasNumValue = optionParam["NumValue"] != null;
@@ -355,8 +348,8 @@ namespace QA.ProductCatalog.ImpactService
 
             if (key == TariffDirection.FeeKey)
             {
-                var cityParams = FindByKey(parametersRoot, TariffDirection.CityFeeKey, false);
-                var federalParams = FindByKey(parametersRoot, TariffDirection.FederalFeeKey, false);
+                var cityParams = FindByKey(parametersRoot, TariffDirection.CityFeeKey);
+                var federalParams = FindByKey(parametersRoot, TariffDirection.FederalFeeKey);
                 parametersToProcess = parametersToProcess.Union(cityParams).Union(federalParams).ToArray();
             }
             return parametersToProcess;
@@ -380,7 +373,7 @@ namespace QA.ProductCatalog.ImpactService
             return ex;
         }
 
-        private static DirectionExclusion GetOptionDirectionExclusion(HashSet<string> bpModifiers, HashSet<string> modifiers)
+        private static DirectionExclusion GetOptionDirectionExclusion(HashSet<string> bpModifiers)
         {
             var ex = new DirectionExclusion(null);
 
@@ -409,7 +402,7 @@ namespace QA.ProductCatalog.ImpactService
                 var collection = c[key];
                 if (collection.Count >= 2)
                 {
-                    var targetParams = FindByKey(productParametersRoot, key, false).ToArray();
+                    var targetParams = FindByKey(productParametersRoot, key).ToArray();
                     if (targetParams.Any())
                     {
                         var targetParam = targetParams[0];

@@ -8,7 +8,7 @@ namespace QA.ProductCatalog.ImpactService
     public class InternationalCallsCalclulator : BaseCallsImpactCalculator
     {
         public InternationalCallsCalclulator(bool consolidateCallGroups = false)
-             : base("UseForInternationalCallsCalculator", "CalculateInInternationalCalls", "ServicesOnTariff", true, consolidateCallGroups)
+             : base("UseForInternationalCallsCalculator", "CalculateInInternationalCalls", "ServicesOnTariff", consolidateCallGroups)
         {
             
         }
