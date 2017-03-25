@@ -29,7 +29,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string region, string homeRegion, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string region, string homeRegion, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
 
             var searchOptions = new SearchOptions()
@@ -49,7 +49,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = result ?? FilterServicesOnTariff();
 
-            result = result ?? GetNewProduct();
+            var product = GetNewProduct();
+
+            result = result ?? (html ? TestLayout(product, serviceIds, state, language) : Content(product.ToString()));
 
             return result;
 

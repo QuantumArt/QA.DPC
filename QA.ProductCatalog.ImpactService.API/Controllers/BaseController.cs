@@ -94,5 +94,17 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             return null;
         }
+
+        protected ActionResult TestLayout(JObject product, int[] serviceIds, string state, string language)
+        {
+            var result = new ProductLayoutModel {Product = product, Calculator = Calculator, ServiceIds = serviceIds, State = state, Language = language};
+            return View("Product", result);
+        }
+
+        [Route("integration")]
+        public ActionResult Integration(int content_item_id, string state, string language, bool html = true)
+        {
+            return RedirectToAction("Get", new {id = content_item_id, html, state, language});
+        }
     }
 }

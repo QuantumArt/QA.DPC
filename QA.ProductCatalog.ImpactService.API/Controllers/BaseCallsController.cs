@@ -23,15 +23,14 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected abstract BaseCallsImpactCalculator CallsCalculator { get; }
 
-        protected ContentResult GetNewProduct()
+        protected JObject GetNewProduct()
         {
             var newProduct = new JObject(new JProperty("Parameters", new JArray(Parameters)),
                 new JProperty("ServicesOnTariff", ServicesOnTariff));
 
             CallsCalculator.Reorder(newProduct);
 
-            var contentResult = Content(newProduct.ToString());
-            return contentResult;
+            return newProduct;
         }
 
         protected ActionResult FilterServiceParameters(string region)

@@ -9,12 +9,17 @@ namespace QA.ProductCatalog.ImpactService
 {
     public class IntranetRoamingCalculator : BaseImpactCalculator
     {
+
+        public bool UseTariffData {get; private set; }
+
+        public bool ExcludePartners { get; private set; }
+
         public IntranetRoamingCalculator() : base("UseForRoamingCalculator", "CalculateInRoaming", "ServicesOnTariff")
         {
 
         }
 
-        public bool MergeLinkImpactToRoamingScale(JObject scale, JObject product, string region)
+        public void MergeLinkImpactToRoamingScale(JObject scale, JObject product, string region)
         {
             int scaleId = (int) scale["Id"];
 
@@ -24,16 +29,17 @@ namespace QA.ProductCatalog.ImpactService
                 .SelectToken("Parent");
 
             var modifiersRoot = link.SelectToken("Modifiers");
-
-            var useTariffDataInRegion = link.SelectToken($"UseTariffDataInRegions.[?(@.Alias == '{region}')]") != null;
-
-            var useTariffData = useTariffDataInRegion || modifiersRoot != null && modifiersRoot.SelectTokens("[?(@.Alias)].Alias").Select(n => n.ToString()).ToArray().Contains("UseTariffData");
+            var modifiersSeq = modifiersRoot?.SelectTokens("[?(@.Alias)].Alias")?.Select(n => n.ToString()) ??
+                               Enumerable.Empty<string>();
+            var modifiers = new HashSet<string>(modifiersSeq);
+            UseTariffData = modifiers.Contains("UseTariffData");
+            ExcludePartners = modifiers.Contains("ExcludePartners");
 
             var scaleLinkParameters = (JArray)link.SelectToken("Parameters");
 
-            if (scaleLinkParameters == null) return useTariffData;
+            if (scaleLinkParameters == null) return;
 
-            if (!useTariffData)
+            if (!UseTariffData)
             {
                 var scaleParameters = (JArray)scale.SelectToken("Parameters");
 
@@ -56,7 +62,6 @@ namespace QA.ProductCatalog.ImpactService
                 MergeLinkImpact(tariffParameters, scaleLinkParameters);
             }
 
-            return useTariffData;
         }
 
 
@@ -71,27 +76,54 @@ namespace QA.ProductCatalog.ImpactService
             return AppendParents(root, russiaParams);
         }
 
+        private IEnumerable<JToken> FilterScaleParameters(JArray root)
+        {
+            if (ExcludePartners)
+            {
+                return root.Where(
+                    n =>
+                        !n.SelectTokens("BaseParameterModifiers.[?(@.Alias)].Alias")
+                            .Select(m => m.ToString())
+                            .Contains("ThroughPartners")).ToArray();
+            }
+            else
+            {
+                return root.ToArray();
+            }
+        }
+
         public JObject FilterScale(string region, JObject[] scales)
         {
-            return scales.SingleOrDefault(
-                       n =>
-                           n.SelectTokens("MarketingProduct.Regions.[?(@.Alias)].Alias")
-                               .Select(m => m.ToString())
-                               .Contains(region)) ??
-                   scales.SingleOrDefault(n => n.SelectToken("MarketingProduct.Regions") == null);
+            var defaultScale = scales.SingleOrDefault(n => n.SelectToken("MarketingProduct.Regions") == null);
+            foreach (var scale in scales)
+            {
+                var regionAliases =
+                    scale.SelectTokens("MarketingProduct.Regions.[?(@.Region)].Region.Alias")
+                        .Select(m => m.ToString())
+                        .ToArray();
+
+                if (!regionAliases.Contains(region)) continue;
+
+                return scale;
+            }
+
+            return defaultScale;
+           
         }
 
         public JArray GetResultParameters(JObject scale, JObject product, string region)
         {
-            var useTariffData = MergeLinkImpactToRoamingScale(scale, product, region);
+            MergeLinkImpactToRoamingScale(scale, product, region);
 
-            IEnumerable<JToken> parameters = (!useTariffData)
-                ? scale.SelectToken("Parameters")
+            IEnumerable<JToken> parameters = (!UseTariffData)
+                ? FilterScaleParameters((JArray)scale.SelectToken("Parameters"))
                 : FilterProductParameters((JArray)product.SelectToken("Parameters"));
 
             var resultParameters = parameters as JArray ?? new JArray(parameters);
             return resultParameters;
         }
+
+ 
 
         public void MergeValuesFromTariff(JObject option, JArray tariffRoot)
         {

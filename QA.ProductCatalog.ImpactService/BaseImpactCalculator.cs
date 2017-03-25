@@ -190,9 +190,18 @@ namespace QA.ProductCatalog.ImpactService
                     var key = linkParameter.ExtractDirection().GetKey(false);
                     var parametersToProcess = FindByKey(optionParametersRoot, key).ToArray();
                     processed = parametersToProcess.Any();
+
                     foreach (var p in parametersToProcess)
                     {
-                        p.Replace(linkParameter.DeepClone());
+                        var toReplace = linkParameter.DeepClone();
+
+                        if (toReplace["SortOrder"] == null && p["SortOrder"] != null)
+                            toReplace["SortOrder"] = p["SortOrder"];
+
+                        toReplace["Id"] = p["Id"];
+
+                        p.Replace(toReplace);
+                            
                     }
                 }
 
