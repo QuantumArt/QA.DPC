@@ -212,17 +212,56 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
 
-        private void CalculateImpact(JToken parametersRoot, JToken[] optionParameters1)
+        private void CalculateImpact(JToken parametersRoot, JToken[] optionParameters)
         {
             var parametersToAppendInsteadOfChange = new List<JToken>();
 
 
 
-            ProcessRemove(parametersRoot, optionParameters1);
-            ChangeParameters(parametersRoot, optionParameters1, parametersToAppendInsteadOfChange);
-            ProcessPackages(parametersRoot, optionParameters1);
-            ProcessTarifficationSteps(parametersRoot, optionParameters1);
-            ProcessAppend((JArray) parametersRoot, optionParameters1, parametersToAppendInsteadOfChange);
+            ProcessRemove(parametersRoot, optionParameters);
+            ProcessDirectParameters(parametersRoot, optionParameters);
+            ChangeParameters(parametersRoot, optionParameters, parametersToAppendInsteadOfChange);
+            ProcessPackages(parametersRoot, optionParameters);
+            ProcessTarifficationSteps(parametersRoot, optionParameters);
+            ProcessAppend((JArray) parametersRoot, optionParameters, parametersToAppendInsteadOfChange);
+        }
+
+        private void ProcessDirectParameters(JToken parametersRoot, JToken[] optionParameters)
+        {
+            foreach (var optionParam in optionParameters.Where(n => n.SelectToken("BaseParameter") == null))
+            {
+                var p  = optionParam.SelectToken("Parameter");
+                if (p == null) continue;
+
+                var modifiers = new HashSet<string>(optionParam.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()));
+                var id = (int) p["Id"];
+                var tariffParam = parametersRoot.SelectToken($"[?(@.Id == {id})]");
+
+                if (modifiers.Contains("Hide"))
+                {
+                    tariffParam?.Remove();
+                }
+                else
+                {
+                    tariffParam["Title"] = optionParam["Title"];
+                    tariffParam["Changed"] = true;
+                    if (optionParam["NumValue"] != null)
+                    {
+                        if (tariffParam["OldNumValue"] == null && tariffParam["NumValue"] != null)
+                        {
+                            tariffParam["OldNumValue"] = tariffParam["NumValue"];
+                        }
+                        tariffParam["NumValue"] = optionParam["NumValue"];
+                    }
+                    if (optionParam["SortOrder"] != null)
+                    {
+                        tariffParam["SortOrder"] = optionParam["SortOrder"];
+                    }
+                }
+
+
+
+            }
         }
 
         private void ProcessRemove(JToken parameters, JToken[] optionParameters)
@@ -267,9 +306,8 @@ namespace QA.ProductCatalog.ImpactService
 
         private void ChangeParameters(JToken parametersRoot, IEnumerable<JToken> optionParameters, List<JToken> parametersToAdd)
         {
-            foreach (var optionParam in optionParameters)
+            foreach (var optionParam in optionParameters.Where(n => n.SelectToken("BaseParameter") != null))
             {
-
                 var modifiers = new HashSet<string>(optionParam.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()));
                 var bpModifiers = new HashSet<string>(optionParam.SelectTokens("BaseParameterModifiers.[?(@.Alias)].Alias").Select(n => n.ToString()));
                 var forcedInfluence = modifiers.Contains("ForcedInfluence");
@@ -278,10 +316,6 @@ namespace QA.ProductCatalog.ImpactService
 
                 var optionEx = GetOptionDirectionExclusion(bpModifiers);
                 var key = optionParam.ExtractDirection().GetKey(optionEx);
-
-                if (string.IsNullOrEmpty(key))
-                    continue;
-
 
                 var tariffEx = GetTariffDirectionExclusion(bpModifiers, modifiers);
                 var parametersToProcess = GetParametersToProcess(parametersRoot, key, tariffEx);
