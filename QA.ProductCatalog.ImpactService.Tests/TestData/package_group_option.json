@@ -1,0 +1,247 @@
+{
+  "Id": 2000,
+  "Parameters": [
+    {
+      "Id": 5000,
+      "SortOrder": 2,
+      "Title": "В пределах пакета XXX минут",
+      "BaseParameter": {
+        "Id": 84,
+        "Title": "Группа параметров",
+        "Alias": "ParameterGroup"
+      },
+      "BaseParameterModifiers": [
+        {
+          "Id": 8565,
+          "Title": "В пределах пакета",
+          "Alias": "WithinPackage",
+          "Type": "Refining"
+        }
+      ],
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      },
+      "Modifiers": [
+        {
+          "Id": 1852272,
+          "Title": "Использовать для калькулятора",
+          "Alias": "UseForCalculator"
+        }
+      ]
+    },
+    {
+      "Id": 6000,
+      "SortOrder": 3,
+      "Title": "В пределах пакета XXX минут",
+      "BaseParameter": {
+        "Id": 84,
+        "Title": "Группа параметров",
+        "Alias": "ParameterGroup"
+      },
+      "BaseParameterModifiers": [
+        {
+          "Id": 8566,
+          "Title": "Сверх пакета",
+          "Alias": "OverPackage",
+          "Type": "Refining"
+        }
+      ],
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      },
+      "Modifiers": [
+        {
+          "Id": 1852272,
+          "Title": "Использовать для калькулятора",
+          "Alias": "UseForCalculator"
+        }
+      ]
+    },
+    {
+      "Id": 3000,
+      "Title": "Новый заголовок (в пределах пакета)",
+      "NumValue": 0,
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8552,
+        "Title": "Направление: Вся Россия",
+        "Alias": "Russia"
+      },
+      "BaseParameterModifiers": [
+        {
+          "Id": 8565,
+          "Title": "В пределах пакета",
+          "Alias": "WithinPackage",
+          "Type": "Refining"
+        }
+      ],
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      },
+      "Parent": {
+        "Id": 5000,
+        "Title": "В пределах пакета XXX минут"
+      },
+      "Modifiers": [
+        {
+          "Id": 1852272,
+          "Title": "Использовать для калькулятора",
+          "Alias": "UseForCalculator"
+        }
+      ]
+    },
+    {
+      "Id": 4000,
+      "Title": "Новый заголовок (сверх пакета)",
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8552,
+        "Title": "Направление: Вся Россия",
+        "Alias": "Russia"
+      },
+      "BaseParameterModifiers": [
+        {
+          "Id": 8566,
+          "Title": "Сверх пакета",
+          "Alias": "OverPackage",
+          "Type": "Refining"
+        }
+      ],
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      },
+      "Parent": {
+        "Id": 6000,
+        "Title": "Сверх пакета XXX минут"
+      },
+      "Modifiers": [
+        {
+          "Id": 1852272,
+          "Title": "Использовать для калькулятора роуминга",
+          "Alias": "UseForCalculator"
+        }
+      ]
+    },
+    {
+      "Id": 7000,
+      "Title": "Новый заголовок (в пределах пакета)",
+      "NumValue": 0,
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8550,
+        "Title": "Направление: домашний регион",
+        "Alias": "Home"
+      },
+      "BaseParameterModifiers": [
+        {
+          "Id": 8565,
+          "Title": "В пределах пакета",
+          "Alias": "WithinPackage",
+          "Type": "Refining"
+        }
+      ],
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      },
+      "Parent": {
+        "Id": 5000,
+        "Title": "В пределах пакета XXX минут"
+      },
+      "Modifiers": [
+        {
+          "Id": 1852272,
+          "Title": "Использовать для калькулятора",
+          "Alias": "UseForCalculator"
+        }
+      ]
+    },
+    {
+      "Id": 8000,
+      "Title": "Новый заголовок (сверх пакета)",
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8550,
+        "Title": "Направление: домашний регион",
+        "Alias": "Home"
+      },
+      "BaseParameterModifiers": [
+        {
+          "Id": 8566,
+          "Title": "Сверх пакета",
+          "Alias": "OverPackage",
+          "Type": "Refining"
+        }
+      ],
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      },
+      "Parent": {
+        "Id": 6000,
+        "Title": "Сверх пакета XXX минут"
+      },
+      "Modifiers": [
+        {
+          "Id": 1852272,
+          "Title": "Использовать для калькулятора роуминга",
+          "Alias": "UseForCalculator"
+        }
+      ]
+    }
+
+  ]
+
+}

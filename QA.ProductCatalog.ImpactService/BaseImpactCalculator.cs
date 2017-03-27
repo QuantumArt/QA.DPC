@@ -173,18 +173,16 @@ namespace QA.ProductCatalog.ImpactService
 
         public void MergeLinkImpact(JArray optionParametersRoot, JArray linkParameters)
         {
+            var changedIds = new Dictionary<int, int>();
+
+
             foreach (var linkParameter in linkParameters)
             {
                 // fix name mismatching in definition
-                var pg = linkParameter.Children<JProperty>().FirstOrDefault(n => n.Name == "ParameterGroup");
-                if (pg != null)
-                {
-                    var g = linkParameter.Children<JProperty>().FirstOrDefault(n => n.Name == "Group");
-                    g?.Replace(new JProperty("ProductGroup", g.Value));
-                    pg.Replace(new JProperty("Group", pg.Value));
-                }
+                FixDefinition(linkParameter, "ParameterGroup", "Group", "ProductGroup");
+                FixDefinition(linkParameter, "MatrixParent", "Parent", "ProductParent");
 
-                bool processed = false;
+                var processed = false;
                 if (linkParameter["BaseParameter"] != null)
                 {
                     var key = linkParameter.ExtractDirection().GetKey(false);
@@ -198,7 +196,12 @@ namespace QA.ProductCatalog.ImpactService
                         if (toReplace["SortOrder"] == null && p["SortOrder"] != null)
                             toReplace["SortOrder"] = p["SortOrder"];
 
+                        if (toReplace["Group"] == null && p["Group"] != null)
+                            toReplace["Group"] = p["Group"].DeepClone();
+
+                        changedIds.Add((int)toReplace["Id"], (int)p["Id"]);
                         toReplace["Id"] = p["Id"];
+                        
 
                         p.Replace(toReplace);
                             
@@ -209,6 +212,28 @@ namespace QA.ProductCatalog.ImpactService
                 {
                     ( optionParametersRoot).Add(linkParameter);
                 }
+
+                foreach (var param in optionParametersRoot)
+                {
+                    var mp = param.SelectToken("Parent");
+                    if (mp == null) continue;
+
+                    int changedId;
+                    if (!changedIds.TryGetValue((int) mp["Id"], out changedId)) continue;
+
+                    mp["Id"] = changedId;
+                }
+            }
+        }
+
+        private static void FixDefinition(JToken linkParameter, string fromName, string crossName, string toName)
+        {
+            var pg = linkParameter.Children<JProperty>().FirstOrDefault(n => n.Name == fromName);
+            if (pg != null)
+            {
+                var g = linkParameter.Children<JProperty>().FirstOrDefault(n => n.Name == crossName);
+                g?.Replace(new JProperty(toName, g.Value));
+                pg.Replace(new JProperty(crossName, pg.Value));
             }
         }
 
@@ -216,14 +241,40 @@ namespace QA.ProductCatalog.ImpactService
         {
             var parametersToAppendInsteadOfChange = new List<JToken>();
 
-
-
             ProcessRemove(parametersRoot, optionParameters);
             ProcessDirectParameters(parametersRoot, optionParameters);
-            ChangeParameters(parametersRoot, optionParameters, parametersToAppendInsteadOfChange);
+            var changedIds = ChangeParameters(parametersRoot, optionParameters, parametersToAppendInsteadOfChange);
             ProcessPackages(parametersRoot, optionParameters);
             ProcessTarifficationSteps(parametersRoot, optionParameters);
-            ProcessAppend((JArray) parametersRoot, optionParameters, parametersToAppendInsteadOfChange);
+            ProcessAppend(parametersRoot, optionParameters, parametersToAppendInsteadOfChange);
+            ProcessParents(parametersRoot, changedIds);
+
+        }
+
+        private void ProcessParents(JToken parametersRoot, Dictionary<int, int> changedIds)
+        {
+            foreach (var p in parametersRoot)
+            {
+                var pp = p.SelectToken("Parent");
+                if (pp == null) continue;
+
+                var id = (int)pp["Id"];
+                int changedId;
+                var found = changedIds.TryGetValue(id, out changedId);
+                if (found)
+                {
+                    pp["Id"] = changedId.ToString();
+                    pp["Title"] = parametersRoot.SelectToken($"[?(@.Id == {changedId})].Title");
+                }
+                else
+                {
+                    if (parametersRoot.SelectToken($"[?(@.Id == {id})]") == null)
+                    {
+                        p.Children().OfType<JProperty>().SingleOrDefault(n => n.Name == "Parent")?.Remove();
+                    }
+                         
+                }
+            }
         }
 
         private void ProcessDirectParameters(JToken parametersRoot, JToken[] optionParameters)
@@ -272,7 +323,7 @@ namespace QA.ProductCatalog.ImpactService
 
             foreach (var param in removeParameters)
             {
-                var jTokens = FindByKey(parameters, param.ExtractDirection().GetKey()).ToArray();
+                var jTokens = FindByKey(parameters, param.ExtractDirection().GetKey(false)).ToArray();
                 foreach (var jToken in jTokens)
                 {
                     jToken.Remove();
@@ -280,8 +331,9 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
 
-        private void ProcessAppend(JArray parameters, IEnumerable<JToken> optionParameters, List<JToken> parametersToAppendInsteadOfChange)
+        private void ProcessAppend(JToken parametersRoot, IEnumerable<JToken> optionParameters, List<JToken> parametersToAppendInsteadOfChange)
         {
+            var parameters = (JArray) parametersRoot;
             foreach (var param in parametersToAppendInsteadOfChange)
             {
                 AppendParameter(parameters, param);
@@ -299,13 +351,14 @@ namespace QA.ProductCatalog.ImpactService
 
         private void AppendParameter(JArray parameters, JToken param)
         {
-            var key = param.ExtractDirection().GetKey();
+            var key = param.ExtractDirection().GetKey(false);
             var clearTariffDirection = !String.IsNullOrEmpty(key) && FindByKey(parameters, key).Any();
             parameters.Add(param.PrepareForAdd(clearTariffDirection));
         }
 
-        private void ChangeParameters(JToken parametersRoot, IEnumerable<JToken> optionParameters, List<JToken> parametersToAdd)
+        private Dictionary<int, int> ChangeParameters(JToken parametersRoot, IEnumerable<JToken> optionParameters, List<JToken> parametersToAdd)
         {
+            var changedIds = new Dictionary<int, int>();
             foreach (var optionParam in optionParameters.Where(n => n.SelectToken("BaseParameter") != null))
             {
                 var modifiers = new HashSet<string>(optionParam.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()));
@@ -320,6 +373,11 @@ namespace QA.ProductCatalog.ImpactService
                 var tariffEx = GetTariffDirectionExclusion(bpModifiers, modifiers);
                 var parametersToProcess = GetParametersToProcess(parametersRoot, key, tariffEx);
                 var anyParameterProcessed = parametersToProcess.Any();
+
+                if (anyParameterProcessed)
+                {
+                    changedIds.Add((int)optionParam["Id"], (int)parametersToProcess.First()["Id"]);
+                }
 
                 foreach (var param in parametersToProcess)
                 {
@@ -373,14 +431,19 @@ namespace QA.ProductCatalog.ImpactService
                         param.SetChanged();
                 
                     }
-                
-                
+
+                    if (optionParam["Parent"] != null)
+                    {
+                        param["Parent"] = optionParam["Parent"];
+                    }
                 
                 }
                 
                 if (!anyParameterProcessed && modifiers.Contains("AppendOrReplace"))
                         parametersToAdd.Add(optionParam);
             }
+
+            return changedIds;
 
 
         }
@@ -443,42 +506,52 @@ namespace QA.ProductCatalog.ImpactService
             foreach (var key in c.Keys)
             {
                 var collection = c[key];
-                if (collection.Count >= 2)
+                if (collection.Count < 2) continue;
+                if (collection.All(n => n.Value["NumValue"] == null)) continue;
+
+                var targetParams = FindByKey(productParametersRoot, key).ToArray();
+                if (!targetParams.Any()) continue;
+
+                var targetParam = targetParams[0];
+                var numValue = targetParam["NumValue"];
+                var order = targetParam["Order"];
+                var parent = targetParam["Parent"]?.DeepClone();
+                var group = targetParam["Group"]?.DeepClone();
+                var unit = targetParam["Unit"]?.DeepClone();
+                targetParam.Remove();
+
+                var i = 0;
+                foreach (var modifier in modifiers)
                 {
-                    var targetParams = FindByKey(productParametersRoot, key).ToArray();
-                    if (targetParams.Any())
+                    if (!collection.ContainsKey(modifier)) continue;
+
+                    var optionParam = collection[modifier];
+
+                    if (optionParam["NumValue"] == null)
                     {
-                        var targetParam = targetParams[0];
-                        var numValue = targetParam["NumValue"];
-                        var order = targetParam["Order"];
-                        var parent = targetParam["Parent"]?.DeepClone();
-                        var group = targetParam["Group"]?.DeepClone();
-                        var unit = targetParam["Unit"]?.DeepClone();
-                        targetParam.Remove();
-
-                        int i = 0;
-                        foreach (var modifier in modifiers)
-                        {
-                            if (collection.ContainsKey(modifier))
-                            {
-                                var param = collection[modifier];
-                                if (param["NumValue"] == null)
-                                    param["NumValue"] = numValue;
-                                if (order != null)
-                                    param["Order"] = (decimal) order + i;
-                                if (parent != null)
-                                    param["Parent"] = parent;
-                                if (group != null)
-                                    param["Group"] = group;
-                                if (unit != null)
-                                    param["Unit"] = unit;
-                                i++;
-                                param.SetChanged();
-
-                                ((JArray)productParametersRoot).Add(param);
-                            }
-                        }
+                        optionParam["NumValue"] = numValue;
                     }
+                    if (order != null)
+                    {
+                        optionParam["Order"] = (decimal)order + i;
+                    }
+                    if (parent != null && optionParam["Parent"] == null)
+                    {
+                        optionParam["Parent"] = parent;
+                    }
+                    if (@group != null)
+                    {
+                        optionParam["Group"] = @group;
+                    }
+                    if (unit != null)
+                    {
+                        optionParam["Unit"] = unit;
+                    }
+
+                    i++;
+                    optionParam.SetChanged();
+
+                    ((JArray)productParametersRoot).Add(optionParam);
                 }
             }
         }
@@ -508,7 +581,10 @@ namespace QA.ProductCatalog.ImpactService
         {
             foreach (var wp in withinPackages)
             {
-                var key = wp.ExtractDirection().GetKey();
+                var key = wp.ExtractDirection().GetKey(true);
+
+                if (string.IsNullOrEmpty(key)) continue;
+
                 if (!c.ContainsKey(key))
                 {
                     c.Add(key, new Dictionary<string, JToken>());

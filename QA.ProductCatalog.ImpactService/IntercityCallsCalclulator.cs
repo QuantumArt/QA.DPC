@@ -37,7 +37,7 @@ namespace QA.ProductCatalog.ImpactService
                 var toDelete = new List<JToken>();
                 foreach (var regionParam in regionParams)
                 {
-                    var key = regionParam.ExtractDirection().GetKey();
+                    var key = regionParam.ExtractDirection().GetKey(false);
 
                     if (!dirCount.ContainsKey(key))
                     {

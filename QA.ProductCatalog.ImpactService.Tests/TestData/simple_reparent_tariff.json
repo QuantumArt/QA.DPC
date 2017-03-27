@@ -1,0 +1,62 @@
+{
+  "Id": 1837319,
+  "Parameters": [
+    {
+      "Id": 5000,
+      "SortOrder": 1,
+      "Title": "Подгруппа 1",
+      "BaseParameter": { "Alias": "ParameterGroup" },
+      "BaseParameterModifiers": [ { "Alias": "First" } ]
+    },
+
+    {
+      "Id": 6000,
+      "SortOrder": 2,
+      "Title": "Подгруппа 2",
+      "BaseParameter": { "Alias": "ParameterGroup" },
+      "BaseParameterModifiers": [ { "Alias": "Second" } ]
+    },
+    {
+      "Id": 7000,
+      "Title": "Параметр 1",
+      "SortOrder": 5,
+      "NumValue": 25.00,
+      "Parent": { "Id": 5000 },
+      "BaseParameter": { "Alias": "OutgoingCalls" }
+    }
+  ],
+  "ServicesOnTariff": [
+    {
+      "Id": 111,
+      "Service": {
+        "Id": 2000,
+        "MarketingProduct": {"Id": 2001 }
+      },
+      "Parent": {
+        "Modifiers": [ { "Alias": "Calculate" } ],
+        "Parameters": [
+          {
+            "Id": 9500,
+            "Title": "Подгруппа 1 (обновленная)",
+            "BaseParameter": { "Alias": "ParameterGroup" },
+            "BaseParameterModifiers": [ { "Alias": "First" } ],
+            "Modifiers": [ { "Alias": "UseForCalculator" } ]
+
+          },
+          {
+            "Id": 9501,
+            "Title": "Параметр 3",
+            "SortOrder": 1,
+            "NumValue": 25.00,
+            "MatrixParent": { "Id": 9500 },
+            "BaseParameter": { "Alias": "MinutesPackage" },
+            "Modifiers": [ { "Alias": "UseForCalculator" }, {"Alias":  "Append" } ]
+
+          }
+        ]
+
+
+      }
+    }
+  ]
+}

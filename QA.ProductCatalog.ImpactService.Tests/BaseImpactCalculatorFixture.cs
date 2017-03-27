@@ -423,12 +423,114 @@ namespace QA.ProductCatalog.ImpactService.Tests
             Assert.That((bool)result[0]["Changed"], Is.True);
         }
 
+        [Test]
+        public void ProcessPackages_HasGroupPackage_Applied()
+        {
+            var tariff = GetJsonFromFile("package_group_tariff.json");
+            var option = GetJsonFromFile("package_group_option.json");
+            var calculator = new TariffOptionCalculator();
+
+            calculator.Calculate(tariff, option);
+            calculator.Reorder(tariff);
+
+            var root = tariff.SelectToken("Parameters");
+            var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
+            var result = calculator.FindByKey(root, direction.GetKey(), true).ToArray();
+            var direction2 = new TariffDirection("ParameterGroup", null, null, new []{ "WithinPackage" });
+            var result2 = calculator.FindByKey(root, direction2.GetKey(false)).ToArray();
+            var direction3 = new TariffDirection("ParameterGroup", null, null, new[] { "OverPackage" });
+            var result3 = calculator.FindByKey(root, direction3.GetKey(false)).ToArray();
+
+
+            Assert.That(result.Length, Is.EqualTo(2));
+            Assert.That(result2.Length, Is.EqualTo(1));
+            Assert.That(result3.Length, Is.EqualTo(1));
+
+
+
+            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(0));
+            Assert.That((decimal)result[1]["NumValue"], Is.EqualTo(85));
+            Assert.That((string)result[0]["Title"], Is.EqualTo("Новый заголовок (в пределах пакета)"));
+            Assert.That((string)result[1]["Title"], Is.EqualTo("Новый заголовок (сверх пакета)"));
+            Assert.That((bool)result[0]["Changed"], Is.True);
+            Assert.That((bool)result[1]["Changed"], Is.True);
+
+            Assert.That(result[0].Previous, Is.EqualTo(result2[0]));
+            Assert.That(result[1].Previous, Is.EqualTo(result3[0]));
+
+            Assert.That((string)result2[0]["Title"], Is.EqualTo("В пределах пакета 500 минут"));
+            Assert.That((int)result2[0]["Id"], Is.EqualTo(5000));
+            Assert.That(result2[0].Previous, Is.Not.Null);
+
+            Assert.That((string)result3[0]["Title"], Is.EqualTo("Сверх пакета 500 минут"));
+            Assert.That((int)result3[0]["Id"], Is.EqualTo(6000));
+            Assert.That(result3[0].Previous, Is.Not.Null);
+
+            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(6));
+        }
+
+        [Test]
+        public void ProcessParents_Reparent_Applied()
+        {
+            var tariff = GetJsonFromFile("simple_reparent_tariff.json");
+            var option = GetJsonFromFile("simple_reparent_option.json");
+            var calculator = new TariffOptionCalculator();
+
+            calculator.Calculate(tariff, option);
+            calculator.Reorder(tariff);
+
+            var root = tariff.SelectToken("Parameters");
+            var direction = new TariffDirection("OutgoingCalls", null, null, null);
+            var result = calculator.FindByKey(root, direction.GetKey(), true).ToArray();
+            var direction2 = new TariffDirection("ParameterGroup", null, null, new[] { "First" });
+            var result2 = calculator.FindByKey(root, direction2.GetKey(false)).ToArray();
+            var direction3 = new TariffDirection("ParameterGroup", null, null, new[] { "Second" });
+            var result3 = calculator.FindByKey(root, direction3.GetKey(false)).ToArray();
+            var direction4 = new TariffDirection("IncomingCalls", null, null, null);
+            var result4 = calculator.FindByKey(root, direction4.GetKey(false)).ToArray();
+            var direction5 = new TariffDirection("MinutesPackage", null, null, null);
+            var result5 = calculator.FindByKey(root, direction5.GetKey(false)).ToArray();
+
+
+            Assert.That(result4.Length, Is.EqualTo(1));
+            Assert.That(result5.Length, Is.EqualTo(1));
+
+            Assert.That((int) result[0]["Parent"]["Id"], Is.EqualTo((int) result3[0]["Id"]));
+            Assert.That((string)result2[0]["Title"], Is.EqualTo("Подгруппа 1"));
+            Assert.That((string)result3[0]["Title"], Is.EqualTo("Подгруппа 2 (новая)"));
+            Assert.That((int)result4[0]["Parent"]["Id"], Is.EqualTo((int)result2[0]["Id"]));
+            Assert.That((int)result5[0]["Parent"]["Id"], Is.EqualTo((int)result2[0]["Id"]));
+        }
+
+        [Test]
+        public void ProcessPackage_ForcedInfluence_Applied()
+        {
+            var tariff = GetJsonFromFile("simple_package_force_tariff.json");
+            var option = GetJsonFromFile("simple_package_force_option.json");
+            var calculator = new TariffOptionCalculator();
+
+            calculator.Calculate(tariff, option);
+
+            var root = tariff.SelectToken("Parameters");
+            var direction = new TariffDirection("OutgoingCalls", null, null, new[] { "WithinPackage" });
+            var result = calculator.FindByKey(root, direction.GetKey(false)).ToArray();
+            var direction2 = new TariffDirection("OutgoingCalls", null, null, new[] { "OverPackage" });
+            var result2 = calculator.FindByKey(root, direction2.GetKey(false)).ToArray();
+
+            Assert.That((string)result[0]["Title"], Is.EqualTo("Звонки по всей России (в пределах пакета)"));
+            Assert.That((string)result2[0]["Title"], Is.EqualTo("Звонки (сверх пакета)"));
+
+            Assert.That((bool)result[0]["Changed"], Is.True);
+            Assert.That(result2[0]["Changed"], Is.Null);
+            Assert.That(result[0]["NumValue"], Is.Not.Null);
+            Assert.That(result2[0]["NumValue"], Is.Not.Null);
+        }
 
         [Test]
         public void ProcessPackages_HasPackage_Applied()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
-            var option = GetJsonFromFile("simple2_option.json");
+            var option = GetJsonFromFile("package_option.json");
             var calculator = new InternationalRoamingCalculator();
 
             calculator.Calculate(tariff, option);

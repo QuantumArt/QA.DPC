@@ -1,0 +1,201 @@
+{
+  "Id": 1837319,
+  "Parameters": [
+    {
+      "Id": 1837525,
+      "Title": "Исходящие звонки на номера того же контракта",
+      "SortOrder": 1,
+      "NumValue": 135.00,
+      "OldPointId": 33,
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8584,
+        "Title": "Направление: домашний регион",
+        "Alias": "Home"
+      },
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+
+      "BaseParameterModifiers": [
+        {
+          "Id": 183,
+          "Title": "Тот же самый контракт",
+          "Alias": "SameContract"
+        }
+      ],
+
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      }
+    },
+    {
+      "Id": 1837526,
+      "Title": "Исходящие звонки на номера домашнего региона",
+      "SortOrder": 5,
+      "NumValue": 25.00,
+      "OldPointId": 33,
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8584,
+        "Title": "Направление: домашний регион",
+        "Alias": "Home"
+      },
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      }
+    },
+    {
+      "Id": 1837532,
+      "Title": "Исходящие звонки на российские номера",
+      "SortOrder": 8,
+      "NumValue": 85.00,
+      "OldPointId": 29,
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8552,
+        "Title": "Направление: Вся Россия",
+        "Alias": "Russia"
+      },
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      }
+    }
+
+
+  ],
+  "ServicesOnTariff": [
+    {
+      "Id": 1893691,
+      "Service": {
+        "Id": 2000,
+        "MarketingProduct": {
+          "Id": 2001,
+          "Title": "Просто опция",
+          "Alias": "simple_option",
+          "SortOrder": 2,
+          "Groups": [
+            {
+              "Id": 23579,
+              "Title": "Звонки",
+              "SortOrder": 0,
+              "OldSiteId": 31
+            }
+          ],
+          "Link": "/mob_connect/roaming/i_roaming/simple_option/",
+          "Description": "Бесплатные входящие в поездках по миру."
+        }
+      },
+      "Parent": {
+        "Id": 2002,
+        "Title": "Услуга 'Ноль без границ' на роуминговой сетке 'Зона 1' в регионе 'Россия'",
+        "Type": 444.0,
+
+        "Parameters": [
+          {
+            "Id": 5001,
+            "Title": "В пределах пакета 500 минут",
+            "SortOrder": 2,
+            "BaseParameter": {
+              "Id": 84,
+              "Title": "Группа параметров",
+              "Alias": "ParameterGroup"
+            },
+            "BaseParameterModifiers": [
+              {
+                "Id": 8565,
+                "Title": "В пределах пакета",
+                "Alias": "WithinPackage",
+                "Type": "Refining"
+              }
+            ],
+
+            "Modifiers": [
+              {
+                "Id": 1852272,
+                "Title": "Использовать для калькулятора",
+                "Alias": "UseForCalculator"
+              },
+              {
+                "Id": 1000,
+                "Title": "Добавить",
+                "Alias": "Append"
+              }
+            ]
+          },
+          {
+            "Id": 6001,
+            "Title": "Сверх пакета 500 минут",
+            "SortOrder": 3,
+            "BaseParameter": {
+              "Id": 84,
+              "Title": "Группа параметров",
+              "Alias": "ParameterGroup"
+            },
+            "BaseParameterModifiers": [
+              {
+                "Id": 8566,
+                "Title": "Сверх пакета",
+                "Alias": "OverPackage",
+                "Type": "Refining"
+              }
+            ],
+            "Modifiers": [
+              {
+                "Id": 1852272,
+                "Title": "Использовать для калькулятора",
+                "Alias": "UseForCalculator"
+              },
+              {
+                "Id": 1000,
+                "Title": "Добавить",
+                "Alias": "Append"
+              }
+            ]
+          }
+        ],
+
+        "Modifiers": [
+          {
+            "Id": 1838315,
+            "Title": "Участвует в калькуляторе",
+            "Alias": "Calculate"
+          }
+        ]
+      }
+    }
+  ]
+}
