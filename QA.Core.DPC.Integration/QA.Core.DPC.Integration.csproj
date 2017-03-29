@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D0E08DCE-0185-4472-B28C-80E30BBB0CD5}</ProjectGuid>
+    <ProjectGuid>{71121A6B-3673-4CC1-A97A-610E9C33F33A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QA.Core.DPC.Integration</RootNamespace>
@@ -136,7 +136,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Configuration, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Configuration.1.0.1.0\lib\net40\QA.Configuration.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Configuration.1.0.1\lib\net40\QA.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
