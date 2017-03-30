@@ -21,13 +21,11 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return new Regex($@"[<\[]replacement[>\]]tag={tag}[<\[]/replacement[>\]]");
         }
 
-        public async Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options)
+        public async Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options, DateTimeOffset defaultValue)
         {
             var result = await GetContent(GetJsonQuery(productIds, true), options);
-            var dates = JObject.Parse(result).SelectTokens("hits.hits.[?(@.UpdateDate)].UpdateDate").Select(n => DateTimeOffset.Parse(n.ToString() ,CultureInfo.InvariantCulture)).ToArray();
-            //if (dates.Length < productIds.Length)
-            //    throw new ApplicationException("Some products not found");
-            return dates.Max();
+            var dates = JObject.Parse(result).SelectTokens($"{_sourceQuery}.UpdateDate").Select(n => (DateTimeOffset)n).ToArray();
+            return dates.Any() ? dates.Max() : defaultValue;
         }
 
         private string GetJsonQuery(int[] productIds, bool onlyModified = false)

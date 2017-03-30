@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
@@ -18,7 +14,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         private readonly IntercityCallsCalculator _calc;
 
 
-        public IntercityCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory): base(searchRepo, elasticIndexOptionsAccessor, loggerFactory)
+        public IntercityCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
         {
             _calc = new IntercityCallsCalculator(ConfigurationOptions.ConsolidateCallGroupsForIcin);
         }
@@ -39,19 +35,29 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 HomeRegion = homeRegion
             };
 
-            var result = await LoadProducts(id, serviceIds, searchOptions);
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, region, homeRegion, state, language);
+            var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
+            var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            if (result != null) return result;
+
+            result = await LoadProducts(id, serviceIds, searchOptions);
+
+            LogStartImpact("MG", id, serviceIds);
 
             result = result ?? FilterServiceParameters(region);
-
             result = result ?? CalculateImpact();
-
             result = result ?? FilterProductParameters(region);
-
             result = result ?? FilterServicesOnTariff();
-
             var product = GetNewProduct();
 
+            LogEndImpact("MG", id, serviceIds);
+
             result = result ?? (html ? TestLayout(product, serviceIds, state, language) : Content(product.ToString()));
+
+            if (!disableCache)
+            {
+                SetCachedResult(id, serviceIds, result, cacheKey);
+            }
 
             return result;
 

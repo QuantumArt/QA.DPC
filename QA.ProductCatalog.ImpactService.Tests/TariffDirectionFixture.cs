@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace QA.ProductCatalog.ImpactService.Tests
 {
@@ -15,7 +10,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var a = new TariffDirection("OutgoingCalls", "RussiaExceptHome", "Russia",
                 new[] {"ExceptMTS", "ExceptHome", "WithinPackage"});
-            Assert.That(a.GetKey(),
+            Assert.That(a.GetKey(true),
                 Is.EqualTo(
                     "BaseParameter: OutgoingCalls; Zone: RussiaExceptHome; Direction: Russia; BaseParameterModifiers: ExceptHome,ExceptMTS;"));
         }
@@ -34,7 +29,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
         {
             var a = new TariffDirection("OutgoingCalls", "RussiaExceptHome", "Russia",
                 new[] { "ExceptMTS", "ExceptHome", "OverPackage" });
-            Assert.That(a.GetKey(false),
+            Assert.That(a.GetKey(),
                 Is.EqualTo(
                     "BaseParameter: OutgoingCalls; Zone: RussiaExceptHome; Direction: Russia; BaseParameterModifiers: ExceptHome,ExceptMTS,OverPackage;"));
         }

@@ -8,6 +8,8 @@ namespace QA.ProductCatalog.ImpactService.API
         {
             ElasticBaseAddress = "http://localhost:9200";
             RootRegionId = 19975;
+            CachingInterval = 300;
+            NegativeCachingInterval = 20;
         }
 
 
@@ -16,6 +18,11 @@ namespace QA.ProductCatalog.ImpactService.API
         public bool ConsolidateCallGroupsForIcin { get; set; }
 
         public string ElasticBaseAddress { get; set; }
+
+        public int CachingInterval { get; set; }
+
+        public int NegativeCachingInterval { get; set; }
+
 
         public int RootRegionId { get; set; }
 

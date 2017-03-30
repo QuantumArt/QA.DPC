@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -437,9 +436,9 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var result = calculator.FindByKey(root, direction.GetKey(), true).ToArray();
             var direction2 = new TariffDirection("ParameterGroup", null, null, new []{ "WithinPackage" });
-            var result2 = calculator.FindByKey(root, direction2.GetKey(false)).ToArray();
+            var result2 = calculator.FindByKey(root, direction2.GetKey()).ToArray();
             var direction3 = new TariffDirection("ParameterGroup", null, null, new[] { "OverPackage" });
-            var result3 = calculator.FindByKey(root, direction3.GetKey(false)).ToArray();
+            var result3 = calculator.FindByKey(root, direction3.GetKey()).ToArray();
 
 
             Assert.That(result.Length, Is.EqualTo(2));
@@ -483,13 +482,13 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var direction = new TariffDirection("OutgoingCalls", null, null, null);
             var result = calculator.FindByKey(root, direction.GetKey(), true).ToArray();
             var direction2 = new TariffDirection("ParameterGroup", null, null, new[] { "First" });
-            var result2 = calculator.FindByKey(root, direction2.GetKey(false)).ToArray();
+            var result2 = calculator.FindByKey(root, direction2.GetKey()).ToArray();
             var direction3 = new TariffDirection("ParameterGroup", null, null, new[] { "Second" });
-            var result3 = calculator.FindByKey(root, direction3.GetKey(false)).ToArray();
+            var result3 = calculator.FindByKey(root, direction3.GetKey()).ToArray();
             var direction4 = new TariffDirection("IncomingCalls", null, null, null);
-            var result4 = calculator.FindByKey(root, direction4.GetKey(false)).ToArray();
+            var result4 = calculator.FindByKey(root, direction4.GetKey()).ToArray();
             var direction5 = new TariffDirection("MinutesPackage", null, null, null);
-            var result5 = calculator.FindByKey(root, direction5.GetKey(false)).ToArray();
+            var result5 = calculator.FindByKey(root, direction5.GetKey()).ToArray();
 
 
             Assert.That(result4.Length, Is.EqualTo(1));
@@ -513,9 +512,9 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var root = tariff.SelectToken("Parameters");
             var direction = new TariffDirection("OutgoingCalls", null, null, new[] { "WithinPackage" });
-            var result = calculator.FindByKey(root, direction.GetKey(false)).ToArray();
+            var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
             var direction2 = new TariffDirection("OutgoingCalls", null, null, new[] { "OverPackage" });
-            var result2 = calculator.FindByKey(root, direction2.GetKey(false)).ToArray();
+            var result2 = calculator.FindByKey(root, direction2.GetKey()).ToArray();
 
             Assert.That((string)result[0]["Title"], Is.EqualTo("Звонки по всей России (в пределах пакета)"));
             Assert.That((string)result2[0]["Title"], Is.EqualTo("Звонки (сверх пакета)"));

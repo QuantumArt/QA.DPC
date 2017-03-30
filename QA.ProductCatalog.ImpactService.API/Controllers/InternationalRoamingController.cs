@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
@@ -18,12 +17,11 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         protected override BaseImpactCalculator Calculator => _calc;
 
 
-        public InternationalRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory)
+        public InternationalRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
         {
             _calc = new InternationalRoamingCalculator();
         }
 
-        // GET api/values/5
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string country = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
@@ -34,11 +32,27 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 IndexName = ConfigurationOptions.GetIndexName(state, language)
             };
 
-            var result = await LoadProducts(id, serviceIds, searchOptions);
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, country, country, state, language);
+            var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
+            var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            if (result != null) return result;
+
+            result = await LoadProducts(id, serviceIds, searchOptions);
+
+
+            LogStartImpact("MNR", id, serviceIds);
 
             result = result ?? CalculateImpact(country);
 
+            LogEndImpact("MNR", id, serviceIds);
+
             result = result ?? (html ? TestLayout(Product, serviceIds, state, language) : Content(Product.ToString()));
+
+            if (!disableCache)
+            {
+                SetCachedResult(id, serviceIds, result, cacheKey);
+            }
+
             return result;
 
         }

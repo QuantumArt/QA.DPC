@@ -35,7 +35,7 @@ namespace QA.ProductCatalog.ImpactService
 
         public static string CityFeeKey = new TariffDirection("SubscriptionFee", null, null, new[] { "City" }).GetKey();
 
-        public string GetKey(bool excludeSpecial = true, bool excludeZone = false)
+        public string GetKey(bool excludeSpecial = false, bool excludeZone = false)
         {
             return GetKey(new DirectionExclusion((excludeSpecial) ? SpecialModifiers : null) {Zone = excludeZone});
         }
@@ -46,11 +46,11 @@ namespace QA.ProductCatalog.ImpactService
             if (BaseParameter != null)
             {
                 sb.Append($"BaseParameter: {BaseParameter}; ");
-                var zone = (exclusion.Zone) ? String.Empty : (Zone ?? string.Empty);
+                var zone = (exclusion.Zone) ? string.Empty : (Zone ?? string.Empty);
                 sb.Append($"Zone: {zone}; ");
-                var direction = (exclusion.Direction) ? String.Empty : (Direction ?? string.Empty);
+                var direction = (exclusion.Direction) ? string.Empty : (Direction ?? string.Empty);
                 sb.Append($"Direction: {direction}; ");
-                IEnumerable<string> modifiers = BaseParameterModifiers ?? Enumerable.Empty<string>();
+                var modifiers = BaseParameterModifiers ?? Enumerable.Empty<string>();
                 if (exclusion.Modifiers != null)
                     modifiers = modifiers.Where(n => !exclusion.Modifiers.Contains(n));
                 sb.Append($"BaseParameterModifiers: {string.Join(",", modifiers)};");

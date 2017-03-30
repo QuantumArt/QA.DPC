@@ -185,7 +185,7 @@ namespace QA.ProductCatalog.ImpactService
                 var processed = false;
                 if (linkParameter["BaseParameter"] != null)
                 {
-                    var key = linkParameter.ExtractDirection().GetKey(false);
+                    var key = linkParameter.ExtractDirection().GetKey();
                     var parametersToProcess = FindByKey(optionParametersRoot, key).ToArray();
                     processed = parametersToProcess.Any();
 
@@ -323,7 +323,7 @@ namespace QA.ProductCatalog.ImpactService
 
             foreach (var param in removeParameters)
             {
-                var jTokens = FindByKey(parameters, param.ExtractDirection().GetKey(false)).ToArray();
+                var jTokens = FindByKey(parameters, param.ExtractDirection().GetKey()).ToArray();
                 foreach (var jToken in jTokens)
                 {
                     jToken.Remove();
@@ -351,7 +351,7 @@ namespace QA.ProductCatalog.ImpactService
 
         private void AppendParameter(JArray parameters, JToken param)
         {
-            var key = param.ExtractDirection().GetKey(false);
+            var key = param.ExtractDirection().GetKey();
             var clearTariffDirection = !String.IsNullOrEmpty(key) && FindByKey(parameters, key).Any();
             parameters.Add(param.PrepareForAdd(clearTariffDirection));
         }
@@ -539,9 +539,9 @@ namespace QA.ProductCatalog.ImpactService
                     {
                         optionParam["Parent"] = parent;
                     }
-                    if (@group != null)
+                    if (group != null)
                     {
-                        optionParam["Group"] = @group;
+                        optionParam["Group"] = group;
                     }
                     if (unit != null)
                     {

@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
 namespace QA.ProductCatalog.ImpactService
@@ -35,10 +33,10 @@ namespace QA.ProductCatalog.ImpactService
             foreach (var p in countryParams)
             {
                 var group = p.SelectToken("Group");
-                var icinTitle = @group?.SelectToken("TitleForIcin");
+                var icinTitle = group?.SelectToken("TitleForIcin");
                 if (icinTitle != null)
                 {
-                    @group["Title"] = icinTitle.ToString();
+                    group["Title"] = icinTitle.ToString();
                 }
             }
         }

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
@@ -23,7 +23,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         protected JArray InitialTariffProperties;
 
 
-        public InRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory)
+        public InRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
         {
             _calc = new IntranetRoamingCalculator();
         }
@@ -31,7 +31,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string region, string homeRegion, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
-
             var searchOptions = new SearchOptions()
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
@@ -39,16 +38,31 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 HomeRegion = homeRegion
             };
 
-            var result = await LoadProducts(id, serviceIds, searchOptions);
+
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, region, homeRegion, state, language);
+            var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
+            var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            if (result != null) return result;
+
+            result = await LoadProducts(id, serviceIds, searchOptions);
+
+            LogStartImpact("VSR", id, serviceIds);
+
             result = result ?? await CorrectProductWithScale(id, region, searchOptions);
             result = result ?? CalculateImpact();
+
+            LogEndImpact("VSR", id, serviceIds);
+
             result = result ?? (html ? TestLayout(Product, serviceIds, state, language) : Content(Product.ToString()));
+
+            if (!disableCache)
+            {
+                SetCachedResult(id, serviceIds, result, cacheKey);
+            }
             return result;
-
-
         }
 
-        private async Task<ActionResult> CorrectProductWithScale(int id, string region, SearchOptions searchOptions)
+        protected async Task<ActionResult> CorrectProductWithScale(int id, string region, SearchOptions searchOptions)
         {
             var result = await LoadScale(id, region, searchOptions);
             if (result == null)

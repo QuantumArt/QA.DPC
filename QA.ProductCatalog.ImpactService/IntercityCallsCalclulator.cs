@@ -8,7 +8,7 @@ namespace QA.ProductCatalog.ImpactService
     public class IntercityCallsCalculator : BaseCallsImpactCalculator
     {
         public IntercityCallsCalculator(bool consolidateCallGroups = false)
-             : base("UseForIntercityCallsCalculator", "CalculateInInterCityCalls", "ServicesOnTariff", consolidateCallGroups)
+             : base("UseForIntercityCallsCalculator", "CalculateInIntercityCalls", "ServicesOnTariff", consolidateCallGroups)
         {
 
         }
@@ -37,7 +37,7 @@ namespace QA.ProductCatalog.ImpactService
                 var toDelete = new List<JToken>();
                 foreach (var regionParam in regionParams)
                 {
-                    var key = regionParam.ExtractDirection().GetKey(false);
+                    var key = regionParam.ExtractDirection().GetKey();
 
                     if (!dirCount.ContainsKey(key))
                     {
