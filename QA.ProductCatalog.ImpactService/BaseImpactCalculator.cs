@@ -387,7 +387,7 @@ namespace QA.ProductCatalog.ImpactService
 
                     var isEqualUnits = param.SelectToken("Unit.Id")?.ToString() == optionParam.SelectToken("Unit.Id")?.ToString();
                 
-                    var skipProcessing = paramHasNumValue && optionHasNumValue && (decimal)param["NumValue"] < (decimal)optionParam["NumValue"] && !forcedInfluence;
+                    var skipProcessing = paramHasNumValue && optionHasNumValue && (decimal)param["NumValue"] <= (decimal)optionParam["NumValue"] && !forcedInfluence;
                 
                     if (optionHasNumValue && !modifiers.Contains("DoNotChangeValue"))
                     {
