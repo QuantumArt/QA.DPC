@@ -10,12 +10,15 @@ namespace QA.ProductCatalog.ImpactService.API
             RootRegionId = 19975;
             CachingInterval = 300;
             NegativeCachingInterval = 20;
+            LoadDefaultServices = true;
         }
 
 
         public ElasticIndex[] ElasticIndexes { get; set; }
 
         public bool ConsolidateCallGroupsForIcin { get; set; }
+
+        public bool LoadDefaultServices { get; set; }
 
         public string ElasticBaseAddress { get; set; }
 

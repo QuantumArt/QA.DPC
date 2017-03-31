@@ -104,6 +104,7 @@ namespace QA.ProductCatalog.ImpactService
             {
                 var b = parametersRoot.SelectTokens("[?(@.Id)]").Where(n => n["Parent"] == null)
                     .OrderBy(n => GetTokenOrder(n, "Group.SortOrder"))
+                    .ThenBy(n => GetTokenOrder(n, "Group.Id"))
                     .ThenBy(n => GetTokenOrder(n, "SortOrder"))
                     .ThenBy(n => GetTokenOrder(n, "Id"))
                     .ToArray();

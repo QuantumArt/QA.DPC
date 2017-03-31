@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
@@ -39,6 +43,11 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = await LoadProducts(id, serviceIds, searchOptions);
 
+            if (ConfigurationOptions.LoadDefaultServices && !Services.Any())
+            {
+                result = result ?? await LoadDefaultService(searchOptions);
+            }
+
             LogStartImpact("Base", id, serviceIds);
 
             result = result ?? CalculateImpact();
@@ -53,6 +62,56 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
 
             return result;
+        }
+
+        private async Task<ActionResult> LoadDefaultService(SearchOptions searchOptions)
+        {
+            ActionResult result = null;
+
+            try
+            {
+
+                Logger.LogTrace($"Checking for default service");
+                var defaultServiceId = GetDefaultServiceId();
+                if (defaultServiceId == 0) return null;
+
+                Logger.LogTrace($"Start loading default service {defaultServiceId}");
+                var results = await SearchRepo.GetProducts(new[] { defaultServiceId }, searchOptions);
+                Logger.LogTrace($"End loading default service {defaultServiceId}");
+
+                if (results.Length == 0)
+                {
+                    var message = $"Service {defaultServiceId} is not found";
+                    Logger.LogError(message);
+                    return NotFound(message);
+                }
+
+                Services = new [] { results[0] };
+            }
+            
+            catch (Exception ex)
+            {
+                var message = $"Exception occurs while using Elastic Search: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                result = BadRequest(message);
+            }
+            return result;
+        }
+
+        private int GetDefaultServiceId()
+        {
+            var defaultServiceId = 0;
+            var links = Product.SelectTokens("ServicesOnTariff.[?(@.Service)]");
+
+            foreach (var link in links)
+            {
+                var modifiers =
+                    new HashSet<string>(link.SelectTokens($"Parent.Modifiers.[?(@.Alias)].Alias").Select(n => n.ToString()));
+                if (!modifiers.Contains(Calculator.LinkModifierName) || !modifiers.Contains("IsDefault")) continue;
+                defaultServiceId = (int) link.SelectToken("Service.Id");
+                break;
+            }
+            return defaultServiceId;
         }
     }
 }
