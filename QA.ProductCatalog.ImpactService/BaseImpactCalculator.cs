@@ -27,6 +27,7 @@ namespace QA.ProductCatalog.ImpactService
         public void Calculate(JObject product, JObject option)
         {
             var optionParametersRoot = option.SelectToken("Parameters");
+            if (optionParametersRoot == null) return;
             var optionId = (int)option.SelectToken("Id");
             bool hasImpact = MergeLinkImpactToOption(optionParametersRoot, product, optionId);
 
@@ -42,6 +43,8 @@ namespace QA.ProductCatalog.ImpactService
         {
             var parametersRoot = (JArray)product.SelectToken("Parameters");
 
+            if (parametersRoot == null) return;
+
             SetSiblingOrder(parametersRoot);
 
             SetNaturalOrder(parametersRoot);
@@ -54,7 +57,6 @@ namespace QA.ProductCatalog.ImpactService
             {
                 parametersRoot.Add(param);
             }
-
         }
 
         public static int GetLevelCapacity(int maxSiblings)

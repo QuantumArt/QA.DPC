@@ -25,7 +25,9 @@ namespace QA.ProductCatalog.ImpactService
 
         private void SetUnlimitedValues(JObject option)
         {
-            foreach (var param in option["Parameters"])
+            var parameters = option["Parameters"];
+            if (parameters == null) return;
+            foreach (var param in parameters)
             {
                 var title = param.SelectToken("BaseParameterModifiers[?(@.Alias == 'Unlimited')].Title")?.ToString();
                 if (title != null)

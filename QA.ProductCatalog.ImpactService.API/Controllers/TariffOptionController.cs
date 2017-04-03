@@ -43,7 +43,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = await LoadProducts(id, serviceIds, searchOptions);
 
-            if (ConfigurationOptions.LoadDefaultServices && !Services.Any())
+            if (ConfigurationOptions.LoadDefaultServices && Services != null && !Services.Any())
             {
                 result = result ?? await LoadDefaultService(searchOptions);
             }

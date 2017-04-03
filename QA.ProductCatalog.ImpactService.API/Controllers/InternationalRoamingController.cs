@@ -23,7 +23,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string country = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
 
             var searchOptions = new SearchOptions()
@@ -32,7 +32,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 IndexName = ConfigurationOptions.GetIndexName(state, language)
             };
 
-            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, country, country, state, language);
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, countryCode, state, language);
             var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
@@ -42,7 +42,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogStartImpact("MNR", id, serviceIds);
 
-            result = result ?? CalculateImpact(country);
+            result = result ?? CalculateImpact(countryCode);
 
             LogEndImpact("MNR", id, serviceIds);
 
@@ -57,11 +57,11 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         }
 
-        private ActionResult CalculateImpact(string country)
+        private ActionResult CalculateImpact(string countryCode)
         {
             try
             {
-                _calc.Calculate(Product, Services.ToArray(), country);
+                _calc.Calculate(Product, Services.ToArray(), countryCode);
             }
             catch (Exception ex)
             {
