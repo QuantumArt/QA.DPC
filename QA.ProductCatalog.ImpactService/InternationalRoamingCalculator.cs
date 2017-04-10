@@ -47,15 +47,30 @@ namespace QA.ProductCatalog.ImpactService
             var countryParams = zoneParameters.Where(n => n.SelectToken("Zone.Alias").ToString() == countryCode)
                 .ToDictionary(k => (int)k["Id"], p => p);
 
+            if (!countryParams.Any())
+            {
+                foreach (var zp in zoneParameters)
+                {
+                    var aliases = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@.Alias)].Alias").Select(n => n.ToString()));
+                    if (aliases.Contains(countryCode))
+                    {
+                        countryParams.Add((int)zp["Id"], zp);
+                    }
+                }
+            }
+
             var preservedParams = new Dictionary<int, JToken>(countryParams);
+
+            var exclusion = new DirectionExclusion(new[] {"Unlimited"}) { Zone = true };
 
             foreach (var p in worldExceptRussiaParams)
             {
-                var dir = p.ExtractDirection();
-                dir.Zone = countryCode;
-                var specialExists = FindByKey(option.SelectToken("Parameters"), dir.GetKey(), new DirectionExclusion(new [] {"Unlimited"})).Any();
+                var key = p.ExtractDirection().GetKey(exclusion);
+                var specialExists = countryParams.Values.Any(n => n.ExtractDirection().GetKey(exclusion) == key);
                 if (!specialExists)
+                {
                     preservedParams.Add((int)p["Id"], p);
+                }
             }
 
             foreach (var zp in zoneParameters)
