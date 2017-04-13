@@ -70,7 +70,10 @@ namespace QA.ProductCatalog.ImpactService
 
             countryParams = AppendParents(root, countryParams);
 
-            СonsolidateGroupForCalls(countryParams);
+            if (ConsolidateCallGroups)
+            {
+                СonsolidateGroupForCalls(countryParams);
+            }
 
             ChangeGroupNamesForIcin(countryParams);
 

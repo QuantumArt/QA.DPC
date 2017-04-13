@@ -47,12 +47,12 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             result = result ?? FilterServiceParameters(region);
             result = result ?? CalculateImpact();
             result = result ?? FilterProductParameters(region);
-            result = result ?? FilterServicesOnTariff();
+            result = result ?? FilterServicesOnProduct();
             var product = GetNewProduct();
 
             LogEndImpact("MG", id, serviceIds);
 
-            result = result ?? (html ? TestLayout(product, serviceIds, state, language) : Content(product.ToString()));
+            result = result ?? (html ? TestLayout(product, serviceIds, state, language, homeRegion, region) : Content(product.ToString()));
 
             if (!disableCache)
             {

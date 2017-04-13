@@ -13,5 +13,11 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         public string State { get; set; }
 
         public string Language { get; set; }
+
+        public string Region { get; set; }
+
+        public string HomeRegion { get; set; }
+
+        public string Country { get; set;  }
     }
 }

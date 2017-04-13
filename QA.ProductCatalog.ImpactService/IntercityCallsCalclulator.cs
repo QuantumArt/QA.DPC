@@ -71,6 +71,11 @@ namespace QA.ProductCatalog.ImpactService
 
             regionParams = AppendParents(root, regionParams);
 
+            if (ConsolidateCallGroups)
+            {
+                СonsolidateGroupForCalls(regionParams);
+            }
+
             ChangeGroupNamesForIcin(regionParams);
 
             return regionParams;

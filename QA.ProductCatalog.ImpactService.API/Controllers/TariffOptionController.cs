@@ -48,13 +48,15 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 result = result ?? await LoadDefaultService(searchOptions);
             }
 
+            result = result ?? FilterServicesOnProduct(true);
+
             LogStartImpact("Base", id, serviceIds);
 
             result = result ?? CalculateImpact();
 
             LogEndImpact("Base", id, serviceIds);
 
-            result = result ?? (html ? TestLayout(Product, serviceIds, state, language) : Content(Product.ToString()));
+            result = result ?? (html ? TestLayout(Product, serviceIds, state, language, homeRegion) : Content(Product.ToString()));
 
             if (!disableCache)
             {

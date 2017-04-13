@@ -635,13 +635,23 @@ namespace QA.ProductCatalog.ImpactService
             return tariff;
         }
 
-        public IEnumerable<JToken> FilterServicesOnTariff(JArray root)
+        public IEnumerable<JToken> FilterServicesOnProduct(JObject product)
         {
-            return root
-                .Where(n => n.SelectTokens("Parent.Modifiers.[?(@.Alias)].Alias")
+            var root = product.SelectToken(LinkName);
+            if (root == null) yield break;
+            foreach (var elem in (JArray)root)
+            {
+                var hasModifier =
+                    elem.SelectTokens("Parent.Modifiers.[?(@.Alias)].Alias")
+                        .Select(m => m.ToString())
+                        .Contains(LinkModifierName);
+                var isArchive = elem.SelectTokens("Service.Modifiers.[?(@.Alias)].Alias")
                     .Select(m => m.ToString())
-                    .Contains(LinkModifierName))
-                .ToArray();
+                    .Contains("Archive");
+
+                if (hasModifier && !isArchive)
+                    yield return elem;
+            }
         }
 
         protected JToken[] AppendParents(JArray root, JToken[] inParams)
@@ -655,6 +665,26 @@ namespace QA.ProductCatalog.ImpactService
 
             var parentParams = root.Where(n => parentParamIds.Contains((int)n["Id"]) && !countryParamIds.Contains((int)n["Id"])).ToArray();
             return inParams.Union(parentParams).ToArray();
+        }
+
+        public void SaveServicesOnProduct(JObject product, IEnumerable<JToken> servicesOnProduct)
+        {
+            if (product == null) return;
+            var root = product.SelectToken(LinkName);
+            if (root == null)
+            {
+                product.Add(new JProperty(LinkName, servicesOnProduct));
+            }
+            else
+            {
+                var filtered = servicesOnProduct.ToDictionary(n => (int)n["Id"], m => m);
+                var toDelete = ((JArray) root).Where(n => !filtered.ContainsKey((int) n["Id"])).ToArray();
+
+                foreach (var item in toDelete)
+                {
+                    item.Remove();
+                }
+            }
         }
     }
 }

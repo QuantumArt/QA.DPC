@@ -39,6 +39,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = await LoadProducts(id, serviceIds, searchOptions);
 
+            result = result ?? FilterServicesOnProduct(true);
 
             LogStartImpact("MNR", id, serviceIds);
 
@@ -46,7 +47,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogEndImpact("MNR", id, serviceIds);
 
-            result = result ?? (html ? TestLayout(Product, serviceIds, state, language) : Content(Product.ToString()));
+            result = result ?? (html ? TestLayout(Product, serviceIds, state, language, country: countryCode) : Content(Product.ToString()));
 
             if (!disableCache)
             {

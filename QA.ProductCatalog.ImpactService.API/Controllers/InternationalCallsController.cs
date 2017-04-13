@@ -47,12 +47,13 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             result = result ?? FilterServiceParameters(countryCode);
             result = result ?? CalculateImpact();
             result = result ?? FilterProductParameters(countryCode);
-            result = result ?? FilterServicesOnTariff();
+            result = result ?? FilterServicesOnProduct();
+
             var product = GetNewProduct();
 
             LogEndImpact("MN", id, serviceIds);
 
-            result = result ?? (html ? TestLayout(product, serviceIds, state, language) : Content(product.ToString()));
+            result = result ?? (html ? TestLayout(product, serviceIds, state, language, homeRegion, country: countryCode) : Content(product.ToString()));
 
             if (!disableCache)
             {

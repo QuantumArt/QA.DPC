@@ -28,6 +28,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         protected JObject[] Services;
 
         protected JObject[] ParameterGroups;
+        protected IEnumerable<JToken> ServicesOnProduct;
 
         protected BaseController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache)
         {
@@ -111,9 +112,19 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return null;
         }
 
-        protected ActionResult TestLayout(JObject product, int[] serviceIds, string state, string language)
+        protected ActionResult TestLayout(JObject product, int[] serviceIds, string state, string language, string homeRegion = null, string region = null, string country = null)
         {
-            var result = new ProductLayoutModel {Product = product, Calculator = Calculator, ServiceIds = serviceIds, State = state, Language = language};
+            var result = new ProductLayoutModel
+            {
+                Product = product,
+                Calculator = Calculator,
+                ServiceIds = serviceIds,
+                State = state,
+                Language = language,
+                Region = region,
+                HomeRegion = homeRegion,
+                Country = country
+            };
             return View("Product", result);
         }
 
@@ -195,6 +206,25 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         {
             var services = string.Join(", ", serviceIds);
             Logger.LogTrace($"Start calculating {code} impact for product {id} and services {services}");
+        }
+
+        protected ActionResult FilterServicesOnProduct(bool saveInProduct = false)
+        {
+            try
+            {
+                ServicesOnProduct = Calculator.FilterServicesOnProduct(Product).ToArray();
+                if (saveInProduct)
+                {
+                    Calculator.SaveServicesOnProduct(Product, ServicesOnProduct);
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Exception occurs while filtering services: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
+            }
+            return null;
         }
     }
 }

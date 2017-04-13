@@ -14,8 +14,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected IEnumerable<JToken> Parameters;
 
-        protected IEnumerable<JToken> ServicesOnTariff;
-
         protected BaseCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
         {
         }
@@ -25,7 +23,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         protected JObject GetNewProduct()
         {
             var newProduct = new JObject(new JProperty("Parameters", new JArray(Parameters)),
-                new JProperty("ServicesOnTariff", ServicesOnTariff));
+                new JProperty("ServicesOnTariff", ServicesOnProduct));
 
             CallsCalculator.Reorder(newProduct);
 
@@ -57,21 +55,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while filtering parameters: {ex.Message}";
-                Logger.LogError(1, ex, message);
-                return BadRequest(message);
-            }
-            return null;
-        }
-
-        protected ActionResult FilterServicesOnTariff()
-        {
-            try
-            {
-                ServicesOnTariff = CallsCalculator.FilterServicesOnTariff((JArray) Product.SelectToken("ServicesOnTariff"));
-            }
-            catch (Exception ex)
-            {
-                var message = $"Exception occurs while filtering services: {ex.Message}";
                 Logger.LogError(1, ex, message);
                 return BadRequest(message);
             }

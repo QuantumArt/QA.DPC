@@ -46,6 +46,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = await LoadProducts(id, serviceIds, searchOptions);
 
+            result =  result ?? FilterServicesOnProduct(true);
+
             LogStartImpact("VSR", id, serviceIds);
 
             result = result ?? await CorrectProductWithScale(id, region, searchOptions);
@@ -53,7 +55,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogEndImpact("VSR", id, serviceIds);
 
-            result = result ?? (html ? TestLayout(Product, serviceIds, state, language) : Content(Product.ToString()));
+            result = result ?? (html ? TestLayout(Product, serviceIds, state, language, homeRegion, region) : Content(Product.ToString()));
 
             if (!disableCache)
             {

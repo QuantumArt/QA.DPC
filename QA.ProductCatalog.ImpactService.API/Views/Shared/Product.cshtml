@@ -46,8 +46,8 @@
         var options = optionRoot
             .SelectTokens("[?(@.Id)]")
             .Where(n => n.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{Model.Calculator.LinkModifierName}')]").Any() && n.SelectTokens("Service.MarketingProduct.Groups").Any())
-            .OrderBy(n => (int) (n.SelectToken("Service.MarketingProduct.Groups[0].SortOrder") ?? -1))
-            .ThenBy(n => (int) (n.SelectToken("Service.SortOrder") ?? -1));
+            .OrderBy(n => (int)(n.SelectToken("Service.MarketingProduct.Groups[0].SortOrder") ?? -1))
+            .ThenBy(n => (int)(n.SelectToken("Service.SortOrder") ?? -1));
 
 
         var previousOptionGroupName = String.Empty;
@@ -64,14 +64,26 @@
                         <h3>@Html.Raw(optionGroupName)</h3>
                     }
 
-                    int id = (int) option.SelectToken("Service.Id");
-                    <input name="serviceIds" data-group-id="@optionGroupId" id="@id" type="checkbox" value="@id" @(Model.ServiceIds.Any(n => n == id) ? "checked" : "")/>
+                    int id = (int)option.SelectToken("Service.Id");
+                    <input name="serviceIds" data-group-id="@optionGroupId" id="@id" type="checkbox" value="@id" @(Model.ServiceIds.Any(n => n == id) ? "checked" : "") />
                     @option.SelectToken("Service.MarketingProduct.Title")
                     previousOptionGroupName = optionGroupName;
                 }
-                <input type="hidden" name="html" value="true"/>
-                <input type="hidden" name="language" value="@Model.Language"/>
-                <input type="hidden" name="state" value="@Model.State"/>
+                <input type="hidden" name="html" value="true" />
+                <input type="hidden" name="language" value="@Model.Language" />
+                <input type="hidden" name="state" value="@Model.State" />
+                @if (!string.IsNullOrEmpty(@Model.Country))
+                {
+                    <input type="hidden" name="countryCode" value="@Model.Country" />
+                }
+                @if (!string.IsNullOrEmpty(@Model.Region))
+                {
+                    <input type="hidden" name="region" value="@Model.Region" />
+                }
+                @if (!string.IsNullOrEmpty(@Model.HomeRegion))
+                {
+                    <input type="hidden" name="homeRegion" value="@Model.HomeRegion" />
+                }
 
             </div>
         </form>
