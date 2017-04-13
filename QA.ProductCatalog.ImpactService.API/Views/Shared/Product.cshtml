@@ -39,86 +39,96 @@
 @{
     JToken root = Model.Product.SelectToken("Parameters");
     JToken optionRoot = Model.Product.SelectToken(Model.Calculator.LinkName);
-    var options = optionRoot
-        .SelectTokens("[?(@.Id)]")
-        .Where(n => n.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{Model.Calculator.LinkModifierName}')]").Any() && n.SelectTokens("Service.MarketingProduct.Groups").Any())
-        .OrderBy(n => (int)(n.SelectToken("Service.MarketingProduct.Groups[0].SortOrder") ?? -1))
-        .ThenBy(n => (int)(n.SelectToken("Service.SortOrder") ?? -1));
 
-
-    var previousGroupName = String.Empty;
-    var previousOptionGroupName = String.Empty;
-    var parents = new HashSet<string>(root.SelectTokens("[?(@.Parent)].Parent.Id").Select(n => n.ToString()));
-    <form name="main" method="get">
-
-        <div id="options">
-            <h2>Возможности экономии</h2>
-            @foreach (var option in options)
-            {
-                var optionGroupName = option.SelectToken("Service.MarketingProduct.Groups[0].Title").ToString();
-                var optionGroupId = option.SelectToken("Service.MarketingProduct.Groups[0].Id").ToString();
-                if (optionGroupName != previousOptionGroupName)
-                {
-                    <h3>@Html.Raw(optionGroupName)</h3>
-                }
-
-                int id = (int) option.SelectToken("Service.Id");
-                <input name="serviceIds" data-group-id="@optionGroupId" id="@id" type="checkbox" value="@id" @(Model.ServiceIds.Any(n => n == id) ? "checked" : "")/>
-                @option.SelectToken("Service.MarketingProduct.Title")
-                previousOptionGroupName = optionGroupName;
-            }
-            <input type="hidden" name="html" value="true"/>
-            <input type="hidden" name="language" value="@Model.Language" />
-            <input type="hidden" name="state" value="@Model.State" />
-
-        </div>
-    </form>
-
-    foreach (var param in root.SelectTokens("[?(@.Id)]"))
+    if (optionRoot != null)
     {
-        var groupName = param.SelectToken("Group.Title")?.ToString();
-        var numValue = param.SelectToken("NumValue")?.ToString();
-        var oldNumValue = param.SelectToken("OldNumValue")?.ToString();
-        var unit = param.SelectToken("Unit.Display")?.ToString() ?? "";
-        var value = param.SelectToken("Value")?.ToString();
-        var changed = param.SelectToken("Changed") != null;
-        var changedData = changed ? @"class=changed" : "";
-        var returnValue = numValue;
-        if (returnValue == null)
-        {
-            returnValue = value;
-        }
-        else
-        {
-            returnValue = $"{returnValue} {unit}";
-            if (oldNumValue != null)
-            {
-                returnValue += $" (<span class=old>{oldNumValue} {unit}</span>)";
-            }
-        }
 
-        if (returnValue != null)
-        {
-            returnValue = "- " + returnValue;
-        }
+        var options = optionRoot
+            .SelectTokens("[?(@.Id)]")
+            .Where(n => n.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{Model.Calculator.LinkModifierName}')]").Any() && n.SelectTokens("Service.MarketingProduct.Groups").Any())
+            .OrderBy(n => (int) (n.SelectToken("Service.MarketingProduct.Groups[0].SortOrder") ?? -1))
+            .ThenBy(n => (int) (n.SelectToken("Service.SortOrder") ?? -1));
 
-        if (groupName != "Системная")
-        {
-            if (groupName != previousGroupName)
-            {
-                <h2>@Html.Raw(groupName)</h2>
-            }
 
-            if (numValue == null && parents.Contains(param.SelectToken("Id").ToString()))
+        var previousOptionGroupName = String.Empty;
+        <form name="main" method="get">
+
+            <div id="options">
+                <h2>Возможности экономии</h2>
+                @foreach (var option in options)
+                {
+                    var optionGroupName = option.SelectToken("Service.MarketingProduct.Groups[0].Title").ToString();
+                    var optionGroupId = option.SelectToken("Service.MarketingProduct.Groups[0].Id").ToString();
+                    if (optionGroupName != previousOptionGroupName)
+                    {
+                        <h3>@Html.Raw(optionGroupName)</h3>
+                    }
+
+                    int id = (int) option.SelectToken("Service.Id");
+                    <input name="serviceIds" data-group-id="@optionGroupId" id="@id" type="checkbox" value="@id" @(Model.ServiceIds.Any(n => n == id) ? "checked" : "")/>
+                    @option.SelectToken("Service.MarketingProduct.Title")
+                    previousOptionGroupName = optionGroupName;
+                }
+                <input type="hidden" name="html" value="true"/>
+                <input type="hidden" name="language" value="@Model.Language"/>
+                <input type="hidden" name="state" value="@Model.State"/>
+
+            </div>
+        </form>
+    }
+
+    if (root != null)
+    {
+        var previousGroupName = String.Empty;
+        var parents = new HashSet<string>(root.SelectTokens("[?(@.Parent)].Parent.Id").Select(n => n.ToString()));
+
+        foreach (var param in root.SelectTokens("[?(@.Id)]"))
+        {
+            var groupName = param.SelectToken("Group.Title")?.ToString();
+            var numValue = param.SelectToken("NumValue")?.ToString();
+            var oldNumValue = param.SelectToken("OldNumValue")?.ToString();
+            var unit = param.SelectToken("Unit.Display")?.ToString() ?? "";
+            var value = param.SelectToken("Value")?.ToString();
+            var changed = param.SelectToken("Changed") != null;
+            var changedData = changed ? @"class=changed" : "";
+            var returnValue = numValue;
+            if (returnValue == null)
             {
-                <h3 @Html.Raw(changedData)>@Html.Raw(param.SelectToken("Title"))</h3>
+                returnValue = value;
             }
             else
             {
-                <p @Html.Raw(changedData)>@Html.Raw(param.SelectToken("Title")) @Html.Raw(returnValue)</p>
+                returnValue = $"{returnValue} {unit}";
+                if (oldNumValue != null)
+                {
+                    returnValue += $" (<span class=old>{oldNumValue} {unit}</span>)";
+                }
             }
 
-            previousGroupName = groupName;
+            if (returnValue != null)
+            {
+                returnValue = "- " + returnValue;
+            }
+
+            if (groupName != "Системная")
+            {
+                if (groupName != previousGroupName)
+                {
+                    <h2>@Html.Raw(groupName)</h2>
+                }
+
+                if (numValue == null && parents.Contains(param.SelectToken("Id").ToString()))
+                {
+                    <h3 @Html.Raw(changedData)>@Html.Raw(param.SelectToken("Title"))</h3>
+                }
+                else
+                {
+                    <p @Html.Raw(changedData)>@Html.Raw(param.SelectToken("Title")) @Html.Raw(returnValue)</p>
+                }
+
+                previousGroupName = groupName;
+            }
+
         }
 
     }

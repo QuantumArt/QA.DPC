@@ -9,6 +9,9 @@ namespace QA.ProductCatalog.ImpactService
 
         public bool UseTariffData {get; private set; }
 
+        public bool MergeWithTariffData { get; private set; }
+
+
         public bool ExcludePartners { get; private set; }
 
         public IntranetRoamingCalculator() : base("UseForRoamingCalculator", "CalculateInRoaming", "ServicesOnTariff")
@@ -29,8 +32,17 @@ namespace QA.ProductCatalog.ImpactService
             var modifiersSeq = modifiersRoot?.SelectTokens("[?(@.Alias)].Alias")?.Select(n => n.ToString()) ??
                                Enumerable.Empty<string>();
             var modifiers = new HashSet<string>(modifiersSeq);
+
             UseTariffData = modifiers.Contains("UseTariffData");
+            MergeWithTariffData = modifiers.Contains("MergeWithTariffData");
             ExcludePartners = modifiers.Contains("ExcludePartners");
+            var scaleParameters = (JArray)scale.SelectToken("Parameters");
+
+            if (MergeWithTariffData)
+            {
+                var tariffParameters = (JArray)product.SelectToken("Parameters");
+                MergeTariffParametersToScale(tariffParameters, scaleParameters);
+            }
 
             var scaleLinkParameters = (JArray)link.SelectToken("Parameters");
 
@@ -38,9 +50,6 @@ namespace QA.ProductCatalog.ImpactService
 
             if (!UseTariffData)
             {
-                var scaleParameters = (JArray)scale.SelectToken("Parameters");
-
-
                 MergeLinkImpact(scaleParameters, scaleLinkParameters);
                 var toRemove =
                     scaleParameters.Where(
@@ -59,6 +68,12 @@ namespace QA.ProductCatalog.ImpactService
                 MergeLinkImpact(tariffParameters, scaleLinkParameters);
             }
 
+        }
+
+        private void MergeTariffParametersToScale(JArray tariffParameters, JArray scaleParameters)
+        {
+            var parameters = FilterProductParameters(tariffParameters);
+            scaleParameters.Add(parameters);
         }
 
 
