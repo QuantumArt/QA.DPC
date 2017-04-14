@@ -21,6 +21,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         private const string BaseSeparator = ",";
         private const string ProductIdField = "ProductId";
+        private const string DidableOrParameterName = "DisableOr";
+        private const string DidableNotParameterName = "DisableNot";
 
         private IElasticClient _client { get; }
         private Func<string, string, IElasticClient> _getClient { get; }
@@ -307,100 +309,26 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             if (productsOptions.Filters != null)
             {
-                query = productsOptions.Filters.Where(f => f.Item1 != Options.TypePath).Aggregate(query, (current, sf) =>
+                var disabledOrFields = GetFieldValues(productsOptions.Filters, DidableOrParameterName);
+                var disabledNotFields = GetFieldValues(productsOptions.Filters, DidableNotParameterName);
+
+                query = productsOptions.Filters
+                    .Where(f => !new[] { Options.TypePath, DidableOrParameterName, DidableNotParameterName }.Contains(f.Item1))
+                    .Aggregate(query, (current, sf) =>
                 {
                     var field = sf.Item1;
                     var value = sf.Item2;
-                    var separator = Options.ValueSeparator;
-                    var isBaseField = field == Options.IdPath || field == ProductIdField;
 
-                    if (isBaseField)
+                    if (!string.IsNullOrEmpty(Options.NegationMark) && value.StartsWith(Options.NegationMark) && !disabledNotFields.Contains(field))
                     {
-
-                        if (value.Contains(BaseSeparator))
-                        {
-                            var values = value.Split(new string[] { BaseSeparator }, StringSplitOptions.None);
-
-                            current = current & +new TermsQuery
-                            {
-                                Field = field,
-                                Terms = values
-                            };
-                        }
-                        else if (!string.IsNullOrWhiteSpace(separator) && value.Contains(separator))
-                        {
-                            var values = value.Split(new string[] { separator }, StringSplitOptions.None);
-
-                            current = current & +new TermsQuery
-                            {
-                                Field = field,
-                                Terms = values
-                            };
-                        }
-                        else
-                        {
-                            current = current & +new TermQuery
-                            {
-                                Field = field,
-                                Value = value
-                            };
-                        }
-                    }                 
+                        value = value.Remove(0, Options.NegationMark.Length);
+                        var condition = Filter(new QueryContainer(), field, value, Options.ValueSeparator);
+                        current = current & +new BoolQuery { MustNot = new QueryContainer[] { condition } };
+                    }
                     else
-                    {                        
-                        var notAnalized = IsNotAnalyzedField(field);
-                        var separated = !string.IsNullOrWhiteSpace(separator) && value.Contains(separator);
-                        var values = new string[0];
-
-                        if (separated)
-                        {
-                            values = value.Split(new string[] { separator }, StringSplitOptions.None);
-                        }
-
-                        if (notAnalized)
-                        {
-                            if (separated)
-                            {
-                                current = current & +new TermsQuery
-                                {
-                                    Field = field,
-                                    Terms = values
-                                };
-                            }
-                            else
-                            {
-                                current = current & +new TermQuery
-                                {
-                                    Field = field,
-                                    Value = value
-                                };
-                            }
-                        }
-                        else
-                        {
-                            if (separated)
-                            {
-                                current = current & +new BoolQuery
-                                {
-                                    Should = values.Select(v => (QueryContainer)
-                                        new MatchPhraseQuery
-                                        {
-                                            Field = field,
-                                            Query = v,
-                                            Operator = Operator.And
-                                        })
-                                };
-                            }
-                            else
-                            {
-                                current = current & +new MatchPhraseQuery
-                                {
-                                    Field = field,
-                                    Query = value,
-                                    Operator = Operator.And
-                                };
-                            }
-                        }                      
+                    {
+                        var separator = disabledOrFields.Contains(field) ? null : Options.ValueSeparator;
+                        current = Filter(current, field, value, separator);
                     }
 
                     return current;
@@ -428,6 +356,115 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
 
             return query;
+        }
+
+        private QueryContainer Filter(QueryContainer condition, string field, string value, string separator)
+        {
+            var isBaseField = field == Options.IdPath || field == ProductIdField;
+
+            if (isBaseField)
+            {
+                if (value.Contains(BaseSeparator))
+                {
+                    var values = value.Split(new string[] { BaseSeparator }, StringSplitOptions.None);
+
+                    condition = condition & +new TermsQuery
+                    {
+                        Field = field,
+                        Terms = values
+                    };
+                }
+                else if (!string.IsNullOrWhiteSpace(separator) && value.Contains(separator))
+                {
+                    var values = value.Split(new string[] { separator }, StringSplitOptions.None);
+
+                    condition = condition & +new TermsQuery
+                    {
+                        Field = field,
+                        Terms = values
+                    };
+                }
+                else
+                {
+                    condition = condition & +new TermQuery
+                    {
+                        Field = field,
+                        Value = value
+                    };
+                }
+            }
+            else
+            {
+                var notAnalized = IsNotAnalyzedField(field);
+                var separated = !string.IsNullOrWhiteSpace(separator) && value.Contains(separator);
+                var values = new string[0];
+
+                if (separated)
+                {
+                    values = value.Split(new string[] { separator }, StringSplitOptions.None);
+                }
+
+                if (notAnalized)
+                {
+                    if (separated)
+                    {
+                        condition = condition & +new TermsQuery
+                        {
+                            Field = field,
+                            Terms = values
+                        };
+                    }
+                    else
+                    {
+                        condition = condition & +new TermQuery
+                        {
+                            Field = field,
+                            Value = value
+                        };
+                    }
+                }
+                else
+                {
+                    if (separated)
+                    {
+                        condition = condition & +new BoolQuery
+                        {
+                            Should = values.Select(v => (QueryContainer)
+                                new MatchPhraseQuery
+                                {
+                                    Field = field,
+                                    Query = v,
+                                    Operator = Operator.And
+                                })
+                        };
+                    }
+                    else
+                    {
+                        condition = condition & +new MatchPhraseQuery
+                        {
+                            Field = field,
+                            Query = value,
+                            Operator = Operator.And
+                        };
+                    }
+                }
+            }
+
+            return condition;
+        }
+
+        private string[] GetFieldValues(IList<Tuple<string, string>> filters, string field)
+        {
+            var value = filters.FirstOrDefault(f => f.Item1 == field)?.Item2;
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return new string[0];
+            }
+            else
+            {
+                return value.Split(',');
+            }
         }
 
         private void SetPropertyFilter(SearchDescriptor<StreamData> request, ProductsOptions options, string type = null)
