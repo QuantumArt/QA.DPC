@@ -41,7 +41,13 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return $@"{{ _source: [""Region.Id""], ""query"" : {{ ""term"" : {{ ""Region.Alias"" : ""{regionAlias}"" }}}}}}";
         }
 
-        
+        private string GetMrQuery(string[] regionAliases)
+        {
+            var regions = string.Join(", ", regionAliases.Select(n => $@"""{n.ToString()}""").ToArray());
+            return $@"{{ _source: [""Region.Parent.Alias""], ""query"" : {{ ""terms"" : {{ ""Region.Alias"" : [{regions}] }}}}}}";
+        }
+
+
         public async Task<JObject[]> GetProducts(int[] productIds, SearchOptions options)
         {
             var result = await GetContent(GetJsonQuery(productIds), options);
@@ -51,6 +57,16 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             var hits = JObject.Parse(result).SelectTokens(_sourceQuery).ToArray();
 
             return hits.Select(n => (JObject)n).ToArray();
+        }
+
+        public async Task<bool> IsOneMacroRegion(string[] regions, SearchOptions options)
+        {
+            var newOptions = options.Clone();
+            newOptions.TypeName = "RoamingRegion";
+            var regionResult = await GetContent(GetMrQuery(regions), newOptions);
+            var aliases = JObject.Parse(regionResult)
+                .SelectTokens($"{_sourceQuery}.Region.Parent.Alias").Select(n => n.ToString()).ToArray();
+            return aliases.Length > 1 && aliases.Distinct().Count() == 1;
         }
 
         private async Task<string> ProcessRegionTags(int[] productIds, string input, SearchOptions options)

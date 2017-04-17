@@ -45,10 +45,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             LogStartImpact("MG", id, serviceIds);
 
             result = result ?? FilterServiceParameters(region);
-            result = result ?? CalculateImpact();
+            result = result ?? CalculateImpact(homeRegion);
             result = result ?? FilterProductParameters(region);
             result = result ?? FilterServicesOnProduct();
-            var product = GetNewProduct();
+            var product = (result == null) ? GetNewProduct(homeRegion) : null;
 
             LogEndImpact("MG", id, serviceIds);
 

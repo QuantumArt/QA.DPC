@@ -11,7 +11,7 @@ namespace QA.ProductCatalog.ImpactService
 
         }
 
-        public JObject Calculate(JObject roamingScale, JObject[] options, string countryCode)
+        public JObject Calculate(JObject roamingScale, JObject[] options, string countryCode, string homeRegion)
         {
             foreach (var option in options)
             {
@@ -19,7 +19,7 @@ namespace QA.ProductCatalog.ImpactService
                 SetUnlimitedValues(option);
                 Calculate(roamingScale, option);
             }
-            Reorder(roamingScale);
+            Reorder(roamingScale, homeRegion);
             return roamingScale;
         }
 

@@ -39,11 +39,15 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
 
-        public void Reorder(JObject product)
+        public void Reorder(JObject product, string homeRegion = null, Dictionary<int, int> forcedGroupOrderOverride = null)
         {
             var parametersRoot = (JArray)product.SelectToken("Parameters");
 
             if (parametersRoot == null) return;
+
+            var groupOrderOverride = forcedGroupOrderOverride ?? GetGroupOrderOverride(product, homeRegion);
+
+            SetGroupOrder(parametersRoot, groupOrderOverride);
 
             SetSiblingOrder(parametersRoot);
 
@@ -57,6 +61,52 @@ namespace QA.ProductCatalog.ImpactService
             {
                 parametersRoot.Add(param);
             }
+        }
+
+        private void SetGroupOrder(JArray parametersRoot, Dictionary<int, int> groupOrderOverride)
+        {
+            foreach (var p in parametersRoot)
+            {
+                var group = p.SelectToken("Group");
+                var groupId = (int) group["Id"];
+                int order;
+                if (groupOrderOverride.TryGetValue(groupId, out order))
+                {
+                    group["SortOrder"] = order;
+                }
+            }
+        }
+
+        public Dictionary<int, int> GetGroupOrderOverride(JObject product, string homeRegion)
+        {
+            var result = new Dictionary<int, int>();
+            JToken region = null;
+            if (!string.IsNullOrEmpty(homeRegion))
+            {
+                region = product.SelectToken($"Regions[?(@.Alias == '{homeRegion}')]");
+            }
+
+            if (region == null)
+            {
+                region = product.SelectToken($"Regions[0]");
+            }
+
+            var usagesRoot = (JArray)region.SelectToken("ParameterGroupUsages");
+
+            if (usagesRoot != null)
+            {
+                foreach (var usage in usagesRoot)
+                {
+                    var idToken = usage.SelectToken("Group.Id");
+                    var orderToken = usage.SelectToken("SortOrder");
+                    if (idToken != null && orderToken != null)
+                    {
+                        result.Add((int)idToken, (int)orderToken);
+                    }
+                }
+            }
+
+            return result;
         }
 
         public static int GetLevelCapacity(int maxSiblings)
@@ -174,10 +224,9 @@ namespace QA.ProductCatalog.ImpactService
             return hasImpact;
         }
 
-        public void MergeLinkImpact(JArray optionParametersRoot, JArray linkParameters)
+        public void MergeLinkImpact(JArray optionParametersRoot, JArray linkParameters, string specialBaseParameterModifier = null)
         {
             var changedIds = new Dictionary<int, int>();
-
 
             foreach (var linkParameter in linkParameters)
             {
@@ -188,8 +237,15 @@ namespace QA.ProductCatalog.ImpactService
                 var processed = false;
                 if (linkParameter["BaseParameter"] != null)
                 {
-                    var key = linkParameter.ExtractDirection().GetKey();
+                    var direction = linkParameter.ExtractDirection();
+                    var key = direction.GetKey();
                     var parametersToProcess = FindByKey(optionParametersRoot, key).ToArray();
+                    if (!parametersToProcess.Any() && specialBaseParameterModifier != null && direction.BaseParameterModifiers.Contains(specialBaseParameterModifier))
+                    {
+                        key = direction.GetKey(new DirectionExclusion(new[] {specialBaseParameterModifier}));
+                        parametersToProcess = FindByKey(optionParametersRoot, key).ToArray();
+                    }
+
                     processed = parametersToProcess.Any();
 
                     foreach (var p in parametersToProcess)
@@ -625,13 +681,13 @@ namespace QA.ProductCatalog.ImpactService
             return defaultResult;
         }
 
-        public virtual JObject Calculate(JObject tariff, JObject[] options)
+        public virtual JObject Calculate(JObject tariff, JObject[] options, string homeRegion)
         {
             foreach (var option in options)
             {
                 Calculate(tariff, option);
             }
-            Reorder(tariff);
+            Reorder(tariff, homeRegion);
             return tariff;
         }
 

@@ -43,27 +43,56 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected async Task<DateTimeOffset> GetLastUpdated(int[] ids, SearchOptions searchOptions, DateTimeOffset defaultValue)
         {
-            return await SearchRepo.GetLastUpdated(ids, searchOptions, defaultValue);
+            var addrString = GetAddressString(searchOptions);
+            var productIds = string.Join(", ", ids);
+            Logger.LogTrace($"Check last updated for: {productIds}. {addrString}");
+            try
+            {
+                return await SearchRepo.GetLastUpdated(ids, searchOptions, defaultValue);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(1, e, $"Exception occurs while using Elastic Search: {e.Message}. {addrString}");
+                return defaultValue;
+            }
+
+        }
+
+        protected async Task<bool> IsOneMacroRegion(string region, string homeRegion, SearchOptions options)
+        {
+            if (string.IsNullOrEmpty(region) || string.IsNullOrEmpty(homeRegion)) return false;
+            var addrString = GetAddressString(options);
+            Logger.LogTrace($"Check for common macroregion: {region}, {homeRegion}. {addrString}");
+            try
+            {
+                return await SearchRepo.IsOneMacroRegion(new[] { region, homeRegion }, options);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError(1, e, $"Exception occurs while using Elastic Search: {e.Message}. {addrString}");
+                return false;
+            }
         }
 
         protected async Task<ActionResult> LoadProducts(int id, int[] serviceIds, SearchOptions searchOptions)
         {
             ActionResult result = null;
+            var addrString = GetAddressString(searchOptions);
             try
             {
                 var services = string.Join(", ", serviceIds);
-                Logger.LogTrace($"Start loading product {id} with services {services}");
+                Logger.LogTrace($"Start loading product {id} with services {services}. {addrString}");
 
                 var allProductIds = new[] { id }.Union(serviceIds).ToArray();
                 var results = await SearchRepo.GetProducts(allProductIds, searchOptions);
 
-                Logger.LogTrace($"End loading product {id} with services {services}");
+                Logger.LogTrace($"End loading product {id} with services {services}. {addrString}");
 
                 Product = results.FirstOrDefault(n => (int) n["Id"] == id);
                 if (Product == null)
                 {
                     var message = $"Product {id} is not found";
-                    Logger.LogError(message);
+                    Logger.LogError($"{message}. {addrString}");
                     result = NotFound(message);
                 }
                 else
@@ -75,7 +104,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                         if (service == null)
                         {
                             var message = $"Service {serviceId} is not found";
-                            Logger.LogError(message);
+                            Logger.LogError($"{message}. {addrString}");
                             result = NotFound(message);
                         }
                         else
@@ -91,17 +120,22 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while using Elastic Search: {ex.Message}";
-                Logger.LogError(1, ex, message);
+                Logger.LogError(1, ex, $"{message}. {addrString}");
                 result = BadRequest(message);
             }
             return result;
         }
 
-        protected virtual ActionResult CalculateImpact()
+        private static string GetAddressString(SearchOptions searchOptions)
+        {
+            return $"Address: {searchOptions.BaseAddress}, Index: {searchOptions.IndexName}";
+        }
+
+        protected virtual ActionResult CalculateImpact(string homeRegion)
         {
             try
             {
-                Calculator.Calculate(Product, Services.ToArray());
+                Calculator.Calculate(Product, Services.ToArray(), homeRegion);
             }
             catch (Exception ex)
             {

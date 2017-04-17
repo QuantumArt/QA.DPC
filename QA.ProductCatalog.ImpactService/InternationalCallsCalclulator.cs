@@ -68,6 +68,8 @@ namespace QA.ProductCatalog.ImpactService
 
             countryParams = countryParams.Union(markedParams.Where(n => n["Direction"] == null)).ToArray();
 
+
+
             countryParams = AppendParents(root, countryParams);
 
             if (ConsolidateCallGroups)
@@ -86,9 +88,9 @@ namespace QA.ProductCatalog.ImpactService
             return countryParam.SelectTokens("Direction.Countries").Count();
         }
 
-        public override JObject Calculate(JObject tariff, JObject[] options)
-        {
-            var newTariff = base.Calculate(tariff, options);
+        public override JObject Calculate(JObject tariff, JObject[] options, string homeRegion)
+        {   
+            var newTariff = base.Calculate(tariff, options, homeRegion);
             foreach (var option in options)
             {
                 newTariff = CalculateSpecialDirectionsImpact(newTariff, option);

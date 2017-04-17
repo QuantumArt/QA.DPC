@@ -52,7 +52,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogStartImpact("Base", id, serviceIds);
 
-            result = result ?? CalculateImpact();
+            result = result ?? CalculateImpact(homeRegion);
 
             LogEndImpact("Base", id, serviceIds);
 

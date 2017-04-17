@@ -10,5 +10,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         Task<JObject[]> GetProducts(int[] productIds, SearchOptions options);
 
+        Task<bool> IsOneMacroRegion(string[] regions, SearchOptions options);
+
     }
 }

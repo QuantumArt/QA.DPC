@@ -46,12 +46,15 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = await LoadProducts(id, serviceIds, searchOptions);
 
+            var useMacroRegionParameters = await IsOneMacroRegion(region, homeRegion, searchOptions);
+
+
             result =  result ?? FilterServicesOnProduct(true);
 
             LogStartImpact("VSR", id, serviceIds);
 
-            result = result ?? await CorrectProductWithScale(id, region, searchOptions);
-            result = result ?? CalculateImpact();
+            result = result ?? await CorrectProductWithScale(id, region, useMacroRegionParameters, searchOptions);
+            result = result ?? CalculateImpact(homeRegion);
 
             LogEndImpact("VSR", id, serviceIds);
 
@@ -64,7 +67,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return result;
         }
 
-        protected async Task<ActionResult> CorrectProductWithScale(int id, string region, SearchOptions searchOptions)
+        protected async Task<ActionResult> CorrectProductWithScale(int id, string region, bool useMacroRegionParameters, SearchOptions searchOptions)
         {
             var result = await LoadScale(id, region, searchOptions);
             if (result == null)
@@ -72,7 +75,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 try
                 {
                     InitialTariffProperties = (JArray)Product["Parameters"];
-                    Product["Parameters"] = _calc.GetResultParameters(Scale, Product, region);
+                    Product["Parameters"] = _calc.GetResultParameters(Scale, Product, useMacroRegionParameters);
                 }
                 catch (Exception ex)
                 {
@@ -107,7 +110,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return Scale == null ? NotFound($"Roaming scale is not found for tariff {id} in regions: {region}, {ConfigurationOptions.RootRegionId}") : null;
         }
 
-        protected override ActionResult CalculateImpact()
+        protected override ActionResult CalculateImpact(string homeRegion)
         {
             try
             {
@@ -116,7 +119,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                     _calc.MergeValuesFromTariff(service, InitialTariffProperties);   
                 }
 
-                _calc.Calculate(Product, Services.ToArray());
+                _calc.Calculate(Product, Services.ToArray(), homeRegion);
             }
             catch (Exception ex)
             {

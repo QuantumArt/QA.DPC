@@ -19,7 +19,7 @@ namespace QA.ProductCatalog.ImpactService
 
         }
 
-        public void MergeLinkImpactToRoamingScale(JObject scale, JObject product, string region)
+        public void MergeLinkImpactToRoamingScale(JObject scale, JObject product, bool useMacroRegionParameters)
         {
             int scaleId = (int) scale["Id"];
 
@@ -50,7 +50,7 @@ namespace QA.ProductCatalog.ImpactService
 
             if (!UseTariffData)
             {
-                MergeLinkImpact(scaleParameters, scaleLinkParameters);
+                MergeLinkImpact(scaleParameters, scaleLinkParameters, useMacroRegionParameters ? "ForHomeMacroRegion" : null);
                 var toRemove =
                     scaleParameters.Where(
                             n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains("Remove"))
@@ -123,9 +123,9 @@ namespace QA.ProductCatalog.ImpactService
            
         }
 
-        public JArray GetResultParameters(JObject scale, JObject product, string region)
+        public JArray GetResultParameters(JObject scale, JObject product, bool useMacroRegionParameters)
         {
-            MergeLinkImpactToRoamingScale(scale, product, region);
+            MergeLinkImpactToRoamingScale(scale, product, useMacroRegionParameters);
 
             IEnumerable<JToken> parameters = (!UseTariffData)
                 ? FilterScaleParameters((JArray)scale.SelectToken("Parameters"))
