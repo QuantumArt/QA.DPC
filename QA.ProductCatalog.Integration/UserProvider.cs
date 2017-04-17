@@ -6,6 +6,7 @@ using System.Data;
 using Quantumart.QPublishing;
 using Quantumart.QPublishing.Database;
 using Quantumart.QPublishing.OnScreen;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.ProductCatalog.Integration
 {
@@ -29,9 +30,9 @@ namespace QA.ProductCatalog.Integration
 
 
 
-        public UserProvider(string connectionString)
+        public UserProvider(IConnectionProvider connectionProvider)
         {
-            _connectionString = connectionString;
+            _connectionString = connectionProvider.GetConnection();
         }
 
         public int GetUserId()

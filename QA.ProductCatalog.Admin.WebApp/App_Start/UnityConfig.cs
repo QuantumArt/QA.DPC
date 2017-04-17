@@ -29,6 +29,8 @@ using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Xaml;
 using Quantumart.QP8.BLL;
 using System.Globalization;
+using QA.Core.DPC.QP.Servives;
+using QA.Core.DPC.QP.Configuration;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Start
 {
@@ -45,13 +47,13 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
         public static UnityContainer RegisterTypes(UnityContainer container)
         {
-            string qpConnectionString = ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString;
 
 #if DEBUG
             container.AddNewExtension<LocalSystemCachedLoaderConfigurationExtension>();
 #else
             container.AddNewExtension<LoaderConfigurationExtension>();
 #endif
+            container.AddNewExtension<QPConfigurationExtension>();
             container.AddNewExtension<ActionContainerConfiguration>();
 			container.AddNewExtension<TaskContainerConfiguration>();
 			container.AddNewExtension<ValidationConfiguration>();
@@ -70,8 +72,6 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
             container.RegisterType<IAdministrationSecurityChecker, QPSecurityChecker>();
 	        
-			string qpDbConnString = ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString;
-
 	        container.RegisterType<DefinitionEditorService>();
 
 	        container
@@ -81,13 +81,13 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 .RegisterInstance<IVersionedCacheProvider>(container.Resolve<HttpVersionedCacheProvider>())
                 .RegisterType<IContentInvalidator, DPCContentInvalidator>()
 				.RegisterType<ISettingsService, SettingsFromContentService>()
-                .RegisterType<IUserProvider, UserProvider>(new InjectionConstructor(qpDbConnString))
+                .RegisterType<IUserProvider, UserProvider>()
                 .RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()))
                 .RegisterType<IQPNotificationService, QPNotificationService>()
                 .RegisterType<IProductControlProvider, ProductControlProvider>()
                 .RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(liveConsumerMonitoringConnString));
 
-            container.RegisterType<CustomActionService>(new InjectionConstructor(qpDbConnString, 1));
+            container.RegisterType<CustomActionService>(new InjectionFactory(c => new CustomActionService(c.Resolve<IConnectionProvider>().GetConnection(), 1)));
 
             container.RegisterType<IRegionTagReplaceService, RegionTagService>();
             container.RegisterType<IRegionService, RegionService>();
@@ -170,7 +170,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
             ControllerBuilder.Current.SetControllerFactory(new DefaultControllerFactory(container.Resolve<IControllerActivator>()));
 
-	        container.RegisterType<StructureCacheTracker>(new InjectionConstructor(qpDbConnString));
+	        container.RegisterType<StructureCacheTracker>();
 
 			container.Resolve<ICacheItemWatcher>().AttachTracker(container.Resolve<StructureCacheTracker>());
 
