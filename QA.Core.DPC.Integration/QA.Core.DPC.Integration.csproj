@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D0E08DCE-0185-4472-B28C-80E30BBB0CD5}</ProjectGuid>
+    <ProjectGuid>{71121A6B-3673-4CC1-A97A-610E9C33F33A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>QA.Core.DPC.Integration</RootNamespace>
@@ -303,4 +303,3 @@
   </Target>
   -->
 </Project>
-
