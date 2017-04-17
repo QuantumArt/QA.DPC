@@ -5,13 +5,13 @@ namespace QA.Core.DPC.QP.Servives
     public class ConnectionProvider : IConnectionProvider
     {
         private readonly ICustomerProvider _customerProvider;
-        private readonly ICustomerCodeProvider _codeProvider;
+        private readonly IIdentityProvider _identityProvider;
         private string _defaultConnection = null;
 
-        public ConnectionProvider(ICustomerProvider customerProvider, ICustomerCodeProvider codeProvider)
+        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider)
         {
             _customerProvider = customerProvider;
-            _codeProvider = codeProvider;
+            _identityProvider = identityProvider;
 
             var qpMode =  ConfigurationManager.AppSettings["QPMode"];
 
@@ -23,7 +23,7 @@ namespace QA.Core.DPC.QP.Servives
 
         public string GetConnection()
         {
-            return _defaultConnection ?? _customerProvider.GetConnectionString(_codeProvider.CustomerCode);         
+            return _defaultConnection ?? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode);         
         }   
     }
 }

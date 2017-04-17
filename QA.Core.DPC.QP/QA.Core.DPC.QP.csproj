@@ -44,12 +44,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Models\Customer.cs" />
+    <Compile Include="Models\Identity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Servives\ConnectionProvider.cs" />
-    <Compile Include="Servives\CustomerCodeProvider.cs" />
+    <Compile Include="Servives\IdentityProvider.cs" />
     <Compile Include="Servives\CustomerProvider.cs" />
     <Compile Include="Servives\IConnectionProvider.cs" />
-    <Compile Include="Servives\ICustomerCodeProvider.cs" />
+    <Compile Include="Servives\IIdentityProvider.cs" />
     <Compile Include="Servives\ICustomerProvider.cs" />
   </ItemGroup>
   <ItemGroup>

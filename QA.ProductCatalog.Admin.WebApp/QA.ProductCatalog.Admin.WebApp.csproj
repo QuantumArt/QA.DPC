@@ -303,7 +303,7 @@
     <Compile Include="Core\IProductChangeSubscriber.cs" />
     <Compile Include="Core\ProductChangeNotificator.cs" />
     <Compile Include="Core\RelevanceUpdaterOnProductChange.cs" />
-    <Compile Include="Filters\ConnectionFilterAttribute.cs" />
+    <Compile Include="Filters\IdentityFilterAttribute.cs" />
     <Compile Include="Filters\HandleAndLogErrorAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
