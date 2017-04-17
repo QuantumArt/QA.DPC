@@ -15,6 +15,7 @@ using Quantumart.QPublishing.Database;
 using Article = QA.Core.Models.Entities.Article;
 using Content = QA.Core.Models.Configuration.Content;
 using Field = QA.Core.Models.Configuration.Field;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
@@ -45,13 +46,13 @@ namespace QA.Core.DPC.Loader
 			public string AbsoluteUrl { get; set; }
 		}
 
-		public JsonProductService(string connectionString, ILogger logger, Quantumart.QP8.BLL.Services.API.FieldService fieldService, VirtualFieldPathEvaluator virtualFieldPathEvaluator, IRegionTagReplaceService regionTagReplaceService)
+		public JsonProductService(IConnectionProvider connectionProvider, ILogger logger, Quantumart.QP8.BLL.Services.API.FieldService fieldService, VirtualFieldPathEvaluator virtualFieldPathEvaluator, IRegionTagReplaceService regionTagReplaceService)
 		{
 			_logger = logger;
 
 			_fieldService = fieldService;
-
-			_dbConnector = new DBConnector(connectionString);
+            var connectionString = connectionProvider.GetConnection();
+            _dbConnector = new DBConnector(connectionString);
 
 			_virtualFieldPathEvaluator = virtualFieldPathEvaluator;
 

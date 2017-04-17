@@ -14,6 +14,7 @@ using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Models;
 using Quantumart.QP8.BLL;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader.Container
 {
@@ -27,24 +28,22 @@ namespace QA.Core.DPC.Loader.Container
 
         protected override void Initialize()
         {
-            string qpConnectionString = ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString;
-
             Container.RegisterInstance<ILogger>(new NLogLogger("NLogClient.config"));
-            Container.RegisterType<IServiceFactory, ServiceFactory>(new InjectionFactory(c => new ServiceFactory(c.GetConnectionString(), c.Resolve<IUserProvider>())));
+            Container.RegisterType<IServiceFactory, ServiceFactory>();
             Container.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
-            Container.RegisterType<IArticleService, ArticleServiceAdapter>(new InjectionConstructor(typeof(ArticleService), qpConnectionString, typeof(IContextStorage)));
+            Container.RegisterType<IArticleService, ArticleServiceAdapter>();
             Container.RegisterType<FieldService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetFieldService()));
-            Container.RegisterType<IFieldService, FieldServiceAdapter>(new HttpContextLifetimeManager(), new InjectionConstructor(typeof(FieldService), qpConnectionString));
+            Container.RegisterType<IFieldService, FieldServiceAdapter>(new HttpContextLifetimeManager());
             Container.RegisterType<IFreezeService, FreezeService>();
 
             Container.RegisterType<IFieldService, FieldServiceAdapter>("FieldServiceAdapterAlwaysAdmin",
                 new HttpContextLifetimeManager(),
-                new InjectionFactory(x => new FieldServiceAdapter(new FieldService(qpConnectionString, 1), qpConnectionString)));
+                new InjectionFactory(x => new FieldServiceAdapter(new FieldService(x.Resolve<IConnectionProvider>().GetConnection(), 1), x.Resolve<IConnectionProvider>())));
 
             Container.RegisterType<ITransaction, Transaction>(new InjectionFactory(c => new Transaction(c.GetConnectionString(), Container.Resolve<ILogger>())));
             Container.RegisterType<Func<ITransaction>>(new InjectionFactory(c => new Func<ITransaction>(() => c.Resolve<ITransaction>())));
 
-            Container.RegisterType<IJsonProductService, JsonProductService>(new InjectionConstructor(qpConnectionString, typeof(ILogger), typeof(FieldService), typeof(VirtualFieldPathEvaluator), typeof(IRegionTagReplaceService)));
+            Container.RegisterType<IJsonProductService, JsonProductService>();
 
             Container.RegisterType<IContextStorage, QpCachedContextStorage>();
 
@@ -52,25 +51,24 @@ namespace QA.Core.DPC.Loader.Container
 
             //Фейк юзер нужен для работы ремоут валидации. Также нужны варианты сервисов с фейк-юзером
             Container.RegisterType<IUserProvider, AlwaysAdminUserProvider>(AlwaysAdminUserProviderName);
-            Container.RegisterType<IServiceFactory, ServiceFactory>("ServiceFactoryFakeUser", new InjectionFactory(c => new ServiceFactory(c.GetConnectionString(), c.Resolve<IUserProvider>(AlwaysAdminUserProviderName))));
+            Container.RegisterType<IServiceFactory, ServiceFactory>("ServiceFactoryFakeUser", new InjectionFactory(c => new ServiceFactory(c.Resolve<IConnectionProvider>(), c.Resolve<IUserProvider>(AlwaysAdminUserProviderName))));
             Container.RegisterType<ArticleService>("ArticleServiceFakeUser", new InjectionFactory(c => c.Resolve<IServiceFactory>("ServiceFactoryFakeUser").GetArticleService()));
             Container.RegisterType<IArticleService, ArticleServiceAdapter>("ArticleServiceAdapterFakeUser",
-                new InjectionFactory(c => new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), qpConnectionString, c.Resolve<IContextStorage>())));
+                new InjectionFactory(c => new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(), c.Resolve<IContextStorage>())));
 
             Container.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>(
                 new InjectionFactory(
                     c =>
-                        new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), qpConnectionString,
+                        new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
                             c.Resolve<IContextStorage>())));
 
             Container.RegisterType<IReadOnlyArticleService, CachedReadOnlyArticleServiceAdapter>("CachedReadOnlyArticleServiceAdapter",
                 new InjectionFactory(
                     c =>
-                        new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), qpConnectionString,
+                        new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
                             c.Resolve<IContextStorage>())));
 
-            Container.RegisterType<IDBConnector, DBConnectorProxy>(new HttpContextLifetimeManager(),
-                new InjectionConstructor(qpConnectionString, typeof(IVersionedCacheProvider)));
+            Container.RegisterType<IDBConnector, DBConnectorProxy>(new HttpContextLifetimeManager());
 
             Container.RegisterType<IRegionService, RegionService>("RegionServiceFakeUser",
                     new InjectionFactory(c => new RegionService(Container.Resolve<IVersionedCacheProvider>(),
@@ -109,7 +107,7 @@ namespace QA.Core.DPC.Loader.Container
                     c.Resolve<IServiceFactory>("ServiceFactoryFakeUser"),
                     c.Resolve<IVersionedCacheProvider>(),
                     c.Resolve<ISettingsService>(),
-                    qpConnectionString)));
+                    c.Resolve<IConnectionProvider>())));
 
             string loaderWarmUpProductIdStr = ConfigurationManager.AppSettings["LoaderWarmUpProductId"];
 
@@ -119,8 +117,6 @@ namespace QA.Core.DPC.Loader.Container
 
                 Container.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>("ProductLoaderWarmUpProvider", new InjectionConstructor(typeof(ProductLoader), typeof(ILogger), loaderWarmUpProductId));
             }
-
-            Container.RegisterConnectionString(qpConnectionString);
         }
     }
 }

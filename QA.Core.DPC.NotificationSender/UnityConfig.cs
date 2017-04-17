@@ -33,16 +33,12 @@ namespace QA.Core.DPC
 			
 			unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			unityContainer.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
-			unityContainer.RegisterType<IServiceFactory, ServiceFactory>(new InjectionFactory(c => new ServiceFactory(connectionString, c.Resolve<IUserProvider>())));
+			unityContainer.RegisterType<IServiceFactory, ServiceFactory>();
 			unityContainer.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
 			unityContainer.RegisterType<IContextStorage, QpCachedContextStorage>();
             unityContainer.RegisterType<INotificationChannelService, NotificationChannelService>(new ContainerControlledLifetimeManager());
 
-			unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>(
-				new InjectionFactory(
-				c =>
-				new ArticleServiceAdapter(c.Resolve<ArticleService>(), connectionString,
-				c.Resolve<IContextStorage>())));
+			unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();
 
 			unityContainer.RegisterType<IContentInvalidator, DPCContentInvalidator>();
 			unityContainer.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager());
