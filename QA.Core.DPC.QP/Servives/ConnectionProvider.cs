@@ -15,7 +15,7 @@ namespace QA.Core.DPC.QP.Servives
 
             var qpMode =  ConfigurationManager.AppSettings["QPMode"];
 
-            if (!string.IsNullOrEmpty(qpMode) && qpMode.ToLower() == "true")
+            if (string.IsNullOrEmpty(qpMode) || qpMode.ToLower() != "true")
             {
                 _defaultConnection = ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString;
             }
