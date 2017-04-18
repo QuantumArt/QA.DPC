@@ -14,7 +14,7 @@ using QA.ProductCatalog.Integration;
 using Quartz;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Notification.Services;
-
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -63,20 +63,14 @@ namespace QA.Core.ProductCatalog.ActionsService
 
             container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
 
-			string liveConsumerMonitoringConnString = ConfigurationManager.ConnectionStrings["consumer_monitoring"].ConnectionString;
-
-			string stageConsumerMonitoringConnString = ConfigurationManager.ConnectionStrings["consumer_monitoringStage"].ConnectionString;
-
 			container.RegisterType<Func<bool, IConsumerMonitoringService>>(
 				new InjectionFactory(
 					x =>
 						new Func<bool, IConsumerMonitoringService>(
 							isLive =>
-								new ConsumerMonitoringService(isLive
-									? liveConsumerMonitoringConnString
-									: stageConsumerMonitoringConnString))));
+								new ConsumerMonitoringService(x.Resolve<IConnectionProvider>(), isLive))));
 
-			container.RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(liveConsumerMonitoringConnString));
+			container.RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(typeof(IConnectionProvider), true));
 
             container.RegisterType<ITasksRunner, TasksRunner>();
 

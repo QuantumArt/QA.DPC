@@ -64,11 +64,6 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
 
-	        string liveConsumerMonitoringConnString = ConfigurationManager.ConnectionStrings["consumer_monitoring"].ConnectionString;
-
-			string stageConsumerMonitoringConnString=ConfigurationManager.ConnectionStrings["consumer_monitoringStage"].ConnectionString;
-
-	       
 
             container.RegisterType<IAdministrationSecurityChecker, QPSecurityChecker>();
 	        
@@ -85,7 +80,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 .RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()))
                 .RegisterType<IQPNotificationService, QPNotificationService>()
                 .RegisterType<IProductControlProvider, ProductControlProvider>()
-                .RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(liveConsumerMonitoringConnString));
+                .RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(typeof(IConnectionProvider), true));
 
             container.RegisterType<CustomActionService>(new InjectionFactory(c => new CustomActionService(c.Resolve<IConnectionProvider>().GetConnection(), 1)));
 
@@ -109,37 +104,11 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 			        x =>
 				        new Func<bool, IConsumerMonitoringService>(
 					        isLive =>
-						        new ConsumerMonitoringService(isLive
-							        ? liveConsumerMonitoringConnString
-							        : stageConsumerMonitoringConnString))));
+						        new ConsumerMonitoringService(x.Resolve<IConnectionProvider>() ,isLive))));
 
             container.RegisterType<Func<bool, CultureInfo, IConsumerMonitoringService>>(
                new InjectionFactory(c => new Func<bool, CultureInfo, IConsumerMonitoringService>(
-                   (isLive, culture) =>
-                   {
-                       string connectionName = "consumer_monitoring";
-
-                       if (!isLive)
-                       {
-                           connectionName += "Stage";
-                       }
-
-                       if (culture != CultureInfo.InvariantCulture)
-                       {
-                           connectionName += "_" + culture.Name;
-                       }
-
-                       var connection = ConfigurationManager.ConnectionStrings[connectionName];
-
-                       if (connection == null || string.IsNullOrEmpty(connection.ConnectionString) || connection.ConnectionString == "none")
-                       {
-                           return null;
-                       }
-                       else
-                       {
-                           return new ConsumerMonitoringService(connection.ConnectionString);
-                       }
-                   })));
+                   (isLive, culture) => new ConsumerMonitoringService(c.Resolve<IConnectionProvider>(), isLive, culture) )));
 
             container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
 
@@ -172,7 +141,8 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
 	        container.RegisterType<StructureCacheTracker>();
 
-			container.Resolve<ICacheItemWatcher>().AttachTracker(container.Resolve<StructureCacheTracker>());
+            //TODO: update cache tracking
+			//container.Resolve<ICacheItemWatcher>().AttachTracker(container.Resolve<StructureCacheTracker>());
 
             return container;
         }

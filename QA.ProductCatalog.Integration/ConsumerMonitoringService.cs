@@ -6,15 +6,23 @@ using System.Threading.Tasks;
 using QA.Core;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.DAL;
+using QA.Core.DPC.QP.Servives;
+using System.Globalization;
 
 namespace QA.ProductCatalog.Integration
 {
     public class ConsumerMonitoringService : IConsumerMonitoringService
     {
         private readonly string _connectionString;
-        public ConsumerMonitoringService(string connectionString)
+
+        public ConsumerMonitoringService(IConnectionProvider connectionProvider, bool isLive)
+            : this(connectionProvider, isLive, CultureInfo.InvariantCulture)
         {
-            _connectionString = connectionString;
+           
+        }
+        public ConsumerMonitoringService(IConnectionProvider connectionProvider, bool isLive, CultureInfo culture)
+        {
+            _connectionString = connectionProvider.GetConnection();
         }
 
         public int[] FindMissingProducts(int[] productIDs)
