@@ -19,10 +19,6 @@ namespace QA.Core.DPC.Loader
 {
     public class RegionService : IRegionService
     {
-        #region Константы
-        private const string KEY_CONNTECTION_STRING = "qp_database";
-        #endregion
-
         #region Глобальные переменные
         private IVersionedCacheProvider _cacheProvider;
         private ICacheItemWatcher _cacheItemWatcher;
