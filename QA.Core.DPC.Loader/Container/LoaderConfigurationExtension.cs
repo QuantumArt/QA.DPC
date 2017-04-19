@@ -74,7 +74,8 @@ namespace QA.Core.DPC.Loader.Container
                     new InjectionFactory(c => new RegionService(Container.Resolve<IVersionedCacheProvider>(),
                         Container.Resolve<ICacheItemWatcher>(),
                         Container.Resolve<IUserProvider>(AlwaysAdminUserProviderName),
-                        Container.Resolve<ISettingsService>())));
+                        Container.Resolve<ISettingsService>(),
+                        Container.Resolve<IConnectionProvider>())));
 
             Container.RegisterType<IContentDefinitionService, ContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin",
                 new InjectionFactory(x => new ContentDefinitionService(

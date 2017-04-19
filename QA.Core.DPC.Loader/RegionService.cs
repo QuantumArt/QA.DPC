@@ -13,6 +13,7 @@ using System.Linq;
 using System.Data;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
@@ -37,7 +38,7 @@ namespace QA.Core.DPC.Loader
         #endregion
 
         #region Конструкторы
-        public RegionService(IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher, IUserProvider userProvider, ISettingsService settingsService)
+        public RegionService(IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher, IUserProvider userProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _cacheProvider = cacheProvider;
             _cacheItemWatcher = cacheItemWatcher;
@@ -46,12 +47,7 @@ namespace QA.Core.DPC.Loader
 
             //_userProvider = userProvider;
             this._cacheItemWatcher.TrackChanges();
-            var connectinStringObject = ConfigurationManager.ConnectionStrings[KEY_CONNTECTION_STRING];
-            if (connectinStringObject == null)
-            {
-                throw new Exception(string.Format(ProductLoaderResources.ERR_CONNECTION_STRING_NO_EXISTS, KEY_CONNTECTION_STRING));
-            }
-            _connectionString = connectinStringObject.ConnectionString;
+            _connectionString = connectionProvider.GetConnection();
         }
         #endregion
 

@@ -10,14 +10,13 @@ using QA.Core.DPC.Loader.Resources;
 using QA.Core.DPC.Loader.Services;
 using Quantumart.QP8.BLL;
 using QA.Core.ProductCatalog.Actions.Services;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
     public class RegionTagService : IRegionTagReplaceService
     {
         #region Константы
-        private const string KEY_CONNTECTION_STRING = "qp_database";
-
         private const string FIELD_TITLE = "Title";
         private const string FIELD_REGION_TAG = "RegionTag";
         private const string FIELD_VALUE = "Value";
@@ -39,7 +38,7 @@ namespace QA.Core.DPC.Loader
 
         #region Конструкторы
         public RegionTagService(IVersionedCacheProvider cacheProvider, ISettingsService settingsService, IRegionService regionService, ICacheItemWatcher cacheItemWatcher,
-            IArticleService articleService)
+            IArticleService articleService, IConnectionProvider connectionProvider)
         {
             _cacheProvider = cacheProvider;
             _settingsService = settingsService;
@@ -47,13 +46,7 @@ namespace QA.Core.DPC.Loader
             _cacheItemWatcher = cacheItemWatcher;
             _articleService = articleService;
 
-            this._cacheItemWatcher.TrackChanges();
-            var connectinStringObject = ConfigurationManager.ConnectionStrings[KEY_CONNTECTION_STRING];
-            if (connectinStringObject == null)
-            {
-                throw new Exception(string.Format(ProductLoaderResources.ERR_CONNECTION_STRING_NO_EXISTS, KEY_CONNTECTION_STRING));
-            }
-            _connectionString = connectinStringObject.ConnectionString;
+            _connectionString = connectionProvider.GetConnection();;
         }
         #endregion
 
