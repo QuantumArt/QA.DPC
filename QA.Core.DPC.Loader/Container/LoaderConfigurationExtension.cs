@@ -81,7 +81,8 @@ namespace QA.Core.DPC.Loader.Container
                     x.Resolve<ISettingsService>(),
                     x.Resolve<IVersionedCacheProvider>(),
                     x.Resolve<IArticleService>("ArticleServiceAdapterFakeUser"),
-                    x.Resolve<ILogger>())));
+                    x.Resolve<ILogger>(),
+                    x.Resolve<IConnectionProvider>())));
 
 
             //так как лоадер только читает то нет смысла реальный userId получать и передавать
@@ -95,7 +96,8 @@ namespace QA.Core.DPC.Loader.Container
                     new ResolvedParameter<IFieldService>("FieldServiceAdapterAlwaysAdmin"),
                     typeof(ISettingsService),
                     typeof(IConsumerMonitoringService),
-                    typeof(IArticleFormatter)
+                    typeof(IArticleFormatter),
+                    typeof(IConnectionProvider)
                 ));
 
             Container.RegisterType<ILocalizationSettingsService, LocalizationSettingsService>();

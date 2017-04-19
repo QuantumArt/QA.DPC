@@ -77,7 +77,8 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 .RegisterType<IContentInvalidator, DPCContentInvalidator>()
 				.RegisterType<ISettingsService, SettingsFromContentService>()
                 .RegisterType<IUserProvider, UserProvider>()
-                .RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()))
+                //.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()))
+                .RegisterInstance<ICacheItemWatcher>(new CacheItemWatcherFake())                
                 .RegisterType<IQPNotificationService, QPNotificationService>()
                 .RegisterType<IProductControlProvider, ProductControlProvider>()
                 .RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(typeof(IConnectionProvider), true));
@@ -94,7 +95,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             BindingValueProviderFactory.Current = new DefaultBindingValueProviderFactory(new QPModelBindingValueProvider());
 
             // регистрируем типы для MVC
-            container.RegisterType<IControllerActivator, UnityControllerActivator>(new ContainerControlledLifetimeManager());
+            container.RegisterType<IControllerActivator, IdentityControllerActivator>(new ContainerControlledLifetimeManager());
 
             container.RegisterType<TaskRunnerEntities>(new InjectionConstructor());
             container.RegisterType<ITaskService, TaskService>(new InjectionConstructor(typeof(TaskRunnerEntities)));
@@ -118,7 +119,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 container.RegisterType(typeof (IArticleFilter), filterClass, filterClass.Name);
 
 
-			container.RegisterType<IProductChangeSubscriber, RelevanceUpdaterOnProductChange>("RelevanceUpdaterOnProductChange");
+			container.RegisterType<IProductChangeSubscriber, IdentityDecorator>("RelevanceUpdaterOnProductChange");
 
 	        container.RegisterType<IProductChangeNotificator, ProductChangeNotificator>(
 		        new ContainerControlledLifetimeManager(),

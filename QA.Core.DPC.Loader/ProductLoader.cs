@@ -24,12 +24,12 @@ using Content = QA.Core.Models.Configuration.Content;
 using Qp8Bll = Quantumart.QP8.BLL;
 using System.IO;
 using System.Text;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
     public class ProductLoader : IProductService
     {
-        public const string KEY_CONNECTION_STRING = "qp_database";
         private const string ARTICLE_STATUS_PUBLISHED = "Published";
         private const string KEY_CACHE_GET_ARTICLE = "GetArticle_";
 
@@ -52,7 +52,7 @@ namespace QA.Core.DPC.Loader
         public ProductLoader(IContentDefinitionService definitionService, ILogger logger,
             IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher,
             IReadOnlyArticleService articleService, IFieldService fieldService, ISettingsService settingsService,
-            IConsumerMonitoringService consumerMonitoringService, IArticleFormatter formatter)
+            IConsumerMonitoringService consumerMonitoringService, IArticleFormatter formatter, IConnectionProvider connectionProvider)
         {
             _definitionService = definitionService;
             _logger = logger;
@@ -64,12 +64,7 @@ namespace QA.Core.DPC.Loader
             _consumerMonitoringService = consumerMonitoringService;
             _formatter = formatter;
 
-            var connectinStringObject = ConfigurationManager.ConnectionStrings[KEY_CONNECTION_STRING];
-            if (connectinStringObject == null)
-            {
-                throw new Exception(string.Format(ProductLoaderResources.ERR_CONNECTION_STRING_NO_EXISTS, KEY_CONNECTION_STRING));
-            }
-            _connectionString = connectinStringObject.ConnectionString;
+            _connectionString = connectionProvider.GetConnection();
         }
         #endregion
 
@@ -409,7 +404,7 @@ FROM
         {
             var typeField = _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
 
-            using (var cs = new Qp8Bll.QPConnectionScope(ConfigurationManager.ConnectionStrings[KEY_CONNECTION_STRING].ConnectionString))
+            using (var cs = new Qp8Bll.QPConnectionScope(_connectionString))
             {
                 var cnn = new DBConnector(cs.DbConnection);
                 using (var cmd = new SqlCommand(GetProductTypesQuery))
