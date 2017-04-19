@@ -68,11 +68,14 @@ namespace QA.ProductCatalog.ImpactService
             foreach (var p in parametersRoot)
             {
                 var group = p.SelectToken("Group");
-                var groupId = (int) group["Id"];
-                int order;
-                if (groupOrderOverride.TryGetValue(groupId, out order))
+                if (group != null)
                 {
-                    group["SortOrder"] = order;
+                    var groupId = (int)group["Id"];
+                    int order;
+                    if (groupOrderOverride.TryGetValue(groupId, out order))
+                    {
+                        group["SortOrder"] = order;
+                    }
                 }
             }
         }
