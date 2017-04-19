@@ -58,7 +58,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         }
 
-        private ActionResult CalculateImpact(string countryCode)
+        protected new ActionResult CalculateImpact(string countryCode)
         {
             try
             {
