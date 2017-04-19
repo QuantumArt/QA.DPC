@@ -284,6 +284,8 @@
     <Compile Include="Core\Adapters\CountActionAdapter.cs" />
     <Compile Include="Core\Adapters\TaskActionAdapter.cs" />
     <Compile Include="Core\Adapters\TimebasedActionAdapter.cs" />
+    <Compile Include="Core\CacheItemWatcherFake.cs" />
+    <Compile Include="Core\IdentityControllerActivator.cs" />
     <Compile Include="Core\QPSecurityChecker.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\ModelBindersConfig.cs" />
@@ -303,7 +305,6 @@
     <Compile Include="Core\IProductChangeSubscriber.cs" />
     <Compile Include="Core\ProductChangeNotificator.cs" />
     <Compile Include="Core\RelevanceUpdaterOnProductChange.cs" />
-    <Compile Include="Filters\IdentityFilterAttribute.cs" />
     <Compile Include="Filters\HandleAndLogErrorAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

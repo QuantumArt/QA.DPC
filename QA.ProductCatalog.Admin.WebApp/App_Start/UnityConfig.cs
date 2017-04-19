@@ -119,9 +119,10 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 container.RegisterType(typeof (IArticleFilter), filterClass, filterClass.Name);
 
 
-			container.RegisterType<IProductChangeSubscriber, IdentityDecorator>("RelevanceUpdaterOnProductChange");
+            container.RegisterType<IProductChangeSubscriber, RelevanceUpdaterOnProductChange>("RelevanceUpdaterOnProductChange");
 
-	        container.RegisterType<IProductChangeNotificator, ProductChangeNotificator>(
+
+            container.RegisterType<IProductChangeNotificator, ProductChangeNotificator>(
 		        new ContainerControlledLifetimeManager(),
 		        new InjectionFactory(x =>
 		        {
