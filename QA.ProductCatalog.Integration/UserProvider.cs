@@ -60,7 +60,7 @@ namespace QA.ProductCatalog.Integration
 
 				if (!string.IsNullOrEmpty(newSid) && newSid != sid || userid == 0)
                 {
-					userid = QScreen.AuthenticateForCustomTab();
+					userid = QScreen.AuthenticateForCustomTab(new DBConnector(_connectionString));
 					HttpContext.Current.Session[QPUserIdKey] = userid;
                 }
 
