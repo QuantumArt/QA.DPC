@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Data;
 using Quantumart.QP8.Utils;
 using System.Data.SqlClient;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader.Services
 {
@@ -32,10 +33,12 @@ namespace QA.Core.DPC.Loader.Services
 				(m.Content IS NULL OR m.Content = @contentId)";
 
         private readonly ISettingsService _settingsService;
+        private readonly string _connectionString;
 
-        public LocalizationSettingsService(ISettingsService settingsService)
+        public LocalizationSettingsService(ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _settingsService = settingsService;
+            _connectionString = connectionProvider.GetConnection();
         }      
 
         public Dictionary<string, CultureInfo> GetSettings(int contentId)
@@ -49,7 +52,7 @@ namespace QA.Core.DPC.Loader.Services
 
         private SettingItem[] GetSettingItems(int contentId)
         {
-            var cnn = QPConnectionScope.Current == null ? new DBConnector() : new DBConnector(QPConnectionScope.Current.DbConnection);
+            var cnn = QPConnectionScope.Current == null ? new DBConnector(_connectionString) : new DBConnector(QPConnectionScope.Current.DbConnection);
 
             var localizationContentId = _settingsService.GetSetting(SettingsTitles.LOCALIZATION_CONTENT_ID);
             var localizationMapContentId = _settingsService.GetSetting(SettingsTitles.LOCALIZATION_MAP_CONTENT_ID);
