@@ -1,29 +1,49 @@
-﻿using System.Configuration;
+﻿using QA.Core.DPC.QP.Models;
+using System.Collections.Generic;
+using System.Configuration;
 
 namespace QA.Core.DPC.QP.Servives
 {
     public class ConnectionProvider : IConnectionProvider
     {
-        private readonly ICustomerProvider _customerProvider;
-        private readonly IIdentityProvider _identityProvider;
-        private string _defaultConnection = null;
+        private const string AdminKey = "qp_database";
 
-        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider)
+        private readonly ICustomerProvider _customerProvider;
+        private readonly IIdentityProvider _identityProvider;        
+        private Dictionary<Service, string> _defaultConnections;
+        private readonly Service _defaultService;
+
+        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider) : this(customerProvider, identityProvider, Service.Admin)
+        {
+
+        }
+
+        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, Service defaultService)
         {
             _customerProvider = customerProvider;
             _identityProvider = identityProvider;
+            _defaultService = defaultService;
 
             var qpMode =  ConfigurationManager.AppSettings["QPMode"];
 
             if (string.IsNullOrEmpty(qpMode) || qpMode.ToLower() != "true")
             {
-                _defaultConnection = ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString;
+                AddConnection(Service.Admin, AdminKey);
             }
+        }
+
+        private void AddConnection(Service service, string key)
+        {
+            _defaultConnections[service] = ConfigurationManager.ConnectionStrings[key].ConnectionString;
         }
 
         public string GetConnection()
         {
-            return _defaultConnection ?? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode);         
-        }   
+            return GetConnection(_defaultService);
+        }
+        public string GetConnection(Service service)
+        {
+            return _defaultConnections[service] ?? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode);         
+        }
     }
 }

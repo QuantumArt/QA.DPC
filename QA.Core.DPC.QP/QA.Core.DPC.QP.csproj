@@ -161,6 +161,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\QPConfigurationExtension.cs" />
+    <Compile Include="Models\Service.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Identity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
