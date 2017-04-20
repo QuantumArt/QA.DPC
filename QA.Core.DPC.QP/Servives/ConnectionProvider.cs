@@ -12,17 +12,19 @@ namespace QA.Core.DPC.QP.Servives
         private readonly IIdentityProvider _identityProvider;        
         private Dictionary<Service, string> _defaultConnections;
         private readonly Service _defaultService;
+        private bool _qpMode;
 
-        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider)
+        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, Service defaultService)
         {
             _defaultConnections = new Dictionary<Service, string>();
             _customerProvider = customerProvider;
             _identityProvider = identityProvider;
-            _defaultService = Service.Admin;
+            _defaultService = defaultService;
 
             var qpMode =  ConfigurationManager.AppSettings["QPMode"];
+            _qpMode = !string.IsNullOrEmpty(qpMode) && qpMode.ToLower() == "true";
 
-            if (string.IsNullOrEmpty(qpMode) || qpMode.ToLower() != "true")
+            if (!_qpMode)
             {
                 AddConnection(Service.Admin, AdminKey);
             }
@@ -39,7 +41,7 @@ namespace QA.Core.DPC.QP.Servives
         }
         public string GetConnection(Service service)
         {
-            return _defaultConnections[service] ?? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode);         
+            return _qpMode ? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode) : _defaultConnections[service];
         }
     }
 }
