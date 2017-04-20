@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {
@@ -17,6 +18,11 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
         }
 
         public string GetConnection()
+        {
+            return _connection;
+        }
+
+        public string GetConnection(Service service)
         {
             return _connection;
         }
