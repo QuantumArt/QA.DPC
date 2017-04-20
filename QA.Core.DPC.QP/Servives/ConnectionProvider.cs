@@ -13,16 +13,12 @@ namespace QA.Core.DPC.QP.Servives
         private Dictionary<Service, string> _defaultConnections;
         private readonly Service _defaultService;
 
-        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider) : this(customerProvider, identityProvider, Service.Admin)
+        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider)
         {
-
-        }
-
-        public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, Service defaultService)
-        {
+            _defaultConnections = new Dictionary<Service, string>();
             _customerProvider = customerProvider;
             _identityProvider = identityProvider;
-            _defaultService = defaultService;
+            _defaultService = Service.Admin;
 
             var qpMode =  ConfigurationManager.AppSettings["QPMode"];
 
