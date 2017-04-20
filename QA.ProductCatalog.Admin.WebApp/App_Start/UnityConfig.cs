@@ -71,9 +71,9 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
 	        container
                 .RegisterType<IXmlProductService, XmlProductService>()
-                .RegisterInstance(container.Resolve<HttpVersionedCacheProvider>())
-                .RegisterInstance<ICacheProvider>(container.Resolve<HttpVersionedCacheProvider>())
-                .RegisterInstance<IVersionedCacheProvider>(container.Resolve<HttpVersionedCacheProvider>())
+                .RegisterInstance(new CustomerCacheProvider(container.Resolve<HttpVersionedCacheProvider>(), container.Resolve<IIdentityProvider>()))
+                .RegisterInstance<ICacheProvider>(container.Resolve<CustomerCacheProvider>())
+                .RegisterInstance<IVersionedCacheProvider>(container.Resolve<CustomerCacheProvider>())
                 .RegisterType<IContentInvalidator, DPCContentInvalidator>()
 				.RegisterType<ISettingsService, SettingsFromContentService>()
                 .RegisterType<IUserProvider, UserProvider>()
