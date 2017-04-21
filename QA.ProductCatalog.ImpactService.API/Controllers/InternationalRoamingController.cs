@@ -62,7 +62,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         {
             try
             {
-                _calc.Calculate(Product, Services.ToArray(), countryCode);
+                _calc.Calculate(Product, Services.ToArray(), countryCode, null);
             }
             catch (Exception ex)
             {
