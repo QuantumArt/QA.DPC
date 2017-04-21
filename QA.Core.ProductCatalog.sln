@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9E374573-BDFB-453D-B9A7-D098D2E295C5}"
 EndProject
@@ -93,6 +93,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Scheduler.API", "QA.Scheduler.API\QA.Scheduler.API.csproj", "{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Scheduler.Core", "QA.Scheduler.Core\QA.Scheduler.Core.csproj", "{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImpactService", "ImpactService", "{5F3FA71D-494E-445E-B5AB-823BBDD911FD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.ImpactService", "QA.ProductCatalog.ImpactService\QA.ProductCatalog.ImpactService.csproj", "{4DC1E99B-52AC-4FBD-B8BB-486998FBA45D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.ImpactService.Tests", "QA.ProductCatalog.ImpactService.Tests\QA.ProductCatalog.ImpactService.Tests.csproj", "{DEEDCDEE-A343-4B63-8905-3A549F505002}"
+EndProject
+Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QA.ProductCatalog.ImpactService.API", "QA.ProductCatalog.ImpactService.API\QA.ProductCatalog.ImpactService.API.xproj", "{BDA5817B-BE73-4FC3-9B64-E85599BF7E51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -248,6 +256,18 @@ Global
 		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DC1E99B-52AC-4FBD-B8BB-486998FBA45D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DC1E99B-52AC-4FBD-B8BB-486998FBA45D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DC1E99B-52AC-4FBD-B8BB-486998FBA45D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DC1E99B-52AC-4FBD-B8BB-486998FBA45D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEEDCDEE-A343-4B63-8905-3A549F505002}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEEDCDEE-A343-4B63-8905-3A549F505002}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEEDCDEE-A343-4B63-8905-3A549F505002}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEEDCDEE-A343-4B63-8905-3A549F505002}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDA5817B-BE73-4FC3-9B64-E85599BF7E51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDA5817B-BE73-4FC3-9B64-E85599BF7E51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDA5817B-BE73-4FC3-9B64-E85599BF7E51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDA5817B-BE73-4FC3-9B64-E85599BF7E51}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -286,6 +306,9 @@ Global
 		{65934658-47E0-4175-A495-7F2D94318640} = {BD97F8FF-249D-4776-8C46-6346C8E29ADA}
 		{5BA9AE54-4D68-4365-9EA2-34EE72BA27A0} = {BD97F8FF-249D-4776-8C46-6346C8E29ADA}
 		{5B884BAB-79C7-4F14-8D6D-398FECE0C4E8} = {BD97F8FF-249D-4776-8C46-6346C8E29ADA}
+		{4DC1E99B-52AC-4FBD-B8BB-486998FBA45D} = {5F3FA71D-494E-445E-B5AB-823BBDD911FD}
+		{DEEDCDEE-A343-4B63-8905-3A549F505002} = {9E374573-BDFB-453D-B9A7-D098D2E295C5}
+		{BDA5817B-BE73-4FC3-9B64-E85599BF7E51} = {5F3FA71D-494E-445E-B5AB-823BBDD911FD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35;packages\Unity.Interception.2.1.505.0\lib\NET35;packages\EnterpriseLibrary.Common.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Data.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.ExceptionHandling.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Logging.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.ExceptionHandling.Logging.5.0.505.0\lib\NET35;packages\EnterpriseLibrary.Validation.5.0.505.0\lib\NET35;packages\Unity.2.1.505.2\lib\NET35

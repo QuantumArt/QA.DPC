@@ -1,0 +1,30 @@
+{
+  "Id": 2000,
+  "Parameters": [
+    {
+      "Id": 8000,
+      "SortOrder": 1,
+      "Title": "Звонки по всей России (в пределах пакета)",
+      "BaseParameter": { "Alias": "OutgoingCalls" },
+      "BaseParameterModifiers": [ { "Alias": "WithinPackage" } ],
+      "Modifiers": [
+        { "Alias": "ForcedInfluence" },
+        { "Alias": "ChangeName" },
+        { "Alias": "UseForCalculator" }
+      ]
+    },
+    {
+      "Id": 9000,
+      "SortOrder": 2,
+      "Title": "Звонки по всей России (сверх пакета)",
+      "BaseParameter": { "Alias": "OutgoingCalls" },
+      "BaseParameterModifiers": [ { "Alias": "WithinPackage" } ],
+      "Modifiers": [
+        { "Alias": "ChangeName" },
+        { "Alias": "UseForCalculator" }
+      ]
+    }
+
+
+  ]
+}
