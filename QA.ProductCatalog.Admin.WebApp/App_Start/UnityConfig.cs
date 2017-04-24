@@ -55,7 +55,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 #else
             container.AddNewExtension<LoaderConfigurationExtension>();
 #endif
-            container.AddNewExtension<QPConfigurationExtension>();
+            container.AddNewExtension<QPContainerConfiguration>();
             container.AddNewExtension<ActionContainerConfiguration>();
 			container.AddNewExtension<TaskContainerConfiguration>();
 			container.AddNewExtension<ValidationConfiguration>();
@@ -158,11 +158,10 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 container.RegisterInstance<ICacheItemWatcher>(code, watcher);              
             }
 
-
-            container.RegisterType<IContentInvalidator>(new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.Resolve<IIdentityProvider>().Identity.CustomerCode)));
-            container.RegisterType<ICacheProvider>(new InjectionFactory(c => c.Resolve<ICacheProvider>(c.Resolve<IIdentityProvider>().Identity.CustomerCode)));
-            container.RegisterType<IVersionedCacheProvider>(new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.Resolve<IIdentityProvider>().Identity.CustomerCode)));
-            container.RegisterType<ICacheItemWatcher>(new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.Resolve<IIdentityProvider>().Identity.CustomerCode)));       
+            container.RegisterType<IContentInvalidator>(new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.GetCustomerCode())));
+            container.RegisterType<ICacheProvider>(new InjectionFactory(c => c.Resolve<ICacheProvider>(c.GetCustomerCode())));
+            container.RegisterType<IVersionedCacheProvider>(new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
+            container.RegisterType<ICacheItemWatcher>(new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));       
 
             return container;
         }

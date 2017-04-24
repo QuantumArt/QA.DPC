@@ -4,7 +4,7 @@ using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.QP.Configuration
 {
-    public class QPConfigurationExtension : UnityContainerExtension
+    public class QPContainerConfiguration : UnityContainerExtension
     {
         protected override void Initialize()
         {
