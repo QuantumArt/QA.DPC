@@ -31,6 +31,8 @@ using Quantumart.QP8.BLL;
 using System.Globalization;
 using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Configuration;
+using System.Web;
+using QA.Core.Data;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Start
 {
@@ -71,14 +73,8 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
 	        container
                 .RegisterType<IXmlProductService, XmlProductService>()
-                .RegisterInstance(new CustomerCacheProvider(container.Resolve<HttpVersionedCacheProvider>(), container.Resolve<IIdentityProvider>()))
-                .RegisterInstance<ICacheProvider>(container.Resolve<CustomerCacheProvider>())
-                .RegisterInstance<IVersionedCacheProvider>(container.Resolve<CustomerCacheProvider>())
-                .RegisterType<IContentInvalidator, DPCContentInvalidator>()
 				.RegisterType<ISettingsService, SettingsFromContentService>()
                 .RegisterType<IUserProvider, UserProvider>()
-                //.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()))
-                .RegisterInstance<ICacheItemWatcher>(new CacheItemWatcherFake())                
                 .RegisterType<IQPNotificationService, QPNotificationService>()
                 .RegisterType<IProductControlProvider, ProductControlProvider>()
                 .RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(typeof(IConnectionProvider), true));
@@ -142,9 +138,31 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             ControllerBuilder.Current.SetControllerFactory(new DefaultControllerFactory(container.Resolve<IControllerActivator>()));
 
 	        container.RegisterType<StructureCacheTracker>();
+            
 
-            //TODO: update cache tracking
-			//container.Resolve<ICacheItemWatcher>().AttachTracker(container.Resolve<StructureCacheTracker>());
+            foreach (var customer in container.Resolve<ICustomerProvider>().GetCustomers())
+            {
+                var code = customer.CustomerCode;
+
+                var cacheProvider = new VersionedCustomerCacheProvider(code);
+                var invalidator = new DPCContentInvalidator(cacheProvider);
+                var connectionProvider = new ExplicitConnectionProvider(customer.ConnecdtionString);
+                var tracker = new StructureCacheTracker(connectionProvider);
+                var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider);
+
+                watcher.AttachTracker(tracker);
+                
+                container.RegisterInstance<IContentInvalidator>(code, invalidator);
+                container.RegisterInstance<ICacheProvider>(code, cacheProvider);
+                container.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
+                container.RegisterInstance<ICacheItemWatcher>(code, watcher);              
+            }
+
+
+            container.RegisterType<IContentInvalidator>(new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.Resolve<IIdentityProvider>().Identity.CustomerCode)));
+            container.RegisterType<ICacheProvider>(new InjectionFactory(c => c.Resolve<ICacheProvider>(c.Resolve<IIdentityProvider>().Identity.CustomerCode)));
+            container.RegisterType<IVersionedCacheProvider>(new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.Resolve<IIdentityProvider>().Identity.CustomerCode)));
+            container.RegisterType<ICacheItemWatcher>(new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.Resolve<IIdentityProvider>().Identity.CustomerCode)));       
 
             return container;
         }
