@@ -178,7 +178,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Configuration\QPConfigurationExtension.cs" />
+    <Compile Include="Configuration\QPContainerConfiguration.cs" />
+    <Compile Include="Configuration\QPContainerExtension.cs" />
+    <Compile Include="Exceptions\ConsolidationException.cs" />
     <Compile Include="Models\Service.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Identity.cs" />
