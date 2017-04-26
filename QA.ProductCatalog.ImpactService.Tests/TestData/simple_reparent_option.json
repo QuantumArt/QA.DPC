@@ -1,0 +1,41 @@
+{
+  "Id": 2000,
+  "Parameters": [
+    {
+      "Id": 8001,
+      "Title": "Подгруппа 2 (новая)",
+      "BaseParameter": { "Alias": "ParameterGroup" },
+      "BaseParameterModifiers": [ { "Alias": "Second" } ],
+      "Modifiers": [
+        { "Alias": "UseForCalculator" },
+        { "Alias": "ChangeName" }
+      ]
+    },
+    {
+      "Id": 8002,
+      "SortOrder": 5,
+      "Parent": { "Id": 8001 },
+      "BaseParameter": { "Alias": "OutgoingCalls" },
+      "Modifiers": [ { "Alias": "UseForCalculator" } ]
+    },
+    {
+      "Id": 8003,
+      "Title": "Подгруппа 1 (новая)",
+      "BaseParameter": { "Alias": "ParameterGroup" },
+      "BaseParameterModifiers": [ { "Alias": "First" } ],
+      "Modifiers": [
+        { "Alias": "UseForCalculator" }
+      ]
+    },
+    {
+      "Id": 8004,
+      "SortOrder": 5,
+      "Parent": { "Id": 8003 },
+      "BaseParameter": { "Alias": "IncomingCalls" },
+      "Modifiers": [
+        { "Alias": "UseForCalculator" },
+        { "Alias": "Append" }
+      ]
+    }
+  ]
+}

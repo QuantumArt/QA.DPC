@@ -1,0 +1,88 @@
+{
+  "Id": 2000,
+  "Parameters": [
+    {
+      "Id": 3000,
+      "Title": "Новый заголовок (в пределах пакета)",
+      "NumValue": 0,
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8552,
+        "Title": "Направление: Вся Россия",
+        "Alias": "Russia"
+      },
+      "BaseParameterModifiers": [
+        {
+          "Id": 8565,
+          "Title": "В пределах пакета",
+          "Alias": "WithinPackage",
+          "Type": "Refining"
+        }
+      ],
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      },
+      "Modifiers": [
+        {
+          "Id": 1852272,
+          "Title": "Использовать для калькулятора роуминга",
+          "Alias": "UseForRoamingCalculator"
+        }
+      ]
+    },
+    {
+      "Id": 4000,
+      "Title": "Новый заголовок (сверх пакета)",
+      "BaseParameter": {
+        "Id": 8478,
+        "Title": "Исходящие звонки",
+        "Alias": "OutgoingCalls"
+      },
+      "Direction": {
+        "Id": 8552,
+        "Title": "Направление: Вся Россия",
+        "Alias": "Russia"
+      },
+      "BaseParameterModifiers": [
+        {
+          "Id": 8566,
+          "Title": "Сверх пакета",
+          "Alias": "OverPackage",
+          "Type": "Refining"
+        }
+      ],
+      "Unit": {
+        "Id": 8543,
+        "Title": "рублей",
+        "Display": "руб."
+      },
+      "Group": {
+        "Id": 1837521,
+        "Title": "Исходящие звонки в Россию (за минуту)",
+        "SortOrder": 3,
+        "OldSiteId": 3
+      },
+      "Modifiers": [
+        {
+          "Id": 1852272,
+          "Title": "Использовать для калькулятора роуминга",
+          "Alias": "UseForRoamingCalculator"
+        }
+      ]
+    }
+
+  ]
+
+}

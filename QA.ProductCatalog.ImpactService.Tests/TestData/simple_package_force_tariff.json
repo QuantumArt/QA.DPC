@@ -1,0 +1,34 @@
+{
+  "Id": 1837319,
+  "Parameters": [
+    {
+      "Id": 5000,
+      "SortOrder": 1,
+      "Title": "Звонки (в пределах пакета)",
+      "NumValue": 0.00,  
+      "BaseParameter": { "Alias": "OutgoingCalls" },
+      "BaseParameterModifiers": [ { "Alias": "WithinPackage" } ]
+    },
+
+    {
+      "Id": 6000,
+      "SortOrder": 2,
+      "Title": "Звонки (сверх пакета)",
+      "NumValue": 5.30,
+      "BaseParameter": { "Alias": "OutgoingCalls" },
+      "BaseParameterModifiers": [ { "Alias": "OverPackage" } ]
+    }
+  ],
+  "ServicesOnTariff": [
+    {
+      "Id": 111,
+      "Service": {
+        "Id": 2000,
+        "MarketingProduct": {"Id": 2001 }
+      },
+      "Parent": {
+        "Modifiers": [ { "Alias": "Calculate" } ]
+      }
+    }
+  ]
+}
