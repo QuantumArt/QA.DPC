@@ -30,9 +30,20 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         {
             type = type?.TrimStart('@');
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
-            var stream = await Manager.GetProductsInTypeStream(type, options, language, state);
-            return GetResponse(stream);
-        }     
+            Stream stream;
+            try
+            {
+                stream = await Manager.GetProductsInTypeStream(type, options, language, state);
+                return GetResponse(stream);
+            }
+            catch (ElasticsearchClientException ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Error occurred: " + ex.Response.HttpStatusCode + ". Reason: " + ex.Message)
+                };
+            }
+        }
 
         [RateLimit("GetById"), Route("{language}/{state}/products/{id:int}"), Route("products/{id:int}")]
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
@@ -56,8 +67,18 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
         public async Task<HttpResponseMessage> Search([FromUri] string q, string language = null, string state = null)
         {
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
-            var stream = await Manager.SearchStreamAsync(q, options, language, state);
-            return GetResponse(stream);
+            try
+            {
+                var stream = await Manager.SearchStreamAsync(q, options, language, state);
+                return GetResponse(stream);
+            }
+            catch (ElasticsearchClientException ex)
+            {
+                return new HttpResponseMessage(HttpStatusCode.OK)
+                {
+                    Content = new StringContent("Error occurred: " + ex.Response.HttpStatusCode + ". Reason: " + ex.Message)
+                };
+            }
         }
 
         public HttpResponseMessage GetResponse(Stream stream, bool filter = true)
