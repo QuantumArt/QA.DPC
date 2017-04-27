@@ -7,6 +7,7 @@ using System.IO;
 using System.Collections.Generic;
 using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.DAL;
 
 namespace QA.Core.DPC
 {
@@ -31,7 +32,7 @@ namespace QA.Core.DPC
                 var logger = ObjectFactoryBase.Resolve<ILogger>();
                 var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
 
-                using (var ctx = new DAL.NotificationsModelDataContext())
+                using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
 				{
 					bool needSubmit = false;
 					List<NotificationChannel> channels = null;
@@ -128,7 +129,7 @@ namespace QA.Core.DPC
 
             Dictionary<string, int> countMap;
 
-            using (var ctx = new DAL.NotificationsModelDataContext())
+            using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
             {
                 countMap = ctx.Messages
                     .GroupBy(m => m.Channel)

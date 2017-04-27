@@ -10,6 +10,7 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Servives;
+using QA.Core.DPC.DAL;
 
 namespace QA.Core.DPC
 {
@@ -41,9 +42,10 @@ namespace QA.Core.DPC
 			unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();
 
             var connection = unityContainer.Resolve<IConnectionProvider>();
+            unityContainer.RegisterType<NotificationsModelDataContext>(new InjectionFactory(c => new NotificationsModelDataContext(c.Resolve<IConnectionProvider>().GetConnection(QP.Models.Service.Notification))));
 
             if (connection.QPMode)
-            {
+            {                
                 foreach (var customer in unityContainer.Resolve<ICustomerProvider>().GetCustomers())
                 {
                     var code = customer.CustomerCode;
