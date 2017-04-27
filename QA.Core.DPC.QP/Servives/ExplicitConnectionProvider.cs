@@ -1,4 +1,5 @@
-﻿using QA.Core.DPC.QP.Models;
+﻿using System;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.QP.Servives
 {
@@ -10,7 +11,7 @@ namespace QA.Core.DPC.QP.Servives
         {
             _connection = connection;
         }
-     
+
         public string GetConnection()
         {
             return _connection;
@@ -18,6 +19,16 @@ namespace QA.Core.DPC.QP.Servives
         public string GetConnection(Service service)
         {
             return _connection;
+        }
+
+        public bool HasConnection(Service service)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool QPMode
+        {
+            get { throw new NotImplementedException(); }
         }
     }
 }

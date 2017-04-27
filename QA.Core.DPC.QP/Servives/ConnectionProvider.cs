@@ -7,12 +7,13 @@ namespace QA.Core.DPC.QP.Servives
     public class ConnectionProvider : IConnectionProvider
     {
         private const string AdminKey = "qp_database";
+        private const string NotificationKey = "QA.Core.DPC.Properties.Settings.beeline_dpc_notificationsConnectionString";
 
         private readonly ICustomerProvider _customerProvider;
         private readonly IIdentityProvider _identityProvider;        
         private Dictionary<Service, string> _defaultConnections;
         private readonly Service _defaultService;
-        private bool _qpMode;
+        public bool QPMode { get; private set; }
 
         public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, Service defaultService)
         {
@@ -21,18 +22,34 @@ namespace QA.Core.DPC.QP.Servives
             _identityProvider = identityProvider;
             _defaultService = defaultService;
 
-            var qpMode =  ConfigurationManager.AppSettings["QPMode"];
-            _qpMode = !string.IsNullOrEmpty(qpMode) && qpMode.ToLower() == "true";
+            QPMode = GetQPMode();
 
-            if (!_qpMode)
+            if (!QPMode)
             {
                 AddConnection(Service.Admin, AdminKey);
+                AddConnection(Service.Notification, NotificationKey);
             }
+        }
+
+        public static bool GetQPMode()
+        {
+            var qpMode = ConfigurationManager.AppSettings["QPMode"];
+            return !string.IsNullOrEmpty(qpMode) && qpMode.ToLower() == "true";
         }
 
         private void AddConnection(Service service, string key)
         {
-            _defaultConnections[service] = ConfigurationManager.ConnectionStrings[key].ConnectionString;
+            var connection = ConfigurationManager.ConnectionStrings[key];
+
+            if (connection != null)
+            {
+                _defaultConnections[service] = connection.ConnectionString;
+            }
+        }
+
+        public bool HasConnection(Service service)
+        {
+            return _defaultConnections.ContainsKey(service);
         }
 
         public string GetConnection()
@@ -41,7 +58,7 @@ namespace QA.Core.DPC.QP.Servives
         }
         public string GetConnection(Service service)
         {
-            return _qpMode ? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode) : _defaultConnections[service];
+            return QPMode ? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode) : _defaultConnections[service];
         }
     }
 }

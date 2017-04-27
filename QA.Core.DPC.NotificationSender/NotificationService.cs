@@ -5,45 +5,45 @@ using QA.ProductCatalog.Infrastructure;
 using System.Xml.XPath;
 using System.IO;
 using System.Collections.Generic;
+using QA.Core.DPC.QP.Servives;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC
 {
 	public class NotificationService : QAServiceBase, INotificationService
 	{
-		internal static NotificationSenderConfig _currentConfiguration = null;
+		internal static event EventHandler<string> OnUpdateConfiguration;
 
-		internal static event EventHandler<EventArgs> OnUpdateConfiguration;
-
-		private readonly ILogger _logger;
-		private readonly INotificationProvider _provider;
-        private INotificationChannelService _channelService;
+        private readonly IIdentityProvider _identityProvider;
 
         public NotificationService()
 		{
-			_logger = ObjectFactoryBase.Resolve<ILogger>();
-			_provider = ObjectFactoryBase.Resolve<INotificationProvider>();
-            _channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
+            _identityProvider = ObjectFactoryBase.Resolve<IIdentityProvider>();
         }
 		
-		public void PushNotifications(NotificationItem[] notifications, bool isStage, int userId, string userName, string method)
+		public void PushNotifications(NotificationItem[] notifications, bool isStage, int userId, string userName, string method, string customerCode)
 		{
-			RunAction(new UserContext(), null, () =>
+            _identityProvider.Identity = new Identity(customerCode);
+
+            RunAction(new UserContext(), null, () =>
 			{
 				Throws.IfArgumentNull(notifications, _ => notifications);
+                var logger = ObjectFactoryBase.Resolve<ILogger>();
+                var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
 
-				using (var ctx = new DAL.NotificationsModelDataContext())
+                using (var ctx = new DAL.NotificationsModelDataContext())
 				{
 					bool needSubmit = false;
 					List<NotificationChannel> channels = null;
 
 					if (notifications.Any(n => n.Channels == null))
 					{
-						channels = _provider.GetConfiguration().Channels;
+						channels = provider.GetConfiguration().Channels;
 
 						if (channels == null)
 						{
 							var productIds = notifications.Where(n => n.Channels == null).Select(n => n.ProductId);
-							_logger.Error("Продукты {0} не поставлены в очередь т.к. остутствуют каналы для публикации" , string.Join(", ", string.Join(", ", productIds)));
+							logger.Error("Продукты {0} не поставлены в очередь т.к. остутствуют каналы для публикации" , string.Join(", ", string.Join(", ", productIds)));
 							throw new Exception("Не найдено каналов для публикации");
 						}
 					}
@@ -96,7 +96,7 @@ namespace QA.Core.DPC
 						needSubmit = true;
 
 						var productIds = notifications.Select(n => n.ProductId).Distinct();
-						_logger.Info("Постановка сообщения {0} для продуктов {1} в очередь, isStage={2}", method, string.Join(", ", productIds), isStage);
+						logger.Info("Постановка сообщения {0} для продуктов {1} в очередь, isStage={2}", method, string.Join(", ", productIds), isStage);
 					}
 
 					if (needSubmit)
@@ -105,20 +105,25 @@ namespace QA.Core.DPC
 			});
 		}
 
-        public void UpdateConfiguration()
+        public void UpdateConfiguration(string customerCode)
 		{
 			if (OnUpdateConfiguration != null)
 			{
-				OnUpdateConfiguration(this, new EventArgs());
+				OnUpdateConfiguration(this, customerCode);
             }
         }
 
-        public ConfigurationInfo GetConfigurationInfo()
+        public ConfigurationInfo GetConfigurationInfo(string customerCode)
         {
-            var actualConfiguration = _provider.GetConfiguration();
+            _identityProvider.Identity = new Identity(customerCode);
+            var channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
+            var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
+
+            var currentConfiguration = GetCurrentConfiguration(customerCode);
+            var actualConfiguration = provider.GetConfiguration();
 
             var channels = actualConfiguration.Channels.Select(c => c.Name)
-                .Union(_currentConfiguration.Channels.Select(c => c.Name))
+                .Union(currentConfiguration.Channels.Select(c => c.Name))
                 .Distinct();
 
             Dictionary<string, int> countMap;
@@ -130,20 +135,20 @@ namespace QA.Core.DPC
                     .ToDictionary(g => g.Key, g => g.Count());
             }         
 
-            var chennelsStatistic = _channelService.GetNotificationChannels();
+            var chennelsStatistic = channelService.GetNotificationChannels();
 
             return new ConfigurationInfo
             {
                 Started = DateTime.Now,
-                NotificationProvider = _provider.GetType().Name,
-                IsAtual = actualConfiguration.Equals(_currentConfiguration),
+                NotificationProvider = provider.GetType().Name,
+                IsAtual = actualConfiguration.Equals(currentConfiguration),
                 Channels = (from channel in channels
                            join s in chennelsStatistic on channel equals s.Name into d
                            from s in d.DefaultIfEmpty()
                            select new ChannelInfo
                            {
                                Name = channel,
-                               State = GetState(actualConfiguration.Channels.FirstOrDefault(c => c.Name == channel), _currentConfiguration.Channels.FirstOrDefault(c => c.Name == channel)),
+                               State = GetState(actualConfiguration.Channels.FirstOrDefault(c => c.Name == channel), currentConfiguration.Channels.FirstOrDefault(c => c.Name == channel)),
                                Count = countMap.ContainsKey(channel) ? countMap[channel] : 0,
                                LastId = s?.LastId,
                                LastQueued = s?.LastQueued,
@@ -153,6 +158,11 @@ namespace QA.Core.DPC
                            .ToArray()
                 .ToArray()
             };          
+        }
+
+        private static NotificationSenderConfig GetCurrentConfiguration(string customerCode)
+        {
+            return NotificationSender._configDictionary[customerCode];
         }
 
         private State GetState(NotificationChannel actual, NotificationChannel current)

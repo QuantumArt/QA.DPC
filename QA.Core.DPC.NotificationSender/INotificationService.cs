@@ -6,13 +6,13 @@ namespace QA.Core.DPC
 	public interface INotificationService
 	{
 		[OperationContract]
-		void PushNotifications(NotificationItem[] notifications, bool isStage, int userId, string userName, string method);
+		void PushNotifications(NotificationItem[] notifications, bool isStage, int userId, string userName, string method, string customerCode);
 
 		[OperationContract]
-		void UpdateConfiguration();
+		void UpdateConfiguration(string customerCode);
 
 		[OperationContract]
-		ConfigurationInfo GetConfigurationInfo();
+		ConfigurationInfo GetConfigurationInfo(string customerCode);
 
 	}
 }

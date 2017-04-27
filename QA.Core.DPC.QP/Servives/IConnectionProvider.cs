@@ -6,5 +6,7 @@ namespace QA.Core.DPC.QP.Servives
     {
         string GetConnection();
         string GetConnection(Service service);
+        bool HasConnection(Service service);
+        bool QPMode { get; }
     }
 }

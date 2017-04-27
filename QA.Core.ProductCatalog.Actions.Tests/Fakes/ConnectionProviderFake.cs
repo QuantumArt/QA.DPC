@@ -17,6 +17,14 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
             _connection = connection;
         }
 
+        public bool QPMode
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public string GetConnection()
         {
             return _connection;
@@ -25,6 +33,11 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
         public string GetConnection(Service service)
         {
             return _connection;
+        }
+
+        public bool HasConnection(Service service)
+        {
+            throw new NotImplementedException();
         }
     }
 }

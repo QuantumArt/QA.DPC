@@ -11,36 +11,38 @@ using QA.Core.DPC.Service;
 using System.Threading.Tasks.Schedulers;
 using System.Diagnostics;
 using QA.ProductCatalog.Infrastructure;
+using System.Collections.Concurrent;
+using QA.Core.DPC.QP.Servives;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC
 {
 	public partial class NotificationSender : ServiceBase
 	{
-		static NotificationSenderConfig _config;
-		static INotificationProvider _configProvider;
-        static INotificationChannelService _channelService;
-        static ILogger _logger;
+		public static ConcurrentDictionary<string, NotificationSenderConfig> _configDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
+        static ICustomerProvider _customerProvider;
+        static IIdentityProvider _identityProvider;
 
-	public ServiceHost serviceHost = null;
+        public ServiceHost serviceHost = null;
 
 		private readonly List<Timer> _senders = new List<Timer>();
 		static readonly Dictionary<string, ChannelState> _lockers = new Dictionary<string, ChannelState>();
 
 		public NotificationSender()
 		{
-		InitializeComponent();
-
+		    InitializeComponent();
 			UnityConfig.Configure();
-
-			_logger = ObjectFactoryBase.Resolve<ILogger>();
-			_configProvider = ObjectFactoryBase.Resolve<INotificationProvider>();
-            _channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
-
+            _customerProvider = ObjectFactoryBase.Resolve<ICustomerProvider>();
+            _identityProvider = ObjectFactoryBase.Resolve<IIdentityProvider>();
         }
 
 		protected override void OnStart(string[] args)
 		{
-			UpdateConfiguration();
+            foreach (var customer in _customerProvider.GetCustomers())
+            {
+                UpdateConfiguration(customer.CustomerCode);
+            }
+
 			NotificationService.OnUpdateConfiguration += NotificationService_OnUpdateConfiguration;
 
 			if (serviceHost != null)
@@ -60,88 +62,108 @@ namespace QA.Core.DPC
                 serviceHost = null;
             }
 
-            foreach (var sender in _senders)
+            foreach (var configDictionary in _configDictionary.Values)
             {
-                sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, _config.CheckInterval));
+                foreach (var sender in _senders)
+                {
+                    sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, configDictionary.CheckInterval));
+                }
             }
         }
 
-		private void UpdateConfiguration()
+		private void UpdateConfiguration(string customerCode)
 		{
-			int delay = 0;
-			var items = _senders.Zip(_lockers.Keys, (s, c) => new { Sender = s, Channel = c });
-			_config = _configProvider.GetConfiguration();
-			NotificationService._currentConfiguration = _config;
+            _identityProvider.Identity = new Identity(customerCode);
+            var configProvider = ObjectFactoryBase.Resolve<INotificationProvider>();
+            var logger = ObjectFactoryBase.Resolve<ILogger>();
+            int delay = 0;
+			var items = _senders.Zip(_lockers.Keys, (s, k) => new { Sender = s, Key = k });
+            var config = _configDictionary.AddOrUpdate(customerCode, code => configProvider.GetConfiguration(), (code, cfg) => configProvider.GetConfiguration());
 
-			foreach (var channel in _config.Channels.Where(c => c.DegreeOfParallelism > 0))
+			foreach (var channel in config.Channels.Where(c => c.DegreeOfParallelism > 0))
 			{
-				if (_lockers.ContainsKey(channel.Name))
-				{
-					var sender = items.First(itm => itm.Channel == channel.Name).Sender;
-					sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, _config.CheckInterval));
-                    _logger.Info("Updete sender for {0} whith delay {1} and interval {2}", channel.Name, delay, _config.CheckInterval);
+                var key = GetKey(channel, customerCode);
 
+                if (_lockers.ContainsKey(key))
+				{
+					var sender = items.First(itm => itm.Key == key).Sender;
+					sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval));
+                    logger.Info("Updete sender for {0} whith delay {1} and interval {2}", key, delay, config.CheckInterval);
                 }
 				else
 				{
-					_lockers.Add(channel.Name, new ChannelState { BlockState = null, ErrorsCount = 0 });
-					_senders.Add(new Timer((SendToOneChannel), channel.Name, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, _config.CheckInterval)));
-                    _logger.Info("Add sender for {0} whith delay {1} and interval {2}", channel.Name, delay, _config.CheckInterval);
+                    var state = new ChannelState { BlockState = null, ErrorsCount = 0 };
+                    var descriptor = new ChannelDescriptor { ChannelName = channel.Name, CustomerCode = customerCode };
+                    _lockers.Add(key, state);
+					_senders.Add(new Timer((SendToOneChannel), descriptor, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval)));
+                    logger.Info("Add sender for {0} whith delay {1} and interval {2}", key, delay, config.CheckInterval);
                 }
 
 				delay++;
 			}
 
 			var itemsToStop = items
-				.Where(itm => !_config.Channels.Any(c => c.Name == itm.Channel && c.DegreeOfParallelism > 0));
+				.Where(itm => !config.Channels.Any(c => GetKey(c, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
 
 			foreach (var item in itemsToStop)
 			{
-				item.Sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, _config.CheckInterval));
-                _logger.Info("Stop sender for {0}", item.Channel, delay);
+				item.Sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, config.CheckInterval));
+                logger.Info("Stop sender for {0} whith delay {1}", item.Key, delay);
             }
 		}
-		private void NotificationService_OnUpdateConfiguration(object sender, EventArgs e)
-		{
-			UpdateConfiguration();
-		}
-		public static void SendToOneChannel(Object stateInfo)
+
+        private string GetKey(NotificationChannel channel, string customerCode)
         {
-			string channelName = (string)stateInfo;
+            return $"{customerCode}_{channel.Name}";
+        }
+		private void NotificationService_OnUpdateConfiguration(object sender, string customerCode)
+		{
+			UpdateConfiguration(customerCode);
+		}
+
+		public static void SendToOneChannel(Object stateInfo)
+        {            
+            var descriptor = (ChannelDescriptor)stateInfo;
+            _identityProvider.Identity = new Identity(descriptor.CustomerCode);
+            var logger = ObjectFactoryBase.Resolve<ILogger>();
+            var channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
+            var config = _configDictionary[descriptor.CustomerCode];
 
             try
             {
-				var state = _lockers[channelName];
+				var state = _lockers[descriptor.ChannelName];
 
 				if (Monitor.TryEnter(state))
                 {
                     try
                     {
-						if (!state.BlockState.HasValue || state.BlockState.Value.AddSeconds(_config.WaitIntervalAfterErrors) >= DateTime.Now)
+						if (!state.BlockState.HasValue || state.BlockState.Value.AddSeconds(config.WaitIntervalAfterErrors) >= DateTime.Now)
                         {
 							if (state.BlockState.HasValue)
                             {
-                                _logger.Info("Снятие временной блокировки попыток отправки сообщений для канала {0}", channelName);
+                                logger.Info("Снятие временной блокировки попыток отправки сообщений для канала {0}, кастомер код {1}", descriptor.ChannelName, descriptor.CustomerCode);
 								state.BlockState = null; //снимаем блокировку, если прошел указанные интервал и пробуем отправить снова
                             }
 
 							IMessageService service = ObjectFactoryBase.Resolve<IMessageService>();
 
-							var res = service.GetMessagesToSend(channelName, _config.PackageSize);
+							var res = service.GetMessagesToSend(descriptor.ChannelName, config.PackageSize);
                             if (res.IsSucceeded)
                             {
-								var channel = GetChannel(channelName);
+								var channel = GetChannel(config, descriptor.ChannelName);
 								var semaphore = new SemaphoreSlim(Math.Max(channel.DegreeOfParallelism, 1));
 								var localState = new ChannelState() { ErrorsCount = 0 };
 								var factoryMap = res.Result.Select(m => m.Key).Distinct().ToDictionary(k => k, k => new TaskFactory(new OrderedTaskScheduler()));
-								var tasks = res.Result.Select(m => SendOneMessage(channel, service, m, semaphore, factoryMap[m.Key], localState)).ToArray();
+								var tasks = res.Result
+                                    .Select(m => SendOneMessage(config, channel, service, m, semaphore, factoryMap[m.Key], localState, channelService, logger))
+                                    .ToArray();
                                 
 								Task.WaitAll(tasks);
 
-								if (localState.ErrorsCount >= _config.ErrorCountBeforeWait)
+								if (localState.ErrorsCount >= config.ErrorCountBeforeWait)
 								{
 									state.BlockState = DateTime.Now;
-									_logger.Info("Выставление временной блокировки попыток отправки сообщений для канала {0}", channel.Name);
+                                    logger.Info("Выставление временной блокировки попыток отправки сообщений для канала {0}, кастомер код {1}", channel.Name, descriptor.CustomerCode);
 								}
                             }
                         }
@@ -153,22 +175,31 @@ namespace QA.Core.DPC
                 }
                 else
                 {
-					_logger.Info("Очередь для канала {0} все еще занята отправкой сообщений", channelName);
+                    logger.Info("Очередь для канала {0}, кастомер код {1} все еще занята отправкой сообщений", descriptor.ChannelName, descriptor.CustomerCode);
                 }
             }
             catch (Exception ex)
             {
-                _logger.ErrorException("Ошибка при обработке сообщений из очереди для канала {0}", ex, channelName);
+                logger.ErrorException("Ошибка при обработке сообщений из очереди для канала {0}, кастомер код {1}", ex, descriptor.ChannelName, descriptor.CustomerCode);
             }
         }
 
-		private static async Task SendOneMessage(NotificationChannel channel, IMessageService service, Message message, SemaphoreSlim semaphore, TaskFactory factory, ChannelState state)
+		private static async Task SendOneMessage(
+            NotificationSenderConfig config,
+            NotificationChannel channel,
+            IMessageService service,
+            Message message,
+            SemaphoreSlim semaphore,
+            TaskFactory factory,
+            ChannelState state,
+            INotificationChannelService channelService,
+            ILogger logger)
 		{
 			await factory.StartNew(() =>
 			{				
 				lock (state)
 				{
-					if (state.ErrorsCount >= _config.ErrorCountBeforeWait)
+					if (state.ErrorsCount >= config.ErrorCountBeforeWait)
 					{
 						return;
 					}
@@ -181,12 +212,12 @@ namespace QA.Core.DPC
 				try
 				{
 					semaphore.Wait();
-					_logger.LogDebug(() => "Начало обработки сообщения MsgId = " + message.Id);
+                    logger.LogDebug(() => "Начало обработки сообщения MsgId = " + message.Id);
 
 					
 					var request = (HttpWebRequest)WebRequest.Create(url);
 					request.Method = message.Method.ToUpper();
-					request.Timeout = 1000 * _config.TimeOut;
+					request.Timeout = 1000 * config.TimeOut;
 				    var mediaType = !string.IsNullOrEmpty(channel.MediaType) ? channel.MediaType : "text/xml";
                     request.ContentType = $"{mediaType}; charset=utf-8";
                     byte[] data = Encoding.UTF8.GetBytes(message.Xml);
@@ -201,7 +232,7 @@ namespace QA.Core.DPC
 					using (var httpResponse = (HttpWebResponse)request.GetResponse())
 					{
 						timer.Stop();
-						_logger.Info(
+                        logger.Info(
 						    "Отправлено сообщение {1} для канала {0} по адресу {2}, ProductId = {3}, StatusCode = {4}, MsgId = {5}, TimeTaken = {6}",
 						    channel.Name,
 						    message.Method,
@@ -210,7 +241,7 @@ namespace QA.Core.DPC
 						    httpResponse.StatusCode,
 						    message.Id,
 						    timer.ElapsedMilliseconds);
-                        _channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
+                        channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
                     };
 					
 					service.RemoveMessage(message.Id);
@@ -228,7 +259,7 @@ namespace QA.Core.DPC
 
 					if (httpResponse != null)
 					{
-						_logger.Info(
+                        logger.Info(
 							"Отправлено сообщение {1} для канала {0} по адресу {2}, ProductId = {3}, StatusCode = {4}, MsgId = {5}, TimeTaken = {6}",
 							channel.Name,
 							message.Method,
@@ -237,11 +268,11 @@ namespace QA.Core.DPC
 							httpResponse.StatusCode,
 							message.Id,
 							timer.ElapsedMilliseconds);
-                        _channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
+                        channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
                     }
 					else
 					{
-						_logger.Info(
+                        logger.Info(
 							"Не отправлено сообщение {1} для канала {0} по адресу {2} по причине {3}, ProductId = {4}, MsgId = {5}, TimeTaken = {6}",
 							channel.Name,
 							message.Method,
@@ -250,10 +281,10 @@ namespace QA.Core.DPC
 							message.Key,
 							message.Id,
 							timer.ElapsedMilliseconds);
-                        _channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, ex.Status.ToString());
+                        channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, ex.Status.ToString());
                     }
 
-					_logger.ErrorException(
+                    logger.ErrorException(
 						"Ошибка при отправке сообщения {0} для канала {1} по адресу {2}, ProductId = {3}, MsgId = {4}, TimeTaken = {5}",
 						ex, message.Method,
 						channel.Name,
@@ -281,9 +312,9 @@ namespace QA.Core.DPC
 				"&isStage=" + channel.IsStage;
 		}
 
-		private static NotificationChannel GetChannel(string channel)
+		private static NotificationChannel GetChannel(NotificationSenderConfig config, string channel)
 		{
-			return _config.Channels.FirstOrDefault(x => x.Name == channel);
+			return config.Channels.FirstOrDefault(x => x.Name == channel);
 		}
 	}
 }
