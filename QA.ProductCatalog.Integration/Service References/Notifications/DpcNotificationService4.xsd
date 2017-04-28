@@ -9,6 +9,7 @@
         <xs:element minOccurs="0" name="userId" type="xs:int" />
         <xs:element minOccurs="0" name="userName" nillable="true" type="xs:string" />
         <xs:element minOccurs="0" name="method" nillable="true" type="xs:string" />
+        <xs:element minOccurs="0" name="customerCode" nillable="true" type="xs:string" />
       </xs:sequence>
     </xs:complexType>
   </xs:element>
@@ -19,7 +20,9 @@
   </xs:element>
   <xs:element name="UpdateConfiguration">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="customerCode" nillable="true" type="xs:string" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="UpdateConfigurationResponse">
@@ -29,7 +32,9 @@
   </xs:element>
   <xs:element name="GetConfigurationInfo">
     <xs:complexType>
-      <xs:sequence />
+      <xs:sequence>
+        <xs:element minOccurs="0" name="customerCode" nillable="true" type="xs:string" />
+      </xs:sequence>
     </xs:complexType>
   </xs:element>
   <xs:element name="GetConfigurationInfoResponse">

@@ -8,6 +8,7 @@ using QA.Core.Models.Processors;
 using QA.Core.Service.Interaction;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.Notifications;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.ProductCatalog.Integration
 {
@@ -20,12 +21,14 @@ namespace QA.ProductCatalog.Integration
         private readonly IContentProvider<NotificationChannel> _channelProvider;
         private readonly Func<string, IArticleFormatter> _getFormatter;
         private readonly IProductLocalizationService _localizationService;
+        private readonly IIdentityProvider _identityProvider;
 
-        public QPNotificationService(IContentProvider<NotificationChannel> channelProvider, Func<string, IArticleFormatter> getFormatter, IProductLocalizationService localizationService)
+        public QPNotificationService(IContentProvider<NotificationChannel> channelProvider, Func<string, IArticleFormatter> getFormatter, IProductLocalizationService localizationService, IIdentityProvider identityProvider)
         {
             _channelProvider = channelProvider;
             _getFormatter = getFormatter;
             _localizationService = localizationService;
+            _identityProvider = identityProvider;
         }
 
         protected override void OnInitializeClient(object service)
@@ -80,7 +83,8 @@ namespace QA.ProductCatalog.Integration
 
             if (notifications.Any())
             {
-                service.PushNotifications(notifications, isStage, userId, userName, method);
+                var customerCode = _identityProvider.Identity.CustomerCode;
+                service.PushNotifications(notifications, isStage, userId, userName, method, customerCode);
             }
 
             return notifications.Select(n => n.ProductId).ToArray();
@@ -97,7 +101,8 @@ namespace QA.ProductCatalog.Integration
             }
             if (notifications.Any())
             {
-                await service.PushNotificationsAsync(notifications, isStage, userId, userName, method);
+                var customerCode = _identityProvider.Identity.CustomerCode;
+                await service.PushNotificationsAsync(notifications, isStage, userId, userName, method, customerCode);
             }
 
             return notifications.Select(n => n.ProductId).ToArray();
