@@ -583,7 +583,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var calculator = new InternationalRoamingCalculator();
             string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
             var cntOption = option.SelectTokens(feeQuery).Count();
-            calculator.Calculate(tariff, new [] { option }, "UA");
+            calculator.Calculate(tariff, new [] { option }, "UA", null);
 
 
             var cnt = tariff.SelectTokens(feeQuery).Count();
@@ -615,7 +615,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var cntOption = option.SelectTokens(feeQuery).Count();
 
             
-            calculator.Calculate(tariff, new[] { option }, "UA");
+            calculator.Calculate(tariff, new[] { option }, "UA", null);
 
 
             var cnt = tariff.SelectTokens(feeQuery).Count();
@@ -638,7 +638,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var calculator = new InternationalRoamingCalculator();
             string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
             var cntOption = option.SelectTokens(feeQuery).Count();
-            calculator.Calculate(tariff, new[] { option }, "HU");
+            calculator.Calculate(tariff, new[] { option }, "HU", null);
 
 
             var cnt = tariff.SelectTokens(feeQuery).Count();
@@ -662,7 +662,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var calculator = new InternationalRoamingCalculator();
             string feeQuery = "Parameters.[?(@.BaseParameter.Alias == 'SubscriptionFee')]";
             var cntOption = option.SelectTokens(feeQuery).Count();
-            calculator.Calculate(tariff, new[] { option }, "LT");
+            calculator.Calculate(tariff, new[] { option }, "LT", null);
 
 
             var cnt = tariff.SelectTokens(feeQuery).Count();

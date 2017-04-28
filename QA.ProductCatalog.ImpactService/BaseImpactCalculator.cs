@@ -94,7 +94,7 @@ namespace QA.ProductCatalog.ImpactService
                 region = product.SelectToken($"Regions[0]");
             }
 
-            var usagesRoot = (JArray)region.SelectToken("ParameterGroupUsages");
+            var usagesRoot = (JArray)region?.SelectToken("ParameterGroupUsages");
 
             if (usagesRoot != null)
             {
