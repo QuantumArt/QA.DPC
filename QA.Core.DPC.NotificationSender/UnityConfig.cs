@@ -39,13 +39,15 @@ namespace QA.Core.DPC
 			unityContainer.RegisterType<IContextStorage, QpCachedContextStorage>();
             unityContainer.RegisterType<INotificationChannelService, NotificationChannelService>(new ContainerControlledLifetimeManager());
 
-			unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();
+			unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();          
+
+            unityContainer.LoadConfiguration("Default");
 
             var connection = unityContainer.Resolve<IConnectionProvider>();
             unityContainer.RegisterType<NotificationsModelDataContext>(new InjectionFactory(c => new NotificationsModelDataContext(c.Resolve<IConnectionProvider>().GetConnection(QP.Models.Service.Notification))));
 
             if (connection.QPMode)
-            {                
+            {
                 foreach (var customer in unityContainer.Resolve<ICustomerProvider>().GetCustomers())
                 {
                     var code = customer.CustomerCode;
@@ -68,13 +70,11 @@ namespace QA.Core.DPC
             {
                 unityContainer.RegisterType<IContentInvalidator, DPCContentInvalidator>();
                 unityContainer.RegisterInstance<ICacheProvider>(unityContainer.Resolve<CacheProvider>());
-                unityContainer.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager());                
+                unityContainer.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager());
                 unityContainer.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, unityContainer.Resolve<IContentInvalidator>()));
             }
 
-            unityContainer.LoadConfiguration("Default");
-
-			return unityContainer;
+            return unityContainer;
 		}
 	}
 }
