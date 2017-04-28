@@ -82,7 +82,7 @@ namespace QA.Core.DPC
 
 			foreach (var channel in config.Channels.Where(c => c.DegreeOfParallelism > 0))
 			{
-                var key = GetKey(channel, customerCode);
+                var key = GetKey(channel.Name, customerCode);
 
                 if (_lockers.ContainsKey(key))
 				{
@@ -103,7 +103,7 @@ namespace QA.Core.DPC
 			}
 
 			var itemsToStop = items
-				.Where(itm => !config.Channels.Any(c => GetKey(c, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
+				.Where(itm => !config.Channels.Any(c => GetKey(c.Name, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
 
 			foreach (var item in itemsToStop)
 			{
@@ -112,9 +112,9 @@ namespace QA.Core.DPC
             }
 		}
 
-        private string GetKey(NotificationChannel channel, string customerCode)
+        private static string GetKey(string channelName, string customerCode)
         {
-            return $"{customerCode}_{channel.Name}";
+            return $"{customerCode}_{channelName}";
         }
 		private void NotificationService_OnUpdateConfiguration(object sender, string customerCode)
 		{
@@ -131,7 +131,8 @@ namespace QA.Core.DPC
 
             try
             {
-				var state = _lockers[descriptor.ChannelName];
+                var key = GetKey(descriptor.ChannelName, descriptor.CustomerCode);
+                var state = _lockers[key];
 
 				if (Monitor.TryEnter(state))
                 {
