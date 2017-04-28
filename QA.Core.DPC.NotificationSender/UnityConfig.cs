@@ -57,7 +57,12 @@ namespace QA.Core.DPC
                     var connectionProvider = new ExplicitConnectionProvider(customer.ConnecdtionString);
                     var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider);
 
+                    var tracker = new StructureCacheTracker(connectionProvider);
+                    watcher.AttachTracker(tracker);
+
+                    unityContainer.RegisterInstance<IContentInvalidator>(code, invalidator);
                     unityContainer.RegisterInstance<ICacheProvider>(code, cacheProvider);
+                    unityContainer.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
                     unityContainer.RegisterInstance<ICacheItemWatcher>(code, watcher);
                 }
 
