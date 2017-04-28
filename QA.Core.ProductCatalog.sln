@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{9E374573-BDFB-453D-B9A7-D098D2E295C5}"
 EndProject
@@ -100,7 +100,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.ImpactSer
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.ProductCatalog.ImpactService.Tests", "QA.ProductCatalog.ImpactService.Tests\QA.ProductCatalog.ImpactService.Tests.csproj", "{DEEDCDEE-A343-4B63-8905-3A549F505002}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "QA.ProductCatalog.ImpactService.API", "QA.ProductCatalog.ImpactService.API\QA.ProductCatalog.ImpactService.API.xproj", "{BDA5817B-BE73-4FC3-9B64-E85599BF7E51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.ProductCatalog.ImpactService.API", "QA.ProductCatalog.ImpactService.API\QA.ProductCatalog.ImpactService.API.csproj", "{BDA5817B-BE73-4FC3-9B64-E85599BF7E51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
