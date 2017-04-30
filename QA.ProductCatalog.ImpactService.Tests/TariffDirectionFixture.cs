@@ -1,53 +1,50 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
+using FluentAssertions;
+
 
 namespace QA.ProductCatalog.ImpactService.Tests
 {
-    [TestFixture]
     public class TariffDirectionFixture
     {
-        [Test]
+        [Fact]
         public void GetKey_SimpleTariffDirection()
         {
             var a = new TariffDirection("OutgoingCalls", "RussiaExceptHome", "Russia",
                 new[] {"ExceptMTS", "ExceptHome", "WithinPackage"});
-            Assert.That(a.GetKey(true),
-                Is.EqualTo(
-                    "BaseParameter: OutgoingCalls; Zone: RussiaExceptHome; Direction: Russia; BaseParameterModifiers: ExceptHome,ExceptMTS;"));
+            a.GetKey(true)
+                .Should().Be("BaseParameter: OutgoingCalls; Zone: RussiaExceptHome; Direction: Russia; BaseParameterModifiers: ExceptHome,ExceptMTS;");
         }
 
-        [Test]
+        [Fact]
         public void GetKey_BaseParameter()
         {
             var a = new TariffDirection("IncomingCalls", null, null, null);
-            Assert.That(a.GetKey(),
-                Is.EqualTo(
-                    "BaseParameter: IncomingCalls; Zone: ; Direction: ; BaseParameterModifiers: ;"));
+            a.GetKey()
+                .Should().Be("BaseParameter: IncomingCalls; Zone: ; Direction: ; BaseParameterModifiers: ;");
         }
 
-        [Test]
+        [Fact]
         public void GetKey_SimpleTariffDirectionWithSpecials()
         {
             var a = new TariffDirection("OutgoingCalls", "RussiaExceptHome", "Russia",
                 new[] { "ExceptMTS", "ExceptHome", "OverPackage" });
-            Assert.That(a.GetKey(),
-                Is.EqualTo(
-                    "BaseParameter: OutgoingCalls; Zone: RussiaExceptHome; Direction: Russia; BaseParameterModifiers: ExceptHome,ExceptMTS,OverPackage;"));
+            a.GetKey()
+                .Should().Be("BaseParameter: OutgoingCalls; Zone: RussiaExceptHome; Direction: Russia; BaseParameterModifiers: ExceptHome,ExceptMTS,OverPackage;");
         }
 
-        [Test]
+        [Fact]
         public void GetKey_EmptyTariffDirection()
         {
             var a = new TariffDirection(null, null, null, null);
-            Assert.That(a.GetKey(true, true), Is.Empty);
+            a.GetKey(true, true).Should().BeEmpty();
         }
 
-        [Test]
+        [Fact]
         public void GetKey_SimpleTariffDirectionWithoutBaseParameter()
         {
             var a = new TariffDirection(null, "RussiaExceptHome", "Russia",
                 new[] { "ExceptMTS", "ExceptHome", "OverPackage" });
-            Assert.That(a.GetKey(true, true), Is.Empty);
+            a.GetKey(true, true).Should().BeEmpty();
         }
-
     }
 }

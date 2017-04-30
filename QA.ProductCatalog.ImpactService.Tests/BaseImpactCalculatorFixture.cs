@@ -1,28 +1,21 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using FluentAssertions;
 using Newtonsoft.Json.Linq;
-using NUnit.Framework;
+using Xunit;
 
 namespace QA.ProductCatalog.ImpactService.Tests
 {
-    [TestFixture]
     public class BaseImpactCalculatorFixture
     {
-        [OneTimeSetUp]
-        public void Start()
-        {
-            
-
-        }
-
         private JObject GetJsonFromFile(string file)
         {
             var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $"TestData\\{file}");
             return JObject.Parse(File.ReadAllText(path));
         }
 
-        [Test]
+        [Fact]
         public void ChangeParameters_MixedOrder_Reordered()
         {
             var tariff = GetJsonFromFile("simple_tariff_order.json");
@@ -34,11 +27,11 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var resultOrders = tariff.SelectTokens("Parameters.[?(@.Id)].Id").Select(n => (int) n).ToArray();
 
-            Assert.That(resultOrders, Is.EqualTo(orders));
+            resultOrders.ShouldBeEquivalentTo(orders);
 
         }
 
-        [Test]
+        [Fact]
         public void ChangeParameters_NumValueSmaller_Changed()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -50,16 +43,16 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var root = tariff.SelectToken("Parameters");
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(45));
-            Assert.That((decimal)result[0]["OldNumValue"], Is.EqualTo(85));
-            Assert.That((string)result[0]["Title"], Is.Not.EqualTo("Новый заголовок"));
-            Assert.That((bool)result[0]["Changed"], Is.True);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
+            result.Length.Should().Be(1);
+            ((decimal)result[0]["NumValue"]).Should().Be(45);
+            ((decimal)result[0]["OldNumValue"]).Should().Be(85);
+            ((string)result[0]["Title"]).Should().NotBe("Новый заголовок");
+            ((bool)result[0]["Changed"]).Should().BeTrue();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(1);
         }
 
 
-        [Test]
+        [Fact]
         public void ChangeParameters_NumValueSmallerWithLinkMerging_Changed()
         {
             var tariff = GetJsonFromFile("simple2_tariff.json");
@@ -71,14 +64,14 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var root = tariff.SelectToken("Parameters");
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(65));
-            Assert.That((string)result[0]["Title"], Is.Not.EqualTo("Новый заголовок"));
-            Assert.That((bool)result[0]["Changed"], Is.True);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
+            result.Length.Should().Be(1);
+            ((decimal)result[0]["NumValue"]).Should().Be(65);
+            ((string)result[0]["Title"]).Should().NotBe("Новый заголовок");
+            ((bool)result[0]["Changed"]).Should().BeTrue();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(1);
         }
 
-        [Test]
+        [Fact]
         public void ChangeParameters_NumValueSmallerWithoutCalculateModifier_NotChanged()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -94,12 +87,12 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
-            Assert.That(result[0]["Changed"], Is.Null);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(0));
+            ((decimal)result[0]["NumValue"]).Should().Be(85);
+            result[0]["Changed"].Should().BeNull();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(0);
         }
 
-        [Test]
+        [Fact]
         public void ChangeParameters_NumValueSmallerWithoutOptionCalculateModifier_NotChanged()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -116,13 +109,13 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
-            Assert.That(result[0]["Changed"], Is.Null);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(0));
+            ((decimal)result[0]["NumValue"]).Should().Be(85);
+            result[0]["Changed"].Should().BeNull();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(0);
         }
 
 
-        [Test]
+        [Fact]
         public void ChangeParameters_NumValueGreater_NotChanged()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -136,13 +129,13 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
-            Assert.That(result[0]["Changed"], Is.Null);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(0));
+            result.Length.Should().Be(1);
+            ((decimal)result[0]["NumValue"]).Should().Be(85);
+            result[0]["Changed"].Should().BeNull();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(0);
         }
 
-        [Test]
+        [Fact]
         public void ChangeParameters_NumValueGreaterWithForcedInfluence_Changed()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -165,13 +158,13 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(95));
-            Assert.That((bool)result[0]["Changed"], Is.True);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
+            result.Length.Should().Be(1);
+            ((decimal)result[0]["NumValue"]).Should().Be(95);
+            ((bool)result[0]["Changed"]).Should().BeTrue();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(1);
         }
 
-        [Test]
+        [Fact]
         public void ProcessRemove_HasRemoveModifier_Removed()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -192,11 +185,11 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(0));
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Id)]").Count(), Is.GreaterThan(0));
+            result.Length.Should().Be(0);
+            tariff.SelectTokens("Parameters.[?(@.Id)]").Count().Should().BeGreaterThan(0);
         }
 
-        [Test]
+        [Fact]
         public void ProcessRemove_HasRemoveModifierWithLinkMerging_Removed()
         {
             var tariff = GetJsonFromFile("simple2_tariff.json");
@@ -219,11 +212,11 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var cntAfter = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(0));
-            Assert.That(cntAfter, Is.EqualTo(cntBefore - 1));
+            result.Length.Should().Be(0);
+            cntAfter.Should().Be(cntBefore - 1);
         }
 
-        [Test]
+        [Fact]
         public void ProcessAppend_HasAppendModifier_Appended()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -247,14 +240,14 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var cntAfter = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
-            Assert.That(result[0].Previous["Changed"], Is.Not.Null);
+            result.Length.Should().Be(1);
+            ((decimal)result[0]["NumValue"]).Should().Be(85);
+            result[0].Previous["Changed"].Should().NotBeNull();
 
-            Assert.That(cntAfter, Is.EqualTo(cntBefore + 1));
+            cntAfter.Should().Be(cntBefore + 1);
         }
 
-        [Test]
+        [Fact]
         public void ProcessAppend_HasAppendModifierWithLinkMerging_Appended()
         {
             var tariff = GetJsonFromFile("simple2_tariff.json");
@@ -277,15 +270,15 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var cntAfter = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
-            Assert.That(cntAfter, Is.EqualTo(cntBefore + 1));
+            result.Length.Should().Be(1);
+            ((decimal)result[0]["NumValue"]).Should().Be(85);
+            cntAfter.Should().Be(cntBefore + 1);
         }
 
 
 
 
-        [Test]
+        [Fact]
         public void ProcessAppend_HasAppendOrReplaceModifierAndDirectionDoesntExist_Appended()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -322,16 +315,16 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
             var result2 = tariff.SelectToken("Parameters.[?(@.Id==3000)]");
 
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That(cntAfter, Is.EqualTo(cntBefore + 1));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
-            Assert.That((decimal)result2["NumValue"], Is.EqualTo(45));
-            Assert.That(result[0]["Changed"], Is.Null);
-            Assert.That((bool)result2["Changed"], Is.True);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
+            result.Length.Should().Be(1);
+            cntAfter.Should().Be(cntBefore + 1);
+            ((decimal)result[0]["NumValue"]).Should().Be(85);
+            ((decimal)result2["NumValue"]).Should().Be(45);
+            result[0]["Changed"].Should().BeNull();
+            ((bool)result2["Changed"]).Should().BeTrue();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(1);
         }
 
-        [Test]
+        [Fact]
         public void ProcessAppend_HasAppendOrReplaceModifierAndDirectionExists_Changed()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -354,16 +347,16 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var cntAfter = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That(cntAfter, Is.EqualTo(cntBefore));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(45));
-            Assert.That((string)result[0]["Title"], Is.Not.EqualTo("Новый заголовок"));
-            Assert.That((bool)result[0]["Changed"], Is.True);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(1));
+            result.Length.Should().Be(1);
+            cntAfter.Should().Be(cntBefore);
+            ((decimal)result[0]["NumValue"]).Should().Be(45);
+            ((string)result[0]["Title"]).Should().NotBe("Новый заголовок");
+            ((bool)result[0]["Changed"]).Should().BeTrue();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(1);
         }
 
 
-        [Test]
+        [Fact]
         public void ChangeParameters_HasAddModifier_Added()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -386,14 +379,14 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var cntAfter = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That(cntAfter, Is.EqualTo(cntBefore));
-            Assert.That((decimal) result[0]["NumValue"], Is.EqualTo(130));
-            Assert.That((string)result[0]["Title"], Is.Not.EqualTo("Новый заголовок"));
-            Assert.That((bool)result[0]["Changed"], Is.True);
+            result.Length.Should().Be(1);
+            cntAfter.Should().Be(cntBefore);
+            ((decimal)result[0]["NumValue"]).Should().Be(130);
+            ((string)result[0]["Title"]).Should().NotBe("Новый заголовок");
+            ((bool)result[0]["Changed"]).Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public void ChangeParameters_HasDiscountModifier_DiscountApplied()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -416,13 +409,13 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var root = tariff.SelectToken("Parameters");
             var result = calculator.FindByKey(root, direction.GetKey()).ToArray();
-            Assert.That(result.Length, Is.EqualTo(1));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(42.5));
-            Assert.That((decimal)result[0]["OldNumValue"], Is.EqualTo(85));
-            Assert.That((bool)result[0]["Changed"], Is.True);
+            result.Length.Should().Be(1);
+            ((double)result[0]["NumValue"]).Should().Be(42.5);
+            ((decimal)result[0]["OldNumValue"]).Should().Be(85);
+            ((bool)result[0]["Changed"]).Should().BeTrue();
         }
 
-        [Test]
+        [Fact]
         public void ProcessPackages_HasGroupPackage_Applied()
         {
             var tariff = GetJsonFromFile("package_group_tariff.json");
@@ -441,34 +434,34 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var result3 = calculator.FindByKey(root, direction3.GetKey()).ToArray();
 
 
-            Assert.That(result.Length, Is.EqualTo(2));
-            Assert.That(result2.Length, Is.EqualTo(1));
-            Assert.That(result3.Length, Is.EqualTo(1));
+            result.Length.Should().Be(2);
+            result2.Length.Should().Be(1);
+            result3.Length.Should().Be(1);
 
 
 
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(0));
-            Assert.That((decimal)result[1]["NumValue"], Is.EqualTo(85));
-            Assert.That((string)result[0]["Title"], Is.EqualTo("Новый заголовок (в пределах пакета)"));
-            Assert.That((string)result[1]["Title"], Is.EqualTo("Новый заголовок (сверх пакета)"));
-            Assert.That((bool)result[0]["Changed"], Is.True);
-            Assert.That((bool)result[1]["Changed"], Is.True);
+            ((decimal)result[0]["NumValue"]).Should().Be(0);
+            ((decimal)result[1]["NumValue"]).Should().Be(85);
+            ((string)result[0]["Title"]).Should().Be("Новый заголовок (в пределах пакета)");
+            ((string)result[1]["Title"]).Should().Be("Новый заголовок (сверх пакета)");
+            ((bool)result[0]["Changed"]).Should().BeTrue();
+            ((bool)result[1]["Changed"]).Should().BeTrue();
 
-            Assert.That(result[0].Previous, Is.EqualTo(result2[0]));
-            Assert.That(result[1].Previous, Is.EqualTo(result3[0]));
+            result[0].Previous.ShouldBeEquivalentTo(result2[0]);
+            result[1].Previous.ShouldBeEquivalentTo(result3[0]);
 
-            Assert.That((string)result2[0]["Title"], Is.EqualTo("В пределах пакета 500 минут"));
-            Assert.That((int)result2[0]["Id"], Is.EqualTo(5000));
-            Assert.That(result2[0].Previous, Is.Not.Null);
+            ((string)result2[0]["Title"]).Should().Be("В пределах пакета 500 минут");
+            ((int)result2[0]["Id"]).Should().Be(5000);
+            result2[0].Previous.Should().NotBeNull();
 
-            Assert.That((string)result3[0]["Title"], Is.EqualTo("Сверх пакета 500 минут"));
-            Assert.That((int)result3[0]["Id"], Is.EqualTo(6000));
-            Assert.That(result3[0].Previous, Is.Not.Null);
+            ((string)result3[0]["Title"]).Should().Be("Сверх пакета 500 минут");
+            ((int)result3[0]["Id"]).Should().Be(6000);
+            result3[0].Previous.Should().NotBeNull();
 
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(6));
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(6);
         }
 
-        [Test]
+        [Fact]
         public void ProcessParents_Reparent_Applied()
         {
             var tariff = GetJsonFromFile("simple_reparent_tariff.json");
@@ -491,17 +484,17 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var result5 = calculator.FindByKey(root, direction5.GetKey()).ToArray();
 
 
-            Assert.That(result4.Length, Is.EqualTo(1));
-            Assert.That(result5.Length, Is.EqualTo(1));
+            result4.Length.Should().Be(1);
+            result5.Length.Should().Be(1);
 
-            Assert.That((int) result[0]["Parent"]["Id"], Is.EqualTo((int) result3[0]["Id"]));
-            Assert.That((string)result2[0]["Title"], Is.EqualTo("Подгруппа 1"));
-            Assert.That((string)result3[0]["Title"], Is.EqualTo("Подгруппа 2 (новая)"));
-            Assert.That((int)result4[0]["Parent"]["Id"], Is.EqualTo((int)result2[0]["Id"]));
-            Assert.That((int)result5[0]["Parent"]["Id"], Is.EqualTo((int)result2[0]["Id"]));
+            ((int)result[0]["Parent"]["Id"]).Should().Be((int) result3[0]["Id"]);
+            ((string)result2[0]["Title"]).Should().Be("Подгруппа 1");
+            ((string)result3[0]["Title"]).Should().Be("Подгруппа 2 (новая)");
+            ((int)result4[0]["Parent"]["Id"]).Should().Be((int)result2[0]["Id"]);
+            ((int)result5[0]["Parent"]["Id"]).Should().Be((int)result2[0]["Id"]);
         }
 
-        [Test]
+        [Fact]
         public void ProcessPackage_ForcedInfluence_Applied()
         {
             var tariff = GetJsonFromFile("simple_package_force_tariff.json");
@@ -516,16 +509,16 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var direction2 = new TariffDirection("OutgoingCalls", null, null, new[] { "OverPackage" });
             var result2 = calculator.FindByKey(root, direction2.GetKey()).ToArray();
 
-            Assert.That((string)result[0]["Title"], Is.EqualTo("Звонки по всей России (в пределах пакета)"));
-            Assert.That((string)result2[0]["Title"], Is.EqualTo("Звонки (сверх пакета)"));
+            ((string)result[0]["Title"]).Should().Be("Звонки по всей России (в пределах пакета)");
+            ((string)result2[0]["Title"]).Should().Be("Звонки (сверх пакета)");
 
-            Assert.That((bool)result[0]["Changed"], Is.True);
-            Assert.That(result2[0]["Changed"], Is.Null);
-            Assert.That(result[0]["NumValue"], Is.Not.Null);
-            Assert.That(result2[0]["NumValue"], Is.Not.Null);
+            ((bool)result[0]["Changed"]).Should().BeTrue();
+            result2[0]["Changed"].Should().BeNull();
+            result[0]["NumValue"].Should().NotBeNull();
+            result2[0]["NumValue"].Should().NotBeNull();
         }
 
-        [Test]
+        [Fact]
         public void ProcessPackages_HasPackage_Applied()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -537,17 +530,17 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var root = tariff.SelectToken("Parameters");
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var result = calculator.FindByKey(root, direction.GetKey(), true).ToArray();
-            Assert.That(result.Length, Is.EqualTo(2));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(0));
-            Assert.That((decimal)result[1]["NumValue"], Is.EqualTo(85));
-            Assert.That((string)result[0]["Title"], Is.EqualTo("Новый заголовок (в пределах пакета)"));
-            Assert.That((string)result[1]["Title"], Is.EqualTo("Новый заголовок (сверх пакета)"));
-            Assert.That((bool)result[0]["Changed"], Is.True);
-            Assert.That((bool)result[1]["Changed"], Is.True);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(2));
+            result.Length.Should().Be(2);
+            ((decimal)result[0]["NumValue"]).Should().Be(0);
+            ((decimal)result[1]["NumValue"]).Should().Be(85);
+            ((string)result[0]["Title"]).Should().Be("Новый заголовок (в пределах пакета)");
+            ((string)result[1]["Title"]).Should().Be("Новый заголовок (сверх пакета)");
+            ((bool)result[0]["Changed"]).Should().BeTrue();
+            ((bool)result[1]["Changed"]).Should().BeTrue();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(2);
         }
 
-        [Test]
+        [Fact]
         public void ProcessTarifficationSteps_HasTarifficationSteps_Applied()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -559,23 +552,23 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var root = tariff.SelectToken("Parameters");
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
             var result = calculator.FindByKey(root, direction.GetKey(), true).ToArray();
-            Assert.That(result.Length, Is.EqualTo(3));
-            Assert.That((decimal)result[0]["NumValue"], Is.EqualTo(85));
-            Assert.That((decimal)result[1]["NumValue"], Is.EqualTo(45));
-            Assert.That((decimal)result[2]["NumValue"], Is.EqualTo(85));
+            result.Length.Should().Be(3);
+            ((decimal)result[0]["NumValue"]).Should().Be(85);
+            ((decimal)result[1]["NumValue"]).Should().Be(45);
+            ((decimal)result[2]["NumValue"]).Should().Be(85);
 
-            Assert.That((string)result[0]["Title"], Is.EqualTo("Новый заголовок (первый шаг)"));
-            Assert.That((string)result[1]["Title"], Is.EqualTo("Новый заголовок (второй шаг)"));
-            Assert.That((string)result[2]["Title"], Is.EqualTo("Новый заголовок (третий шаг)"));
+            ((string)result[0]["Title"]).Should().Be("Новый заголовок (первый шаг)");
+            ((string)result[1]["Title"]).Should().Be("Новый заголовок (второй шаг)");
+            ((string)result[2]["Title"]).Should().Be("Новый заголовок (третий шаг)");
 
-            Assert.That((bool)result[0]["Changed"], Is.True);
-            Assert.That((bool)result[1]["Changed"], Is.True);
-            Assert.That((bool)result[2]["Changed"], Is.True);
-            Assert.That(tariff.SelectTokens("Parameters.[?(@.Changed)]").Count(), Is.EqualTo(3));
+            ((bool)result[0]["Changed"]).Should().BeTrue();
+            ((bool)result[1]["Changed"]).Should().BeTrue();
+            ((bool)result[2]["Changed"]).Should().BeTrue();
+            tariff.SelectTokens("Parameters.[?(@.Changed)]").Count().Should().Be(3);
 
         }
 
-        [Test]
+        [Fact]
         public void FilterByCountryCode_ExistingFilter_Filtered()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -591,14 +584,14 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var specialCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'UA')]").Count();
             var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
 
-            Assert.That(cnt, Is.LessThan(cntOption));
-            Assert.That(cnt, Is.EqualTo(2));
-            Assert.That(specialCnt, Is.EqualTo(2));
-            Assert.That(generalCnt, Is.EqualTo(1));
+            cnt.Should().BeLessThan(cntOption);
+            cnt.Should().Be(2);
+            specialCnt.Should().Be(2);
+            generalCnt.Should().Be(1);
 
         }
 
-        [Test]
+        [Fact]
         public void FilterByCountryCode_ExistingFilterWithMissingWorldExceptRussia_Filtered()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -623,14 +616,14 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var specialCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'UA')]").Count();
             var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
 
-            Assert.That(cnt, Is.LessThan(cntOption));
-            Assert.That(cnt, Is.EqualTo(2));
-            Assert.That(specialCnt, Is.EqualTo(2));
-            Assert.That(generalCnt, Is.EqualTo(1));
+            cnt.Should().BeLessThan(cntOption);
+            cnt.Should().Be(2);
+            specialCnt.Should().Be(2);
+            generalCnt.Should().Be(1);
 
         }
 
-        [Test]
+        [Fact]
         public void FilterByCountryCode_PartialExistingFilter_Filtered()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -647,14 +640,14 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
 
 
-            Assert.That(cnt, Is.LessThan(cntOption));
-            Assert.That(cnt, Is.EqualTo(2));
-            Assert.That(specialCnt, Is.EqualTo(1));
-            Assert.That(generalCnt, Is.EqualTo(2));
-            Assert.That((string) specials.First()["Value"], Is.EqualTo("безлимитный"));
+            cnt.Should().BeLessThan(cntOption);
+            cnt.Should().Be(2);
+            specialCnt.Should().Be(1);
+            generalCnt.Should().Be(2);
+            ((string) specials.First()["Value"]).Should().Be("безлимитный");
         }
 
-        [Test]
+        [Fact]
         public void FilterByCountryCode_NonExistingFilter_Filtered()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -671,14 +664,14 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
 
 
-            Assert.That(cnt, Is.LessThan(cntOption));
-            Assert.That(cnt, Is.EqualTo(2));
-            Assert.That(specialCnt, Is.EqualTo(0));
-            Assert.That(generalCnt, Is.EqualTo(3));
+            cnt.Should().BeLessThan(cntOption);
+            cnt.Should().Be(2);
+            specialCnt.Should().Be(0);
+            generalCnt.Should().Be(3);
         }
 
 
-        [Test]
+        [Fact]
         public void FindByKey_DirectionWithMissedElements_Found()
         {
             var tariff = GetJsonFromFile("simple1_tariff.json");
@@ -688,7 +681,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var result = new InternationalRoamingCalculator().FindByKey(root, direction.GetKey()).ToArray();
 
-            Assert.That(result.Length, Is.EqualTo(1));
+            result.Length.Should().Be(1);
         }
 
 
