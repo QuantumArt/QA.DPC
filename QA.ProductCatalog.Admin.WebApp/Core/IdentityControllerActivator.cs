@@ -10,6 +10,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
 {
     public class IdentityControllerActivator : IControllerActivator
     {
+        private const string CustomerCodeKey = "customerCode";
 
         private readonly IControllerActivator _activator;
         private IUnityContainer _container;
@@ -22,7 +23,17 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
 
         public IController Create(RequestContext requestContext, Type controllerType)
         {
-            var customerCode = requestContext.HttpContext.Request.QueryString["customerCode"];
+            var customerCode = requestContext.HttpContext.Request[CustomerCodeKey];
+
+            if (string.IsNullOrEmpty(customerCode))
+            {
+                customerCode = requestContext.HttpContext.Session[CustomerCodeKey] as string;
+            }
+            else
+            {
+                requestContext.HttpContext.Session[CustomerCodeKey] = customerCode;
+            }
+
             _container.Resolve<IIdentityProvider>().Identity = new Identity(customerCode);
             return _activator.Create(requestContext, controllerType);
         }

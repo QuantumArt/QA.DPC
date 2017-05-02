@@ -1,4 +1,5 @@
-﻿using Quantumart.QP8.BLL;
+﻿using QA.Core.DPC.QP.Servives;
+using Quantumart.QP8.BLL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -13,10 +14,12 @@ namespace QA.Core.ProductCatalog.Actions.Services
     {
         private readonly TransactionScope _transactionScope;
         private readonly QPConnectionScope _connectionScope;
+        private readonly IConnectionProvider _connectionProvider;
 
-        public Transaction(string connectionString, ILogger logger)
+        public Transaction(IConnectionProvider connectionProvider, ILogger logger)
         {
             TimeSpan timeout;
+            var connectionString = connectionProvider.GetConnection();
             string configTimeout = ConfigurationManager.AppSettings["ProductCatalog.Actions.TransactionTimeout"];
 
             if (!TimeSpan.TryParse(configTimeout, out timeout))

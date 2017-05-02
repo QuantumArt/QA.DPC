@@ -40,7 +40,7 @@ namespace QA.Core.DPC.Loader.Container
                 new HttpContextLifetimeManager(),
                 new InjectionFactory(x => new FieldServiceAdapter(new FieldService(x.Resolve<IConnectionProvider>().GetConnection(), 1), x.Resolve<IConnectionProvider>())));
 
-            Container.RegisterType<ITransaction, Transaction>(new InjectionFactory(c => new Transaction(c.GetConnectionString(), Container.Resolve<ILogger>())));
+            Container.RegisterType<ITransaction, Transaction>(new InjectionFactory(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>())));
             Container.RegisterType<Func<ITransaction>>(new InjectionFactory(c => new Func<ITransaction>(() => c.Resolve<ITransaction>())));
 
             Container.RegisterType<IJsonProductService, JsonProductService>();
