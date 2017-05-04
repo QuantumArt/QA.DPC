@@ -35,6 +35,16 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
             return _connection;
         }
 
+        public string GetEFConnection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetEFConnection(Service service)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool HasConnection(Service service)
         {
             throw new NotImplementedException();

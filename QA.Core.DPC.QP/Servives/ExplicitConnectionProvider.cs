@@ -26,6 +26,16 @@ namespace QA.Core.DPC.QP.Servives
             throw new NotImplementedException();
         }
 
+        public string GetEFConnection()
+        {
+            throw new NotImplementedException();
+        }
+
+        public string GetEFConnection(Service service)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool QPMode
         {
             get { throw new NotImplementedException(); }

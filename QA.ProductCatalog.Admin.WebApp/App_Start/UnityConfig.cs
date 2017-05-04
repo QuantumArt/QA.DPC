@@ -33,6 +33,7 @@ using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Configuration;
 using System.Web;
 using QA.Core.Data;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Start
 {
@@ -93,7 +94,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             // регистрируем типы для MVC
             container.RegisterType<IControllerActivator, IdentityControllerActivator>(new ContainerControlledLifetimeManager());
 
-            container.RegisterType<TaskRunnerEntities>(new InjectionConstructor());
+            container.RegisterType<TaskRunnerEntities>(new InjectionFactory(c => new TaskRunnerEntities(c.Resolve<IConnectionProvider>().GetEFConnection(Service.Actions))));
             container.RegisterType<ITaskService, TaskService>(new InjectionConstructor(typeof(TaskRunnerEntities)));
 
 	        container.RegisterType<Func<bool, IConsumerMonitoringService>>(

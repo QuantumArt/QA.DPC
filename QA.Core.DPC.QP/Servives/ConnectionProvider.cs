@@ -1,6 +1,7 @@
 ﻿using QA.Core.DPC.QP.Models;
 using System.Collections.Generic;
 using System.Configuration;
+using System;
 
 namespace QA.Core.DPC.QP.Servives
 {
@@ -59,6 +60,33 @@ namespace QA.Core.DPC.QP.Servives
         public string GetConnection(Service service)
         {
             return QPMode ? _customerProvider.GetConnectionString(_identityProvider.Identity.CustomerCode) : _defaultConnections[service];
+        }
+
+        public string GetEFConnection()
+        {
+            return GetEFConnection(_defaultService);
+        }
+
+        public string GetEFConnection(Service service)
+        {
+            var connection = GetConnection(service);
+
+            if (!IsEFConnection(connection))
+            {
+                connection = ConvertToEFConnection(connection);
+            }
+
+            return connection;
+        }
+
+        private string ConvertToEFConnection(string connectionString)
+        {
+            return $"metadata=res://*/Model.csdl|res://*/Model.ssdl|res://*/Model.msl;provider=System.Data.SqlClient;provider connection string=\"{connectionString}\"";
+        }
+
+        private bool IsEFConnection(string connectionString)
+        {
+            return connectionString.StartsWith("metadata", StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

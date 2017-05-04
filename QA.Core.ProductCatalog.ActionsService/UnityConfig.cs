@@ -15,6 +15,7 @@ using Quartz;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Notification.Services;
 using QA.Core.DPC.QP.Servives;
+using QA.Core.DPC.QP.Configuration;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -27,6 +28,8 @@ namespace QA.Core.ProductCatalog.ActionsService
 
         public static UnityContainer RegisterTypes(UnityContainer container)
         {
+            container.AddNewExtension<QPContainerConfiguration>();
+
             container.AddNewExtension<ActionContainerConfiguration>();
 
             container.AddNewExtension<LoaderConfigurationExtension>();
@@ -78,6 +81,12 @@ namespace QA.Core.ProductCatalog.ActionsService
 
 			container.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			container.AddNewExtension<FormattersContainerConfiguration>();
+
+            var connection = container.Resolve<IConnectionProvider>();
+            if (!connection.QPMode)
+            {
+                container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
+            }
 
             container.LoadConfiguration("Default");
 
