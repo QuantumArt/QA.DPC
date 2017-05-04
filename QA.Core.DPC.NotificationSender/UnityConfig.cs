@@ -54,7 +54,7 @@ namespace QA.Core.DPC
 
                     var cacheProvider = new VersionedCustomerCacheProvider(code);
                     var invalidator = new DPCContentInvalidator(cacheProvider);
-                    var connectionProvider = new ExplicitConnectionProvider(customer.ConnecdtionString);
+                    var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
                     var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider);
 
                     var tracker = new StructureCacheTracker(connectionProvider);
@@ -73,10 +73,16 @@ namespace QA.Core.DPC
             }
             else if (connection.HasConnection(QP.Models.Service.Admin))
             {
+                unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
+
                 unityContainer.RegisterType<IContentInvalidator, DPCContentInvalidator>();
                 unityContainer.RegisterInstance<ICacheProvider>(unityContainer.Resolve<CacheProvider>());
                 unityContainer.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager());
                 unityContainer.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, unityContainer.Resolve<IContentInvalidator>()));
+            }
+            else
+            {
+                unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
             }
 
             return unityContainer;

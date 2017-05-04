@@ -3,6 +3,6 @@
     public class Customer
     {
         public string CustomerCode { get; set;}
-        public string ConnecdtionString { get; set; }
+        public string ConnectionString { get; set; }
     }
 }

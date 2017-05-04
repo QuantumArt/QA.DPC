@@ -28,7 +28,7 @@ namespace QA.Core.DPC.QP.Servives
             return QPConfiguration.CustomerCodes
                 .Select(c => new Customer
                 {
-                    ConnecdtionString = QPConfiguration.GetConnectionString(c),
+                    ConnectionString = QPConfiguration.GetConnectionString(c),
                     CustomerCode = c
                 })
                 .Where(customer => IsDPCMode(customer))
@@ -39,7 +39,7 @@ namespace QA.Core.DPC.QP.Servives
         {
             try
             {
-                var connector = new DBConnector(customer.ConnecdtionString);
+                var connector = new DBConnector(customer.ConnectionString);
                 var command = new SqlCommand("SELECT USE_DPC FROM DB");
                 return (bool)connector.GetRealScalarData(command);
             }

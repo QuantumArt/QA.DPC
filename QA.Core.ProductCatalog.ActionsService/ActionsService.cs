@@ -4,6 +4,8 @@ using System.Threading;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsService.Properties;
 using QA.Core.ProductCatalog.TaskScheduler;
+using QA.Core.DPC.QP.Servives;
+using System;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -22,15 +24,25 @@ namespace QA.Core.ProductCatalog.ActionsService
         {
             UnityConfig.Configure();
 
-            _actionRunners = new ITasksRunner[Settings.Default.NumberOfThreads];
+            var connectionProvider = ObjectFactoryBase.Resolve<IConnectionProvider>();
+            var customerProvider = ObjectFactoryBase.Resolve<ICustomerProvider>();
+            var customers = customerProvider.GetCustomers();
 
-            for (int i = 0; i < _actionRunners.Length; i++)
+            _actionRunners = new ITasksRunner[customers.Length * Settings.Default.NumberOfThreads];
+
+            for (int j = 0; j < customers.Length; j++)
             {
-                _actionRunners[i] = ObjectFactoryBase.Resolve<ITasksRunner>();
+                for (int i = 0; i < _actionRunners.Length; i++)
+                {
+                    var taskRunnerFactory = ObjectFactoryBase.Resolve<Func<string, ITasksRunner>>();
+                    var customerCode = customers[j].CustomerCode;
+                    var runner = taskRunnerFactory(customerCode);
+                    _actionRunners[i + j] = runner;
 
-                var actionRunnerThread = new Thread(_actionRunners[i].Run);
+                    var actionRunnerThread = new Thread(runner.Run);
 
-                actionRunnerThread.Start();
+                    actionRunnerThread.Start(customerCode);
+                }
             }
 
 	        if (Settings.Default.EnableSheduleProcess)

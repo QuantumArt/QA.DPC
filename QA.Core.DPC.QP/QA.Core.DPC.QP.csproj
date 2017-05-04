@@ -195,6 +195,7 @@
     <Compile Include="Servives\IIdentityProvider.cs" />
     <Compile Include="Servives\ICustomerProvider.cs" />
     <Compile Include="Cache\VersionedCustomerCacheProvider.cs" />
+    <Compile Include="Servives\SingleCustomerProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -45,7 +45,7 @@ namespace QA.Core.ProductCatalog.ActionsService
 
             container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()));
 
-            container.RegisterType<TaskRunnerEntities>(new InjectionConstructor());
+            container.RegisterType<TaskRunnerEntities>(new InjectionFactory(x => new TaskRunnerEntities(x.Resolve<IConnectionProvider>().GetConnection(DPC.QP.Models.Service.Actions))));
 
             container.RegisterType<Func<ITaskService>>(new InjectionFactory(x => new Func<ITaskService>(() => x.Resolve<TaskService>())));
 

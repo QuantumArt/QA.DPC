@@ -146,7 +146,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
                 var cacheProvider = new VersionedCustomerCacheProvider(code);
                 var invalidator = new DPCContentInvalidator(cacheProvider);
-                var connectionProvider = new ExplicitConnectionProvider(customer.ConnecdtionString);
+                var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
                 var tracker = new StructureCacheTracker(connectionProvider);
                 var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider);
 
