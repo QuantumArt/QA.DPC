@@ -6,10 +6,10 @@ namespace QA.Core.DPC.QP.Autopublish.Services
     public class AutopublishService : ITask
     {
         private readonly IAutopublishProvider _autopublishProvider;
-        private readonly INotificationProvider _notificationProvider;
+        private readonly INotificationAutopublishProvider _notificationProvider;
         private readonly ILogger _logger;
 
-        public AutopublishService(IAutopublishProvider autopublishProvider, INotificationProvider notificationProvider, ILogger logger)
+        public AutopublishService(IAutopublishProvider autopublishProvider, INotificationAutopublishProvider notificationProvider, ILogger logger)
         {
             _autopublishProvider = autopublishProvider;
             _notificationProvider = notificationProvider;
@@ -32,12 +32,12 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                     {
                         _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channels, true, 1, "Admin", "PUT", customerCode);
                         _autopublishProvider.Dequeue(item);
-                        _logger.LogTrace(() => $"Product {item.ProductId} was published");
+                        _logger.LogTrace(() => $"Product {item.ProductId} was autopublished");
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.ErrorException($"Cant process product {item.ProductId}", ex);
+                    _logger.ErrorException($"Can't autopublish product {item.ProductId}", ex);
                 }
             }
         }

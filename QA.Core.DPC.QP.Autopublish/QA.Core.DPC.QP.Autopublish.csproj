@@ -81,17 +81,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\QPAutopublishContainerConfiguration.cs" />
     <Compile Include="Models\ProductDescriptor.cs" />
     <Compile Include="Models\ProductItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AutopublishProvider.cs" />
     <Compile Include="Services\AutopublishService.cs" />
     <Compile Include="Services\IAutopublishProvider.cs" />
-    <Compile Include="Services\INotificationProvider.cs" />
+    <Compile Include="Services\INotificationAutopublishProvider.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj">
       <Project>{5af860a1-97a7-4c36-9496-21054975e226}</Project>

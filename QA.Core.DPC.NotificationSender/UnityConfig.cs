@@ -11,6 +11,8 @@ using Quantumart.QP8.BLL.Services.API;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.DAL;
+using QA.Core.DPC.QP.Autopublish.Configuration;
+using QA.Core.DPC.QP.Autopublish.Services;
 
 namespace QA.Core.DPC
 {
@@ -30,9 +32,11 @@ namespace QA.Core.DPC
 
 		private static IUnityContainer RegisterTypes(UnityContainer unityContainer)
 		{
-            unityContainer.AddNewExtension<QPContainerConfiguration>();     
-			
-			unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
+            unityContainer.AddNewExtension<QPContainerConfiguration>();
+            unityContainer.AddNewExtension<QPAutopublishContainerConfiguration>();
+            
+            unityContainer.RegisterType<INotificationAutopublishProvider, NotificationAutopublishProvider>();
+            unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			unityContainer.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
 			unityContainer.RegisterType<IServiceFactory, ServiceFactory>();
 			unityContainer.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));

@@ -4,7 +4,7 @@ using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.QP.Autopublish.Configuration
 {
-    class QPAutopublishContainerConfiguration : UnityContainerExtension
+    public class QPAutopublishContainerConfiguration : UnityContainerExtension
     {
         protected override void Initialize()
         {

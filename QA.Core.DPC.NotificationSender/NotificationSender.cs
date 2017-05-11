@@ -19,6 +19,7 @@ namespace QA.Core.DPC
 {
 	public partial class NotificationSender : ServiceBase
 	{
+        private const string AutopublishKey = "Autopublish";
 		public static ConcurrentDictionary<string, NotificationSenderConfig> _configDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
         static ICustomerProvider _customerProvider;
         static IIdentityProvider _identityProvider;
@@ -102,7 +103,23 @@ namespace QA.Core.DPC
 				delay++;
 			}
 
-			var itemsToStop = items
+            var autopublishKey = GetKey(AutopublishKey, customerCode);
+
+            if (_lockers.ContainsKey(autopublishKey))
+            {
+                var sender = items.First(itm => itm.Key == autopublishKey).Sender;
+                sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval));
+                logger.Info("Updete autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+            }
+            else
+            {
+                var state = new ChannelState { BlockState = null, ErrorsCount = 0 };                
+                _lockers.Add(autopublishKey, state);
+                _senders.Add(new Timer((Autopublish), customerCode, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval)));
+                logger.Info("Add autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+            }
+
+            var itemsToStop = items
 				.Where(itm => !config.Channels.Any(c => GetKey(c.Name, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
 
 			foreach (var item in itemsToStop)
@@ -121,7 +138,7 @@ namespace QA.Core.DPC
 			UpdateConfiguration(customerCode);
 		}
 
-		public static void SendToOneChannel(Object stateInfo)
+		public static void SendToOneChannel(object stateInfo)
         {            
             var descriptor = (ChannelDescriptor)stateInfo;
             _identityProvider.Identity = new Identity(descriptor.CustomerCode);
@@ -183,6 +200,14 @@ namespace QA.Core.DPC
             {
                 logger.ErrorException("Ошибка при обработке сообщений из очереди для канала {0}, кастомер код {1}", ex, descriptor.ChannelName, descriptor.CustomerCode);
             }
+        }
+
+        public static void Autopublish(object stateInfo)
+        {
+            var customerCode = stateInfo as string;
+            var task = ObjectFactoryBase.Resolve<ITask>();
+
+            task.Run(customerCode, null, null, null);
         }
 
 		private static async Task SendOneMessage(
