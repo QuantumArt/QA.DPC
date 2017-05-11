@@ -15,8 +15,9 @@ namespace QA.Core.DPC.Loader
             public const string Field = "CONTENT_ATTRIBUTE";
             public const string Content = "CONTENT";
             public const string Site = "SITE";
+            public const string DB = "DB";
 
-            public static string[] All = new string[] { StatusType, User, Field, Content, Site };
+            public static string[] All = new string[] { StatusType, User, Field, Content, Site, DB };
         }
 
         public static string[] Merge(params string[] tags)
