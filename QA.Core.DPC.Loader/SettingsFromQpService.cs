@@ -11,11 +11,11 @@ namespace QA.Core.DPC.Loader
 	public class SettingsFromQpService : SettingsServiceBase
 	{
 		private readonly DbService _dbService;
-		private readonly ICacheProvider _cacheProvider;
+		private readonly IVersionedCacheProvider _cacheProvider;
 
 		private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
 
-		public SettingsFromQpService(ICacheProvider cacheProvider)
+		public SettingsFromQpService(IVersionedCacheProvider cacheProvider)
 		{
 			_dbService = new DbService(_connectionString, 1);
 
@@ -26,7 +26,7 @@ namespace QA.Core.DPC.Loader
 		{
 			const string key = "AllQpSettings";
 
-			var allSettings = _cacheProvider.GetOrAdd(key, _cacheTimeSpan, _dbService.GetAppSettings);
+			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.DB }, _cacheTimeSpan, _dbService.GetAppSettings);
 
 			return allSettings.ContainsKey(title) ? allSettings[title] : null;
 		}
