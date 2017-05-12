@@ -77,6 +77,7 @@ namespace QA.Core.DPC
             _identityProvider.Identity = new Identity(customerCode);
             var configProvider = ObjectFactoryBase.Resolve<INotificationProvider>();
             var logger = ObjectFactoryBase.Resolve<ILogger>();
+            logger.Info("start UpdateConfiguration for {0}", customerCode);
             int delay = 0;
 			var items = _senders.Zip(_lockers.Keys, (s, k) => new { Sender = s, Key = k });
             var config = _configDictionary.AddOrUpdate(customerCode, code => configProvider.GetConfiguration(), (code, cfg) => configProvider.GetConfiguration());
@@ -119,15 +120,19 @@ namespace QA.Core.DPC
                 logger.Info("Add autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
             }
 
+            delay++;
+
             var itemsToStop = items
-				.Where(itm => !config.Channels.Any(c => GetKey(c.Name, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
+				.Where(itm => itm.Key != autopublishKey && !config.Channels.Any(c => GetKey(c.Name, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
 
 			foreach (var item in itemsToStop)
 			{
 				item.Sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, config.CheckInterval));
                 logger.Info("Stop sender for {0} whith delay {1}", item.Key, delay);
             }
-		}
+
+            logger.Info("end UpdateConfiguration for {0}", customerCode);
+        }
 
         private static string GetKey(string channelName, string customerCode)
         {
