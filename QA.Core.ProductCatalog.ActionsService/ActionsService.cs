@@ -5,7 +5,6 @@ using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsService.Properties;
 using QA.Core.ProductCatalog.TaskScheduler;
 using QA.Core.DPC.QP.Servives;
-using System;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -42,7 +41,7 @@ namespace QA.Core.ProductCatalog.ActionsService
                 {
                     var customerCode = customers[j].CustomerCode;
                     var runner = ObjectFactoryBase.Resolve<ITasksRunner>();
-                    _actionRunners[i + j] = runner;
+                    _actionRunners[j * threads + i] = runner;
 
                     var actionRunnerThread = new Thread(runner.Run);
 
