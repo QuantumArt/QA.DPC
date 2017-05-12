@@ -121,9 +121,12 @@ namespace QA.Core.DPC
             }
 
             delay++;
-
+       
             var itemsToStop = items
-				.Where(itm => itm.Key != autopublishKey && !config.Channels.Any(c => GetKey(c.Name, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
+                .Where(itm =>
+                    itm.Key.StartsWith(customerCode) &&
+                    itm.Key != autopublishKey &&
+                    !config.Channels.Any(c => GetKey(c.Name, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
 
 			foreach (var item in itemsToStop)
 			{
@@ -178,7 +181,7 @@ namespace QA.Core.DPC
 								var localState = new ChannelState() { ErrorsCount = 0 };
 								var factoryMap = res.Result.Select(m => m.Key).Distinct().ToDictionary(k => k, k => new TaskFactory(new OrderedTaskScheduler()));
 								var tasks = res.Result
-                                    .Select(m => SendOneMessage(config, channel, service, m, semaphore, factoryMap[m.Key], localState, channelService, logger))
+                                    .Select(m => SendOneMessage(descriptor.CustomerCode, config, channel, service, m, semaphore, factoryMap[m.Key], localState, channelService, logger))
                                     .ToArray();
                                 
 								Task.WaitAll(tasks);
@@ -216,6 +219,7 @@ namespace QA.Core.DPC
         }
 
 		private static async Task SendOneMessage(
+            string customerCode,
             NotificationSenderConfig config,
             NotificationChannel channel,
             IMessageService service,
@@ -238,7 +242,7 @@ namespace QA.Core.DPC
 
 				var timer = new Stopwatch();
 				timer.Start();
-				string url = GetUrl(channel, message);
+				string url = GetUrl(customerCode, channel, message);
 			
 				try
 				{
@@ -332,16 +336,17 @@ namespace QA.Core.DPC
 			});
 		}
 
-		private static string GetUrl(NotificationChannel channel, Message message)
+		private static string GetUrl(string customerCode, NotificationChannel channel, Message message)
 		{
-			return
-				channel.Url +
-				"?UserId=" + message.UserId +
-				"&UserName=" + Uri.EscapeDataString(message.UserName) +
-				"&MsgId=" + message.Id +
-				"&ProductId=" + message.Key +
-				"&isStage=" + channel.IsStage;
-		}
+            return
+                channel.Url +
+                "?UserId=" + message.UserId +
+                "&UserName=" + Uri.EscapeDataString(message.UserName) +
+                "&MsgId=" + message.Id +
+                "&ProductId=" + message.Key +
+                "&isStage=" + channel.IsStage +
+                "&customerCode=" + customerCode;
+        }
 
 		private static NotificationChannel GetChannel(NotificationSenderConfig config, string channel)
 		{

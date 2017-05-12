@@ -42,8 +42,9 @@ namespace QA.Core.DPC
 			unityContainer.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
 			unityContainer.RegisterType<IContextStorage, QpCachedContextStorage>();
             unityContainer.RegisterType<INotificationChannelService, NotificationChannelService>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<INotificationService, NotificationService>();            
 
-			unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();          
+            unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();          
 
             unityContainer.LoadConfiguration("Default");
 

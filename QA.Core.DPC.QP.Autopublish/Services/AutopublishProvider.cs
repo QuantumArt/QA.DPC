@@ -21,9 +21,9 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             _baseUri = new Uri(ConfigurationManager.AppSettings["Autopublish.SyncApi"]);
         }
 
-        public ProductItem[] Peek()
+        public ProductItem[] Peek(string customerCode)
         {
-            var url = GetPeekUrl();
+            var url = GetPeekUrl(customerCode);
             var result = Request(url, GetMethod);
 
             ValidateStatus(result);
@@ -31,8 +31,11 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             return result["data"]
                   .Select(itm => new ProductItem
                   {
+                      CustomerCode = customerCode,
                       ProductId = itm["id"].Value<int>(),
                       DefinitionId = itm["definitionId"].Value<int>(),
+                      Slug = itm["meta"]["slug"].Value<string>(),
+                      Version = itm["meta"]["version"].Value<string>(),
                   })
                   .ToArray();
         }
@@ -46,8 +49,11 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
             return new ProductDescriptor
             {
+                CustomerCode = item.CustomerCode,
                 ProductId = item.ProductId,
                 DefinitionId = item.DefinitionId,
+                Slug = item.Slug,
+                Version = item.Version,
                 Product = result["data"]["item"]["product"].ToString(),
                 Definition = result["data"]["meta"]["definition"].ToString()
             };
@@ -90,19 +96,19 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             }
         }
 
-        private string GetPeekUrl()
+        private string GetPeekUrl(string customerCode)
         {
-            return $"queue";
+            return $"{customerCode}/queue";
         }
 
         private string GetProductUrl(ProductItem item)
         {
-            return $"product/?product_id={item.ProductId}&definition_id={item.DefinitionId}";
+            return $"{item.CustomerCode}/product/{item.CustomerCode}/?product_id={item.ProductId}&definition_id={item.DefinitionId}";
         }
 
         private string GetDequeueUrl(ProductItem item)
         {
-            return $"queue/?product_id={item.ProductId}&definition_id={item.DefinitionId}";
+            return $"{item.CustomerCode}/queue/?product_id={item.ProductId}&definition_id={item.DefinitionId}";
         }
 
         private void ValidateStatus(JObject item)
