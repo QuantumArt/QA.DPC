@@ -9,6 +9,7 @@ namespace QA.Core.DPC.QP.Servives
 {
     public class CustomerProvider : ICustomerProvider
     {
+        private const int Timeout = 2;
         private readonly QPConfiguration _configuration;
         private readonly ILogger _logger;
 
@@ -39,7 +40,9 @@ namespace QA.Core.DPC.QP.Servives
         {
             try
             {
-                var connector = new DBConnector(customer.ConnectionString);
+                var builder = new SqlConnectionStringBuilder(customer.ConnectionString);
+                builder.ConnectTimeout = Timeout;
+                var connector = new DBConnector(builder.ConnectionString);
                 var command = new SqlCommand("SELECT USE_DPC FROM DB");
                 return (bool)connector.GetRealScalarData(command);
             }
