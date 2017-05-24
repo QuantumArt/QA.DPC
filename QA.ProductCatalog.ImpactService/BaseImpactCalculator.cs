@@ -261,6 +261,9 @@ namespace QA.ProductCatalog.ImpactService
                         if (toReplace["Group"] == null && p["Group"] != null)
                             toReplace["Group"] = p["Group"].DeepClone();
 
+                        if (toReplace["Parent"] == null && p["Parent"] != null)
+                            toReplace["Parent"] = p["Parent"].DeepClone();
+
                         changedIds.Add((int)toReplace["Id"], (int)p["Id"]);
                         toReplace["Id"] = p["Id"];
                         
