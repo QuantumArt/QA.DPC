@@ -31,7 +31,6 @@ QA.Product.TabStrip = QA.Product.TabStrip || (function (window) {
             var tabstrip = $tabstrip
                 .data("kendoTabStrip");
 
-
             if (tabstrip && savedTabName && savedTabName != "") {
                 $tabstrip.find(".tabstrip-header-item").each(function (i, item) {
 
@@ -68,6 +67,17 @@ QA.Product.TabStrip = QA.Product.TabStrip || (function (window) {
                     .data("kendoTabStrip")
                     .activateTab(first);
             }
+        }
+    };
+
+    var scrolling = function (tabStripElement) {
+        var scrollingPositionTab = localStorage.getItem('scrollPosition');
+        if (scrollingPositionTab) {
+            if (scrollingPositionTab != 0) {
+                tabStripElement.children('.k-state-active').scrollTo(scrollingPositionTab + "px");
+            }
+            localStorage.removeItem("scrollPosition");
+            localStorage.removeItem("activeTabName");
         }
     };
 
@@ -117,6 +127,10 @@ QA.Product.TabStrip = QA.Product.TabStrip || (function (window) {
 
         resizeAll();
 
+        var scrollingTab = localStorage.getItem('activeTabName');
+        if (scrollingTab == tabStripElement.data("name")) {
+            scrolling(tabStripElement);
+        }
     };
 
     return { init: init };
