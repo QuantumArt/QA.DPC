@@ -21,12 +21,7 @@ namespace QA.ProductCatalog.HighloadFront
             return this;
         }
 
-        public virtual SonicBuilder AddProductValidator<T>() where T : class
-        {
-            return RegisterScoped(typeof(IProductValidator), typeof(T));
-        }
-
-        public virtual SonicBuilder AddErrorDescriber<TDescriber>() where TDescriber : SonicErrorDescriber
+ public virtual SonicBuilder AddErrorDescriber<TDescriber>() where TDescriber : SonicErrorDescriber
         {
             return RegisterScoped(typeof(SonicErrorDescriber), typeof(TDescriber));
         }

@@ -83,7 +83,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayIndexingSettings.cs" />
     <Compile Include="Configuration\AccessControlList.cs" />
     <Compile Include="ConfigureFromConfigurationOptions.cs" />
     <Compile Include="ConfigureOptions.cs" />
@@ -113,4 +112,3 @@
   </Target>
   -->
 </Project>
-

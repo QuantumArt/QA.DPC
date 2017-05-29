@@ -17,10 +17,7 @@ namespace QA.ProductCatalog.FileSyncWebHost
 		/// <param name="container"></param>
 		public UnityResolver(IUnityContainer container)
 		{
-			if (container == null)
-				throw new ArgumentNullException("container");
-
-			_container = container;
+		    _container = container ?? throw new ArgumentNullException(nameof(container));
 
 			_logger = container.Resolve<ILogger>();
 		}
@@ -31,7 +28,7 @@ namespace QA.ProductCatalog.FileSyncWebHost
 			{
 				return _container.Resolve(serviceType);
 			}
-			catch (ResolutionFailedException ex)
+			catch (ResolutionFailedException)
 			{
 				return null;
 			}

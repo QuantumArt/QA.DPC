@@ -447,11 +447,6 @@ namespace QA.Core.DPC.Formatters.Services
 
 			XmlSchemaComplexType currentType = type == null ? new XmlSchemaComplexType() : type;
 
-			if (currentType.Name == "Content_296_0")
-			{
-				int k = 0;
-			}
-
 			var all = new XmlSchemaSequence();
 			
 			element.Name = name;

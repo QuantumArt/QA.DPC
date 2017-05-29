@@ -224,8 +224,9 @@
   <ItemGroup>
     <Compile Include="IProductBulkStore.cs" />
     <Compile Include="IProductStreamStore.cs" />
-    <Compile Include="IProductValidator.cs" />
-    <Compile Include="ProductValidator.cs" />
+    <Compile Include="Models\PushMessage.cs" />
+    <Compile Include="Models\TaskItem.cs" />
+    <Compile Include="Models\Users.cs" />
     <Compile Include="SonicBuilder.cs" />
     <Compile Include="SonicError.cs" />
     <Compile Include="IProductSearchStore.cs" />
@@ -258,6 +259,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj">
+      <Project>{56e7fb60-0511-4bc7-9091-99c91d4ca5f7}</Project>
+      <Name>QA.Core.ProductCatalog.ActionsRunnerModel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Infrastructure\QA.ProductCatalog.HighloadFront.Infrastructure.csproj">
       <Project>{828345e1-3b11-45dd-871d-ac445b466e42}</Project>
       <Name>QA.ProductCatalog.HighloadFront.Infrastructure</Name>
@@ -272,4 +277,3 @@
   </Target>
   -->
 </Project>
-

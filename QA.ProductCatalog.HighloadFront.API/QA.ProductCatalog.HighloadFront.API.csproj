@@ -310,15 +310,12 @@
     <Compile Include="App_Core\IndexOperationSyncer.cs" />
     <Compile Include="App_Core\ReindexAllTask.cs" />
     <Compile Include="Controllers\HealthCheckController.cs" />
-    <Compile Include="Models\TaskItem.cs" />
     <Compile Include="Controllers\SyncController.cs" />
     <Compile Include="Filters\GlobalExceptionLogger.cs" />
     <Compile Include="Filters\OnlyAuthUsersAttribute.cs" />
     <Compile Include="Filters\RateLimitAttribute.cs" />
     <Compile Include="Filters\ResponseCacheAttribute.cs" />
-    <Compile Include="Models\PushMessage.cs" />
     <Compile Include="App_Start\Startup.cs" />
-    <Compile Include="Models\Users.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -402,4 +399,3 @@
   </Target>
   -->
 </Project>
-

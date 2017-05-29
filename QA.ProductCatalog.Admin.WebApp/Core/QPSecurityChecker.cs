@@ -15,8 +15,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
 
         public bool CheckAuthorization(HttpContextBase context)
         {
-#warning biryukovp: Возможно, надо переделать проверку авторизованности
-			var userId = _userProvider.GetUserId(); //TODO: переделать проверку авторизованности
+			var userId = _userProvider.GetUserId(); 
             return userId > 0;
         }
     }

@@ -33,7 +33,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
 			{
 				return _container.Resolve(serviceType);
 			}
-			catch (ResolutionFailedException ex)
+			catch (ResolutionFailedException)
 			{
 				return null;
 			}

@@ -1,19 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using QA.ProductCatalog.ImpactService.API.Services;
-using NLog.Extensions;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using QA.ProductCatalog.ImpactService.API.Services;
+using QA.DPC.Core.Helpers;
 
 namespace QA.ProductCatalog.ImpactService.API
 {
@@ -68,33 +61,10 @@ namespace QA.ProductCatalog.ImpactService.API
             }
             else
             {
-                app.UseExceptionHandler(
-                 options => {
-                     options.Run(
-                    async context =>
-                    {
-                        context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        context.Response.ContentType = "text/html";
-                        var ex = context.Features.Get<IExceptionHandlerFeature>();
-                        if (ex != null)
-                        {
-                            var logger = loggerFactory.CreateLogger("Global Exception Handling");
-                            logger.LogError(new EventId(1), ex.Error, "Unhandled exception occurs");
-                            var err = $"<h1>Error: {ex.Error.Message}</h1>{ex.Error.StackTrace }";
-                            await context.Response.WriteAsync(err).ConfigureAwait(false);
-                        }
-                    });
-                 }
-                );
-
+                app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);
             }
 
-            app.UseApplicationInsightsRequestTelemetry();
-
-            app.UseApplicationInsightsExceptionTelemetry();
-
             app.UseMvc();
-
         }
     }
 }

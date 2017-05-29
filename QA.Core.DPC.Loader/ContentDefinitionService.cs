@@ -5,12 +5,8 @@ using System.Linq;
 using System.Reflection;
 using QA.Configuration;
 using QA.ProductCatalog.Infrastructure;
-using Quantumart.QP8.BLL.Services.API;
-using Quantumart.QPublishing;
 using Quantumart.QPublishing.Database;
-using Qp8Bll = Quantumart.QP8.BLL;
 using QA.Core.Cache;
-using QA.Core.ProductCatalog.Actions.Services;
 using Content = QA.Core.Models.Configuration.Content;
 using QA.Core.Models.Configuration;
 using System.Collections.Generic;
@@ -19,7 +15,7 @@ using QA.Core.DPC.Loader.Services;
 
 namespace QA.Core.DPC.Loader
 {
-	public class ContentDefinitionService : IContentDefinitionService
+    public class ContentDefinitionService : IContentDefinitionService
 	{
 		#region Константы
 		
@@ -40,8 +36,6 @@ namespace QA.Core.DPC.Loader
 		private readonly ISettingsService _settingsService;
 		private readonly IVersionedCacheProvider _cacheProvider;
 		private readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
-#warning Настройки времени кэширования вынести в конфиг //TODO: получать время кэширования из конфига
-
 		private readonly ILogger _logger;
 		private readonly IArticleService _articleService;
 		private readonly string _connectionString;

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Xaml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.Core.Models.Configuration;
 using System.IO;
@@ -20,19 +18,18 @@ namespace QA.Core.Models.Tests
                 LoadAllPlainFields = true,
             };
 
-            var mp = new Content { };
+            var mp = new Content();
 
-            mp.Fields.Add(new EntityField { FieldName = "Categories", Load = true });
-            mp.Fields.Add(new EntityField { FieldName = "Family", Load = true });
-            mp.Fields.Add(new EntityField { FieldName = "Tabs", Load = true });
-            mp.Fields.Add(new EntityField { FieldName = "MarketingSign", Load = true });
-            mp.Fields.Add(new EntityField { FieldName = "Modifiers", Load = true });
+            mp.Fields.Add(new EntityField { FieldName = "Categories"});
+            mp.Fields.Add(new EntityField { FieldName = "Family"});
+            mp.Fields.Add(new EntityField { FieldName = "Tabs"});
+            mp.Fields.Add(new EntityField { FieldName = "MarketingSign"});
+            mp.Fields.Add(new EntityField { FieldName = "Modifiers"});
 
             entity.Fields.Add(new EntityField
             {
                 FieldName = "MarketingProduct",
                 FieldId = 1115,
-                Load = true,
                 CloningMode = CloningMode.UseExisting,
                 DeletingMode = DeletingMode.Keep,
                 Content = mp
@@ -42,10 +39,9 @@ namespace QA.Core.Models.Tests
             {
                 FieldName = "Regions",
                 FieldId = 1228,
-                Load = true,
                 CloningMode = CloningMode.UseExisting,
                 DeletingMode = DeletingMode.Keep,
-                Content = new Content { }
+                Content = new Content()
             };
 
             entity.Fields.Add(n);
@@ -66,10 +62,9 @@ namespace QA.Core.Models.Tests
             {
                 FieldName = "Parameters",
                 FieldId = 1193,
-                Load = true,
                 CloningMode = CloningMode.Copy,
                 DeletingMode = DeletingMode.Delete,
-                Content = new Content { }
+                Content = new Content()
             });
 
 
@@ -94,7 +89,7 @@ namespace QA.Core.Models.Tests
 
             //string xml = QA.Core.Models.Tests.Helpers.ValidationHelper.GetEmbeddedResourceText(@"LoaderMapping.xaml");
 
-            var article = Tools.ConfigurationSerializer.GetContent(xml);
+            Tools.ConfigurationSerializer.GetContent(xml);
         }
     }
 }

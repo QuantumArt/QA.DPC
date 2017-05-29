@@ -61,8 +61,6 @@ namespace QA.Core.Models.Tests
             {
                 // создаем экземпляр валидатора
 
-                T instance = default(T);
-
                 XamlXmlReader xxr = new XamlXmlReader(stream);
                 //where xamlStringToLoad is a string of well formed XAML
                 XamlObjectWriter xow = new XamlObjectWriter(xxr.SchemaContext);

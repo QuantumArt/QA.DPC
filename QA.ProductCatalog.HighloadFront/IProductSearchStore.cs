@@ -7,7 +7,6 @@ namespace QA.ProductCatalog.HighloadFront
 {
     public interface IProductSearchStore: IProductStore
     {
-        Task<IList<JObject>> SearchAsync(string query, ProductsOptions options);
-        Task<Stream> SearchStreamAsync(string q, ProductsOptions options, string language, string state);
+        Task<Stream> SearchStreamAsync(ProductsOptions options, string language, string state);
     }
 }

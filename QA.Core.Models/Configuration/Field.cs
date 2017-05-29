@@ -73,11 +73,6 @@ namespace QA.Core.Models.Configuration
 
 	public abstract class Association : Field
 	{
-		[ScaffoldColumn(false)] 
-		[Obsolete]
-		[DefaultValue(true)]
-		public bool Load { get; set; }
-
 		[DisplayName("При клонировании родительской сущности")]
 		[DefaultValue(CloningMode.Ignore)]
 		public CloningMode CloningMode { get; set; }
@@ -95,8 +90,6 @@ namespace QA.Core.Models.Configuration
 
 		protected Association()
 		{
-			Load = true;
-
 			CloningMode = CloningMode.Ignore;
 
 			DeletingMode = DeletingMode.Keep;

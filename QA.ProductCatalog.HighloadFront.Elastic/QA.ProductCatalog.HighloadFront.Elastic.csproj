@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArrayIndexingSettings.cs" />
     <Compile Include="ConnectionConfigurationExstensions.cs" />
     <Compile Include="ElasticClientExstensions.cs" />
     <Compile Include="ElasticProductStore.cs" />

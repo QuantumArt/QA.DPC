@@ -7,7 +7,7 @@
     <ProductVersion>
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{375EC380-2D28-47CF-80A2-F7AB84123883}</ProjectGuid>
+    <ProjectGuid>{87FB5057-411E-40BE-96F6-ACD5B2A1E399}</ProjectGuid>
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -422,4 +422,3 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
-

@@ -136,7 +136,7 @@ namespace QA.Core.DPC
             {
                 Started = DateTime.Now,
                 NotificationProvider = _provider.GetType().Name,
-                IsAtual = actualConfiguration.Equals(_currentConfiguration),
+                IsActual = actualConfiguration.IsEqualTo(_currentConfiguration),
                 Channels = (from channel in channels
                            join s in chennelsStatistic on channel equals s.Name into d
                            from s in d.DefaultIfEmpty()
@@ -170,7 +170,7 @@ namespace QA.Core.DPC
             {
                 return State.New;
             }
-            else if (current.Equals(actual))
+            else if (current.IsEqualTo(actual))
             {
                 return State.Actual;
             }

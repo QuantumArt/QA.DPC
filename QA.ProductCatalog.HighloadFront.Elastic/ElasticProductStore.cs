@@ -12,8 +12,7 @@ using QA.ProductCatalog.HighloadFront.Infrastructure;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
-    public class ElasticProductStore :
-        IProductStore,
+    public class ElasticProductStore : 
         IProductTypeStore,
         IProductBulkStore,
         IProductStreamStore,
@@ -21,18 +20,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         private const string BaseSeparator = ",";
         private const string ProductIdField = "ProductId";
-        private const string DidableOrParameterName = "DisableOr";
-        private const string DidableNotParameterName = "DisableNot";
+        private const string DisableOrParameterName = "DisableOr";
+        private const string DisableNotParameterName = "DisableNot";
 
-        private IElasticClient _client { get; }
-        private Func<string, string, IElasticClient> _getClient { get; }
+        private IElasticClient Client { get; }
+        private Func<string, string, IElasticClient> GetClient { get; }
 
-        private SonicElasticStoreOptions Options { get; set; }
+        private SonicElasticStoreOptions Options { get; }
 
         public ElasticProductStore(IElasticClient client, Func<string, string, IElasticClient> getClient, IOptions<SonicElasticStoreOptions> optionsAccessor)
         {
-            _client = client;
-            _getClient = getClient;
+            Client = client;
+            GetClient = getClient;
             Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
         }
 
@@ -63,7 +62,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (products == null) throw new ArgumentNullException(nameof(products));
 
             var failedResult = new List<SonicError>();
-            var client = _getClient(language, state);
+            var client = GetClient(language, state);
 
             var commands = products.Select(p =>
             {
@@ -102,27 +101,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<ElasticsearchResponse<string>> FindByIdAsync(string id, ProductsOptions options)
-        {
-            ThrowIfDisposed();
-
-            var response = await _client.LowLevel.GetSourceAsync<string>(_client.ConnectionSettings.DefaultIndex, "_all", id, p =>
-            {
-                if (options?.PropertiesFilter != null)
-                {
-                    p.SourceInclude(options.PropertiesFilter.ToArray());
-                }
-                return p;
-            });
-
-            return response;
-        }
-
         public async Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(string id, ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
 
-            var client = _getClient(language, state);
+            var client = GetClient(language, state);
             var response = await client.LowLevel.GetSourceAsync<Stream>(client.ConnectionSettings.DefaultIndex, "_all", id, p =>
             {
                 if (options?.PropertiesFilter != null)
@@ -156,7 +139,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                var client = _getClient(language, state);
+                var client = GetClient(language, state);
                 var response = await client.LowLevel.IndexAsync<VoidResponse>(client.ConnectionSettings.DefaultIndex, type, id, json);
                 return response.Success
                     ? SonicResult.Success
@@ -189,7 +172,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     .StoreFailure($"Product {id} has no type"));
             }
 
-            var client = _getClient(language, state);
+            var client = GetClient(language, state);
             var response = await client.UpdateAsync<JObject>(id, d => d.Upsert(product).Type(type));
 
             return response.IsValid
@@ -207,7 +190,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                var client = _getClient(language, state);
+                var client = GetClient(language, state);
 
                 var request = new DeleteRequest(client.ConnectionSettings.DefaultIndex, type, id);
 
@@ -230,8 +213,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             string id = GetId(product);
             string type = GetType(product);
 
-            var existsRequest = new DocumentExistsRequest(_client.ConnectionSettings.DefaultIndex, type, id);
-            var existsResponse = await _client.DocumentExistsAsync(existsRequest);
+            var existsRequest = new DocumentExistsRequest(Client.ConnectionSettings.DefaultIndex, type, id);
+            var existsResponse = await Client.DocumentExistsAsync(existsRequest);
 
             return existsResponse.Exists;
         }
@@ -242,15 +225,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                var client = _getClient(language, state);
+                var client = GetClient(language, state);
 
-                var response = await client.DeleteIndexAsync(client.ConnectionSettings.DefaultIndex);
+                await client.DeleteIndexAsync(client.ConnectionSettings.DefaultIndex);
 
-                var r = await client.CreateIndexAsync(
+                await client.CreateIndexAsync(
                     client.ConnectionSettings.DefaultIndex,
                     index => index
                         .Settings(s => s.Setting("max_result_window", Options.MaxResultWindow))
-                        .Mappings(m => m.MapNotAnalyzed(Options.Types, Options.NotAnalyzedFields))                 
+                        .Mappings(m => m.MapNotAnalyzed(Options.Types, Options.NotAnalyzedFields))
                 );
 
                 return SonicResult.Success;
@@ -261,104 +244,154 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<IList<JObject>> GetProductsInTypeAsync(string type, ProductsOptions options)
-        {
-            ThrowIfDisposed();
-
-            if (type == null) throw new ArgumentNullException(nameof(type));
-
-            var request = new SearchDescriptor<JObject>()
-                .Type(type)
-                .From((options?.Page ?? 0) * (options?.PerPage ?? Options.DefaultSize))
-                .Size(options?.PerPage ?? Options.DefaultSize)
-                .Query(q => Filter(q, options));
-
-            //var filter = MakeFilter(options);
-            //request.Filter(filter);
-
-            if (options?.PropertiesFilter?.Any() == true)
-                request.Source(s => s.Include(f => f.Fields(options.PropertiesFilter.ToArray())));
-
-            var response = await _client.SearchAsync<JObject>(request);
-
-            return response.Documents.ToList();
-        }
-
         public async Task<Stream> GetProductsInTypeStreamAsync(string type, ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
 
             if (type == null) throw new ArgumentNullException(nameof(type));
+            var q = JObject.FromObject(new
+            {
+                from = (options?.Page ?? 0) * (options?.PerPage ?? Options.DefaultSize),
+                size = options?.PerPage ?? Options.DefaultSize,
+                _source = new { include = GetFields(options, type) }
+            });
 
-            var request = new SearchDescriptor<StreamData>()
-                .Type(type)
-                .From((options?.Page ?? 0) * (options?.PerPage ?? Options.DefaultSize))
-                .Size(options?.PerPage ?? Options.DefaultSize)
-                .Query(q => Filter(q, options));
+            SetQuery(q, options);
+            SetSorting(q, options);
 
-            SetPropertyFilter(request, options, type);
-            SetSorting(request, options);
+            var response = await Client.LowLevel.SearchAsync<Stream>(Client.ConnectionSettings.DefaultIndex, type, q.ToString());
+            return response.Body;
 
-            var client = _getClient(language, state);
-            return await client.SearchStreamAsync(request);
         }
 
-        private QueryContainer Filter(QueryContainer query, ProductsOptions productsOptions)
+        public async Task<Stream> SearchStreamAsync(ProductsOptions options, string language, string state)
         {
-            if (productsOptions == null) return query;
+            ThrowIfDisposed();
+
+            var q = JObject.FromObject(new
+            {
+                from = (options?.Page ?? 0) * (options?.PerPage ?? Options.DefaultSize),
+                size = options?.PerPage ?? Options.DefaultSize,
+                _source = new { include = GetFields(options) }
+            });
+
+
+            var types = options?.Filters?
+                .Where(f => f.Item1 == Options.TypePath)
+                .Select(f => f.Item2)
+                .FirstOrDefault();
+
+            SetQuery(q, options);
+            SetSorting(q, options);
+            ElasticsearchResponse<Stream> response;
+            if (types == null)
+            {
+                response = await Client.LowLevel.SearchAsync<Stream>(Client.ConnectionSettings.DefaultIndex, q.ToString());
+            }
+            else
+            {
+                response = await Client.LowLevel.SearchAsync<Stream>(Client.ConnectionSettings.DefaultIndex, types, q.ToString());
+            }
+            return response.Body;
+        }
+
+        public async Task<string[]> GetTypesAsync()
+        {
+            var q = new JObject(
+                new JProperty("aggs", new JObject(
+                    new JProperty("typesAgg", new JObject(
+                        new JProperty("terms", new JObject(
+                            new JProperty("field", "_type"),
+                            new JProperty("size", "200")
+                        ))
+                    ))
+                )),
+                new JProperty("size", 0)
+            );
+            var response = await Client.LowLevel.SearchAsync<JObject>(Client.ConnectionSettings.DefaultIndex, q.ToString());
+            return response.Body.SelectTokens("aggregations.typesAgg.buckets.[?(@.key)].key").Select(n => n.ToString())
+                .ToArray();
+        }
+
+        private void SetQuery(JObject json, ProductsOptions productsOptions)
+        {
+            var result = new List<JProperty>();
 
             if (productsOptions.Filters != null)
             {
-                var disabledOrFields = GetFieldValues(productsOptions.Filters, DidableOrParameterName);
-                var disabledNotFields = GetFieldValues(productsOptions.Filters, DidableNotParameterName);
-
-                query = productsOptions.Filters
-                    .Where(f => !new[] { Options.TypePath, DidableOrParameterName, DidableNotParameterName }.Contains(f.Item1))
-                    .Aggregate(query, (current, sf) =>
-                {
-                    var field = sf.Item1;
-                    var value = sf.Item2;
-
-                    if (!string.IsNullOrEmpty(Options.NegationMark) && value.StartsWith(Options.NegationMark) && !disabledNotFields.Contains(field))
-                    {
-                        value = value.Remove(0, Options.NegationMark.Length);
-                        var condition = Filter(new QueryContainer(), field, value, Options.ValueSeparator);
-                        current = current & +new BoolQuery { MustNot = new QueryContainer[] { condition } };
-                    }
-                    else
-                    {
-                        var separator = disabledOrFields.Contains(field) ? null : Options.ValueSeparator;
-                        current = Filter(current, field, value, separator);
-                    }
-
-                    return current;
-                });
+                var disabledOrFields = GetFieldValues(productsOptions.Filters, DisableOrParameterName);
+                var disabledNotFields = GetFieldValues(productsOptions.Filters, DisableNotParameterName);
+                result.AddRange(productsOptions.Filters.Select(n => GetSingleFilterWithNot(n.Item1, n.Item2, disabledOrFields, disabledNotFields)));
             }
 
             if (productsOptions.RangeFilters != null)
             {
-                query = productsOptions.RangeFilters.Aggregate(query, (current, rf) =>
-                current & new TermRangeQuery
-                {
-                    Field = rf.Item1,
-                    GreaterThanOrEqualTo = rf.Item2 == "" ? null : rf.Item2,
-                    LessThanOrEqualTo = rf.Item3 == "" ? null : rf.Item3,
-                });
+                result.Add(
+                    new JProperty("range", new JObject(productsOptions.RangeFilters.Select(GetSingleRangeQuery)))
+                );
             }
 
             if (productsOptions.Query != null)
             {
-                query &= new QueryStringQuery
-                {
-                    Query = productsOptions.Query,
-                    Lenient = true,
-                };
+                result.Add(
+                    new JProperty("query_string", JObject.FromObject(new { query = productsOptions.Query, lenient = true }))
+                );
             }
 
-            return query;
+            var obj = result.Select(n => new JObject(n)).ToArray();
+
+            if (obj.Any())
+            {
+                var query = new JObject(
+                    new JProperty("bool", new JObject(
+                            new JProperty("must", obj.Length > 1 ? JArray.FromObject(obj) : (JToken)obj[0])
+                        ))
+                    );
+
+                json.Add(new JProperty("query", query));
+            }
         }
 
-        private QueryContainer Filter(QueryContainer condition, string field, string value, string separator)
+        private JProperty GetSingleRangeQuery(Tuple<string, string, string> elem)
+        {
+            var content = new JObject();
+            if (elem.Item2 != "")
+            {
+                content.Add("gte", elem.Item2);
+            }
+            if (elem.Item3 != "")
+            {
+                content.Add("lte", elem.Item3);
+            }
+            return new JProperty(elem.Item1, content);
+        }
+
+        private void SetSorting(JObject json, ProductsOptions options)
+        {
+            if (!String.IsNullOrEmpty(options.Sort))
+            {
+                json.Add(new JProperty("sort", new JArray(new JObject(new JProperty(options.Sort, options.Order ? "asc" : "desc")))));
+            }
+        }
+
+        private JProperty GetSingleFilterWithNot(string field, string value, string[] disabledOrFields, string[] disabledNotFields)
+        {
+            if (!string.IsNullOrEmpty(Options.NegationMark) && value.StartsWith(Options.NegationMark) && !disabledNotFields.Contains(field))
+            {
+                value = value.Remove(0, Options.NegationMark.Length);
+                var condition = GetSingleFilter(field, value, Options.ValueSeparator);
+                return new JProperty("bool", new JObject(
+                    new JProperty("must_not", new JObject(condition))
+                ));
+            }
+            else
+            {
+                var separator = disabledOrFields.Contains(field) ? null : Options.ValueSeparator;
+                return GetSingleFilter(field, value, separator);
+            }
+        }
+
+        private JProperty GetSingleFilter(string field, string value, string separator)
         {
             var isBaseField = field == Options.IdPath || field == ProductIdField;
 
@@ -366,31 +399,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 if (value.Contains(BaseSeparator))
                 {
-                    var values = value.Split(new string[] { BaseSeparator }, StringSplitOptions.None);
-
-                    condition = condition & +new TermsQuery
-                    {
-                        Field = field,
-                        Terms = values
-                    };
+                    var values = value.Split(new[] { BaseSeparator }, StringSplitOptions.None);
+                    return Terms(field, values);
                 }
                 else if (!string.IsNullOrWhiteSpace(separator) && value.Contains(separator))
                 {
-                    var values = value.Split(new string[] { separator }, StringSplitOptions.None);
-
-                    condition = condition & +new TermsQuery
-                    {
-                        Field = field,
-                        Terms = values
-                    };
+                    var values = value.Split(new[] { separator }, StringSplitOptions.None);
+                    return Terms(field, values);
                 }
                 else
                 {
-                    condition = condition & +new TermQuery
-                    {
-                        Field = field,
-                        Value = value
-                    };
+                    return Term(field, value);
                 }
             }
             else
@@ -401,56 +420,55 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                 if (separated)
                 {
-                    values = value.Split(new string[] { separator }, StringSplitOptions.None);
+                    values = value.Split(new[] { separator }, StringSplitOptions.None);
                 }
 
                 if (notAnalized)
                 {
                     if (separated)
                     {
-                        condition = condition & +new TermsQuery
-                        {
-                            Field = field,
-                            Terms = values
-                        };
+                        return Terms(field, values);
                     }
                     else
                     {
-                        condition = condition & +new TermQuery
-                        {
-                            Field = field,
-                            Value = value
-                        };
+                        return Term(field, value);
                     }
                 }
                 else
                 {
                     if (separated)
                     {
-                        condition = condition & +new BoolQuery
-                        {
-                            Should = values.Select(v => (QueryContainer)
-                                new MatchPhraseQuery
-                                {
-                                    Field = field,
-                                    Query = v,
-                                    Operator = Operator.And
-                                })
-                        };
+                        var arr = values.Select(v => MatchPhrase(field, v)).Select(m => new JObject(m)).ToArray();
+                        return new JProperty("bool", new JObject(
+                            new JProperty("should", arr.Length > 1 ? (JArray.FromObject(arr)) : (JToken)arr[0])
+                        ));
                     }
                     else
                     {
-                        condition = condition & +new MatchPhraseQuery
-                        {
-                            Field = field,
-                            Query = value,
-                            Operator = Operator.And
-                        };
+                        return MatchPhrase(field, value);
                     }
                 }
             }
+        }
 
-            return condition;
+        private static JProperty Term(string field, string value)
+        {
+            return new JProperty("term", new JObject(new JProperty(field, value)));
+        }
+
+        private static JProperty Terms(string field, string[] values)
+        {
+            return new JProperty("terms", new JObject(new JProperty(field, JArray.FromObject(values))));
+        }
+
+        private static JProperty MatchPhrase(string field, string value)
+        {
+            return new JProperty("match_phrase", new JObject(new JProperty(field,
+                new JObject(
+                    new JProperty("query", value),
+                    new JProperty("operator", "and")
+                )
+            )));
         }
 
         private string[] GetFieldValues(IList<Tuple<string, string>> filters, string field)
@@ -467,7 +485,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        private void SetPropertyFilter(SearchDescriptor<StreamData> request, ProductsOptions options, string type = null)
+        private string[] GetFields(ProductsOptions options, string type = null)
         {
             string[] fields = null;
 
@@ -483,121 +501,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 fields = Options.DefaultFields;
             }
-
-            if (fields != null)
-            {
-                request.Source(s => s.Include(f => f.Fields(fields)));
-            }
+            return fields;
         }
 
-        private void SetSorting(SearchDescriptor<StreamData> request, ProductsOptions options)
-        {
-            if (!string.IsNullOrEmpty(options.Sort))
-            {
-                if (options.Order)
-                {
-                    request.Sort(d => d.Ascending(options.Sort));
-                }
-                else
-                {
-                    request.Sort(d => d.Descending(options.Sort));
-                }
-            }
-        }
-
-        /*
-        private static FilterContainer MakeFilter(ProductsOptions productsOptions)
-        {
-            FilterContainer filter = new MatchAllFilter();
-
-            if (productsOptions == null) return filter;
-
-            if (productsOptions.Filters != null)
-            {
-                filter = productsOptions.Filters.Aggregate(filter, (current, sf) =>
-                current & new TermFilter
-                {
-                    Field = sf.Item1,
-                    Value = sf.Item2
-                });
-            }
-
-            if (productsOptions.RangeFilters != null)
-            {
-                filter = productsOptions.RangeFilters.Aggregate(filter, (current, rf) =>
-                current & new RangeFilter
-                {
-                    Field = rf.Item1,
-                    GreaterThanOrEqualTo = rf.Item2.ToString(),
-                    LowerThanOrEqualTo = rf.Item3.ToString(),
-                });
-            }
-
-            if (productsOptions.Query != null)
-            {
-                filter &= new QueryFilter
-                {
-                    Query = new QueryStringQuery
-                    {
-                        Query = productsOptions.Query, Lenient = true
-                    }.ToContainer()
-                };
-            }
-
-            return filter;
-        }
-        */
-
-        public async Task<IList<JObject>> SearchAsync(string q, ProductsOptions options)
-        {
-            ThrowIfDisposed();
-            //var filter = MakeFilter(options);
-            var respons = await _client.SearchAsync<JObject>(body => body
-                //.Filter(filter)
-                .Query(query => query.QueryString(qs => qs.Query(q).Lenient()))
-                .AllTypes());
-
-            return respons.Documents.ToList();
-        }
-
-        public async Task<Stream> SearchStreamAsync(string q, ProductsOptions options, string language, string state)
-        {
-            ThrowIfDisposed();
-
-            var request = new SearchDescriptor<StreamData>()
-                 .From((options?.Page ?? 0) * (options?.PerPage ?? Options.DefaultSize))
-                 .Size(options?.PerPage ?? Options.DefaultSize)
-                 .Query(query => Filter(query, options) & query.QueryString(qs => qs.Query(q).Lenient()));
-
-            var types = options?.Filters?
-                .Where(f => f.Item1 == Options.TypePath)
-                .Select(f => f.Item2)
-                .FirstOrDefault();
-
-            if (types == null)
-            {
-                request.AllTypes();
-            }
-            else
-            {
-                request.Type(types);
-            }
-
-            SetPropertyFilter(request, options);
-            SetSorting(request, options);
-
-            var client = _getClient(language, state);
-            return await client.SearchStreamAsync(request);
-        }
 
         private bool IsNotAnalyzedField(string pathField)
         {
-            return Options.NotAnalyzedFields.Any(mask => {
-                var field = pathField.Split(new[] { '.' }).Last();
+            return Options.NotAnalyzedFields.Any(mask =>
+            {
+                var field = pathField.Split('.').Last();
 
                 bool startsWithMask = mask.StartsWith("*");
                 bool endsWithMask = mask.EndsWith("*");
-                string analyzedField = startsWithMask && endsWithMask ? analyzedField = mask.Replace("*", string.Empty) : mask;
+                string analyzedField = startsWithMask && endsWithMask ? mask.Replace("*", string.Empty) : mask;
 
                 if (startsWithMask && endsWithMask)
                 {

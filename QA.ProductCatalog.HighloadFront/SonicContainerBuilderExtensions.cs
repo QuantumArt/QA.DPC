@@ -9,7 +9,6 @@ namespace QA.ProductCatalog.HighloadFront
         {
             // Builder used by Sonic
             builder.RegisterOptions();
-            builder.RegisterScoped<IProductValidator, ProductValidator>();
 
             builder.RegisterSingleton<ProductManager>();
 

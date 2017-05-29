@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Nest;
 
@@ -10,7 +11,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         public static Stream SearchStream(this IElasticClient client, SearchDescriptor<StreamData> request)
         {
-            var response = client.Search<StreamData>(request) as StreamResponse;
+            var response =  client.Search<StreamData>(request) as StreamResponse;
             return response?.Stream;
         }
 

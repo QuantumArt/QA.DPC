@@ -11,10 +11,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             using (var reader = new StreamReader(requestStream))
             {
-                using (var writer = new StreamWriter(responseStream))
-                {
-                    return await JsonFragmentExtractor.ExtractJsonFragment(textToSearch, reader, writer, depthToSearch);
-                }
+                var writer = new StreamWriter(responseStream);
+                var result = await JsonFragmentExtractor.ExtractJsonFragment(textToSearch, reader, writer, depthToSearch);
+                await writer.FlushAsync();
+                responseStream.Position = 0;
+                return result;
             }
         }
 
