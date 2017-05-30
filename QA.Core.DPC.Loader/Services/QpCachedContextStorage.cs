@@ -31,7 +31,7 @@ namespace QA.Core.DPC.Loader.Services
             {"_FieldCache", new[] {CacheTags.QP8.Field}},
             {"_ContentCache", new[] {CacheTags.QP8.Content}},
             {"_SiteCache", new[] { CacheTags.QP8.Site}},
-            {"_ContentFieldCache", new[] { CacheTags.QP8.Content, CacheTags.QP8.Field}},
+            {"_ContentFieldCache", new[] { CacheTags.QP8.Content, CacheTags.QP8.Field}}
         };
 
         public static readonly string[] TagTables = StorageKeyTags.Values.SelectMany(x => x).Distinct().ToArray();
