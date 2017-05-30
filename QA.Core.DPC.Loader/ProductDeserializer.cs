@@ -12,6 +12,7 @@ using Quantumart.QP8.BLL.Services.API;
 using Article = QA.Core.Models.Entities.Article;
 using Field = QA.Core.Models.Configuration.Field;
 using Quantumart.QPublishing.Database;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
@@ -26,8 +27,9 @@ namespace QA.Core.DPC.Loader
         private readonly ContentService _contentService;
         private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly IContextStorage _contextStorage;
+        private readonly string _connectionString;
 
-        public ProductDeserializer(IFieldService fieldService, IServiceFactory serviceFactory, ICacheItemWatcher cacheItemWatcher, IContextStorage contextStorage)
+        public ProductDeserializer(IFieldService fieldService, IServiceFactory serviceFactory, ICacheItemWatcher cacheItemWatcher, IContextStorage contextStorage, IConnectionProvider connectionProvider)
         {
             _fieldService = fieldService;
 
@@ -35,13 +37,15 @@ namespace QA.Core.DPC.Loader
 
             _cacheItemWatcher = cacheItemWatcher;
 
-            _contextStorage = contextStorage;            
+            _contextStorage = contextStorage;
+
+            _connectionString = connectionProvider.GetConnection();
         }
        
 
         public Article Deserialize(IProductDataSource productDataSource, Models.Configuration.Content definition)
         {
-            using (var cs = new QPConnectionScope(ConfigurationManager.ConnectionStrings[ProductLoader.KEY_CONNECTION_STRING].ConnectionString))
+            using (var cs = new QPConnectionScope(_connectionString))
             {
                 _cacheItemWatcher.TrackChanges();
 

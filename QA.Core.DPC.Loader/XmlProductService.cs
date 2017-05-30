@@ -13,6 +13,7 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QPublishing.Database;
 using Article = QA.Core.Models.Entities.Article;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
@@ -23,11 +24,13 @@ namespace QA.Core.DPC.Loader
 
 		private readonly ILogger _logger;
         private readonly ISettingsService _settingsService;
+        private readonly string _connectionString;
 
-        public XmlProductService(ILogger logger, ISettingsService settingsService)
+        public XmlProductService(ILogger logger, ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _logger = logger;
             _settingsService = settingsService;
+            _connectionString = connectionProvider.GetConnection();
         }
 
         public string GetProductXml(Article article, IArticleFilter filter)
@@ -60,8 +63,7 @@ namespace QA.Core.DPC.Loader
 		{
             using (
                 var cs =
-                    new QPConnectionScope(
-                        ConfigurationManager.ConnectionStrings[ProductLoader.KEY_CONNECTION_STRING].ConnectionString))
+                    new QPConnectionScope(_connectionString))
 			{
                 var ctx = new CallContext(new DBConnector(cs.DbConnection), filter);
 

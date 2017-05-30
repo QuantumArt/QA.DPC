@@ -344,6 +344,10 @@
     <Compile Include="XmlProductService.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj">
+      <Project>{d894f71e-c027-4b58-8930-1d44a65727cb}</Project>
+      <Name>QA.Core.DPC.QP</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj">
       <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
       <Name>QA.Core.Models</Name>
@@ -446,4 +450,3 @@
   </Target>
   -->
 </Project>
-

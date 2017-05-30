@@ -327,7 +327,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.Integration\QA.Core.DPC.Integration.csproj">
-      <Project>{71121a6b-3673-4cc1-a97a-610e9c33f33a}</Project>
+      <Project>{449474e1-584d-4c81-ab4e-d84cadf4d74a}</Project>
       <Name>QA.Core.DPC.Integration</Name>
     </ProjectReference>
     <ProjectReference Include="..\QA.ProductCatalog.Integration\QA.ProductCatalog.Integration.csproj">

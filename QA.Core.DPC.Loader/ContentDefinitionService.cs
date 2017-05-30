@@ -12,6 +12,7 @@ using QA.Core.Models.Configuration;
 using System.Collections.Generic;
 using Quantumart.QPublishing.Info;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
@@ -46,13 +47,14 @@ namespace QA.Core.DPC.Loader
 		public ContentDefinitionService(ISettingsService settingsService,
 			IVersionedCacheProvider cacheProvider,
 			IArticleService articleService,
-			ILogger logger)
+			ILogger logger,
+            IConnectionProvider connectionProvider)
 		{
 			_logger = logger;
 			_settingsService = settingsService;
 			_cacheProvider = cacheProvider;
 			_articleService = articleService;
-			_connectionString = ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString; 
+			_connectionString = connectionProvider.GetConnection(); 
 		}
 		#endregion
 

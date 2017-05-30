@@ -56,7 +56,7 @@ namespace QA.ProductCatalog.HighloadFront
 
             //containerBuilder.RegisterWebApiFilterProvider(config);
 
-            System.Threading.Tasks.Task.Run((Action)container.Resolve<ITasksRunner>().Run);
+            //System.Threading.Tasks.Task.Run((Action)container.Resolve<ITasksRunner>().Run);
         }
 
         public IContainer DIConfiguration(ContainerBuilder builder)

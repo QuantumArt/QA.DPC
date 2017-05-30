@@ -2,7 +2,7 @@
 {
     public interface ITasksRunner
     {
-        void Run();
+        void Run(object customerCode);
 
         void InitStop();
 

@@ -307,6 +307,10 @@
       <Project>{749FE9E8-3678-497B-948F-F0B0135E2D97}</Project>
       <Name>QA.Core.DPC.Formatters</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj">
+      <Project>{D894F71E-C027-4B58-8930-1D44A65727CB}</Project>
+      <Name>QA.Core.DPC.QP</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj">
       <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
       <Name>QA.Core.Models</Name>
@@ -364,4 +368,3 @@
   </Target>
   -->
 </Project>
-

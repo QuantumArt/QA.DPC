@@ -4,6 +4,7 @@ using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.Utils;
 using Quantumart.QPublishing.Database;
 using Quantumart.QP8.BLL;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Notification.Services
 {
@@ -12,17 +13,19 @@ namespace QA.Core.DPC.Notification.Services
 	{
 		protected ISettingsService SettingsService { get; private set; }
 		protected DBConnector Connector { get; private set; }
+        protected string ConnectionString { get; private set; }
 
-		public ContentProviderBase(ISettingsService settingsService)
+        public ContentProviderBase(ISettingsService settingsService, IConnectionProvider connectionProvider)
 		{
 			SettingsService = settingsService;
-		}
+            ConnectionString = connectionProvider.GetConnection();
+        }
 
 		protected abstract string GetQuery();
 		
 		public TModel[] GetArticles()
 		{
-			Connector = QPConnectionScope.Current == null ? new DBConnector() : new DBConnector(QPConnectionScope.Current.DbConnection);
+			Connector = QPConnectionScope.Current == null ? new DBConnector(ConnectionString) : new DBConnector(QPConnectionScope.Current.DbConnection);
 			var query = GetQuery();
 
 			if (query == null)

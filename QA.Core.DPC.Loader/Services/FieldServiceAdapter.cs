@@ -3,6 +3,7 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Concurrent;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.ProductCatalog.Actions.Services
 {
@@ -12,7 +13,7 @@ namespace QA.Core.ProductCatalog.Actions.Services
 		private readonly ConcurrentDictionary<int, Field> _fieldMap;
 		private readonly string _qpConnString;
 
-		public FieldServiceAdapter(FieldService fieldService, string qpConnString)
+		public FieldServiceAdapter(FieldService fieldService, IConnectionProvider connectionProvider)
 		{
 			if (fieldService == null)
 				throw new ArgumentNullException("fieldService");
@@ -20,7 +21,7 @@ namespace QA.Core.ProductCatalog.Actions.Services
 			_fieldService = fieldService;
 			_fieldMap = new ConcurrentDictionary<int, Field>();
 
-			_qpConnString = qpConnString;
+			_qpConnString = connectionProvider.GetConnection();
 		}
 
 		#region IFieldService implementation

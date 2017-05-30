@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using QA.Core.Data;
 using Quantumart.QP8.BLL;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader.Services
 {
@@ -14,9 +15,9 @@ namespace QA.Core.DPC.Loader.Services
 	{
 		private readonly string _qpConnectionString;
 
-		public StructureCacheTracker(string qpConnectionString)
+		public StructureCacheTracker(IConnectionProvider connectionProvider)
 		{
-			_qpConnectionString = qpConnectionString;
+			_qpConnectionString = connectionProvider.GetConnection();
 		}
 
 		protected override void OnTrackChanges(List<TableModification> changes)

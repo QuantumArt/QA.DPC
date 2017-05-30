@@ -4,13 +4,15 @@ using System.Threading;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.Infrastructure;
 using System.Configuration;
+using QA.Core.DPC.QP.Servives;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {
 
     public class TasksRunner : ITasksRunner
     {
-        public TasksRunner(Func<string, int, ITask> taskFactoryMethod, Func<ITaskService> taskServiceFactoryMethod, ILogger logger)
+        public TasksRunner(Func<string, int, ITask> taskFactoryMethod, Func<ITaskService> taskServiceFactoryMethod, ILogger logger, IIdentityProvider identityProvider)
         {
             State = StateEnum.Stopped;
 
@@ -21,8 +23,10 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             _taskServiceFactoryMethod = taskServiceFactoryMethod;
 
             _taskFactoryMethod = taskFactoryMethod;
-
+            
             _logger = logger;
+
+            _identityProvider = identityProvider;
         }
 
         private readonly object _stateLoker = new object();
@@ -65,11 +69,14 @@ namespace QA.Core.ProductCatalog.ActionsRunner
            ? 1000
            : Convert.ToInt32(ConfigurationManager.AppSettings["MillisecondsToSleepIfNoTasks"]);
 
+        private readonly IIdentityProvider _identityProvider;
         private readonly Func<string, int, ITask> _taskFactoryMethod;
         private readonly Func<ITaskService> _taskServiceFactoryMethod;
 
-        public void Run()
+        public void Run(object customerCode)
         {
+            _identityProvider.Identity = new Identity(customerCode as string);
+
             if (_logger != null)
                 _logger.Info("Run called");
 

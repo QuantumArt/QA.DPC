@@ -13,6 +13,7 @@ using QA.Core.Models.Entities;
 using System.Xaml;
 using System.IO;
 using System.IO.Compression;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
@@ -32,8 +33,8 @@ namespace QA.Core.DPC.Loader
             IFieldService fieldService,
             ISettingsService settingsService,
             IConsumerMonitoringService consumerMonitoringService,
-            IArticleFormatter formatter) : base(definitionService,
-                logger, cacheProvider, cacheItemWatcher, articleService, fieldService, settingsService, consumerMonitoringService, formatter)
+            IArticleFormatter formatter, IConnectionProvider connectionProvider) : base(definitionService,
+                logger, cacheProvider, cacheItemWatcher, articleService, fieldService, settingsService, consumerMonitoringService, formatter, connectionProvider)
         {
             DataDirectory = AppDomain.CurrentDomain.GetData("DataDirectory") as string;
             if (DataDirectory == null)

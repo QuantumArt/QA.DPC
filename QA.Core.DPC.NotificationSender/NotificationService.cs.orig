@@ -141,8 +141,13 @@ namespace QA.Core.DPC
             return new ConfigurationInfo
             {
                 Started = DateTime.Now,
+<<<<<<< HEAD
+                NotificationProvider = _provider.GetType().Name,
+                IsActual = actualConfiguration.IsEqualTo(_currentConfiguration),
+=======
                 NotificationProvider = provider.GetType().Name,
-                IsActual = actualConfiguration.IsEqualTo(currentConfiguration),
+                IsAtual = actualConfiguration.Equals(currentConfiguration),
+>>>>>>> origin/QA.DPC.QP
                 Channels = (from channel in channels
                            join s in chennelsStatistic on channel equals s.Name into d
                            from s in d.DefaultIfEmpty()

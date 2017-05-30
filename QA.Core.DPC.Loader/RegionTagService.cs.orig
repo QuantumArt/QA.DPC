@@ -9,7 +9,11 @@ using System.Configuration;
 using QA.Core.DPC.Loader.Resources;
 using QA.Core.DPC.Loader.Services;
 using Quantumart.QP8.BLL;
+<<<<<<< HEAD
+=======
+using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.DPC.QP.Servives;
+>>>>>>> origin/QA.DPC.QP
 
 namespace QA.Core.DPC.Loader
 {

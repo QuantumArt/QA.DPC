@@ -7,12 +7,24 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
+<<<<<<< HEAD
+=======
+using QA.Core.ProductCatalog.Actions.Services;
+using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Servives;
+>>>>>>> origin/QA.DPC.QP
 
 namespace QA.Core.DPC.Loader
 {
     public class RegionService : IRegionService
     {
+<<<<<<< HEAD
+        #region Константы
+        private const string KeyConntectionString = "qp_database";
+        #endregion
+
+=======
+>>>>>>> origin/QA.DPC.QP
         #region Глобальные переменные
         private readonly IVersionedCacheProvider _cacheProvider;
         private readonly ICacheItemWatcher _cacheItemWatcher;
@@ -35,7 +47,16 @@ namespace QA.Core.DPC.Loader
 
             //_userProvider = userProvider;
             this._cacheItemWatcher.TrackChanges();
+<<<<<<< HEAD
+            var connectinStringObject = ConfigurationManager.ConnectionStrings[KeyConntectionString];
+            if (connectinStringObject == null)
+            {
+                throw new Exception(string.Format(ProductLoaderResources.ERR_CONNECTION_STRING_NO_EXISTS, KeyConntectionString));
+            }
+            _connectionString = connectinStringObject.ConnectionString;
+=======
             _connectionString = connectionProvider.GetConnection();
+>>>>>>> origin/QA.DPC.QP
         }
         #endregion
 

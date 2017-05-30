@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using QA.Core.Service.Interaction;
+using QA.Core.DPC.DAL;
 
 namespace QA.Core.DPC.Service
 {
@@ -24,7 +25,7 @@ namespace QA.Core.DPC.Service
 
                 List<Message> res;
 
-                using (var ctx = new Core.DPC.DAL.NotificationsModelDataContext())
+                using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
                 {
                     using (var t = new TransactionScope(TransactionScopeOption.Required,
                             new TransactionOptions
@@ -51,7 +52,7 @@ namespace QA.Core.DPC.Service
             {
                 Throws.IfArgumentNull(id, _ => id);
 
-                using (var ctx = new Core.DPC.DAL.NotificationsModelDataContext())
+                using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
                 {
                     var m = ctx.Messages.FirstOrDefault(x => x.Id == id);
                     

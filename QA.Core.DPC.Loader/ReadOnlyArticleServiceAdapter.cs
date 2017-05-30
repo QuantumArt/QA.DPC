@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using QA.Core.DPC.Loader.Services;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
@@ -14,14 +15,14 @@ namespace QA.Core.DPC.Loader
 
 		protected readonly IContextStorage ContextStorage;
 
-		public ReadOnlyArticleServiceAdapter(ArticleService articleService, string qpConnString, IContextStorage contextStorage)
+		public ReadOnlyArticleServiceAdapter(ArticleService articleService, IConnectionProvider connectionProvider, IContextStorage contextStorage)
         {
             if (articleService == null)
                 throw new ArgumentNullException("articleService");
 
             ArticleService = articleService;
 
-			QpConnString = qpConnString;
+			QpConnString = connectionProvider.GetConnection();
 
 		    ContextStorage = contextStorage;
         }

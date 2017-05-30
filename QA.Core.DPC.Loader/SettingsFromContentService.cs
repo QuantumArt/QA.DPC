@@ -4,6 +4,7 @@ using QA.Core.Cache;
 using Quantumart.QP8.BLL;
 using QA.Core.DPC.Loader.Resources;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {
@@ -16,7 +17,9 @@ namespace QA.Core.DPC.Loader
 		public SettingsFromContentService(
 			IVersionedCacheProvider cacheProvider, 
 			ICacheItemWatcher cacheItemWatcher,
-			IReadOnlyArticleService articleService)
+			IReadOnlyArticleService articleService,
+            IConnectionProvider connectionProvider)
+            : base(connectionProvider)
 		{
 			_cacheProvider = cacheProvider;
 			

@@ -1,4 +1,5 @@
-﻿using QA.Core.Web;
+﻿using QA.Core.DPC.QP.Servives;
+using QA.Core.Web;
 using QA.ProductCatalog.Integration.Notifications;
 using System;
 using System.ServiceModel;
@@ -10,16 +11,19 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 	public class NotificationController : Controller
 	{
 		private NotificationServiceClient _service;
+        private IIdentityProvider _identityProvider;
 
-		public NotificationController()
+        public NotificationController(IIdentityProvider identityProvider)
 		{
-			_service = new NotificationServiceClient();
+            _identityProvider = identityProvider;
+            _service = new NotificationServiceClient();
 		}
 		public ActionResult Index()
 		{
             try
             {
-                object model = _service.GetConfigurationInfo();
+                var customerCode = _identityProvider.Identity.CustomerCode;
+                object model = _service.GetConfigurationInfo(customerCode);
                 return View(model);
             }
             catch(EndpointNotFoundException)
@@ -30,7 +34,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
 		public ActionResult UpdateConfiguration()
 		{
-			_service.UpdateConfiguration();
+            var customerCode = _identityProvider.Identity.CustomerCode;
+            _service.UpdateConfiguration(customerCode);
 			return RedirectToAction("Index");
 		}
 	}
