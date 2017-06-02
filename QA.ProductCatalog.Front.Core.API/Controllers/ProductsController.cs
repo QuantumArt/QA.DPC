@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using QA.Core;
 using QA.Core.DPC.Front;
 
@@ -30,14 +31,16 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var ints = (date == null)
                 ? DpcService.GetAllProductId(locator, page, pageSize)
                 : DpcService.GetLastProductId(locator, page, pageSize, date.Value);
-            return Content(string.Join(",", ints));
+            return Json(ints);
         }
 
         [HttpGet("{id:int}")]
         [HttpGet("{language}/{state}/{id:int}")]
         public ActionResult GetProduct(ProductLocator locator, int id, DateTime? date)
         {
-            return Content(DpcService.GetProduct(locator, id));
+            var data = DpcService.GetProductData(locator, id);
+            ControllerContext.HttpContext.Response.Headers.Add("Last-Modified", data.Updated.ToUniversalTime().ToString("R"));
+            return Content(data.Product, new MediaTypeHeaderValue("application/json"));
         }
 
         [HttpDelete]

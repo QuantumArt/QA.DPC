@@ -4,6 +4,7 @@ using QA.ProductCatalog.Integration.Notifications;
 using System;
 using System.ServiceModel;
 using System.Web.Mvc;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {

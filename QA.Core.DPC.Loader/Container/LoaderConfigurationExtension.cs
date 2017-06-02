@@ -12,6 +12,7 @@ using Quantumart.QP8.BLL.Services.API;
 using QA.Core.ProductCatalog;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Models;
 using Quantumart.QP8.BLL;
 using QA.Core.DPC.QP.Servives;

@@ -1,33 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Caching;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using QA.Core;
+using QA.Core.Cache;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
-using QA.ProductCatalog.HighloadFront.Infrastructure;
-using QA.ProductCatalog.HighloadFront.Models;
+using QA.ProductCatalog.HighloadFront.Elastic;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 {
     public class RateLimitAttribute : Attribute, IAsyncActionFilter
     {
-        private readonly IOptions<Users> _users;
 
-        private readonly IOptions<RateLimitOptions> _options;
-
-        private readonly ObjectCache _cache;
+        private readonly IElasticConfiguration _configuration;
+        private readonly IVersionedCacheProvider _cacheProvider;
 
         public string Profile { get; set; }
 
-        public RateLimitAttribute(IOptions<Users> users, IOptions<RateLimitOptions> options, ObjectCache cache, string profile)
+        public RateLimitAttribute(IElasticConfiguration configuration, IVersionedCacheProvider cacheProvider,
+            string profile)
         {
-            _users = users;
-            _options = options;
-            _cache = cache;
+            _configuration = configuration;
+            _cacheProvider = cacheProvider;
             Profile = profile;
         }
 
@@ -39,20 +37,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
                 .FirstOrDefault(h => h.Key == "X-Auth-Token")
                 .Value.FirstOrDefault();
 
-            var user = _users?.Value
-                           ?.FirstOrDefault(u => u.Value == token)
-                           .Key ?? "Default";
-
+            var user = _configuration.GetUserName(token) ?? "Default";
             var key = GetKey(user, ip, context);
-
-            var counter = _cache[key] as RateCounter;
-            var limit = _options.Value[Profile][user].Limit;
-            var seconds = _options.Value[Profile][user].Seconds;
-            if (counter == null)
-            {
-                counter = new RateCounter(limit, seconds);
-                _cache.Add(key, counter, counter.Reset);
-            }
+            var limit = _configuration.GetLimit(user, Profile);
+            var counter = _cacheProvider.GetOrAdd(key, TimeSpan.FromSeconds(limit.Seconds),
+                () => new RateCounter(limit.Limit, limit.Seconds));
 
             if (counter.Remaining == 0)
             {
@@ -76,8 +65,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
             }
         }
 
-
-
         private static string GetKey(string user, string ip, ActionExecutingContext actionContext)
         {
             var actionName = (actionContext.ActionDescriptor as ControllerActionDescriptor)?.ActionName;
@@ -90,7 +77,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
             public int Remaining { get; private set; }
             public int Limit { get; }
             public long ResetUnix { get; }
-            public DateTime Reset { get; }
+            private DateTime Reset { get; }
 
             public void Hit()
             {
@@ -107,14 +94,4 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 
     }
 
-    public class RateLimitOptions : Dictionary<string, RateLimitProfile>
-    { }
-    public class RateLimitProfile : Dictionary<string, RateLimit>
-    { }
-
-    public class RateLimit
-    {
-        public int Seconds { get; set; }
-        public int Limit { get; set; }
-    }
 }

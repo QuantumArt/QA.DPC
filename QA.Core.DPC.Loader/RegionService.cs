@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
+using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader

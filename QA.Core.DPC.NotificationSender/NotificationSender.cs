@@ -14,6 +14,7 @@ using QA.ProductCatalog.Infrastructure;
 using System.Collections.Concurrent;
 using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC
 {

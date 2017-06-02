@@ -3,6 +3,7 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Concurrent;
+using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.ProductCatalog.Actions.Services

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QA.Core.Data;
+using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;
 using QA.Core.DPC.QP.Servives;
 

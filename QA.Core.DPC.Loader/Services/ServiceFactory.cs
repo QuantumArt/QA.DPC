@@ -2,6 +2,7 @@
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
 using System;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.ProductCatalog.Actions.Services
 {

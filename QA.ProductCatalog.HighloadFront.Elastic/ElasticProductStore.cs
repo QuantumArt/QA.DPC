@@ -24,14 +24,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private const string DisableNotParameterName = "DisableNot";
 
         private IElasticClient Client { get; }
-        private Func<string, string, IElasticClient> GetClient { get; }
+        private IElasticConfiguration Configuration { get; }
 
         private SonicElasticStoreOptions Options { get; }
 
-        public ElasticProductStore(IElasticClient client, Func<string, string, IElasticClient> getClient, IOptions<SonicElasticStoreOptions> optionsAccessor)
+        public ElasticProductStore(IElasticClient client, IElasticConfiguration config, IOptions<SonicElasticStoreOptions> optionsAccessor)
         {
             Client = client;
-            GetClient = getClient;
+            Configuration = config;
             Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
         }
 
@@ -62,7 +62,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (products == null) throw new ArgumentNullException(nameof(products));
 
             var failedResult = new List<SonicError>();
-            var client = GetClient(language, state);
+            var client = Configuration.GetElasticClient(language, state);
 
             var commands = products.Select(p =>
             {
@@ -105,7 +105,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             ThrowIfDisposed();
 
-            var client = GetClient(language, state);
+            var client = Configuration.GetElasticClient(language, state); 
             var response = await client.LowLevel.GetSourceAsync<Stream>(client.ConnectionSettings.DefaultIndex, "_all", id, p =>
             {
                 if (options?.PropertiesFilter != null)
@@ -139,7 +139,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                var client = GetClient(language, state);
+                var client = Configuration.GetElasticClient(language, state); 
                 var response = await client.LowLevel.IndexAsync<VoidResponse>(client.ConnectionSettings.DefaultIndex, type, id, json);
                 return response.Success
                     ? SonicResult.Success
@@ -172,7 +172,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     .StoreFailure($"Product {id} has no type"));
             }
 
-            var client = GetClient(language, state);
+            var client = Configuration.GetElasticClient(language, state);
             var response = await client.UpdateAsync<JObject>(id, d => d.Upsert(product).Type(type));
 
             return response.IsValid
@@ -190,7 +190,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                var client = GetClient(language, state);
+                var client = Configuration.GetElasticClient(language, state);
 
                 var request = new DeleteRequest(client.ConnectionSettings.DefaultIndex, type, id);
 
@@ -225,7 +225,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             try
             {
-                var client = GetClient(language, state);
+                var client = Configuration.GetElasticClient(language, state);
 
                 await client.DeleteIndexAsync(client.ConnectionSettings.DefaultIndex);
 

@@ -8,6 +8,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC.QP.Servives
 {

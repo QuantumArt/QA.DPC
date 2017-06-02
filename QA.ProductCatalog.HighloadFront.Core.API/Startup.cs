@@ -3,12 +3,22 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using QA.Core;
+using QA.Core.DPC.Loader;
+using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Servives;
 using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.HighloadFront.Core.API.Filters;
+using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Importer;
+using QA.ProductCatalog.HighloadFront.Models;
+using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API
 {
@@ -30,7 +40,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add(typeof(ProcessCustomerCodeAttribute));
+            });
+
+            services.AddMemoryCache();
+
+            services.Configure<HarvesterOptions>(Configuration.GetSection("Harvester"));
+            services.Configure<SonicElasticStoreOptions>(Configuration.GetSection("sonicElasticStore"));
+            services.Configure<DataOptions>(Configuration.GetSection("Data"));
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration});

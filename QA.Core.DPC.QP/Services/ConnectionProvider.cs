@@ -1,9 +1,9 @@
-﻿using QA.Core.DPC.QP.Models;
+﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System;
+using QA.Core.DPC.QP.Models;
 
-namespace QA.Core.DPC.QP.Servives
+namespace QA.Core.DPC.QP.Services
 {
     public class ConnectionProvider : IConnectionProvider
     {

@@ -5,6 +5,7 @@ using QA.Core.Web;
 using System;
 using System.Web.Mvc;
 using System.Web.Routing;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.ProductCatalog.Admin.WebApp.Core
 {

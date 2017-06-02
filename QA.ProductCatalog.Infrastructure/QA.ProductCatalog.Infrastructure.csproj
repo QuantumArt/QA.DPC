@@ -253,6 +253,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionContainerExstension.cs" />
+    <Compile Include="ContentProviderBase.cs" />
+    <Compile Include="ElasticIndexProvider.cs" />
+    <Compile Include="HighloadApiLimit.cs" />
+    <Compile Include="HighloadApiLimitProvider.cs" />
+    <Compile Include="HighloadApiUser.cs" />
+    <Compile Include="HighloadApiUserProvider.cs" />
     <Compile Include="IArticleFormatter.cs" />
     <Compile Include="IConsumerMonitoringService.cs" />
     <Compile Include="IContentDefinitionService.cs" />
@@ -280,6 +286,7 @@
     <Compile Include="IXmlProductService.cs" />
     <Compile Include="IProductService.cs" />
     <Compile Include="LocalizationSetting.cs" />
+    <Compile Include="ElasticIndex.cs" />
     <Compile Include="NotificationChannel.cs" />
     <Compile Include="NotificationSenderConfig.cs" />
     <Compile Include="NotificationChannelDescriptor.cs" />
@@ -289,6 +296,10 @@
     <Compile Include="WarmUpHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj">
+      <Project>{D894F71E-C027-4B58-8930-1D44A65727CB}</Project>
+      <Name>QA.Core.DPC.QP</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj">
       <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
       <Name>QA.Core.Models</Name>
@@ -307,4 +318,3 @@
   </Target>
   -->
 </Project>
-

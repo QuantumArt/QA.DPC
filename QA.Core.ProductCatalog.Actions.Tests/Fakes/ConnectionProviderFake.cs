@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {

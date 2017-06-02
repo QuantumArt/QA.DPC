@@ -12,6 +12,7 @@ using QA.Core.Models.Configuration;
 using System.Collections.Generic;
 using Quantumart.QPublishing.Info;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader

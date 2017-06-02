@@ -24,6 +24,7 @@ using Content = QA.Core.Models.Configuration.Content;
 using Qp8Bll = Quantumart.QP8.BLL;
 using System.IO;
 using System.Text;
+using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader

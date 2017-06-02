@@ -6,6 +6,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC.QP.Servives
 {

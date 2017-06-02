@@ -220,7 +220,6 @@
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\NotificationChannelProvider.cs" />
-    <Compile Include="Services\ContentProviderBase.cs" />
     <Compile Include="Services\NotificationChannelService.cs" />
     <Compile Include="Services\NotificationConfigurationProvider.cs" />
     <Compile Include="Services\NotificationContentProvider.cs" />

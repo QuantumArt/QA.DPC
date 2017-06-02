@@ -1,22 +1,24 @@
 ﻿using System;
-using System.Linq;
 using System.Runtime.Caching;
 using Autofac;
-using Elasticsearch.Net;
-using Nest;
-using QA.Configuration;
+using Microsoft.AspNetCore.Http;
 using QA.Core;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
-using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Importer;
-using QA.ProductCatalog.HighloadFront.Importer.DpcServiceReference;
 using QA.ProductCatalog.HighloadFront.Infrastructure;
-using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.Infrastructure;
 using Microsoft.Extensions.Configuration;
+using QA.Core.Cache;
+using QA.Core.Data;
+using QA.Core.DPC.Loader;
+using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.QP.Servives;
+using QA.DPC.Core.Helpers;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API
 {
@@ -32,40 +34,33 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
 
             builder.Configure<HarvesterOptions>(Configuration.GetSection("Harvester"));
 
-            builder.Configure<DataOptions>(Configuration.GetSection("Data"));
-
             builder.Configure<SonicElasticStoreOptions>(Configuration.GetSection("sonicElasticStore"));
 
-            QA.Core.ILogger logger = new NLogLogger("NLog.config");
-            builder.RegisterInstance<ILogger>(logger);
+            builder.RegisterSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.RegisterScoped<ISettingsService, SettingsFromQpService>();
+            builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
+            builder.RegisterScoped<IIdentityProvider, CoreIdentityProvider>();
 
-            var elasticOptions = GetOptions<DataOptions>("Data").Elastic;
+            ILogger logger = new NLogLogger("NLog.config");
+            builder.RegisterInstance(logger);
 
-            var elasticClientMap = elasticOptions.ToDictionary(
-                option => GetElasticKey(option.Language, option.State),
-                option => GetElasticClient(option.Index, option.Adress, option.Timeout, logger, option.DoTrace)
-            );
+            builder.RegisterSingleton<IVersionedCacheCoreProviderCollection, VersionedCacheCoreProviderCollection>();
+            builder.RegisterScoped<IVersionedCacheProvider>(c => c.Resolve<IVersionedCacheCoreProviderCollection>().Get(c.GetCustomerCode()));
 
-            var syncerMap = elasticOptions.ToDictionary(
-                option => GetElasticKey(option.Language, option.State),
-                option => new IndexOperationSyncer()
-            );
+            builder.RegisterScoped<IConnectionProvider>(c => new ConnectionProvider(c.Resolve<ICustomerProvider>(), c.Resolve<IIdentityProvider>(), Service.HighloadAPI));
 
-            var defaultElasticOption = elasticOptions.FirstOrDefault(option => option.IsDefault);
-
-            if (defaultElasticOption != null)
+            builder.RegisterScoped<IContentProvider<ElasticIndex>, ElasticIndexProvider>();
+            builder.RegisterScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
+            builder.RegisterScoped<IContentProvider<HighloadApiUser>, HighloadApiUserProvider>();
+            builder.RegisterScoped<CacheItemTracker, StructureCacheTracker>();
+            builder.RegisterScoped<ICacheItemWatcher>(c =>
             {
-                var defaultKey = GetElasticKey(null, null);
-                var actualKey = GetElasticKey(defaultElasticOption.Language, defaultElasticOption.State);
-                elasticClientMap[defaultKey] = elasticClientMap[actualKey];
-                builder.RegisterSingleton<IElasticClient>(c => elasticClientMap[actualKey]);
-                builder.RegisterInstance(syncerMap[actualKey]);
-                builder.Register<IDpcService>(c => new DpcServiceClient(actualKey));
-            }
+                var a = new CustomerCacheItemWatcher(InvalidationMode.All, c.Resolve<IContentInvalidator>(), c.Resolve<IConnectionProvider>()); 
+                a.AttachTracker(c.Resolve<CacheItemTracker>());
+                return a;
+            });
 
-            builder.Register<Func<string, string, IElasticClient>>(c => (language, state) => elasticClientMap[GetElasticKey(language, state)]);
-            builder.Register<Func<string, string, IDpcService>>(c => (language, state) => new DpcServiceClient(GetElasticKey(language, state)));
-            builder.Register<Func<string, string, IndexOperationSyncer>>(c => (language, state) => syncerMap[GetElasticKey(language, state)]);
+            builder.RegisterScoped<IElasticConfiguration, QpElasticConfiguration>();
 
             builder.RegisterType<TasksRunner>().As<ITasksRunner>().SingleInstance();
 
@@ -83,8 +78,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
 
             builder.RegisterType<ReindexAllTask>().Named<ITask>("ReindexAllTask");
 
-            builder.RegisterScoped<IDpcService, DpcServiceClient>();
-
             builder.Register(c => new ArrayIndexer(GetOptions<SonicElasticStoreOptions>("sonicElasticStore").ArrayIndexingSettings)).Named<IProductPostProcessor>("array");
             builder.RegisterType<DateIndexer>().Named<IProductPostProcessor>("date");
 
@@ -95,10 +88,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             })).As<IProductPostProcessor>();
 
             builder.RegisterType(typeof(ProductImporter)).InstancePerLifetimeScope();
-
-            builder.Configure<RateLimitOptions>(Configuration.GetSection("RateLimits"));
-
-            builder.Configure<Users>(Configuration.GetSection("Users"));
         }
 
 
@@ -111,32 +100,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             return manager.Value;
         }
 
-        private string GetElasticKey(string language, string state)
-        {
-            if (language == null && state == null)
-            {
-                return "default";
-            }
-            else
-            {
-                return $"{language}-{state}";
-            }
-        }
 
-        private IElasticClient GetElasticClient(string index, string address, int timeout, ILogger logger, bool doTrace)
-        {
-            var node = new Uri(address);
-
-            var connectionPool = new SingleNodeConnectionPool(node);
-
-            var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
-                .DefaultIndex(index)
-                .RequestTimeout(TimeSpan.FromSeconds(timeout))
-                .DisableDirectStreaming()
-                .EnableTrace(msg => logger.Log(() => msg, EventLevel.Trace), doTrace)
-                .ThrowExceptions();
-
-            return new ElasticClient(settings);
-        }
     }
 }

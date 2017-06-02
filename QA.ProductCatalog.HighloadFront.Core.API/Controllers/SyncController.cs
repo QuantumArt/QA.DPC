@@ -5,11 +5,10 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using QA.ProductCatalog.HighloadFront.Elastic;
-using QA.ProductCatalog.HighloadFront.Infrastructure;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.Core;
-using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
+using Microsoft.Extensions.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
@@ -22,15 +21,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private const int LockTimeoutInMs = 1000;
 
-        private readonly Func<string, string, IndexOperationSyncer> _getSyncer;
+        private readonly IElasticConfiguration _configuration;
         private readonly ITaskService _taskService;
         private readonly DataOptions _dataOptions;
 
-        public SyncController(ILogger logger, ProductManager manager, Func<string, string, IndexOperationSyncer> getSyncer, ITaskService taskService, IOptions<DataOptions> optionsAccessor)
+        public SyncController(ILogger logger, ProductManager manager, IElasticConfiguration configuration, ITaskService taskService, IOptions<DataOptions> optionsAccessor)
         {
             Logger = logger;
             Manager = manager;
-            _getSyncer = getSyncer;
+            _configuration = configuration;
             _taskService = taskService;
             _dataOptions = optionsAccessor.Value;
         }
@@ -39,7 +38,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         public async Task<HttpResponseMessage> Put([FromBody]PushMessage message, string language, string state)
         {
 
-            var syncer = _getSyncer(language, state);
+            var syncer = _configuration.GetSyncer(language, state);
             var product = message.Product;
             string id = Manager.GetProductId(message.Product);
 
@@ -71,7 +70,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("{language}/{state}")]
         public async Task<object> Delete([FromBody]PushMessage message, string language, string state)
         {
-            var syncer = _getSyncer(language, state);
+            var syncer = _configuration.GetSyncer(language, state);
             var product = message.Product;
 
             var id = Manager.GetProductId(message.Product);
@@ -109,7 +108,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 throw new Exception("Невозможно выполнить операцию пересоздания индекса. Данный экземпляр API предназначен только для чтения.");
             }
 
-            var syncer = _getSyncer(language, state);
+            var syncer = _configuration.GetSyncer(language, state);
 
             if (!syncer.AnySlotsLeft)
                 throw new Exception("Нет свободных слотов, дождитесь завершения предыдущих операций");
@@ -136,7 +135,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             var lastTasks = tasks.GroupBy(t => t.Data).Select(g => g.OrderByDescending(t => t.ID).First()).ToArray();
 
             var r =
-                from o in _dataOptions.Elastic
+                from o in _configuration.GetElasticIndices()
                 join t in lastTasks on $"{o.Language}/{o.State}" equals t.Data into ts
                 from t in ts.DefaultIfEmpty()
                 select new TaskItem

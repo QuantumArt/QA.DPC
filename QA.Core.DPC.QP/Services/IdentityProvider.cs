@@ -1,8 +1,8 @@
-﻿using QA.Core.DPC.QP.Models;
-using System.Security.Principal;
+﻿using System.Security.Principal;
 using System.Threading;
+using QA.Core.DPC.QP.Models;
 
-namespace QA.Core.DPC.QP.Servives
+namespace QA.Core.DPC.QP.Services
 {
     public class IdentityProvider : IIdentityProvider
     {

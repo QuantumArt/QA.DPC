@@ -1,11 +1,11 @@
-﻿using System.Linq;
+﻿using System;
+using System.Data.SqlClient;
+using System.Linq;
 using QA.Core.DPC.QP.Models;
 using Quantumart.QP8.Configuration;
 using Quantumart.QPublishing.Database;
-using System.Data.SqlClient;
-using System;
 
-namespace QA.Core.DPC.QP.Servives
+namespace QA.Core.DPC.QP.Services
 {
     public class CustomerProvider : ICustomerProvider
     {

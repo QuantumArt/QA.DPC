@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using QA.Core.DPC.Formatters.Services;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
 using QA.Core.Models.Processors;

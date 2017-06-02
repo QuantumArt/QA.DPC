@@ -1,7 +1,6 @@
 using System.IO;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.AspNetCore.Http;
@@ -91,39 +90,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             await JsonFragmentExtractor.ExtractJsonFragment("_source", stream, ms, 4);
             return new JsonStreamResult(ms);
 
-        }
-    }
-
-    public class JsonStreamResult : ActionResult
-    {
-        public JsonStreamResult(Stream stream)
-        {
-            Stream = stream;
-        }
-
-        public Stream Stream { get; set; }
-
-        public override async Task ExecuteResultAsync(ActionContext context)
-        {
-            var media = new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" }.ToString();
-            context.HttpContext.Response.ContentType = media;
-            await Stream.CopyToAsync(context.HttpContext.Response.Body);
-
-        }
-    }
-
-    public class MyPushStreamResult : ActionResult
-    {
-        public PushStreamContent Stream { get; private set; }
-        public MyPushStreamResult(PushStreamContent stream)
-        {
-            Stream = stream;
-        }
-        public override async Task ExecuteResultAsync(ActionContext context)
-        {
-            var response = context.HttpContext.Response;
-            response.ContentType = new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" }.ToString();
-            await Stream.CopyToAsync(response.Body);
         }
     }
 }

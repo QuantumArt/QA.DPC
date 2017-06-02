@@ -1,8 +1,5 @@
 ﻿using QA.Core.Models.Entities;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace QA.ProductCatalog.Infrastructure
 {

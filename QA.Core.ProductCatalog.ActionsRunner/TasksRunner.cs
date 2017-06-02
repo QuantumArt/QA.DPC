@@ -6,6 +6,7 @@ using QA.ProductCatalog.Infrastructure;
 using System.Configuration;
 using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {

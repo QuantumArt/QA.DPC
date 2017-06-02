@@ -34,26 +34,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Autofac, Version=4.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.4.5.0\lib\net45\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="Elasticsearch.Net, Version=2.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Elasticsearch.Net.2.0.5\lib\net45\Elasticsearch.Net.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\Elasticsearch.Net.2.5.5\lib\net45\Elasticsearch.Net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Nest, Version=2.0.0.0, Culture=neutral, PublicKeyToken=96c599bbe3e70f5d, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\NEST.2.0.5\lib\net45\Nest.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\..\packages\NEST.2.5.5\lib\net45\Nest.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="QA.Core, Version=3.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\Users\CelutP\.nuget\packages\qa.core\3.0.5\lib\net45\QA.Core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -66,17 +66,21 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ArrayIndexingSettings.cs" />
+    <Compile Include="QpElasticConfiguration.cs" />
     <Compile Include="ConnectionConfigurationExstensions.cs" />
     <Compile Include="ElasticClientExstensions.cs" />
     <Compile Include="ElasticProductStore.cs" />
     <Compile Include="ElasticsearchSerializerExstensions.cs" />
     <Compile Include="ElasticsearchStreamSerializer.cs" />
+    <Compile Include="IElasticConfiguration.cs" />
+    <Compile Include="IndexOperationSyncer.cs" />
     <Compile Include="IndexsationPostProcessing\ArrayIndexer.cs" />
     <Compile Include="IndexsationPostProcessing\DateIndexer.cs" />
     <Compile Include="IndexsationPostProcessing\IndexerDecorator.cs" />
     <Compile Include="JsonFragmentExtractor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DataOptions.cs" />
+    <Compile Include="RateLimit.cs" />
     <Compile Include="SonicElasticStoreOptions.cs" />
     <Compile Include="StreamResponse.cs" />
   </ItemGroup>
@@ -92,6 +96,10 @@
     <ProjectReference Include="..\QA.ProductCatalog.HighloadFront\QA.ProductCatalog.HighloadFront.csproj">
       <Project>{08de5738-45f8-47b9-b828-d657223eae51}</Project>
       <Name>QA.ProductCatalog.HighloadFront</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj">
+      <Project>{5AF860A1-97A7-4C36-9496-21054975E226}</Project>
+      <Name>QA.ProductCatalog.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

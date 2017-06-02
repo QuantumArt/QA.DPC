@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.DPC.QP.Models;
 
-namespace QA.Core.DPC.QP.Servives
+namespace QA.Core.DPC.QP.Services
 {
     public class SingleCustomerProvider : ICustomerProvider
     {

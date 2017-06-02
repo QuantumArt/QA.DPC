@@ -118,8 +118,6 @@ namespace QA.ProductCatalog.HighloadFront
 
             builder.RegisterType<ReindexAllTask>().Named<ITask>("ReindexAllTask");
 
-            builder.RegisterScoped<IDpcService, DpcServiceClient>();
-
             builder.RegisterType<ConfigurationService>().As<IConfigurationService>().SingleInstance();
 
             builder.Register(c => new ArrayIndexer(c.Resolve<IConfigurationService>().GetConfiguration<ArrayIndexingSettings[]>())).Named<IProductPostProcessor>("array");

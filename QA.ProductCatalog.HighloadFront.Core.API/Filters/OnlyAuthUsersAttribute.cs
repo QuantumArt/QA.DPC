@@ -4,8 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using QA.ProductCatalog.HighloadFront.Infrastructure;
-using QA.ProductCatalog.HighloadFront.Models;
+using QA.ProductCatalog.HighloadFront.Elastic;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 {
@@ -19,10 +18,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 
         private class OnlyAuthUsersAttributeImpl : Attribute, IAsyncActionFilter
         {
-            private readonly IOptions<Users> _users;
-            public OnlyAuthUsersAttributeImpl(IOptions<Users> users)
+            private readonly IElasticConfiguration _configuration;
+            public OnlyAuthUsersAttributeImpl(IElasticConfiguration configuration)
             {
-                _users = users;
+                _configuration = configuration;
             }
 
             public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -31,15 +30,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
                     .FirstOrDefault(h => h.Key == "X-Auth-Token")
                     .Value.FirstOrDefault();
 
-                var user = _users?.Value?.FirstOrDefault(u => u.Value == token).Key;
+                var user = _configuration.GetUserName(token);
 
-                if (user != null || _users?.Value?.ContainsKey("Default") == true && token == null)
+                if (user != null || token == null && string.IsNullOrEmpty(_configuration.GetUserToken("Default")))
                     await next();
                 else
                 {
                     context.Result = new ContentResult()
                     {
-                        Content = $@"{{""message"":""You have no valid access token""}}",
+                        Content = @"{""message"":""You have no valid access token""}",
                         ContentType = "application/json",
                         StatusCode = StatusCodes.Status401Unauthorized
                     };

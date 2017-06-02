@@ -5,18 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using QA.ProductCatalog.HighloadFront.Elastic;
-using QA.ProductCatalog.HighloadFront.Infrastructure;
+using Microsoft.Extensions.Options;
+
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
     [Route("api/HealthCheck")]
     public class HealthCheckController : Controller
     {
-        private readonly DataOptions _dataOptions;
+        private readonly IElasticConfiguration _elasticConfiguration;
 
-        public HealthCheckController(IOptions<DataOptions> optionsAccessor)
+        private readonly DataOptions _options;
+
+        public HealthCheckController(IElasticConfiguration elasticConfiguration, IOptions<DataOptions> options)
         {
-            _dataOptions = optionsAccessor.Value;
+            _elasticConfiguration = elasticConfiguration;
+            _options = options.Value;
         }
 
         public async Task<HttpResponseMessage> HealthCheck(bool isSync)
@@ -24,12 +28,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             var sb = new StringBuilder();
             sb.AppendLine("Application: OK");
             var httpClient = new HttpClient();
-            sb.AppendLine(@"Read\Write: " + Status(_dataOptions.CanUpdate == isSync));
+            sb.AppendLine(@"Read\Write: " + Status(_options.CanUpdate == isSync));
 
-            foreach (var option in _dataOptions.Elastic)
+            foreach (var option in _elasticConfiguration.GetElasticIndices())
             {
 
-                var uri = $"{option.Adress}/{option.Index}";
+                var uri = $"{option.Url}/{option.Name}";
                 var ok = false;
                 try
                 {

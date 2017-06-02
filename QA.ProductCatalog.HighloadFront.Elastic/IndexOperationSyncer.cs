@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
+namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class IndexOperationSyncer
     {

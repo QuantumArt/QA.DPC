@@ -34,6 +34,7 @@ using QA.Core.DPC.QP.Configuration;
 using System.Web;
 using QA.Core.Data;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Start
 {

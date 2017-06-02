@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.ServiceProcess;
 using System.Threading;
+using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsService.Properties;
 using QA.Core.ProductCatalog.TaskScheduler;

@@ -8,5 +8,16 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.Abstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="1.1.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />    
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="QA.Core">
+      <HintPath>..\..\..\..\..\Users\CelutP\.nuget\packages\qa.core\3.0.5\lib\net45\QA.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

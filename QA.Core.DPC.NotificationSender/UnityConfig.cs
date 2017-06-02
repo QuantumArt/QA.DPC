@@ -13,6 +13,7 @@ using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.QP.Autopublish.Configuration;
 using QA.Core.DPC.QP.Autopublish.Services;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC
 {

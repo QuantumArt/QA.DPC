@@ -1,4 +1,5 @@
 ﻿using System;
+using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Importer;
 using QA.ProductCatalog.Infrastructure;
 
@@ -8,17 +9,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
     {
         private readonly ProductImporter _importer;
         private readonly ProductManager _manager;
-        private readonly Func<string, string, IndexOperationSyncer> _getSyncer;
+        private readonly IElasticConfiguration _configuration;
 
         private const int LockTimeoutInMs = 5000;
 
-        public ReindexAllTask(ProductImporter importer, ProductManager manager, Func<string, string, IndexOperationSyncer> getSyncer)
+        public ReindexAllTask(ProductImporter importer, ProductManager manager, IElasticConfiguration configuration)
         {
             _importer = importer;
-
             _manager = manager;
-
-            _getSyncer = getSyncer;
+            _configuration = configuration;
         }
 
 
@@ -28,14 +27,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
             string language = itms[0];
             string state = itms[1];
 
-            var syncer = _getSyncer(language, state);
+            var syncer = _configuration.GetSyncer(language, state);
 
             if (syncer.EnterSyncAll(LockTimeoutInMs))
             {
                 try
                 {
                     _manager.DeleteAllASync(language, state).Wait();
-
                     _importer.ImportAsync(executionContext, language, state).Wait();
                 }
                 finally

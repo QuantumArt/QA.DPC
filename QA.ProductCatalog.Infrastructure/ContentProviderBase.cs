@@ -1,12 +1,11 @@
 ﻿using System.Data;
 using System.Linq;
-using QA.ProductCatalog.Infrastructure;
+using QA.Core.DPC.QP.Services;
+using Quantumart.QP8.BLL;
 using Quantumart.QP8.Utils;
 using Quantumart.QPublishing.Database;
-using Quantumart.QP8.BLL;
-using QA.Core.DPC.QP.Servives;
 
-namespace QA.Core.DPC.Notification.Services
+namespace QA.ProductCatalog.Infrastructure
 {
 	public abstract class ContentProviderBase<TModel> : IContentProvider<TModel>
 		where TModel : class
