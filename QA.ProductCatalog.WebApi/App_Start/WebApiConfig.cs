@@ -11,7 +11,7 @@ using QA.Core.DPC.Formatters.Formatting;
 using QA.ProductCatalog.WebApi.App_Start;
 using QA.ProductCatalog.WebApi.Filters;
 using QA.Core.Models.Configuration;
-
+using QA.Core.DPC.QP.Servives;
 
 namespace QA.ProductCatalog.WebApi
 {
@@ -36,64 +36,67 @@ namespace QA.ProductCatalog.WebApi
 			#region IOC container
 			var container = UnityConfig.Configure();
 			config.DependencyResolver = new UnityResolver(container);
-			//config.Services.Add(typeof(IExceptionLogger), new ExceptionLoggerAdapter());
-			#endregion
+            //config.Services.Add(typeof(IExceptionLogger), new ExceptionLoggerAdapter());
+            #endregion
 
-			#region Routing
-			config.MapHttpAttributeRoutes();
+            #region Routing
+            var connection = container.Resolve<IConnectionProvider>();
+            var customerCode = connection.QPMode ? "{customerCode}/" : string.Empty;
+
+            config.MapHttpAttributeRoutes();
 
 			config.Routes.MapHttpRoute(
 			   name: "GetProduct",
-			   routeTemplate: "api/{version}/{slug}/{format}/{id}",
+			   routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
 			   defaults: new { controller = "Product" },
 			   constraints: new { id = @"\d+", format = FormatConstraints }
 		   );
 
 			config.Routes.MapHttpRoute(
 				name: "PostProduct",
-				routeTemplate: "api/{version}/{slug}/{format}/{id}",
+				routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
 				defaults: new { controller = "Product", action = "Post" },
 				constraints: new { id = @"\d+", format = FormatConstraints }
 			);
 
 			config.Routes.MapHttpRoute(
 				name: "CustomAction",
-				routeTemplate: "api/custom/{format}/{name}/{id}",
+				routeTemplate: $"api/{customerCode}custom/{{format}}/{{name}}/{{id}}",
 				defaults: new { controller = "Product", action = "CustomAction" },
 				constraints: new { id = @"\d+", format = FormatConstraints}
 			);
 
 			config.Routes.MapHttpRoute(
 				name: "DeleteProduct",
-				routeTemplate: "api/{format}/{id}",
+				routeTemplate: $"api/{customerCode}{{format}}/{{id}}",
 				defaults: new { controller = "Product", action = "Delete" },
 				constraints: new { id = @"\d+", format = FormatConstraints }
 			);
 
 			config.Routes.MapHttpRoute(
 				name: "ListProduct",
-				routeTemplate: "api/{version}/{slug}/{format}",
+				routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}",
 				defaults: new { controller = "Product", action = "List", format = JsonMappingValue },
 				constraints: new { format = FormatConstraints }
 			);
 
 			config.Routes.MapHttpRoute(
 			   name: "SearchProduct",
-			   routeTemplate: "api/{version}/{slug}/search/{format}/{query}",
+			   routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/search/{{format}}/{{query}}",
 			   defaults: new { controller = "Product", action = "Search" },
 			   constraints: new { format = FormatConstraints }
 		   );
 
 			config.Routes.MapHttpRoute(
 			   name: "Schema",
-			   routeTemplate: "api/{version}/{slug}/schema/{format}",
+			   routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/schema/{{format}}",
 			   defaults: new { controller = "Product", action = "Schema" },
 			   constraints: new { format = FormatConstraints }
 		   );
 	
 			config.Routes.MapHttpRoute(
 				name: "Default",
-				routeTemplate: "api/{controller}/{action}/{id}",
+				routeTemplate: $"api/{customerCode}{{controller}}/{{action}}/{{id}}",
 				defaults: new { id = RouteParameter.Optional }
 			);
 			#endregion

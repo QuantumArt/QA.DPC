@@ -44,7 +44,9 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
 		    HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
 
-			return _productService.GetProduct(slug, version, id, isLive);
+            var product = _productService.GetProduct(slug, version, id, isLive);
+
+            return product;
 		}
 
 		public void Post(string slug, string version, Article product, bool isLive = false)

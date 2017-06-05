@@ -26,7 +26,7 @@ namespace QA.Core.DPC.API.Container
 
 			Container.RegisterType<IProductAPIService, ProductAPIService>();
 			Container.RegisterExpressionArticleMatchService();
-			Container.RegisterArticleMatchService<ProductQuery, QueryConditionMapper>(c => c.GetConnectionString());
+			Container.RegisterArticleMatchService<ProductQuery, QueryConditionMapper>(c => c.Resolve<IConnectionProvider>().GetConnection());
 			Container.RegisterType<IProductSearchService, ProductSearchService>();
 			Container.RegisterType<IProductUpdateService, ProductUpdateService>();
 
