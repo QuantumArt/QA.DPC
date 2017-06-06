@@ -15,9 +15,9 @@ using QA.Core.Cache;
 using QA.Core.Data;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
-using QA.Core.DPC.QP.Servives;
 using QA.DPC.Core.Helpers;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API

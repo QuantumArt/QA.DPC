@@ -13,7 +13,6 @@ using Quantumart.QP8.BLL.Services.API;
 using Article = QA.Core.Models.Entities.Article;
 using Field = QA.Core.Models.Configuration.Field;
 using Quantumart.QPublishing.Database;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {

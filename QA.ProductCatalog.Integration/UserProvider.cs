@@ -7,7 +7,6 @@ using QA.Core.DPC.QP.Services;
 using Quantumart.QPublishing;
 using Quantumart.QPublishing.Database;
 using Quantumart.QPublishing.OnScreen;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.ProductCatalog.Integration
 {

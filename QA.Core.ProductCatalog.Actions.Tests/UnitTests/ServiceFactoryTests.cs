@@ -4,7 +4,6 @@ using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.ProductCatalog.Actions.Tests.Fakes;
 using QA.ProductCatalog.Infrastructure;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {

@@ -16,7 +16,6 @@ using Quantumart.QPublishing.Database;
 using Article = QA.Core.Models.Entities.Article;
 using Content = QA.Core.Models.Configuration.Content;
 using Field = QA.Core.Models.Configuration.Field;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {

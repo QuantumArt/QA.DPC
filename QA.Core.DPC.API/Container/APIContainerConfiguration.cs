@@ -15,7 +15,6 @@ using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.API.Container
 {
@@ -27,7 +26,7 @@ namespace QA.Core.DPC.API.Container
 
 			Container.RegisterType<IProductAPIService, ProductAPIService>();
 			Container.RegisterExpressionArticleMatchService();
-			Container.RegisterArticleMatchService<ProductQuery, QueryConditionMapper>(c => c.GetConnectionString());
+			Container.RegisterArticleMatchService<ProductQuery, QueryConditionMapper>(c => c.Resolve<IConnectionProvider>().GetConnection());
 			Container.RegisterType<IProductSearchService, ProductSearchService>();
 			Container.RegisterType<IProductUpdateService, ProductUpdateService>();
 

@@ -1,6 +1,7 @@
-﻿using System.Security.Principal;
+﻿using QA.Core.DPC.QP.Models;
+using System.Security.Principal;
 using System.Threading;
-using QA.Core.DPC.QP.Models;
+using System.Web;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -10,12 +11,26 @@ namespace QA.Core.DPC.QP.Services
         {
             get
             {
-                return Thread.CurrentPrincipal.Identity as Identity;
+                var identity = Thread.CurrentPrincipal.Identity as Identity;
+
+                if (identity == null && HttpContext.Current != null)
+                {
+                    identity = HttpContext.Current.User.Identity as Identity;
+                }
+
+                return identity;
             }
 
             set
             {
-                Thread.CurrentPrincipal = new GenericPrincipal(value, new string[0]);
+                var principal = new GenericPrincipal(value, new string[0]);
+
+                if (HttpContext.Current != null)
+                {
+                    HttpContext.Current.User = principal;
+                }
+
+                Thread.CurrentPrincipal = principal;
             }
         }
     }

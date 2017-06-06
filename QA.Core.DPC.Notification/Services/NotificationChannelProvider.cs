@@ -1,5 +1,4 @@
 ﻿using QA.Core.DPC.QP.Services;
-using QA.Core.DPC.QP.Servives;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Notification.Services

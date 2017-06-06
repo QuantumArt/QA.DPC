@@ -4,7 +4,6 @@ using System.Threading;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.Infrastructure;
 using System.Configuration;
-using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 

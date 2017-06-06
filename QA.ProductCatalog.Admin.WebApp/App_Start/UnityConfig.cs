@@ -29,10 +29,10 @@ using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Xaml;
 using Quantumart.QP8.BLL;
 using System.Globalization;
-using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Configuration;
 using System.Web;
 using QA.Core.Data;
+using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 

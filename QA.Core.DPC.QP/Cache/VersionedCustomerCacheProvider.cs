@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Caching;
 
-namespace QA.Core.DPC.QP.Servives
+namespace QA.Core.DPC.QP.Cache
 {
     /// <summary>
     /// Реализует провайдер кеширования данных

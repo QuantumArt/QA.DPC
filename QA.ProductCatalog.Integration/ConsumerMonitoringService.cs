@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using QA.Core;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.DAL;
-using QA.Core.DPC.QP.Servives;
 using System.Globalization;
 using QA.Core.DPC.QP.Services;
 

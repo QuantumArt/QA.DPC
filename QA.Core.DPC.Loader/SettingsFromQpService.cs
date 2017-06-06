@@ -1,5 +1,4 @@
 ﻿using QA.Core.Cache;
-using QA.Core.DPC.QP.Servives;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;

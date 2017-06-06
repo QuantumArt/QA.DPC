@@ -1,6 +1,5 @@
 ﻿using Microsoft.Practices.Unity;
 using QA.Core.DPC.QP.Services;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.QP.Configuration
 {

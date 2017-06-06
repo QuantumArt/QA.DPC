@@ -1,5 +1,4 @@
-﻿using QA.Core.DPC.QP.Servives;
-using QA.ProductCatalog.Infrastructure;
+﻿using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using QA.Core.DPC.QP.Services;

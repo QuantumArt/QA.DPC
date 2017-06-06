@@ -1,5 +1,4 @@
-﻿using QA.Core.DPC.QP.Servives;
-using Quantumart.QP8.BLL;
+﻿using Quantumart.QP8.BLL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

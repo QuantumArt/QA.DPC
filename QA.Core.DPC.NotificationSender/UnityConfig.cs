@@ -9,10 +9,10 @@ using QA.Core.DPC.Notification.Services;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using QA.Core.DPC.QP.Configuration;
-using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.QP.Autopublish.Configuration;
 using QA.Core.DPC.QP.Autopublish.Services;
+using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC

@@ -9,7 +9,6 @@ using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using QA.Core.Web;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader
 {

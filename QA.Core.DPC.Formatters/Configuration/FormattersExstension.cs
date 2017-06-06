@@ -6,6 +6,7 @@ using Microsoft.Practices.Unity;
 using QA.Core.DPC.Formatters.Formatting;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
+using System.Runtime.Serialization;
 
 namespace QA.Core.DPC.Formatters.Configuration
 {
@@ -16,7 +17,7 @@ namespace QA.Core.DPC.Formatters.Configuration
 			where TModel : class
 			where TFormatter : IFormatter<TModel>
 		{
-			var formatter = new ModelMediaTypeFormatter<TModel>(container.Resolve<TFormatter>(), mediaType);
+            var formatter = new ModelMediaTypeFormatter<TModel>(container.GetFactory<TFormatter, TModel>(), mediaType);
 
 			foreach (var addMapping in f)
 			{
@@ -36,7 +37,7 @@ namespace QA.Core.DPC.Formatters.Configuration
 			where TModel : class
 			where TFormatter : IFormatter<TModel>
 		{
-			container.RegisterType<MediaTypeFormatter, ModelMediaTypeFormatter<TModel>>(name, new InjectionFactory(c => new ModelMediaTypeFormatter<TModel>(c.Resolve<TFormatter>(), mediaType)));
+			container.RegisterType<MediaTypeFormatter, ModelMediaTypeFormatter<TModel>>(name, new InjectionFactory(c => new ModelMediaTypeFormatter<TModel>(c.GetFactory<TFormatter, TModel>(), mediaType)));
 		}
 
 		public static void RegisterModelMediaTypeFormatter<TFormatter, TModel>(this IUnityContainer container, string mediaType)
@@ -63,5 +64,13 @@ namespace QA.Core.DPC.Formatters.Configuration
 				await writer.FlushAsync();
 			}
 		}
-	}
+
+        public static Func<IFormatter<TModel>> GetFactory<TFormatter, TModel>(this IUnityContainer container)
+          where TModel : class
+          where TFormatter : IFormatter<TModel>
+        {
+            var f = container.Resolve<Func<TFormatter>>();
+            return () => (IFormatter<TModel>)f();
+        }
+    }
 }

@@ -1,14 +1,11 @@
-﻿using Quantumart.QP8.BLL;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.DPC.QP.Services;
+using Quantumart.QP8.BLL;
 
-namespace QA.Core.DPC.QP.Servives
+namespace QA.Core.DPC.QP.Cache
 {
     public class CustomerQP8CacheItemWatcher : CustomerCacheItemWatcher
     {

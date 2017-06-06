@@ -1,6 +1,4 @@
-﻿using QA.Core.Cache;
-using QA.Core.Data;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
@@ -8,9 +6,11 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Transactions;
+using QA.Core.Cache;
+using QA.Core.Data;
 using QA.Core.DPC.QP.Services;
 
-namespace QA.Core.DPC.QP.Servives
+namespace QA.Core.DPC.QP.Cache
 {
     public class CustomerCacheItemWatcher : IDisposable, ICacheItemWatcher
     {

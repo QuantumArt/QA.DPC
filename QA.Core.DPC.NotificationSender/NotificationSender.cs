@@ -12,7 +12,6 @@ using System.Threading.Tasks.Schedulers;
 using System.Diagnostics;
 using QA.ProductCatalog.Infrastructure;
 using System.Collections.Concurrent;
-using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 

@@ -9,7 +9,6 @@ using QA.Core.Models.Processors;
 using QA.Core.Service.Interaction;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.Notifications;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.ProductCatalog.Integration
 {

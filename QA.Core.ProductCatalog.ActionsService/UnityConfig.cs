@@ -14,9 +14,9 @@ using QA.ProductCatalog.Integration;
 using Quartz;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Notification.Services;
-using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.ProductCatalog.ActionsService

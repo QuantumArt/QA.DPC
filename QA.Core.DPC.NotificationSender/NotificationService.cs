@@ -5,7 +5,6 @@ using QA.ProductCatalog.Infrastructure;
 using System.Xml.XPath;
 using System.IO;
 using System.Collections.Generic;
-using QA.Core.DPC.QP.Servives;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.QP.Services;

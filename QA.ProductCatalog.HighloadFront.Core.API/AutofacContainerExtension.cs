@@ -1,6 +1,5 @@
 ﻿using Autofac;
 using QA.Core.DPC.QP.Services;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API
 {

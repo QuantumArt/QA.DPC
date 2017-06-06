@@ -1,5 +1,4 @@
-﻿using QA.Core.DPC.QP.Servives;
-using QA.Core.Web;
+﻿using QA.Core.Web;
 using QA.ProductCatalog.Integration.Notifications;
 using System;
 using System.ServiceModel;

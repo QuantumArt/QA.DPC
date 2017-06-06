@@ -12,7 +12,6 @@ using NLog.Web;
 using QA.Core;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Models;
-using QA.Core.DPC.QP.Servives;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Elastic;

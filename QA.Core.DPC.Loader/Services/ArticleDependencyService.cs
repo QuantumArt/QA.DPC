@@ -12,7 +12,6 @@ using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.Utils;
 using Content = QA.Core.Models.Configuration.Content;
 using Field = QA.Core.Models.Configuration.Field;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader.Services
 {

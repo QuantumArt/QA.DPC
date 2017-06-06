@@ -5,7 +5,6 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.BLL.Services.DTO;
 using Quantumart.QP8.BLL.Services.API.Models;
-using QA.Core.DPC.QP.Servives;
 
 namespace QA.Core.DPC.Loader.Services
 {
