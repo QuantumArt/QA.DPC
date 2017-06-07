@@ -7,7 +7,7 @@ namespace QA.ProductCatalog.Infrastructure
 		#region Constants
 		private const string QueryTemplate = @"
 			SELECT
-				u.Name as User,
+				u.Name as [User],
                 m.Title as Method,
                 c.Seconds,
                 c.Limit

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using QA.Core;
-using QA.Core.Cache;
+using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
 
@@ -17,11 +15,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
     {
 
         private readonly IElasticConfiguration _configuration;
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly IVersionedCacheProvider2 _cacheProvider;
 
         public string Profile { get; set; }
 
-        public RateLimitAttribute(IElasticConfiguration configuration, IVersionedCacheProvider cacheProvider,
+        public RateLimitAttribute(IElasticConfiguration configuration, IVersionedCacheProvider2 cacheProvider,
             string profile)
         {
             _configuration = configuration;

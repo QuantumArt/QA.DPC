@@ -1,21 +1,40 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Threading;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using QA.Core;
+using ILogger = QA.Core.ILogger;
 
 namespace QA.DPC.Core.Helpers
 {
+    public interface IVersionedCacheProvider2 : IVersionedCacheProvider
+    {
+        T GetOrAdd<T>(string key, string[] tags, TimeSpan expiration, Func<T> getData);
+
+        T GetOrAdd<T>(string key, TimeSpan expiration, Func<T> getData);
+    }
+
     /// <summary>
     /// Реализует провайдер кеширования данных
     /// </summary>
-    public class VersionedCacheCoreProvider : IVersionedCacheProvider
+    public class VersionedCacheCoreProvider : IVersionedCacheProvider2
     {
         private readonly MemoryCache _cache;
 
-        public VersionedCacheCoreProvider()
+        private readonly ILogger _logger;
+
+        private static readonly string DeprecatedCacheKey = "<>__deprecated__cache_element_";
+
+        private readonly ConcurrentDictionary<string, object> _lockers = new ConcurrentDictionary<string, object>();
+
+        private const int TryenterTimeoutMs = 7000;
+
+        public VersionedCacheCoreProvider(ILogger logger)
         {
             _cache = new MemoryCache(new MemoryCacheOptions());
+            _logger = logger;
         }
 
         /// <summary>
@@ -191,6 +210,96 @@ namespace QA.DPC.Core.Helpers
                 entry.RegisterPostEvictionCallback(callback: EvictionTagCallback, state: this);
                 return new CancellationTokenSource();
             });
+        }
+
+        internal static string CalculateDeprecatedKey(string key)
+        {
+            return DeprecatedCacheKey + key;
+        }
+
+        public T GetOrAdd<T>(string key, TimeSpan expiration, Func<T> getData)
+        {
+            return GetOrAdd(key, null, expiration, getData);
+        }
+
+        public T GetOrAdd<T>(string key, string[] tags, TimeSpan expiration, Func<T> getData)
+        {
+            object result = Get(key, tags);
+
+            if (result == null)
+            {
+                object localLocker = _lockers.GetOrAdd(key, new object());
+
+                bool lockTaken = false;
+                try
+                {
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+
+                    Monitor.TryEnter(localLocker, TryenterTimeoutMs, ref lockTaken);
+
+                    if (lockTaken)
+                    {
+                        result = Get(key, tags);
+
+                        var time1 = sw.ElapsedMilliseconds;
+
+                        if (result == null)
+                        {
+                            result = getData();
+                            sw.Stop();
+                            var time2 = sw.ElapsedMilliseconds;
+
+                            CheckPerformance(key, time1, time2);
+
+                            if (result != null)
+                            {
+                                Add(result, key, tags, expiration);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        var time1 = sw.ElapsedMilliseconds;
+                        _logger.Log(() => $"Долгое нахождение в ожидании обновления кэша {time1} ms, ключ: {key} ", EventLevel.Warning);
+
+                        result = getData();
+
+                        sw.Stop();
+                        var time2 = sw.ElapsedMilliseconds;
+
+                        CheckPerformance(key, time1, time2, false);
+
+                        if (result != null)
+                        {
+                            Add(result, key, tags, expiration);
+                        }
+                    }
+                }
+                finally
+                {
+                    if (lockTaken)
+                    {
+                        Monitor.Exit(localLocker);
+                    }
+                }
+            }
+            return (T) result;
+        }
+
+
+        private void CheckPerformance(string key, long time1, long time2, bool reportTime1 = true)
+        {
+            var elapsed = time2 - time1;
+            if (elapsed > 5000)
+            {
+                _logger.Log(() =>
+                    $"Долгое получение данных время: {elapsed} мс, ключ: {key}, time1: {time1}, time2: {time2}", EventLevel.Warning);
+            }
+            if (reportTime1 && time1 > 1000)
+            {
+                _logger.Log(() => $"Долгая проверка кеша: {time1} мс, ключ: {key}", EventLevel.Warning);
+            }
         }
     }
 }

@@ -8,9 +8,9 @@ namespace QA.ProductCatalog.Infrastructure
 		private const string QueryTemplate = @"
 			SELECT
 				c.Name,
-				c.Token
+				c.AccessToken as Token
 			FROM
-				CONTENT_{0}_UNITED e
+				CONTENT_{0}_UNITED c
 			WHERE
 				c.ARCHIVE = 0 AND c.VISIBLE = 1";
 

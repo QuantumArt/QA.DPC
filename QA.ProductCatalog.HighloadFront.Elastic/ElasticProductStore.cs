@@ -23,14 +23,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private const string DisableOrParameterName = "DisableOr";
         private const string DisableNotParameterName = "DisableNot";
 
-        private IElasticClient Client { get; }
         private IElasticConfiguration Configuration { get; }
 
         private SonicElasticStoreOptions Options { get; }
 
-        public ElasticProductStore(IElasticClient client, IElasticConfiguration config, IOptions<SonicElasticStoreOptions> optionsAccessor)
+        public ElasticProductStore(IElasticConfiguration config, IOptions<SonicElasticStoreOptions> optionsAccessor)
         {
-            Client = client;
             Configuration = config;
             Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
         }
@@ -213,8 +211,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             string id = GetId(product);
             string type = GetType(product);
 
-            var existsRequest = new DocumentExistsRequest(Client.ConnectionSettings.DefaultIndex, type, id);
-            var existsResponse = await Client.DocumentExistsAsync(existsRequest);
+            var client = Configuration.GetElasticClient(language, state);
+            var existsRequest = new DocumentExistsRequest(client.ConnectionSettings.DefaultIndex, type, id);
+            var existsResponse = await client.DocumentExistsAsync(existsRequest);
 
             return existsResponse.Exists;
         }
@@ -259,7 +258,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             SetQuery(q, options);
             SetSorting(q, options);
 
-            var response = await Client.LowLevel.SearchAsync<Stream>(Client.ConnectionSettings.DefaultIndex, type, q.ToString());
+            var client = Configuration.GetElasticClient(language, state);
+            var response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, type, q.ToString());
             return response.Body;
 
         }
@@ -284,18 +284,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             SetQuery(q, options);
             SetSorting(q, options);
             ElasticsearchResponse<Stream> response;
+            var client = Configuration.GetElasticClient(language, state);
             if (types == null)
             {
-                response = await Client.LowLevel.SearchAsync<Stream>(Client.ConnectionSettings.DefaultIndex, q.ToString());
+                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, q.ToString());
             }
             else
             {
-                response = await Client.LowLevel.SearchAsync<Stream>(Client.ConnectionSettings.DefaultIndex, types, q.ToString());
+                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, types, q.ToString());
             }
             return response.Body;
         }
 
-        public async Task<string[]> GetTypesAsync()
+        public async Task<string[]> GetTypesAsync(string language, string state)
         {
             var q = new JObject(
                 new JProperty("aggs", new JObject(
@@ -308,7 +309,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 )),
                 new JProperty("size", 0)
             );
-            var response = await Client.LowLevel.SearchAsync<JObject>(Client.ConnectionSettings.DefaultIndex, q.ToString());
+            var client = Configuration.GetElasticClient(language, state);
+            var response = await client.LowLevel.SearchAsync<JObject>(client.ConnectionSettings.DefaultIndex, q.ToString());
             return response.Body.SelectTokens("aggregations.typesAgg.buckets.[?(@.key)].key").Select(n => n.ToString())
                 .ToArray();
         }

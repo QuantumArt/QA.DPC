@@ -28,24 +28,27 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
 
         protected override void Load(ContainerBuilder builder)
         {
-            builder.RegisterInstance<ObjectCache>(MemoryCache.Default);
-
-            builder.RegisterSonic().AddProductStore<ElasticProductStore>();
 
             builder.Configure<HarvesterOptions>(Configuration.GetSection("Harvester"));
 
             builder.Configure<SonicElasticStoreOptions>(Configuration.GetSection("sonicElasticStore"));
 
-            builder.RegisterSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            builder.RegisterScoped<ISettingsService, SettingsFromQpService>();
-            builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
-            builder.RegisterScoped<IIdentityProvider, CoreIdentityProvider>();
+            builder.RegisterOptions();
 
-            ILogger logger = new NLogLogger("NLog.config");
-            builder.RegisterInstance(logger);
+            builder.RegisterScoped<ProductManager>();
+            builder.RegisterScoped<SonicErrorDescriber>();
+            builder.RegisterScoped<IProductStore, ElasticProductStore>();
+
+            builder.RegisterSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            builder.RegisterScoped<ISettingsService, SettingsFromQpCoreService>();
+            builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
+            builder.RegisterScoped<IIdentityProvider>(c => new CoreIdentityProvider(c.Resolve<IHttpContextAccessor>(), c.Resolve<IOptions<DataOptions>>().Value.FixedCustomerCode));
+
+            builder.RegisterSingleton<ILogger>(n => new NLogLogger("NLog.config"));
 
             builder.RegisterSingleton<IVersionedCacheCoreProviderCollection, VersionedCacheCoreProviderCollection>();
-            builder.RegisterScoped<IVersionedCacheProvider>(c => c.Resolve<IVersionedCacheCoreProviderCollection>().Get(c.GetCustomerCode()));
+            builder.RegisterScoped<IVersionedCacheProvider2>(c => c.Resolve<IVersionedCacheCoreProviderCollection>().Get(c.Resolve<IIdentityProvider>()));
+            builder.RegisterScoped<IVersionedCacheProvider>(c => c.Resolve<IVersionedCacheProvider2>());
 
             builder.RegisterScoped<IConnectionProvider>(c => new ConnectionProvider(c.Resolve<ICustomerProvider>(), c.Resolve<IIdentityProvider>(), Service.HighloadAPI));
 
@@ -60,7 +63,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                 return a;
             });
 
-            builder.RegisterScoped<IElasticConfiguration, QpElasticConfiguration>();
+            builder.RegisterTransient<IElasticConfiguration, QpElasticConfiguration>();
 
             builder.RegisterType<TasksRunner>().As<ITasksRunner>().SingleInstance();
 

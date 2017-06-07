@@ -5,6 +5,7 @@ using Elasticsearch.Net;
 using Nest;
 using QA.Core;
 using QA.Core.Cache;
+using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
@@ -14,7 +15,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly IContentProvider<ElasticIndex> _indexProvider;
         private readonly IContentProvider<HighloadApiUser> _userProvider;
         private readonly IContentProvider<HighloadApiLimit> _limitProvider;
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly IVersionedCacheProvider2 _cacheProvider;
         private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
         private readonly int _timeout = 5;
         private readonly ILogger _logger;
@@ -24,7 +25,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             IContentProvider<ElasticIndex> indexProvider,
             IContentProvider<HighloadApiUser> userProvider,
             IContentProvider<HighloadApiLimit> limitProvider,
-            IVersionedCacheProvider cacheProvider,
+            IVersionedCacheProvider2 cacheProvider,
             ILogger logger
         )
         {

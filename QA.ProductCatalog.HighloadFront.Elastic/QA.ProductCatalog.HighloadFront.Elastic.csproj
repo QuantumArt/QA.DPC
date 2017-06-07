@@ -89,6 +89,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj">
+      <Project>{eed71da3-0026-4f1e-9fe0-b08519f7a976}</Project>
+      <Name>QA.DPC.Core.Helpers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Infrastructure\QA.ProductCatalog.HighloadFront.Infrastructure.csproj">
       <Project>{828345e1-3b11-45dd-871d-ac445b466e42}</Project>
       <Name>QA.ProductCatalog.HighloadFront.Infrastructure</Name>

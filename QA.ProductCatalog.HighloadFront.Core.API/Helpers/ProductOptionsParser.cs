@@ -23,8 +23,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
             var page = properties.FirstOrDefault(p => p.Key == "page");
             var perPage = properties.FirstOrDefault(p => p.Key == "per_page");
             var query = properties.FirstOrDefault(p => p.Key == "q");
+            var customerCode = properties.FirstOrDefault(p => p.Key == "customerCode");
             var filters = properties
-                .Except(new[] { sort, order, page, perPage, fields, query })
+                .Except(new[] { sort, order, page, perPage, fields, query, customerCode })
                 .Select(p => p.Key.StartsWith(EscapeCharacter) ? 
                     new KeyValuePair<string, string>(p.Key.Substring(1), p.Value)
                     : p).ToArray();

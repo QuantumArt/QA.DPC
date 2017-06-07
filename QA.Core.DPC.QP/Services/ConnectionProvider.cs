@@ -23,7 +23,7 @@ namespace QA.Core.DPC.QP.Services
             _identityProvider = identityProvider;
             _defaultService = defaultService;
 
-            QPMode = GetQPMode();
+            QPMode = GetQPMode() || defaultService == Service.HighloadAPI;
 
             if (!QPMode)
             {

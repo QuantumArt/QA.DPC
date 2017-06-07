@@ -6,9 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="NLog.config" />
+      <None Update="nlog.config">
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
   </ItemGroup>
-
+  
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>

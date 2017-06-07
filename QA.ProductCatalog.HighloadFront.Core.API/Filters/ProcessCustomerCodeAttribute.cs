@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using QA.Core;
 using QA.Core.DPC.QP.Models;
@@ -22,25 +23,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 
         private class ProcessCustomerCodeFilter: IResultFilter
         {
-            private readonly DataOptions _options;
             private readonly IIdentityProvider _provider;
-            private const string CustomerCodeKey = "customerCode";
 
-            public ProcessCustomerCodeFilter(IOptions<DataOptions> options, IIdentityProvider provider)
+            public ProcessCustomerCodeFilter(IIdentityProvider provider)
             {
-                _options = options.Value;
                 _provider = provider;
             }
 
             public void OnResultExecuting(ResultExecutingContext context)
             {
-                var code = _options.FixedCustomerCode;
-                code = (!string.IsNullOrEmpty(code)) ? code : context.HttpContext.Request.Query[CustomerCodeKey].FirstOrDefault();
-                if (!string.IsNullOrEmpty(code))
-                {
-                    _provider.Identity = new Identity(code);
-                }
-                else
+                if (string.IsNullOrEmpty(_provider.Identity?.CustomerCode))
                 {
                     context.Result = new ContentResult()
                     {

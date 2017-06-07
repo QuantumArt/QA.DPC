@@ -9,7 +9,7 @@ namespace QA.ProductCatalog.Infrastructure
 			SELECT
 				e.Name,
 				e.Address as Url,
-				e.Stage,
+				e.State,
 				e.IsDefault,
 				e.DoTrace,
 				c.Url as ReindexUrl,
@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.Infrastructure
 			SELECT
 				e.Name,
 				e.Address as Url,
-				e.Stage,
+				e.State,
 				e.IsDefault,
 				e.DoTrace,
 				c.Url as ReindexUrl,
