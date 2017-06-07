@@ -22,7 +22,7 @@ namespace QA.Core.DocumentGenerator.Tests
         private static string _xmlText;
 
 
-        //[TestMethod]
+        [TestMethod]
         public void TestMailMerge()
         {
             var generator = new DocumentGenerator(NotesServiceMoq.Object);

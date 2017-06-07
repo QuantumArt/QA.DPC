@@ -6,10 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Update="nlog.config">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,7 +32,7 @@
     <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta5" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.4.0" />
     <PackageReference Include="QA.Configuration" Version="1.0.2" />
-    <PackageReference Include="Quantumart" Version="2.1.0" />
+    <PackageReference Include="Quantumart" Version="2.1.2" />
   </ItemGroup>
   <ItemGroup>
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="1.0.0" />
@@ -47,8 +44,6 @@
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunner\QA.Core.ProductCatalog.ActionsRunner.csproj" />
     <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Elastic\QA.ProductCatalog.HighloadFront.Elastic.csproj" />
-    <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Importer\QA.ProductCatalog.HighloadFront.Importer.csproj" />
-    <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Infrastructure\QA.ProductCatalog.HighloadFront.Infrastructure.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.HighloadFront\QA.ProductCatalog.HighloadFront.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>

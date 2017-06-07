@@ -73,6 +73,11 @@ namespace QA.ProductCatalog.Infrastructure
                 }
 			}
 		}
-		#endregion
-	}
+
+	    public override string[] GetTags()
+	    {
+	        return new[] { SettingsService.GetSetting(SettingsTitles.ELASTIC_INDEXES_CONTENT_ID) };
+	    }
+        #endregion
+    }
 }

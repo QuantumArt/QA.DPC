@@ -1,4 +1,5 @@
 using System;
+using QA.ProductCatalog.HighloadFront.Models;
 
 namespace QA.ProductCatalog.HighloadFront
 {

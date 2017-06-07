@@ -1,12 +1,14 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using QA.Core;
-using QA.ProductCatalog.HighloadFront.Infrastructure;
+using QA.ProductCatalog.HighloadFront.Interfaces;
+using QA.ProductCatalog.HighloadFront.Models;
+using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront
 {
@@ -23,11 +25,7 @@ namespace QA.ProductCatalog.HighloadFront
 
         public ProductManager(IProductStore store, IOptions<SonicOptions> optionsAccessor, ILogger logger, IProductPostProcessor productPostProcessor)
         {
-            if (store == null)
-            {
-                throw new ArgumentNullException(nameof(store));
-            }
-            Store = store;
+            Store = store ?? throw new ArgumentNullException(nameof(store));
             Logger = logger;
             Options = optionsAccessor?.Value ?? new SonicOptions();
             _productPostProcessor = productPostProcessor;
@@ -62,7 +60,7 @@ namespace QA.ProductCatalog.HighloadFront
             }
             else
             {
-                tagsProduct = GetRegionTagsProduct(product, new RegionTag[] { new RegionTag() });
+                tagsProduct = GetRegionTagsProduct(product, new[] { new RegionTag() });
 
                 if (await Store.Exists(tagsProduct, language, state))
                 {
@@ -176,7 +174,7 @@ namespace QA.ProductCatalog.HighloadFront
         {
             ThrowIfDisposed();
 
-            var tagsProduct = GetRegionTagsProduct(product, new RegionTag[] { new RegionTag() });
+            var tagsProduct = GetRegionTagsProduct(product, new[] { new RegionTag() });
 
             if (await Store.Exists(tagsProduct, language, state))
             {

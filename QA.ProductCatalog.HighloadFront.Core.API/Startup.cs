@@ -3,21 +3,15 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using NLog.Web;
-using QA.Core;
-using QA.Core.DPC.Loader;
-using QA.Core.DPC.QP.Models;
 using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.HighloadFront.Core.API.DI;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
-using QA.ProductCatalog.HighloadFront.Elastic;
-using QA.ProductCatalog.HighloadFront.Importer;
-using QA.ProductCatalog.HighloadFront.Models;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API
 {

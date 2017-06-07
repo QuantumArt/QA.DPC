@@ -32,7 +32,7 @@ namespace QA.ProductCatalog.StressTestUtility
 			Container.RegisterInstance<HttpVersionedCacheProvider>(Container.Resolve<HttpVersionedCacheProvider>());
 			Container.RegisterInstance<ICacheProvider>(Container.Resolve<HttpVersionedCacheProvider>());
 			Container.RegisterInstance<IVersionedCacheProvider>(Container.Resolve<HttpVersionedCacheProvider>());
-			Container.RegisterType<IContentInvalidator, DPCContentInvalidator>();
+			Container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
 			Container.RegisterType<ISettingsService, SettingsFromContentService>();
 			Container.RegisterType<IUserProvider, TestUserProvider>();
 			Container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, Container.Resolve<IContentInvalidator>()));

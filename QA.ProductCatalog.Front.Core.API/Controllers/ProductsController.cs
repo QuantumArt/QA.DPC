@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using QA.Core;
@@ -40,7 +41,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         {
             var data = DpcService.GetProductData(locator, id);
             ControllerContext.HttpContext.Response.Headers.Add("Last-Modified", data.Updated.ToUniversalTime().ToString("R"));
-            return Content(data.Product, new MediaTypeHeaderValue("application/json"));
+            return Content(data.Product, new MediaTypeHeaderValue("application/json") { Charset = Encoding.UTF8.WebName });
         }
 
         [HttpDelete]

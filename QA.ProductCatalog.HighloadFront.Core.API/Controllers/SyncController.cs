@@ -9,6 +9,7 @@ using QA.ProductCatalog.HighloadFront.Models;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.Core;
 using Microsoft.Extensions.Options;
+using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
@@ -34,6 +35,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             _dataOptions = optionsAccessor.Value;
         }
 
+        [HttpPut]
         [Route("{language}/{state}")]
         public async Task<HttpResponseMessage> Put([FromBody]PushMessage message, string language, string state)
         {
@@ -67,6 +69,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 throw new Exception($"Ќе удалось войти в EnterSingleCRUDAsync в течение {LockTimeoutInMs} миллисекунд");
         }
 
+        [HttpDelete]
         [Route("{language}/{state}")]
         public async Task<object> Delete([FromBody]PushMessage message, string language, string state)
         {

@@ -42,16 +42,7 @@ namespace QA.DPC.Core.Helpers
         /// </summary>
         /// <param name="key">Ключ</param>
         /// <returns></returns>
-        public virtual object Get(string key)
-        {
-            object result = null;
-            if (string.IsNullOrEmpty(key) && _cache.TryGetValue(key, out result))
-            {
-                return null;
-            }
-
-            return result;
-        }
+        public virtual object Get(string key) => string.IsNullOrEmpty(key) ? null : _cache.Get(key);
 
         /// <summary>
         /// Записывает данные в кеш
@@ -102,13 +93,13 @@ namespace QA.DPC.Core.Helpers
         /// <returns></returns>
         public virtual bool IsSet(string key)
         {
-            object result;
-            return !string.IsNullOrEmpty(key) && _cache.TryGetValue(key, out result);
+            return Get(key) != null;
         }
 
         public virtual bool TryGetValue(string key, out object result)
         {
-            return _cache.TryGetValue(key, out result);
+            result = _cache.Get(key);
+            return result != null;
         }
 
         /// <summary>
@@ -203,13 +194,19 @@ namespace QA.DPC.Core.Helpers
 
         private CancellationTokenSource AddTag(DateTime tagExpiration, string item)
         {
-            return _cache.GetOrCreate(item, entry =>
+            var result = _cache.Get(item) as CancellationTokenSource;
+            if (result == null)
             {
-                entry.Priority = CacheItemPriority.NeverRemove;
-                entry.AbsoluteExpiration = tagExpiration;
-                entry.RegisterPostEvictionCallback(callback: EvictionTagCallback, state: this);
-                return new CancellationTokenSource();
-            });
+                result = new CancellationTokenSource();
+                var options = new MemoryCacheEntryOptions()
+                {
+                    Priority = CacheItemPriority.NeverRemove,
+                    AbsoluteExpiration = tagExpiration,
+                };
+                options.RegisterPostEvictionCallback(EvictionTagCallback, this);
+                _cache.Set(item, result, options);
+            }
+            return result;
         }
 
         internal static string CalculateDeprecatedKey(string key)

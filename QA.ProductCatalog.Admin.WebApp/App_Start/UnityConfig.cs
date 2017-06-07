@@ -145,12 +145,13 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             foreach (var customer in container.Resolve<ICustomerProvider>().GetCustomers())
             {
                 var code = customer.CustomerCode;
+                var logger = container.Resolve<ILogger>();
 
                 var cacheProvider = new VersionedCustomerCacheProvider(code);
-                var invalidator = new DPCContentInvalidator(cacheProvider);
+                var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
                 var tracker = new StructureCacheTracker(connectionProvider);
-                var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider);
+                var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger);
 
                 watcher.AttachTracker(tracker);
                 

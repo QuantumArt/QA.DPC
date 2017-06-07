@@ -4,8 +4,9 @@ using System.Linq;
 using Elasticsearch.Net;
 using Nest;
 using QA.Core;
-using QA.Core.Cache;
 using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
+using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
@@ -38,20 +39,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public IEnumerable<ElasticIndex> GetElasticIndices()
         {
-            var tags = new[] {SettingsTitles.ELASTIC_INDEXES_CONTENT_ID.ToString()};
-            return _cacheProvider.GetOrAdd("ElasticIndexes", tags, _cacheTimeSpan, _indexProvider.GetArticles);
+            return _cacheProvider.GetOrAdd("ElasticIndexes", _indexProvider.GetTags(), _cacheTimeSpan, _indexProvider.GetArticles);
         }
 
         protected IEnumerable<HighloadApiUser> GetHighloadApiUsers()
         {
-            var tags = new[] {SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID.ToString()};
-            return _cacheProvider.GetOrAdd("HighloadApiUsers", tags, _cacheTimeSpan, _userProvider.GetArticles);
+            return _cacheProvider.GetOrAdd("HighloadApiUsers", _userProvider.GetTags(), _cacheTimeSpan, _userProvider.GetArticles);
         }
 
         protected IEnumerable<HighloadApiLimit> GetHighloadApiLimits()
         {
-            var tags = new[] {SettingsTitles.HIGHLOAD_API_LIMITS_CONTENT_ID.ToString()};
-            return _cacheProvider.GetOrAdd("HighloadApiLimits", tags, _cacheTimeSpan, _limitProvider.GetArticles);
+            return _cacheProvider.GetOrAdd("HighloadApiLimits", _limitProvider.GetTags(), _cacheTimeSpan, _limitProvider.GetArticles);
         }
 
         public Dictionary<string, IElasticClient> GetClientMap()
@@ -82,14 +80,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public IElasticClient GetElasticClient(string language, string state)
         {
-            var tags = new[] { SettingsTitles.ELASTIC_INDEXES_CONTENT_ID.ToString() };
-            return _cacheProvider.GetOrAdd("ElasticClients", tags, _cacheTimeSpan, GetClientMap)[GetElasticKey(language, state)];
+            return _cacheProvider.GetOrAdd("ElasticClients", _indexProvider.GetTags(), _cacheTimeSpan, GetClientMap)[GetElasticKey(language, state)];
         }
 
         public IndexOperationSyncer GetSyncer(string language, string state)
         {
-            var tags = new[] { SettingsTitles.ELASTIC_INDEXES_CONTENT_ID.ToString() };
-            return _cacheProvider.GetOrAdd("ElasticSyncers", tags, _cacheTimeSpan, GetSyncerMap)[GetElasticKey(language, state)];
+            return _cacheProvider.GetOrAdd("ElasticSyncers", _indexProvider.GetTags(), _cacheTimeSpan, GetSyncerMap)[GetElasticKey(language, state)];
         }
 
         public string GetReindexUrl(string language, string state)

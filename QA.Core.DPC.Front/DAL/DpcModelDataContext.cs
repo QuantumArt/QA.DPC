@@ -35,7 +35,7 @@ namespace QA.Core.DPC.Front.DAL
             product.Format = locator.Format;
             product.IsLive = locator.IsLive;
             product.Language = locator.Language;
-            product.Slug = locator.Slug;
+            product.Slug = !string.IsNullOrEmpty(locator.Slug) ? locator.Slug : null;
             product.Version = locator.Version;
         }
     }

@@ -11,15 +11,15 @@ namespace QA.Core.DPC.QP.Cache
     {
         private readonly string _cmdText = @"SELECT [CONTENT_ID], [LIVE_MODIFIED], [STAGE_MODIFIED] FROM [CONTENT_MODIFICATION] WITH (NOLOCK)";
 
-        public CustomerQP8CacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, IConnectionProvider connectionProvider)
-            : base(mode, invalidator, connectionProvider)
+        public CustomerQP8CacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, IConnectionProvider connectionProvider, ILogger logger)
+            : base(mode, invalidator, connectionProvider, logger)
         {
 
         }
 
         protected override void GetData(Dictionary<int, ContentModification> newValues)
         {
-            using (var cs = new QPConnectionScope(_connectionString))
+            using (var cs = new QPConnectionScope(ConnectionString))
             {
                 var con = cs.DbConnection;
 

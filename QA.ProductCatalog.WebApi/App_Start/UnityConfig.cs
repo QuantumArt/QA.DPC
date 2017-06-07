@@ -67,17 +67,18 @@ namespace QA.ProductCatalog.WebApi.App_Start
 
             var connection = unityContainer.Resolve<IConnectionProvider>();
 
-            if (connection.QPMode)
+		    var logger = unityContainer.Resolve<ILogger>();
+		    if (connection.QPMode)
             {
                 foreach (var customer in unityContainer.Resolve<ICustomerProvider>().GetCustomers())
                 {
                     var code = customer.CustomerCode;
 
                     var cacheProvider = new VersionedCustomerCacheProvider(code);
-                    var invalidator = new DPCContentInvalidator(cacheProvider);
+                    var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                     var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
                     var tracker = new StructureCacheTracker(connectionProvider);
-                    var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider);
+                    var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger);
 
                     watcher.AttachTracker(tracker);
 
@@ -95,9 +96,9 @@ namespace QA.ProductCatalog.WebApi.App_Start
             else
             {
                 var cacheProvider = new VersionedCustomerCacheProvider(null);
-                var invalidator = new DPCContentInvalidator(cacheProvider);
+                var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var tracker = new StructureCacheTracker(connection);
-                var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connection);
+                var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connection, logger);
 
                 watcher.AttachTracker(tracker);
 

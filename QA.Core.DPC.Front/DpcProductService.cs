@@ -139,10 +139,12 @@ namespace QA.Core.DPC.Front
                         }
                     }
 
-                    p.Id = product.Id;
+                    p.DpcId = product.Id;
 
                     if (isNew)
+                    {
                         ctx.Products.InsertOnSubmit(p);
+                    }
 
                     ctx.SubmitChanges();
                     regionIds.AddRange(p.ProductRegions.Select(x => x.RegionId));

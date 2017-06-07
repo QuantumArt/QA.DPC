@@ -39,5 +39,8 @@ namespace QA.ProductCatalog.Infrastructure
 					.ToArray();
 			}
 		}
+
+	    public abstract string[] GetTags();
+
 	}
 }

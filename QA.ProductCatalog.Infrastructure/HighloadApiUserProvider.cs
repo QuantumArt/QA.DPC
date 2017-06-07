@@ -33,6 +33,11 @@ namespace QA.ProductCatalog.Infrastructure
 
             return string.Format(QueryTemplate, usersContentId);
 		}
-		#endregion
-	}
+
+	    public override string[] GetTags()
+	    {
+	        return new[] { SettingsService.GetSetting(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID) };
+	    }
+        #endregion
+    }
 }

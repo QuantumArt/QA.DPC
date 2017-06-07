@@ -58,10 +58,12 @@ namespace QA.Core.DPC
                 {
                     var code = customer.CustomerCode;
 
+                    var logger = unityContainer.Resolve<ILogger>();
                     var cacheProvider = new VersionedCustomerCacheProvider(code);
-                    var invalidator = new DPCContentInvalidator(cacheProvider);
+                    var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                     var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
-                    var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider);
+                    
+                    var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger);
 
                     var tracker = new StructureCacheTracker(connectionProvider);
                     watcher.AttachTracker(tracker);
@@ -81,7 +83,7 @@ namespace QA.Core.DPC
             {
                 unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
 
-                unityContainer.RegisterType<IContentInvalidator, DPCContentInvalidator>();
+                unityContainer.RegisterType<IContentInvalidator, DpcContentInvalidator>();
                 unityContainer.RegisterInstance<ICacheProvider>(unityContainer.Resolve<CacheProvider>());
                 unityContainer.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager());
                 unityContainer.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, unityContainer.Resolve<IContentInvalidator>()));

@@ -5,10 +5,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
+using Microsoft.Extensions.Options;
 using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QA.ProductCatalog.HighloadFront.Infrastructure;
+using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
+using QA.ProductCatalog.HighloadFront.Interfaces;
+using QA.ProductCatalog.HighloadFront.Models;
+using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {

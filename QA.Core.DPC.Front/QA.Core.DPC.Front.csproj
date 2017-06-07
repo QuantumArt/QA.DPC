@@ -33,6 +33,9 @@
     <PackageReference Include="QA.Core.Service.Interaction" Version="3.0.3" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />
+  </ItemGroup>
+  <ItemGroup>
     <None Update="DAL\DpcModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>DpcModel.generated.cs</LastGenOutput>

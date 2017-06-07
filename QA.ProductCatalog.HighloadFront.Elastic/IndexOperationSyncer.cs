@@ -44,12 +44,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             if (enterTasks.All(x => x.Result))
                 return true;
-            else
-            {
-                _semaphore.Release(enterTasks.Count(x => !x.Result));
+            _semaphore.Release(enterTasks.Count(x => !x.Result));
 
-                return false;
-            }
+            return false;
         }
 
 

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using Microsoft.Extensions.Options;
+using QA.ProductCatalog.HighloadFront.Models;
+using QA.ProductCatalog.HighloadFront.Options;
 
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers

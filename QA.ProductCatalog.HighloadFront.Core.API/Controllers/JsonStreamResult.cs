@@ -1,5 +1,6 @@
 using System.IO;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +17,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         public override async Task ExecuteResultAsync(ActionContext context)
         {
-            var media = new MediaTypeHeaderValue("application/json") { CharSet = "utf-8" }.ToString();
+            var media = new MediaTypeHeaderValue("application/json") { CharSet = Encoding.UTF8.WebName }.ToString();
             context.HttpContext.Response.ContentType = media;
             await Stream.CopyToAsync(context.HttpContext.Response.Body);
 

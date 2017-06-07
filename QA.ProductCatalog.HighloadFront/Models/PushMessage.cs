@@ -1,5 +1,4 @@
 using Newtonsoft.Json.Linq;
-using QA.ProductCatalog.HighloadFront.Infrastructure;
 
 namespace QA.ProductCatalog.HighloadFront.Models
 {

@@ -5,5 +5,7 @@ namespace QA.ProductCatalog.Infrastructure
 		where TModel : class
 	{
 		TModel[] GetArticles();
+
+	    string[] GetTags();
 	}
 }

@@ -6,12 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <None Update="nlog.config">
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+    <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Folder Include="wwwroot\" />
   </ItemGroup>
@@ -29,7 +26,7 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="1.1.2" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta4" />
-    <PackageReference Include="Quantumart" Version="2.0.8" />
+    <PackageReference Include="Quantumart" Version="2.1.2" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.4.0" />
   </ItemGroup>
   <ItemGroup>

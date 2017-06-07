@@ -30,7 +30,7 @@ namespace QA.Core.DPC.Loader.Tests
             container.RegisterType<IQPNotificationService, QPNotificationService>();
             container.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager());
             container.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IContentInvalidator, DPCContentInvalidator>();
+            container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
             container.RegisterType<ISettingsService, SettingsFromContentService>();
             container.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
             container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()));

@@ -28,7 +28,7 @@ namespace QA.Core.ProductCatalog.Actions.Container
 				.RegisterType<IXmlProductService, XmlProductService>()
 				.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager())
 				.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager())
-				.RegisterType<IContentInvalidator, DPCContentInvalidator>()
+				.RegisterType<IContentInvalidator, DpcContentInvalidator>()
 				.RegisterType<ISettingsService, SettingsFromContentService>()
 				.RegisterType<IUserProvider, AlwaysAdminUserProvider>()
                 .RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, Container.Resolve<IContentInvalidator>()))

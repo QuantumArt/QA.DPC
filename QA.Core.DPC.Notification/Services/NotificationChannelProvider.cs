@@ -78,6 +78,12 @@ namespace QA.Core.DPC.Notification.Services
                 }
 			}
 		}
-		#endregion
-	}
+
+	    public override string[] GetTags()
+	    {
+	        return new[] { SettingsService.GetSetting(SettingsTitles.NOTIFICATION_SENDER_CHANNELS_CONTENT_ID) };
+	    }
+
+        #endregion
+    }
 }

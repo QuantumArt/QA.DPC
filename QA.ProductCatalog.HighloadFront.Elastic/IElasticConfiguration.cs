@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Nest;
+using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
@@ -19,8 +20,5 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         string GetUserToken(string name);
 
         RateLimit GetLimit(string name, string profile);
-
-
-
     }
 }

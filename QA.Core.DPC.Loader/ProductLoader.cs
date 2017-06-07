@@ -1136,7 +1136,7 @@ FROM
         #region Кэширование
         private static string[] GetTags(Content content)
         {
-            return DPCContentInvalidator.GetTagNameByContentId(content.GetChildContentsIncludingSelf().Select(x => x.ContentId));
+            return DpcContentInvalidator.GetTagNameByContentId(content.GetChildContentsIncludingSelf().Select(x => x.ContentId));
         }
 
         private static string GetArticleKeyStringForCache(ArticleShapedByDefinitionKey articleKey)

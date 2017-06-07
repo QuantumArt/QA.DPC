@@ -9,10 +9,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="App.config" />
-    <None Update="nlog.config;nlog.*.config">
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </None>
+    <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+  
+  <ItemGroup>   
     <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.ImpactService\QA.ProductCatalog.ImpactService.csproj" />
   </ItemGroup>

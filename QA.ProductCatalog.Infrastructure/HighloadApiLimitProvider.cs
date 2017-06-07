@@ -41,6 +41,12 @@ namespace QA.ProductCatalog.Infrastructure
 
             return string.Format(QueryTemplate, limitsContentId, methodsContentId, usersContentId);
 		}
-		#endregion
+
+	    public override string[] GetTags()
+	    {
+	        return new []{ SettingsService.GetSetting(SettingsTitles.HIGHLOAD_API_LIMITS_CONTENT_ID) };
+	    }
+
+	    #endregion
 	}
 }

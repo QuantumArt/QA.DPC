@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
+using QA.DPC.Core.Helpers;
 
 namespace QA.Core.DPC.Front
 {
@@ -11,7 +12,6 @@ namespace QA.Core.DPC.Front
             IsLive = true;
             Language = "invariant";
             Version = 1;
-            Format = "json";
             Slug = String.Empty;
         }
 
@@ -28,7 +28,7 @@ namespace QA.Core.DPC.Front
 
         public int Version { get; set; }
 
-        [ModelBinder(Name = "format")]
+        [ModelBinder(BinderType = typeof(FormatModelBinder))]
         public string Format { get; set; }
 
         [ModelBinder(Name = "state")]

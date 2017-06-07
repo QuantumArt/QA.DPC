@@ -1,6 +1,5 @@
 ﻿using System;
 using QA.ProductCatalog.HighloadFront.Elastic;
-using QA.ProductCatalog.HighloadFront.Importer;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers

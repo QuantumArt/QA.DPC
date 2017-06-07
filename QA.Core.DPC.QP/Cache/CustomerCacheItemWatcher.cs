@@ -14,18 +14,19 @@ namespace QA.Core.DPC.QP.Cache
 {
     public class CustomerCacheItemWatcher : IDisposable, ICacheItemWatcher
     {
-        private static readonly object _locker = new object();
-        private static bool _disposing = false;
+        private static readonly object Locker = new object();
+        private static bool _disposing;
         private readonly Timer _timer;
-        protected readonly string _connectionString;
+        protected readonly string ConnectionString;
         private Dictionary<int, ContentModification> _modifications = new Dictionary<int, ContentModification>();
         private Dictionary<string, TableModification> _tableModifications = new Dictionary<string, TableModification>();
         private readonly ConcurrentBag<CacheItemTracker> _trackers;
         private readonly IContentInvalidator _invalidator;
+        private readonly ILogger _logger;
         private readonly InvalidationMode _mode;
         private readonly string _cmdText = @"SELECT [CONTENT_ID], [LIVE_MODIFIED], [STAGE_MODIFIED] FROM [CONTENT_MODIFICATION] WITH (NOLOCK)";
 
-        private volatile bool _isBusy = false;
+        private volatile bool _isBusy;
         private readonly TimeSpan _pollPeriod;
         private readonly TimeSpan _dueTime;
 
@@ -36,11 +37,14 @@ namespace QA.Core.DPC.QP.Cache
         /// </summary>
         /// <param name="mode">режим работы</param>
         /// <param name="invalidator">объект, инвалидирующий кеш</param>
-        /// <param name="connectionName">имя строки подключения</param>
-        public CustomerCacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, IConnectionProvider connectionProvider)
-            : this(mode, Timeout.InfiniteTimeSpan, invalidator, connectionProvider, 0, false)
+        /// <param name="connectionProvider">провайдер строки подключения</param>
+        /// <param name="logger">логгер</param>
+        public CustomerCacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, IConnectionProvider connectionProvider, ILogger logger)
+            : this(mode, Timeout.InfiniteTimeSpan, invalidator, connectionProvider, logger, 0, false)
         {
+
         }
+
         /// <summary>
         /// 
         /// </summary>
@@ -48,10 +52,12 @@ namespace QA.Core.DPC.QP.Cache
         /// <param name="pollPeriod">интервал опроса бд</param>
         /// <param name="invalidator">объект, инвалидирующий кеш</param>
         /// <param name="connectionProvider">провайдер строк подключения</param>
+        /// <param name="logger">логгер</param>
         /// <param name="dueTime">отложенный запуск (ms)</param>
+        /// <param name="useTimer">использовать таймер?</param>
         /// <param name="onInvalidate">вызывается при удалении старых записей</param>
         public CustomerCacheItemWatcher(InvalidationMode mode, TimeSpan pollPeriod, IContentInvalidator invalidator,
-            IConnectionProvider connectionProvider,
+            IConnectionProvider connectionProvider, ILogger logger,
             int dueTime = 0,
             bool useTimer = true,
             Func<Tuple<int[], string[]>, bool> onInvalidate = null)
@@ -66,14 +72,15 @@ namespace QA.Core.DPC.QP.Cache
                 _timer = new Timer(OnTick, null, 0, Timeout.Infinite);
             }
 
-            _connectionString = connectionProvider.GetConnection();
-            Throws.IfArgumentNullOrEmpty(_connectionString, nameof(_connectionString));
+            ConnectionString = connectionProvider.GetConnection();
+            Throws.IfArgumentNullOrEmpty(ConnectionString, nameof(ConnectionString));
 
             _trackers = new ConcurrentBag<CacheItemTracker>();
+            _logger = logger;
             _mode = mode;
             _invalidator = invalidator;
             _onInvalidate = onInvalidate;
-            Throws.IfArgumentNull(_ => _connectionString);
+            Throws.IfArgumentNull(_ => ConnectionString);
         }
 
         /// <summary>
@@ -117,7 +124,7 @@ namespace QA.Core.DPC.QP.Cache
             if (_isBusy)
                 return;
 
-            lock (_locker)
+            lock (Locker)
             {
                 if (_disposing)
                 {
@@ -155,7 +162,7 @@ namespace QA.Core.DPC.QP.Cache
                         if (itemsIds.Count > 0)
                         {
                             _invalidator.InvalidateIds(_mode, itemsIds.ToArray());
-                            ObjectFactoryBase.Logger.Debug(_ => ("Invalidating a set of ids " + string.Join(", ", itemsIds)));
+                            _logger.Debug(_ => ("Invalidating a set of ids " + string.Join(", ", itemsIds)));
                         }
                     }
 
@@ -169,7 +176,7 @@ namespace QA.Core.DPC.QP.Cache
                         if (itemsTables.Count > 0)
                         {
                             _invalidator.InvalidateTables(_mode, itemsTables.ToArray());
-                            ObjectFactoryBase.Logger.Debug(_ => ("Invalidating a set of tables " + string.Join(", ", itemsTables)));
+                            _logger.Debug(_ => ("Invalidating a set of tables " + string.Join(", ", itemsTables)));
                         }
                     }
 
@@ -178,23 +185,20 @@ namespace QA.Core.DPC.QP.Cache
                         _onInvalidate(new Tuple<int[], string[]>(itemsIds.ToArray(), itemsTables.ToArray()));
                     }
 
-                    if (newValues != null && newValues.Count > 0)
+                    if (newValues.Count > 0)
                     {
                         _modifications = newValues;
                     }
 
-                    if (tableChanges != null && tableChanges.Count > 0)
+                    if (tableChanges.Count > 0)
                     {
                         _tableModifications = tableChanges;
                     }
-
-                    newValues = null;
-                    tableChanges = null;
                 }
                 catch (Exception ex)
                 {
-                    ObjectFactoryBase.Logger.ErrorException("qp watcher error", ex);
-                    ObjectFactoryBase.Logger.Error("qp watcher error StackTrace: {0}", ex.StackTrace);
+                    _logger.ErrorException("qp watcher error", ex);
+                    _logger.Error("qp watcher error StackTrace: {0}", ex.StackTrace);
                 }
                 finally
                 {
@@ -212,7 +216,7 @@ namespace QA.Core.DPC.QP.Cache
             {
                 if (newValues == null) throw new ArgumentNullException(nameof(newValues));
 
-                using (SqlConnection con = new SqlConnection(_connectionString))
+                using (SqlConnection con = new SqlConnection(ConnectionString))
                 {
                     using (SqlCommand cmd = new SqlCommand(_cmdText, con))
                     {
@@ -247,10 +251,10 @@ namespace QA.Core.DPC.QP.Cache
             }
         }
 
-        private void Compare<T, V>(Dictionary<T, V> modifications,
-            Dictionary<T, V> newValues,
+        private void Compare<T, TV>(Dictionary<T, TV> modifications,
+            Dictionary<T, TV> newValues,
             List<T> idsToUpdate)
-                where V : TableModification
+                where TV : TableModification
         {
             foreach (var item in newValues)
             {
@@ -281,8 +285,7 @@ namespace QA.Core.DPC.QP.Cache
         public void Dispose()
         {
             _disposing = true;
-            if (_timer != null)
-                _timer.Dispose();
+            _timer?.Dispose();
         }
 
         #endregion
