@@ -13,6 +13,7 @@ namespace QA.Core.DPC.Front
             Language = "invariant";
             Version = 1;
             Slug = String.Empty;
+            QueryFormat = "json";
         }
 
         [ModelBinder(Name = "customerCode")]
@@ -28,8 +29,13 @@ namespace QA.Core.DPC.Front
 
         public int Version { get; set; }
 
-        [ModelBinder(BinderType = typeof(FormatModelBinder))]
-        public string Format { get; set; }
+        [ModelBinder(BinderType = typeof(HeaderFormatModelBinder))]
+        public string HeaderFormat { get; set; }
+
+        [ModelBinder(Name = "format")]
+        public string QueryFormat { get; set; }
+
+        public string Format => HeaderFormat ?? QueryFormat;
 
         [ModelBinder(Name = "state")]
         public string State

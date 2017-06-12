@@ -4,6 +4,7 @@ using System.Linq;
 using Elasticsearch.Net;
 using Nest;
 using QA.Core;
+using QA.Core.DPC.QP.Services;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Options;

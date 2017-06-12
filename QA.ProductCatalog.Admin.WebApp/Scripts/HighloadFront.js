@@ -3,13 +3,13 @@
 ko.bindingHandlers.updateProgress = {
     init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
         $(element).kendoProgressBar({
-            value: viewModel.TaskProgress,
+            value: viewModel.taskProgress,
             type: "percent"
         });
     },
     update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
         $(element).kendoProgressBar({
-            value: viewModel.TaskProgress,
+            value: viewModel.taskProgress,
             type: "percent"
         });
     }
@@ -28,25 +28,26 @@ function TasksViewModel() {
     self.index = function (task, event) {
         $(event.target).hide();
         $(event.target).parent().find('img').show();
-        indexChanel(task.ChannelLanguage, task.ChannelState);
+        indexChanel(task.channelLanguage, task.channelState);
     };
 
     self.getState = function (task) {
-        return getTaskStateDescription(task.TaskState);
+        return getTaskStateDescription(task.taskState);
     };
 
     self.getStateLogo = function (task) {
-        return getTaskStateLogo(task.TaskState);
+        return getTaskStateLogo(task.taskState);
     };
 
     self.isButtonVisible = function (task) {
-        return task.TaskState != 1 && task.TaskState != 2;
+        return task.taskState != 1 && task.taskState != 2;
     };
 }
 
 function updateTasks(loop) {
 
-    $.getJSON(Url.Content('~/HighloadFront/GetSettings?url=sync/settings'), function (json) {        
+
+    $.getJSON(Url.Content('~/HighloadFront/GetSettings?customerCode=' + getCustomerCode() + '&url=api/sync/settings'), function (json) {        
         model.tasks(json);
     })
 
@@ -57,8 +58,12 @@ function updateTasks(loop) {
     }
 }
 
+function getCustomerCode() {
+  return $("#tasks").data("customerCode");
+}
+
 function indexChanel(language, state) {
-    $.post(Url.Content('~/HighloadFront/IndexChanel?url=sync/' + language + '/' + state + '/reset')).done(function () {
+    $.post(Url.Content('~/HighloadFront/IndexChanel?customerCode=' + getCustomerCode() + '&url=api/sync/' + language + '/' + state + '/reset')).done(function () {
         updateTasks(false);
     });
 }

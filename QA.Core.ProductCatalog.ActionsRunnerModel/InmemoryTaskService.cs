@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -15,9 +13,9 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
     /// </summary>
     public class InmemoryTaskService : ITaskService
     {
-        private  ConcurrentDictionary<int,Task> _tasks = new ConcurrentDictionary<int, Task>();
+        private readonly ConcurrentDictionary<int,Task> _tasks = new ConcurrentDictionary<int, Task>();
 
-        private int _taskNumber = 0;
+        private int _taskNumber;
 
         public int AddTask(string key, string data, int userId, string userName, string taskDisplayName, int? sourceTaskId = default(int?), string exclusiveCategory = null, string config = null, byte[] binData = null)
         {

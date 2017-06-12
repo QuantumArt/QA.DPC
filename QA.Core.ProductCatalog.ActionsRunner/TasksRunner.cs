@@ -3,16 +3,14 @@ using System.Diagnostics;
 using System.Threading;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.Infrastructure;
-using System.Configuration;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {
-
     public class TasksRunner : ITasksRunner
     {
-        public TasksRunner(Func<string, int, ITask> taskFactoryMethod, Func<ITaskService> taskServiceFactoryMethod, ILogger logger, IIdentityProvider identityProvider)
+        public TasksRunner(Func<string, int, ITask> taskFactoryMethod, Func<ITaskService> taskServiceFactoryMethod, ILogger logger, IIdentityProvider identityProvider, TaskRunnerDelays delays)
         {
             State = StateEnum.Stopped;
 
@@ -27,6 +25,8 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             _logger = logger;
 
             _identityProvider = identityProvider;
+
+            _delays = delays;
         }
 
         private readonly object _stateLoker = new object();
@@ -36,7 +36,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         public void SetTaskProgress(int taskId, byte progress)
         {
             if (progress > 100)
-                throw new ArgumentOutOfRangeException("progress");
+                throw new ArgumentOutOfRangeException(nameof(progress));
 
             using (var taskService = _taskServiceFactoryMethod())
             {
@@ -54,31 +54,16 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         private readonly ILogger _logger;
         
-        /// <summary>
-        /// пауза между запросами к бд если бд недоступна
-        /// </summary>
-        public int MillisecondsToSleepIfNotAccessDB = string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["MillisecondsToSleepIfNotAccessDB"]) 
-            ? 30000
-            : Convert.ToInt32(ConfigurationManager.AppSettings["MillisecondsToSleepIfNotAccessDB"]);
-
-        /// <summary>
-        /// пауза между запросами к бд если нет задач на исполнение
-        /// иначе если непрерывно запрашивать то этот спам запрос выжрет у бд ресурсы
-        /// </summary>
-        public int MillisecondsToSleepIfNoTasks = string.IsNullOrWhiteSpace(ConfigurationManager.AppSettings["MillisecondsToSleepIfNoTasks"])
-           ? 1000
-           : Convert.ToInt32(ConfigurationManager.AppSettings["MillisecondsToSleepIfNoTasks"]);
-
         private readonly IIdentityProvider _identityProvider;
         private readonly Func<string, int, ITask> _taskFactoryMethod;
         private readonly Func<ITaskService> _taskServiceFactoryMethod;
+        private readonly TaskRunnerDelays _delays;
 
         public void Run(object customerCode)
         {
             _identityProvider.Identity = new Identity(customerCode as string);
 
-            if (_logger != null)
-                _logger.Info("Run called");
+            _logger?.Info("Run called");
 
             if (Debugger.IsAttached)
             {
@@ -107,12 +92,9 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                         }
                         catch (Exception ex)
                         {
-                            if (_logger != null)
-                            {
-                                _logger.ErrorException("Error getting task ID to process", ex);
-                            }
+                            _logger?.ErrorException("Error getting task ID to process", ex);
 
-                            Thread.Sleep(MillisecondsToSleepIfNotAccessDB);
+                            Thread.Sleep(_delays.MsToSleepIfNoDbAccess);
                             continue;
                         }
 
@@ -120,12 +102,11 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                         if (!taskIdToRun.HasValue)
                         {
                             if (State != StateEnum.WaitingToStop)
-                                Thread.Sleep(MillisecondsToSleepIfNoTasks);
+                                Thread.Sleep(_delays.MsToSleepIfNoTasks);
                         }
                         else
                         {
-                            if (_logger != null)
-                                _logger.Info("Задача {0} принята в работу", taskIdToRun);
+                            _logger?.Info("Задача {0} принята в работу", taskIdToRun);
 
                             try
                             {
@@ -134,15 +115,15 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                 var task = _taskFactoryMethod(taskFromQueueInfo.Name, taskFromQueueInfo.UserID);
 
                                 if (task == null)
-                                    throw new Exception(string.Format("ITask for task {0} with name '{1}' not found", taskIdToRun, taskFromQueueInfo.Name));
+                                    throw new Exception(
+                                        $"ITask for task {taskIdToRun} with name '{taskFromQueueInfo.Name}' not found");
 
                                 var executionContext = new ExecutionContext(this, taskIdToRun.Value);
                                 task.Run(taskFromQueueInfo.Data, taskFromQueueInfo.Config, taskFromQueueInfo.BinData, executionContext);
 
                                 taskService.ChangeTaskState(taskIdToRun.Value, executionContext.IsCancelled ? ActionsRunnerModel.State.Cancelled : ActionsRunnerModel.State.Done, executionContext.Message);
 
-                                if (_logger != null)
-                                    _logger.Info("Задача {0} успешно выполнилась. Сообщение: {1}", taskIdToRun, executionContext.Message);
+                                _logger?.Info("Задача {0} успешно выполнилась. Сообщение: {1}", taskIdToRun, executionContext.Message);
                             }
                             catch (Exception ex)
                             {
@@ -153,26 +134,22 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
                                 taskService.ChangeTaskState(taskIdToRun.Value, ActionsRunnerModel.State.Failed, errMessage);
 
-                                if (_logger != null)
-                                    _logger.ErrorException("Задача {0} не выполнилась", ex, taskIdToRun);
+                                _logger?.ErrorException("Задача {0} не выполнилась", ex, taskIdToRun);
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    try
-                    {
-                        if (_logger != null)
-                            _logger.ErrorException("Общая ошибка в работе сервиса", ex);
-                    }
-                    catch { }
+                    _logger?.ErrorException("Общая ошибка в работе сервиса", ex);
 
                     InitStop();
                 }
             } while (State != StateEnum.WaitingToStop);
 
             State = StateEnum.Stopped;
+
+
         }
 
         public void InitStop()

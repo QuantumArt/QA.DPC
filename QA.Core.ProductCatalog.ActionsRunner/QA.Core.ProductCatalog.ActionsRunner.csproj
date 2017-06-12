@@ -245,6 +245,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TaskRunnerDelays.cs" />
     <Compile Include="TasksRunner.cs" />
     <Compile Include="ExecutionContext.cs" />
     <Compile Include="ITasksRunner.cs" />
@@ -277,4 +278,3 @@
   </Target>
   -->
 </Project>
-

@@ -216,6 +216,8 @@ namespace QA.ProductCatalog.HighloadFront
 
         public void Dispose()
         {
+            Logger.Debug("Disposing manager");
+
             Dispose(true);
             GC.SuppressFinalize(this);
         }

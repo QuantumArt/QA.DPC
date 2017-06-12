@@ -19,7 +19,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
             _configuration = configuration;
         }
 
-
         public void Run(string data, string config, byte[] binData, ITaskExecutionContext executionContext)
         {
             var itms = data.Split('/');

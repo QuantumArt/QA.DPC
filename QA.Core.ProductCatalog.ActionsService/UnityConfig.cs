@@ -68,7 +68,7 @@ namespace QA.Core.ProductCatalog.ActionsService
 								new ConsumerMonitoringService(x.Resolve<IConnectionProvider>(), isLive))));
 
 			container.RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(typeof(IConnectionProvider), true));
-
+            container.RegisterInstance(new TaskRunnerDelays(ConfigurationManager.AppSettings));
             container.RegisterType<ITasksRunner, TasksRunner>();
 
 	        container.RegisterType<ISchedulerFactory, SchedulerFactory>();

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace QA.DPC.Core.Helpers
 {
-    public class FormatModelBinder : IModelBinder
+    public class HeaderFormatModelBinder : IModelBinder
     {
         public Task BindModelAsync(ModelBindingContext bindingContext)
         {

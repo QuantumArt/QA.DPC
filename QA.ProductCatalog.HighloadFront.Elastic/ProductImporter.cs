@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QA.Core;
+using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
@@ -24,12 +25,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private readonly HarvesterOptions _options;
 
-        public ProductImporter(IOptions<HarvesterOptions> optionsAccessor, IElasticConfiguration configuration, ProductManager manager, ILogger logger)
+        private readonly string _customerCode;
+
+        public ProductImporter(IOptions<HarvesterOptions> optionsAccessor, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
         {
             _logger = logger;
             _manager = manager;
             _configuration = configuration;
             _options = optionsAccessor?.Value ?? new HarvesterOptions();
+            _customerCode = customerCode;
         }
 
         public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state)
@@ -113,6 +117,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 client.BaseAddress = new Uri(url);
                 client.DefaultRequestHeaders.Accept.Clear();
+                url += "?customerCode=" + _customerCode;
                 var response = await client.GetAsync(url);
                 modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
 
@@ -133,16 +138,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public async Task<ProductPostProcessorData> GetProductById(string reindexUrl, int id)
         {
-            var relUri = new Uri(new Uri(reindexUrl), id.ToString());
-            var result = await GetContent(relUri.ToString());
+            var relUri = $"{reindexUrl}/{id}";
+            var result = await GetContent(relUri);
             var obj = JsonConvert.DeserializeObject(result.Item1) as JObject;
-            if (obj != null)
+            if (obj == null)
             {
-                var product = (JObject)obj["product"];
-                var regionTags = obj["regionTags"].ToObject<List<RegionTag>>().ToArray();
-                return new ProductPostProcessorData(product, regionTags, result.Item2);
+                _logger.Error($"Cannot parse JSON from url {relUri}");
+                return null;
             }
-            return null;
+            var product = (JObject)obj["product"];
+            var regionTags = obj["regionTags"].ToObject<List<RegionTag>>().ToArray();
+            return new ProductPostProcessorData(product, regionTags, result.Item2);
         }
 
 
@@ -160,6 +166,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing || _disposed) return;
+            _logger.Debug("Disposing importer");
             _manager.Dispose();
             _disposed = true;
         }

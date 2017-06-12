@@ -1,13 +1,11 @@
 ﻿using System;
 using Autofac;
+using Autofac.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using QA.Core;
-using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
-using QA.Core.ProductCatalog.ActionsRunner;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
@@ -15,6 +13,7 @@ using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.HighloadFront.PostProcessing;
 using QA.ProductCatalog.Infrastructure;
+using Service = QA.Core.DPC.QP.Models.Service;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 {
@@ -29,17 +28,67 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             builder.RegisterScoped<ProductManager>();
+            builder.RegisterType<ProductManager>().Named<ProductManager>("ForTask").ExternallyOwned();
+
             builder.RegisterScoped<SonicErrorDescriber>();
             
             builder.RegisterScoped<IProductStore, ElasticProductStore>();
-            builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
-            builder.RegisterScoped<IIdentityProvider>(c => new CoreIdentityProvider(c.Resolve<IHttpContextAccessor>(), c.Resolve<IOptions<DataOptions>>().Value.FixedCustomerCode));
-            builder.RegisterScoped<IConnectionProvider>(c => new ConnectionProvider(c.Resolve<ICustomerProvider>(), c.Resolve<IIdentityProvider>(), Service.HighloadAPI));
+            builder.RegisterType<ElasticProductStore>().Named<IProductStore>("ForTask").ExternallyOwned();
 
-            builder.RegisterSingleton<IVersionedCacheCoreProviderCollection, VersionedCacheCoreProviderCollection>();
-            builder.RegisterScoped<IVersionedCacheProvider2>(c => c.Resolve<IVersionedCacheCoreProviderCollection>().Get(
-                c.Resolve<IIdentityProvider>(), c.Resolve<IConnectionProvider>()
+            builder.RegisterType<ProductImporter>().ExternallyOwned();
+        
+
+            builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
+            builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityProvider(
+                c.Resolve<IHttpContextAccessor>(), 
+                c.Resolve<IOptions<DataOptions>>().Value.FixedCustomerCode
             ));
+            builder.RegisterScoped<IConnectionProvider>(c =>
+            {
+                var fcnn = c.Resolve<IOptions<DataOptions>>().Value.FixedConnectionString;
+                if (!string.IsNullOrEmpty(fcnn))
+                    return new ExplicitConnectionProvider(fcnn);
+
+                return new ConnectionProvider(
+                    c.Resolve<ICustomerProvider>(),
+                    c.Resolve<IIdentityProvider>(),
+                    Service.HighloadAPI
+                );
+            });
+
+            builder.RegisterSingleton<ICustomerCodeInstanceCollection, CustomerCodeInstanceCollection>();
+            builder.RegisterScoped(c => c.Resolve<ICustomerCodeInstanceCollection>().Get(
+                c.Resolve<IIdentityProvider>(),
+                c.Resolve<IConnectionProvider>()
+                )
+            );
+
+            builder.RegisterScoped(c =>
+                {
+                    return c.Resolve<ICustomerCodeInstanceCollection>().Get(
+                        c.Resolve<IIdentityProvider>(), () =>
+                        {
+                            var manager = c.ResolveNamed<ProductManager>("ForTask",
+                                new ResolvedParameter(
+                                    (p, ctx) => p.ParameterType == typeof(IProductStore),
+                                    (p, ctx) => ctx.ResolveNamed<IProductStore>("ForTask")
+                                )
+                            );
+
+                            var importer = c.Resolve<ProductImporter>(
+                                new TypedParameter(typeof(ProductManager), manager),
+                                new NamedParameter("customerCode", c.Resolve<IIdentityProvider>().Identity.CustomerCode)
+                            );
+
+                            return new ReindexAllTask(importer, manager, c.Resolve<IElasticConfiguration>());
+                        }
+                    );
+                }
+            );
+
+            builder.RegisterScoped(c => c.Resolve<CustomerCodeInstance>().CacheProvider);
+            builder.RegisterScoped(c => c.Resolve<CustomerCodeTaskInstance>().TaskService);
+
             builder.RegisterScoped<IVersionedCacheProvider>(c => c.Resolve<IVersionedCacheProvider2>());
 
             builder.RegisterScoped<ISettingsService, SettingsFromQpCoreService>();
@@ -47,17 +96,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
             builder.RegisterScoped<IContentProvider<HighloadApiUser>, HighloadApiUserProvider>();
             builder.RegisterScoped<IElasticConfiguration, QpElasticConfiguration>();
-
-            builder.RegisterType<TasksRunner>().As<ITasksRunner>().SingleInstance();
-            builder.RegisterType<InmemoryTaskService>().As<ITaskService>().SingleInstance();
-            builder.Register<Func<ITaskService>>(c =>
-            {
-                var taskService = c.Resolve<ITaskService>();
-                return () => taskService;
-            }).SingleInstance();
-
-            builder.Register<Func<string, int, ITask>>(c => { var reindexTask = c.ResolveNamed<ITask>("ReindexAllTask"); return (key, userId) => key == "ReindexAllTask" ? reindexTask : null; }).SingleInstance();
-            builder.RegisterType<ReindexAllTask>().Named<ITask>("ReindexAllTask");
 
             builder.RegisterType<ArrayIndexer>().Named<IProductPostProcessor>("array");
             builder.RegisterType<DateIndexer>().Named<IProductPostProcessor>("date");
@@ -67,7 +105,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 c.ResolveNamed<IProductPostProcessor>("date")
             })).As<IProductPostProcessor>();
 
-            builder.RegisterType(typeof(ProductImporter)).InstancePerLifetimeScope();
         }
     }
 }

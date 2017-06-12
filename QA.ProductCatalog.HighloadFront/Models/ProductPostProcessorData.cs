@@ -12,8 +12,8 @@ namespace QA.ProductCatalog.HighloadFront.Models
 
         public ProductPostProcessorData(JObject product, RegionTag[] regionTags, DateTime updated)
         {
-            Product = product;
-            RegionTags = regionTags;
+            Product = product ?? throw new ArgumentNullException(nameof(product));
+            RegionTags = regionTags ?? throw new ArgumentNullException(nameof(regionTags));
             Updated = updated;
         }
 
