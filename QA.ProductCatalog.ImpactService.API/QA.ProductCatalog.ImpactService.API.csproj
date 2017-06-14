@@ -2,12 +2,13 @@
 
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <AssemblyName>QA.ProductCatalog.ImpactService.API</AssemblyName>
     <OutputType>Exe</OutputType>
     <PackageId>QA.ProductCatalog.ImpactService.API</PackageId>
   </PropertyGroup>
-
+  
   <ItemGroup>
     <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>

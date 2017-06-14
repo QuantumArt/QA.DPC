@@ -32,7 +32,17 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var ints = (date == null)
                 ? DpcService.GetAllProductId(locator, page, pageSize)
                 : DpcService.GetLastProductId(locator, page, pageSize, date.Value);
-            return Json(ints);
+
+            if (locator.Format == "json")
+            {
+                return Json(ints);
+            }
+            else
+            {
+                var ints2 = String.Join("", ints.Select(n => $"<id>{n}</id>").ToList());
+                return Content($"<ids>{ints2}</ids>", XmlHeader);
+            }
+
         }
 
         [HttpGet("{id:int}")]
@@ -40,9 +50,20 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         public ActionResult GetProduct(ProductLocator locator, int id, DateTime? date)
         {
             var data = DpcService.GetProductData(locator, id);
+
+            if (data == null)
+                return BadRequest($"Product {id} is not found");
+
             ControllerContext.HttpContext.Response.Headers.Add("Last-Modified", data.Updated.ToUniversalTime().ToString("R"));
-            return Content(data.Product, new MediaTypeHeaderValue("application/json") { Charset = Encoding.UTF8.WebName });
+            return (locator.Format == "json")
+                ? Content(data.Product, JsonHeader)
+                : Content(data.Product, XmlHeader);
+
         }
+
+        private static MediaTypeHeaderValue JsonHeader => new MediaTypeHeaderValue("application/json") { Charset = Encoding.UTF8.WebName};
+
+        private static MediaTypeHeaderValue XmlHeader => new MediaTypeHeaderValue("application/xml") { Charset = Encoding.UTF8.WebName};
 
         [HttpDelete]
         [HttpDelete("{language}/{state}")]
@@ -51,21 +72,21 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products != null)
             {
-                Logger.Info("Сообщение разобрано, удаляем продукты ... ");
+                Logger.Info("Message parsed, deleting products... ");
 
                 try
                 {
                     foreach (var p in res1.Result.Products)
                     {
-                        Logger.Info($"Удаляем продукт {p.Id}");
+                        Logger.Info($"Deleting product {p.Id}...");
 
                         var res2 = ProductService.DeleteProduct(locator, p.Id);
                         if (!res2.IsSucceeded)
                         {
-                            throw new Exception($"Ошибка при удалении продукта {p.Id}: {res2.Error.Message}");
+                            throw new Exception($"Error while deleting product {p.Id}: {res2.Error.Message}");
                         }
 
-                        Logger.Info($"Продукт {p.Id} успешно удален");
+                        Logger.Info($"Product {p.Id} successfully deleted");
                     }
                 }
                 catch (Exception e)
@@ -78,11 +99,11 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             }
             else
             {
-                Logger.Info($"Не удалось разобрать сообщение в продукты: {data}");
+                Logger.Info($"Could not parse message to products: {data}");
                 if (!res1.IsSucceeded)
                     return BadRequest(res1.Error.Message);
                 else
-                    return BadRequest("Не удалось разобрать сообщение в продукты");
+                    return BadRequest("Could not parse message to products");
             }
 
         }
@@ -94,35 +115,35 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products?.Any() == true)
             {
-                Logger.Info("Сообщение разобрано, создаем/обновляем продукты... ");
+                Logger.Info("Message parsed, creating or updating products...  ");
 
                 try
                 {
                     foreach (var p in res1.Result.Products)
                     {
-                        Logger.Info($"Проверяем, нужно ли создавать/обновлять продукт {p.Id}");
+                        Logger.Info($"Check for creating or updating (product {p.Id})");
                         var res2 = ProductService.HasProductChanged(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
-                            Logger.Info($"Ошибка при проверке продукта {p.Id}: {res2.Error.Message}");
+                            Logger.Info($"Error while checking product {p.Id}: {res2.Error.Message}");
                             throw new Exception(res2.Error.Message);
                         }
                         else if (!res2.Result)
                         {
-                            Logger.Info($"Продукт {p.Id} не требует создания/обновления");
+                            Logger.Info($"Product {p.Id} doesn't require updating");
                         }
                         else
                         {
-                            Logger.Info($"Создаем/обновляем продукт {p.Id}");
+                            Logger.Info($"Creating or updating product {p.Id}");
 
                             var res3 = ProductService.UpdateProduct(locator, p, data, userName, userId);
                             if (res3.IsSucceeded)
                             {
-                                Logger.Info($"Продукт {p.Id} успешно создан/обновлен");
+                                Logger.Info($"Product {p.Id} successfully created/updated");
                             }
                             else
                             {
-                                Logger.Info($"Ошибка при создании/обновлении продукта {p.Id}: {res3.Error.Message}");
+                                Logger.Info($"Error while creating/updating product {p.Id}: {res3.Error.Message}");
                                 throw new Exception(res3.Error.Message);
                             }
                         }
@@ -137,11 +158,11 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             }
             else
             {
-                Logger.Info($"Не удалось разобрать сообщение в продукты: {data}");
+                Logger.Info($"Could not parse message to products: {data}");
                 if (!res1.IsSucceeded)
                     return BadRequest(res1.Error.Message);
                 else
-                    return BadRequest("Не удалось разобрать сообщение в продукты");
+                    return BadRequest("Could not parse message to products");
 
             }
         }

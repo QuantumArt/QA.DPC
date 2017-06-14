@@ -1,10 +1,9 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Reflection;
-using QA.Core.DPC.Front;
 using Xunit;
 
-namespace QA.Core.DPC.Integration.Tests
+namespace QA.Core.DPC.Front.Tests
 {
 	public abstract class TestBase
 	{
@@ -22,7 +21,7 @@ namespace QA.Core.DPC.Integration.Tests
 
 		protected void DeserializeData(IProductSerializer serializer, string resource)
 		{
-			string data = GetEmbeddedResourceText("QA.Core.DPC.Integration.Tests.Data." + resource);
+			string data = GetEmbeddedResourceText(Assembly.GetExecutingAssembly().GetName().Name + ".Data." + resource);
 			ProductInfo info = serializer.Deserialize(data);
 
 			Assert.NotNull(info);

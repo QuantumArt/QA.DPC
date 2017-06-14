@@ -1,7 +1,6 @@
-﻿using QA.Core.DPC.Front;
-using Xunit;
+﻿using Xunit;
 
-namespace QA.Core.DPC.Integration.Tests
+namespace QA.Core.DPC.Front.Tests
 {
 	public class XmlProductSerializerTests : TestBase
 	{

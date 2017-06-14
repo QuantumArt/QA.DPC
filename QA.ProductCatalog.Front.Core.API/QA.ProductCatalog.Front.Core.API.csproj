@@ -2,9 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
-    <RuntimeIdentifier>win7-x86</RuntimeIdentifier>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>

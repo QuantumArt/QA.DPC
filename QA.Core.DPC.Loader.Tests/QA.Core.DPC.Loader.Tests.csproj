@@ -314,6 +314,10 @@
       <Project>{30ce970f-dc61-40b7-9625-44a70e8beaf8}</Project>
       <Name>QA.Core.DPC.Loader</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj">
+      <Project>{D894F71E-C027-4B58-8930-1D44A65727CB}</Project>
+      <Name>QA.Core.DPC.QP</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj">
       <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
       <Name>QA.Core.Models</Name>
@@ -398,4 +402,3 @@
     <Error Condition="!Exists('$(SolutionDir)packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\xunit.runner.visualstudio.2.1.0\build\net20\xunit.runner.visualstudio.props'))" />
   </Target>
 </Project>
-

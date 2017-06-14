@@ -19,6 +19,9 @@ namespace QA.DPC.Core.Helpers
 
         public static readonly MediaTypeHeaderValue ApplicationXml
             = MediaTypeHeaderValue.Parse("application/xml").CopyAsReadOnly();
+
+        public static readonly MediaTypeHeaderValue TextXml
+            = MediaTypeHeaderValue.Parse("text/xml").CopyAsReadOnly();
     }
 
     public class TextUniversalInputFormatter : TextInputFormatter
@@ -34,7 +37,7 @@ namespace QA.DPC.Core.Helpers
             SupportedMediaTypes.Add(MediaTypeHeaderValues.ApplicationJson);
             SupportedMediaTypes.Add(MediaTypeHeaderValues.ApplicationXml);
             SupportedMediaTypes.Add(MediaTypeHeaderValues.TextPlain);
-
+            SupportedMediaTypes.Add(MediaTypeHeaderValues.TextXml);
         }
 
         protected override bool CanReadType(Type type)

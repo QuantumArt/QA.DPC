@@ -41,14 +41,6 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Constructor_ConnectionIsEmpty_ThrowException()
-        {
-            // ReSharper disable once UnusedVariable
-            var service = new ServiceFactory(ConnectionProvider, UserProvider);
-        }
-
-        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_UserProviderIsNull_ThrowException()
         {

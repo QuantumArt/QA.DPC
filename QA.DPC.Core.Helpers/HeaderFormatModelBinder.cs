@@ -16,18 +16,17 @@ namespace QA.DPC.Core.Helpers
             var contentType = bindingContext.HttpContext.Request.ContentType;
 
             string model;
-            if (contentType == MediaTypeHeaderValues.ApplicationXml.MediaType)
+            if (contentType != null && (contentType.StartsWith(MediaTypeHeaderValues.ApplicationXml.MediaType) || contentType.StartsWith(MediaTypeHeaderValues.TextXml.MediaType)))
             {
                 model = "xml";
             }
-            else if (contentType == MediaTypeHeaderValues.ApplicationJson.MediaType)
+            else if (contentType != null && contentType.StartsWith(MediaTypeHeaderValues.ApplicationJson.MediaType))
             {
                 model = "json";
             }
             else
             {
-                bindingContext.ModelState.TryAddModelError(bindingContext.ModelName, "Supported formats are xml or json.");
-                return TaskCache.CompletedTask;
+                model = null;
             }
 
             bindingContext.Result = ModelBindingResult.Success(model);
