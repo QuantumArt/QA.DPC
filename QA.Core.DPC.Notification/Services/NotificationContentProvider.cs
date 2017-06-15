@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using QA.ProductCatalog.Infrastructure;
 
@@ -28,7 +29,8 @@ namespace QA.Core.DPC.Notification.Services
 				Channels = (_notificationChannelProvider.GetArticles() ?? new NotificationChannel[0]).ToList(),
 			};
 		}
-		#endregion
+
+	    #endregion
 
 		#region Private methods
 		private int GetIntValue(SettingsTitles title)

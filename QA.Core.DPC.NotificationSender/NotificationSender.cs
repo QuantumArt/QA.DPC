@@ -20,7 +20,9 @@ namespace QA.Core.DPC
 	public partial class NotificationSender : ServiceBase
 	{
         private const string AutopublishKey = "Autopublish";
-		public static ConcurrentDictionary<string, NotificationSenderConfig> _configDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
+		public static ConcurrentDictionary<string, NotificationSenderConfig> ConfigDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
+	    public static DateTime Started = DateTime.MinValue;
+
         static ICustomerProvider _customerProvider;
         static IIdentityProvider _identityProvider;
 
@@ -28,6 +30,8 @@ namespace QA.Core.DPC
 
 		private readonly List<Timer> _senders = new List<Timer>();
 		static readonly Dictionary<string, ChannelState> _lockers = new Dictionary<string, ChannelState>();
+
+
 
 		public NotificationSender()
 		{
@@ -39,6 +43,7 @@ namespace QA.Core.DPC
 
 		protected override void OnStart(string[] args)
 		{
+		    Started = DateTime.Now;
             foreach (var customer in _customerProvider.GetCustomers())
             {
                 UpdateConfiguration(customer.CustomerCode);
@@ -63,7 +68,7 @@ namespace QA.Core.DPC
                 serviceHost = null;
             }
 
-            foreach (var configDictionary in _configDictionary.Values)
+            foreach (var configDictionary in ConfigDictionary.Values)
             {
                 foreach (var sender in _senders)
                 {
@@ -80,7 +85,7 @@ namespace QA.Core.DPC
             logger.Info("start UpdateConfiguration for {0}", customerCode);
             int delay = 0;
 			var items = _senders.Zip(_lockers.Keys, (s, k) => new { Sender = s, Key = k });
-            var config = _configDictionary.AddOrUpdate(customerCode, code => configProvider.GetConfiguration(), (code, cfg) => configProvider.GetConfiguration());
+            var config = ConfigDictionary.AddOrUpdate(customerCode, code => configProvider.GetConfiguration(), (code, cfg) => configProvider.GetConfiguration());
 
 			foreach (var channel in config.Channels.Where(c => c.DegreeOfParallelism > 0))
 			{
@@ -152,7 +157,7 @@ namespace QA.Core.DPC
             _identityProvider.Identity = new Identity(descriptor.CustomerCode);
             var logger = ObjectFactoryBase.Resolve<ILogger>();
             var channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
-            var config = _configDictionary[descriptor.CustomerCode];
+            var config = ConfigDictionary[descriptor.CustomerCode];
 
             try
             {

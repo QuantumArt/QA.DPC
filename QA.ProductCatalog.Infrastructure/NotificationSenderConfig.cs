@@ -50,7 +50,7 @@ namespace QA.ProductCatalog.Infrastructure
                 PackageSize == config.PackageSize &&
                 TimeOut == config.TimeOut &&
                 WaitIntervalAfterErrors == config.WaitIntervalAfterErrors &&
-                Channels.SequenceEqual(config.Channels);
+                Channels.Zip(config.Channels, (f,s) => f.IsEqualTo(s)).All(s => s);
         }
     }
 }

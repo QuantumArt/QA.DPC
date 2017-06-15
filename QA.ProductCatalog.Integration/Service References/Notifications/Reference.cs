@@ -103,7 +103,7 @@ namespace QA.ProductCatalog.Integration.Notifications {
         private QA.ProductCatalog.Integration.Notifications.ChannelInfo[] ChannelsField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IsAtualField;
+        private bool IsActualField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string NotificationProviderField;
@@ -135,14 +135,14 @@ namespace QA.ProductCatalog.Integration.Notifications {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsAtual {
+        public bool IsActual {
             get {
-                return this.IsAtualField;
+                return this.IsActualField;
             }
             set {
-                if ((this.IsAtualField.Equals(value) != true)) {
-                    this.IsAtualField = value;
-                    this.RaisePropertyChanged("IsAtual");
+                if ((this.IsActualField.Equals(value) != true)) {
+                    this.IsActualField = value;
+                    this.RaisePropertyChanged("IsActual");
                 }
             }
         }

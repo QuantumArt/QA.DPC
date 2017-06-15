@@ -140,7 +140,7 @@ namespace QA.Core.DPC
 
             return new ConfigurationInfo
             {
-                Started = DateTime.Now,
+                Started = NotificationSender.Started,
                 NotificationProvider = provider.GetType().Name,
                 IsActual = actualConfiguration.IsEqualTo(currentConfiguration),
                 Channels = (from channel in channels
@@ -163,7 +163,7 @@ namespace QA.Core.DPC
 
         private static NotificationSenderConfig GetCurrentConfiguration(string customerCode)
         {
-            return NotificationSender._configDictionary[customerCode];
+            return NotificationSender.ConfigDictionary[customerCode];
         }
 
         private State GetState(NotificationChannel actual, NotificationChannel current)
