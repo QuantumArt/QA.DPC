@@ -13,7 +13,7 @@ using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
     [Produces("application/json")]
-    [Route("api/products")]
+    [Route("api/products"), Route("api/{version:decimal}/products")]
     [OnlyAuthUsers]
     public class ProductsController : Controller
     {

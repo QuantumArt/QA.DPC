@@ -12,6 +12,8 @@ namespace QA.ProductCatalog.Front.Core.API
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                .CaptureStartupErrors(true)
+                .UseSetting("detailedErrors", "true")
                 .UseApplicationInsights()
                 .Build();
 

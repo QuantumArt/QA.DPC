@@ -13,7 +13,7 @@ using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
-    [Route("api/Sync")]
+    [Route("api/sync"), Route("api/{version:decimal}/sync")]
     public class SyncController : Controller
     {
         private ILogger Logger { get; }

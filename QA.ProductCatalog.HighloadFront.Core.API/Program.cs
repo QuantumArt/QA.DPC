@@ -16,6 +16,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                 .UseKestrel()
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
+                .CaptureStartupErrors(true)
+                .UseSetting("detailedErrors", "true")
                 .UseStartup<Startup>()
                 .UseApplicationInsights()
                 .Build();
