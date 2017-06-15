@@ -1,13 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using QA.Core.DPC.QP.Services;
-using QA.Core;
-using QA.Core.DPC.Loader;
-using QA.Core.DPC.Loader.Services;
-using QA.Core.DPC.QP.Cache;
-using QA.Core.ProductCatalog.ActionsRunner;
 using ILogger = QA.Core.ILogger;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.DPC.Core.Helpers
@@ -50,8 +44,11 @@ namespace QA.DPC.Core.Helpers
             if (customerCode == null || _list.TryGetValue(customerCode, out result)) return result;
             lock (Locker)
             {
-                result = new CustomerCodeInstance(connectionProvider, _logger);
-                _list.Add(customerCode, result);
+                if (!_list.TryGetValue(customerCode, out result))
+                {
+                    result = new CustomerCodeInstance(connectionProvider, _logger);
+                    _list.Add(customerCode, result);
+                }
             }
             return result;
         }
@@ -62,8 +59,11 @@ namespace QA.DPC.Core.Helpers
             if (customerCode == null || _taskList.TryGetValue(customerCode, out result)) return result;
             lock (Locker)
             {
-                result = new CustomerCodeTaskInstance(provider, reindexAllTaskAccessor(), _logger);
-                _taskList.Add(customerCode, result);
+                if (!_taskList.TryGetValue(customerCode, out result))
+                {
+                    result = new CustomerCodeTaskInstance(provider, reindexAllTaskAccessor(), _logger);
+                    _taskList.Add(customerCode, result);
+                }
             }
             return result;
         }

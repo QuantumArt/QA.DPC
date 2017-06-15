@@ -21,7 +21,6 @@
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj" />
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunner\QA.Core.ProductCatalog.ActionsRunner.csproj" />
-    <ProjectReference Include="..\QA.ProductCatalog.HighloadFront\QA.ProductCatalog.HighloadFront.csproj" />
   </ItemGroup>
 
 </Project>
