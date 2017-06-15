@@ -738,7 +738,7 @@ FROM
                 ContentName = article.Content.NetName,
                 Created = article.Created,
                 Modified = article.Modified,
-                IsPublished = article.Status.Name == ARTICLE_STATUS_PUBLISHED,
+                IsPublished = article.Status.Name == ARTICLE_STATUS_PUBLISHED && !article.Delayed,
                 Splitted = article.Splitted,
                 Status = article.Status.Name,
                 Visible = article.Visible,

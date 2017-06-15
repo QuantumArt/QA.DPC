@@ -67,10 +67,6 @@ namespace QA.Core.DPC.QP.Cache
 
             _dueTime = TimeSpan.FromMilliseconds(dueTime);
             _pollPeriod = pollPeriod;
-            if (useTimer)
-            {
-                _timer = new Timer(OnTick, null, 0, Timeout.Infinite);
-            }
 
             ConnectionString = connectionProvider.GetConnection();
             Throws.IfArgumentNullOrEmpty(ConnectionString, nameof(ConnectionString));
@@ -80,7 +76,11 @@ namespace QA.Core.DPC.QP.Cache
             _mode = mode;
             _invalidator = invalidator;
             _onInvalidate = onInvalidate;
-            Throws.IfArgumentNull(_ => ConnectionString);
+
+            if (useTimer)
+            {
+                _timer = new Timer(OnTick, null, 0, Timeout.Infinite);
+            }
         }
 
         /// <summary>

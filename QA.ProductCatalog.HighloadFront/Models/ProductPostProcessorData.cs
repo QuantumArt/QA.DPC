@@ -6,7 +6,7 @@ namespace QA.ProductCatalog.HighloadFront.Models
     public class ProductPostProcessorData
     {
         public ProductPostProcessorData(JObject product)
-            : this(product, null, DateTime.Now)
+            : this(product, new RegionTag[] {}, DateTime.Now)
         {
         }
 
