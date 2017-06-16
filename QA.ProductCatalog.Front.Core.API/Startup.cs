@@ -41,6 +41,8 @@ namespace QA.ProductCatalog.Front.Core.API
             services.AddScoped<ILogger>(logger => new NLogLogger("NLog.config"));
             services.AddScoped(typeof(IDpcProductService), typeof(DpcProductService));
             services.AddScoped(typeof(IDpcService), typeof(DpcProductService));
+
+            services.Configure<DataOptions>(Configuration.GetSection("Data"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

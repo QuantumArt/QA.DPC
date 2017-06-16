@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using QA.Core;
 using QA.Core.DPC.Front;
@@ -17,11 +18,14 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         protected readonly IDpcService DpcService;
 
-        public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService)
+        protected readonly DataOptions Options;
+
+        public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService, IOptions<DataOptions> options)
         {
             ProductService = productService;
             Logger = logger;
             DpcService = dpcService;
+            Options = options.Value;
         }
 
         [HttpGet]
@@ -29,6 +33,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         public ActionResult GetProductIds(ProductLocator locator, int page, DateTime? date, int pageSize = Int32.MaxValue)
         {
+            ApplyOptions(locator);
             var ints = (date == null)
                 ? DpcService.GetAllProductId(locator, page, pageSize)
                 : DpcService.GetLastProductId(locator, page, pageSize, date.Value);
@@ -49,6 +54,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         [HttpGet("{language}/{state}/{id:int}")]
         public ActionResult GetProduct(ProductLocator locator, int id, DateTime? date)
         {
+            ApplyOptions(locator);
             var data = DpcService.GetProductData(locator, id);
 
             if (data == null)
@@ -69,6 +75,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         [HttpDelete("{language}/{state}")]
         public ActionResult DeleteProduct(ProductLocator locator, [FromBody] string data)
         {
+            ApplyOptions(locator);
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products != null)
             {
@@ -112,6 +119,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         [HttpPut("{language}/{state}")]
         public ActionResult PutProduct(ProductLocator locator, [FromBody] string data, [FromQuery(Name = "UserId")] int userId, [FromQuery(Name = "UserName")] string userName)
         {
+            ApplyOptions(locator);
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products?.Any() == true)
             {
@@ -164,6 +172,13 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 else
                     return BadRequest("Could not parse message to products");
 
+            }
+        }
+        private void ApplyOptions(ProductLocator locator)
+        {
+            if (!String.IsNullOrEmpty(Options.FixedConnectionString))
+            {
+                locator.FixedConnectionString = Options.FixedConnectionString;
             }
         }
     }

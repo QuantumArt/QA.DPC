@@ -1,7 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using QA.DPC.Core.Helpers;
+using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.Front
 {
@@ -18,6 +20,9 @@ namespace QA.Core.DPC.Front
 
         [ModelBinder(Name = "customerCode")]
         public string CustomerCode { get; set; }
+
+        [BindNever]
+        public string FixedConnectionString { get; set; }
 
         public bool IsLive { get; set; }
 
@@ -59,5 +64,18 @@ namespace QA.Core.DPC.Front
             }
             return new XmlProductSerializer();
         }
+
+        public string GetConnectionString()
+        {
+            if (!String.IsNullOrEmpty(FixedConnectionString))
+                return FixedConnectionString;
+
+            if (string.IsNullOrEmpty(CustomerCode))
+                throw new ArgumentNullException(nameof(CustomerCode));
+
+            return DBConnector.GetConnectionString(CustomerCode);
+
+        }
+
     }
 }

@@ -16,20 +16,20 @@
             <tbody data-bind="foreach: tasks">
                 <tr>
                     <td align="center">
-                        <input type="checkbox" disabled  data-bind="checked: isDefault"/>
+                        <input type="checkbox" disabled  data-bind="checked: IsDefault"/>
                     </td>
-                    <td align="center" data-bind="text: channelLanguage"></td>
-                    <td align="center" data-bind="text: channelState"></td>                    
+                    <td align="center" data-bind="text: ChannelLanguage"></td>
+                    <td align="center" data-bind="text: ChannelState"></td>                    
                     <td width="20" align="center">
-                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: taskMessage }" src="~/Content/img/icons/0.gif"/>
+                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/Content/img/icons/0.gif"/>
                     </td>
                     <td width="100">
                         <img src="~/Content/KendoUI/Default/loading.gif" style="display:none" />
                         <a href="#" class="js" data-bind="click: $parent.index, visible: $parent.isButtonVisible($data)">индексировать</a>
                     </td>
-                    <td align="center" data-bind="text: getTimePassed(taskStart, taskEnd)"></td>
+                    <td align="center" data-bind="text: getTimePassed(TaskStart, TaskEnd)"></td>
                     <td>
-                        <div data-bind="updateProgress: taskProgress"></div>
+                        <div data-bind="updateProgress: TaskProgress"></div>
                     </td>
                 </tr>          
             </tbody>

@@ -3,13 +3,13 @@
 ko.bindingHandlers.updateProgress = {
     init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
         $(element).kendoProgressBar({
-            value: viewModel.taskProgress,
+            value: viewModel.TaskProgress,
             type: "percent"
         });
     },
     update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
         $(element).kendoProgressBar({
-            value: viewModel.taskProgress,
+            value: viewModel.TaskProgress,
             type: "percent"
         });
     }
@@ -28,19 +28,19 @@ function TasksViewModel() {
     self.index = function (task, event) {
         $(event.target).hide();
         $(event.target).parent().find('img').show();
-        indexChanel(task.channelLanguage, task.channelState);
+        indexChanel(task.ChannelLanguage, task.ChannelState);
     };
 
     self.getState = function (task) {
-        return getTaskStateDescription(task.taskState);
+        return getTaskStateDescription(task.TaskState);
     };
 
     self.getStateLogo = function (task) {
-        return getTaskStateLogo(task.taskState);
+        return getTaskStateLogo(task.TaskState);
     };
 
     self.isButtonVisible = function (task) {
-        return task.taskState != 1 && task.taskState != 2;
+        return task.TaskState != 1 && task.TaskState != 2;
     };
 }
 

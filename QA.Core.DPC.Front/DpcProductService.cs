@@ -11,19 +11,12 @@ namespace QA.Core.DPC.Front
 {
     public class DpcProductService : QAServiceBase, IDpcProductService, IDpcService
     {
-        private string GetConnectionString(string customerCode)
-        {
-            if (string.IsNullOrEmpty(customerCode))
-                throw new ArgumentNullException(nameof(customerCode));
-            return DBConnector.GetConnectionString(customerCode);
-
-        }
 
         public ServiceResult<bool> HasProductChanged(ProductLocator locator, int id, string data)
         {
             return Run(new UserContext(), null, () =>
             {
-                using (var ctx = new DpcModelDataContext(GetConnectionString(locator.CustomerCode)))
+                using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
                 {
                     var p = ctx.GetProduct(locator, id);
                     if (p?.Hash == null) return true;
@@ -55,7 +48,7 @@ namespace QA.Core.DPC.Front
         {
             return RunAction(new UserContext(), null, () =>
             {
-                using (var ctx = new DpcModelDataContext(GetConnectionString(locator.CustomerCode)))
+                using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
                 {
                     var p = ctx.GetProduct(locator, product.Id);
                     var isNew = p == null;
@@ -160,7 +153,7 @@ namespace QA.Core.DPC.Front
         {
             return RunAction(new UserContext(), null, () =>
             {
-                using (var ctx = new DpcModelDataContext(GetConnectionString(locator.CustomerCode)))
+                using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
                 {
                     var p = ctx.GetProduct(locator, id);
                     if (p != null)
@@ -189,7 +182,7 @@ namespace QA.Core.DPC.Front
 
         public int[] GetAllProductId(ProductLocator locator, int page, int pageSize)
         {
-            using (var ctx = new DpcModelDataContext(GetConnectionString(locator.CustomerCode)))
+            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
             {
                 return ctx.GetProducts(locator)
                     .OrderBy(x => x.DpcId).Skip(page * pageSize).Take(pageSize)
@@ -199,7 +192,7 @@ namespace QA.Core.DPC.Front
 
         public int[] GetLastProductId(ProductLocator locator, int page, int pageSize, DateTime date)
         {
-            using (var ctx = new DpcModelDataContext(GetConnectionString(locator.CustomerCode)))
+            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
             {
                 return ctx.GetProducts(locator)
                     .Where(x => x.Updated > date)
@@ -210,7 +203,7 @@ namespace QA.Core.DPC.Front
 
         public string GetProduct(ProductLocator locator, int id)
         {
-            using (var ctx = new DpcModelDataContext(GetConnectionString(locator.CustomerCode)))
+            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
             {
                 var p = ctx.GetProduct(locator, id);
                 return p != null ? p.Data : "";
@@ -220,7 +213,7 @@ namespace QA.Core.DPC.Front
         public ProductData GetProductData(ProductLocator locator, int id)
         {
             ProductData result = null;
-            using (var ctx = new DpcModelDataContext(GetConnectionString(locator.CustomerCode)))
+            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
             {
                 var p = ctx.GetProduct(locator, id);
                 if (p != null)

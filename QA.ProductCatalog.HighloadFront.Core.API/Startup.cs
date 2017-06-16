@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using QA.DPC.Core.Helpers;
@@ -36,6 +37,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.AddMvc(options =>
             {
                 options.Filters.Add(typeof(ProcessCustomerCodeAttribute));
+            }).AddJsonOptions(options =>
+            {
+                options.SerializerSettings.ContractResolver = new DefaultContractResolver();
             });
 
             services.AddMemoryCache();
