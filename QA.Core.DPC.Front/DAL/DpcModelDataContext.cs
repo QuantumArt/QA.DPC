@@ -11,7 +11,7 @@ namespace QA.Core.DPC.Front.DAL
             return GetProducts(locator).FirstOrDefault(m => id == m.DpcId);
         }
 
-        public IEnumerable<Product> GetProducts(ProductLocator locator)
+        public IQueryable<Product> GetProducts(ProductLocator locator)
         {
             if (string.IsNullOrEmpty(locator.Slug))
             {

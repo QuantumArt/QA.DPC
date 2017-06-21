@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using QA.Core;
 using QA.Core.DPC.Front;
+using QA.Core.Service.Interaction;
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
 {
@@ -106,11 +107,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             }
             else
             {
-                Logger.Info($"Could not parse message to products: {data}");
-                if (!res1.IsSucceeded)
-                    return BadRequest(res1.Error.Message);
-                else
-                    return BadRequest("Could not parse message to products");
+                return ProceedParseError(data, res1);
             }
 
         }
@@ -133,8 +130,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                         var res2 = ProductService.HasProductChanged(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
-                            Logger.Info($"Error while checking product {p.Id}: {res2.Error.Message}");
-                            throw new Exception(res2.Error.Message);
+                            throw new Exception($"Error while checking product {p.Id}: {res2.Error.Message}");
                         }
                         else if (!res2.Result)
                         {
@@ -151,8 +147,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                             }
                             else
                             {
-                                Logger.Info($"Error while creating/updating product {p.Id}: {res3.Error.Message}");
-                                throw new Exception(res3.Error.Message);
+                                throw new Exception($"Error while creating/updating product {p.Id}: {res3.Error.Message}");
                             }
                         }
                     }
@@ -160,20 +155,33 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 }
                 catch (Exception e)
                 {
+                    Logger.Error(e.Message);
                     return BadRequest(e.Message);
                 }
                 return Ok();
             }
             else
             {
-                Logger.Info($"Could not parse message to products: {data}");
-                if (!res1.IsSucceeded)
-                    return BadRequest(res1.Error.Message);
-                else
-                    return BadRequest("Could not parse message to products");
-
+                return ProceedParseError(data, res1);
             }
         }
+
+        private ActionResult ProceedParseError(string data, ServiceResult<ProductInfo> res1)
+        {
+            string result;
+            if (!res1.IsSucceeded)
+            {
+                result = res1.Error.Message;
+                Logger.Error($"Could not parse message to products. Message: {result}. Data: {data}");
+            }
+            else
+            {
+                result = "Could find products in parsed message";
+                Logger.Error(result);
+            }
+            return BadRequest(result);
+        }
+
         private void ApplyOptions(ProductLocator locator)
         {
             if (!String.IsNullOrEmpty(Options.FixedConnectionString))

@@ -45,7 +45,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.AddMemoryCache();
 
             services.Configure<HarvesterOptions>(Configuration.GetSection("Harvester"));
-            services.Configure<SonicElasticStoreOptions>(Configuration.GetSection("sonicElasticStore"));
+            services.Configure<SonicElasticStoreOptions>(Configuration.GetSection("SonicElasticStore"));
             services.Configure<DataOptions>(Configuration.GetSection("Data"));
 
             var containerBuilder = new ContainerBuilder();
