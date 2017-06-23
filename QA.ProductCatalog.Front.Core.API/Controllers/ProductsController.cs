@@ -10,7 +10,7 @@ using QA.Core.Service.Interaction;
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/{customerCode}/products"), Route("api/products")]
     public class ProductsController : Controller
     {
         protected readonly IDpcProductService ProductService;

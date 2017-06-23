@@ -11,7 +11,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "api/mts_catalog/healthcheck",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -19,7 +19,7 @@
     "QA.ProductCatalog.SiteSyncWebHost.Core": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "api/values",
+      "launchUrl": "api/mts_catalog/healthcheck",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

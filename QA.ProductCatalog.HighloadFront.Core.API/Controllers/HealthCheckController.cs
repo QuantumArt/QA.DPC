@@ -12,7 +12,7 @@ using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
-    [Route("api/healthCheck")]
+    [Route("api/{customerCode}/healthCheck")]
     public class HealthCheckController : Controller
     {
         private readonly IElasticConfiguration _elasticConfiguration;
@@ -25,7 +25,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             _options = options.Value;
         }
 
-        public async Task<HttpResponseMessage> HealthCheck(bool isSync)
+        public async Task<ActionResult> HealthCheck(bool isSync)
         {
             var sb = new StringBuilder();
             sb.AppendLine("Application: OK");
@@ -52,10 +52,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 sb.AppendLine($@"Index '{uri}': " + Status(ok));
             }
 
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent(sb.ToString())
-            };
+            return Content(sb.ToString(), "text/plain");
         }
 
         private static string Status(bool flag)
@@ -65,7 +62,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         [HttpGet]
         [Route("sync")]
-        public async Task<HttpResponseMessage> Sync()
+        public async Task<ActionResult> Sync()
         {
             return await HealthCheck(true);
         }
@@ -73,7 +70,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         [HttpGet]
         [Route("search")]
-        public async Task<HttpResponseMessage> Search()
+        public async Task<ActionResult> Search()
         {
             return await HealthCheck(false);
         }
