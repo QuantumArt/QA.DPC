@@ -53,9 +53,9 @@ namespace QA.Core.ProductCatalog.Actions
 			return articleService.GetFieldValues(allIds, contentId, "Id").Select(int.Parse).ToArray();
 		}
 
-		public static int[] GetAllProductIds(int siteId, int productsContentId)
+		public static int[] GetAllProductIds(int siteId, int productsContentId, string connectionString)
 		{
-			var dbConnector = new DBConnector();
+			var dbConnector = new DBConnector(connectionString);
 
 			string siteName = dbConnector.GetSiteName(siteId);
 
@@ -83,9 +83,9 @@ namespace QA.Core.ProductCatalog.Actions
 			return dtProducts.AsEnumerable().Select(x => (int)(decimal)x["CONTENT_ITEM_ID"]).ToArray();
 		}
 
-        public static Dictionary<int, int[]> GetContentIds(IEnumerable<int> ids)
+        public static Dictionary<int, int[]> GetContentIds(IEnumerable<int> ids, string connectionString)
         {
-            var dbConnector = new DBConnector();
+            var dbConnector = new DBConnector(connectionString);
 
             var sqlCommand = new SqlCommand(@"SELECT CONTENT_ID, CONTENT_ITEM_ID FROM CONTENT_ITEM WITH(NOLOCK) WHERE CONTENT_ITEM_ID IN (SELECT ID FROM @Ids)");
 

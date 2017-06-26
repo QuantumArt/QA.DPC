@@ -73,7 +73,7 @@ namespace QA.Core.DPC.QP.Services
         {
             var connection = GetConnection(service);
 
-            if (!IsEFConnection(connection) && service != Service.Actions)
+            if (!IsEFConnection(connection))
             {
                 connection = ConvertToEFConnection(connection);
             }
