@@ -5,7 +5,6 @@ using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
 using QA.Core.Cache;
-using QA.Core.ProductCatalog;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.UI;
@@ -21,20 +20,17 @@ using QA.Core.ProductCatalog.Actions.Container;
 using System.Web.Mvc;
 using Quantumart.QP8.BLL.Services.API;
 using QA.Core.DPC.Loader.Container;
-using QA.Core.ProductCatalog.Actions.Services;
-using QA.Core.ProductCatalog.ActionsRunner;
 using Task = System.Threading.Tasks.Task;
 using QA.Core.DPC.Notification.Services;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Xaml;
-using Quantumart.QP8.BLL;
 using System.Globalization;
 using QA.Core.DPC.QP.Configuration;
-using System.Web;
-using QA.Core.Data;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.Integration.Configuration;
+using QA.ProductCatalog.Integration.DAL;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Start
 {
@@ -52,15 +48,12 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
         public static UnityContainer RegisterTypes(UnityContainer container)
         {
 
-#if DEBUG
-            container.AddNewExtension<LocalSystemCachedLoaderConfigurationExtension>();
-#else
             container.AddNewExtension<LoaderConfigurationExtension>();
-#endif
             container.AddNewExtension<QPContainerConfiguration>();
             container.AddNewExtension<ActionContainerConfiguration>();
 			container.AddNewExtension<TaskContainerConfiguration>();
 			container.AddNewExtension<ValidationConfiguration>();
+
 
             // логируем в консоль
             //container.RegisterInstance<ILogger>(new TextWriterLogger(Console.Out));
@@ -73,13 +66,12 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 	        
 	        container.RegisterType<DefinitionEditorService>();
 
-	        container
+            container
                 .RegisterType<IXmlProductService, XmlProductService>()
-				.RegisterType<ISettingsService, SettingsFromContentService>()
+                .RegisterType<ISettingsService, SettingsFromContentService>()
                 .RegisterType<IUserProvider, UserProvider>()
                 .RegisterType<IQPNotificationService, QPNotificationService>()
-                .RegisterType<IProductControlProvider, ProductControlProvider>()
-                .RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(typeof(IConnectionProvider), true));
+                .RegisterType<IProductControlProvider, ProductControlProvider>();
 
             container.RegisterType<CustomActionService>(new InjectionFactory(c => new CustomActionService(c.Resolve<IConnectionProvider>().GetConnection(), 1)));
 
@@ -97,17 +89,6 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
             container.RegisterType<TaskRunnerEntities>(new InjectionFactory(c => new TaskRunnerEntities(c.Resolve<IConnectionProvider>().GetEFConnection(Service.Actions))));
             container.RegisterType<ITaskService, TaskService>(new InjectionConstructor(typeof(TaskRunnerEntities)));
-
-	        container.RegisterType<Func<bool, IConsumerMonitoringService>>(
-		        new InjectionFactory(
-			        x =>
-				        new Func<bool, IConsumerMonitoringService>(
-					        isLive =>
-						        new ConsumerMonitoringService(x.Resolve<IConnectionProvider>() ,isLive))));
-
-            container.RegisterType<Func<bool, CultureInfo, IConsumerMonitoringService>>(
-               new InjectionFactory(c => new Func<bool, CultureInfo, IConsumerMonitoringService>(
-                   (isLive, culture) => new ConsumerMonitoringService(c.Resolve<IConnectionProvider>(), isLive, culture) )));
 
             container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
 
@@ -140,31 +121,54 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             ControllerBuilder.Current.SetControllerFactory(new DefaultControllerFactory(container.Resolve<IControllerActivator>()));
 
 	        container.RegisterType<StructureCacheTracker>();
-            
 
-            foreach (var customer in container.Resolve<ICustomerProvider>().GetCustomers())
+            var connection = container.Resolve<IConnectionProvider>();
+            if (connection.QPMode)
             {
-                var code = customer.CustomerCode;
-                var logger = container.Resolve<ILogger>();
+                foreach (var customer in container.Resolve<ICustomerProvider>().GetCustomers())
+                {
+                    var code = customer.CustomerCode;
+                    var logger = container.Resolve<ILogger>();
 
-                var cacheProvider = new VersionedCustomerCacheProvider(code);
-                var invalidator = new DpcContentInvalidator(cacheProvider, logger);
-                var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
-                var tracker = new StructureCacheTracker(connectionProvider);
-                var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger);
+                    var cacheProvider = new VersionedCustomerCacheProvider(code);
+                    var invalidator = new DpcContentInvalidator(cacheProvider, logger);
+                    var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
+                    var tracker = new StructureCacheTracker(connectionProvider);
+                    var watcher =
+                        new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger);
 
-                watcher.AttachTracker(tracker);
-                
-                container.RegisterInstance<IContentInvalidator>(code, invalidator);
-                container.RegisterInstance<ICacheProvider>(code, cacheProvider);
-                container.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
-                container.RegisterInstance<ICacheItemWatcher>(code, watcher);              
+                    watcher.AttachTracker(tracker);
+
+                    container.RegisterInstance<IContentInvalidator>(code, invalidator);
+                    container.RegisterInstance<ICacheProvider>(code, cacheProvider);
+                    container.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
+                    container.RegisterInstance<ICacheItemWatcher>(code, watcher);
+                }
+
+                container.RegisterType<IContentInvalidator>(
+                    new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.GetCustomerCode())));
+                container.RegisterType<ICacheProvider>(
+                    new InjectionFactory(c => c.Resolve<ICacheProvider>(c.GetCustomerCode())));
+                container.RegisterType<IVersionedCacheProvider>(
+                    new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
+                container.RegisterType<ICacheItemWatcher>(
+                    new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));
+
+                IntegrationContainerConfiguration.RegisterQpMonitoring(container);
+            }
+            else
+            {
+                container.RegisterInstance<ICacheProvider>(container.Resolve<CacheProvider>());
+                container.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(
+                    new ContainerControlledLifetimeManager());
+                container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
+                container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All,
+                    container.Resolve<IContentInvalidator>()));
+                container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
+
+                IntegrationContainerConfiguration.RegisterNonQpMonitoring(container);
             }
 
-            container.RegisterType<IContentInvalidator>(new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.GetCustomerCode())));
-            container.RegisterType<ICacheProvider>(new InjectionFactory(c => c.Resolve<ICacheProvider>(c.GetCustomerCode())));
-            container.RegisterType<IVersionedCacheProvider>(new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
-            container.RegisterType<ICacheItemWatcher>(new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));       
 
             return container;
         }

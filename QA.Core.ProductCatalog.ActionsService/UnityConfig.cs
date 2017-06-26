@@ -18,6 +18,8 @@ using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.Integration.Configuration;
+using QA.ProductCatalog.Integration.DAL;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -60,14 +62,6 @@ namespace QA.Core.ProductCatalog.ActionsService
 
             container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
 
-			container.RegisterType<Func<bool, IConsumerMonitoringService>>(
-				new InjectionFactory(
-					x =>
-						new Func<bool, IConsumerMonitoringService>(
-							isLive =>
-								new ConsumerMonitoringService(x.Resolve<IConnectionProvider>(), isLive))));
-
-			container.RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(typeof(IConnectionProvider), true));
             container.RegisterInstance(new TaskRunnerDelays(ConfigurationManager.AppSettings));
             container.RegisterType<ITasksRunner, TasksRunner>();
 
@@ -102,6 +96,9 @@ namespace QA.Core.ProductCatalog.ActionsService
                 container.RegisterType<ICacheProvider>(new InjectionFactory(c => c.Resolve<ICacheProvider>(c.GetCustomerCode())));
                 container.RegisterType<IVersionedCacheProvider>(new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
                 container.RegisterType<ICacheItemWatcher>(new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));
+
+                IntegrationContainerConfiguration.RegisterQpMonitoring(container);
+
             }
             else
             {
@@ -111,6 +108,8 @@ namespace QA.Core.ProductCatalog.ActionsService
                 container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()));
 
                 container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
+
+                IntegrationContainerConfiguration.RegisterNonQpMonitoring(container);
 
             }
 

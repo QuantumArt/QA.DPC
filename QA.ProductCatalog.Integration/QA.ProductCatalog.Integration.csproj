@@ -275,6 +275,8 @@
   <ItemGroup>
     <Compile Include="Configuration\IntegrationContainerConfiguration.cs" />
     <Compile Include="ConsumerMonitoringService.cs" />
+    <Compile Include="DAL\IMonitoringRepository.cs" />
+    <Compile Include="DAL\QpMonitoringRepository.cs" />
     <Compile Include="DAL\MonitoringRepository.cs" />
     <Compile Include="FakeConsumerMonitoringService.cs" />
     <Compile Include="FakeQPNotificationService.cs" />
@@ -361,4 +363,3 @@
   </Target>
   -->
 </Project>
-

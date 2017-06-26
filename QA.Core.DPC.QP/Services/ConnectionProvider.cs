@@ -9,6 +9,7 @@ namespace QA.Core.DPC.QP.Services
     {
         private const string AdminKey = "qp_database";
         private const string NotificationKey = "QA.Core.DPC.Properties.Settings.beeline_dpc_notificationsConnectionString";
+        private const string ActionsKey = "TaskRunnerEntities";
 
         private readonly ICustomerProvider _customerProvider;
         private readonly IIdentityProvider _identityProvider;        
@@ -29,6 +30,7 @@ namespace QA.Core.DPC.QP.Services
             {
                 AddConnection(Service.Admin, AdminKey);
                 AddConnection(Service.Notification, NotificationKey);
+                AddConnection(Service.Actions, ActionsKey);
             }
         }
 
@@ -71,7 +73,7 @@ namespace QA.Core.DPC.QP.Services
         {
             var connection = GetConnection(service);
 
-            if (!IsEFConnection(connection))
+            if (!IsEFConnection(connection) && service != Service.Actions)
             {
                 connection = ConvertToEFConnection(connection);
             }
