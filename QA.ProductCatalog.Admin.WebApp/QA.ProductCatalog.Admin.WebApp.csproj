@@ -302,6 +302,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\ArticleChangedNotification.cs" />
+    <Compile Include="Models\CardModel.cs" />
     <Compile Include="Models\DefinitionContentInfo.cs" />
     <Compile Include="Models\DefinitionEditor.cs" />
     <Compile Include="Models\DefinitionElement.cs" />
@@ -681,4 +682,3 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
-

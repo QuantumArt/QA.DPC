@@ -79,15 +79,20 @@ namespace QA.Core.DPC.Loader.Services
 
         public Dictionary<CultureInfo, Article> SplitLocalizations(Article product)
         {
-            var channels = _channelProvider.GetArticles();
-            var cultures = channels.Select(c => c.Culture).Distinct().ToArray();
-
+            var cultures = GetCultures();
             return SplitLocalizations(product, cultures);
         }
 
         public Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures)
         {
             return cultures.ToDictionary(c => c, c => Localize(product, c));
+        }
+
+        public CultureInfo[] GetCultures()
+        {
+            var channels = _channelProvider.GetArticles();
+            var cultures = channels.Select(c => c.Culture).Distinct().ToArray();
+            return cultures;
         }
         #endregion
 
