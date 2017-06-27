@@ -34,8 +34,7 @@ namespace QA.Core.DPC
 		private static IUnityContainer RegisterTypes(UnityContainer unityContainer)
 		{
             unityContainer.AddNewExtension<QPContainerConfiguration>();
-            unityContainer.AddNewExtension<QPAutopublishContainerConfiguration>();
-            
+           
             unityContainer.RegisterType<INotificationAutopublishProvider, NotificationAutopublishProvider>();
             unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			unityContainer.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
@@ -54,6 +53,7 @@ namespace QA.Core.DPC
 
             if (connection.QPMode)
             {
+                unityContainer.AddNewExtension<QPAutopublishContainerConfiguration>();
                 foreach (var customer in unityContainer.Resolve<ICustomerProvider>().GetCustomers())
                 {
                     var code = customer.CustomerCode;

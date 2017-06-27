@@ -163,7 +163,9 @@ namespace QA.Core.DPC
 
         private static NotificationSenderConfig GetCurrentConfiguration(string customerCode)
         {
-            return NotificationSender.ConfigDictionary[customerCode];
+            return NotificationSender.ConfigDictionary.ContainsKey(customerCode)
+                ? NotificationSender.ConfigDictionary[customerCode]
+                : NotificationSender.ConfigDictionary[SingleCustomerProvider.Key];
         }
 
         private State GetState(NotificationChannel actual, NotificationChannel current)

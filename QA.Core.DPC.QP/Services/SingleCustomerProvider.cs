@@ -5,6 +5,8 @@ namespace QA.Core.DPC.QP.Services
 {
     public class SingleCustomerProvider : ICustomerProvider
     {
+        public const string Key = "current";
+
         public string GetConnectionString(string customerCode)
         {
             throw new NotImplementedException();
@@ -16,7 +18,7 @@ namespace QA.Core.DPC.QP.Services
             {
                 new Customer
                 {
-                    CustomerCode = "current",
+                    CustomerCode = Key,
                     ConnectionString = null
                 }
             };
