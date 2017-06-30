@@ -14,10 +14,12 @@ QA.Product.Index = QA.Product.Index || (function () {
         })
 
         $(".actionlink.active").click(function () {
+            setParamsToLS();
             var $this = $(this);
             var create = ($this.data("action-name") == "new_article");
             var fts = decodeURIComponent($this.data("fields-to-init"));
             var ftb = decodeURIComponent($this.data("fields-to-block"));
+            var fth = decodeURIComponent($this.data("fields-to-hide"));
 
             if (fts) {
                 try {
@@ -39,6 +41,16 @@ QA.Product.Index = QA.Product.Index || (function () {
                 }
             }
 
+            if (fth) {
+                try {
+                    var fieldsToHide = JSON.parse(fth);
+                }
+                catch (ex) {
+                    console.log(ex);
+                    fieldsToHide = [];
+                }
+            }
+
             QA.Integration.showQPForm($this.data("entityid"), $this.data("parentid"),
                 function (eventType, args) {
                     console.log(args);
@@ -52,7 +64,9 @@ QA.Product.Index = QA.Product.Index || (function () {
                 $this.data("action-window") == 'true',
                 create,
                 fieldsToSet,
-                fieldsToBlock, $this.data("action-name"));
+                fieldsToBlock,
+                fieldsToHide,
+                $this.data("action-name"));
         });
 
         $(".anchor").click(function () {
@@ -93,6 +107,18 @@ QA.Product.Index = QA.Product.Index || (function () {
                     $e.addClass(state);
             }
         });
+
+        function setParamsToLS() {
+            var activeElem = $("#" + QA.Utils.hostId()).context.activeElement;
+            var elemID = $(activeElem).attr('aria-activedescendant');
+            var tabElem = $("#" + elemID).parents('.tabstrip').first().data("name")
+
+            ls.setItem('activeTabName', tabElem);
+
+            var childElem = $(activeElem).children(".k-state-active");
+
+            ls.setItem('scrollPosition', childElem.scrollTop());
+        }
 
         function toggleCollapsing(foldingMode) {
             if (foldingMode != undefined && foldingMode == false) {

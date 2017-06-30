@@ -5,7 +5,7 @@ var QA = QA || {};
 QA.Integration = QA.Integration || (function () {
     var getHostUID = function () { return window.name; };
 
-    showQPForm = function (id, contentId, callback, isInTab, isCreate, fieldsToSet, fieldsToBlock, action) {
+    showQPForm = function (id, contentId, callback, isInTab, isCreate, fieldsToSet, fieldsToBlock, fieldsToHide, action) {
         var uid = QA.Utils.newUID();
 
         var actionCode = action || "edit_article";
@@ -25,7 +25,7 @@ QA.Integration = QA.Integration || (function () {
             callback(eventType, args);
         });
 
-        if (isCreate) { actionCode = "new_article";}
+        if (isCreate) { actionCode = "new_article"; }
 
         var executeOptions = new Quantumart.QP8.Interaction.ExecuteActionOtions();
         executeOptions.actionCode = actionCode;
@@ -48,6 +48,11 @@ QA.Integration = QA.Integration || (function () {
         if (fieldsToBlock) {
             executeOptions.options.disabledFields = fieldsToBlock;
         }
+
+        if (fieldsToHide) {
+            executeOptions.options.hideFields = fieldsToHide;
+        }
+
         // убираем save
         executeOptions.options.disabledActionCodes = ["update_article"];
 
