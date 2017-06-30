@@ -108,7 +108,8 @@ QA.Product.Index = QA.Product.Index || (function () {
             }
         });
 
-        function setParamsToLS() {
+        function setParamsToLS()
+        {
             var activeElem = $("#" + QA.Utils.hostId()).context.activeElement;
             var elemID = $(activeElem).attr('aria-activedescendant');
             var tabElem = $("#" + elemID).parents('.tabstrip').first().data("name")
