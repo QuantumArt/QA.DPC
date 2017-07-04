@@ -174,7 +174,7 @@ namespace QA.Core.DPC
                 {
                     try
                     {
-						if (!state.BlockState.HasValue || state.BlockState.Value.AddSeconds(config.WaitIntervalAfterErrors) >= DateTime.Now)
+						if (!state.BlockState.HasValue || state.BlockState.Value.AddSeconds(config.WaitIntervalAfterErrors) <= DateTime.Now)
                         {
 							if (state.BlockState.HasValue)
                             {
@@ -211,7 +211,7 @@ namespace QA.Core.DPC
                     }
                 }
                 else
-                {
+                {                    
                     logger.Info("Очередь для канала {0}, кастомер код {1} все еще занята отправкой сообщений", descriptor.ChannelName, descriptor.CustomerCode);
                 }
             }
