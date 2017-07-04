@@ -3,6 +3,7 @@ using QA.ProductCatalog.Infrastructure;
 using System.Web;
 using QA.Core.Web;
 using System.Data;
+using QA.Core.DPC.QP.Services;
 using Quantumart.QPublishing;
 using Quantumart.QPublishing.Database;
 using Quantumart.QPublishing.OnScreen;
@@ -29,9 +30,9 @@ namespace QA.ProductCatalog.Integration
 
 
 
-        public UserProvider(string connectionString)
+        public UserProvider(IConnectionProvider connectionProvider)
         {
-            _connectionString = connectionString;
+            _connectionString = connectionProvider.GetConnection();
         }
 
         public int GetUserId()
@@ -59,7 +60,7 @@ namespace QA.ProductCatalog.Integration
 
 				if (!string.IsNullOrEmpty(newSid) && newSid != sid || userid == 0)
                 {
-					userid = QScreen.AuthenticateForCustomTab();
+					userid = QScreen.AuthenticateForCustomTab(new DBConnector(_connectionString));
 					HttpContext.Current.Session[QPUserIdKey] = userid;
                 }
 

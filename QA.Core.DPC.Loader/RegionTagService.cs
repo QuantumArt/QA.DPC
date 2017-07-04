@@ -8,16 +8,14 @@ using QA.Core.Models.Entities;
 using System.Configuration;
 using QA.Core.DPC.Loader.Resources;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;
-using QA.Core.ProductCatalog.Actions.Services;
 
 namespace QA.Core.DPC.Loader
 {
     public class RegionTagService : IRegionTagReplaceService
     {
         #region Константы
-        private const string KEY_CONNTECTION_STRING = "qp_database";
-
         private const string FIELD_TITLE = "Title";
         private const string FIELD_REGION_TAG = "RegionTag";
         private const string FIELD_VALUE = "Value";
@@ -29,17 +27,16 @@ namespace QA.Core.DPC.Loader
         private readonly ISettingsService _settingsService;
         private readonly IRegionService _regionService;
         private static readonly Regex DefaultRegex = new Regex(@"[<\[]replacement[>\]]tag=(\w+)[<\[]/replacement[>\]]", RegexOptions.Compiled);
-        private static readonly TimeSpan _cacheInterval = new TimeSpan(0, 10, 0); //TODO: вынести интервал кэширования региональных тегов в конфиг
-#warning Вынести интервал кэширования региональных тегов в конфиг
+        private static readonly TimeSpan _cacheInterval = new TimeSpan(0, 10, 0); 
         private readonly string _connectionString;
-        ICacheItemWatcher _cacheItemWatcher;
+        private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly IArticleService _articleService;
-        private IFieldService _fieldService;
+
         #endregion
 
         #region Конструкторы
         public RegionTagService(IVersionedCacheProvider cacheProvider, ISettingsService settingsService, IRegionService regionService, ICacheItemWatcher cacheItemWatcher,
-            IArticleService articleService)
+            IArticleService articleService, IConnectionProvider connectionProvider)
         {
             _cacheProvider = cacheProvider;
             _settingsService = settingsService;
@@ -47,13 +44,7 @@ namespace QA.Core.DPC.Loader
             _cacheItemWatcher = cacheItemWatcher;
             _articleService = articleService;
 
-            this._cacheItemWatcher.TrackChanges();
-            var connectinStringObject = ConfigurationManager.ConnectionStrings[KEY_CONNTECTION_STRING];
-            if (connectinStringObject == null)
-            {
-                throw new Exception(string.Format(ProductLoaderResources.ERR_CONNECTION_STRING_NO_EXISTS, KEY_CONNTECTION_STRING));
-            }
-            _connectionString = connectinStringObject.ConnectionString;
+            _connectionString = connectionProvider.GetConnection();;
         }
         #endregion
 
@@ -114,10 +105,6 @@ namespace QA.Core.DPC.Loader
             // меньше элементов = быстрее получаем из кеша
             return (List<RegionTag>)_cacheProvider.GetOrAdd(key, tags, _cacheInterval, () =>
             {
-				//TODO: возможно, надо фильтровать только лайв
-#warning возможно, надо фильтровать только лайв
-				//_articleService.IsLive = isLive;
-
 				List<RegionTag> result = new List<RegionTag>();
                 _articleService.LoadStructureCache();
                 List<RegionTag> rtags = GetAllRegionTags(_articleService);

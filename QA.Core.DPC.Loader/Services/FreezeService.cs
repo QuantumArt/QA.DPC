@@ -6,6 +6,7 @@ using Quantumart.QPublishing.Database;
 using System.Data.SqlClient;
 using Quantumart.QP8.Utils;
 using System.Collections.Generic;
+using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.Constants;
 using Quantumart.QP8.BLL;
 
@@ -217,11 +218,13 @@ namespace QA.Core.DPC.Loader.Services
 
         private readonly ISettingsService _settingsService;
         private IUserProvider _userProvider;
+        private string _connectionString;
 
-        public FreezeService(ISettingsService settingsService, IUserProvider userProvider)
+        public FreezeService(ISettingsService settingsService, IUserProvider userProvider, IConnectionProvider connectionProvider)
         {
             _settingsService = settingsService;
             _userProvider = userProvider;
+            _connectionString = connectionProvider.GetConnection();
         }
 
         #region ISettingsService implementation
@@ -376,7 +379,7 @@ namespace QA.Core.DPC.Loader.Services
             }
             else
             {
-                return new DBConnector();
+                return new DBConnector(_connectionString);
             }
         }
         private string GetFreezeFieldName()

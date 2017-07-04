@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
-using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using System.Globalization;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
@@ -15,14 +15,15 @@ namespace QA.Core.ProductCatalog.Actions.Actions
         private readonly Func<bool, CultureInfo, IConsumerMonitoringService> _consumerMonitoringServiceFunc;
         private readonly ISettingsService _settingsService;
         private readonly IArticleService _articleService;
+        private readonly IConnectionProvider _provider;
 
-        public ProductRelevanceAction(Func<bool, CultureInfo, IConsumerMonitoringService> consumerMonitoringServiceFunc, ISettingsService settingsService, IArticleService articleService)
+        public ProductRelevanceAction(Func<bool, CultureInfo, IConsumerMonitoringService> consumerMonitoringServiceFunc, ISettingsService settingsService, IArticleService articleService, IConnectionProvider provider)
         {
             _consumerMonitoringServiceFunc = consumerMonitoringServiceFunc;
             _settingsService = settingsService;
             _articleService = articleService;
+            _provider = provider;
         }
-
 
         public override string Process(ActionContext context)
         {
@@ -37,7 +38,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 if (context.ContentId == marketingProductContentId)
                     throw new Exception("Нельзя обрабатывать все маркетинговые продукты сразу, виберите конкретные продукты");
 
-				productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId);
+				productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetConnection());
             }
 
             object percentLocker = new object();

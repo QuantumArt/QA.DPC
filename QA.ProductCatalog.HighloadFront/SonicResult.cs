@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using QA.ProductCatalog.HighloadFront.Models;
 
 namespace QA.ProductCatalog.HighloadFront
 {
@@ -31,11 +32,11 @@ namespace QA.ProductCatalog.HighloadFront
             }
             else if (exceptions.Length == 1)
             {
-                return new Exception(this.ToString(), exceptions[0]);
+                return new Exception(ToString(), exceptions[0]);
             }
             else
             {
-                return new AggregateException(this.ToString(), exceptions);
+                return new AggregateException(ToString(), exceptions);
             }
         }
         public override string ToString()

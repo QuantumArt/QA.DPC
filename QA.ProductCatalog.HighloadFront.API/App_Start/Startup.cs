@@ -56,7 +56,7 @@ namespace QA.ProductCatalog.HighloadFront
 
             //containerBuilder.RegisterWebApiFilterProvider(config);
 
-            System.Threading.Tasks.Task.Run((Action)container.Resolve<ITasksRunner>().Run);
+            //System.Threading.Tasks.Task.Run((Action)container.Resolve<ITasksRunner>().Run);
         }
 
         public IContainer DIConfiguration(ContainerBuilder builder)
@@ -117,8 +117,6 @@ namespace QA.ProductCatalog.HighloadFront
             builder.Register<Func<string, int, ITask>>(c => { var reindexTask = c.ResolveNamed<ITask>("ReindexAllTask"); return (key, userId) => key == "ReindexAllTask" ? reindexTask : null; }).SingleInstance();
 
             builder.RegisterType<ReindexAllTask>().Named<ITask>("ReindexAllTask");
-
-            builder.RegisterScoped<IDpcService, DpcServiceClient>();
 
             builder.RegisterType<ConfigurationService>().As<IConfigurationService>().SingleInstance();
 

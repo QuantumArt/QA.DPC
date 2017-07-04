@@ -5,6 +5,10 @@ using System.Text;
 using System.Web.Http.Dependencies;
 using Microsoft.Practices.Unity;
 using QA.Core;
+using QA.Core.DPC.QP.Models;
+using QA.ProductCatalog.WebApi.Controllers;
+using System.Web;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
@@ -31,9 +35,16 @@ namespace QA.ProductCatalog.WebApi.App_Start
 		{
 			try
 			{
-				return _container.Resolve(serviceType);
+                if (serviceType == typeof(ProductController) && HttpContext.Current != null)
+                {
+                    var route = HttpContext.Current.Request.RequestContext.RouteData;
+                    var customerCode = route.Values["customerCode"] as string;
+                    _container.Resolve<IIdentityProvider>().Identity = new Identity(customerCode);
+                }
+
+                return _container.Resolve(serviceType);
 			}
-			catch (ResolutionFailedException ex)
+			catch (ResolutionFailedException)
 			{
 				return null;
 			}

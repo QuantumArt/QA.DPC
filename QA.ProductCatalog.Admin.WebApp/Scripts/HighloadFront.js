@@ -46,7 +46,8 @@ function TasksViewModel() {
 
 function updateTasks(loop) {
 
-    $.getJSON(Url.Content('~/HighloadFront/GetSettings?url=sync/settings'), function (json) {        
+
+    $.getJSON(Url.Content('~/HighloadFront/GetSettings?customerCode=' + getCustomerCode() + '&url=api/sync/settings'), function (json) {        
         model.tasks(json);
     })
 
@@ -57,8 +58,12 @@ function updateTasks(loop) {
     }
 }
 
+function getCustomerCode() {
+  return $("#tasks").data("customerCode");
+}
+
 function indexChanel(language, state) {
-    $.post(Url.Content('~/HighloadFront/IndexChanel?url=sync/' + language + '/' + state + '/reset')).done(function () {
+    $.post(Url.Content('~/HighloadFront/IndexChanel?customerCode=' + getCustomerCode() + '&url=api/sync/' + language + '/' + state + '/reset')).done(function () {
         updateTasks(false);
     });
 }

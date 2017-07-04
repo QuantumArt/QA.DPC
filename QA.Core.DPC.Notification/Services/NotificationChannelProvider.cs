@@ -1,4 +1,5 @@
-﻿using QA.ProductCatalog.Infrastructure;
+﻿using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Notification.Services
 {
@@ -49,8 +50,8 @@ namespace QA.Core.DPC.Notification.Services
 	            l.VISIBLE = 1";
         #endregion
 
-        public NotificationChannelProvider(ISettingsService settingsService)
-			: base(settingsService)
+        public NotificationChannelProvider(ISettingsService settingsService, IConnectionProvider connectionProvider)
+			: base(settingsService, connectionProvider)
 		{
 		}
 
@@ -77,6 +78,12 @@ namespace QA.Core.DPC.Notification.Services
                 }
 			}
 		}
-		#endregion
-	}
+
+	    public override string[] GetTags()
+	    {
+	        return new[] { SettingsService.GetSetting(SettingsTitles.NOTIFICATION_SENDER_CHANNELS_CONTENT_ID) };
+	    }
+
+        #endregion
+    }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QA.ProductCatalog.Infrastructure
+﻿namespace QA.ProductCatalog.Infrastructure
 {
     public interface ISettingsService
     {
@@ -56,6 +50,11 @@ namespace QA.ProductCatalog.Infrastructure
         BASE_PARAMETER_MODIFIERS_FIELD_NAME,
         BASE_PARAMETER_FIELD_NAME,
         PUBLISH_BUNDLE_SIZE,
-        PUBLISH_DEGREE_OF_PARALLELISM
+        PUBLISH_DEGREE_OF_PARALLELISM,
+        ELASTIC_INDEXES_CONTENT_ID,
+        HIGHLOAD_API_USERS_CONTENT_ID,
+	    HIGHLOAD_API_METHODS_CONTENT_ID,
+	    HIGHLOAD_API_LIMITS_CONTENT_ID
+
     }
 }

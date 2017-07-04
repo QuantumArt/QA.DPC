@@ -24,9 +24,12 @@ namespace QA.ProductCatalog.ImpactService
             int scaleId = (int) scale["Id"];
 
             var link = product
-                .SelectTokens($"RoamingScalesOnTariff.[?(@.Id)]")
-                .Single(n => (int)n.SelectToken("RoamingScale.Id") == scaleId)
-                .SelectToken("Parent");
+                .SelectTokens($"RoamingScalesOnTariff.[?(@.RoamingScale)]")
+                .FirstOrDefault(n => (int)n.SelectToken("RoamingScale.Id") == scaleId)
+                ?.SelectToken("Parent");
+
+            if (link == null)
+                return;
 
             var modifiersRoot = link.SelectToken("Modifiers");
             var modifiersSeq = modifiersRoot?.SelectTokens("[?(@.Alias)].Alias")?.Select(n => n.ToString()) ??

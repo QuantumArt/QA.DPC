@@ -1,4 +1,4 @@
-﻿namespace QA.ProductCatalog.HighloadFront.Infrastructure
+﻿namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ArrayIndexingSettings
     {

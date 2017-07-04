@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QA.Core.Models.UI;
+﻿using QA.Core.Models.UI;
 
 namespace QA.Core.DPC.UI.Controls
 {
@@ -11,10 +6,10 @@ namespace QA.Core.DPC.UI.Controls
     {
         static Icon() { }
         
-        public string ClassName
+        public new string ClassName
         {
-            get { return (string)GetValue(ClassNameProperty); }
-            set { SetValue(ClassNameProperty, value); }
+            get => (string)GetValue(ClassNameProperty);
+            set => SetValue(ClassNameProperty, value);
         }
 
         // Using a DependencyProperty as the backing store for ClassName.  This enables animation, styling, binding, etc...

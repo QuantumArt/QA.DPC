@@ -23,12 +23,14 @@ using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Processors;
 using System.Globalization;
+using System.Web;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
 
     public class ProductController : Controller
     {
+        private const string DefaultCultureKey = "_default_culture";
         private readonly Func<string, string, IAction> _getAction;
         private IVersionedCacheProvider _versionedCacheProvider;
         private readonly Func<string, IArticleFormatter> _getFormatter;
@@ -43,8 +45,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
-        public ActionResult Index(int content_item_id, bool live = false, string[] filters = null, bool includeRelevanceInfo = true)
-        {
+        public ActionResult Index(int content_item_id, string actionCode, bool live = false, string[] filters = null, bool includeRelevanceInfo = true, bool localize = false, string lang = null)
+        {    
             if (content_item_id <= 0)
             {
                 ViewBag.Message = "Параметры действия некорректны: content_item_id должен быть больше 0.";
@@ -53,11 +55,41 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             Stopwatch sw = Stopwatch.StartNew();
 
-            var product = ObjectFactoryBase.Resolve<IProductService>().GetProductById(content_item_id, live);
+            var originalOroduct = ObjectFactoryBase.Resolve<IProductService>().GetProductById(content_item_id, live);
+            var product = originalOroduct;
+            var cultures = new CultureInfo[0];
+            var currentCulture = CultureInfo.InvariantCulture;
+
             if (product == null)
             {
                 ViewBag.Message = "Продукт не найден.";
                 return View();
+            }
+            else if (localize)
+            {
+                cultures = _localizationService.GetCultures();
+
+                if (lang == null)
+                {
+                    var cookie = Request.Cookies[actionCode + DefaultCultureKey];
+                    
+                    if (cookie != null)
+                    {
+                        currentCulture = CultureInfo.GetCultureInfo(cookie.Value);
+                    }
+                    else
+                    {
+                        currentCulture = cultures[0];
+                    }
+                }
+                else
+                {
+                    currentCulture = CultureInfo.GetCultureInfo(lang);
+                    var cookie = new HttpCookie(actionCode + DefaultCultureKey, lang);
+                    Response.AppendCookie(cookie);
+                }
+
+                product = _localizationService.Localize(product, currentCulture);                
             }
 
             var productLoadedIn = sw.ElapsedMilliseconds;
@@ -77,12 +109,20 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             product = ArticleFilteredCopier.Copy(product, allFilter);
 
-            
-
             if (includeRelevanceInfo)
-            {
+            {                
                 var relevanceService = ObjectFactoryBase.Resolve<IProductRelevanceService>();
-                var relevanceItems = relevanceService.GetProductRelevance(product, live);
+                var relevanceItems = new RelevanceInfo[0];
+
+                if (localize)
+                {
+                    originalOroduct = ArticleFilteredCopier.Copy(originalOroduct, allFilter);
+                    relevanceItems = relevanceService.GetProductRelevance(originalOroduct, live);
+                }
+                else
+                {
+                    relevanceItems = relevanceService.GetProductRelevance(product, live);
+                }
                 var relevanceField = new MultiArticleField() { FieldName = "Relevance" };                          
                 int id = 0;
 
@@ -132,7 +172,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             control.DataContext = product;
 
-            return View("Index", control);
+            return View("Index", new CardModel { Control = control, Cultures = cultures, CurrentCultute = currentCulture });
         }
 
         [RequireCustomAction]

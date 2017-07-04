@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using QA.Core.DPC.Loader.Resources;
+using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using QA.Core.Web;
@@ -13,21 +14,14 @@ namespace QA.Core.DPC.Loader
 {
 	public abstract class SettingsServiceBase : ISettingsService
 	{
-		private const string KEY_CONNTECTION_STRING = "qp_database";
-
 		private static readonly RequestLocal<Dictionary<string, string>> Actions =
 			new RequestLocal<Dictionary<string, string>>(() => new Dictionary<string, string>());
 
 		protected readonly string _connectionString;
 
-		protected SettingsServiceBase()
+		protected SettingsServiceBase(IConnectionProvider connectionProvider)
 		{
-			ConnectionStringSettings connectionStringObject = ConfigurationManager.ConnectionStrings[KEY_CONNTECTION_STRING];
-
-			if (connectionStringObject == null)
-				throw new Exception(string.Format(ProductLoaderResources.ERR_CONNECTION_STRING_NO_EXISTS, KEY_CONNTECTION_STRING));
-
-			_connectionString = connectionStringObject.ConnectionString;
+			_connectionString = connectionProvider.GetConnection();
 		}
 
 		public string GetSetting(SettingsTitles title)

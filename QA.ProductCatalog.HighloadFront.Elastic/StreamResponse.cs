@@ -10,7 +10,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             Stream = stream;
         }
 
-        public Stream Stream { get; private set; }
+        public Stream Stream { get; }
     }
 
     public class StreamData { }

@@ -1,4 +1,4 @@
-﻿@model QA.Core.Models.UI.UIElement
+﻿@model QA.ProductCatalog.Admin.WebApp.Models.CardModel
 @{
     ViewBag.Title = "Продукт";
 }
@@ -17,8 +17,31 @@
 	@Styles.Render("~/content/KendoUI/KendoUIStyles")
 }
 
-<div class="formLayout">
-    @Html.DisplayFor(x => x)
+<div class="formLayout">    
+    @if (Model.Cultures.Length > 0)
+    {
+        <fieldset>
+            <legend>Локализация</legend>
+            <div class="gr-wrapper">
+            @foreach (var culture in Model.Cultures)
+            {
+                <span style="padding-right:15px;">
+                    @if (culture.Equals(Model.CurrentCultute))
+                    {
+                    <b>
+                        <a class="js" href="@Url.Current(new { lang = culture.Name })">@culture.NativeName</a>
+                    </b>
+                    }
+                    else
+                    {
+                    <a class="js" href="@Url.Current(new { lang = culture.Name })">@culture.NativeName</a>
+                    }
+                </span>
+            }
+            </div>
+        </fieldset>
+    }           
+    @Html.DisplayFor(m => m.Control)
 </div>
 
 @section scripts{

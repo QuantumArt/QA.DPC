@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 
@@ -13,8 +14,8 @@ namespace QA.Core.DPC.Loader
 	/// </summary>
 	public class CachedReadOnlyArticleServiceAdapter : ReadOnlyArticleServiceAdapter
 	{
-		public CachedReadOnlyArticleServiceAdapter(ArticleService articleService, string qpConnString, IContextStorage contextStorage, ILogger logger)
-			: base(articleService, qpConnString, contextStorage)
+		public CachedReadOnlyArticleServiceAdapter(ArticleService articleService, IConnectionProvider connectionProvider, IContextStorage contextStorage, ILogger logger)
+			: base(articleService, connectionProvider, contextStorage)
 		{
 			_logger = logger;
 		}

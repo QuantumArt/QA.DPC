@@ -1,57 +1,41 @@
-﻿
-
-using QA.Core.Cache;
+﻿using QA.Core.Cache;
 using QA.Core.DPC.Loader.Resources;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Data;
-using QA.Core.ProductCatalog.Actions.Services;
-using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC.Loader
 {
     public class RegionService : IRegionService
     {
-        #region Константы
-        private const string KEY_CONNTECTION_STRING = "qp_database";
-        #endregion
-
         #region Глобальные переменные
-        private IVersionedCacheProvider _cacheProvider;
-        private ICacheItemWatcher _cacheItemWatcher;
-        private ISettingsService _settingsService;
+        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly ICacheItemWatcher _cacheItemWatcher;
+        private readonly ISettingsService _settingsService;
 
         //private IUserProvider _userProvider;
 
-        private static TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
-#warning Настройки времени кэширования вынести в конфиг //TODO: получать время кэширования из конфига
+        private static readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
         private readonly string _connectionString;
-        private readonly IFieldService _fieldService;
-        private readonly IArticleService _articleService;
+
         #endregion
 
         #region Конструкторы
-        public RegionService(IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher, IUserProvider userProvider, ISettingsService settingsService)
+        public RegionService(IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher, IUserProvider userProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _cacheProvider = cacheProvider;
-            _cacheItemWatcher = cacheItemWatcher;
             _settingsService = settingsService;
+            _cacheItemWatcher = cacheItemWatcher;
 
 
             //_userProvider = userProvider;
             this._cacheItemWatcher.TrackChanges();
-            var connectinStringObject = ConfigurationManager.ConnectionStrings[KEY_CONNTECTION_STRING];
-            if (connectinStringObject == null)
-            {
-                throw new Exception(string.Format(ProductLoaderResources.ERR_CONNECTION_STRING_NO_EXISTS, KEY_CONNTECTION_STRING));
-            }
-            _connectionString = connectinStringObject.ConnectionString;
+            _connectionString = connectionProvider.GetConnection();
         }
         #endregion
 

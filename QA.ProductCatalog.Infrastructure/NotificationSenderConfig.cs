@@ -37,24 +37,20 @@ namespace QA.ProductCatalog.Infrastructure
 
 		public List<NotificationChannel> Channels { get; set; }
 
-        public override bool Equals(object obj)
+        public bool IsEqualTo(NotificationSenderConfig config)
         {
-            var config = obj as NotificationSenderConfig;
-
             if (config == null)
             {
                 return false;
             }
-            else
-            {
-                return
-                    CheckInterval == config.CheckInterval &&
-                    ErrorCountBeforeWait == config.ErrorCountBeforeWait &&
-                    PackageSize == config.PackageSize &&
-                    TimeOut == config.TimeOut &&
-                    WaitIntervalAfterErrors == config.WaitIntervalAfterErrors &&
-                    Channels.SequenceEqual(config.Channels);
-            }
+
+            return
+                CheckInterval == config.CheckInterval &&
+                ErrorCountBeforeWait == config.ErrorCountBeforeWait &&
+                PackageSize == config.PackageSize &&
+                TimeOut == config.TimeOut &&
+                WaitIntervalAfterErrors == config.WaitIntervalAfterErrors &&
+                Channels.Zip(config.Channels, (f,s) => f.IsEqualTo(s)).All(s => s);
         }
     }
 }

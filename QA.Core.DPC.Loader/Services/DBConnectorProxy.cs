@@ -2,6 +2,7 @@
 using QA.Core.Cache;
 using Quantumart.QPublishing.Database;
 using System;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC.Loader.Services
 {
@@ -9,9 +10,9 @@ namespace QA.Core.DPC.Loader.Services
     {
         private readonly IVersionedCacheProvider _cacheProvider;
         private readonly string _connectionString;
-        public DBConnectorProxy(string connectionString, IVersionedCacheProvider cacheProvider)
+        public DBConnectorProxy(IConnectionProvider connectionProvider, IVersionedCacheProvider cacheProvider)
         {
-            _connectionString = connectionString;
+            _connectionString = connectionProvider.GetConnection();
             _cacheProvider = cacheProvider;
         }
         public string GetUrlForFileAttribute(int fieldId)

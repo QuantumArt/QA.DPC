@@ -176,11 +176,11 @@ namespace QA.Core.Models.UI
             return GetDataContextList().Skip(skip).FirstOrDefault();
         }
 
+
         object IDataContextProvider.GetRootContext(int skip)
         {
-
             if (_overridenProvider != null)
-                return _overridenProvider.GetRootContext(skip);
+                return _overridenProvider.GetDataContext(skip);
 
             var list = GetDataContextList();
 

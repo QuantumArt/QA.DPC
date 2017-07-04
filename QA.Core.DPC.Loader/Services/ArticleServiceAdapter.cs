@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.BLL.Services.DTO;
@@ -9,8 +10,8 @@ namespace QA.Core.DPC.Loader.Services
 {
 	public class ArticleServiceAdapter : ReadOnlyArticleServiceAdapter, IArticleService
 	{
-		public ArticleServiceAdapter(ArticleService articleService, string qpConnString, IContextStorage contextStorage)
-			: base(articleService, qpConnString, contextStorage)
+		public ArticleServiceAdapter(ArticleService articleService, IConnectionProvider connectionProvider, IContextStorage contextStorage)
+			: base(articleService, connectionProvider, contextStorage)
 		{
 
 		}

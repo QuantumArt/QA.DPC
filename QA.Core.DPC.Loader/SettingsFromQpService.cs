@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC.Loader
 {
@@ -15,10 +16,11 @@ namespace QA.Core.DPC.Loader
 
 		private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
 
-		public SettingsFromQpService(IVersionedCacheProvider cacheProvider)
+		public SettingsFromQpService(IVersionedCacheProvider cacheProvider, IConnectionProvider connectionProvider)
+            : base(connectionProvider)
 		{
-			_dbService = new DbService(_connectionString, 1);
 
+            _dbService = new DbService(_connectionString, 1);
 			_cacheProvider = cacheProvider;
 		}
 

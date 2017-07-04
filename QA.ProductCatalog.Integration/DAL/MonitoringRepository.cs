@@ -2,21 +2,20 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Text;
 using QA.Core;
+using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.Integration.DAL
 {
-    internal class MonitoringRepository
+    public class MonitoringRepository : IMonitoringRepository
     {
-        public MonitoringRepository(string connectionString)
+        public MonitoringRepository(IConnectionProvider connectionProvider)
         {
-            _connectionString = connectionString;
+            _connectionString = connectionProvider.GetConnection();
         }
 
-        //declare @xmlParameter nvarchar(max) = N'<items><item id="699603" /></items>'
         const string SqlQuery = @" DECLARE @ids TABLE(Id int primary key) 
  DECLARE @idoc int
  EXEC sp_xml_preparedocument @idoc OUTPUT, @xmlParameter;
@@ -39,7 +38,7 @@ SELECT p.[Id]
   inner join @ids ids on ids.Id = p.Id";
         private readonly string _connectionString;
 
-        public ProductInfo[] GetByIds( params int[] productIDs)
+        public ProductInfo[] GetByIds(int[] productIDs)
         {
             Throws.IfArrayArgumentNullOrEmpty(productIDs, _ => productIDs);
 
@@ -110,7 +109,7 @@ SELECT p.[Id]
 		    }
 	    }
 
-		internal void InsertOrUpdateProductRelevanceStatus(int productId, ProductRelevance productRelevance, bool isLive)
+		public void InsertOrUpdateProductRelevanceStatus(int productId, ProductRelevance productRelevance, bool isLive)
         {
             using (var connection = new SqlConnection(_connectionString))
             {

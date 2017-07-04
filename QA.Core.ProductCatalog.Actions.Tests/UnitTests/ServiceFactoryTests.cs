@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.ProductCatalog.Actions.Tests.Fakes;
 using QA.ProductCatalog.Infrastructure;
@@ -17,14 +18,16 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         #region Private properties
         private IServiceFactory Factory { get; set; }
         private IUserProvider UserProvider { get; set; }
+        private IConnectionProvider ConnectionProvider { get; set; }
         #endregion
 
         #region Initialization
         [TestInitialize]
         public void Initialize()
         {
+            ConnectionProvider = new ConnectionProviderFake(ConnectionString);
             UserProvider = new UserProviderFake { UserId = UserId };
-            Factory = new ServiceFactory(ConnectionString, UserProvider);
+            Factory = new ServiceFactory(ConnectionProvider, UserProvider);
         }
         #endregion
 
@@ -38,19 +41,11 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         }
 
         [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void Constructor_ConnectionIsEmpty_ThrowException()
-        {
-            // ReSharper disable once UnusedVariable
-            var service = new ServiceFactory(string.Empty, UserProvider);
-        }
-
-        [TestMethod]
         [ExpectedException(typeof(ArgumentNullException))]
         public void Constructor_UserProviderIsNull_ThrowException()
         {
             // ReSharper disable once UnusedVariable
-            var service = new ServiceFactory(ConnectionString, null);
+            var service = new ServiceFactory(ConnectionProvider, null);
         }
 
         [Ignore]

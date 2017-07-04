@@ -1,0 +1,110 @@
+﻿using System;
+using Autofac;
+using Autofac.Core;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
+using QA.Core;
+using QA.Core.DPC.QP.Services;
+using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
+using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Interfaces;
+using QA.ProductCatalog.HighloadFront.Options;
+using QA.ProductCatalog.HighloadFront.PostProcessing;
+using QA.ProductCatalog.Infrastructure;
+using Service = QA.Core.DPC.QP.Models.Service;
+
+namespace QA.ProductCatalog.HighloadFront.Core.API.DI
+{
+    internal class DefaultModule: Module
+    {
+        public IConfigurationRoot Configuration { get; set; }
+
+        protected override void Load(ContainerBuilder builder)
+        {
+
+            builder.RegisterSingleton<ILogger>(n => new NLogLogger("NLog.config"));
+            builder.RegisterSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            builder.RegisterScoped<ProductManager>();
+            builder.RegisterType<ProductManager>().Named<ProductManager>("ForTask").ExternallyOwned();
+
+            builder.RegisterScoped<SonicErrorDescriber>();
+            
+            builder.RegisterScoped<IProductStore, ElasticProductStore>();
+            builder.RegisterType<ElasticProductStore>().Named<IProductStore>("ForTask").ExternallyOwned();
+
+            builder.RegisterType<ProductImporter>().ExternallyOwned();
+        
+
+            builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
+            builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityProvider(
+                c.Resolve<IHttpContextAccessor>(), 
+                c.Resolve<IOptions<DataOptions>>().Value.FixedCustomerCode
+            ));
+            builder.RegisterScoped<IConnectionProvider>(c =>
+            {
+                var fcnn = c.Resolve<IOptions<DataOptions>>().Value.FixedConnectionString;
+                if (!string.IsNullOrEmpty(fcnn))
+                    return new ExplicitConnectionProvider(fcnn);
+
+                return new ConnectionProvider(
+                    c.Resolve<ICustomerProvider>(),
+                    c.Resolve<IIdentityProvider>(),
+                    Service.HighloadAPI
+                );
+            });
+
+            builder.RegisterSingleton<ICustomerCodeInstanceCollection, CustomerCodeInstanceCollection>();
+            builder.RegisterScoped(c => c.Resolve<ICustomerCodeInstanceCollection>().Get(
+                c.Resolve<IIdentityProvider>(),
+                c.Resolve<IConnectionProvider>()
+                )
+            );
+
+            builder.RegisterScoped(c =>
+                {
+                    return c.Resolve<ICustomerCodeInstanceCollection>().Get(
+                        c.Resolve<IIdentityProvider>(), () =>
+                        {
+                            var manager = c.ResolveNamed<ProductManager>("ForTask",
+                                new ResolvedParameter(
+                                    (p, ctx) => p.ParameterType == typeof(IProductStore),
+                                    (p, ctx) => ctx.ResolveNamed<IProductStore>("ForTask")
+                                )
+                            );
+
+                            var importer = c.Resolve<ProductImporter>(
+                                new TypedParameter(typeof(ProductManager), manager),
+                                new NamedParameter("customerCode", c.Resolve<IIdentityProvider>().Identity.CustomerCode)
+                            );
+
+                            return new ReindexAllTask(importer, manager, c.Resolve<IElasticConfiguration>());
+                        }
+                    );
+                }
+            );
+
+            builder.RegisterScoped(c => c.Resolve<CustomerCodeInstance>().CacheProvider);
+            builder.RegisterScoped(c => c.Resolve<CustomerCodeTaskInstance>().TaskService);
+
+            builder.RegisterScoped<IVersionedCacheProvider>(c => c.Resolve<IVersionedCacheProvider2>());
+
+            builder.RegisterScoped<ISettingsService, SettingsFromQpCoreService>();
+            builder.RegisterScoped<IContentProvider<ElasticIndex>, ElasticIndexProvider>();
+            builder.RegisterScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
+            builder.RegisterScoped<IContentProvider<HighloadApiUser>, HighloadApiUserProvider>();
+            builder.RegisterScoped<IElasticConfiguration, QpElasticConfiguration>();
+
+            builder.RegisterType<ArrayIndexer>().Named<IProductPostProcessor>("array");
+            builder.RegisterType<DateIndexer>().Named<IProductPostProcessor>("date");
+            builder.Register(c => new IndexerDecorator(new[]
+            {
+                c.ResolveNamed<IProductPostProcessor>("array"),
+                c.ResolveNamed<IProductPostProcessor>("date")
+            })).As<IProductPostProcessor>();
+
+        }
+    }
+}

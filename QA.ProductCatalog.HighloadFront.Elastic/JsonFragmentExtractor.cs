@@ -11,27 +11,26 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             using (var reader = new StreamReader(requestStream))
             {
-                using (var writer = new StreamWriter(responseStream))
-                {
-                    return await JsonFragmentExtractor.ExtractJsonFragment(textToSearch, reader, writer, depthToSearch);
-                }
+                var writer = new StreamWriter(responseStream);
+                var result = await ExtractJsonFragment(textToSearch, reader, writer, depthToSearch);
+                await writer.FlushAsync();
+                responseStream.Position = 0;
+                return result;
             }
         }
 
         public static async Task<int> ExtractJsonFragment(string textToSearch, TextReader reader, StreamWriter writer, int? depthToSearch = null)
         {
             bool inside = false, startExport = false, exporting = false;
-            int depth = 0, exportDepth = 0, l = 0, batchSize = 0, count = 1, found = 0, entityNumber = 0;
+            int depth = 0, exportDepth = 0, l = 0, batchSize, count = 1, found = 0, entityNumber = 0;
             char prev = (char)0;
             writer.Write("[");
             var findInWhole = !depthToSearch.HasValue;
             int deep = depthToSearch ?? 0;
             char[] json = new char[ReaderBufferSize];
-            batchSize = json.Length;
-
             while ((batchSize = await reader.ReadAsync(json, 0, json.Length)) > 0)
             {
-                l++;
+                l = l + 1;
                 for (int i = 0; i < batchSize; i++)
                 {
                     var c = json[i];

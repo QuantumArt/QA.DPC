@@ -13,11 +13,11 @@ namespace QA.Core.DPC.Formatters.Formatting
 	public class ModelMediaTypeFormatter<T> : MediaTypeFormatter
 		where T : class
 	{
-		private readonly IFormatter<T> _formatter;
+		private readonly Func<IFormatter<T>> _formatterFactory;
 
-		public ModelMediaTypeFormatter(IFormatter<T> formatter, string mediaType)
+		public ModelMediaTypeFormatter(Func<IFormatter<T>> formatterFactory, string mediaType)
 		{
-			_formatter = formatter;
+            _formatterFactory = formatterFactory;
 			SupportedMediaTypes.Add(new MediaTypeHeaderValue(mediaType));
 		}
 
@@ -33,13 +33,14 @@ namespace QA.Core.DPC.Formatters.Formatting
 
 		public override async Task<object> ReadFromStreamAsync(Type type, Stream readStream, HttpContent content, IFormatterLogger formatterLogger)
 		{
-			return await _formatter.Read(readStream);
+			return await _formatterFactory().Read(readStream);
 		}
 
 		public override Task WriteToStreamAsync(Type type, object value, Stream writeStream, HttpContent content, TransportContext transportContext)
 		{
-			return _formatter.Write(writeStream, (T)value);
-		}
+            var f = _formatterFactory();
+            return f.Write(writeStream, (T)value);
+        }
 
 		public override void SetDefaultContentHeaders(Type type, HttpContentHeaders headers, MediaTypeHeaderValue mediaType)
 		{

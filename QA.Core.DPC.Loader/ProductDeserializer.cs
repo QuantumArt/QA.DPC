@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Services;
@@ -26,8 +27,9 @@ namespace QA.Core.DPC.Loader
         private readonly ContentService _contentService;
         private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly IContextStorage _contextStorage;
+        private readonly string _connectionString;
 
-        public ProductDeserializer(IFieldService fieldService, IServiceFactory serviceFactory, ICacheItemWatcher cacheItemWatcher, IContextStorage contextStorage)
+        public ProductDeserializer(IFieldService fieldService, IServiceFactory serviceFactory, ICacheItemWatcher cacheItemWatcher, IContextStorage contextStorage, IConnectionProvider connectionProvider)
         {
             _fieldService = fieldService;
 
@@ -35,13 +37,15 @@ namespace QA.Core.DPC.Loader
 
             _cacheItemWatcher = cacheItemWatcher;
 
-            _contextStorage = contextStorage;            
+            _contextStorage = contextStorage;
+
+            _connectionString = connectionProvider.GetConnection();
         }
        
 
         public Article Deserialize(IProductDataSource productDataSource, Models.Configuration.Content definition)
         {
-            using (var cs = new QPConnectionScope(ConfigurationManager.ConnectionStrings[ProductLoader.KEY_CONNECTION_STRING].ConnectionString))
+            using (var cs = new QPConnectionScope(_connectionString))
             {
                 _cacheItemWatcher.TrackChanges();
 

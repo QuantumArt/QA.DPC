@@ -12,6 +12,7 @@ using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
 using QA.ProductCatalog.HighloadFront.App_Core;
+using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Infrastructure;
 using QA.ProductCatalog.HighloadFront.Models;
 

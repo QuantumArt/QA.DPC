@@ -21,8 +21,8 @@ namespace QA.Core.DocumentGenerator.Tests
         private static readonly Mock<INotesService> NotesServiceMoq = new Mock<INotesService>();
         private static string _xmlText;
 
-
-        //[TestMethod]
+        [Ignore]
+        [TestMethod]
         public void TestMailMerge()
         {
             var generator = new DocumentGenerator(NotesServiceMoq.Object);
@@ -34,7 +34,8 @@ namespace QA.Core.DocumentGenerator.Tests
             Process.Start(resFilePath);
         }
 
-        //[TestMethod]
+        [Ignore]
+        [TestMethod]
         public void TestNotes()
         {
             var generator = new DocumentGenerator(NotesServiceMoq.Object);

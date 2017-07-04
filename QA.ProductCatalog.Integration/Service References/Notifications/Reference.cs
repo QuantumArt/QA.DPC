@@ -103,7 +103,7 @@ namespace QA.ProductCatalog.Integration.Notifications {
         private QA.ProductCatalog.Integration.Notifications.ChannelInfo[] ChannelsField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
-        private bool IsAtualField;
+        private bool IsActualField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private string NotificationProviderField;
@@ -135,14 +135,14 @@ namespace QA.ProductCatalog.Integration.Notifications {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
-        public bool IsAtual {
+        public bool IsActual {
             get {
-                return this.IsAtualField;
+                return this.IsActualField;
             }
             set {
-                if ((this.IsAtualField.Equals(value) != true)) {
-                    this.IsAtualField = value;
-                    this.RaisePropertyChanged("IsAtual");
+                if ((this.IsActualField.Equals(value) != true)) {
+                    this.IsActualField = value;
+                    this.RaisePropertyChanged("IsActual");
                 }
             }
         }
@@ -346,22 +346,22 @@ namespace QA.ProductCatalog.Integration.Notifications {
     public interface INotificationService {
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/INotificationService/PushNotifications", ReplyAction="http://tempuri.org/INotificationService/PushNotificationsResponse")]
-        void PushNotifications(QA.ProductCatalog.Integration.Notifications.NotificationItem[] notifications, bool isStage, int userId, string userName, string method);
+        void PushNotifications(QA.ProductCatalog.Integration.Notifications.NotificationItem[] notifications, bool isStage, int userId, string userName, string method, string customerCode);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/INotificationService/PushNotifications", ReplyAction="http://tempuri.org/INotificationService/PushNotificationsResponse")]
-        System.Threading.Tasks.Task PushNotificationsAsync(QA.ProductCatalog.Integration.Notifications.NotificationItem[] notifications, bool isStage, int userId, string userName, string method);
+        System.Threading.Tasks.Task PushNotificationsAsync(QA.ProductCatalog.Integration.Notifications.NotificationItem[] notifications, bool isStage, int userId, string userName, string method, string customerCode);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/INotificationService/UpdateConfiguration", ReplyAction="http://tempuri.org/INotificationService/UpdateConfigurationResponse")]
-        void UpdateConfiguration();
+        void UpdateConfiguration(string customerCode);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/INotificationService/UpdateConfiguration", ReplyAction="http://tempuri.org/INotificationService/UpdateConfigurationResponse")]
-        System.Threading.Tasks.Task UpdateConfigurationAsync();
+        System.Threading.Tasks.Task UpdateConfigurationAsync(string customerCode);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/INotificationService/GetConfigurationInfo", ReplyAction="http://tempuri.org/INotificationService/GetConfigurationInfoResponse")]
-        QA.ProductCatalog.Integration.Notifications.ConfigurationInfo GetConfigurationInfo();
+        QA.ProductCatalog.Integration.Notifications.ConfigurationInfo GetConfigurationInfo(string customerCode);
         
         [System.ServiceModel.OperationContractAttribute(Action="http://tempuri.org/INotificationService/GetConfigurationInfo", ReplyAction="http://tempuri.org/INotificationService/GetConfigurationInfoResponse")]
-        System.Threading.Tasks.Task<QA.ProductCatalog.Integration.Notifications.ConfigurationInfo> GetConfigurationInfoAsync();
+        System.Threading.Tasks.Task<QA.ProductCatalog.Integration.Notifications.ConfigurationInfo> GetConfigurationInfoAsync(string customerCode);
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -391,28 +391,28 @@ namespace QA.ProductCatalog.Integration.Notifications {
                 base(binding, remoteAddress) {
         }
         
-        public void PushNotifications(QA.ProductCatalog.Integration.Notifications.NotificationItem[] notifications, bool isStage, int userId, string userName, string method) {
-            base.Channel.PushNotifications(notifications, isStage, userId, userName, method);
+        public void PushNotifications(QA.ProductCatalog.Integration.Notifications.NotificationItem[] notifications, bool isStage, int userId, string userName, string method, string customerCode) {
+            base.Channel.PushNotifications(notifications, isStage, userId, userName, method, customerCode);
         }
         
-        public System.Threading.Tasks.Task PushNotificationsAsync(QA.ProductCatalog.Integration.Notifications.NotificationItem[] notifications, bool isStage, int userId, string userName, string method) {
-            return base.Channel.PushNotificationsAsync(notifications, isStage, userId, userName, method);
+        public System.Threading.Tasks.Task PushNotificationsAsync(QA.ProductCatalog.Integration.Notifications.NotificationItem[] notifications, bool isStage, int userId, string userName, string method, string customerCode) {
+            return base.Channel.PushNotificationsAsync(notifications, isStage, userId, userName, method, customerCode);
         }
         
-        public void UpdateConfiguration() {
-            base.Channel.UpdateConfiguration();
+        public void UpdateConfiguration(string customerCode) {
+            base.Channel.UpdateConfiguration(customerCode);
         }
         
-        public System.Threading.Tasks.Task UpdateConfigurationAsync() {
-            return base.Channel.UpdateConfigurationAsync();
+        public System.Threading.Tasks.Task UpdateConfigurationAsync(string customerCode) {
+            return base.Channel.UpdateConfigurationAsync(customerCode);
         }
         
-        public QA.ProductCatalog.Integration.Notifications.ConfigurationInfo GetConfigurationInfo() {
-            return base.Channel.GetConfigurationInfo();
+        public QA.ProductCatalog.Integration.Notifications.ConfigurationInfo GetConfigurationInfo(string customerCode) {
+            return base.Channel.GetConfigurationInfo(customerCode);
         }
         
-        public System.Threading.Tasks.Task<QA.ProductCatalog.Integration.Notifications.ConfigurationInfo> GetConfigurationInfoAsync() {
-            return base.Channel.GetConfigurationInfoAsync();
+        public System.Threading.Tasks.Task<QA.ProductCatalog.Integration.Notifications.ConfigurationInfo> GetConfigurationInfoAsync(string customerCode) {
+            return base.Channel.GetConfigurationInfoAsync(customerCode);
         }
     }
 }

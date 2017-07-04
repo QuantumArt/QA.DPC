@@ -7,6 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 using QA.Core.DPC.UI.Controls;
 using QA.Core.Models.UI;
+using System.Web.Routing;
+using System.ComponentModel;
 
 namespace System.Web.Mvc
 {
@@ -72,6 +74,31 @@ namespace System.Web.Mvc
         public static HtmlString ReplaceNotesIfNeeded(this DependencyObject model, string text, bool htmlEncode = true)
         {
             return ReplaceNotesIfNeeded(model, new HtmlString(htmlEncode ? HttpUtility.HtmlEncode(text) : text));
+        }
+
+        public static MvcHtmlString Current(this UrlHelper helper, object substitutes)
+        {
+            var uri = helper.RequestContext.HttpContext.Request.Url;
+            var uriBuilder = new UriBuilder(uri);
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+       
+            foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(substitutes.GetType()))
+            {
+                var value = property.GetValue(substitutes) as string;
+
+                if (value == null)
+                {
+                    query.Remove(property.Name);
+                }
+                else
+                {
+                    query[property.Name] = value;
+                }
+            }
+
+            uriBuilder.Query = query.ToString();
+
+            return new MvcHtmlString(uriBuilder.ToString());
         }
     }
 }

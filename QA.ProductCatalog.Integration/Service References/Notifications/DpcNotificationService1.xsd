@@ -18,7 +18,7 @@
   <xs:complexType name="ConfigurationInfo">
     <xs:sequence>
       <xs:element minOccurs="0" name="Channels" nillable="true" type="tns:ArrayOfChannelInfo" />
-      <xs:element minOccurs="0" name="IsAtual" type="xs:boolean" />
+      <xs:element minOccurs="0" name="IsActual" type="xs:boolean" />
       <xs:element minOccurs="0" name="NotificationProvider" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Started" type="xs:dateTime" />
     </xs:sequence>

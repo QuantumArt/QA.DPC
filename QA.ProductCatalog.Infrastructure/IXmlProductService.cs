@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 

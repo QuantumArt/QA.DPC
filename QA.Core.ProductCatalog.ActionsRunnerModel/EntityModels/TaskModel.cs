@@ -8,7 +8,6 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels
 {
     public partial class TaskModel
     {
-
         public int ID { get; set; }
         public System.DateTime CreatedTime { get; set; }
         public Nullable<System.DateTime> LastStatusChangeTime { get; set; }

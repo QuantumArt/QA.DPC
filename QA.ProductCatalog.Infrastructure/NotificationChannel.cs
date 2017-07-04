@@ -36,8 +36,8 @@ namespace QA.ProductCatalog.Infrastructure
 		/// </summary>
 		public string XPathFilter
 		{
-			get { return _xPathFilter; }
-			set
+			get => _xPathFilter;
+		    set
 			{
 				_xPathFilter = value;
 
@@ -53,32 +53,24 @@ namespace QA.ProductCatalog.Infrastructure
 
         public string Language { get; set; }
 
-        public CultureInfo Culture
-        {
-            get { return string.IsNullOrEmpty(Language) ? CultureInfo.InvariantCulture : CultureInfo.GetCultureInfo(Language); }
-        }
+        public CultureInfo Culture => string.IsNullOrEmpty(Language) ? CultureInfo.InvariantCulture : CultureInfo.GetCultureInfo(Language);
 
-        public override bool Equals(object obj)
-        {
-            var channel = obj as NotificationChannel;
-
-            if (channel == null)
+	    public bool IsEqualTo(NotificationChannel channel)
+	    {
+	        if (channel == null)
             {
                 return false;
             }
-            else
-            {
-                return
-                    DegreeOfParallelism == channel.DegreeOfParallelism &&
-                    Filter == channel.Filter &&
-                    Format == channel.Format &&
-                    Formatter == channel.Formatter &&
-                    IsStage == channel.IsStage &&
-                    MediaType == channel.MediaType &&
-                    Name == channel.Name &&
-                    Url == channel.Url &&
-                    Language == channel.Language;
-            }
-        }
+	        return
+	            DegreeOfParallelism == channel.DegreeOfParallelism &&
+	            Filter == channel.Filter &&
+	            Format == channel.Format &&
+	            Formatter == channel.Formatter &&
+	            IsStage == channel.IsStage &&
+	            MediaType == channel.MediaType &&
+	            Name == channel.Name &&
+	            Url == channel.Url &&
+	            Language == channel.Language;
+	    }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.ServiceProcess;
 using System.Threading;
+using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsService.Properties;
 using QA.Core.ProductCatalog.TaskScheduler;
@@ -20,25 +21,40 @@ namespace QA.Core.ProductCatalog.ActionsService
 
         protected override void OnStart(string[] args)
         {
+            Start();
+        }
+
+        public void Start()
+        {
             UnityConfig.Configure();
 
-            _actionRunners = new ITasksRunner[Settings.Default.NumberOfThreads];
+            var connectionProvider = ObjectFactoryBase.Resolve<IConnectionProvider>();
+            var customerProvider = ObjectFactoryBase.Resolve<ICustomerProvider>();
+            var customers = customerProvider.GetCustomers();
+            var threads = Settings.Default.NumberOfThreads;
 
-            for (int i = 0; i < _actionRunners.Length; i++)
+            _actionRunners = new ITasksRunner[customers.Length * threads];
+
+            for (int j = 0; j < customers.Length; j++)
             {
-                _actionRunners[i] = ObjectFactoryBase.Resolve<ITasksRunner>();
+                for (int i = 0; i < threads; i++)
+                {
+                    var customerCode = customers[j].CustomerCode;
+                    var runner = ObjectFactoryBase.Resolve<ITasksRunner>();
+                    _actionRunners[j * threads + i] = runner;
 
-                var actionRunnerThread = new Thread(_actionRunners[i].Run);
+                    var actionRunnerThread = new Thread(runner.Run);
 
-                actionRunnerThread.Start();
+                    actionRunnerThread.Start(customerCode);
+                }
             }
 
-	        if (Settings.Default.EnableSheduleProcess)
-	        {
-				_taskSchedulerRunner = ObjectFactoryBase.Resolve<TaskSchedulerRunner>();
+            if (Settings.Default.EnableSheduleProcess)
+            {
+                _taskSchedulerRunner = ObjectFactoryBase.Resolve<TaskSchedulerRunner>();
 
-				_taskSchedulerRunner.Start();
-	        }
+                _taskSchedulerRunner.Start();
+            }
         }
 
         protected override void OnStop()

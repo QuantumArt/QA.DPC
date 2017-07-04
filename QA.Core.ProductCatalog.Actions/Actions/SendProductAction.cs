@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
@@ -23,22 +24,24 @@ namespace QA.Core.ProductCatalog.Actions.Actions
         private readonly IArticleService _articleService;
         private readonly ILogger _logger;
         private readonly IFreezeService _freezeService;
+        private readonly IConnectionProvider _provider;
 
 
         internal class Local
         {
             public IProductService ProductService { get; set; }
             public IXmlProductService XmlProductService { get; set; }
-            public IQPNotificationService QPNotificationService { get; set; }
+            public IQPNotificationService QpNotificationService { get; set; }
 
         }
 
-        public SendProductAction(ISettingsService settingsService, IArticleService articleService, ILogger logger, IFreezeService freezeService)
+        public SendProductAction(ISettingsService settingsService, IArticleService articleService, ILogger logger, IFreezeService freezeService, IConnectionProvider provider)
         {
             _settingsService = settingsService;
             _logger = logger;
             _articleService = articleService;
             _freezeService = freezeService;
+            _provider = provider;
         }
 
         public override string Process(ActionContext context)
@@ -58,7 +61,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             if (context.ContentItemIds == null || context.ContentItemIds.Length == 0)
             {
-                productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId);
+                productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetConnection());
 
                 articleIdsToCheckRelationsByContentId = new Dictionary<int, int[]>
                 {
@@ -69,7 +72,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             {
                 productIds = Helpers.ExtractRegionalProductIdsFromMarketing(context.ContentItemIds, _articleService, marketingProductContentId, productsFieldName);
 
-                articleIdsToCheckRelationsByContentId = Helpers.GetContentIds(productIds);
+                articleIdsToCheckRelationsByContentId = Helpers.GetContentIds(productIds, _provider.GetConnection());
             }
 
             if (productIds.Length == 0)
@@ -125,7 +128,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     return new Local
                     {
                         ProductService = ObjectFactoryBase.Resolve<IProductService>(),
-                        QPNotificationService = ObjectFactoryBase.Resolve<IQPNotificationService>(),
+                        QpNotificationService = ObjectFactoryBase.Resolve<IQPNotificationService>(),
                         XmlProductService = ObjectFactoryBase.Resolve<IXmlProductService>()
                     };
                 },
@@ -143,7 +146,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         var localInvisibleOrArchivedIds = new HashSet<int>();
 
 
-                        Article[] prodsStage = tl.ProductService.GetProductsByIds(idsToProcess.ToArray(), false);
+                        Article[] prodsStage = tl.ProductService.GetProductsByIds(idsToProcess.ToArray());
                         IEnumerable<string> ignoredStatuses = ignoredStatus?.Split(',') ??
                                                               Enumerable.Empty<string>().ToArray();
                         var excludedStage = prodsStage.Where(n => ignoredStatuses.Contains(n.Status)).ToArray();
@@ -263,17 +266,17 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         foreach (var id in localInvisibleOrArchivedIds)
                             invisibleOrArchivedIds.Add(id);
 
-                        int sectionSize = Math.Min(bundleSize, (byte)5);
+                        int sectionSize = Math.Min(bundleSize, 5);
 
                         var tasks =
                                 ArticleFilter.LiveFilter.Filter(prodsLive)
                                 .Section(sectionSize)
-                                .Select(z => tl.QPNotificationService
+                                .Select(z => tl.QpNotificationService
                                     .SendProductsAsync(z.ToArray(), false, context.UserName, context.UserId, localize, channels)
                                     .ContinueWith(y => UpdateFilteredIds(filteredInLive, y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed)))
                                 .Concat(ArticleFilter.DefaultFilter.Filter(prodsStage)
                                     .Section(sectionSize)
-                                    .Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), true, context.UserName, context.UserId, localize, channels)
+                                    .Select(z => tl.QpNotificationService.SendProductsAsync(z.ToArray(), true, context.UserName, context.UserId, localize, channels)
                                     .ContinueWith(y => UpdateFilteredIds(filteredInStage, y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed))))
                                 .ToArray();
 

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Serialization;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -45,13 +46,13 @@ namespace QA.Core.DPC.Loader
 			public string AbsoluteUrl { get; set; }
 		}
 
-		public JsonProductService(string connectionString, ILogger logger, Quantumart.QP8.BLL.Services.API.FieldService fieldService, VirtualFieldPathEvaluator virtualFieldPathEvaluator, IRegionTagReplaceService regionTagReplaceService)
+		public JsonProductService(IConnectionProvider connectionProvider, ILogger logger, Quantumart.QP8.BLL.Services.API.FieldService fieldService, VirtualFieldPathEvaluator virtualFieldPathEvaluator, IRegionTagReplaceService regionTagReplaceService)
 		{
 			_logger = logger;
 
 			_fieldService = fieldService;
-
-			_dbConnector = new DBConnector(connectionString);
+            var connectionString = connectionProvider.GetConnection();
+            _dbConnector = new DBConnector(connectionString);
 
 			_virtualFieldPathEvaluator = virtualFieldPathEvaluator;
 

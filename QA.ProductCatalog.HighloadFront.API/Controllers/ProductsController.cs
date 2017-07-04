@@ -69,7 +69,7 @@ namespace QA.ProductCatalog.HighloadFront.Controllers
             var options = ProductOptionsParser.Parse(Request.GetQueryNameValuePairs());
             try
             {
-                var stream = await Manager.SearchStreamAsync(q, options, language, state);
+                var stream = await Manager.SearchStreamAsync(options, language, state);
                 return GetResponse(stream);
             }
             catch (ElasticsearchClientException ex)
