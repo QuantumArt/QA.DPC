@@ -279,10 +279,6 @@
     <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\QA.Core.DPC.QP.API\QA.Core.DPC.QP.API.csproj">
-      <Project>{e4b62953-ca39-4d73-9473-21c64101de17}</Project>
-      <Name>QA.Core.DPC.QP.API</Name>
-    </ProjectReference>
     <ProjectReference Include="..\QA.Core.DocumentGenerator\QA.Core.DocumentGenerator.csproj">
       <Project>{7bf30688-370a-4290-89e4-ef9181d373e4}</Project>
       <Name>QA.Core.DocumentGenerator</Name>
@@ -302,6 +298,10 @@
     <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj">
       <Project>{30ce970f-dc61-40b7-9625-44a70e8beaf8}</Project>
       <Name>QA.Core.DPC.Loader</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.QP.API\QA.Core.DPC.QP.API.csproj">
+      <Project>{e4b62953-ca39-4d73-9473-21c64101de17}</Project>
+      <Name>QA.Core.DPC.QP.API</Name>
     </ProjectReference>
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj">
       <Project>{d894f71e-c027-4b58-8930-1d44a65727cb}</Project>
