@@ -13,27 +13,29 @@ namespace QA.ProductCatalog.WebApi.Controllers
 {
 	public class ProductController : ApiController
 	{
-		private readonly IProductAPIService _productService;
-		private readonly ILogger _logger;
+		private readonly IProductAPIService _databaseProductService;
+        private readonly IProductSimpleAPIService _tarantoolProductService;
+        private readonly ILogger _logger;
 
-		public ProductController(IProductAPIService productService, ILogger logger)
+		public ProductController(IProductAPIService databaseProductService, IProductSimpleAPIService tarantoolProductService, ILogger logger)
 		{
-			_productService = productService;
-			_logger = logger;
+			_databaseProductService = databaseProductService;
+            _tarantoolProductService = tarantoolProductService;
+            _logger = logger;
 		}
 
 		[AcceptVerbs("GET")]
 		public Dictionary<string, object>[] List(string slug, string version, bool isLive = false, long startRow = 0, long pageSize = int.MaxValue)
 		{
 			_logger.LogDebug(() => new { slug, version, isLive, startRow, pageSize }.ToString());
-			return _productService.GetProductsList(slug, version, isLive, startRow, pageSize);
+			return _databaseProductService.GetProductsList(slug, version, isLive, startRow, pageSize);
 		}
 
 		[AcceptVerbs("GET")]
 		public int[] Search(string slug, string version, string query, bool isLive = false)
 		{
 			_logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
-			return _productService.SearchProducts(slug, version, query, isLive);
+			return _databaseProductService.SearchProducts(slug, version, query, isLive);
 		}
 
 		public Article Get(string slug, string version, int id, bool isLive = false, bool includeRegionTags=false)
@@ -44,28 +46,42 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
 		    HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
 
-            var product = _productService.GetProduct(slug, version, id, isLive);
+            var product = _databaseProductService.GetProduct(slug, version, id, isLive);
 
             return product;
 		}
 
-		public void Post(string slug, string version, Article product, bool isLive = false)
+        [AcceptVerbs("GET")]
+        public Article TarantoolGet(int productId, int definitionId, bool isLive = false, bool includeRegionTags = false)
+        {
+            _logger.LogDebug(() => new { productId, definitionId, isLive }.ToString());
+
+            HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+
+            HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
+
+            var product = _tarantoolProductService.GetProduct(productId, definitionId, isLive);
+
+            return product;
+        }
+
+        public void Post(string slug, string version, Article product, bool isLive = false)
 		{
 			_logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId, isLive }.ToString());
-			_productService.UpdateProduct(slug, version, product, isLive);
+			_databaseProductService.UpdateProduct(slug, version, product, isLive);
 		}
 
 		public void Delete(int id)
 		{
 			_logger.LogDebug(() => new { id }.ToString());
-			_productService.CustomAction("DeleteAction", id);
+			_databaseProductService.CustomAction("DeleteAction", id);
 		}
 
 		[AcceptVerbs("POST")]
 		public void CustomAction(string name, int id, Dictionary<string, string> parameters)
 		{
 			_logger.LogDebug(() => new { name, id }.ToString());
-			_productService.CustomAction(name, id, parameters);
+			_databaseProductService.CustomAction(name, id, parameters);
 		}
 
 		[AcceptVerbs("GET")]
@@ -73,7 +89,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 		{
 			_logger.LogDebug(() => new { slug, version, forList }.ToString());
 
-			var definition = _productService.GetProductDefinition(slug, version, forList);
+			var definition = _databaseProductService.GetProductDefinition(slug, version, forList);
 
             HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
 

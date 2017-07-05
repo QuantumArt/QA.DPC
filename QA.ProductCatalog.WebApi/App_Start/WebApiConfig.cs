@@ -52,7 +52,14 @@ namespace QA.ProductCatalog.WebApi
 			   constraints: new { id = @"\d+", format = FormatConstraints }
 		   );
 
-			config.Routes.MapHttpRoute(
+            config.Routes.MapHttpRoute(
+                name: "GetTarantoolProduct",
+                routeTemplate: $"api/{customerCode}tarantool/{{format}}/{{productId}}",
+                defaults: new { controller = "Product" },
+                constraints: new { productId = @"\d+", format = FormatConstraints }
+            );
+
+            config.Routes.MapHttpRoute(
 				name: "PostProduct",
 				routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
 				defaults: new { controller = "Product", action = "Post" },

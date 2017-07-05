@@ -27,7 +27,8 @@ namespace QA.Core.DPC.Notification.Services
 				TimeOut = GetIntValue(SettingsTitles.NOTIFICATION_SENDER_TIMEOUT),
 				WaitIntervalAfterErrors = GetIntValue(SettingsTitles.NOTIFICATION_SENDER_WAIT_INTERVAL_AFTER_ERRORS),
 				Channels = (_notificationChannelProvider.GetArticles() ?? new NotificationChannel[0]).ToList(),
-			};
+                Autopublish = GetBoolValue(SettingsTitles.NOTIFICATION_SENDER_AUTOPUBLISH, false)
+            };
 		}
 
 	    #endregion
@@ -37,6 +38,20 @@ namespace QA.Core.DPC.Notification.Services
 		{
 			return int.Parse(_settingsService.GetSetting(title));
 		}
-		#endregion
-	}
+
+        private bool GetBoolValue(SettingsTitles title, bool defaultValue)
+        {
+            var value = _settingsService.GetSetting(title);
+
+            if (string.IsNullOrEmpty(value))
+            {
+                return false;
+            }
+            else
+            {
+                return bool.Parse(value);
+            }
+        }
+        #endregion
+    }
 }
