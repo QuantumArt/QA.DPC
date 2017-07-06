@@ -1,5 +1,11 @@
-﻿using System;
+﻿using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Service;
+using QA.ProductCatalog.Infrastructure;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.ServiceModel;
@@ -7,17 +13,11 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using QA.Core.DPC.Service;
 using System.Threading.Tasks.Schedulers;
-using System.Diagnostics;
-using QA.ProductCatalog.Infrastructure;
-using System.Collections.Concurrent;
-using QA.Core.DPC.QP.Models;
-using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC
 {
-	public partial class NotificationSender : ServiceBase
+    public partial class NotificationSender : ServiceBase
 	{
         private const string AutopublishKey = "Autopublish";
 		public static ConcurrentDictionary<string, NotificationSenderConfig> ConfigDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
@@ -112,13 +112,23 @@ namespace QA.Core.DPC
 		    if (customerCode != SingleCustomerProvider.Key)
 		    {
 		        var autopublishKey = GetKey(AutopublishKey, customerCode);
+
                 if (_lockers.ContainsKey(autopublishKey))
 		        {
 		            var sender = items.First(itm => itm.Key == autopublishKey).Sender;
-		            sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval));
-		            logger.Info("Updete autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
-		        }
-		        else
+
+                    if (config.Autopublish)
+                    {
+                        sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval));
+                        logger.Info("Updete autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+                    }
+                    else
+                    {
+                        sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, config.CheckInterval));
+                        logger.Info("Stop autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+                    }
+                }
+		        else if (config.Autopublish)
 		        {
 		            var state = new ChannelState { BlockState = null, ErrorsCount = 0 };
 		            _lockers.Add(autopublishKey, state);
@@ -140,10 +150,6 @@ namespace QA.Core.DPC
 		            logger.Info("Stop sender for {0} whith delay {1}", item.Key, delay);
 		        }
             }
-
-
-
-
 
             logger.Info("end UpdateConfiguration for {0}", customerCode);
         }

@@ -131,9 +131,9 @@ namespace QA.ProductCatalog.Integration
                     }).ToArray();
 
             }
-            else if (channels.Any())
+            else if (channels.Any(c => !c.Autopublish))
             {
-                channels = channels.Where(c => c.IsStage == isStage).ToArray();
+                channels = channels.Where(c => c.IsStage == isStage && !c.Autopublish).ToArray();
 
                 if (channels.Any())
                 {

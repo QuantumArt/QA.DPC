@@ -97,8 +97,7 @@ namespace QA.Core.ProductCatalog.ActionsService
                 container.RegisterType<IVersionedCacheProvider>(new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
                 container.RegisterType<ICacheItemWatcher>(new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));
 
-                IntegrationContainerConfiguration.RegisterQpMonitoring(container);
-
+                container.RegisterQpMonitoring();
             }
             else
             {
@@ -109,8 +108,7 @@ namespace QA.Core.ProductCatalog.ActionsService
 
                 container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
 
-                IntegrationContainerConfiguration.RegisterNonQpMonitoring(container);
-
+                container.RegisterNonQpMonitoring();
             }
 
             container.LoadConfiguration("Default");

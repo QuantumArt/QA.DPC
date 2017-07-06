@@ -154,7 +154,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 container.RegisterType<ICacheItemWatcher>(
                     new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));
 
-                IntegrationContainerConfiguration.RegisterQpMonitoring(container);
+                container.RegisterQpMonitoring();
             }
             else
             {
@@ -166,7 +166,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                     container.Resolve<IContentInvalidator>()));
                 container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
 
-                IntegrationContainerConfiguration.RegisterNonQpMonitoring(container);
+                container.RegisterNonQpMonitoring();
             }
 
 

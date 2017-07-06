@@ -35,7 +35,12 @@ namespace QA.ProductCatalog.Infrastructure
 		/// </summary>
 		public int TimeOut { get; set; }
 
-		public List<NotificationChannel> Channels { get; set; }
+        /// <summary>
+        /// Автопубликация
+        /// </summary>
+        public bool Autopublish { get; set; }
+
+        public List<NotificationChannel> Channels { get; set; }
 
         public bool IsEqualTo(NotificationSenderConfig config)
         {
@@ -50,6 +55,7 @@ namespace QA.ProductCatalog.Infrastructure
                 PackageSize == config.PackageSize &&
                 TimeOut == config.TimeOut &&
                 WaitIntervalAfterErrors == config.WaitIntervalAfterErrors &&
+                Autopublish == config.Autopublish &&
                 Channels.Zip(config.Channels, (f,s) => f.IsEqualTo(s)).All(s => s);
         }
     }

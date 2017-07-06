@@ -2,9 +2,9 @@
 using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Autopublish.Models;
 using System;
-using System.Linq;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Net;
 
 namespace QA.Core.DPC.QP.Autopublish.Services

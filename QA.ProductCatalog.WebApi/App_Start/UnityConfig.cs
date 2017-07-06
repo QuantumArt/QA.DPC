@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Web;
-using Microsoft.Practices.Unity;
+﻿using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
 using QA.Core.Cache;
 using QA.Core.DocumentGenerator;
+using QA.Core.DPC.API.Container;
+using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.ProductCatalog.Actions.Services;
-using QA.ProductCatalog.Infrastructure;
-using QA.Core.ProductCatalog;
-using QA.Core.DPC.API.Container;
-using QA.Core.DPC.Formatters.Configuration;
-using QA.ProductCatalog.Integration;
 using QA.Core.DPC.Notification.Services;
+using QA.Core.DPC.QP.API.Container;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
+using QA.Core.ProductCatalog.Actions.Services;
+using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Integration;
+using QA.ProductCatalog.Integration.Configuration;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
-	public static class UnityConfig
+    public static class UnityConfig
 	{
 		public static IUnityContainer Configure()
 		{
@@ -36,8 +32,9 @@ namespace QA.ProductCatalog.WebApi.App_Start
             unityContainer.AddNewExtension<QPContainerConfiguration>();
             unityContainer.AddNewExtension<FormattersContainerConfiguration>();
 			unityContainer.AddNewExtension<APIContainerConfiguration>();
+            unityContainer.AddNewExtension<QPAPIContainerConfiguration>();
 
-			unityContainer.RegisterType<IUserProvider, ConfigurableUserProvider>();
+            unityContainer.RegisterType<IUserProvider, ConfigurableUserProvider>();
 
 			unityContainer.RegisterType<ISettingsService, SettingsFromContentService>();
 
@@ -55,9 +52,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
 
 			unityContainer.RegisterType<IDocumentGenerator, DocumentGenerator>();
 
-			unityContainer.RegisterType<INotesService, NotesFromContentService>();
-		
-            unityContainer.RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>(new InjectionConstructor(typeof(IConnectionProvider), true));
+			unityContainer.RegisterType<INotesService, NotesFromContentService>();            
 
             unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 
@@ -92,6 +87,8 @@ namespace QA.ProductCatalog.WebApi.App_Start
                 unityContainer.RegisterType<ICacheProvider>(new InjectionFactory(c => c.Resolve<ICacheProvider>(c.GetCustomerCode())));
                 unityContainer.RegisterType<IVersionedCacheProvider>(new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
                 unityContainer.RegisterType<ICacheItemWatcher>(new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));
+
+                unityContainer.RegisterQpMonitoring();
             }
             else
             {
@@ -106,6 +103,8 @@ namespace QA.ProductCatalog.WebApi.App_Start
                 unityContainer.RegisterInstance<ICacheProvider>(cacheProvider);
                 unityContainer.RegisterInstance<IVersionedCacheProvider>(cacheProvider);
                 unityContainer.RegisterInstance<ICacheItemWatcher>(watcher);
+
+                unityContainer.RegisterNonQpMonitoring();
             }
 
             return unityContainer;
