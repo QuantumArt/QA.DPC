@@ -1,6 +1,7 @@
 ﻿using QA.Core.DPC.QP.Autopublish.Models;
 using QA.ProductCatalog.Infrastructure;
 using System;
+using System.Linq;
 
 namespace QA.Core.DPC.QP.Autopublish.Services
 {
@@ -8,12 +9,14 @@ namespace QA.Core.DPC.QP.Autopublish.Services
     {
         private readonly IAutopublishProvider _autopublishProvider;
         private readonly INotificationAutopublishProvider _notificationProvider;
+        private readonly INotificationProvider _configurationProvider;
         private readonly ILogger _logger;
 
-        public AutopublishService(IAutopublishProvider autopublishProvider, INotificationAutopublishProvider notificationProvider, ILogger logger)
+        public AutopublishService(IAutopublishProvider autopublishProvider, INotificationAutopublishProvider notificationProvider, INotificationProvider configurationProvider, ILogger logger)
         {
             _autopublishProvider = autopublishProvider;
             _notificationProvider = notificationProvider;
+            _configurationProvider = configurationProvider;
             _logger = logger;
         }
 
@@ -22,26 +25,33 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             var customerCode = data;
 
             try
-            {                
-                var items = _autopublishProvider.Peek(customerCode);
+            {
+                var channels = GetChannels();
 
-                foreach (var item in items)
+                if (channels.Any())
                 {
-                    try
-                    {
-                        var descriptor = _autopublishProvider.GetProduct(item);
+                    var items = _autopublishProvider.Peek(customerCode);
 
-                        if (descriptor != null)
-                        {
-                            var channels = GetChannels(item);
-                            _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channels, true, 1, "Admin", "PUT", customerCode);
-                            _autopublishProvider.Dequeue(item);
-                            _logger.LogTrace(() => $"Product {item.ProductId} was autopublished");
-                        }
-                    }
-                    catch (Exception ex)
+                    if (items.Any())
                     {
-                        _logger.ErrorException($"Can't autopublish product {item.ProductId}", ex);
+                        foreach (var item in items)
+                        {
+                            try
+                            {
+                                var descriptor = _autopublishProvider.GetProduct(item);
+
+                                if (descriptor != null)
+                                {
+                                    _logger.LogInfo(() => $"Autopublish product {item.ProductId} for {customerCode} and channels ['{string.Join("', '", channels)}']");
+                                    _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channels, true, 1, "Admin", "PUT", customerCode);
+                                    _autopublishProvider.Dequeue(item);                                    
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.ErrorException($"Can't autopublish product {item.ProductId}", ex);
+                            }
+                        }
                     }
                 }
             }
@@ -51,9 +61,14 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             }
         }
 
-        private string[] GetChannels(ProductItem item)
+        private string[] GetChannels()
         {
-            return new string[] { item.Slug };
+            return _configurationProvider
+                .GetConfiguration()
+                .Channels
+                .Where(c => c.Autopublish)
+                .Select(c => c.Name)
+                .ToArray();
         }
     }
 }

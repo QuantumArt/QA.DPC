@@ -50,8 +50,9 @@ namespace QA.ProductCatalog.Infrastructure
 		public string Format { get; set; }
 		public string Formatter { get; set; }
 		public string MediaType { get; set; }
-
         public string Language { get; set; }
+        public bool Autopublish { get; set; }
+
 
         public CultureInfo Culture => string.IsNullOrEmpty(Language) ? CultureInfo.InvariantCulture : CultureInfo.GetCultureInfo(Language);
 
@@ -61,16 +62,17 @@ namespace QA.ProductCatalog.Infrastructure
             {
                 return false;
             }
-	        return
-	            DegreeOfParallelism == channel.DegreeOfParallelism &&
-	            Filter == channel.Filter &&
-	            Format == channel.Format &&
-	            Formatter == channel.Formatter &&
-	            IsStage == channel.IsStage &&
-	            MediaType == channel.MediaType &&
-	            Name == channel.Name &&
-	            Url == channel.Url &&
-	            Language == channel.Language;
+            return
+                DegreeOfParallelism == channel.DegreeOfParallelism &&
+                Filter == channel.Filter &&
+                Format == channel.Format &&
+                Formatter == channel.Formatter &&
+                IsStage == channel.IsStage &&
+                MediaType == channel.MediaType &&
+                Name == channel.Name &&
+                Url == channel.Url &&
+                Language == channel.Language &&
+                Autopublish == channel.Autopublish;
 	    }
     }
 }
