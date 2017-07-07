@@ -26,8 +26,10 @@ namespace QA.Core.Models.Configuration
 		public virtual string FieldName { get; set; }
 
 		public virtual int FieldId { get; set; }
+        public virtual string FieldType { get; set; }
+        public NumberType? NumberType { get; set; }
 
-		internal virtual void FillChildContents(List<Content> parents)
+        internal virtual void FillChildContents(List<Content> parents)
 		{
 			return;
 		}

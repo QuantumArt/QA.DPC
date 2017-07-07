@@ -28,10 +28,13 @@ namespace QA.ProductCatalog.WebApi
 		private const string JsonMediaType = "application/json";
 		private const string PdfMediaType = "application/pdf";
 		private const string BinaryMediaType = "application/octet-stream";
-		private const string FormatConstraints = XamlMappingValue + "|" + XmlMappingValue + "|" + JsonMappingValue + "|" + PdfMappingValue + "|" + BinaryMappingValue;
-		#endregion
+        private const string JsonDefinitionMappingValue = "jsonDefinition";
+        private const string JsonDefinition2MappingValue = "jsonDefinition2";
+        private static readonly string FormatConstraints = $"{XamlMappingValue}|{XmlMappingValue}|{JsonMappingValue}|{PdfMappingValue}|{BinaryMappingValue}|{JsonDefinitionMappingValue}|{JsonDefinitionMappingValue}";
 
-		public static void Register(HttpConfiguration config)
+        #endregion
+
+        public static void Register(HttpConfiguration config)
 		{
 			#region IOC container
 			var container = UnityConfig.Configure();
@@ -122,13 +125,17 @@ namespace QA.ProductCatalog.WebApi
 			config.Formatters.AddModelMediaTypeFormatter<BinaryModelFormatter<int[]>, int[]>(container, BinaryMappingValue, BinaryMediaType, RegisterMediaTypeMappings);
 			config.Formatters.AddModelMediaTypeFormatter<BinaryModelFormatter<Dictionary<string, object>[]>, Dictionary<string, object>[]>(container, BinaryMappingValue, BinaryMediaType, RegisterMediaTypeMappings);
 			config.Formatters.AddModelMediaTypeFormatter<BinaryModelFormatter<Dictionary<string, string>>, Dictionary<string, string>>(container, BinaryMappingValue, BinaryMediaType, RegisterMediaTypeMappings);
-			var unsupportedMediatypeFormatter = new ResponseExceptionMediaTypeFormatter(HttpStatusCode.UnsupportedMediaType, PdfMediaType);
+            config.Formatters.AddModelMediaTypeFormatter<JsonDefinitionSchemaFormatter, Content>(container, JsonDefinitionMappingValue, JsonMediaType, RegisterMediaTypeMappings);
+            config.Formatters.AddModelMediaTypeFormatter<JsonDefinitionSchemaClassifiersAsBackwardsFormatter, Content>(container, JsonDefinition2MappingValue, JsonMediaType, RegisterMediaTypeMappings);
+
+            var unsupportedMediatypeFormatter = new ResponseExceptionMediaTypeFormatter(HttpStatusCode.UnsupportedMediaType, PdfMediaType);
 			config.Formatters.Add(unsupportedMediatypeFormatter);
 			config.Formatters.Add(new XmlMediaTypeFormatter());
 			config.Formatters.Add(new JsonMediaTypeFormatter());			
 			RegisterMediaTypeMappings(config.Formatters.JsonFormatter, JsonMappingValue, JsonMediaType);
 			RegisterMediaTypeMappings(config.Formatters.XmlFormatter, XmlMappingValue, XmlMediaType);
-			RegisterMediaTypeMappings(unsupportedMediatypeFormatter, PdfMappingValue, PdfMediaType);
+            RegisterMediaTypeMappings(config.Formatters.JsonFormatter, JsonDefinitionMappingValue, JsonMediaType);
+            RegisterMediaTypeMappings(unsupportedMediatypeFormatter, PdfMappingValue, PdfMediaType);
 			#endregion
 
 			#region Filters
