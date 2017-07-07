@@ -61,15 +61,13 @@ namespace QA.Core.DPC.Formatters.Services
             {
                 jObject["Content"] = VisitDefinition(product, new List<Content>(), new Context(fieldService, TreatClassifiersAsBackwardFields));
             }
-            using (var textWriter = new StreamWriter(stream))
-            {
-                using (var writer = new JsonTextWriter(textWriter))
-                {
-                    writer.Formatting = Newtonsoft.Json.Formatting.Indented;
-                    jObject.WriteTo(writer);
-                }
 
-            }
+            var textWriter = new StreamWriter(stream);
+            var writer = new JsonTextWriter(textWriter);
+            writer.Formatting = Newtonsoft.Json.Formatting.Indented;
+            jObject.WriteTo(writer);
+
+            textWriter.Flush();
 
             return Task.FromResult(0);
         }
@@ -91,7 +89,18 @@ namespace QA.Core.DPC.Formatters.Services
 
             JObject currentContent = new JObject();
             currentContent["ContentId"] = content.ContentId;
-            currentContent["ContentName"] = content.ContentName;
+
+            if (!string.IsNullOrEmpty(content.ContentName))
+            {
+                currentContent["ContentName"] = content.ContentName;
+            }
+            else
+            {
+                //todo: get contentname from BLL if empty, so hardcode it
+                //HARDCODE                                
+                currentContent["ContentName"] = $"content_{content.GetHashCode()}_generated";
+            }
+
             currentContent["PlainField"] = new JArray(AddFieldData(GetPlainFields(content, fieldService), fields)
                 .Select(x => ProcessFieldBase(x)));
 
@@ -143,33 +152,33 @@ namespace QA.Core.DPC.Formatters.Services
                           .Cast<ExtensionField>();
         }
 
-        private static IEnumerable<Field> GetBackwardsWithClassifiers(Content content, Context fieldService)
+        private static IEnumerable<Field> GetBackwardsWithClassifiers(Content content, Context context)
         {
             var fields = content.Fields
                 .Where(ExactType<BackwardRelationField>())
                 .OfType<BackwardRelationField>();
 
-            var additionalFields = GetAdditionalBackwardFields(content, fieldService)
+            var additionalFields = GetAdditionalBackwardFields(content, context)
                 .ToArray();
 
             return fields.Concat(additionalFields);
 
         }
 
-        private static IEnumerable<BackwardRelationField> GetAdditionalBackwardFields(Content content, Context fieldService)
+        private static IEnumerable<BackwardRelationField> GetAdditionalBackwardFields(Content content, Context context)
         {
-            if (!fieldService.treatClassifiersAsBackwardFields)
+            if (!context.treatClassifiersAsBackwardFields)
                 yield break;
 
             var classifiers = GetClassifiers(content);
 
-            var fields = GetFieldsFromDB(content, fieldService);
+            var fields = GetFieldsFromDB(content, context);
 
             foreach (var classifier in classifiers)
             {
                 foreach (var relatedContent in classifier.Contents)
                 {
-                    var aggField = GetFieldsFromDB(relatedContent, fieldService)
+                    var aggField = GetFieldsFromDB(relatedContent, context)
                         .Where(x => x.Aggregated)
                         .FirstOrDefault();
 
@@ -187,23 +196,23 @@ namespace QA.Core.DPC.Formatters.Services
 
         }
 
-        private static IEnumerable<Field> GetPlainFields(Content content, Context fieldService)
+        private static IEnumerable<Field> GetPlainFields(Content content, Context context)
         {
             var fields = content.Fields.Where(ExactType<PlainField>());
             if (content.LoadAllPlainFields)
             {
-                PlainField[] additionalFields = GetAdditional(content, fieldService);
+                PlainField[] additionalFields = GetAdditional(content, context);
 
                 return fields.Concat(additionalFields);
             }
             return fields;
         }
 
-        private static PlainField[] GetAdditional(Content content, Context fieldService)
+        private static PlainField[] GetAdditional(Content content, Context context)
         {
-            return fieldService.GetOrAdd($"GetAdditional_{content.ContentId}", () =>
+            return context.GetOrAdd($"GetAdditional_{content.ContentId}", () =>
             {
-                var fields = GetFieldsFromDB(content, fieldService).Where(x =>
+                var fields = GetFieldsFromDB(content, context).Where(x =>
                     !x.IsClassifier && x.LinkId == null && x.RelationId == null);
 
                 var additionalFields = fields.Where(x => !content.Fields.Any(y => y.FieldId == x.Id))
@@ -214,28 +223,28 @@ namespace QA.Core.DPC.Formatters.Services
             });
         }
 
-        private static IEnumerable<Quantumart.QP8.BLL.Field> GetFieldsFromDB(Content content, Context fieldService)
+        private static IEnumerable<Quantumart.QP8.BLL.Field> GetFieldsFromDB(Content content, Context context)
         {
-            return fieldService.GetOrAdd($"GetFieldsFromDB_{content.ContentId}", () =>
+            return context.GetOrAdd($"GetFieldsFromDB_{content.ContentId}", () =>
             {
-                return fieldService.fieldService.List(content.ContentId);
+                return context.fieldService.List(content.ContentId);
             });
         }
 
-        private static JObject ProcessEntityField(EntityField x, List<Content> visited, Context fieldService)
+        private static JObject ProcessEntityField(EntityField x, List<Content> visited, Context context)
         {
             JObject f = ProcessFieldBase(x);
 
-            f["Content"] = VisitDefinition(x.Content, visited, fieldService);
+            f["Content"] = VisitDefinition(x.Content, visited, context);
 
             return f;
         }
 
-        private static JObject ProcessEntityField(ExtensionField x, List<Content> visited, Context fieldService)
+        private static JObject ProcessEntityField(ExtensionField x, List<Content> visited, Context context)
         {
             JObject f = ProcessFieldBase(x);
 
-            f["Contents"] = new JArray(x.Contents.Select(c => VisitDefinition(c, visited, fieldService)));
+            f["Contents"] = new JArray(x.Contents.Select(c => VisitDefinition(c, visited, context)));
 
             return f;
         }

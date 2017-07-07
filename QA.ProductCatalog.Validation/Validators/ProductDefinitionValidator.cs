@@ -39,11 +39,11 @@ namespace QA.ProductCatalog.Validation.Validators
                 Content definition = null;
                 try
                 {
-                    definition = (Content)XamlServices.Load(xaml);
+                    definition = (Content)XamlServices.Parse(xaml);
                 }
                 catch (Exception ex)
                 {
-                    result.Messages.Add($"Текст не является валидным Xaml-документом валидатора. Ошибка: {ex.Message}");
+                    result.Messages.Add($"Текст не является валидным Xaml-описанием продукта. Ошибка: {ex.Message}");
                     return result;
                 }
 
@@ -57,11 +57,12 @@ namespace QA.ProductCatalog.Validation.Validators
                             try
                             {
                                 _formatter.Write(stream, definition);
-                                var json = reader.ReadToEnd();
+                                stream.Position = 0;                                
+                                context.SetValue(result, jsonDefinition, reader.ReadToEnd());
                             }
                             catch (Exception ex)
                             {
-                                result.Messages.Add($"Текст не является валидным Xaml-документом валидатора. Ошибка: {ex.Message}");
+                                result.Messages.Add($"Возникла ошибка при попытке получить JSON-описание. Ошибка: {ex.Message}");
                                 return result;
                             }
                         }
