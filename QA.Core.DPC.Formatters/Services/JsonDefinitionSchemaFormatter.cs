@@ -71,7 +71,7 @@ namespace QA.Core.DPC.Formatters.Services
 
             }
 
-            return Task.CompletedTask;
+            return Task.FromResult(0);
         }
 
 
