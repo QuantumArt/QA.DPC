@@ -273,6 +273,7 @@
     <Compile Include="IQPNotificationService.cs" />
     <Compile Include="IRegionService.cs" />
     <Compile Include="IRegionTagReplaceService.cs" />
+    <Compile Include="IRemoteValidator2.cs" />
     <Compile Include="IRemoteValidator.cs" />
     <Compile Include="ITask.cs" />
     <Compile Include="IUserProvider.cs" />

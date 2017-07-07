@@ -199,6 +199,7 @@
       <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -216,11 +217,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validators\ChannelsValidator.cs" />
     <Compile Include="Validators\Constants.cs" />
+    <Compile Include="Validators\ProductDefinitionValidator.cs" />
     <Compile Include="Validators\RemoteValidatorDecorator.cs" />
     <Compile Include="ValidationException.cs" />
     <Compile Include="Validators\ValidationHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QA.Core.DPC.Formatters\QA.Core.DPC.Formatters.csproj">
+      <Project>{749fe9e8-3678-497b-948f-f0b0135e2d97}</Project>
+      <Name>QA.Core.DPC.Formatters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj">
       <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
       <Name>QA.Core.Models</Name>
@@ -250,4 +256,3 @@
   </Target>
   -->
 </Project>
-
