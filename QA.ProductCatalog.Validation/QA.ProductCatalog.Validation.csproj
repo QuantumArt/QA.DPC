@@ -122,13 +122,11 @@
       <HintPath>$(SolutionDir)packages\QA.Core.3.0.2.0\lib\net45\QA.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="QA.Validation.Xaml, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.1.0.2.0\lib\net40\QA.Validation.Xaml.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="QA.Validation.Xaml, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.1.0.4\lib\net40\QA.Validation.Xaml.dll</HintPath>
     </Reference>
-    <Reference Include="QA.Validation.Xaml.Extensions, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.Extensions.1.0.2.0\lib\net40\QA.Validation.Xaml.Extensions.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="QA.Validation.Xaml.Extensions, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.Extensions.1.0.4\lib\net40\QA.Validation.Xaml.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="QP8.Infrastructure, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\QP8.Infrastructure.1.0.0\lib\net452\QP8.Infrastructure.dll</HintPath>
@@ -199,6 +197,7 @@
       <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -216,11 +215,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Validators\ChannelsValidator.cs" />
     <Compile Include="Validators\Constants.cs" />
+    <Compile Include="Validators\ProductDefinitionValidator.cs" />
     <Compile Include="Validators\RemoteValidatorDecorator.cs" />
     <Compile Include="ValidationException.cs" />
     <Compile Include="Validators\ValidationHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\QA.Core.DPC.Formatters\QA.Core.DPC.Formatters.csproj">
+      <Project>{749fe9e8-3678-497b-948f-f0b0135e2d97}</Project>
+      <Name>QA.Core.DPC.Formatters</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj">
       <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
       <Name>QA.Core.Models</Name>
