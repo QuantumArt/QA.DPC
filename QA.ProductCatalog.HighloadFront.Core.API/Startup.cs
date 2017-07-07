@@ -47,6 +47,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.Configure<HarvesterOptions>(Configuration.GetSection("Harvester"));
             services.Configure<SonicElasticStoreOptions>(Configuration.GetSection("SonicElasticStore"));
             services.Configure<DataOptions>(Configuration.GetSection("Data"));
+            services.AddSingleton(Configuration);
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration});

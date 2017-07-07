@@ -23,13 +23,15 @@ namespace QA.DPC.Core.Helpers
         {
             CacheProvider = new VersionedCacheCoreProvider(logger);
             Invalidator = new DpcContentInvalidator(CacheProvider, logger);
-            Watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15),
-                Invalidator, connectionProvider, logger);
-            Tracker = new StructureCacheTracker(connectionProvider);
-            Watcher.AttachTracker(Tracker);
-            ((CustomerCacheItemWatcher)Watcher).Start();
 
+            if (!String.IsNullOrEmpty(connectionProvider.GetConnection()))
+            {
+                Watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15),
+                    Invalidator, connectionProvider, logger);
+                Tracker = new StructureCacheTracker(connectionProvider);
+                Watcher.AttachTracker(Tracker);
+                ((CustomerCacheItemWatcher)Watcher).Start();
+            }
         }
-
     }
 }

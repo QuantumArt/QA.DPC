@@ -17,9 +17,13 @@ using Service = QA.Core.DPC.QP.Models.Service;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 {
-    internal class DefaultModule: Module
+    internal class DefaultModule : Module
     {
         public IConfigurationRoot Configuration { get; set; }
+
+        public bool IsQpMode => !String.Equals(Configuration["Data:QpMode"], "false"
+            , StringComparison.InvariantCultureIgnoreCase);
+
 
         protected override void Load(ContainerBuilder builder)
         {
@@ -46,7 +50,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterScoped<IConnectionProvider>(c =>
             {
                 var fcnn = c.Resolve<IOptions<DataOptions>>().Value.FixedConnectionString;
-                if (!string.IsNullOrEmpty(fcnn))
+                if (!string.IsNullOrEmpty(fcnn) || !IsQpMode)
                     return new ExplicitConnectionProvider(fcnn);
 
                 return new ConnectionProvider(
@@ -91,11 +95,20 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 
             builder.RegisterScoped<IVersionedCacheProvider>(c => c.Resolve<IVersionedCacheProvider2>());
 
-            builder.RegisterScoped<ISettingsService, SettingsFromQpCoreService>();
-            builder.RegisterScoped<IContentProvider<ElasticIndex>, ElasticIndexProvider>();
-            builder.RegisterScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
-            builder.RegisterScoped<IContentProvider<HighloadApiUser>, HighloadApiUserProvider>();
-            builder.RegisterScoped<IElasticConfiguration, QpElasticConfiguration>();
+            if (IsQpMode)
+            {
+                builder.RegisterScoped<ISettingsService, SettingsFromQpCoreService>();
+                builder.RegisterScoped<IContentProvider<ElasticIndex>, ElasticIndexProvider>();
+                builder.RegisterScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
+                builder.RegisterScoped<IContentProvider<HighloadApiUser>, HighloadApiUserProvider>();
+                builder.RegisterScoped<IElasticConfiguration, QpElasticConfiguration>();
+            }
+            else
+            {
+                builder.RegisterScoped<IElasticConfiguration, JsonElasticConfiguration>();
+            }
+
+
 
             builder.RegisterType<ArrayIndexer>().Named<IProductPostProcessor>("array");
             builder.RegisterType<DateIndexer>().Named<IProductPostProcessor>("date");
