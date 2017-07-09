@@ -5,12 +5,15 @@ using System.Security.Cryptography;
 using System.Text;
 using QA.Core.DPC.Front.DAL;
 using QA.Core.Service.Interaction;
-using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.Front
 {
     public class DpcProductService : QAServiceBase, IDpcProductService, IDpcService
     {
+        public DpcProductService(ILogger logger)
+        {
+            Logger = logger;
+        }
 
         public ServiceResult<bool> HasProductChanged(ProductLocator locator, int id, string data)
         {

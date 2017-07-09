@@ -155,9 +155,8 @@
       <HintPath>$(SolutionDir)packages\QA.Core.Data.3.0.2.0\lib\net45\QA.Core.Data.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="QA.Core.Service.Interaction, Version=3.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Core.Service.Interaction.3.0.2.0\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="QA.Core.Service.Interaction, Version=3.0.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Core.Service.Interaction.3.0.4\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
     </Reference>
     <Reference Include="QA.Core.Web, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\QA.Core.Web.3.0.3.0\lib\net45\QA.Core.Web.dll</HintPath>
