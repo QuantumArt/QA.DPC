@@ -22,6 +22,35 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             _calc = new InternationalRoamingCalculator();
         }
 
+        [HttpGet("option/{id}")]
+        public async Task<ActionResult> Get(int id, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState,
+            string language = ElasticIndex.DefaultLanguage, bool html = false)
+        {
+            var searchOptions = new SearchOptions()
+            {
+                BaseAddress = ConfigurationOptions.ElasticBaseAddress,
+                IndexName = ConfigurationOptions.GetIndexName(state, language)
+            };
+            var serviceIds = new int[] { };
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, countryCode, state, language);
+            var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
+            var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            if (result != null) return result;
+
+            result = await LoadProducts(id, serviceIds, searchOptions);
+
+            result = result ?? CalculateOption(countryCode);
+
+            result = result ?? (html ? TestLayout(Product, serviceIds, state, language, country: countryCode) : Content(Product.ToString()));
+
+            if (!disableCache)
+            {
+                SetCachedResult(id, serviceIds, result, cacheKey);
+            }
+
+            return result;
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
@@ -67,6 +96,21 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while calculating impact: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
+            }
+            return null;
+        }
+
+        protected ActionResult CalculateOption(string countryCode)
+        {
+            try
+            {
+                _calc.Calculate(Product, countryCode);
+            }
+            catch (Exception ex)
+            {
+                var message = $"Exception occurs while calculating option: {ex.Message}";
                 Logger.LogError(1, ex, message);
                 return BadRequest(message);
             }

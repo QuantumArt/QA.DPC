@@ -11,6 +11,13 @@ namespace QA.ProductCatalog.ImpactService
 
         }
 
+        public JObject Calculate(JObject option, string countryCode)
+        {
+            FilterByCountryCode(option, countryCode);
+            SetUnlimitedValues(option);
+            return option;
+        }
+
         public JObject Calculate(JObject roamingScale, JObject[] options, string countryCode, string homeRegion)
         {
             foreach (var option in options)
