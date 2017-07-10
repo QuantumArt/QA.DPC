@@ -94,25 +94,26 @@ namespace QA.ProductCatalog.Validation.Validators
                     };
 
         }
+
         public void IsProductsRegionsWithModifierIntersectionsExist(ArticleService articleService, int productId, int[] regionsIds, int[] productsIds,
                         string regionsName, string modifiersName, int dataOptionId)
         {
 
             int contentId = GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID);
             var productsList = articleService.List(contentId, productsIds).Where(w => !w.Archived);
-            
-           Lookup<int, int[]> productToRegions = (Lookup<int, int[]>)productsList
-                 .ToLookup(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == regionsName).Single().RelatedItems.ToArray());
-           Lookup<int, int[]> modifiersToProducts = (Lookup<int, int[]>)productsList
-                  .ToLookup(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == modifiersName).Single().RelatedItems.ToArray());
+
+            Lookup<int, int[]> productToRegions = (Lookup<int, int[]>)productsList
+                  .ToLookup(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == regionsName).Single().RelatedItems.ToArray());
+            Lookup<int, int[]> modifiersToProducts = (Lookup<int, int[]>)productsList
+                   .ToLookup(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == modifiersName).Single().RelatedItems.ToArray());
             var resultIds = new List<int>();
             foreach (var item in productToRegions)
             {
                 if (item.Key != productId)
                 {
-                    if (!modifiersToProducts[item.Key].Any() || !modifiersToProducts[item.Key].Contains(new [] { dataOptionId}))
+                    if (!modifiersToProducts[item.Key].Any() || !modifiersToProducts[item.Key].Contains(new[] { dataOptionId }))
                     {
-                        if (regionsIds.Intersect(item.SelectMany(s=>s)).Any())
+                        if (regionsIds.Intersect(item.SelectMany(s => s)).Any())
                         {
                             resultIds.Add(item.Key);
                         }
@@ -182,7 +183,6 @@ namespace QA.ProductCatalog.Validation.Validators
             }
         }
 
-
         public void GetParametersListFromRelationMatrix(ArticleService articleService, Article article, string parametersFieldName)
         {
             var contentId = article.FieldValues.Where(a => a.Field.Name == parametersFieldName).Select(s => s.Field.ContentId).Single();
@@ -196,14 +196,13 @@ namespace QA.ProductCatalog.Validation.Validators
             CheckTariffAreaDuplicateExist(articleService, contentId, parametersList, parametersFieldName);
         }
 
-
         public void CheckTariffAreaDuplicateExist(ArticleService articleService, int contentId, int[] parametersList, string parametersFieldName)
         {
             Lookup<int, int[]> tariffAreaLists = (Lookup<int, int[]>)articleService.List(contentId, parametersList).Where(w => !w.Archived)
                 .ToLookup(s => s.Id, s => s.FieldValues
-                    .Where(w => GetListOfParametersNames().Contains(w.Field.Name) )
+                    .Where(w => GetListOfParametersNames().Contains(w.Field.Name))
                     .SelectMany(r => r.RelatedItems).ToArray());
-            
+
             var resultIds = new List<int>();
             for (int i = 0; i < tariffAreaLists.Count; i++)
             {
@@ -223,6 +222,28 @@ namespace QA.ProductCatalog.Validation.Validators
                 result.AddModelError(GetPropertyName(parametersFieldName),
                         string.Format(RemoteValidationMessages.DuplicateTariffsAreas, String.Join(", ", resultIds.Distinct())));
             }
+        }
+
+        public void CheckArchivedRelatedEntity(ArticleService articleService, List<Article> relationsArticles, int productId, string[] fields, string idFieldName)
+        {
+            var relIds = new List<int>();
+            foreach (var article in relationsArticles)
+            {
+                var ids = article.FieldValues
+                                 .Where(w => fields
+                                 .Contains(w.Field.Name, StringComparer.InvariantCultureIgnoreCase))
+                                 .Select(s => int.Parse(s.Value)).ToArray();
+                foreach (var id in ids)
+                {
+                    var relArticle = articleService.Read(id);
+                    if (relArticle.Archived)
+                    {
+                        relIds.Add(relArticle.Id);
+                    }
+                }
+            }
+            result.AddModelError(GetPropertyName(idFieldName),
+                        string.Format(RemoteValidationMessages.RelatedEtityIsArchived, productId, String.Join(",", relIds)));
         }
 
         public void CheckRelationProductsDuplicate(ArticleService articleService, string idFieldName, int contentProductsId, int[] relationsIds)
