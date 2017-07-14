@@ -31,6 +31,11 @@ namespace QA.Core.DPC.Loader
 	    public Article DeserializeProduct(string productJson, Content definition)
 	    {
 	        var rootArticleDictionary = JsonConvert.DeserializeObject<JObject>(productJson);
+            var product = rootArticleDictionary.SelectToken("product");
+	        if (product != null)
+	        {
+	            rootArticleDictionary = (JObject)product;
+	        }
 
             var productDeserializer = ObjectFactoryBase.Resolve<IProductDeserializer>();
 
