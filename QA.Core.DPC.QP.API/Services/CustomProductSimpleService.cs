@@ -2,7 +2,7 @@
 
 namespace QA.Core.DPC.QP.API.Services
 {
-    class CustomProductSimpleService<TProduct, TDefinition> : IProductSimpleService<TProduct, TDefinition>
+    public class CustomProductSimpleService<TProduct, TDefinition> : IProductSimpleService<TProduct, TDefinition>
         where TProduct : class
         where TDefinition : class
     {

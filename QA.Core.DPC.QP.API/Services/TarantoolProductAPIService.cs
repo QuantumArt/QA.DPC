@@ -22,6 +22,34 @@ namespace QA.Core.DPC.QP.API.Services
             _identityProvider = identityProvider;
         }
 
+        public Article GetAbsentProduct(int productId, int definitionId, bool isLive, string type)
+        {
+            var product = new Article
+            {
+                Id = productId,
+                ContentId = 0,
+                Visible = true,
+                Archived = false,
+                ContentName = string.Empty,
+                IsPublished = true
+            };
+
+            if (!string.IsNullOrEmpty(type))
+            {
+                product.Fields.Add("Type", new PlainArticleField
+                {
+                    ContentId = 0,
+                    FieldId = 0,
+                    FieldName = "Type",
+                    Value = type,
+                    NativeValue = type,
+                    PlainFieldType = PlainFieldType.String
+                });
+            }
+
+            return product;
+        }
+
         public Article GetProduct(int productId, int definitionId, bool isLive = false)
         {
             var customerCode = _identityProvider.Identity.CustomerCode;
@@ -128,6 +156,7 @@ namespace QA.Core.DPC.QP.API.Services
                     if (childContentToken != null)
                     {
                         var article = GetProduct(productToken, childContentToken);
+                        article.Id = 0;
                         extensionField.Value = childContentToken.Value<string>("ContentId");
                         extensionField.Item = article;
                         product.Fields[extensionField.FieldName] = extensionField;
@@ -278,6 +307,6 @@ namespace QA.Core.DPC.QP.API.Services
             field.FieldId = fieldToken.Value<int>("FieldId");
             field.FieldName = fieldToken.Value<string>("FieldName");
             field.FieldDisplayName = fieldToken.Value<string>("FieldName");
-        }
+        }    
     }
 }

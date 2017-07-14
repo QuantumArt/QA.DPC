@@ -14,17 +14,19 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         private const string DeleteMethod = "DELETE";
         private const string GetMethod = "GET";
 
-        private readonly Uri _baseUri;
+        private readonly Uri _baseTntUri;
+        private readonly Uri _baseWebApiUri;
 
         public AutopublishProvider()
         {
-            _baseUri = new Uri(ConfigurationManager.AppSettings["Autopublish.SyncApi"]);
+            _baseTntUri = new Uri(ConfigurationManager.AppSettings["Autopublish.SyncApi"]);
+            _baseWebApiUri = new Uri(ConfigurationManager.AppSettings["Autopublish.WebApi"]);
         }
 
         public ProductItem[] Peek(string customerCode)
         {
             var url = GetPeekUrl(customerCode);
-            var result = Request(url, GetMethod);
+            var result = RequestQueue(url, GetMethod);
 
             ValidateStatus(result);
 
@@ -32,60 +34,55 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                   .Select(itm => new ProductItem
                   {
                       CustomerCode = customerCode,
-                      ProductId = itm["id"].Value<int>(),
-                      DefinitionId = itm["definitionId"].Value<int>(),
-                      Slug = itm["meta"]["slug"].Value<string>(),
-                      Version = itm["meta"]["version"].Value<string>(),
+                      ProductId = itm.Value<int>("id"),
+                      DefinitionId = itm.Value<int>("definitionId"),
+                      IsUnited = itm.Value<bool>("isUnited"),
+                      ActionCode = itm.Value<ProductAction>("actionCode"),
+                      Type = itm.Value<string>("type")
                   })
                   .ToArray();
         }
 
-        public ProductDescriptor GetProduct(ProductItem item)
+        public ProductDescriptor GetProduct(ProductItem item, string format)
         {
-            var url = GetProductUrl(item);
-            var result = Request(url, GetMethod);
-
-            ValidateStatus(result);
+            var url = GetProductUrl(item, format);
+            var result = RequestProduct(url);
 
             return new ProductDescriptor
             {
                 CustomerCode = item.CustomerCode,
                 ProductId = item.ProductId,
                 DefinitionId = item.DefinitionId,
-                Slug = item.Slug,
-                Version = item.Version,
-                Product = result["data"]["item"]["product"].ToString(),
-                Definition = result["data"]["meta"]["definition"].ToString()
+                Product = result
             };
         }
 
         public void Dequeue(ProductItem item)
         {
             var url = GetDequeueUrl(item);
-            var result = Request(url, DeleteMethod);
+            var result = RequestQueue(url, DeleteMethod);
 
             ValidateStatus(result);
         }
 
-        private JObject Request(string url, string method, JObject data = null)
+        private string RequestProduct(string url)
         {
-            var uri = new Uri(_baseUri, url);
+            var uri = new Uri(_baseWebApiUri, url);
+            var request = (HttpWebRequest)WebRequest.Create(uri);
+            request.Method = GetMethod;
+            request.Accept = "application/json";
+
+            return null;     
+        }
+
+        private JObject RequestQueue(string url, string method)
+        {
+            var uri = new Uri(_baseTntUri, url);
             var request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = method;
             request.Accept = "application/json";
 
-            var serializer = new JsonSerializer();
-
-            if (data != null)
-            {
-                using (var stream = request.GetRequestStream())
-                using (var writer = new StreamWriter(stream))
-                using (var jsonWriter = new JsonTextWriter(writer))
-                {
-                    serializer.Serialize(jsonWriter, data);
-                    jsonWriter.Flush();
-                }
-            }
+            var serializer = new JsonSerializer();         
 
             using (var response = (HttpWebResponse)request.GetResponse())
             using (var stream = response.GetResponseStream())
@@ -101,9 +98,9 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             return $"{customerCode}/queue";
         }
 
-        private string GetProductUrl(ProductItem item)
+        private string GetProductUrl(ProductItem item, string format)
         {
-            return $"{item.CustomerCode}/product/{item.CustomerCode}/?product_id={item.ProductId}&definition_id={item.DefinitionId}";
+            return $"/api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&type={item.Type}&absent={item.ActionCode == ProductAction.Delete}";
         }
 
         private string GetDequeueUrl(ProductItem item)
