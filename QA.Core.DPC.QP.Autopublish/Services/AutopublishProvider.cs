@@ -19,8 +19,8 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         public AutopublishProvider()
         {
-            _baseTntUri = new Uri(ConfigurationManager.AppSettings["Autopublish.SyncApi"]);
-            _baseWebApiUri = new Uri(ConfigurationManager.AppSettings["Autopublish.WebApi"]);
+            _baseTntUri = new Uri(ConfigurationManager.AppSettings["DPC.Tarantool.Api"]);
+            _baseWebApiUri = new Uri(ConfigurationManager.AppSettings["DPC.WebApi"]);
         }
 
         public ProductItem[] Peek(string customerCode)
@@ -72,7 +72,19 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             request.Method = GetMethod;
             request.Accept = "application/json";
 
-            return null;     
+            using (var response = (HttpWebResponse)request.GetResponse())
+            using (var stream = response.GetResponseStream())
+            using (var reader = new StreamReader(stream))
+            {
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    return reader.ReadToEnd();
+                }
+                else
+                {
+                    throw new Exception($"Incorrect request  {uri}");
+                }
+            }                
         }
 
         private JObject RequestQueue(string url, string method)
@@ -100,7 +112,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         private string GetProductUrl(ProductItem item, string format)
         {
-            return $"/api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&type={item.Type}&absent={item.ActionCode == ProductAction.Delete}";
+            return $"api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&type={item.Type}&absent={item.ActionCode == ProductAction.Delete}";
         }
 
         private string GetDequeueUrl(ProductItem item)
@@ -112,7 +124,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         {
             var status = item["status"].Value<string>();
 
-            if (status != "success")          
+            if (status != "success")
             {
                 throw new Exception($"incorrect status {status}");
             }
