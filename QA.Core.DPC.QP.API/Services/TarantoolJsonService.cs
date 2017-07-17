@@ -15,7 +15,7 @@ namespace QA.Core.DPC.QP.API.Services
 
         public TarantoolJsonService()
         {
-            _baseUri = new Uri(ConfigurationManager.AppSettings["Tarantool.ProductApi"]);
+            _baseUri = new Uri(ConfigurationManager.AppSettings["DPC.Tarantool.Api"]);
             _tempBaseUri = new Uri("http://mscdev02:90/DPC.WebAPI/");
         }
 
