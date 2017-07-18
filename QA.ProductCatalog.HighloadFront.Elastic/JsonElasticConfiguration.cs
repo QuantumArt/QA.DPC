@@ -35,6 +35,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return _dataOptions.Elastic;
         }
 
+        public int GetElasticTimeout()
+        {
+            return _dataOptions.ElasticTimeout != 0 ? _dataOptions.ElasticTimeout : _timeout;
+        }
+
         protected IEnumerable<HighloadApiUser> GetHighloadApiUsers()
         {
             return _config.GetSection("Users").GetChildren().Select(n => new HighloadApiUser {Name = n.Key, Token = n.Value});
@@ -65,7 +70,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var elasticIndices = GetElasticIndices().ToArray();
             var a = elasticIndices.ToDictionary(
                 index => GetElasticKey(index.Language, index.State),
-                index => GetElasticClient(index.Name, index.Url, _timeout, _logger, index.DoTrace)
+                index => GetElasticClient(index.Name, index.Url, _logger, index.DoTrace)
             );
             var defaultIndex = elasticIndices.FirstOrDefault(n => n.IsDefault);
             if (defaultIndex != null)
@@ -125,7 +130,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return (language == null && state == null) ? "default" : $"{language}-{state}";
         }
 
-        private IElasticClient GetElasticClient(string index, string address, int timeout, ILogger logger, bool doTrace)
+        private IElasticClient GetElasticClient(string index, string address, ILogger logger, bool doTrace)
         {
             var node = new Uri(address);
 
@@ -133,7 +138,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
                 .DefaultIndex(index)
-                .RequestTimeout(TimeSpan.FromSeconds(timeout))
+                .RequestTimeout(TimeSpan.FromSeconds(GetElasticTimeout()))
                 .DisableDirectStreaming()
                 .EnableTrace(msg => logger.Log(() => msg, EventLevel.Trace), doTrace)
                 .ThrowExceptions();

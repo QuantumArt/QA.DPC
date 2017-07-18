@@ -13,7 +13,15 @@ using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
     [Produces("application/json")]
-    [Route("api/products"), Route("api/{customerCode}/products"), Route("api/{version:decimal}/products"), Route("api/{customerCode}/{version:decimal}/products")]
+    [
+        Route("api/products"),
+        Route("api/{version:decimal}/products"),
+        Route("api/{version:decimal}/{language}/{state}/products"),
+        Route("api/{customerCode}/products"),
+        Route("api/{customerCode}/{language}/{state}/products"),
+        Route("api/{customerCode}/{version:decimal}/products"),
+        Route("api/{customerCode}/{version:decimal}/{language}/{state}/products"),
+    ]
     [OnlyAuthUsers]
     public class ProductsController : Controller
     {
@@ -27,7 +35,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        [Route("{type}"), Route("{language}/{state}/{type}")]
+        [Route("{type}")]
         public async Task<ActionResult> GetByType(string type, string language = null, string state = null)
         {
             type = type?.TrimStart('@');
@@ -44,7 +52,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         }
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetById" })]
-        [Route("{language}/{state}/{id:int}"), Route("{id:int}")]
+        [Route("{id:int}")]
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
         public async Task<ActionResult> GetById(string id, string language = null, string state = null)
         {
@@ -67,7 +75,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         }
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "Search" })]
-        [Route("{language}/{state}/search"), Route("search"), HttpGet]
+        [Route("search"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<ActionResult> Search([FromQuery] string q, string language = null, string state = null)
         {
