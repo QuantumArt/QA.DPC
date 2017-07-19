@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -24,8 +25,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         private const string BaseSeparator = ",";
         private const string ProductIdField = "ProductId";
-        private const string DisableOrParameterName = "DisableOr";
-        private const string DisableNotParameterName = "DisableNot";
 
         private IElasticConfiguration Configuration { get; }
 
@@ -281,8 +280,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
 
             var types = options?.Filters?
-                .Where(f => f.Item1 == Options.TypePath)
-                .Select(f => f.Item2)
+                .Where(f => f.Name == Options.TypePath)
+                .Select(f => f.Value)
                 .FirstOrDefault();
 
             SetQuery(q, options);
@@ -325,9 +324,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             if (productsOptions.Filters != null)
             {
-                var disabledOrFields = GetFieldValues(productsOptions.Filters, DisableOrParameterName);
-                var disabledNotFields = GetFieldValues(productsOptions.Filters, DisableNotParameterName);
-                result.AddRange(productsOptions.Filters.Select(n => GetSingleFilterWithNot(n.Item1, n.Item2, disabledOrFields, disabledNotFields)));
+                result.AddRange(productsOptions.Filters.Select(n => GetSingleFilterWithNot(n.Name, n.Values, productsOptions.DisableOr, productsOptions.DisableNot)));
             }
 
             if (productsOptions.RangeFilters != null)
@@ -344,7 +341,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 );
             }
 
-            var obj = result.Select(n => new JObject(n)).ToArray();
+            var obj = result.Where(n => n != null).Select(n => new JObject(n)).ToArray();
 
             if (obj.Any())
             {
@@ -358,18 +355,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        private JProperty GetSingleRangeQuery(Tuple<string, string, string> elem)
+        private JProperty GetSingleRangeQuery(RangeFilter elem)
         {
             var content = new JObject();
-            if (elem.Item2 != "")
+            if (elem.Floor != "")
             {
-                content.Add("gte", elem.Item2);
+                content.Add("gte", elem.Floor);
             }
-            if (elem.Item3 != "")
+            if (elem.Ceiling != "")
             {
-                content.Add("lte", elem.Item3);
+                content.Add("lte", elem.Ceiling);
             }
-            return new JProperty(elem.Item1, content);
+            return new JProperty(elem.Name, content);
         }
 
         private void SetSorting(JObject json, ProductsOptions options)
@@ -380,81 +377,80 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
+        private JProperty GetSingleFilterWithNot(string field, StringValues values, string[] disabledOrFields, string[] disabledNotFields)
+        {
+            var conditions = StringValues.IsNullOrEmpty(values)
+                ? null
+                : values.Select(n => GetSingleFilterWithNot(field, n, disabledOrFields, disabledNotFields)).ToArray();
+
+            if (conditions == null || conditions.Length == 0)
+                return null;
+
+            return conditions.Length == 1 ? 
+                conditions.First() : 
+                new JProperty("bool", new JObject(new JProperty("must", JArray.FromObject(conditions.Select(n => new JObject(n))))));
+        }
+
         private JProperty GetSingleFilterWithNot(string field, string value, string[] disabledOrFields, string[] disabledNotFields)
         {
-            if (!string.IsNullOrEmpty(Options.NegationMark) && value.StartsWith(Options.NegationMark) && !disabledNotFields.Contains(field))
+            JProperty result;
+            var actualSeparator = GetActualSeparator(field, disabledOrFields);
+            bool hasNegation;
+            var actualValue = GetActualValue(field, value, disabledNotFields, out hasNegation);
+
+            if (actualValue == "null")
             {
-                value = value.Remove(0, Options.NegationMark.Length);
-                var condition = GetSingleFilter(field, value, Options.ValueSeparator);
-                return new JProperty("bool", new JObject(
-                    new JProperty("must_not", new JObject(condition))
-                ));
+                result = Exists(field);
+                hasNegation = !hasNegation;
             }
             else
             {
-                var separator = disabledOrFields.Contains(field) ? null : Options.ValueSeparator;
-                return GetSingleFilter(field, value, separator);
+                result = GetSingleFilter(field, actualValue, actualSeparator);  
             }
+
+            if (hasNegation)
+            {
+                result = new JProperty("bool", new JObject(
+                    new JProperty("must_not", new JObject(result))
+                ));
+            }
+
+            return result;
+        }
+
+        private string GetActualValue(string field, string value, string[] disabledNotFields, out bool hasNegation)
+        {
+            hasNegation = !string.IsNullOrEmpty(Options.NegationMark) && value.StartsWith(Options.NegationMark) &&
+                          !disabledNotFields.Contains(field);
+            return (hasNegation) ? value.Remove(0, Options.NegationMark.Length) : value;
+        }
+
+        private string GetActualSeparator(string field, string[] disabledOrFields)
+        {
+            var actualSeparator = !string.IsNullOrWhiteSpace(Options.ValueSeparator) ? Options.ValueSeparator : BaseSeparator;
+            actualSeparator = disabledOrFields.Contains(field) ? null : actualSeparator;
+            return actualSeparator;
         }
 
         private JProperty GetSingleFilter(string field, string value, string separator)
         {
             var isBaseField = field == Options.IdPath || field == ProductIdField;
 
-            if (isBaseField)
-            {
-                if (value.Contains(BaseSeparator))
-                {
-                    var values = value.Split(new[] { BaseSeparator }, StringSplitOptions.None);
-                    return Terms(field, values);
-                }
-                else if (!string.IsNullOrWhiteSpace(separator) && value.Contains(separator))
-                {
-                    var values = value.Split(new[] { separator }, StringSplitOptions.None);
-                    return Terms(field, values);
-                }
-                else
-                {
-                    return Term(field, value);
-                }
-            }
-            else
-            {
-                var notAnalized = IsNotAnalyzedField(field);
-                var separated = !string.IsNullOrWhiteSpace(separator) && value.Contains(separator);
-                var values = new string[0];
+            var isSeparated = !String.IsNullOrEmpty(separator) && value.Contains(separator);
+            var values = (isSeparated) ? value.Split(new[] { separator }, StringSplitOptions.None) : new string[0];
+            var notAnalized = IsNotAnalyzedField(field);
 
-                if (separated)
-                {
-                    values = value.Split(new[] { separator }, StringSplitOptions.None);
-                }
-
-                if (notAnalized)
-                {
-                    if (separated)
-                    {
-                        return Terms(field, values);
-                    }
-                    else
-                    {
-                        return Term(field, value);
-                    }
-                }
-                else
-                {
-                    if (separated)
-                    {
-                        var arr = values.Select(v => MatchPhrase(field, v)).Select(m => new JObject(m)).ToArray();
-                        return new JProperty("bool", new JObject(
-                            new JProperty("should", arr.Length > 1 ? (JArray.FromObject(arr)) : (JToken)arr[0])
-                        ));
-                    }
-                    else
-                    {
-                        return MatchPhrase(field, value);
-                    }
-                }
+            if (isBaseField || notAnalized)
+            {
+                return (isSeparated) ? Terms(field, values) : Term(field, value);
             }
+
+            return (isSeparated) ? MatchPhrases(field, values) : MatchPhrase(field, value);
+        }
+
+        private static JProperty Exists(string field)
+        {
+            return new JProperty("exists", new JObject(new JProperty("field", field)));
         }
 
         private static JProperty Term(string field, string value)
@@ -476,19 +472,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 )
             )));
         }
-
-        private string[] GetFieldValues(IList<Tuple<string, string>> filters, string field)
+        private static JProperty MatchPhrases(string field, string[] values)
         {
-            var value = filters.FirstOrDefault(f => f.Item1 == field)?.Item2;
-
-            if (string.IsNullOrEmpty(value))
-            {
-                return new string[0];
-            }
-            else
-            {
-                return value.Split(',');
-            }
+            var arr = values.Select(v => MatchPhrase(field, v)).Select(m => new JObject(m)).ToArray();
+            return new JProperty("bool", new JObject(
+                new JProperty("should", arr.Length > 1 ? (JArray.FromObject(arr)) : (JToken)arr[0])
+            ));
         }
 
         private string[] GetFields(ProductsOptions options, string type = null)

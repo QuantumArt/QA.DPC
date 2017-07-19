@@ -27,6 +27,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public string NegationMark { get; set; }
 
+        public string DisjunctionMark { get; set; }
+
         public ArrayIndexingSettings[] IndexingOptions { get; set; }
 
     }
