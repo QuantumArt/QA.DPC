@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
@@ -8,9 +10,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
     public class ProductOptionsParser
     {
         private static Regex RangeFilterRegex { get; } = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
-        private static string EscapeCharacter { get; } = "@";
 
-        public static ProductsOptions Parse(IQueryCollection queryCollection)
+        public static ProductsOptions Parse(IQueryCollection queryCollection, SonicElasticStoreOptions options)
         {
             if (!queryCollection.Any()) return null;
 
@@ -21,15 +22,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
             var fields = properties["fields"].FirstOrDefault();
             var page = properties["page"].FirstOrDefault();
             var perPage = properties["per_page"].FirstOrDefault();
-            var query = properties["q"].FirstOrDefault();
             var disableOr = properties["disable_or"].FirstOrDefault();
             var disableNot = properties["disable_not"].FirstOrDefault();
 
-            var exceptKeys = new[] {"sort", "order", "fields", "page", "per_page", "q", "disable_or", "disable_not", "customerCode"};
-
+            var exceptKeys = new[] {"sort", "order", "fields", "page", "per_page", "disable_or", "disable_not", "customerCode"};
             var filters = queryCollection.Where(n => !exceptKeys.Contains(n.Key)).ToArray();
-            var rangeFilters = filters.Where(f => RangeFilterRegex.IsMatch(f.Value)).ToArray();
-            var simpleFilters = filters.Except(rangeFilters);
 
             var result = new ProductsOptions
             {
@@ -37,32 +34,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 Order = order == "asc",
                 PropertiesFilter = fields?.Split(',').ToList(),
                 DisableOr = string.IsNullOrEmpty(disableOr) ? new string[] { } : disableOr.Split(','),
-                DisableNot = string.IsNullOrEmpty(disableNot) ? new string[] { } : disableNot.Split(',')
+                DisableNot = string.IsNullOrEmpty(disableNot) ? new string[] { } : disableNot.Split(','),
+                Filters = filters.Select(n => CreateFilter(n, options)).ToList()
             };
-
-            if (filters.Any())
-            {
-                result.Filters = simpleFilters
-                    .Select(f => new SimpleFilter
-                    {
-                        Name = GetParameterName(f.Key),
-                        Values = f.Value
-                    }).ToList();
-            }
-
-            if (rangeFilters.Any())
-            {
-                result.RangeFilters = rangeFilters.Select(f =>
-                {
-                    var match = RangeFilterRegex.Match(f.Value);
-                    return new RangeFilter
-                    {
-                        Name = GetParameterName(f.Key),
-                        Floor = match.Groups[1].Value,
-                        Ceiling = match.Groups[2].Value
-                    };
-                }).ToList();
-            }
 
             int intPage;
             if (int.TryParse(page, out intPage))
@@ -76,14 +50,59 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 result.PerPage = intPerPage;
             }
 
-            result.Query = query;
-
             return result;
         }
 
-        private static string GetParameterName(string key)
+        public static IElasticFilter CreateFilter(KeyValuePair<string, StringValues> pair, SonicElasticStoreOptions options)
         {
-            return key.StartsWith(EscapeCharacter) ? key.Substring(1) : key;
+            bool isDisjunction;
+            var name = GetParameterName(pair.Key, options, out isDisjunction);
+            if (name == "q")
+            {
+                return new QueryFilter()
+                {
+                    Query = pair.Value,
+                    IsDisjunction = isDisjunction
+                };
+            }
+
+            var match = RangeFilterRegex.Match(pair.Value);
+            if (match.Success)
+            {
+                return new RangeFilter
+                {
+                    Name = name,
+                    Floor = match.Groups[1].Value,
+                    Ceiling = match.Groups[2].Value,
+                    IsDisjunction = isDisjunction
+                };
+            }
+
+            return new SimpleFilter
+            {
+                Name = name,
+                Values = pair.Value,
+                IsDisjunction = isDisjunction
+            };
+
+        }
+
+        private static string GetParameterName(string key, SonicElasticStoreOptions options, out bool isDisjunction)
+        {
+            isDisjunction = false;
+
+            if (key.StartsWith(options.DisjunctionMark))
+            {
+                isDisjunction = true;
+                key = key.Substring(options.DisjunctionMark.Length);
+            }
+
+            if (key.StartsWith(options.EscapeCharacter))
+            {
+                key = key.Substring(options.EscapeCharacter.Length);
+            }
+
+            return key;
         }
     }
 }

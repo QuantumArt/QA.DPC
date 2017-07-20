@@ -279,7 +279,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             });
 
 
-            var types = options?.Filters?
+            var types = options?.SimpleFilters?
                 .Where(f => f.Name == Options.TypePath)
                 .Select(f => f.Value)
                 .FirstOrDefault();
@@ -320,39 +320,91 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private void SetQuery(JObject json, ProductsOptions productsOptions)
         {
-            var result = new List<JProperty>();
-
-            if (productsOptions.Filters != null)
+            JProperty query = null;
+            var filters = productsOptions.Filters;
+            if (filters != null)
             {
-                result.AddRange(productsOptions.Filters.Select(n => GetSingleFilterWithNot(n.Name, n.Values, productsOptions.DisableOr, productsOptions.DisableNot)));
+                var conditions = filters.Select(n => CreateFilter(n, productsOptions.DisableOr, productsOptions.DisableNot));
+                var shouldGroups = new List<List<JProperty>>();
+                var currentGroup = new List<JProperty>();
+                foreach (var condition in conditions)
+                {
+                    if (condition.Value["or"] != null)
+                    {
+                        if (currentGroup.Any())
+                        {
+                            shouldGroups.Add(currentGroup);
+                        }
+                        condition.Value["or"].Parent.Remove();
+                        currentGroup = new List<JProperty>();
+                    }
+
+                    currentGroup.Add(condition);
+                }
+                shouldGroups.Add(currentGroup);
+
+                query = shouldGroups.Count == 1 ? Must(currentGroup) : Should(shouldGroups.Select(Must));
             }
 
-            if (productsOptions.RangeFilters != null)
+            if (query != null)
             {
-                result.Add(
-                    new JProperty("range", new JObject(productsOptions.RangeFilters.Select(GetSingleRangeQuery)))
+                json.Add(new JProperty("query", new JObject(query)));
+            }
+        }
+
+        private JProperty CreateFilter(IElasticFilter filter, string[] disableOr, string[] disableNot)
+        {
+            var simpleFilter = filter as SimpleFilter;
+            var rangeFilter = filter as RangeFilter;
+            var queryFilter = filter as QueryFilter;
+            JProperty result = null;
+
+            if (simpleFilter != null)
+            {
+                result = GetSingleFilterWithNot(simpleFilter.Name, simpleFilter.Values, disableOr, disableNot);
+            }
+
+            if (rangeFilter != null)
+            {
+                result = new JProperty("range", 
+                    new JObject(GetSingleRangeQuery(rangeFilter))
                 );
             }
 
-            if (productsOptions.Query != null)
+            if (queryFilter != null)
             {
-                result.Add(
-                    new JProperty("query_string", JObject.FromObject(new { query = productsOptions.Query, lenient = true }))
+                result = new JProperty("query_string",
+                    JObject.FromObject(new {query = queryFilter.Query, lenient = true})
                 );
             }
 
-            var obj = result.Where(n => n != null).Select(n => new JObject(n)).ToArray();
-
-            if (obj.Any())
+            if (filter.IsDisjunction && result != null)
             {
-                var query = new JObject(
-                    new JProperty("bool", new JObject(
-                            new JProperty("must", obj.Length > 1 ? JArray.FromObject(obj) : (JToken)obj[0])
-                        ))
-                    );
-
-                json.Add(new JProperty("query", query));
+                result.Value["or"] = true;
             }
+
+            return result;
+        }
+
+        private static JProperty Must(IEnumerable<JProperty> props)
+        {
+            return Bool(props, false);
+        }
+
+        private static JProperty Should(IEnumerable<JProperty> props)
+        {
+            return Bool(props, true);
+        }
+
+        private static JProperty Bool(IEnumerable<JProperty> props, bool isDisjunction)
+        {
+            if (props == null) return null;
+            var obj = props.Where(n => n != null).Select(n => new JObject(n)).ToArray();
+            if (!obj.Any()) return null;
+
+            return new JProperty("bool", new JObject(
+                new JProperty(isDisjunction ? "should" : "must", obj.Length > 1 ? JArray.FromObject(obj) : (JToken)obj[0])
+            ));
         }
 
         private JProperty GetSingleRangeQuery(RangeFilter elem)
@@ -386,9 +438,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (conditions == null || conditions.Length == 0)
                 return null;
 
-            return conditions.Length == 1 ? 
+            var result = conditions.Length == 1 ? 
                 conditions.First() : 
                 new JProperty("bool", new JObject(new JProperty("must", JArray.FromObject(conditions.Select(n => new JObject(n))))));
+
+            return result;
         }
 
         private JProperty GetSingleFilterWithNot(string field, string value, string[] disabledOrFields, string[] disabledNotFields)
@@ -415,14 +469,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 ));
             }
 
+
+
             return result;
         }
 
         private string GetActualValue(string field, string value, string[] disabledNotFields, out bool hasNegation)
         {
-            hasNegation = !string.IsNullOrEmpty(Options.NegationMark) && value.StartsWith(Options.NegationMark) &&
-                          !disabledNotFields.Contains(field);
-            return (hasNegation) ? value.Remove(0, Options.NegationMark.Length) : value;
+            hasNegation = !string.IsNullOrEmpty(Options.NegationMark)
+                          && (value.StartsWith(Options.NegationMark))
+                          && !disabledNotFields.Contains(field);
+
+            return (hasNegation) ? value.Substring(Options.NegationMark.Length) : value;
         }
 
         private string GetActualSeparator(string field, string[] disabledOrFields)

@@ -1,13 +1,12 @@
 using System.IO;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Options;
 using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
@@ -27,9 +26,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     {
         private ProductManager Manager { get; }
 
-        public ProductsController(ProductManager manager)
+        private readonly SonicElasticStoreOptions _options;
+
+        public ProductsController(ProductManager manager, IOptions<SonicElasticStoreOptions> options)
         {
             Manager = manager;
+            _options = options.Value;
         }
 
 
@@ -39,7 +41,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         public async Task<ActionResult> GetByType(string type, string language = null, string state = null)
         {
             type = type?.TrimStart('@');
-            var options = ProductOptionsParser.Parse(Request.Query);
+            var options = ProductOptionsParser.Parse(Request.Query, _options);
             try
             {
                 var stream = await Manager.GetProductsInTypeStream(type, options, language, state);
@@ -56,7 +58,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
         public async Task<ActionResult> GetById(string id, string language = null, string state = null)
         {
-            var options = ProductOptionsParser.Parse(Request.Query);
+            var options = ProductOptionsParser.Parse(Request.Query, _options);
 
             try
             {
@@ -79,7 +81,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<ActionResult> Search([FromQuery] string q, string language = null, string state = null)
         {
-            var options = ProductOptionsParser.Parse(Request.Query);
+            var options = ProductOptionsParser.Parse(Request.Query, _options);
             try
             {
                 var stream = await Manager.SearchStreamAsync(options, language, state);
