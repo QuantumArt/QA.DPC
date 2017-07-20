@@ -16,7 +16,7 @@ namespace QA.Core.ProductCatalog.Actions.Services
 		public FieldServiceAdapter(FieldService fieldService, IConnectionProvider connectionProvider)
 		{
 			if (fieldService == null)
-				throw new ArgumentNullException("fieldService");
+				throw new ArgumentNullException(nameof(fieldService));
 
 			_fieldService = fieldService;
 			_fieldMap = new ConcurrentDictionary<int, Field>();

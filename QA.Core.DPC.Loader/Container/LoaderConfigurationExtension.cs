@@ -33,7 +33,10 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
             Container.RegisterType<IArticleService, ArticleServiceAdapter>();
             Container.RegisterType<FieldService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetFieldService()));
+            Container.RegisterType<ContentService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetContentService()));
             Container.RegisterType<IFieldService, FieldServiceAdapter>(new HttpContextLifetimeManager());
+            Container.RegisterType<IContentService, ContentServiceAdapter>(new HttpContextLifetimeManager());
+
             Container.RegisterType<IFreezeService, FreezeService>();
 
             Container.RegisterType<IFieldService, FieldServiceAdapter>("FieldServiceAdapterAlwaysAdmin",
