@@ -329,6 +329,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 var currentGroup = new List<JProperty>();
                 foreach (var condition in conditions)
                 {
+                    if (condition == null)
+                        continue;
+
                     if (condition.Value["or"] != null)
                     {
                         if (currentGroup.Any())

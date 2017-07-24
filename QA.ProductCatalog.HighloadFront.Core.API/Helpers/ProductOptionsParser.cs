@@ -97,7 +97,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 key = key.Substring(options.DisjunctionMark.Length);
             }
 
-            if (key.StartsWith(options.EscapeCharacter))
+            while (key.StartsWith(options.EscapeCharacter))
             {
                 key = key.Substring(options.EscapeCharacter.Length);
             }
