@@ -224,26 +224,23 @@ namespace QA.ProductCatalog.Validation.Validators
             }
         }
 
-        public void CheckArchivedRelatedEntity(ArticleService articleService, List<Article> relationsArticles, int productId, string[] fields, string idFieldName)
+        public void CheckArchivedRelatedEntity(ArticleService articleService, IEnumerable<string> relIdsList, int productId, string idFieldName)
         {
             var relIds = new List<int>();
-            foreach (var article in relationsArticles)
+            var ids = relIdsList.Select(s => int.Parse(s)).ToArray();
+            foreach (var id in ids)
             {
-                var ids = article.FieldValues
-                                 .Where(w => fields
-                                 .Contains(w.Field.Name, StringComparer.InvariantCultureIgnoreCase))
-                                 .Select(s => int.Parse(s.Value)).ToArray();
-                foreach (var id in ids)
+                var relArticle = articleService.Read(id);
+                if (relArticle.Archived)
                 {
-                    var relArticle = articleService.Read(id);
-                    if (relArticle.Archived)
-                    {
-                        relIds.Add(relArticle.Id);
-                    }
+                    relIds.Add(relArticle.Id);
                 }
             }
-            result.AddModelError(GetPropertyName(idFieldName),
-                        string.Format(RemoteValidationMessages.RelatedEtityIsArchived, productId, String.Join(",", relIds)));
+            if (relIds.Any())
+            {
+                result.AddModelError(GetPropertyName(idFieldName),
+                            string.Format(RemoteValidationMessages.RelatedEntityIsArchived, productId, String.Join(",", relIds)));
+            }
         }
 
         public void CheckRelationProductsDuplicate(ArticleService articleService, string idFieldName, int contentProductsId, int[] relationsIds)

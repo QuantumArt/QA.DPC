@@ -144,7 +144,7 @@
   <data name="DuplicateRelationsProducts" xml:space="preserve">
     <value>Встречается дублирование связей с продуктами: {0} </value>
   </data>
-  <data name="RelatedEtityIsArchived" xml:space="preserve">
+  <data name="RelatedEntityIsArchived" xml:space="preserve">
     <value>Связанная сущность заархивирована. Продукт: {0}, связанные статьи: {1}</value>
   </data>
 </root>

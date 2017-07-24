@@ -126,9 +126,9 @@ namespace QA.ProductCatalog.Validation.Resources {
         /// <summary>
         ///   Looks up a localized string similar to Связанная сущность заархивирована. Продукт: {0}, связанные статьи: {1}.
         /// </summary>
-        internal static string RelatedEtityIsArchived {
+        internal static string RelatedEntityIsArchived {
             get {
-                return ResourceManager.GetString("RelatedEtityIsArchived", resourceCulture);
+                return ResourceManager.GetString("RelatedEntityIsArchived", resourceCulture);
             }
         }
         
