@@ -35,10 +35,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 result.Messages.Add(ex.Message);
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
 
             return Json(result, JsonRequestBehavior.AllowGet);
         }
