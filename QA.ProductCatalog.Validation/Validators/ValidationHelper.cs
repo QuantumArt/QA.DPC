@@ -224,18 +224,11 @@ namespace QA.ProductCatalog.Validation.Validators
             }
         }
 
-        public void CheckArchivedRelatedEntity(ArticleService articleService, IEnumerable<string> relIdsList, int productId, string idFieldName)
+        public void CheckArchivedRelatedEntity(ArticleService articleService, IEnumerable<string> relIdsList, int productId, string idFieldName, int contentId)
         {
-            var relIds = new List<int>();
             var ids = relIdsList.Select(s => int.Parse(s)).ToArray();
-            foreach (var id in ids)
-            {
-                var relArticle = articleService.Read(id);
-                if (relArticle.Archived)
-                {
-                    relIds.Add(relArticle.Id);
-                }
-            }
+            var articles = articleService.List(contentId, ids);
+            var relIds = articles.Where(w => w.Archived).Select(s => s.Id).ToList();
             if (relIds.Any())
             {
                 result.AddModelError(GetPropertyName(idFieldName),
