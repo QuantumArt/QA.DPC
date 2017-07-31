@@ -147,7 +147,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 return null;
             }
             var product = (JObject)obj["product"];
-            var regionTags = obj["regionTags"].ToObject<List<RegionTag>>().ToArray();
+            var regionTags = obj["regionTags"]?.ToObject<List<RegionTag>>()?.ToArray() ?? new RegionTag[] {};
             return new ProductPostProcessorData(product, regionTags, result.Item2);
         }
 

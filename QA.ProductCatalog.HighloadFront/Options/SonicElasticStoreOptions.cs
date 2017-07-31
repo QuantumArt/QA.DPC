@@ -3,6 +3,14 @@ namespace QA.ProductCatalog.HighloadFront.Options
 {
     public class SonicElasticStoreOptions
     {
+
+        public SonicElasticStoreOptions()
+        {
+            DisjunctionMark = "|";
+            NegationMark = "!";
+            EscapeCharacter = "@";
+        }
+
         public int DefaultSize { get; set; }
 
         public string IdPath { get; set; }
@@ -26,6 +34,10 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public string ValueSeparator { get; set; }
 
         public string NegationMark { get; set; }
+
+        public string DisjunctionMark { get; set; }
+
+        public string EscapeCharacter { get; set; }
 
         public ArrayIndexingSettings[] IndexingOptions { get; set; }
 

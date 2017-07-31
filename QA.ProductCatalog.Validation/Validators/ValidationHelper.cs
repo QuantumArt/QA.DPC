@@ -1,18 +1,13 @@
-﻿using QA.Core;
-using QA.ProductCatalog.Infrastructure;
+﻿using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Validation.Resources;
 using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.Validation.Xaml.Extensions.Rules.Remote;
 using Quantumart.QP8.BLL.Services.API;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
+using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;
 
 
@@ -21,39 +16,32 @@ namespace QA.ProductCatalog.Validation.Validators
     public class ValidationHelper
     {
 
-        public ValidationHelper(RemoteValidationContext model, ValidationContext result, string connectionStringName)
+        public ValidationHelper(RemoteValidationContext model, ValidationContext result, IConnectionProvider provider, ISettingsService settingsService)
         {
-            this.model = model;
-            this.result = result;
-            this.connectionStringName = connectionStringName;
-            settingsService = ObjectFactoryBase.Resolve<ISettingsService>();
+            Model = model;
+            Result = result;
+            _provider = provider;
+            _settingsService = settingsService;
         }
 
 
         #region private
-        private RemoteValidationContext model;
-        private string connectionStringName;
-        private ValidationContext result;
-        private ISettingsService settingsService;
+
+        private readonly IConnectionProvider _provider;
+        private readonly ISettingsService _settingsService;
         #endregion
 
 
-        public RemoteValidationContext Model
-        {
-            get { return model; }
-        }
+        public RemoteValidationContext Model { get; }
 
-        public ValidationContext Result
-        {
-            get { return result; }
-        }
+        public ValidationContext Result { get; }
 
         public RemotePropertyDefinition GetDefinition(string alias)
         {
-            var def = model.Definitions.FirstOrDefault(x => x.Alias == alias);
+            var def = Model.Definitions.FirstOrDefault(x => x.Alias == alias);
             if (def == null)
             {
-                result.AddErrorMessage(String.Format(RemoteValidationMessages.MissingParam, alias));
+                Result.AddErrorMessage(String.Format(RemoteValidationMessages.MissingParam, alias));
             }
             return def;
         }
@@ -66,23 +54,10 @@ namespace QA.ProductCatalog.Validation.Validators
         public T GetValue<T>(string alias)
         {
             var def = GetDefinition(alias);
-            return model.ProvideValueExact<T>(def);
+            return Model.ProvideValueExact<T>(def);
         }
 
-        public string ConnectionString
-        {
-            get
-            {
-                var connectinStringObject = ConfigurationManager.ConnectionStrings[connectionStringName];
-
-                if (connectinStringObject == null)
-                    throw new ValidationException(string.Format(RemoteValidationMessages.EmptyConnectionString));
-
-                return connectinStringObject.ConnectionString;
-
-            }
-
-        }
+        public string ConnectionString => _provider.GetConnection();
 
         public string[] GetListOfParametersNames()
         {
@@ -94,25 +69,26 @@ namespace QA.ProductCatalog.Validation.Validators
                     };
 
         }
+
         public void IsProductsRegionsWithModifierIntersectionsExist(ArticleService articleService, int productId, int[] regionsIds, int[] productsIds,
                         string regionsName, string modifiersName, int dataOptionId)
         {
 
             int contentId = GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID);
-            var productsList = articleService.List(contentId, productsIds).Where(w => !w.Archived);
+            var productsList = articleService.List(contentId, productsIds).Where(w => !w.Archived).ToArray();
             
            Lookup<int, int[]> productToRegions = (Lookup<int, int[]>)productsList
-                 .ToLookup(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == regionsName).Single().RelatedItems.ToArray());
-           Lookup<int, int[]> modifiersToProducts = (Lookup<int, int[]>)productsList
-                  .ToLookup(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == modifiersName).Single().RelatedItems.ToArray());
+                 .ToLookup(x => x.Id, x => x.FieldValues.Single(a => a.Field.Name == regionsName).RelatedItems.ToArray());
+            Lookup<int, int[]> modifiersToProducts = (Lookup<int, int[]>)productsList
+                  .ToLookup(x => x.Id, x => x.FieldValues.Single(a => a.Field.Name == modifiersName).RelatedItems.ToArray());
             var resultIds = new List<int>();
             foreach (var item in productToRegions)
             {
                 if (item.Key != productId)
                 {
-                    if (!modifiersToProducts[item.Key].Any() || !modifiersToProducts[item.Key].Contains(new [] { dataOptionId}))
+                    if (!modifiersToProducts[item.Key].Any() || !modifiersToProducts[item.Key].Contains(new[] { dataOptionId }))
                     {
-                        if (regionsIds.Intersect(item.SelectMany(s=>s)).Any())
+                        if (regionsIds.Intersect(item.SelectMany(s => s)).Any())
                         {
                             resultIds.Add(item.Key);
                         }
@@ -121,7 +97,10 @@ namespace QA.ProductCatalog.Validation.Validators
             }
             if (resultIds.Any())
             {
-                result.AddModelError(GetPropertyName(regionsName), string.Format(RemoteValidationMessages.ProductsRepeatingRegions, String.Join(", ", resultIds)));
+                Result.AddModelError(
+                    GetPropertyName(regionsName), 
+                    string.Format(RemoteValidationMessages.ProductsRepeatingRegions, String.Join(", ", resultIds))
+                );
             }
         }
 
@@ -134,7 +113,7 @@ namespace QA.ProductCatalog.Validation.Validators
             int contentId = GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID);
 
             Dictionary<int, int[]> productToRegions = articleService.List(contentId, productsIds)
-                  .ToDictionary<Article, int, int[]>(x => x.Id, x => x.FieldValues.Where(a => a.Field.Name == regionsName).Single().RelatedItems.ToArray());
+                  .ToDictionary(x => x.Id, x => x.FieldValues.Single(a => a.Field.Name == regionsName).RelatedItems.ToArray());
 
             Dictionary<int, HashSet<int>> regionsToProducts = new Dictionary<int, HashSet<int>>();
             foreach (var item in productToRegions)
@@ -151,15 +130,20 @@ namespace QA.ProductCatalog.Validation.Validators
                 }
             }
 
-            var resultIds = productToRegions.Where(m => !m.Value.Select(n => regionsToProducts[n].Any(p => p != m.Key)).Any(n => n)).Select(m => m.Key);
+            var resultIds = productToRegions
+                .Where(m => !m.Value.Select(n => regionsToProducts[n].Any(p => p != m.Key))
+                .Any(n => n))
+                .Select(m => m.Key).
+                ToArray();
 
-            if (resultIds.Any())
-            {
-                result.AddModelError(GetPropertyName(productsName), string.Format(RemoteValidationMessages.Products_Different_Regions, String.Join(", ", resultIds)));
-                return false;
-            }
+            if (!resultIds.Any()) return true;
 
-            return true;
+            Result.AddModelError(
+                GetPropertyName(productsName), 
+                string.Format(RemoteValidationMessages.Products_Different_Regions, String.Join(", ", resultIds))
+            );
+
+            return false;
         }
 
         public void CheckRelationServicesProductsTariff(ArticleService articleService, int contentProductsId,
@@ -182,7 +166,6 @@ namespace QA.ProductCatalog.Validation.Validators
             }
         }
 
-
         public void GetParametersListFromRelationMatrix(ArticleService articleService, Article article, string parametersFieldName)
         {
             var contentId = article.FieldValues.Where(a => a.Field.Name == parametersFieldName).Select(s => s.Field.ContentId).Single();
@@ -191,19 +174,18 @@ namespace QA.ProductCatalog.Validation.Validators
             var parametersList =
                 article.FieldValues.Single(a => a.Field.Name == parametersFieldName).Value
                     .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(v => int.Parse(v)).ToArray();
+                    .Select(int.Parse).ToArray();
 
             CheckTariffAreaDuplicateExist(articleService, contentId, parametersList, parametersFieldName);
         }
-
 
         public void CheckTariffAreaDuplicateExist(ArticleService articleService, int contentId, int[] parametersList, string parametersFieldName)
         {
             Lookup<int, int[]> tariffAreaLists = (Lookup<int, int[]>)articleService.List(contentId, parametersList).Where(w => !w.Archived)
                 .ToLookup(s => s.Id, s => s.FieldValues
-                    .Where(w => GetListOfParametersNames().Contains(w.Field.Name) )
+                    .Where(w => GetListOfParametersNames().Contains(w.Field.Name))
                     .SelectMany(r => r.RelatedItems).ToArray());
-            
+
             var resultIds = new List<int>();
             for (int i = 0; i < tariffAreaLists.Count; i++)
             {
@@ -211,7 +193,7 @@ namespace QA.ProductCatalog.Validation.Validators
                 {
                     var element1 = tariffAreaLists.ElementAtOrDefault(i);
                     var element2 = tariffAreaLists.ElementAtOrDefault(j);
-                    if (element1.SelectMany(s => s).Any() && element1.SelectMany(s => s).SequenceEqual(element2.SelectMany(s1 => s1)))
+                    if (element1 != null && element2 != null && element1.SelectMany(s => s).Any() && element1.SelectMany(s => s).SequenceEqual(element2.SelectMany(s1 => s1)))
                     {
                         resultIds.Add(element1.Key);
                         resultIds.Add(element2.Key);
@@ -220,8 +202,20 @@ namespace QA.ProductCatalog.Validation.Validators
             }
             if (resultIds.Any())
             {
-                result.AddModelError(GetPropertyName(parametersFieldName),
+                Result.AddModelError(GetPropertyName(parametersFieldName),
                         string.Format(RemoteValidationMessages.DuplicateTariffsAreas, String.Join(", ", resultIds.Distinct())));
+            }
+        }
+
+        public void CheckArchivedRelatedEntity(ArticleService articleService, IEnumerable<string> relIdsList, int productId, string idFieldName, int contentId)
+        {
+            var ids = relIdsList.Select(s => int.Parse(s)).ToArray();
+            var articles = articleService.List(contentId, ids);
+            var relIds = articles.Where(w => w.Archived).Select(s => s.Id).ToList();
+            if (relIds.Any())
+            {
+                Result.AddModelError(GetPropertyName(idFieldName),
+                            string.Format(RemoteValidationMessages.RelatedEntityIsArchived, productId, String.Join(",", relIds)));
             }
         }
 
@@ -231,10 +225,10 @@ namespace QA.ProductCatalog.Validation.Validators
             var relatedProductsIds = articleService.List(contentProductsId, relationsIds).Where(w => !w.Archived).Select(x =>
                         x.FieldValues.Single(a => a.Field.Name == servicesFieldName))
                 .Select(s => int.Parse(s.Value)).ToArray();
-            var duplicateServices = relatedProductsIds.Where(relId => relatedProductsIds.Count(r => r == relId) > 1).Distinct();
+            var duplicateServices = relatedProductsIds.Where(relId => relatedProductsIds.Count(r => r == relId) > 1).Distinct().ToArray();
             if (duplicateServices.Any())
             {
-                result.AddModelError(GetPropertyName(idFieldName),
+                Result.AddModelError(GetPropertyName(idFieldName),
                 string.Format(RemoteValidationMessages.DuplicateRelationsProducts, String.Join(", ", duplicateServices)));
             }
         }
@@ -242,7 +236,7 @@ namespace QA.ProductCatalog.Validation.Validators
         public void CheckSiteId(int contentId)
         {
             var siteId = (new ContentService(ConnectionString, 1).Read(contentId)).SiteId;
-            if (model.SiteId != siteId)
+            if (Model.SiteId != siteId)
             {
                 throw new ValidationException(RemoteValidationMessages.SiteIdInvalid);
             }
@@ -251,8 +245,8 @@ namespace QA.ProductCatalog.Validation.Validators
 
         public int GetSettingValue(SettingsTitles key)
         {
-            var valueStr = settingsService.GetSetting(key);
-            int value = 0;
+            var valueStr = _settingsService.GetSetting(key);
+            int value;
             if (string.IsNullOrEmpty(valueStr) || !int.TryParse(valueStr, out value))
             {
                 throw new ValidationException(String.Format(RemoteValidationMessages.Settings_Missing, key));
@@ -263,7 +257,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
         public string GetSettingStringValue(SettingsTitles key)
         {
-            var valueStr = settingsService.GetSetting(key);
+            var valueStr = _settingsService.GetSetting(key);
             if (string.IsNullOrEmpty(valueStr))
             {
                 throw new ValidationException(String.Format(RemoteValidationMessages.Settings_Missing, key));
