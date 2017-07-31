@@ -69,6 +69,7 @@ namespace QA.ProductCatalog.Validation.Validators
                     };
 
         }
+
         public void IsProductsRegionsWithModifierIntersectionsExist(ArticleService articleService, int productId, int[] regionsIds, int[] productsIds,
                         string regionsName, string modifiersName, int dataOptionId)
         {
@@ -78,16 +79,16 @@ namespace QA.ProductCatalog.Validation.Validators
             
            Lookup<int, int[]> productToRegions = (Lookup<int, int[]>)productsList
                  .ToLookup(x => x.Id, x => x.FieldValues.Single(a => a.Field.Name == regionsName).RelatedItems.ToArray());
-           Lookup<int, int[]> modifiersToProducts = (Lookup<int, int[]>)productsList
+            Lookup<int, int[]> modifiersToProducts = (Lookup<int, int[]>)productsList
                   .ToLookup(x => x.Id, x => x.FieldValues.Single(a => a.Field.Name == modifiersName).RelatedItems.ToArray());
             var resultIds = new List<int>();
             foreach (var item in productToRegions)
             {
                 if (item.Key != productId)
                 {
-                    if (!modifiersToProducts[item.Key].Any() || !modifiersToProducts[item.Key].Contains(new [] { dataOptionId}))
+                    if (!modifiersToProducts[item.Key].Any() || !modifiersToProducts[item.Key].Contains(new[] { dataOptionId }))
                     {
-                        if (regionsIds.Intersect(item.SelectMany(s=>s)).Any())
+                        if (regionsIds.Intersect(item.SelectMany(s => s)).Any())
                         {
                             resultIds.Add(item.Key);
                         }
@@ -165,7 +166,6 @@ namespace QA.ProductCatalog.Validation.Validators
             }
         }
 
-
         public void GetParametersListFromRelationMatrix(ArticleService articleService, Article article, string parametersFieldName)
         {
             var contentId = article.FieldValues.Where(a => a.Field.Name == parametersFieldName).Select(s => s.Field.ContentId).Single();
@@ -179,14 +179,13 @@ namespace QA.ProductCatalog.Validation.Validators
             CheckTariffAreaDuplicateExist(articleService, contentId, parametersList, parametersFieldName);
         }
 
-
         public void CheckTariffAreaDuplicateExist(ArticleService articleService, int contentId, int[] parametersList, string parametersFieldName)
         {
             Lookup<int, int[]> tariffAreaLists = (Lookup<int, int[]>)articleService.List(contentId, parametersList).Where(w => !w.Archived)
                 .ToLookup(s => s.Id, s => s.FieldValues
-                    .Where(w => GetListOfParametersNames().Contains(w.Field.Name) )
+                    .Where(w => GetListOfParametersNames().Contains(w.Field.Name))
                     .SelectMany(r => r.RelatedItems).ToArray());
-            
+
             var resultIds = new List<int>();
             for (int i = 0; i < tariffAreaLists.Count; i++)
             {
@@ -205,6 +204,18 @@ namespace QA.ProductCatalog.Validation.Validators
             {
                 Result.AddModelError(GetPropertyName(parametersFieldName),
                         string.Format(RemoteValidationMessages.DuplicateTariffsAreas, String.Join(", ", resultIds.Distinct())));
+            }
+        }
+
+        public void CheckArchivedRelatedEntity(ArticleService articleService, IEnumerable<string> relIdsList, int productId, string idFieldName, int contentId)
+        {
+            var ids = relIdsList.Select(s => int.Parse(s)).ToArray();
+            var articles = articleService.List(contentId, ids);
+            var relIds = articles.Where(w => w.Archived).Select(s => s.Id).ToList();
+            if (relIds.Any())
+            {
+                result.AddModelError(GetPropertyName(idFieldName),
+                            string.Format(RemoteValidationMessages.RelatedEntityIsArchived, productId, String.Join(",", relIds)));
             }
         }
 
