@@ -107,7 +107,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         private string GetPeekUrl(string customerCode)
         {
-            return $"{customerCode}/queue";
+            return $"product-building/{customerCode}/autopub";
         }
 
         private string GetProductUrl(ProductItem item, string format)
@@ -117,7 +117,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         private string GetDequeueUrl(ProductItem item)
         {
-            return $"{item.CustomerCode}/queue/?product_id={item.ProductId}&definition_id={item.DefinitionId}";
+            return $"product-building/{item.CustomerCode}/autopub/?product_id={item.ProductId}&definition_id={item.DefinitionId}&is_united={item.IsUnited}";
         }
 
         private void ValidateStatus(JObject item)
