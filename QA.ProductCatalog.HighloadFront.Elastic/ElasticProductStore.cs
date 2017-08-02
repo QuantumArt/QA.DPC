@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Primitives;
 using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using QA.Core;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
@@ -30,10 +32,13 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private SonicElasticStoreOptions Options { get; }
 
-        public ElasticProductStore(IElasticConfiguration config, IOptions<SonicElasticStoreOptions> optionsAccessor)
+        private ILogger Logger { get; }
+
+        public ElasticProductStore(IElasticConfiguration config, IOptions<SonicElasticStoreOptions> optionsAccessor, ILogger logger)
         {
             Configuration = config;
             Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
+            Logger = logger;
         }
 
         public string GetId(JObject product)
@@ -262,7 +267,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             SetSorting(q, options);
 
             var client = Configuration.GetElasticClient(language, state);
+#if DEBUG            
+            var timer = new Stopwatch();
+            timer.Start();
+#endif
             var response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, type, q.ToString());
+#if DEBUG             
+            timer.Stop();
+            Logger.Debug("Query to ElasticSearch took {0} ms", timer.Elapsed.TotalMilliseconds);
+#endif
             return response.Body;
 
         }
