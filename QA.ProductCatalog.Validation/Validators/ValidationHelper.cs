@@ -55,6 +55,8 @@ namespace QA.ProductCatalog.Validation.Validators
         public T GetValue<T>(string alias)
         {
             var def = GetDefinition(alias);
+            if (def == null)
+                throw new ApplicationException($"Definition {alias} is not found in the passed context");
             return Model.ProvideValueExact<T>(def);
         }
 

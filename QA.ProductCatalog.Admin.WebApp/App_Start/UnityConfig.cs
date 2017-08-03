@@ -135,7 +135,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                     var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
                     var tracker = new StructureCacheTracker(connectionProvider);
                     var watcher =
-                        new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger);
+                        new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
 
                     watcher.AttachTracker(tracker);
 
@@ -143,6 +143,8 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                     container.RegisterInstance<ICacheProvider>(code, cacheProvider);
                     container.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
                     container.RegisterInstance<ICacheItemWatcher>(code, watcher);
+
+                    watcher.Start();
                 }
 
                 container.RegisterType<IContentInvalidator>(
