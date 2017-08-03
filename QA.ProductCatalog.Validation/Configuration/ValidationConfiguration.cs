@@ -8,7 +8,7 @@ namespace QA.ProductCatalog.Validation.Configuration
 	{
 		protected override void Initialize()
 		{
-			Container.RegisterType<Func<string, IRemoteValidator>>(new InjectionFactory(c => new Func<string, IRemoteValidator>(key => c.Resolve<IRemoteValidator>(key))));
+			Container.RegisterType<Func<string, IRemoteValidator2>>(new InjectionFactory(c => new Func<string, IRemoteValidator2>(key => c.Resolve<IRemoteValidator2>(key))));
 			Container.RegisterRemoteValidators<ValidationConfiguration>();
 		}
 	}

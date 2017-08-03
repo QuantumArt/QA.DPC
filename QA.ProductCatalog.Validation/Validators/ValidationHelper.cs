@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;
+using Quantumart.QP8.Constants;
 
 
 namespace QA.ProductCatalog.Validation.Validators
@@ -16,7 +17,7 @@ namespace QA.ProductCatalog.Validation.Validators
     public class ValidationHelper
     {
 
-        public ValidationHelper(RemoteValidationContext model, ValidationContext result, IConnectionProvider provider, ISettingsService settingsService)
+        public ValidationHelper(RemoteValidationContext model, RemoteValidationResult result, IConnectionProvider provider, ISettingsService settingsService)
         {
             Model = model;
             Result = result;
@@ -34,7 +35,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
         public RemoteValidationContext Model { get; }
 
-        public ValidationContext Result { get; }
+        public RemoteValidationResult Result { get; }
 
         public RemotePropertyDefinition GetDefinition(string alias)
         {
@@ -209,7 +210,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
         public void CheckArchivedRelatedEntity(ArticleService articleService, IEnumerable<string> relIdsList, int productId, string idFieldName, int contentId)
         {
-            var ids = relIdsList.Select(s => int.Parse(s)).ToArray();
+            var ids = relIdsList.Select(int.Parse).ToArray();
             var articles = articleService.List(contentId, ids);
             var relIds = articles.Where(w => w.Archived).Select(s => s.Id).ToList();
             if (relIds.Any())
@@ -263,6 +264,22 @@ namespace QA.ProductCatalog.Validation.Validators
                 throw new ValidationException(String.Format(RemoteValidationMessages.Settings_Missing, key));
             }
             return valueStr;
+        }
+
+        public string GetClassifierFieldName(Article product)
+        {
+            return GetFieldName(product, a => a.Field.ExactType == FieldExactTypes.Classifier);
+        }
+
+        public string GetFieldName(Article product, Func<FieldValue, bool> predicate)
+        {
+            return product.FieldValues.First(predicate).Field.Name;
+        }
+
+        public string GetRelatedFieldName(Article product, int contentId)
+        {
+            return GetFieldName(product, a => a.Field.RelateToContentId.HasValue &&
+                                              a.Field.RelateToContentId.Value == contentId);
         }
 
     }

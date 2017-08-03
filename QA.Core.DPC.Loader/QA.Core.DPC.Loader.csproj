@@ -180,11 +180,11 @@
       <HintPath>$(SolutionDir)packages\QA.Core.Web.3.0.3.0\lib\net45\QA.Core.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="QA.Validation.Xaml, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.1.0.4\lib\net40\QA.Validation.Xaml.dll</HintPath>
+    <Reference Include="QA.Validation.Xaml, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.1.1.0\lib\net40\QA.Validation.Xaml.dll</HintPath>
     </Reference>
-    <Reference Include="QA.Validation.Xaml.Extensions, Version=1.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.Extensions.1.0.4\lib\net40\QA.Validation.Xaml.Extensions.dll</HintPath>
+    <Reference Include="QA.Validation.Xaml.Extensions, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\QA.Validation.Xaml.Extensions.1.1.0\lib\net40\QA.Validation.Xaml.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="QP8.Infrastructure, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\QP8.Infrastructure.1.0.0\lib\net452\QP8.Infrastructure.dll</HintPath>
@@ -440,4 +440,3 @@
   </Target>
   -->
 </Project>
-
