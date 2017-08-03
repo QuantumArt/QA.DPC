@@ -306,10 +306,12 @@
     <Compile Include="Services\ConfigurableUserProvider.cs" />
     <Compile Include="Services\DBConnectorProxy.cs" />
     <Compile Include="Services\DefinitionEditorService.cs" />
+    <Compile Include="Services\ContentServiceAdapter.cs" />
     <Compile Include="Services\FieldServiceAdapter.cs" />
     <Compile Include="Services\FreezeService.cs" />
     <Compile Include="Services\IArticleDependencyService.cs" />
     <Compile Include="Services\IArticleService.cs" />
+    <Compile Include="Services\IContentService.cs" />
     <Compile Include="Services\IFieldService.cs" />
     <Compile Include="Services\IProductPdfTemplateService.cs" />
     <Compile Include="Services\IQPService.cs" />
@@ -440,4 +442,3 @@
   </Target>
   -->
 </Project>
-

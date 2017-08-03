@@ -14,6 +14,7 @@ namespace QA.ProductCatalog.WebApi
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
+
 			Error += WebApiApplication_Error;
         }
 
