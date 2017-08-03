@@ -39,12 +39,12 @@ namespace QA.Core.DPC.QP.API.Services
         private string GetDefinitiontUrl(string customerCode, int definitionId)
         {
             var settingId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
-            return $"product-building/{customerCode}/data/articles?invariant-name=content_{settingId}&take=1&skip=0&key={definitionId}";
+            return $"{customerCode}/product-building/data/articles?invariant-name=content_{settingId}&take=1&skip=0&key={definitionId}";
         }
 
         private string GetProductUrl(string customerCode, int productId, int definitionId, bool isLive)
         {
-            return $"product-building/{customerCode}/?product_id={productId}&definition_id={definitionId}&s_united={!isLive}";
+            return $"{customerCode}/product-building/?product_id={productId}&definition_id={definitionId}&s_united={!isLive}";
         }
 
         private T Get<T>(Uri uri)
