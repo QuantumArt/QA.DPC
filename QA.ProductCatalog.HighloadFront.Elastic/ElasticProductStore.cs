@@ -1,14 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using QA.Core;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
@@ -24,17 +27,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         private const string BaseSeparator = ",";
         private const string ProductIdField = "ProductId";
-        private const string DisableOrParameterName = "DisableOr";
-        private const string DisableNotParameterName = "DisableNot";
 
         private IElasticConfiguration Configuration { get; }
 
         private SonicElasticStoreOptions Options { get; }
 
-        public ElasticProductStore(IElasticConfiguration config, IOptions<SonicElasticStoreOptions> optionsAccessor)
+        private ILogger Logger { get; }
+
+        public ElasticProductStore(IElasticConfiguration config, IOptions<SonicElasticStoreOptions> optionsAccessor, ILogger logger)
         {
             Configuration = config;
             Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
+            Logger = logger;
         }
 
         public string GetId(JObject product)
@@ -263,7 +267,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             SetSorting(q, options);
 
             var client = Configuration.GetElasticClient(language, state);
+#if DEBUG            
+            var timer = new Stopwatch();
+            timer.Start();
+#endif
             var response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, type, q.ToString());
+#if DEBUG             
+            timer.Stop();
+            Logger.Debug("Query to ElasticSearch took {0} ms", timer.Elapsed.TotalMilliseconds);
+#endif
             return response.Body;
 
         }
@@ -280,9 +292,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             });
 
 
-            var types = options?.Filters?
-                .Where(f => f.Item1 == Options.TypePath)
-                .Select(f => f.Item2)
+            var types = options?.SimpleFilters?
+                .Where(f => f.Name == Options.TypePath)
+                .Select(f => f.Value)
                 .FirstOrDefault();
 
             SetQuery(q, options);
@@ -321,55 +333,108 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private void SetQuery(JObject json, ProductsOptions productsOptions)
         {
-            var result = new List<JProperty>();
-
-            if (productsOptions.Filters != null)
+            JProperty query = null;
+            var filters = productsOptions.Filters;
+            if (filters != null)
             {
-                var disabledOrFields = GetFieldValues(productsOptions.Filters, DisableOrParameterName);
-                var disabledNotFields = GetFieldValues(productsOptions.Filters, DisableNotParameterName);
-                result.AddRange(productsOptions.Filters.Select(n => GetSingleFilterWithNot(n.Item1, n.Item2, disabledOrFields, disabledNotFields)));
+                var conditions = filters.Select(n => CreateFilter(n, productsOptions.DisableOr, productsOptions.DisableNot));
+                var shouldGroups = new List<List<JProperty>>();
+                var currentGroup = new List<JProperty>();
+                foreach (var condition in conditions)
+                {
+                    if (condition == null)
+                        continue;
+
+                    if (condition.Value["or"] != null)
+                    {
+                        if (currentGroup.Any())
+                        {
+                            shouldGroups.Add(currentGroup);
+                        }
+                        condition.Value["or"].Parent.Remove();
+                        currentGroup = new List<JProperty>();
+                    }
+
+                    currentGroup.Add(condition);
+                }
+                shouldGroups.Add(currentGroup);
+
+                query = shouldGroups.Count == 1 ? Must(currentGroup) : Should(shouldGroups.Select(Must));
             }
 
-            if (productsOptions.RangeFilters != null)
+            if (query != null)
             {
-                result.Add(
-                    new JProperty("range", new JObject(productsOptions.RangeFilters.Select(GetSingleRangeQuery)))
-                );
-            }
-
-            if (productsOptions.Query != null)
-            {
-                result.Add(
-                    new JProperty("query_string", JObject.FromObject(new { query = productsOptions.Query, lenient = true }))
-                );
-            }
-
-            var obj = result.Select(n => new JObject(n)).ToArray();
-
-            if (obj.Any())
-            {
-                var query = new JObject(
-                    new JProperty("bool", new JObject(
-                            new JProperty("must", obj.Length > 1 ? JArray.FromObject(obj) : (JToken)obj[0])
-                        ))
-                    );
-
-                json.Add(new JProperty("query", query));
+                json.Add(new JProperty("query", new JObject(query)));
             }
         }
 
-        private JProperty GetSingleRangeQuery(Tuple<string, string, string> elem)
+        private JProperty CreateFilter(IElasticFilter filter, string[] disableOr, string[] disableNot)
+        {
+            var simpleFilter = filter as SimpleFilter;
+            var rangeFilter = filter as RangeFilter;
+            var queryFilter = filter as QueryFilter;
+            JProperty result = null;
+
+            if (simpleFilter != null)
+            {
+                result = GetSingleFilterWithNot(simpleFilter.Name, simpleFilter.Values, disableOr, disableNot);
+            }
+
+            if (rangeFilter != null)
+            {
+                result = new JProperty("range", 
+                    new JObject(GetSingleRangeQuery(rangeFilter))
+                );
+            }
+
+            if (queryFilter != null)
+            {
+                result = new JProperty("query_string",
+                    JObject.FromObject(new {query = queryFilter.Query, lenient = true})
+                );
+            }
+
+            if (filter.IsDisjunction && result != null)
+            {
+                result.Value["or"] = true;
+            }
+
+            return result;
+        }
+
+        private static JProperty Must(IEnumerable<JProperty> props)
+        {
+            return Bool(props, false);
+        }
+
+        private static JProperty Should(IEnumerable<JProperty> props)
+        {
+            return Bool(props, true);
+        }
+
+        private static JProperty Bool(IEnumerable<JProperty> props, bool isDisjunction)
+        {
+            if (props == null) return null;
+            var obj = props.Where(n => n != null).Select(n => new JObject(n)).ToArray();
+            if (!obj.Any()) return null;
+
+            return new JProperty("bool", new JObject(
+                new JProperty(isDisjunction ? "should" : "must", obj.Length > 1 ? JArray.FromObject(obj) : (JToken)obj[0])
+            ));
+        }
+
+        private JProperty GetSingleRangeQuery(RangeFilter elem)
         {
             var content = new JObject();
-            if (elem.Item2 != "")
+            if (elem.Floor != "")
             {
-                content.Add("gte", elem.Item2);
+                content.Add("gte", elem.Floor);
             }
-            if (elem.Item3 != "")
+            if (elem.Ceiling != "")
             {
-                content.Add("lte", elem.Item3);
+                content.Add("lte", elem.Ceiling);
             }
-            return new JProperty(elem.Item1, content);
+            return new JProperty(elem.Name, content);
         }
 
         private void SetSorting(JObject json, ProductsOptions options)
@@ -380,81 +445,86 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
+        private JProperty GetSingleFilterWithNot(string field, StringValues values, string[] disabledOrFields, string[] disabledNotFields)
+        {
+            var conditions = StringValues.IsNullOrEmpty(values)
+                ? null
+                : values.Select(n => GetSingleFilterWithNot(field, n, disabledOrFields, disabledNotFields)).ToArray();
+
+            if (conditions == null || conditions.Length == 0)
+                return null;
+
+            var result = conditions.Length == 1 ? 
+                conditions.First() : 
+                new JProperty("bool", new JObject(new JProperty("must", JArray.FromObject(conditions.Select(n => new JObject(n))))));
+
+            return result;
+        }
+
         private JProperty GetSingleFilterWithNot(string field, string value, string[] disabledOrFields, string[] disabledNotFields)
         {
-            if (!string.IsNullOrEmpty(Options.NegationMark) && value.StartsWith(Options.NegationMark) && !disabledNotFields.Contains(field))
+            JProperty result;
+            var actualSeparator = GetActualSeparator(field, disabledOrFields);
+            bool hasNegation;
+            var actualValue = GetActualValue(field, value, disabledNotFields, out hasNegation);
+
+            if (actualValue == "null")
             {
-                value = value.Remove(0, Options.NegationMark.Length);
-                var condition = GetSingleFilter(field, value, Options.ValueSeparator);
-                return new JProperty("bool", new JObject(
-                    new JProperty("must_not", new JObject(condition))
-                ));
+                result = Exists(field);
+                hasNegation = !hasNegation;
             }
             else
             {
-                var separator = disabledOrFields.Contains(field) ? null : Options.ValueSeparator;
-                return GetSingleFilter(field, value, separator);
+                result = GetSingleFilter(field, actualValue, actualSeparator);  
             }
+
+            if (hasNegation)
+            {
+                result = new JProperty("bool", new JObject(
+                    new JProperty("must_not", new JObject(result))
+                ));
+            }
+
+
+
+            return result;
+        }
+
+        private string GetActualValue(string field, string value, string[] disabledNotFields, out bool hasNegation)
+        {
+            hasNegation = !string.IsNullOrEmpty(Options.NegationMark)
+                          && (value.StartsWith(Options.NegationMark))
+                          && !disabledNotFields.Contains(field);
+
+            return (hasNegation) ? value.Substring(Options.NegationMark.Length) : value;
+        }
+
+        private string GetActualSeparator(string field, string[] disabledOrFields)
+        {
+            var actualSeparator = !string.IsNullOrWhiteSpace(Options.ValueSeparator) ? Options.ValueSeparator : BaseSeparator;
+            actualSeparator = disabledOrFields.Contains(field) ? null : actualSeparator;
+            return actualSeparator;
         }
 
         private JProperty GetSingleFilter(string field, string value, string separator)
         {
             var isBaseField = field == Options.IdPath || field == ProductIdField;
 
-            if (isBaseField)
-            {
-                if (value.Contains(BaseSeparator))
-                {
-                    var values = value.Split(new[] { BaseSeparator }, StringSplitOptions.None);
-                    return Terms(field, values);
-                }
-                else if (!string.IsNullOrWhiteSpace(separator) && value.Contains(separator))
-                {
-                    var values = value.Split(new[] { separator }, StringSplitOptions.None);
-                    return Terms(field, values);
-                }
-                else
-                {
-                    return Term(field, value);
-                }
-            }
-            else
-            {
-                var notAnalized = IsNotAnalyzedField(field);
-                var separated = !string.IsNullOrWhiteSpace(separator) && value.Contains(separator);
-                var values = new string[0];
+            var isSeparated = !String.IsNullOrEmpty(separator) && value.Contains(separator);
+            var values = (isSeparated) ? value.Split(new[] { separator }, StringSplitOptions.None) : new string[0];
+            var notAnalized = IsNotAnalyzedField(field);
 
-                if (separated)
-                {
-                    values = value.Split(new[] { separator }, StringSplitOptions.None);
-                }
-
-                if (notAnalized)
-                {
-                    if (separated)
-                    {
-                        return Terms(field, values);
-                    }
-                    else
-                    {
-                        return Term(field, value);
-                    }
-                }
-                else
-                {
-                    if (separated)
-                    {
-                        var arr = values.Select(v => MatchPhrase(field, v)).Select(m => new JObject(m)).ToArray();
-                        return new JProperty("bool", new JObject(
-                            new JProperty("should", arr.Length > 1 ? (JArray.FromObject(arr)) : (JToken)arr[0])
-                        ));
-                    }
-                    else
-                    {
-                        return MatchPhrase(field, value);
-                    }
-                }
+            if (isBaseField || notAnalized)
+            {
+                return (isSeparated) ? Terms(field, values) : Term(field, value);
             }
+
+            return (isSeparated) ? MatchPhrases(field, values) : MatchPhrase(field, value);
+        }
+
+        private static JProperty Exists(string field)
+        {
+            return new JProperty("exists", new JObject(new JProperty("field", field)));
         }
 
         private static JProperty Term(string field, string value)
@@ -476,19 +546,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 )
             )));
         }
-
-        private string[] GetFieldValues(IList<Tuple<string, string>> filters, string field)
+        private static JProperty MatchPhrases(string field, string[] values)
         {
-            var value = filters.FirstOrDefault(f => f.Item1 == field)?.Item2;
-
-            if (string.IsNullOrEmpty(value))
-            {
-                return new string[0];
-            }
-            else
-            {
-                return value.Split(',');
-            }
+            var arr = values.Select(v => MatchPhrase(field, v)).Select(m => new JObject(m)).ToArray();
+            return new JProperty("bool", new JObject(
+                new JProperty("should", arr.Length > 1 ? (JArray.FromObject(arr)) : (JToken)arr[0])
+            ));
         }
 
         private string[] GetFields(ProductsOptions options, string type = null)

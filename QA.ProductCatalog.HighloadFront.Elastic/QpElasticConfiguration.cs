@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Elasticsearch.Net;
+using Microsoft.Extensions.Options;
 using Nest;
 using QA.Core;
 using QA.Core.DPC.QP.Services;
@@ -21,6 +22,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
         private readonly int _timeout = 5;
         private readonly ILogger _logger;
+        private readonly DataOptions _options;
 
 
         public QpElasticConfiguration(
@@ -28,7 +30,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             IContentProvider<HighloadApiUser> userProvider,
             IContentProvider<HighloadApiLimit> limitProvider,
             IVersionedCacheProvider2 cacheProvider,
-            ILogger logger
+            ILogger logger,
+            IOptions<DataOptions> options
         )
         {
             _indexProvider = indexProvider;
@@ -36,11 +39,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _limitProvider = limitProvider;
             _cacheProvider = cacheProvider;
             _logger = logger;
+            _options = options.Value;
         }
 
         public IEnumerable<ElasticIndex> GetElasticIndices()
         {
             return _cacheProvider.GetOrAdd("ElasticIndexes", _indexProvider.GetTags(), _cacheTimeSpan, _indexProvider.GetArticles);
+        }
+
+        public int GetElasticTimeout()
+        {
+            return _options.ElasticTimeout != 0 ? _options.ElasticTimeout : _timeout;
         }
 
         protected IEnumerable<HighloadApiUser> GetHighloadApiUsers()
@@ -58,7 +67,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var elasticIndices = GetElasticIndices().ToArray();
             var a = elasticIndices.ToDictionary(
                 index => GetElasticKey(index.Language, index.State),
-                index => GetElasticClient(index.Name, index.Url, _timeout, _logger, index.DoTrace)
+                index => GetElasticClient(index.Name, index.Url, _logger, index.DoTrace)
             );
             var defaultIndex = elasticIndices.FirstOrDefault(n => n.IsDefault);
             if (defaultIndex != null)
@@ -118,7 +127,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return (language == null && state == null) ? "default" : $"{language}-{state}";
         }
 
-        private IElasticClient GetElasticClient(string index, string address, int timeout, ILogger logger, bool doTrace)
+        private IElasticClient GetElasticClient(string index, string address, ILogger logger, bool doTrace)
         {
             var node = new Uri(address);
 
@@ -126,7 +135,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
                 .DefaultIndex(index)
-                .RequestTimeout(TimeSpan.FromSeconds(timeout))
+                .RequestTimeout(TimeSpan.FromSeconds(GetElasticTimeout()))
                 .DisableDirectStreaming()
                 .EnableTrace(msg => logger.Log(() => msg, EventLevel.Trace), doTrace)
                 .ThrowExceptions();

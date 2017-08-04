@@ -3,6 +3,5 @@
     public class ProductDescriptor : ProductItem
     {
         public string Product { get; set; }
-        public string Definition { get; set; }
     }
 }

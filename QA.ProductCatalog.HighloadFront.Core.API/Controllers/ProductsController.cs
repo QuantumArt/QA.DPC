@@ -1,37 +1,47 @@
 using System.IO;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Options;
 using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
     [Produces("application/json")]
-    [Route("api/products"), Route("api/{customerCode}/products"), Route("api/{version:decimal}/products"), Route("api/{customerCode}/{version:decimal}/products")]
+    [
+        Route("api/products"),
+        Route("api/{version:decimal}/products"),
+        Route("api/{version:decimal}/{language}/{state}/products"),
+        Route("api/{customerCode}/products"),
+        Route("api/{customerCode}/{language}/{state}/products"),
+        Route("api/{customerCode}/{version:decimal}/products"),
+        Route("api/{customerCode}/{version:decimal}/{language}/{state}/products"),
+    ]
     [OnlyAuthUsers]
     public class ProductsController : Controller
     {
         private ProductManager Manager { get; }
 
-        public ProductsController(ProductManager manager)
+        private readonly SonicElasticStoreOptions _options;
+
+        public ProductsController(ProductManager manager, IOptions<SonicElasticStoreOptions> options)
         {
             Manager = manager;
+            _options = options.Value;
         }
 
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
-        [Route("{type}"), Route("{language}/{state}/{type}")]
+        [Route("{type}")]
         public async Task<ActionResult> GetByType(string type, string language = null, string state = null)
         {
             type = type?.TrimStart('@');
-            var options = ProductOptionsParser.Parse(Request.Query);
+            var options = ProductOptionsParser.Parse(Request.Query, _options);
             try
             {
                 var stream = await Manager.GetProductsInTypeStream(type, options, language, state);
@@ -44,11 +54,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         }
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "GetById" })]
-        [Route("{language}/{state}/{id:int}"), Route("{id:int}")]
+        [Route("{id:int}")]
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
         public async Task<ActionResult> GetById(string id, string language = null, string state = null)
         {
-            var options = ProductOptionsParser.Parse(Request.Query);
+            var options = ProductOptionsParser.Parse(Request.Query, _options);
 
             try
             {
@@ -67,11 +77,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         }
 
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[] { "Search" })]
-        [Route("{language}/{state}/search"), Route("search"), HttpGet]
+        [Route("search"), HttpGet]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<ActionResult> Search([FromQuery] string q, string language = null, string state = null)
         {
-            var options = ProductOptionsParser.Parse(Request.Query);
+            var options = ProductOptionsParser.Parse(Request.Query, _options);
             try
             {
                 var stream = await Manager.SearchStreamAsync(options, language, state);

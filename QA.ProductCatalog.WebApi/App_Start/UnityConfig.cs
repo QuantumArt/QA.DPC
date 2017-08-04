@@ -1,4 +1,5 @@
-﻿using Microsoft.Practices.Unity;
+﻿using System;
+using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
 using QA.Core.Cache;
@@ -73,7 +74,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
                     var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                     var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
                     var tracker = new StructureCacheTracker(connectionProvider);
-                    var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger);
+                    var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
 
                     watcher.AttachTracker(tracker);
 
@@ -81,6 +82,8 @@ namespace QA.ProductCatalog.WebApi.App_Start
                     unityContainer.RegisterInstance<ICacheProvider>(code, cacheProvider);
                     unityContainer.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
                     unityContainer.RegisterInstance<ICacheItemWatcher>(code, watcher);
+
+                    watcher.Start();
                 }
 
                 unityContainer.RegisterType<IContentInvalidator>(new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.GetCustomerCode())));

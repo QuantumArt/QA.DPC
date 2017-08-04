@@ -20,5 +20,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         string GetUserToken(string name);
 
         RateLimit GetLimit(string name, string profile);
+
+        int GetElasticTimeout();
     }
 }

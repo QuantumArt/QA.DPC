@@ -90,15 +90,23 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="includeRegionTags"></param>
         /// <returns></returns>
         [AcceptVerbs("GET")]
-        public Article TarantoolGet(int productId, int definitionId, bool isLive = false, bool includeRegionTags = false)
+        public Article TarantoolGet(int productId, int definitionId, bool isLive = false, bool includeRegionTags = false, bool absent = false, string type = null)
         {
             _logger.LogDebug(() => new { productId, definitionId, isLive }.ToString());
 
             HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
-
             HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
 
-            var product = _tarantoolProductService.GetProduct(productId, definitionId, isLive);
+            Article product;
+
+            if (absent)
+            {
+                product = _tarantoolProductService.GetAbsentProduct(productId, definitionId, isLive, type);
+            }
+            else
+            {
+                product = _tarantoolProductService.GetProduct(productId, definitionId, isLive);
+            }            
 
             return product;
         }

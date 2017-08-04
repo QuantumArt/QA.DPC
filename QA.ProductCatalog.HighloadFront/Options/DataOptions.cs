@@ -13,5 +13,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public string FixedConnectionString { get; set; }
 
         public ElasticIndex[] Elastic { get; set; }
+
+        public int ElasticTimeout { get; set; }
     }
 }

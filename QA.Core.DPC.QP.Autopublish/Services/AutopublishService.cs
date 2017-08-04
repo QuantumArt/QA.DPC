@@ -1,5 +1,4 @@
-﻿using QA.Core.DPC.QP.Autopublish.Models;
-using QA.ProductCatalog.Infrastructure;
+﻿using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Linq;
 
@@ -34,18 +33,24 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
                     if (items.Any())
                     {
+                        var formats = channels.GroupBy(c => c.Format);
+
                         foreach (var item in items)
                         {
                             try
                             {
-                                var descriptor = _autopublishProvider.GetProduct(item);
-
-                                if (descriptor != null)
+                                foreach(var format in formats)
                                 {
-                                    _logger.LogInfo(() => $"Autopublish product {item.ProductId} for {customerCode} and channels ['{string.Join("', '", channels)}']");
-                                    _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channels, true, 1, "Admin", "PUT", customerCode);
-                                    _autopublishProvider.Dequeue(item);                                    
-                                }
+                                    var descriptor = _autopublishProvider.GetProduct(item, format.Key);                                    
+
+                                    if (descriptor != null)
+                                    {
+                                        var channelNames = format.Select(c => c.Name).ToArray();
+                                        _logger.LogInfo(() => $"Autopublish product {item.ProductId} for {customerCode} and channels ['{string.Join("', '", channelNames)}']");
+                                        _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channelNames, true, 1, "Admin", "PUT", customerCode);
+                                        _autopublishProvider.Dequeue(item);
+                                    }
+                                }                               
                             }
                             catch (Exception ex)
                             {
@@ -61,14 +66,13 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             }
         }
 
-        private string[] GetChannels()
+        private NotificationChannel[] GetChannels()
         {
             return _configurationProvider
                 .GetConfiguration()
                 .Channels
-                .Where(c => c.Autopublish)
-                .Select(c => c.Name)
+                .Where(c => c.Autopublish)               
                 .ToArray();
-        }
+        }     
     }
 }
