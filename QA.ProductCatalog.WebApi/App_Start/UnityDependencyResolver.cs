@@ -23,11 +23,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
 		/// <param name="container"></param>
 		public UnityResolver(IUnityContainer container)
 		{
-			if (container == null)
-				throw new ArgumentNullException("container");
-
-			_container = container;
-
+		    _container = container ?? throw new ArgumentNullException(nameof(container));
 			_logger = container.Resolve<ILogger>();
 		}
 
@@ -44,9 +40,17 @@ namespace QA.ProductCatalog.WebApi.App_Start
 
                 return _container.Resolve(serviceType);
 			}
-			catch (ResolutionFailedException)
+			catch (ResolutionFailedException ex)
 			{
-				return null;
+			    if (serviceType == typeof(ProductController))
+			    {
+			        _logger.Error(ex.Message);
+                }
+			    else
+			    {
+			        _logger.Debug(ex.Message);
+			    }
+                return null;
 			}
 		}
 
@@ -56,9 +60,10 @@ namespace QA.ProductCatalog.WebApi.App_Start
 			{
 				return _container.ResolveAll(serviceType);
 			}
-			catch (ResolutionFailedException)
+			catch (ResolutionFailedException ex)
 			{
-				return new List<object>();
+			    _logger.Error(ex.Message);
+                return new List<object>();
 			}
 		}
 
