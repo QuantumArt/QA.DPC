@@ -17,7 +17,8 @@ namespace QA.Core.DPC.QP.API.Services
         
         public TarantoolJsonService(ISettingsService settingsService)
         {
-            _baseUri = new Uri(ConfigurationManager.AppSettings["DPC.Tarantool.Api"]);
+            var tntUrl = ConfigurationManager.AppSettings["DPC.Tarantool.Api"];
+            _baseUri = !String.IsNullOrEmpty(tntUrl) ? new Uri(tntUrl) : null;
             _settingsService = settingsService;
         }
 
