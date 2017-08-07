@@ -135,14 +135,12 @@ else if (Model.Field is PlainField)
     <div class="editor-field">
         @Html.CheckBox("skipcdata", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName))
     </div>
-    if (Model.Field.FieldType == FieldExactTypes.File.ToString())
-    {
-        <div class="editor-label">
-            Загружить как поле Image
-        </div>
-        <div class="editor-field">
-            @Html.CheckBox("loadlikeimage", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage))
-        </div>        
+    <div class="editor-label">
+        Загружать как поле типа Image
+    </div>
+    <div class="editor-field">
+        @Html.CheckBox("loadlikeimage", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage))
+    </div>        
     }
 
 }
