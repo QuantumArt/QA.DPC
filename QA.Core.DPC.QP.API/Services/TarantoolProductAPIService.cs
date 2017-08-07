@@ -55,7 +55,7 @@ namespace QA.Core.DPC.QP.API.Services
             var customerCode = _identityProvider.Identity.CustomerCode;
             var productJson = _tarantoolProductService.GetProduct(customerCode, productId, definitionId, isLive);
             var definitionJson = _tarantoolProductService.GetDefinition(customerCode, definitionId);
-            var productToken = productJson["product"];
+            var productToken = productJson.SelectToken("data.product");
             var contentToken = definitionJson["Content"];
             var product = GetProduct(productToken, contentToken);
             return product;
@@ -256,7 +256,7 @@ namespace QA.Core.DPC.QP.API.Services
 
                         if (fileToken != null)
                         {
-                            field.Value = productToken[field.FieldName].Value<string>("AbsoluteUrl");
+                            field.Value = productToken.Value<string>(field.FieldName);
                             field.NativeValue = field.Value;
                         }
                     }

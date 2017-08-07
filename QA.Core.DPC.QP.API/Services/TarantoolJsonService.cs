@@ -27,7 +27,8 @@ namespace QA.Core.DPC.QP.API.Services
             var definitionUrl = GetDefinitiontUrl(customerCode, definitionId);
             var uri = new Uri(_baseUri, definitionUrl);
             var t = Get<JObject>(uri).SelectTokens("result[?(@.CONTENT_ITEM_ID)]").Select(n => (JObject)n).First();
-            return t.Children().Last(n => ((JProperty)n).Name.StartsWith("field_"));
+            var last = t.Children().Last(n => ((JProperty)n).Name.StartsWith("field_")) as JProperty;
+            return last != null ? JObject.Parse(last.Value.ToString()) : throw new InvalidOperationException("Cannot find definition data");
         }
 
         public JToken GetProduct(string customerCode, int productId, int definitionId, bool isLive = false)
@@ -45,7 +46,7 @@ namespace QA.Core.DPC.QP.API.Services
 
         private string GetProductUrl(string customerCode, int productId, int definitionId, bool isLive)
         {
-            return $"{customerCode}/product-building/?product_id={productId}&definition_id={definitionId}&s_united={!isLive}";
+            return $"{customerCode}/product-building/?product_id={productId}&definition_id={definitionId}&is_united={!isLive}&include_sys_fields=true";
         }
 
         private T Get<T>(Uri uri)
