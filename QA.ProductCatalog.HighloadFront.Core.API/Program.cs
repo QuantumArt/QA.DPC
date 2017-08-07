@@ -14,6 +14,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
         {
             var host = new WebHostBuilder()
                 .UseKestrel()
+#if DEBUG
+                .UseUrls("http://*:9092;http://localhost:5000/")
+#endif
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .CaptureStartupErrors(true)

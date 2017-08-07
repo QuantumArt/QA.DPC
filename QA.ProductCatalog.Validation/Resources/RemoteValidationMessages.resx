@@ -147,4 +147,19 @@
   <data name="RelatedEntityIsArchived" xml:space="preserve">
     <value>Связанная сущность заархивирована. Продукт: {0}, связанные статьи: {1}</value>
   </data>
+  <data name="Cant_Get_Marketing_Products" xml:space="preserve">
+    <value>Не удалось получить один или оба связанных маркетинговых продукта</value>
+  </data>
+  <data name="MarketingProduct_Duplicate_Alias" xml:space="preserve">
+    <value>Продукт с таким Alias и типом уже существует. Id пересекающихся продуктов: {0}</value>
+  </data>
+  <data name="SameTypeMarketingProductProducts" xml:space="preserve">
+    <value>Все продукты маркетингового продукта должны иметь тот же тип</value>
+  </data>
+  <data name="SameTypeProductMarketingProduct" xml:space="preserve">
+    <value>Тип маркетингового продукта не совпадает с типом продукта</value>
+  </data>
+  <data name="Same_Marketing_Products" xml:space="preserve">
+    <value>Маркетинговые продукты не должны совпадать</value>
+  </data>
 </root>

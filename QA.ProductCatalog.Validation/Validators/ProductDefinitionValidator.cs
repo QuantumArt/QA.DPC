@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xaml;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.Models.Configuration;
 using QA.ProductCatalog.Infrastructure;
-using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
 
 namespace QA.ProductCatalog.Validation.Validators
 {
-    public class ProductDefinitionValidator : IRemoteValidator2, IRemoteValidator
+    public class ProductDefinitionValidator : IRemoteValidator2
     {
         // All fields: Title XmlDefinition ApplyToTypes Content JsonDefinition
         private const string FieldXmlDefinition = "XmlDefinition";
@@ -36,7 +32,7 @@ namespace QA.ProductCatalog.Validation.Validators
             var xaml = context.ProvideValueExact<string>(xmlDefinition);
             if (!string.IsNullOrWhiteSpace(xaml))
             {
-                Content definition = null;
+                Content definition;
                 try
                 {
                     definition = (Content)XamlServices.Parse(xaml);
@@ -71,17 +67,6 @@ namespace QA.ProductCatalog.Validation.Validators
             }
 
             return result;
-        }
-
-        [Obsolete]
-        public void Validate(RemoteValidationContext context, ref ValidationContext result)
-        {
-            var adapter = new RemoteValidationResult();
-
-            Validate(context, adapter);
-
-            result.Messages = adapter.Messages;
-            result.Result = adapter.Result;
         }
     }
 }

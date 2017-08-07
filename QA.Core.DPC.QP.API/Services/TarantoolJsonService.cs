@@ -17,7 +17,8 @@ namespace QA.Core.DPC.QP.API.Services
         
         public TarantoolJsonService(ISettingsService settingsService)
         {
-            _baseUri = new Uri(ConfigurationManager.AppSettings["DPC.Tarantool.Api"]);
+            var tntUrl = ConfigurationManager.AppSettings["DPC.Tarantool.Api"];
+            _baseUri = !String.IsNullOrEmpty(tntUrl) ? new Uri(tntUrl) : null;
             _settingsService = settingsService;
         }
 
@@ -26,7 +27,8 @@ namespace QA.Core.DPC.QP.API.Services
             var definitionUrl = GetDefinitiontUrl(customerCode, definitionId);
             var uri = new Uri(_baseUri, definitionUrl);
             var t = Get<JObject>(uri).SelectTokens("result[?(@.CONTENT_ITEM_ID)]").Select(n => (JObject)n).First();
-            return t.Children().Last(n => ((JProperty)n).Name.StartsWith("field_"));
+            var last = t.Children().Last(n => ((JProperty)n).Name.StartsWith("field_")) as JProperty;
+            return last != null ? JObject.Parse(last.Value.ToString()) : throw new InvalidOperationException("Cannot find definition data");
         }
 
         public JToken GetProduct(string customerCode, int productId, int definitionId, bool isLive = false)
@@ -39,12 +41,12 @@ namespace QA.Core.DPC.QP.API.Services
         private string GetDefinitiontUrl(string customerCode, int definitionId)
         {
             var settingId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
-            return $"product-building/{customerCode}/data/articles?invariant-name=content_{settingId}&take=1&skip=0&key={definitionId}";
+            return $"{customerCode}/product-building/data/articles?invariant-name=content_{settingId}&take=1&skip=0&key={definitionId}";
         }
 
         private string GetProductUrl(string customerCode, int productId, int definitionId, bool isLive)
         {
-            return $"product-building/{customerCode}/?product_id={productId}&definition_id={definitionId}&s_united={!isLive}";
+            return $"{customerCode}/product-building/?product_id={productId}&definition_id={definitionId}&is_united={!isLive}&include_sys_fields=true";
         }
 
         private T Get<T>(Uri uri)

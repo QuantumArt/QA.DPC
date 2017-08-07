@@ -12,9 +12,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
     [AllowAnonymous]
     public class RemoteValidationController : Controller
     {
-        private readonly Func<string, IRemoteValidator> _validationFactory;
+        private readonly Func<string, IRemoteValidator2> _validationFactory;
 
-        public RemoteValidationController(Func<string, IRemoteValidator> validationFactory)
+        public RemoteValidationController(Func<string, IRemoteValidator2> validationFactory)
         {
             UserProvider.ForcedUserId = 1;
             _validationFactory = validationFactory;
@@ -22,14 +22,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         public ActionResult Validate(string validatorKey, RemoteValidationContext context)
         {
-            ValidationContextBase result = new RemoteValidationResult();
+            var result = new RemoteValidationResult();
             try
             {
-                result = ValidateInternal(validatorKey, context);
+                result = _validationFactory(validatorKey).Validate(context, result);
             }
-            catch (ResolutionFailedException)
+            catch (ResolutionFailedException ex)
             {
-                result.Messages.Add("Validator " + validatorKey + " is not registered");
+                result.Messages.Add("Validator " + validatorKey + " is not registered: " + ex.Message);
             }
             catch (ValidationException ex)
             {
@@ -37,25 +37,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
 
             return Json(result, JsonRequestBehavior.AllowGet);
-        }
-
-        private ValidationContextBase ValidateInternal(string validatorKey, RemoteValidationContext context)
-        {
-            ValidationContextBase result;
-            var validator = _validationFactory(validatorKey);
-            var remoteValidator = validator as IRemoteValidator2;
-
-            if (remoteValidator != null)
-            {
-                result = remoteValidator.Validate(context, new RemoteValidationResult());
-            }
-            else
-            {
-                var exactResult = new ValidationContext();
-                validator.Validate(context, ref exactResult);
-                result = exactResult;
-            }
-            return result;
         }
     }
 }

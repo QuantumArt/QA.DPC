@@ -61,6 +61,15 @@ namespace QA.ProductCatalog.Validation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Не удалось получить один или оба связанных маркетинговых продукта.
+        /// </summary>
+        internal static string Cant_Get_Marketing_Products {
+            get {
+                return ResourceManager.GetString("Cant_Get_Marketing_Products", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Неверно указан customercode. Ожидался {0}, получен {1}.
         /// </summary>
         internal static string CustomerCodeInvalid {
@@ -97,6 +106,15 @@ namespace QA.ProductCatalog.Validation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Продукт с таким Alias и типом уже существует. Id пересекающихся продуктов: {0}.
+        /// </summary>
+        internal static string MarketingProduct_Duplicate_Alias {
+            get {
+                return ResourceManager.GetString("MarketingProduct_Duplicate_Alias", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Не найдено поле {0}.
         /// </summary>
         internal static string MissingParam {
@@ -129,6 +147,33 @@ namespace QA.ProductCatalog.Validation.Resources {
         internal static string RelatedEntityIsArchived {
             get {
                 return ResourceManager.GetString("RelatedEntityIsArchived", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Маркетинговые продукты не должны совпадать.
+        /// </summary>
+        internal static string Same_Marketing_Products {
+            get {
+                return ResourceManager.GetString("Same_Marketing_Products", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Все продукты маркетингового продукта должны иметь тот же тип.
+        /// </summary>
+        internal static string SameTypeMarketingProductProducts {
+            get {
+                return ResourceManager.GetString("SameTypeMarketingProductProducts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тип маркетингового продукта не совпадает с типом продукта.
+        /// </summary>
+        internal static string SameTypeProductMarketingProduct {
+            get {
+                return ResourceManager.GetString("SameTypeProductMarketingProduct", resourceCulture);
             }
         }
         

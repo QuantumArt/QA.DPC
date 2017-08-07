@@ -139,9 +139,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
                 .DefaultIndex(index)
                 .RequestTimeout(TimeSpan.FromSeconds(GetElasticTimeout()))
-                .DisableDirectStreaming()
                 .EnableTrace(msg => logger.Log(() => msg, EventLevel.Trace), doTrace)
                 .ThrowExceptions();
+
+            if (doTrace)
+                settings.DisableDirectStreaming();
 
             return new ElasticClient(settings);
         }

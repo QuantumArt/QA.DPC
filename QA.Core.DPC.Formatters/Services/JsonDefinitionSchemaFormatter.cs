@@ -14,8 +14,8 @@ namespace QA.Core.DPC.Formatters.Services
 {
     public class JsonDefinitionSchemaFormatter : JsonDefinitionSchemaFormatterBase
     {
-        public JsonDefinitionSchemaFormatter(IUnityContainer container)
-            : base(container) { }
+        public JsonDefinitionSchemaFormatter(IUnityContainer serviceFactory)
+            : base(serviceFactory) { }
 
         protected override bool TreatClassifiersAsBackwardFields
         {
@@ -25,8 +25,8 @@ namespace QA.Core.DPC.Formatters.Services
 
     public class JsonDefinitionSchemaClassifiersAsBackwardsFormatter : JsonDefinitionSchemaFormatterBase
     {
-        public JsonDefinitionSchemaClassifiersAsBackwardsFormatter(IUnityContainer container)
-            : base(container) { }
+        public JsonDefinitionSchemaClassifiersAsBackwardsFormatter(IUnityContainer serviceFactory)
+            : base(serviceFactory) { }
 
         protected override bool TreatClassifiersAsBackwardFields
         {
@@ -36,12 +36,12 @@ namespace QA.Core.DPC.Formatters.Services
 
     public abstract class JsonDefinitionSchemaFormatterBase : IFormatter<Content>
     {
-        private readonly IUnityContainer _container;
+        private readonly IUnityContainer _serviceFactory;
         protected abstract bool TreatClassifiersAsBackwardFields { get; }
 
-        public JsonDefinitionSchemaFormatterBase(IUnityContainer container)
+        public JsonDefinitionSchemaFormatterBase(IUnityContainer serviceFactory)
         {
-            _container = container;
+            _serviceFactory = serviceFactory;
         }
 
         #region IFormatter implementation
@@ -55,11 +55,12 @@ namespace QA.Core.DPC.Formatters.Services
             var jObject = new JObject();
 
             jObject["Hash"] = $"{product.GetHashCode()}";
-            var fieldService = _container.Resolve<IFieldService>();
+            var fieldService = _serviceFactory.Resolve<IFieldService>();
+            var contentService = _serviceFactory.Resolve<IContentService>();
 
             using (fieldService.CreateQpConnectionScope())
             {
-                jObject["Content"] = VisitDefinition(product, new List<Content>(), new Context(fieldService, TreatClassifiersAsBackwardFields));
+                jObject["Content"] = VisitDefinition(product, new List<Content>(), new Context(fieldService, contentService, TreatClassifiersAsBackwardFields));
             }
 
             var textWriter = new StreamWriter(stream);
@@ -73,19 +74,20 @@ namespace QA.Core.DPC.Formatters.Services
         }
 
 
-        private static JObject VisitDefinition(Content content, List<Content> visited, Context fieldService)
+        private static JObject VisitDefinition(Content content, List<Content> visited, Context context)
         {
             if (visited.Any(x => Object.ReferenceEquals(content, x)))
             {
-                if (fieldService.visited.Any(x => Object.ReferenceEquals(content, x)))
+                if (context.visited.Any(x => Object.ReferenceEquals(content, x)))
                     throw new NotSupportedException("Recursive definition are not supported");
 
-                fieldService.visited.Add(content);
+                context.visited.Add(content);
             }
 
             visited.Add(content);
 
-            var fields = GetFieldsFromDB(content, fieldService);
+            var fields = GetFieldsFromDB(content, context);
+
 
             JObject currentContent = new JObject();
             currentContent["ContentId"] = content.ContentId;
@@ -97,30 +99,53 @@ namespace QA.Core.DPC.Formatters.Services
             else
             {
                 //todo: get contentname from BLL if empty, so hardcode it
-                //HARDCODE                                
-                currentContent["ContentName"] = $"content_{content.GetHashCode()}_generated";
+                //HARDCODE            
+                var bllContent = context.GetOrAdd($"content_{content.ContentId}", () => context.contentService.Read(content.ContentId));
+
+                if (bllContent == null)
+                {
+                    throw new InvalidOperationException($"Content {content.ContentId} is not found in DB.");
+                }
+
+                currentContent["ContentName"] = bllContent.NetName;
             }
 
-            currentContent["PlainField"] = new JArray(AddFieldData(GetPlainFields(content, fieldService), fields)
+            currentContent["PlainField"] = new JArray(AddFieldData(GetPlainFields(content, context), fields)
                 .Select(x => ProcessFieldBase(x)));
 
             currentContent["EntityField"] = new JArray(AddFieldData(content.Fields
                 .Where(ExactType<EntityField>()), fields)
                 .Cast<EntityField>()
-                .Select(x => ProcessEntityField(x, visited, fieldService)));
+                .Select(x => ProcessEntityField(x, visited, context)));
 
-            currentContent["BackwardRelationField"] = new JArray(GetBackwardsWithClassifiers(content, fieldService)
+            currentContent["BackwardRelationField"] = new JArray(GetBackwardsWithClassifiers(content, context)
                 .Cast<BackwardRelationField>()
-                .Select(x => ProcessEntityField(x, visited, fieldService)));
+                .Select(x => ProcessEntityField(x, visited, context)));
 
-            if (!fieldService.treatClassifiersAsBackwardFields)
+            currentContent["VirtualField"] = new JArray(GetVirtualFields(content));
+
+            if (!context.treatClassifiersAsBackwardFields)
             {
                 currentContent["ExtensionField"] = new JArray(GetClassifiers(content)
-                  .Select(x => ProcessEntityField(x, visited, fieldService)));
+                  .Select(x => ProcessEntityField(x, visited, context)));
             }
 
             return currentContent;
 
+        }
+
+        private static IEnumerable<JObject> GetVirtualFields(Content content)
+        {
+            return content.Fields
+                .OfType<BaseVirtualField>()
+                .Select(MapVirtualField);
+        }
+
+        private static JObject MapVirtualField(Field x)
+        {
+            var obj = JObject.FromObject(x);
+            obj.Add("Type", x.GetType().Name);
+            return obj;
         }
 
         private static IEnumerable<Field> AddFieldData(IEnumerable<Field> fields, IEnumerable<Quantumart.QP8.BLL.Field> qpFields)
@@ -254,6 +279,7 @@ namespace QA.Core.DPC.Formatters.Services
             var f = new JObject();
             f["FieldId"] = x.FieldId;
             f["FieldName"] = x.FieldName;
+            f["CustomProperties"] = JObject.FromObject(x.CustomProperties);
 
             if (!string.IsNullOrEmpty(x.FieldType))
             {
@@ -274,20 +300,18 @@ namespace QA.Core.DPC.Formatters.Services
         class Context
         {
             internal readonly IFieldService fieldService;
+            internal readonly IContentService contentService;
             private readonly Dictionary<string, object> cache;
             internal readonly List<Content> visited;
             internal readonly bool treatClassifiersAsBackwardFields;
 
-            public Context(IFieldService fieldService)
-            {
-                this.fieldService = fieldService;
-                cache = new Dictionary<string, object>();
-                visited = new List<Content>();
-            }
-
-            public Context(IFieldService fieldService, bool treatClassifiersAsBackwardFields) : this(fieldService)
+            public Context(IFieldService fieldService, IContentService contentService, bool treatClassifiersAsBackwardFields)
             {
                 this.treatClassifiersAsBackwardFields = treatClassifiersAsBackwardFields;
+                this.fieldService = fieldService;
+                this.contentService = contentService;
+                cache = new Dictionary<string, object>();
+                visited = new List<Content>();
             }
 
             internal T GetOrAdd<T>(string key, Func<T> funct)
