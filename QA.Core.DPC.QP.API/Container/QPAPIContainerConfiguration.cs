@@ -11,6 +11,7 @@ namespace QA.Core.DPC.QP.API.Container
         {
             Container.RegisterType<IProductSimpleAPIService, TarantoolProductAPIService>();
             Container.RegisterType<IProductSimpleService<JToken, JToken>, TarantoolJsonService>();
+            Container.RegisterType<IStatusProvider, StatusProvider>();
         }
     }
 }

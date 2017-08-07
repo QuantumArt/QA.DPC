@@ -12,14 +12,16 @@ namespace QA.Core.DPC.QP.API.Services
 {
     public class TarantoolProductAPIService : IProductSimpleAPIService
     {
-        private const int PublishedStatusTypeId = 125;
+        private const string PublishedStatusd = "Published";
         private readonly IProductSimpleService<JToken, JToken> _tarantoolProductService;
         private readonly IIdentityProvider _identityProvider;
+        private readonly IStatusProvider _statusProvider;
 
-        public TarantoolProductAPIService(IProductSimpleService<JToken, JToken> tarantoolProductService, IIdentityProvider identityProvider)
+        public TarantoolProductAPIService(IProductSimpleService<JToken, JToken> tarantoolProductService, IIdentityProvider identityProvider, IStatusProvider statusProvider)
         {
             _tarantoolProductService = tarantoolProductService;
             _identityProvider = identityProvider;
+            _statusProvider = statusProvider;
         }
 
         public Article GetAbsentProduct(int productId, int definitionId, bool isLive, string type)
@@ -63,8 +65,10 @@ namespace QA.Core.DPC.QP.API.Services
 
         private Article GetProduct(JToken productToken, JToken contentToken)
         {
-            int statusTypeId = contentToken.Value<int>("STATUS_TYPE_ID");
-            bool isPublished = statusTypeId == PublishedStatusTypeId;
+            int contentId = contentToken.Value<int>("ContentId");
+            int statusTypeId = productToken.Value<int>("STATUS_TYPE_ID");
+            string statusName = _statusProvider.GetStatusName(contentId, statusTypeId);
+            bool isPublished = statusName == PublishedStatusd;
 
             var product = new Article
             {
@@ -72,10 +76,10 @@ namespace QA.Core.DPC.QP.API.Services
                 Archived = productToken.Value<bool>("ARCHIVE"),
                 Visible = productToken.Value<bool>("VISIBLE"),
                 IsPublished = isPublished,
-                Status = isPublished ? "Published" : string.Empty,
+                Status = statusName,
                 Created = productToken.Value<DateTime>("CREATED"),
                 Modified = productToken.Value<DateTime>("MODIFIED"),
-                ContentId = contentToken.Value<int>("ContentId"),
+                ContentId = contentId,
                 ContentName = contentToken.Value<string>("ContentName"), //NET_CONTENT_NAME
                 ContentDisplayName = contentToken.Value<string>("ContentName"),
             };
