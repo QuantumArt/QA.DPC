@@ -191,9 +191,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			bool skipCdata = Request.Form["skipcdata"] != "false";
 
 			if (skipCdata)
-				defInfo.Field.CustomProperties[QA.Core.DPC.Loader.XmlProductService.RENDER_TEXT_FIELD_AS_XML_NAME] = true;
+				defInfo.Field.CustomProperties[QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName] = true;
 
-			return SaveField(defInfo);
+            var loadLikeImage = Request.Form["loadlikeimage"]?.Contains("true") ?? false;
+
+		    if (loadLikeImage)
+		        defInfo.Field.CustomProperties[QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage] = true;
+
+            return SaveField(defInfo);
 		}
 
 		public ActionResult SaveExtensionField(DefinitionInfoForFieldsSave<ExtensionField> defInfo)
