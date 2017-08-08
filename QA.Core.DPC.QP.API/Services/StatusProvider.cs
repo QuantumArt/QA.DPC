@@ -55,7 +55,6 @@ namespace QA.Core.DPC.QP.API.Services
         private Dictionary<string, string> GetDictionary()
         {
             var connection = _connectionProvider.GetConnection();
-            connection += "2";
             var dbContext = new DBConnector(connection);
 
             return dbContext.GetRealData(Query)
