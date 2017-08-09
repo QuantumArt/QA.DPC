@@ -80,8 +80,8 @@ namespace QA.Core.DPC.QP.API.Services
                 Created = productToken.Value<DateTime>("CREATED"),
                 Modified = productToken.Value<DateTime>("MODIFIED"),
                 ContentId = contentId,
-                ContentName = contentToken.Value<string>("ContentName"), //NET_CONTENT_NAME
-                ContentDisplayName = contentToken.Value<string>("ContentName"),
+                ContentName = contentToken.Value<string>("ContentName"),
+                ContentDisplayName = contentToken.Value<string>("ContentDisplayName"),
             };
 
             foreach (var fieldToken in contentToken["PlainField"])
@@ -148,21 +148,16 @@ namespace QA.Core.DPC.QP.API.Services
                 var extensionField = new ExtensionArticleField { ContentId = product.ContentId };
                 UpdateField(extensionField, fieldToken);
 
-                var type = productToken.Value<string>(extensionField.FieldName);
+                var extensionId = productToken.Value<int>(extensionField.FieldName);
+                var childContentToken = fieldToken["Contents"].FirstOrDefault(c => c.Value<int>("ContentId") == extensionId);
 
-                if (type != null)
+                if (childContentToken != null)
                 {
-
-                    var childContentToken = fieldToken["Contents"].FirstOrDefault(c => c.Value<string>("ContentName") == type);
-
-                    if (childContentToken != null)
-                    {
-                        var article = GetProduct(productToken, childContentToken);
-                        article.Id = 0;
-                        extensionField.Value = childContentToken.Value<string>("ContentId");
-                        extensionField.Item = article;
-                        product.Fields[extensionField.FieldName] = extensionField;
-                    }
+                    var article = GetProduct(productToken, childContentToken);
+                    article.Id = 0;
+                    extensionField.Value = childContentToken.Value<string>("ContentId");
+                    extensionField.Item = article;
+                    product.Fields[extensionField.FieldName] = extensionField;
                 }
             }
 

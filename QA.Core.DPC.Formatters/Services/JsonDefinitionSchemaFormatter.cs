@@ -92,23 +92,15 @@ namespace QA.Core.DPC.Formatters.Services
             JObject currentContent = new JObject();
             currentContent["ContentId"] = content.ContentId;
 
-            if (!string.IsNullOrEmpty(content.ContentName))
-            {
-                currentContent["ContentName"] = content.ContentName;
-            }
-            else
-            {
-                //todo: get contentname from BLL if empty, so hardcode it
-                //HARDCODE            
-                var bllContent = context.GetOrAdd($"content_{content.ContentId}", () => context.contentService.Read(content.ContentId));
+            var bllContent = context.GetOrAdd($"content_{content.ContentId}", () => context.contentService.Read(content.ContentId));
 
-                if (bllContent == null)
-                {
-                    throw new InvalidOperationException($"Content {content.ContentId} is not found in DB.");
-                }
-
-                currentContent["ContentName"] = bllContent.NetName;
+            if (bllContent == null)
+            {
+                throw new InvalidOperationException($"Content {content.ContentId} is not found in DB.");
             }
+
+            currentContent["ContentName"] = bllContent.NetName;
+            currentContent["ContentDisplayName"] = bllContent.Name;
 
             currentContent["PlainField"] = new JArray(AddFieldData(GetPlainFields(content, context), fields)
                 .Select(x => ProcessFieldBase(x)));
@@ -168,6 +160,11 @@ namespace QA.Core.DPC.Formatters.Services
 
             field.FieldType = qpField.ExactType.ToString();
             field.NumberType = qpField.IsLong ? NumberType.Int64 : (qpField.IsInteger ? NumberType.Int32 : (qpField.IsDecimal ? NumberType.Double : (NumberType?)null));
+
+            if (string.IsNullOrEmpty(field.FieldName))
+            {
+                field.FieldName = qpField.Name;
+            }
         }
 
         private static IEnumerable<ExtensionField> GetClassifiers(Content content)
