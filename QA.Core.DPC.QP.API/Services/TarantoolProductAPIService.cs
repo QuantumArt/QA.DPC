@@ -84,8 +84,6 @@ namespace QA.Core.DPC.QP.API.Services
                 ContentDisplayName = contentToken.Value<string>("ContentName"),
             };
 
-            product.ContentName = "ContentName";
-
             foreach (var fieldToken in contentToken["PlainField"])
             {
                 var plainField = new PlainArticleField
@@ -150,7 +148,7 @@ namespace QA.Core.DPC.QP.API.Services
                 var extensionField = new ExtensionArticleField { ContentId = product.ContentId };
                 UpdateField(extensionField, fieldToken);
 
-                var type = productToken.Value<string>(extensionField.FieldName) ?? "Tariffs"; //TODO: whait for final json
+                var type = productToken.Value<string>(extensionField.FieldName);
 
                 if (type != null)
                 {
@@ -251,17 +249,6 @@ namespace QA.Core.DPC.QP.API.Services
                             var val = number.Value ? 1m : 0m;
                             field.NativeValue = val;
                             field.Value = val.ToString(CultureInfo.InvariantCulture);
-                        }
-                    }
-                    break;
-                case PlainFieldType.File:
-                    {
-                        var fileToken = productToken[field.FieldName];
-
-                        if (fileToken != null)
-                        {
-                            field.Value = productToken.Value<string>(field.FieldName);
-                            field.NativeValue = field.Value;
                         }
                     }
                     break;

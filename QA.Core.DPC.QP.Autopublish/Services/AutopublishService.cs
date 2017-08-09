@@ -69,7 +69,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
                                         if (descriptor != null)
                                         {
-                                            var method = item.Action.ToLower() == "upsert" ? "PUT" : "DELETE";
+                                            var method = item.Action.ToLower() == "upserted" ? "PUT" : "DELETE";
                                             var channelNames = format.Select(c => c.Name).ToArray();
                                             _logger.LogInfo(() => $"Autopublish product {item.ProductId} for {customerCode} and channels ['{string.Join("', '", channelNames)}']");
                                             _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channelNames, true, 1, "Admin", method, customerCode);
