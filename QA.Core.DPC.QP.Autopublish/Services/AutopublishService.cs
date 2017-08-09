@@ -21,23 +21,6 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         public void Run(string data, string config, byte[] binData, ITaskExecutionContext executionContext)
         {
-            var items = _autopublishProvider.Peek("mts_catalog");
-
-            foreach (var item in items)
-            {
-                try
-                {
-                    _autopublishProvider.Dequeue(item);
-                }
-                catch (Exception ex)
-                {
-                    _logger.ErrorException($"Can't autopublish product {item.ProductId}", ex);
-                }
-            }
-        }
-
-        public void Run2(string data, string config, byte[] binData, ITaskExecutionContext executionContext)
-        {
             var customerCode = data;
 
             try
