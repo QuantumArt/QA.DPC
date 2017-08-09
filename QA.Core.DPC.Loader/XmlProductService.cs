@@ -20,9 +20,11 @@ namespace QA.Core.DPC.Loader
 
 	public class XmlProductService : IXmlProductService
 	{
-		public const string RENDER_TEXT_FIELD_AS_XML_NAME = "RenderTextFieldAsXml";
+		public const string RenderTextFieldAsXmlName = "RenderTextFieldAsXml";
+	    public const string RenderFileFieldAsImage = "RenderFileFieldAsImage";
 
-		private readonly ILogger _logger;
+
+        private readonly ILogger _logger;
         private readonly ISettingsService _settingsService;
         private readonly string _connectionString;
 
@@ -334,7 +336,7 @@ namespace QA.Core.DPC.Loader
 		{
 			if (article.PlainFieldType == PlainFieldType.VisualEdit || article.PlainFieldType == PlainFieldType.Textbox)
 			{
-				if (article.CustomProperties.ContainsKey(RENDER_TEXT_FIELD_AS_XML_NAME))
+				if (article.CustomProperties.ContainsKey(RenderTextFieldAsXmlName))
 				{
 					XElement parsedElement;
 
@@ -378,7 +380,9 @@ namespace QA.Core.DPC.Loader
 
             var fieldId = article.FieldId.Value;
 
-			if (article.PlainFieldType == PlainFieldType.File && !string.IsNullOrWhiteSpace(article.Value))
+            var renderFileAsImage = article.CustomProperties.ContainsKey(RenderFileFieldAsImage);
+
+			if (article.PlainFieldType == PlainFieldType.File && !string.IsNullOrWhiteSpace(article.Value) && !renderFileAsImage)
 			{
                 var cnn = ctx.Cnn;
 
@@ -406,8 +410,11 @@ namespace QA.Core.DPC.Loader
                             true, true), article.Value))
                 };
 			}
-			if ((article.PlainFieldType == PlainFieldType.Image || article.PlainFieldType == PlainFieldType.DynamicImage)
-				&& !string.IsNullOrWhiteSpace(article.Value))
+			if ((
+                    article.PlainFieldType == PlainFieldType.Image 
+                    || article.PlainFieldType == PlainFieldType.DynamicImage 
+                    || article.PlainFieldType == PlainFieldType.File && renderFileAsImage
+                ) && !string.IsNullOrWhiteSpace(article.Value))
 			{
                 var cnn = ctx.Cnn;
 

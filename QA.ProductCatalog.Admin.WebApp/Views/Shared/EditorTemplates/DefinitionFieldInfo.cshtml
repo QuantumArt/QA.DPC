@@ -1,4 +1,5 @@
 ﻿@using QA.Core.Models.Configuration
+@using Quantumart.QP8.Constants
 
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionFieldInfo
 
@@ -131,9 +132,17 @@ else if (Model.Field is PlainField)
 	<div class="editor-label">
 		Не оборачивать в CDATA
 	</div>
-	<div class="editor-field">
-	@Html.CheckBox("skipcdata", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RENDER_TEXT_FIELD_AS_XML_NAME))
-	</div>
+    <div class="editor-field">
+        @Html.CheckBox("skipcdata", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName))
+    </div>
+    <div class="editor-label">
+        Загружать как поле типа Image
+    </div>
+    <div class="editor-field">
+        @Html.CheckBox("loadlikeimage", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage))
+    </div>        
+    }
+
 }
 
 
