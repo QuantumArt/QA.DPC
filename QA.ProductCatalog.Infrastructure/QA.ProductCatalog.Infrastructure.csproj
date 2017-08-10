@@ -274,6 +274,7 @@
     <Compile Include="IRegionTagReplaceService.cs" />
     <Compile Include="IRemoteValidator2.cs" />
     <Compile Include="IRemoteValidator.cs" />
+    <Compile Include="IStatusProvider.cs" />
     <Compile Include="ITask.cs" />
     <Compile Include="IUserProvider.cs" />
     <Compile Include="IWarmUpProvider.cs" />
@@ -312,4 +313,3 @@
   </Target>
   -->
 </Project>
-

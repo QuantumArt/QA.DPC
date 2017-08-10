@@ -12,14 +12,16 @@ namespace QA.Core.DPC.QP.API.Services
 {
     public class TarantoolProductAPIService : IProductSimpleAPIService
     {
-        private const int PublishedStatusTypeId = 125;
+        private const string PublishedStatusd = "Published";
         private readonly IProductSimpleService<JToken, JToken> _tarantoolProductService;
         private readonly IIdentityProvider _identityProvider;
+        private readonly IStatusProvider _statusProvider;
 
-        public TarantoolProductAPIService(IProductSimpleService<JToken, JToken> tarantoolProductService, IIdentityProvider identityProvider)
+        public TarantoolProductAPIService(IProductSimpleService<JToken, JToken> tarantoolProductService, IIdentityProvider identityProvider, IStatusProvider statusProvider)
         {
             _tarantoolProductService = tarantoolProductService;
             _identityProvider = identityProvider;
+            _statusProvider = statusProvider;
         }
 
         public Article GetAbsentProduct(int productId, int definitionId, bool isLive, string type)
@@ -63,8 +65,10 @@ namespace QA.Core.DPC.QP.API.Services
 
         private Article GetProduct(JToken productToken, JToken contentToken)
         {
-            int statusTypeId = contentToken.Value<int>("STATUS_TYPE_ID");
-            bool isPublished = statusTypeId == PublishedStatusTypeId;
+            int contentId = contentToken.Value<int>("ContentId");
+            int statusTypeId = productToken.Value<int>("STATUS_TYPE_ID");
+            string statusName = _statusProvider.GetStatusName(contentId, statusTypeId);
+            bool isPublished = statusName == PublishedStatusd;
 
             var product = new Article
             {
@@ -72,15 +76,13 @@ namespace QA.Core.DPC.QP.API.Services
                 Archived = productToken.Value<bool>("ARCHIVE"),
                 Visible = productToken.Value<bool>("VISIBLE"),
                 IsPublished = isPublished,
-                Status = isPublished ? "Published" : string.Empty,
+                Status = statusName,
                 Created = productToken.Value<DateTime>("CREATED"),
                 Modified = productToken.Value<DateTime>("MODIFIED"),
-                ContentId = contentToken.Value<int>("ContentId"),
-                ContentName = contentToken.Value<string>("ContentName"), //NET_CONTENT_NAME
-                ContentDisplayName = contentToken.Value<string>("ContentName"),
+                ContentId = contentId,
+                ContentName = contentToken.Value<string>("ContentName"),
+                ContentDisplayName = contentToken.Value<string>("ContentDisplayName"),
             };
-
-            product.ContentName = "ContentName";
 
             foreach (var fieldToken in contentToken["PlainField"])
             {
@@ -146,21 +148,16 @@ namespace QA.Core.DPC.QP.API.Services
                 var extensionField = new ExtensionArticleField { ContentId = product.ContentId };
                 UpdateField(extensionField, fieldToken);
 
-                var type = productToken.Value<string>(extensionField.FieldName) ?? "Tariffs"; //TODO: whait for final json
+                var extensionId = productToken.Value<int>(extensionField.FieldName);
+                var childContentToken = fieldToken["Contents"].FirstOrDefault(c => c.Value<int>("ContentId") == extensionId);
 
-                if (type != null)
+                if (childContentToken != null)
                 {
-
-                    var childContentToken = fieldToken["Contents"].FirstOrDefault(c => c.Value<string>("ContentName") == type);
-
-                    if (childContentToken != null)
-                    {
-                        var article = GetProduct(productToken, childContentToken);
-                        article.Id = 0;
-                        extensionField.Value = childContentToken.Value<string>("ContentId");
-                        extensionField.Item = article;
-                        product.Fields[extensionField.FieldName] = extensionField;
-                    }
+                    var article = GetProduct(productToken, childContentToken);
+                    article.Id = 0;
+                    extensionField.Value = childContentToken.Value<string>("ContentId");
+                    extensionField.Item = article;
+                    product.Fields[extensionField.FieldName] = extensionField;
                 }
             }
 
@@ -247,17 +244,6 @@ namespace QA.Core.DPC.QP.API.Services
                             var val = number.Value ? 1m : 0m;
                             field.NativeValue = val;
                             field.Value = val.ToString(CultureInfo.InvariantCulture);
-                        }
-                    }
-                    break;
-                case PlainFieldType.File:
-                    {
-                        var fileToken = productToken[field.FieldName];
-
-                        if (fileToken != null)
-                        {
-                            field.Value = productToken.Value<string>(field.FieldName);
-                            field.NativeValue = field.Value;
                         }
                     }
                     break;

@@ -34,11 +34,10 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                   .Select(itm => new ProductItem
                   {
                       CustomerCode = customerCode,
-                      ProductId = itm.Value<int>("id"),
-                      DefinitionId = itm.Value<int>("definitionId"),
-                      IsUnited = itm.Value<bool>("isUnited"),
-                      ActionCode = itm.Value<ProductAction>("actionCode"),
-                      Type = itm.Value<string>("type")
+                      ProductId = itm.Value<int>("product_id"),
+                      DefinitionId = itm.Value<int>("definition_id"),
+                      IsUnited = itm.Value<bool>("is_united"),
+                      Action =  itm.Value<string>("action")
                   })
                   .ToArray();
         }
@@ -112,7 +111,8 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         private string GetProductUrl(ProductItem item, string format)
         {
-            return $"api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&type={item.Type}&absent={item.ActionCode == ProductAction.Delete}";
+            var absent = item.Action.ToLower() != "upserted";
+            return $"api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&absent={absent}";
         }
 
         private string GetDequeueUrl(ProductItem item)
