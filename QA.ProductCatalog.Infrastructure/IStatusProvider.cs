@@ -2,6 +2,6 @@
 {
     public interface IStatusProvider
     {
-        string GetStatusName(int contentId, int statusId);
+        string GetStatusName(int statusId);
     }
 }
