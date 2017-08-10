@@ -13,15 +13,13 @@ namespace QA.Core.DPC.QP.API.Services
 {
     public class StatusProvider : IStatusProvider
     {
-        private const string StatusCacheKey = "statuses";
+        private const string StatusCacheKey = "db_statuses";
         private const string Query = @"
             select
-                cast(c.CONTENT_ID as int) ContentId,
                 cast(s.STATUS_TYPE_ID as int) StatusId,
 	            s.STATUS_TYPE_NAME StatusName
             from
-                content c
-                join status_type s on c.SITE_ID = s.SITE_ID";
+                status_type s";
 
         private readonly IVersionedCacheProvider _cacheProvider;
         private readonly IConnectionProvider _connectionProvider;     
@@ -32,17 +30,15 @@ namespace QA.Core.DPC.QP.API.Services
             _connectionProvider = connectionProvider;
         }
 
-        public string GetStatusName(int contentId, int statusId)
+        public string GetStatusName(int statusId)
         {
-            var key = GetKey(contentId, statusId);
-
             var dictionary = _cacheProvider.GetOrAdd(
                 StatusCacheKey,
                 new[] { CacheTags.QP8.Content, CacheTags.QP8.StatusType },
                 TimeSpan.FromHours(1),
                 () => GetDictionary());
 
-            if (dictionary.TryGetValue(key, out string status))
+            if (dictionary.TryGetValue(statusId, out string status))
             {
                 return status;
             }
@@ -52,7 +48,7 @@ namespace QA.Core.DPC.QP.API.Services
             }
         }
 
-        private Dictionary<string, string> GetDictionary()
+        private Dictionary<int, string> GetDictionary()
         {
             var connection = _connectionProvider.GetConnection();
             var dbContext = new DBConnector(connection);
@@ -60,18 +56,12 @@ namespace QA.Core.DPC.QP.API.Services
             return dbContext.GetRealData(Query)
                     .AsEnumerable()
                     .Select(row => Converter.ToModelFromDataRow<StatusModel>(row))
-                    .ToDictionary(s => GetKey(s.ContentId, s.StatusId), s => s.StatusName);
-        }
-
-        private string GetKey(int contentId, int statusId)
-        {
-            return $"{contentId}_{statusId}";
-        }
+                    .ToDictionary(s => s.StatusId, s => s.StatusName);
+        }    
     }
 
     internal class StatusModel
     {
-        public int ContentId { get; set; }
         public int StatusId { get; set; }
         public string StatusName { get; set; }
     }

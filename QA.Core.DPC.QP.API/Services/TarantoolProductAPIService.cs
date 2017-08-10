@@ -67,7 +67,7 @@ namespace QA.Core.DPC.QP.API.Services
         {
             int contentId = contentToken.Value<int>("ContentId");
             int statusTypeId = productToken.Value<int>("STATUS_TYPE_ID");
-            string statusName = _statusProvider.GetStatusName(contentId, statusTypeId);
+            string statusName = _statusProvider.GetStatusName(statusTypeId);
             bool isPublished = statusName == PublishedStatusd;
 
             var product = new Article
