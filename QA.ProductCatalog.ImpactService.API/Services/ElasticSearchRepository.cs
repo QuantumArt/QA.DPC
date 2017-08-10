@@ -1,24 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Elasticsearch.Net;
+using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using QA.Core;
+using QA.ProductCatalog.HighloadFront.Elastic;
 
 namespace QA.ProductCatalog.ImpactService.API.Services
 {
     public class ElasticSearchRepository : ISearchRepository
     {
-        private string _sourceQuery = "hits.hits.[?(@._source)]._source";
-
+        private readonly string _sourceQuery = "hits.hits.[?(@._source)]._source";
+        private readonly int _timeout = 15;
+        private readonly ILogger _logger;
 
         private Regex GetRegionTagRegex(string tag)
         {
             return new Regex($@"[<\[]replacement[>\]]tag={tag}[<\[]/replacement[>\]]");
+        }
+
+        public ElasticSearchRepository(ILogger logger)
+        {
+            _logger = logger;
         }
 
         public async Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options, DateTimeOffset defaultValue)
@@ -136,27 +144,32 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return value;
         }
 
+        private IElasticClient GetElasticClient(SearchOptions options)
+        {
+            return QpElasticConfiguration.GetElasticClient(options.IndexName, options.BaseAddress, _logger, false, _timeout);
+        }
+
+
         public async Task<string> GetContent(string json, SearchOptions options)
         {
-            var result = string.Empty;
-            using (var client = new HttpClient())
+            var client = GetElasticClient(options);
+
+            ElasticsearchResponse<Stream> response; 
+            if (options.TypeName == null)
             {
-                var address = $"{options.BaseAddress}/{options.IndexName}/_search";
-                if (options.TypeName != null)
-                {
-                    address = $"{options.BaseAddress}/{options.IndexName}/{options.TypeName}/_search";
-                }
-                client.BaseAddress = new Uri(address);
-                client.DefaultRequestHeaders.Accept.Clear();
-                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await client.PostAsync(address, httpContent);
-             
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadAsStringAsync();
-                }
+                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, json);
             }
-            return result;
+            else
+            {
+                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, options.TypeName, json);
+            }
+
+            if (response.Success)
+            {
+                return await new StreamReader(response.Body).ReadToEndAsync();
+            }
+
+            return string.Empty;
         }
     }
 }
