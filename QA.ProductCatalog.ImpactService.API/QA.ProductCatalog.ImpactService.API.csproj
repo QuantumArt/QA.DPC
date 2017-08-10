@@ -14,7 +14,8 @@
   </ItemGroup>
   
   <ItemGroup>   
-    <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />
+    <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />   
+    <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Elastic\QA.ProductCatalog.HighloadFront.Elastic.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.ImpactService\QA.ProductCatalog.ImpactService.csproj" />
   </ItemGroup>
 

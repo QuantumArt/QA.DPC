@@ -67,7 +67,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var elasticIndices = GetElasticIndices().ToArray();
             var a = elasticIndices.ToDictionary(
                 index => GetElasticKey(index.Language, index.State),
-                index => GetElasticClient(index.Name, index.Url, _logger, index.DoTrace)
+                index => GetElasticClient(index.Name, index.Url, _logger, index.DoTrace, GetElasticTimeout())
             );
             var defaultIndex = elasticIndices.FirstOrDefault(n => n.IsDefault);
             if (defaultIndex != null)
@@ -127,20 +127,34 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return (language == null && state == null) ? "default" : $"{language}-{state}";
         }
 
-        private IElasticClient GetElasticClient(string index, string address, ILogger logger, bool doTrace)
+        public static IElasticClient GetElasticClient(string index, string address, ILogger logger, bool doTrace, int timeout)
         {
-            var node = new Uri(address);
-
-            var connectionPool = new SingleNodeConnectionPool(node);
+            var connectionPool = GetConnectionPool(address);
 
             var settings = new ConnectionSettings(connectionPool, s => new JsonNetSerializer(s).EnableStreamResponse())
                 .DefaultIndex(index)
-                .RequestTimeout(TimeSpan.FromSeconds(GetElasticTimeout()))
+                .RequestTimeout(TimeSpan.FromSeconds(timeout))
                 .DisableDirectStreaming()
                 .EnableTrace(msg => logger.Log(() => msg, EventLevel.Trace), doTrace)
                 .ThrowExceptions();
 
             return new ElasticClient(settings);
+        }
+
+        private static IConnectionPool GetConnectionPool(string address)
+        {
+            IConnectionPool connectionPool;
+            if (address.Contains(";"))
+            {
+                var uris = address.Split(';').Select(n => new Uri(n.Trim())).ToArray();
+                connectionPool = new SniffingConnectionPool(uris);
+            }
+            else
+            {
+                var node = new Uri(address);
+                connectionPool = new SingleNodeConnectionPool(node);
+            }
+            return connectionPool;
         }
     }
 }
