@@ -147,7 +147,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (address.Contains(";"))
             {
                 var uris = address.Split(';').Select(n => new Uri(n.Trim())).ToArray();
-                connectionPool = new SniffingConnectionPool(uris);
+                connectionPool = new StaticConnectionPool(uris);
             }
             else
             {
