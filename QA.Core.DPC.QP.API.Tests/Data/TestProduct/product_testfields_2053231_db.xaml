@@ -1,0 +1,92 @@
+﻿<Article ContentDisplayName="Тестовый продукт" ContentId="904" ContentName="TestProduct" Created="2017-08-14T19:05:53.397" Id="2053231" IsPublished="True" Modified="2017-08-15T12:39:21.867" PublishingMode="Publish" Status="Published" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Article.Fields>
+        <PlainArticleField x:Key="Title" ContentId="904" FieldDisplayName="Title" FieldId="5169" FieldName="Title" NativeValue="название" PlainFieldType="String" Value="название">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object">
+                    <x:Boolean x:Key="RenderTextFieldAsXml">True</x:Boolean>
+                </scg:Dictionary>
+            </PlainArticleField.CustomProperties>
+        </PlainArticleField>
+        <PlainArticleField x:Key="Description" ContentId="904" FieldDisplayName="Description" FieldId="5173" FieldName="Description" NativeValue="&lt;strong&gt;Описание&lt;/strong&gt;" PlainFieldType="VisualEdit" Value="&lt;strong&gt;Описание&lt;/strong&gt;">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+        </PlainArticleField>
+        <PlainArticleField x:Key="Enum" ContentId="904" FieldDisplayName="Enum" FieldId="5174" FieldName="Enum" NativeValue="key2" PlainFieldType="StringEnum" Value="key2">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+        </PlainArticleField>
+        <PlainArticleField x:Key="Image" ContentId="904" FieldDisplayName="Image" FieldId="5175" FieldName="Image" NativeValue="file.jpg" PlainFieldType="Image" Value="file.jpg">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+        </PlainArticleField>
+        <PlainArticleField x:Key="DynamicImage" ContentId="904" FieldDisplayName="DynamicImage" FieldId="5184" FieldName="DynamicImage" NativeValue="field_5184/file.JPG" PlainFieldType="DynamicImage" Value="field_5184/file.JPG">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+        </PlainArticleField>
+        <PlainArticleField x:Key="File" ContentId="904" FieldDisplayName="File" FieldId="5176" FieldName="File" NativeValue="file.txt" PlainFieldType="File" Value="file.txt">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+        </PlainArticleField>
+        <PlainArticleField x:Key="Integer" ContentId="904" FieldDisplayName="Integer" FieldId="5177" FieldName="Integer" PlainFieldType="Numeric" Value="15">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+            <PlainArticleField.NativeValue>
+                <x:Int32>15</x:Int32>
+            </PlainArticleField.NativeValue>
+        </PlainArticleField>
+        <PlainArticleField x:Key="Float" ContentId="904" FieldDisplayName="Float" FieldId="5178" FieldName="Float" PlainFieldType="Numeric" Value="15,12">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+            <PlainArticleField.NativeValue>
+                <x:Decimal>15.12</x:Decimal>
+            </PlainArticleField.NativeValue>
+        </PlainArticleField>
+        <PlainArticleField x:Key="Decimal" ContentId="904" FieldDisplayName="Decimal" FieldId="5179" FieldName="Decimal" PlainFieldType="Numeric" Value="16,123">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+            <PlainArticleField.NativeValue>
+                <x:Decimal>16.123</x:Decimal>
+            </PlainArticleField.NativeValue>
+        </PlainArticleField>
+        <PlainArticleField x:Key="Boolean" ContentId="904" FieldDisplayName="Boolean" FieldId="5180" FieldName="Boolean" PlainFieldType="Boolean" Value="1">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+            <PlainArticleField.NativeValue>
+                <x:Decimal>1</x:Decimal>
+            </PlainArticleField.NativeValue>
+        </PlainArticleField>
+        <PlainArticleField x:Key="Date" ContentId="904" FieldDisplayName="Date" FieldId="5181" FieldName="Date" PlainFieldType="Date" Value="17.08.2017 0:00:00">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+            <PlainArticleField.NativeValue>
+                <s:DateTime>2017-08-17</s:DateTime>
+            </PlainArticleField.NativeValue>
+        </PlainArticleField>
+        <PlainArticleField x:Key="Time" ContentId="904" FieldDisplayName="Time" FieldId="5182" FieldName="Time" PlainFieldType="Time" Value="15.08.2017 4:30:00">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+            <PlainArticleField.NativeValue>
+                <s:DateTime>2017-08-15T04:30</s:DateTime>
+            </PlainArticleField.NativeValue>
+        </PlainArticleField>
+        <PlainArticleField x:Key="DateTime" ContentId="904" FieldDisplayName="DateTime" FieldId="5183" FieldName="DateTime" PlainFieldType="DateTime" Value="17.08.2017 4:30:00">
+            <PlainArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </PlainArticleField.CustomProperties>
+            <PlainArticleField.NativeValue>
+                <s:DateTime>2017-08-17T04:30</s:DateTime>
+            </PlainArticleField.NativeValue>
+        </PlainArticleField>
+    </Article.Fields>
+</Article>

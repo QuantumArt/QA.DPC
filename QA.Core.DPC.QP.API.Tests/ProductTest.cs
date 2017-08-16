@@ -2,7 +2,6 @@
 using QA.Core.DPC.QP.API.Tests.Attributes;
 using QA.Core.DPC.QP.API.Tests.Providers;
 using QA.Core.Models.Entities;
-using System.IO;
 using System.Linq;
 
 namespace QA.Core.DPC.QP.API.Tests
@@ -110,17 +109,17 @@ namespace QA.Core.DPC.QP.API.Tests
             Assert.Multiple(() =>
             {
                 Assert.That(dbArticle.ContentId, Is.EqualTo(tntArticle.ContentId), $"{path}_ContentId");
-                //Assert.That(dbArticle.ContentName, Is.EqualTo(tntArticle.ContentName), $"{path}_ContentName");
-                //Assert.That(dbArticle.ContentDisplayName, Is.EqualTo(tntArticle.ContentDisplayName), $"{path}_ContentDisplayName");
+                Assert.That(dbArticle.ContentName, Is.EqualTo(tntArticle.ContentName), $"{path}_ContentName");
+                Assert.That(dbArticle.ContentDisplayName, Is.EqualTo(tntArticle.ContentDisplayName), $"{path}_ContentDisplayName");
 
                 Assert.That(dbArticle.Visible, Is.EqualTo(tntArticle.Visible), $"{path}_Visible");
                 Assert.That(dbArticle.Archived, Is.EqualTo(tntArticle.Archived), $"{path}_Archived");
-                //Assert.That(dbArticle.Created, Is.EqualTo(tntArticle.Created), $"{path}_Created");
-                //Assert.That(dbArticle.Modified, Is.EqualTo(tntArticle.Modified), $"{path}_Modified");
-                //Assert.That(dbArticle.IsPublished, Is.EqualTo(tntArticle.IsPublished), $"{path}_IsPublished");
-                //Assert.That(dbArticle.Status, Is.EqualTo(tntArticle.Status), $"{path}_Status");
-                //Assert.That(dbArticle.Splitted, Is.EqualTo(tntArticle.Splitted), $"{path}_Splitted");
-                //Assert.That(dbArticle.PublishingMode, Is.EqualTo(tntArticle.PublishingMode), $"{path}_PublishingMode");
+                Assert.That(dbArticle.Created, Is.EqualTo(tntArticle.Created), $"{path}_Created");
+                Assert.That(dbArticle.Modified, Is.EqualTo(tntArticle.Modified), $"{path}_Modified");
+                Assert.That(dbArticle.IsPublished, Is.EqualTo(tntArticle.IsPublished), $"{path}_IsPublished");
+                Assert.That(dbArticle.Status, Is.EqualTo(tntArticle.Status), $"{path}_Status");
+                Assert.That(dbArticle.Splitted, Is.EqualTo(tntArticle.Splitted), $"{path}_Splitted");
+                Assert.That(dbArticle.PublishingMode, Is.EqualTo(tntArticle.PublishingMode), $"{path}_PublishingMode");
             });
         }
 
@@ -129,7 +128,7 @@ namespace QA.Core.DPC.QP.API.Tests
             Assert.That(dbField.ContentId, Is.EqualTo(tntField.ContentId), $"{path}_ContentId");
             Assert.That(dbField.FieldId, Is.EqualTo(tntField.FieldId), $"{path}_FieldId");
             Assert.That(dbField.FieldName, Is.EqualTo(tntField.FieldName), $"{path}_FieldName");
-            //Assert.That(dbField.FieldDisplayName, Is.EqualTo(tntField.FieldDisplayName), $"{path}_FieldDisplayName");
+            Assert.That(dbField.FieldDisplayName, Is.EqualTo(tntField.FieldDisplayName), $"{path}_FieldDisplayName");
         }
 
         private void ComparePlainArticleField(PlainArticleField dbField, PlainArticleField tntField, string path)
@@ -138,8 +137,8 @@ namespace QA.Core.DPC.QP.API.Tests
             {
                 CompareArticleField(dbField, tntField, path);
 
-                //Assert.That(dbField.Value, Is.EqualTo(tntField.Value), $"{path}_Value");
-                //Assert.That(dbField.NativeValue, Is.EqualTo(tntField.NativeValue), $"{path}_NativeValue");
+                Assert.That(dbField.Value, Is.EqualTo(tntField.Value), $"{path}_Value");
+                Assert.That(dbField.NativeValue, Is.EqualTo(tntField.NativeValue), $"{path}_NativeValue");
                 Assert.That(dbField.PlainFieldType, Is.EqualTo(tntField.PlainFieldType), $"{path}_PlainFieldType");
             });
         }   
