@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
+using Quantumart.QP8.Constants;
 
 namespace QA.Core.DPC.Formatters.Services
 {
@@ -160,7 +161,7 @@ namespace QA.Core.DPC.Formatters.Services
 
             field.FieldType = qpField.ExactType.ToString();
 
-            if (field.FieldType == "Numeric")
+            if (qpField.ExactType == FieldExactTypes.Numeric)
             {
                 if (qpField.IsInteger && qpField.IsLong)
                 {

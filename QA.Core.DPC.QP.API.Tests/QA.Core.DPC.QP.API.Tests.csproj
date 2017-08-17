@@ -65,6 +65,8 @@
     <EmbeddedResource Include="Data\tnt_product_2051672.json" />
     <EmbeddedResource Include="Data\TestProduct\definition_testfields_2053235.json" />
     <EmbeddedResource Include="Data\TestProduct\product_testfields_2053231_tnt.json" />
+    <EmbeddedResource Include="Data\TestProduct\definition_testrelations_2053233.json" />
+    <EmbeddedResource Include="Data\TestProduct\product_testrelations_2053231_tnt.json" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -100,7 +102,11 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Data\TestProduct\product_testrelations_2053231_db.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

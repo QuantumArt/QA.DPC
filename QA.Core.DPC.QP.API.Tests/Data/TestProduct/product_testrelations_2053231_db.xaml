@@ -1,0 +1,74 @@
+﻿<Article ContentDisplayName="Тестовый продукт" ContentId="904" ContentName="TestProduct" Created="2017-08-14T19:05:53.397" Id="2053231" IsPublished="True" Modified="2017-08-16T19:36:15.567" PublishingMode="Publish" Status="Published" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Article.Fields>
+        <ExtensionArticleField SubContentId="{x:Null}" x:Key="Type" ContentId="904" FieldDisplayName="Type" FieldId="5185" FieldName="Type" Value="907">
+            <ExtensionArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </ExtensionArticleField.CustomProperties>
+            <ExtensionArticleField.Item>
+                <Article ContentDisplayName="Тестовое расширение" ContentId="907" ContentName="TestExtension" Created="2017-08-14T19:05:54.037" Id="2053232" IsPublished="True" Modified="2017-08-16T19:36:16.01" PublishingMode="Publish" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <scg:Dictionary x:TypeArguments="x:String, ArticleField" />
+                    </Article.Fields>
+                </Article>
+            </ExtensionArticleField.Item>
+        </ExtensionArticleField>
+        <MultiArticleField x:Key="Modifiers" ContentId="904" FieldDisplayName="Modifiers" FieldId="5187" FieldName="Modifiers" SubContentId="905">
+            <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </MultiArticleField.CustomProperties>
+            <MultiArticleField.Items>
+                <Article x:Key="2053222" ContentDisplayName="Тестовый модификатор" ContentId="905" ContentName="TestModifier" Created="2017-08-14T17:20:19.43" Id="2053222" IsPublished="True" Modified="2017-08-15T12:38:40.953" PublishingMode="Publish" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <scg:Dictionary x:TypeArguments="x:String, ArticleField" />
+                    </Article.Fields>
+                </Article>
+                <Article x:Key="2053223" ContentDisplayName="Тестовый модификатор" ContentId="905" ContentName="TestModifier" Created="2017-08-14T17:20:24.93" Id="2053223" IsPublished="True" Modified="2017-08-15T12:38:34.627" PublishingMode="Publish" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <scg:Dictionary x:TypeArguments="x:String, ArticleField" />
+                    </Article.Fields>
+                </Article>
+            </MultiArticleField.Items>
+        </MultiArticleField>
+        <SingleArticleField x:Key="MarketingProduct" ContentId="904" FieldDisplayName="MarketingProduct" FieldId="5189" FieldName="MarketingProduct" SubContentId="908">
+            <SingleArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </SingleArticleField.CustomProperties>
+            <SingleArticleField.Item>
+                <Article ContentDisplayName="Тестовый маркетинговый продукт" ContentId="908" ContentName="TestMarketingProduct" Created="2017-08-14T17:24:27.743" Id="2053228" IsPublished="True" Modified="2017-08-15T12:38:13.55" PublishingMode="Publish" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <scg:Dictionary x:TypeArguments="x:String, ArticleField" />
+                    </Article.Fields>
+                </Article>
+            </SingleArticleField.Item>
+        </SingleArticleField>
+        <MultiArticleField x:Key="Parameters" ContentId="904" FieldDisplayName="Parameters" FieldId="5195" FieldName="Parameters" SubContentId="909">
+            <MultiArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </MultiArticleField.CustomProperties>
+            <MultiArticleField.Items>
+                <Article x:Key="2053229" x:Name="__ReferenceID0" ContentDisplayName="Тестовый параметр" ContentId="909" ContentName="TestParameter" Created="2017-08-14T17:30:49.293" Id="2053229" IsPublished="True" Modified="2017-08-15T12:38:57.86" PublishingMode="Publish" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <scg:Dictionary x:TypeArguments="x:String, ArticleField" />
+                    </Article.Fields>
+                </Article>
+                <Article x:Key="2053230" ContentDisplayName="Тестовый параметр" ContentId="909" ContentName="TestParameter" Created="2017-08-14T17:31:02.923" Id="2053230" IsPublished="True" Modified="2017-08-15T12:39:05.52" PublishingMode="Publish" Status="Published" Visible="True">
+                    <Article.Fields>
+                        <scg:Dictionary x:TypeArguments="x:String, ArticleField" />
+                    </Article.Fields>
+                </Article>
+            </MultiArticleField.Items>
+        </MultiArticleField>
+        <BackwardArticleField FieldDisplayName="{x:Null}" x:Key="AdditionalProduct" ContentId="909" FieldId="5196" FieldName="AdditionalProduct" SubContentId="909">
+            <BackwardArticleField.CustomProperties>
+                <scg:Dictionary x:TypeArguments="x:String, x:Object" />
+            </BackwardArticleField.CustomProperties>
+            <BackwardArticleField.Items>
+                <scg:Dictionary x:TypeArguments="x:Int32, Article">
+                    <x:Reference>__ReferenceID0
+                        <x:Key>2053229</x:Key>
+                    </x:Reference>
+                </scg:Dictionary>
+            </BackwardArticleField.Items>
+        </BackwardArticleField>
+    </Article.Fields>
+</Article>

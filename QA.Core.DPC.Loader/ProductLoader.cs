@@ -25,6 +25,7 @@ using Qp8Bll = Quantumart.QP8.BLL;
 using System.IO;
 using System.Text;
 using QA.Core.DPC.QP.Services;
+using Quantumart.QP8.Constants;
 
 namespace QA.Core.DPC.Loader
 {
@@ -833,12 +834,36 @@ FROM
             hasVirtualFields = false;
 
             if (fieldDef == null || fieldDef is PlainField) //Для поля не переданы настройки маппинга или оно PlainField => если оно простое, надо получить его значение, если не простое -- пропускается
+            {
+                object nativeValue = field.ObjectValue;
+
+                if (field.ObjectValue != null && field.Field.ExactType == FieldExactTypes.Numeric)
+                {
+                    if (field.Field.IsInteger && field.Field.IsLong)
+                    {
+                        nativeValue = Convert.ToInt64(field.ObjectValue);
+                    }
+                    else if ((field.Field.IsInteger && !field.Field.IsLong) || field.Field.RelationType == Qp8Bll.RelationType.OneToMany)
+                    {
+                        nativeValue = Convert.ToInt32(field.ObjectValue);
+                    }
+                    else if (field.Field.IsDecimal)
+                    {
+                        nativeValue = Convert.ToDecimal(field.ObjectValue);
+                    }
+                    else if (!field.Field.IsDecimal)
+                    {
+                        nativeValue = Convert.ToDouble(field.ObjectValue);
+                    }
+                }
+
                 res = new PlainArticleField
                 {
                     Value = field.Value,
-                    NativeValue = (field.Field.IsInteger || field.Field.RelationType == Qp8Bll.RelationType.OneToMany) && field.ObjectValue != null ? Convert.ToInt32(field.ObjectValue) : field.ObjectValue,
+                    NativeValue = nativeValue,
                     PlainFieldType = (PlainFieldType)field.Field.ExactType /*map to our types*/
                 };
+            }
             else if (fieldDef is BackwardRelationField)
             {
                 var subContentDef = ((BackwardRelationField)fieldDef).Content;

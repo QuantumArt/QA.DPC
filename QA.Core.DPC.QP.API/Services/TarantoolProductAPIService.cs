@@ -191,6 +191,7 @@ namespace QA.Core.DPC.QP.API.Services
             switch (field.PlainFieldType)
             {
                 case PlainFieldType.Date:
+                case PlainFieldType.Time:
                 case PlainFieldType.DateTime:
 
                     var dt = productToken.Value<DateTime?>(field.FieldName);

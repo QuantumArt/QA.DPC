@@ -3,5 +3,10 @@
     "db_product": "TestProduct.product_testfields_2053231_db",
     "tnt_product": "TestProduct.product_testfields_2053231_tnt",
     "tnt_definition": "TestProduct.definition_testfields_2053235"
+  },
+  {
+    "db_product": "TestProduct.product_testrelations_2053231_db",
+    "tnt_product": "TestProduct.product_testrelations_2053231_tnt",
+    "tnt_definition": "TestProduct.definition_testrelations_2053233"
   }
 ]
