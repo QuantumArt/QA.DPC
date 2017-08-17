@@ -380,7 +380,7 @@ namespace QA.Core.DPC.Loader
 
             var fieldId = article.FieldId.Value;
 
-            var renderFileAsImage = article.CustomProperties.ContainsKey(RenderFileFieldAsImage);
+            var renderFileAsImage = article.CustomProperties?.ContainsKey(RenderFileFieldAsImage) ?? false;
 
 			if (article.PlainFieldType == PlainFieldType.File && !string.IsNullOrWhiteSpace(article.Value) && !renderFileAsImage)
 			{

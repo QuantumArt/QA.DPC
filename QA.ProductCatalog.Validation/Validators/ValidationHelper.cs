@@ -212,7 +212,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
         public void CheckArchivedRelatedEntity(ArticleService articleService, IEnumerable<string> relIdsList, int productId, string idFieldName, int contentId)
         {
-            var ids = relIdsList.Select(int.Parse).ToArray();
+            var ids = relIdsList.Where(n => !string.IsNullOrEmpty(n)).Select(int.Parse).Distinct().ToArray();
             var articles = articleService.List(contentId, ids);
             var relIds = articles.Where(w => w.Archived).Select(s => s.Id).ToList();
             if (relIds.Any())
