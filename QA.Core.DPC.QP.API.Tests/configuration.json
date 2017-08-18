@@ -1,12 +1,12 @@
 ﻿[
   {
-    "db_product": "db_product_106360",
-    "tnt_product": "tnt_product_106360",
-    "tnt_definition": "tnt_definition"
+    "db_product": "TestProduct.product_testfields_2053231_db",
+    "tnt_product": "TestProduct.product_testfields_2053231_tnt",
+    "tnt_definition": "TestProduct.definition_testfields_2053235"
   },
   {
-    "db_product": "db_product_2051672",
-    "tnt_product": "tnt_product_2051672",
-    "tnt_definition": "tnt_definition"
+    "db_product": "TestProduct.product_testrelations_2053231_db",
+    "tnt_product": "TestProduct.product_testrelations_2053231_tnt",
+    "tnt_definition": "TestProduct.definition_testrelations_2053233"
   }
 ]

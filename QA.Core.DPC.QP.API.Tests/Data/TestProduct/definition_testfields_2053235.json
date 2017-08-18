@@ -1,0 +1,104 @@
+﻿{
+    "Hash": "-456258434",
+    "Content": {
+        "ContentId": 904,
+        "ContentName": "TestProduct",
+        "ContentDisplayName": "Тестовый продукт",
+        "PlainField": [
+            {
+                "FieldId": 5169,
+                "FieldName": "Title",
+                "CustomProperties": {
+                    "RenderTextFieldAsXml": true
+                },
+                "FieldType": "String"
+            },
+            {
+                "FieldId": 5173,
+                "FieldName": "Description",
+                "CustomProperties": {},
+                "FieldType": "VisualEdit"
+            },
+            {
+                "FieldId": 5174,
+                "FieldName": "Enum",
+                "CustomProperties": {},
+                "FieldType": "StringEnum"
+            },
+            {
+                "FieldId": 5175,
+                "FieldName": "Image",
+                "CustomProperties": {},
+                "FieldType": "Image"
+            },
+            {
+                "FieldId": 5184,
+                "FieldName": "DynamicImage",
+                "CustomProperties": {},
+                "FieldType": "DynamicImage"
+            },
+            {
+                "FieldId": 5176,
+                "FieldName": "File",
+                "CustomProperties": {},
+                "FieldType": "File"
+            },
+            {
+                "FieldId": 5177,
+                "FieldName": "Integer",
+                "CustomProperties": {},
+                "FieldType": "Numeric",
+                "NumberType": "Int32"
+            },
+            {
+                "FieldId": 5203,
+                "FieldName": "Long",
+                "CustomProperties": {},
+                "FieldType": "Numeric",
+                "NumberType": "Int64"
+            },
+            {
+                "FieldId": 5178,
+                "FieldName": "Double",
+                "CustomProperties": {},
+                "FieldType": "Numeric",
+                "NumberType": "Double"
+            },
+          {
+            "FieldId": 5179,
+            "FieldName": "Decimal",
+            "CustomProperties": {},
+            "FieldType": "Numeric",
+            "NumberType": "Decimal"
+          },
+            {
+                "FieldId": 5180,
+                "FieldName": "Boolean",
+                "CustomProperties": {},
+                "FieldType": "Boolean"
+            },
+            {
+                "FieldId": 5181,
+                "FieldName": "Date",
+                "CustomProperties": {},
+                "FieldType": "Date"
+            },
+            {
+                "FieldId": 5182,
+                "FieldName": "Time",
+                "CustomProperties": {},
+                "FieldType": "Time"
+            },
+            {
+                "FieldId": 5183,
+                "FieldName": "DateTime",
+                "CustomProperties": {},
+                "FieldType": "DateTime"
+            }
+        ],
+        "EntityField": [],
+        "BackwardRelationField": [],
+        "VirtualField": [],
+        "ExtensionField": []
+    }
+}

@@ -1,0 +1,96 @@
+﻿{
+    "Hash": "-1943536857",
+    "Content": {
+        "ContentId": 904,
+        "ContentName": "TestProduct",
+        "ContentDisplayName": "Тестовый продукт",
+        "PlainField": [],
+        "EntityField": [
+            {
+                "FieldId": 5187,
+                "FieldName": "Modifiers",
+                "CustomProperties": {},
+                "FieldType": "M2MRelation",
+                "Content": {
+                    "ContentId": 905,
+                    "ContentName": "TestModifier",
+                    "ContentDisplayName": "Тестовый модификатор",
+                    "PlainField": [],
+                    "EntityField": [],
+                    "BackwardRelationField": [],
+                    "VirtualField": [],
+                    "ExtensionField": []
+                }
+            },
+            {
+                "FieldId": 5189,
+                "FieldName": "MarketingProduct",
+                "CustomProperties": {},
+                "FieldType": "O2MRelation",
+                "Content": {
+                    "ContentId": 908,
+                    "ContentName": "TestMarketingProduct",
+                    "ContentDisplayName": "Тестовый маркетинговый продукт",
+                    "PlainField": [],
+                    "EntityField": [],
+                    "BackwardRelationField": [],
+                    "VirtualField": [],
+                    "ExtensionField": []
+                }
+            },
+            {
+                "FieldId": 5195,
+                "FieldName": "Parameters",
+                "CustomProperties": {},
+                "FieldType": "M2ORelation",
+                "Content": {
+                    "ContentId": 909,
+                    "ContentName": "TestParameter",
+                    "ContentDisplayName": "Тестовый параметр",
+                    "PlainField": [],
+                    "EntityField": [],
+                    "BackwardRelationField": [],
+                    "VirtualField": [],
+                    "ExtensionField": []
+                }
+            }
+        ],
+        "BackwardRelationField": [
+            {
+                "FieldId": 5196,
+                "FieldName": "AdditionalProduct",
+                "CustomProperties": {},
+                "Content": {
+                    "ContentId": 909,
+                    "ContentName": "TestParameter",
+                    "ContentDisplayName": "Тестовый параметр",
+                    "PlainField": [],
+                    "EntityField": [],
+                    "BackwardRelationField": [],
+                    "VirtualField": [],
+                    "ExtensionField": []
+                }
+            }
+        ],
+        "VirtualField": [],
+        "ExtensionField": [
+            {
+                "FieldId": 5185,
+                "FieldName": "Type",
+                "CustomProperties": {},
+                "Contents": [
+                  {
+                    "ContentId": 907,
+                    "ContentName": "TestExtension",
+                    "ContentDisplayName": "Тестовое расширение",
+                    "PlainField": [],
+                    "EntityField": [],
+                    "BackwardRelationField": [],
+                    "VirtualField": [],
+                    "ExtensionField": []
+                  }
+                ]
+            }
+        ]
+    }
+}

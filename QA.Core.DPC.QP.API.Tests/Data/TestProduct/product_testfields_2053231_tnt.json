@@ -1,0 +1,30 @@
+﻿{
+    "status": "success",
+    "data": {
+      "product": {
+        "ARCHIVE": false,
+        "Id": 2053231,
+        "Date": "2017-08-17T00:00:00",
+        "Time": "2017-08-16T04:30:00",
+        "Image": "file.jpg",
+        "Title": "название2",
+        "Enum": "key1",
+        "CONTENT_ITEM_ID": 2053231,
+        "File": "file.txt",
+        "VISIBLE": true,
+        "Description": "<strong>Описание</strong>",
+        "Long": 5294967295,
+        "Double": 15.12,
+        "LAST_MODIFIED_BY": 89,
+        "STATUS_TYPE_ID": 125,
+        "DateTime": "2017-08-17T04:30:00",
+        "MODIFIED": "2017-08-16T19:36:15.567",
+        "Boolean": true,
+        "Decimal": 16.123,
+        "DynamicImage": "field_5184/file.JPG",
+        "CREATED": "2017-08-14T19:05:53.397",
+        "Integer": 15
+      }
+    },
+    "code": 200
+}

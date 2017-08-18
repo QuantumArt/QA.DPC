@@ -89,8 +89,7 @@ namespace QA.Core.DPC.QP.API.Services
                 var plainField = new PlainArticleField
                 {
                     ContentId = product.ContentId,
-                    PlainFieldType = GetFieldType(fieldToken),
-                    CustomProperties = new Dictionary<string, object>()
+                    PlainFieldType = GetFieldType(fieldToken)
                 };
 
                 var numberType = GetNumberType(fieldToken);
@@ -192,6 +191,7 @@ namespace QA.Core.DPC.QP.API.Services
             switch (field.PlainFieldType)
             {
                 case PlainFieldType.Date:
+                case PlainFieldType.Time:
                 case PlainFieldType.DateTime:
 
                     var dt = productToken.Value<DateTime?>(field.FieldName);
@@ -293,6 +293,11 @@ namespace QA.Core.DPC.QP.API.Services
             field.FieldId = fieldToken.Value<int>("FieldId");
             field.FieldName = fieldToken.Value<string>("FieldName");
             field.FieldDisplayName = fieldToken.Value<string>("FieldName");
+            field.CustomProperties = fieldToken["CustomProperties"]
+                .Children()
+                .OfType<JProperty>()
+                .Where(p => p.Value is JValue)
+                .ToDictionary(p => p.Name, p => ((JValue)p.Value).Value);
         }    
     }
 }

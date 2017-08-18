@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
+using Quantumart.QP8.Constants;
 
 namespace QA.Core.DPC.Formatters.Services
 {
@@ -159,7 +160,34 @@ namespace QA.Core.DPC.Formatters.Services
             }
 
             field.FieldType = qpField.ExactType.ToString();
-            field.NumberType = qpField.IsLong ? NumberType.Int64 : (qpField.IsInteger ? NumberType.Int32 : (qpField.IsDecimal ? NumberType.Double : (NumberType?)null));
+
+            if (qpField.ExactType == FieldExactTypes.Numeric)
+            {
+                if (qpField.IsInteger && qpField.IsLong)
+                {
+                    field.NumberType = NumberType.Int64;
+                }
+                else if (qpField.IsInteger && !qpField.IsLong)
+                {
+                    field.NumberType = NumberType.Int32;
+                }
+                else if (qpField.IsDecimal)
+                {
+                    field.NumberType = NumberType.Decimal;
+                }
+                else if (!qpField.IsDecimal)
+                {
+                    field.NumberType = NumberType.Double;
+                }
+                else
+                {
+                    field.NumberType = NumberType.Unknown;
+                }
+            }
+            else
+            {
+                field.NumberType = null;
+            }
 
             if (string.IsNullOrEmpty(field.FieldName))
             {
