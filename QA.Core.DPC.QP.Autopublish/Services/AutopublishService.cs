@@ -35,6 +35,8 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                     {
                         var formats = channels.GroupBy(c => c.Format);
 
+                        _logger.LogInfo(() => $"Autopublish {items.Count()} products for channels ['{string.Join("', '", channels.Select(c => c.Name))}'] for {customerCode}");
+
                         foreach (var item in items)
                         {
                             try
@@ -52,20 +54,26 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
                                         if (descriptor != null)
                                         {
+                                            var isStage = item.IsUnited;
                                             var method = item.Action.ToLower() == "upserted" ? "PUT" : "DELETE";
-                                            var channelNames = format.Select(c => c.Name).ToArray();
-                                            _logger.LogInfo(() => $"Autopublish product {item.ProductId} for {customerCode} and channels ['{string.Join("', '", channelNames)}']");
-                                            _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channelNames, true, 1, "Admin", method, customerCode);
-                                            _autopublishProvider.Dequeue(item);
+                                            var channelNames = format.Where(c => c.IsStage == isStage).Select(c => c.Name).ToArray();
+                                            _logger.LogInfo(() => $"Autopublish {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} for {customerCode} and channels ['{string.Join("', '", channelNames)}']");
+                                            _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channelNames, isStage, 1, "Admin", method, customerCode);                                            
                                         }
                                     }
                                 }
+
+                                _autopublishProvider.Dequeue(item);
                             }
                             catch (Exception ex)
                             {
-                                _logger.ErrorException($"Can't autopublish product {item.ProductId}", ex);
+                                _logger.ErrorException($"Can't autopublish {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} for {customerCode}", ex);
                             }
                         }
+                    }
+                    else
+                    {
+                        _logger.LogInfo(() => $"No product to autopublish for {customerCode}");
                     }
                 }
             }

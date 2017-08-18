@@ -112,7 +112,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         private string GetProductUrl(ProductItem item, string format)
         {
             var absent = item.Action.ToLower() != "upserted";
-            return $"api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&absent={absent}";
+            return $"api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&absent={absent}&isLive={!item.IsUnited}&includeRegionTags=false";
         }
 
         private string GetDequeueUrl(ProductItem item)
