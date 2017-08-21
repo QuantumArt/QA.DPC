@@ -83,7 +83,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                 {
                     throw new Exception($"Incorrect request  {uri}");
                 }
-            }                
+            }
         }
 
         private JObject RequestQueue(string url, string method)

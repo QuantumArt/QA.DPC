@@ -73,7 +73,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                     }
                     else
                     {
-                        _logger.LogInfo(() => $"No product to autopublish for {customerCode}");
+                        _logger.LogTrace(() => $"No product to autopublish for {customerCode}");
                     }
                 }
             }
@@ -90,6 +90,6 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                 .Channels
                 .Where(c => c.Autopublish)
                 .ToArray();
-        }     
+        }
     }
 }
