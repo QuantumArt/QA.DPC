@@ -334,9 +334,11 @@ namespace QA.Core.DPC.Loader
 
         private object ConvertValue(PlainArticleField article, CallContext ctx)
 		{
-			if (article.PlainFieldType == PlainFieldType.VisualEdit || article.PlainFieldType == PlainFieldType.Textbox)
+		    var renderFileAsImage = article.CustomProperties?.ContainsKey(RenderTextFieldAsXmlName) ?? false;
+
+            if (article.PlainFieldType == PlainFieldType.VisualEdit || article.PlainFieldType == PlainFieldType.Textbox)
 			{
-				if (article.CustomProperties.ContainsKey(RenderTextFieldAsXmlName))
+                if (renderFileAsImage)
 				{
 					XElement parsedElement;
 
@@ -379,8 +381,6 @@ namespace QA.Core.DPC.Loader
 			}
 
             var fieldId = article.FieldId.Value;
-
-            var renderFileAsImage = article.CustomProperties?.ContainsKey(RenderFileFieldAsImage) ?? false;
 
 			if (article.PlainFieldType == PlainFieldType.File && !string.IsNullOrWhiteSpace(article.Value) && !renderFileAsImage)
 			{

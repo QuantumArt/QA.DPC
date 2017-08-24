@@ -10,12 +10,12 @@ namespace QA.Core.DPC.QP.Services
     public class CustomerProvider : ICustomerProvider
     {
         private const int Timeout = 2;
-        private readonly QPConfiguration _configuration;
+        public QPConfiguration Configuration1 { get; }
         private readonly ILogger _logger;
 
         public CustomerProvider(ILogger logger)
         {
-            _configuration = new QPConfiguration();
+            Configuration1 = new QPConfiguration();
             _logger = logger;
         }
 
@@ -26,22 +26,21 @@ namespace QA.Core.DPC.QP.Services
 
         public Customer[] GetCustomers()
         {
-            return QPConfiguration.CustomerCodes
+            return QPConfiguration.GetCustomerCodes()
                 .Select(c => new Customer
                 {
                     ConnectionString = QPConfiguration.GetConnectionString(c),
                     CustomerCode = c
                 })
-                .Where(customer => IsDPCMode(customer))
+                .Where(IsDpcMode)
                 .ToArray();
         }
 
-        public bool IsDPCMode(Customer customer)
+        public bool IsDpcMode(Customer customer)
         {
             try
             {
-                var builder = new SqlConnectionStringBuilder(customer.ConnectionString);
-                builder.ConnectTimeout = Timeout;
+                var builder = new SqlConnectionStringBuilder(customer.ConnectionString) {ConnectTimeout = Timeout};
                 var connector = new DBConnector(builder.ConnectionString);
                 var command = new SqlCommand("SELECT USE_DPC FROM DB");
                 return (bool)connector.GetRealScalarData(command);

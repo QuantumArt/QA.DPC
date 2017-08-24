@@ -16,9 +16,9 @@ namespace QA.Core.ProductCatalog.Actions
 {
     public class PublishAction : ActionBase
     {
-        protected IQPNotificationService NotificationService { get; private set; }
-        protected IXmlProductService XmlProductService { get; private set; }
-        protected IFreezeService FreezeService { get; private set; }
+        protected IQPNotificationService NotificationService { get; }
+        protected IXmlProductService XmlProductService { get; }
+        protected IFreezeService FreezeService { get; }
 
         public PublishAction(
             IArticleService articleService,
@@ -28,7 +28,8 @@ namespace QA.Core.ProductCatalog.Actions
             Func<ITransaction> createTransaction,
             IQPNotificationService notificationService,
             IXmlProductService xmlProductService,
-            IFreezeService freezeService)
+            IFreezeService freezeService
+            )
             : base(articleService, fieldService, productservice, logger, createTransaction)
         {
             NotificationService = notificationService;
@@ -45,9 +46,9 @@ namespace QA.Core.ProductCatalog.Actions
             bool localize = actionParameters.GetLocalize();
 
             string ignoredStatus = (actionParameters.ContainsKey("IgnoredStatus")) ? actionParameters["IgnoredStatus"] : null;
-			string[] ignoredStatuses = (ignoredStatus == null) ? Enumerable.Empty<string>().ToArray() : ignoredStatus.Split(new[]{','});
+			var ignoredStatuses = ignoredStatus?.Split(',') ?? Enumerable.Empty<string>().ToArray();
 
-            var product = DoWithLogging("Productservice.GetProductById", transactionId, () => Productservice.GetProductById(productId, false));
+            var product = DoWithLogging("Productservice.GetProductById", transactionId, () => Productservice.GetProductById(productId));
 
 			if (ignoredStatuses.Contains(product.Status))
 				ValidateMessageResult(product.Id, MessageResult.Error("продукт исключен по статусу"));
@@ -66,7 +67,7 @@ namespace QA.Core.ProductCatalog.Actions
             if (!xamlValidationErrors.IsEmpty)
                 ValidateMessageResult(product.Id, MessageResult.Error(string.Join(@";" + Environment.NewLine, xamlValidationErrors.Errors.Select(s=>s.Message))));
 
-            var allArticles = GetAllArticles(new[] { product });
+            var allArticles = GetAllArticles(new[] { product }).ToArray();
 			bool containsIgnored = allArticles.Any(a => ignoredStatuses.Contains(a.Status));
 
             var articleIds = DoWithLogging("GetAllArticles", transactionId, () => allArticles.Where(a => a.Id != productId && !a.IsPublished && !ignoredStatuses.Contains(a.Status)).Select(a => a.Id).Distinct().ToArray());
@@ -142,7 +143,7 @@ namespace QA.Core.ProductCatalog.Actions
 				var stageProducts = new[] { stageProduct };
 				var liveProducts = new[] { sendSeparateLive ? Productservice.GetProductById(stageProduct.Id, true) : stageProduct };
 
-                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
+                using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
                     DoWithLogging("NotificationService.SendProducts stage", transactionId, () => NotificationService.SendProducts(stageProducts, true, userName, userId, localize, channels));
                     DoWithLogging("NotificationService.SendProducts live", transactionId, () => NotificationService.SendProducts(liveProducts, false, userName, userId, localize, channels));
