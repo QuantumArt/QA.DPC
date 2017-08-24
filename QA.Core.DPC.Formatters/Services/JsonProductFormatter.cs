@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
 using System.Web;
 using QA.Core.Models.Entities;
@@ -13,11 +12,13 @@ namespace QA.Core.DPC.Formatters.Services
 	{
 		private readonly IJsonProductService _jsonProductService;
 		private readonly IContentDefinitionService _contentDefinitionService;
+	    private readonly ISettingsService _settingsService;
 
-		public JsonProductFormatter(IJsonProductService jsonProductService, IContentDefinitionService contentDefinitionService)
+		public JsonProductFormatter(IJsonProductService jsonProductService, IContentDefinitionService contentDefinitionService, ISettingsService settingsService)
 		{
 			_jsonProductService = jsonProductService;
 			_contentDefinitionService = contentDefinitionService;
+		    _settingsService = settingsService;
 		}
 
 		public async Task<Article> Read(Stream stream)
@@ -28,11 +29,14 @@ namespace QA.Core.DPC.Formatters.Services
 
 				var context = HttpContext.Current;
 
-				string slug = (string)context.Request.RequestContext.RouteData.Values["slug"];
-				string version = (string)context.Request.RequestContext.RouteData.Values["version"];
-				var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
+				string slug = (string)context?.Request.RequestContext?.RouteData?.Values["slug"];
+				string version = (string)context?.Request.RequestContext?.RouteData?.Values["version"];
 
-				return _jsonProductService.DeserializeProduct(line, definition.Content);
+				var definition = (slug == null && version == null) ? 
+                    _contentDefinitionService.GetDefinitionForContent(0, int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCTS_CONTENT_ID))) :
+                    _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+
+				return _jsonProductService.DeserializeProduct(line, definition);
 			}
 		}
 
