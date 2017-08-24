@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using QA.Core;
+using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.DAL;
@@ -11,16 +12,17 @@ namespace QA.ProductCatalog.Integration.DAL
 {
     public class QpMonitoringRepository : IMonitoringRepository
     {
-        public QpMonitoringRepository(IConnectionProvider connectionProvider, bool state)
-            : this(connectionProvider, state, null)
+        public QpMonitoringRepository(IConnectionProvider connectionProvider, IArticleFormatter formatter, bool state)
+            : this(connectionProvider, formatter, state, null)
         {
         }
 
-        public QpMonitoringRepository(IConnectionProvider connectionProvider, bool state, string language)
+        public QpMonitoringRepository(IConnectionProvider connectionProvider, IArticleFormatter formatter, bool state, string language)
         {
             _connectionString = connectionProvider.GetConnection();
             _state = state;
             _language = String.IsNullOrEmpty(language) ? "invariant" : language;
+            _isJson = formatter is JsonProductFormatter;
         }
 
 
@@ -30,12 +32,15 @@ namespace QA.ProductCatalog.Integration.DAL
 
         private readonly string _language;
 
+        private readonly bool _isJson;
+
         private string GetSqlQuery()
         {
             return @" 
             SELECT DpcId as Id, ProductType, Alias, Updated, Hash, MarketingProductId, Title, UserUpdated, UserUpdatedId 
-            FROM [dbo].[Products] p
-            INNER JOIN @ids ids ON ids.Id = p.DpcId WHERE p.IsLive = @isLive AND p.Language = @language";
+            FROM [dbo].[Products] p INNER JOIN @ids ids ON ids.Id = p.DpcId 
+            WHERE p.IsLive = @isLive AND p.Language = @language 
+            AND p.Format = @format AND p.Version = 1 and p.Slug is null";
         }
 
         public ProductInfo[] GetByIds(int[] productIDs)
@@ -55,6 +60,7 @@ namespace QA.ProductCatalog.Integration.DAL
                     cmd.Parameters.Add(p);
                     cmd.Parameters.AddWithValue("@isLive", _state ? 1 : 0);
 	                cmd.Parameters.AddWithValue("@language", _language);
+	                cmd.Parameters.AddWithValue("@format", _isJson ? "json" : "xml");
 
                     connection.Open();
                     var list = new List<ProductInfo>();
@@ -94,11 +100,14 @@ namespace QA.ProductCatalog.Integration.DAL
 	    {
 		    using (var connection = new SqlConnection(_connectionString))
 		    {
-			    using (SqlCommand cmd = new SqlCommand("SELECT Data FROM Products WHERE Id = @id AND p.IsLive = @isLive AND p.Language = @language", connection))
+			    using (SqlCommand cmd = new SqlCommand(
+                    "SELECT Data FROM Products p WHERE p.DpcId = @id AND p.IsLive = @isLive AND p.Language = @language " +
+			        "AND p.Format = @format AND p.Version = 1 and p.Slug is null", connection))
 			    {
 				    cmd.Parameters.AddWithValue("@id", id);
 			        cmd.Parameters.AddWithValue("@isLive", _state ? 1 : 0);
 			        cmd.Parameters.AddWithValue("@language", _language);
+			        cmd.Parameters.AddWithValue("@format", _isJson ? "json" : "xml");
 
                     connection.Open();
 

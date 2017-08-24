@@ -17,7 +17,7 @@ namespace QA.ProductCatalog.Integration.Configuration
                     new Func<bool, IConsumerMonitoringService>(
                         isLive =>
                         {
-                            var repo = new QpMonitoringRepository(container.Resolve<IConnectionProvider>(), isLive);
+                            var repo = new QpMonitoringRepository(container.Resolve<IConnectionProvider>(), container.Resolve<IArticleFormatter>(), isLive);
                             return new ConsumerMonitoringService(repo);
                         }
                     )
@@ -28,7 +28,7 @@ namespace QA.ProductCatalog.Integration.Configuration
                 new InjectionFactory(c => new Func<bool, CultureInfo, IConsumerMonitoringService>(
                     (isLive, culture) =>
                     {
-                        var repo = new QpMonitoringRepository(container.Resolve<IConnectionProvider>(), isLive, culture.Name);
+                        var repo = new QpMonitoringRepository(container.Resolve<IConnectionProvider>(), container.Resolve<IArticleFormatter>(), isLive, culture.Name);
                         return new ConsumerMonitoringService(repo);
                     }
                 ))
