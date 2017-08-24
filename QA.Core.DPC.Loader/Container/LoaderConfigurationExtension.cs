@@ -1,19 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Practices.Unity;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.Web;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
-using QA.Core.ProductCatalog;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Models;
 using Quantumart.QP8.BLL;
 
 namespace QA.Core.DPC.Loader.Container
@@ -57,19 +51,19 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<IServiceFactory, ServiceFactory>("ServiceFactoryFakeUser", new InjectionFactory(c => new ServiceFactory(c.Resolve<IConnectionProvider>(), c.Resolve<IUserProvider>(AlwaysAdminUserProviderName))));
             Container.RegisterType<ArticleService>("ArticleServiceFakeUser", new InjectionFactory(c => c.Resolve<IServiceFactory>("ServiceFactoryFakeUser").GetArticleService()));
             Container.RegisterType<IArticleService, ArticleServiceAdapter>("ArticleServiceAdapterFakeUser",
-                new InjectionFactory(c => new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(), c.Resolve<IContextStorage>())));
+                new InjectionFactory(c => new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(), c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>())));
 
             Container.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>(
                 new InjectionFactory(
                     c =>
                         new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
-                            c.Resolve<IContextStorage>())));
+                            c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>())));
 
             Container.RegisterType<IReadOnlyArticleService, CachedReadOnlyArticleServiceAdapter>("CachedReadOnlyArticleServiceAdapter",
                 new InjectionFactory(
                     c =>
                         new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
-                            c.Resolve<IContextStorage>())));
+                            c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>())));
 
             Container.RegisterType<IDBConnector, DBConnectorProxy>(new HttpContextLifetimeManager());
 

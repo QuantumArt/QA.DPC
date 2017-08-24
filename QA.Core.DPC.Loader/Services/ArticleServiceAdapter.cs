@@ -10,11 +10,13 @@ namespace QA.Core.DPC.Loader.Services
 {
 	public class ArticleServiceAdapter : ReadOnlyArticleServiceAdapter, IArticleService
 	{
-		public ArticleServiceAdapter(ArticleService articleService, IConnectionProvider connectionProvider, IContextStorage contextStorage)
+        public ArticleServiceAdapter(ArticleService articleService, IConnectionProvider connectionProvider, IContextStorage contextStorage, IIdentityProvider provider)
 			: base(articleService, connectionProvider, contextStorage)
-		{
+        {
+            _provider = provider;
+        }
 
-		}
+	    private IIdentityProvider _provider;
 
 
 		#region IArticleService implementation
@@ -76,7 +78,7 @@ namespace QA.Core.DPC.Loader.Services
 
         public RulesException XamlValidationById(int articleId)
         {
-             return ArticleService.ValidateXamlById(articleId);
+             return ArticleService.ValidateXamlById(articleId, _provider.Identity.CustomerCode);
         }
         #endregion
     }
