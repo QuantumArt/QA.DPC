@@ -117,7 +117,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         private string GetDequeueUrl(ProductItem item)
         {
-            return $"{item.CustomerCode}/product-building/autopub/?product_id={item.ProductId}&definition_id={item.DefinitionId}&is_united={item.IsUnited}";
+            return $"{item.CustomerCode}/product-building/autopub/?product_id={item.ProductId}&definition_id={item.DefinitionId}&is_united={item.IsUnited.ToString().ToLower()}";
         }
 
         private void ValidateStatus(JObject item)

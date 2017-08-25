@@ -45,7 +45,6 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                                 {
                                     if (string.IsNullOrEmpty(item.Action))
                                     {
-                                        _autopublishProvider.Dequeue(item);
                                         _logger.Error("Autopublish for {0} is canceled since it has not action", item.ProductId);
                                     }
                                     else
@@ -62,8 +61,9 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                                         }
                                     }
                                 }
-
+                                
                                 _autopublishProvider.Dequeue(item);
+                                _logger.LogInfo(() => $"Autopublish dequeue {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} for {customerCode}");
                             }
                             catch (Exception ex)
                             {
