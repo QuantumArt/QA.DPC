@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Autopublish.Models;
+using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Configuration;
 using System.IO;
@@ -14,11 +15,13 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         private const string DeleteMethod = "DELETE";
         private const string GetMethod = "GET";
 
+        private readonly ISettingsService _settingsService;
         private readonly Uri _baseTntUri;
         private readonly Uri _baseWebApiUri;
 
-        public AutopublishProvider()
+        public AutopublishProvider(ISettingsService settingsService)
         {
+            _settingsService = settingsService;
             _baseTntUri = new Uri(ConfigurationManager.AppSettings["DPC.Tarantool.Api"]);
             _baseWebApiUri = new Uri(ConfigurationManager.AppSettings["DPC.WebApi"]);
         }
@@ -27,6 +30,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         {
             var url = GetPeekUrl(customerCode);
             var result = RequestQueue(url, GetMethod);
+            var typefield = _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
 
             ValidateStatus(result);
 
@@ -37,7 +41,11 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                       ProductId = itm.Value<int>("product_id"),
                       DefinitionId = itm.Value<int>("definition_id"),
                       IsUnited = itm.Value<bool>("is_united"),
-                      Action =  itm.Value<string>("action")
+                      Action =  itm.Value<string>("action"),
+                      IsArchiveOld = itm["old_root_article"]?.Value<bool>("ARCHIVE"),
+                      TypeOld = itm["old_root_article"]?.Value<string>(typefield),
+                      IsArchiveNew = itm["new_root_article"]?.Value<bool>("ARCHIVE"),
+                      TypeNew = itm["new_root_article"]?.Value<string>(typefield)
                   })
                   .ToArray();
         }
@@ -52,6 +60,12 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                 CustomerCode = item.CustomerCode,
                 ProductId = item.ProductId,
                 DefinitionId = item.DefinitionId,
+                Action = item.Action,
+                IsArchiveOld = item.IsArchiveOld,
+                IsArchiveNew = item.IsArchiveNew,
+                IsUnited = item.IsUnited,
+                TypeOld = item.TypeOld,
+                TypeNew = item.TypeNew,
                 Product = result
             };
         }
@@ -111,8 +125,9 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         private string GetProductUrl(ProductItem item, string format)
         {
-            var absent = item.Action.ToLower() != "upserted";
-            return $"api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&absent={absent}&isLive={!item.IsUnited}&includeRegionTags=false";
+            var absent = item.PublishAction != PublishAction.Publish;
+            var type = item.TypeNew ?? item.TypeOld;
+            return $"api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&absent={absent}&type={type}&isLive={!item.IsUnited}&includeRegionTags=false";
         }
 
         private string GetDequeueUrl(ProductItem item)

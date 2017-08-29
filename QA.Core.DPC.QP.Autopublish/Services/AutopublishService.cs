@@ -1,4 +1,5 @@
-﻿using QA.ProductCatalog.Infrastructure;
+﻿using QA.Core.DPC.QP.Autopublish.Models;
+using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Linq;
 
@@ -41,33 +42,34 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                         {
                             try
                             {
-                                foreach(var format in formats)
+                                if (item.PublishAction == PublishAction.Publish || item.PublishAction == PublishAction.Delete)
                                 {
-                                    if (string.IsNullOrEmpty(item.Action))
-                                    {
-                                        _logger.Error("Autopublish for {0} is canceled since it has not action", item.ProductId);
-                                    }
-                                    else
+                                    var isStage = item.IsUnited;
+                                    var method = item.PublishAction == PublishAction.Publish ? "PUT" : "DELETE";
+
+                                    foreach (var format in formats)
                                     {
                                         var descriptor = _autopublishProvider.GetProduct(item, format.Key);
 
                                         if (descriptor != null)
                                         {
-                                            var isStage = item.IsUnited;
-                                            var method = item.Action.ToLower() == "upserted" ? "PUT" : "DELETE";
                                             var channelNames = format.Where(c => c.IsStage == isStage).Select(c => c.Name).ToArray();
-                                            _logger.LogInfo(() => $"Autopublish {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} for {customerCode} and channels ['{string.Join("', '", channelNames)}']");
-                                            _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channelNames, isStage, 1, "Admin", method, customerCode);                                            
+
+                                            if (channelNames.Any())
+                                            {
+                                                _logger.LogInfo(() => $"Autopublish {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} for {customerCode} and channels ['{string.Join("', '", channelNames)}']");
+                                                _notificationProvider.PushNotifications(descriptor.ProductId, descriptor.Product, channelNames, isStage, 1, "Admin", method, customerCode);
+                                            }
                                         }
                                     }
                                 }
                                 
                                 _autopublishProvider.Dequeue(item);
-                                _logger.LogInfo(() => $"Autopublish dequeue {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} for {customerCode}");
+                                _logger.LogInfo(() => $"Autopublish dequeue {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} with action {item.PublishAction} for {customerCode}");
                             }
                             catch (Exception ex)
                             {
-                                _logger.ErrorException($"Can't autopublish {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} for {customerCode}", ex);
+                                _logger.ErrorException($"Can't autopublish {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} with action {item.PublishAction} for {customerCode}", ex);
                             }
                         }
                     }

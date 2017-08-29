@@ -36,7 +36,7 @@ namespace QA.Core.DPC.QP.API.Services
         public JToken GetDefinition(string customerCode, int definitionId)
         {
             DefinitionDescriptor definition = null;
-            var key = $"tnt_definition_{customerCode}";            
+            var key = $"tnt_definition_{customerCode}_{definitionId}";            
 
             if (_cacheProvider.TryGetValue(key, out object value))
             {

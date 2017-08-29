@@ -16,12 +16,14 @@ namespace QA.Core.DPC.QP.API.Services
         private readonly IProductSimpleService<JToken, JToken> _tarantoolProductService;
         private readonly IIdentityProvider _identityProvider;
         private readonly IStatusProvider _statusProvider;
+        private readonly ISettingsService _settingsService;
 
-        public TarantoolProductAPIService(IProductSimpleService<JToken, JToken> tarantoolProductService, IIdentityProvider identityProvider, IStatusProvider statusProvider)
+        public TarantoolProductAPIService(IProductSimpleService<JToken, JToken> tarantoolProductService, IIdentityProvider identityProvider, IStatusProvider statusProvider, ISettingsService settingsService)
         {
             _tarantoolProductService = tarantoolProductService;
             _identityProvider = identityProvider;
             _statusProvider = statusProvider;
+            _settingsService = settingsService;
         }
 
         public Article GetAbsentProduct(int productId, int definitionId, bool isLive, string type)
@@ -38,15 +40,30 @@ namespace QA.Core.DPC.QP.API.Services
 
             if (!string.IsNullOrEmpty(type))
             {
-                product.Fields.Add("Type", new PlainArticleField
+                var typefield = _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
+
+                if (!string.IsNullOrEmpty(typefield))
                 {
-                    ContentId = 0,
-                    FieldId = 0,
-                    FieldName = "Type",
-                    Value = type,
-                    NativeValue = type,
-                    PlainFieldType = PlainFieldType.String
-                });
+                    var customerCode = _identityProvider.Identity.CustomerCode;
+                    var definitionJson = _tarantoolProductService.GetDefinition(customerCode, definitionId);
+                    var extToken = definitionJson["Content"]["ExtensionField"].Where(itm => itm.Value<string>("FieldName") == typefield).FirstOrDefault();
+                    var actualType = type;
+
+                    if (extToken != null)
+                    {
+                        actualType = extToken["Contents"].Where(itm => itm.Value<string>("ContentId") == type).Select(itm => itm.Value<string>("ContentName")).FirstOrDefault();                       
+                    }
+
+                    product.Fields.Add(typefield, new PlainArticleField
+                    {
+                        ContentId = 0,
+                        FieldId = 0,
+                        FieldName = typefield,
+                        Value = actualType,
+                        NativeValue = actualType,
+                        PlainFieldType = PlainFieldType.String
+                    });
+                }
             }
 
             return product;

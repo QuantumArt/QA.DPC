@@ -72,7 +72,8 @@ namespace QA.Core.DPC.QP.API.Tests.Providers
             var identityProvider = new IdentityProvider { Identity = new Identity("customerCode") };
             var dataProvider = new CustomProductSimpleService<JToken, JToken>(product, definition);
             var statusProvider = new StatusProvider();
-            return new TarantoolProductAPIService(dataProvider, identityProvider, statusProvider);
+            var settingsService = new SettingsService();
+            return new TarantoolProductAPIService(dataProvider, identityProvider, statusProvider, settingsService);
         }
 
         private Dictionary<string, Article> GetArticleDictionary(Article parent)
