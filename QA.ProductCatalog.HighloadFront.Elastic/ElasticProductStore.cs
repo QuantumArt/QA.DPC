@@ -508,18 +508,22 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private JProperty GetSingleFilter(string field, string value, string separator)
         {
-            var isBaseField = field == Options.IdPath || field == ProductIdField;
+            var isBaseField = field == Options.IdPath || field.EndsWith(Options.IdPath) || field == ProductIdField;
+            var separators = (isBaseField) ? new[] {separator, BaseSeparator} : new[] {separator};
+            var isSeparated = separators.Any(n => IsSeparated(value, n));
+            var values = (isSeparated) ? value.Split(separators, StringSplitOptions.None) : new string[0];
 
-            var isSeparated = !String.IsNullOrEmpty(separator) && value.Contains(separator);
-            var values = (isSeparated) ? value.Split(new[] { separator }, StringSplitOptions.None) : new string[0];
-            var notAnalized = IsNotAnalyzedField(field);
-
-            if (isBaseField || notAnalized)
+            if (isBaseField || IsNotAnalyzedField(field))
             {
                 return (isSeparated) ? Terms(field, values) : Term(field, value);
             }
 
             return (isSeparated) ? MatchPhrases(field, values) : MatchPhrase(field, value);
+        }
+
+        private static bool IsSeparated(string value, string separator)
+        {
+            return !string.IsNullOrEmpty(separator) && value.Contains(separator);
         }
 
         private static JProperty Exists(string field)
