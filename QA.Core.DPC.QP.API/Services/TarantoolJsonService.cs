@@ -97,7 +97,7 @@ namespace QA.Core.DPC.QP.API.Services
 
         private string GetProductUrl(string customerCode, int productId, int definitionId, bool isLive)
         {
-            return $"{customerCode}/product-building/?product_id={productId}&definition_id={definitionId}&is_united={!isLive}&include_sys_fields=true";
+            return $"{customerCode}/product-building/?product_id={productId}&definition_id={definitionId}&is_united={(!isLive).ToString().ToLower()}&include_sys_fields=true";
         }
 
         private T Get<T>(Uri uri)
