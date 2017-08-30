@@ -67,6 +67,7 @@ namespace QA.Core.DPC
 
                     var tracker = new StructureCacheTracker(connectionProvider);
                     watcher.AttachTracker(tracker);
+                    watcher.Start();
 
                     unityContainer.RegisterInstance<IContentInvalidator>(code, invalidator);
                     unityContainer.RegisterInstance<ICacheProvider>(code, cacheProvider);
