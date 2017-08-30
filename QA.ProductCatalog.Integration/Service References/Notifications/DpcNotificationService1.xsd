@@ -17,13 +17,26 @@
   <xs:element name="NotificationItem" nillable="true" type="tns:NotificationItem" />
   <xs:complexType name="ConfigurationInfo">
     <xs:sequence>
+      <xs:element minOccurs="0" name="ActualSettings" nillable="true" type="tns:SettingsInfo" />
       <xs:element minOccurs="0" name="Channels" nillable="true" type="tns:ArrayOfChannelInfo" />
+      <xs:element minOccurs="0" name="CurrentSettings" nillable="true" type="tns:SettingsInfo" />
       <xs:element minOccurs="0" name="IsActual" type="xs:boolean" />
       <xs:element minOccurs="0" name="NotificationProvider" nillable="true" type="xs:string" />
       <xs:element minOccurs="0" name="Started" type="xs:dateTime" />
     </xs:sequence>
   </xs:complexType>
   <xs:element name="ConfigurationInfo" nillable="true" type="tns:ConfigurationInfo" />
+  <xs:complexType name="SettingsInfo">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="Autopublish" type="xs:boolean" />
+      <xs:element minOccurs="0" name="CheckInterval" type="xs:int" />
+      <xs:element minOccurs="0" name="ErrorCountBeforeWait" type="xs:int" />
+      <xs:element minOccurs="0" name="PackageSize" type="xs:int" />
+      <xs:element minOccurs="0" name="TimeOut" type="xs:int" />
+      <xs:element minOccurs="0" name="WaitIntervalAfterErrors" type="xs:int" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:element name="SettingsInfo" nillable="true" type="tns:SettingsInfo" />
   <xs:complexType name="ArrayOfChannelInfo">
     <xs:sequence>
       <xs:element minOccurs="0" maxOccurs="unbounded" name="ChannelInfo" nillable="true" type="tns:ChannelInfo" />

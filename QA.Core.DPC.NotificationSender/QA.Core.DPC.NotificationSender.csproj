@@ -320,6 +320,7 @@
     <Compile Include="Service\IMessageService.cs" />
     <Compile Include="Service\Message.cs" />
     <Compile Include="Service\MessageService.cs" />
+    <Compile Include="SettingsInfo.cs" />
     <Compile Include="UnityConfig.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -412,4 +413,3 @@
   </Target>
   -->
 </Project>
-

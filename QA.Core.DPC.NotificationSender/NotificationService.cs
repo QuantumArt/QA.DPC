@@ -143,6 +143,24 @@ namespace QA.Core.DPC
                 Started = NotificationSender.Started,
                 NotificationProvider = provider.GetType().Name,
                 IsActual = actualConfiguration.IsEqualTo(currentConfiguration),
+                ActualSettings = new SettingsInfo
+                {
+                    Autopublish = actualConfiguration.Autopublish,
+                    CheckInterval = actualConfiguration.CheckInterval,
+                    ErrorCountBeforeWait = actualConfiguration.ErrorCountBeforeWait,
+                    PackageSize = actualConfiguration.PackageSize,
+                    TimeOut = actualConfiguration.TimeOut,
+                    WaitIntervalAfterErrors = actualConfiguration.WaitIntervalAfterErrors
+                },
+                CurrentSettings = new SettingsInfo
+                {
+                    Autopublish = currentConfiguration.Autopublish,
+                    CheckInterval = currentConfiguration.CheckInterval,
+                    ErrorCountBeforeWait = currentConfiguration.ErrorCountBeforeWait,
+                    PackageSize = currentConfiguration.PackageSize,
+                    TimeOut = currentConfiguration.TimeOut,
+                    WaitIntervalAfterErrors = currentConfiguration.WaitIntervalAfterErrors
+                },
                 Channels = (from channel in channels
                            join s in chennelsStatistic on channel equals s.Name into d
                            from s in d.DefaultIfEmpty()
