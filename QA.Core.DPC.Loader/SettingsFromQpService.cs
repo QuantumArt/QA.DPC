@@ -1,15 +1,11 @@
 ﻿using QA.Core.Cache;
+using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL.Services.API;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC.Loader
 {
-	public class SettingsFromQpService : SettingsServiceBase
+    public class SettingsFromQpService : SettingsServiceBase
 	{
 		private readonly DbService _dbService;
 		private readonly IVersionedCacheProvider _cacheProvider;
@@ -28,7 +24,7 @@ namespace QA.Core.DPC.Loader
 		{
 			const string key = "AllQpSettings";
 
-			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.AppSettings }, _cacheTimeSpan, _dbService.GetAppSettings);
+			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.DB }, _cacheTimeSpan, _dbService.GetAppSettings);
 
 			return allSettings.ContainsKey(title) ? allSettings[title] : null;
 		}

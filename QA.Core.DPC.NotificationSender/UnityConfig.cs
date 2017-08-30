@@ -1,19 +1,20 @@
 ﻿using Microsoft.Practices.Unity;
+using Microsoft.Practices.Unity.Configuration;
 using QA.Core.Cache;
+using QA.Core.DPC.DAL;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
-using Microsoft.Practices.Unity.Configuration;
-using QA.Core.ProductCatalog.Actions.Services;
-using QA.ProductCatalog.Infrastructure;
 using QA.Core.DPC.Notification.Services;
-using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Services.API;
-using QA.Core.DPC.QP.Configuration;
-using QA.Core.DPC.DAL;
 using QA.Core.DPC.QP.Autopublish.Configuration;
 using QA.Core.DPC.QP.Autopublish.Services;
 using QA.Core.DPC.QP.Cache;
+using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
+using QA.Core.ProductCatalog.Actions.Services;
+using QA.ProductCatalog.Infrastructure;
+using Quantumart.QP8.BLL;
+using Quantumart.QP8.BLL.Services.API;
+using System;
 
 namespace QA.Core.DPC
 {
@@ -63,8 +64,7 @@ namespace QA.Core.DPC
                     var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                     var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
                     
-                    var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger);
-
+                    var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger, TimeSpan.FromMinutes(1), 1000);
                     var tracker = new StructureCacheTracker(connectionProvider);
                     watcher.AttachTracker(tracker);
                     watcher.Start();
