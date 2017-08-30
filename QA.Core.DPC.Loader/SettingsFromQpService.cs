@@ -28,7 +28,7 @@ namespace QA.Core.DPC.Loader
 		{
 			const string key = "AllQpSettings";
 
-			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.DB }, _cacheTimeSpan, _dbService.GetAppSettings);
+			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.AppSettings }, _cacheTimeSpan, _dbService.GetAppSettings);
 
 			return allSettings.ContainsKey(title) ? allSettings[title] : null;
 		}
