@@ -107,7 +107,7 @@
                     <dl class="plain-field row">
                         <dt title="Интервал проверки новых нотификаций для отправки" class="plain-field-capture label " style="">Интервал отправки</dt>
                         <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.CheckInterval) с.</span>
+                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.CheckInterval) с</span>
                         </dd>
                         @if (Model.CurrentSettings.CheckInterval != Model.ActualSettings.CheckInterval)
                         {
@@ -119,7 +119,7 @@
                     <dl class="plain-field row">
                         <dt title="Интервал ожидания, когда новых уведомлений не отправляется для этого потребителя" class="plain-field-capture label " style="">Интервал отправки при ошибках</dt>
                         <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.WaitIntervalAfterErrors) с.</span>
+                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.WaitIntervalAfterErrors) с</span>
                         </dd>
                         @if (Model.CurrentSettings.WaitIntervalAfterErrors != Model.ActualSettings.WaitIntervalAfterErrors)
                         {
@@ -155,7 +155,7 @@
                     <dl class="plain-field row">
                         <dt title="Таймаут для отправки нотификаций" class="plain-field-capture label " style="">Таймаут отправки на витрину</dt>
                         <dd style="" class="plain-field-value field">
-                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.TimeOut)</span>
+                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.TimeOut) c</span>
                         </dd>
                         @if (Model.CurrentSettings.TimeOut != Model.ActualSettings.TimeOut)
                         {

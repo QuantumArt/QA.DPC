@@ -5,6 +5,7 @@ using QA.Core.DPC.DAL;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Notification.Services;
+using QA.Core.DPC.QP.API.Services;
 using QA.Core.DPC.QP.Autopublish.Configuration;
 using QA.Core.DPC.QP.Autopublish.Services;
 using QA.Core.DPC.QP.Cache;
@@ -43,9 +44,10 @@ namespace QA.Core.DPC
 			unityContainer.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
 			unityContainer.RegisterType<IContextStorage, QpCachedContextStorage>();
             unityContainer.RegisterType<INotificationChannelService, NotificationChannelService>(new ContainerControlledLifetimeManager());
-            unityContainer.RegisterType<INotificationService, NotificationService>();            
+            unityContainer.RegisterType<INotificationService, NotificationService>();
+            unityContainer.RegisterType<IStatusProvider, StatusProvider>();
 
-            unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();          
+            unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();
 
             unityContainer.LoadConfiguration("Default");
 

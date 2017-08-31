@@ -18,10 +18,12 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         private readonly ISettingsService _settingsService;
         private readonly Uri _baseTntUri;
         private readonly Uri _baseWebApiUri;
+        private readonly IStatusProvider _statusProvider;
 
-        public AutopublishProvider(ISettingsService settingsService)
+        public AutopublishProvider(ISettingsService settingsService, IStatusProvider statusProvider)
         {
             _settingsService = settingsService;
+            _statusProvider = statusProvider;
             _baseTntUri = new Uri(ConfigurationManager.AppSettings["DPC.Tarantool.Api"]);
             _baseWebApiUri = new Uri(ConfigurationManager.AppSettings["DPC.WebApi"]);
         }
@@ -43,9 +45,13 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                       IsUnited = itm.Value<bool>("is_united"),
                       Action =  itm.Value<string>("action"),
                       IsArchiveOld = itm["old_root_article"]?.Value<bool>("ARCHIVE"),
+                      IsVisibleOld = itm["old_root_article"]?.Value<bool>("VISIBLE"),
                       TypeOld = itm["old_root_article"]?.Value<string>(typefield),
+                      StatusOld = GetStatus(itm["old_root_article"]?.Value<int>("STATUS_TYPE_ID")),
                       IsArchiveNew = itm["new_root_article"]?.Value<bool>("ARCHIVE"),
-                      TypeNew = itm["new_root_article"]?.Value<string>(typefield)
+                      IsVisibleNew = itm["new_root_article"]?.Value<bool>("VISIBLE"),
+                      TypeNew = itm["new_root_article"]?.Value<string>(typefield),
+                      StatusNew = GetStatus(itm["new_root_article"]?.Value<int>("STATUS_TYPE_ID"))
                   })
                   .ToArray();
         }
@@ -63,6 +69,10 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                 Action = item.Action,
                 IsArchiveOld = item.IsArchiveOld,
                 IsArchiveNew = item.IsArchiveNew,
+                IsVisibleOld = item.IsVisibleOld,
+                IsVisibleNew = item.IsVisibleNew,
+                StatusOld = item.StatusOld,
+                StatusNew = item.StatusNew,
                 IsUnited = item.IsUnited,
                 TypeOld = item.TypeOld,
                 TypeNew = item.TypeNew,
@@ -76,6 +86,18 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             var result = RequestQueue(url, DeleteMethod);
 
             ValidateStatus(result);
+        }
+
+        private string GetStatus(int? statusId)
+        {
+            if (statusId.HasValue)
+            {
+                return _statusProvider.GetStatusName(statusId.Value);
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private string RequestProduct(string url)
