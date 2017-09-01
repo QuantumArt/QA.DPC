@@ -263,7 +263,7 @@ namespace QA.Core.DPC.Formatters.Services
             return context.GetOrAdd($"GetAdditional_{content.ContentId}", () =>
             {
                 var fields = GetFieldsFromDB(content, context).Where(x =>
-                    !x.IsClassifier && x.LinkId == null && x.RelationId == null);
+                    !x.IsClassifier && x.RelationType == Quantumart.QP8.BLL.RelationType.None);
 
                 var additionalFields = fields.Where(x => !content.Fields.Any(y => y.FieldId == x.Id))
                     .Select(x => new PlainField { FieldId = x.Id, FieldName = x.Name })
