@@ -117,7 +117,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                 }
                 else
                 {
-                    throw new Exception($"Incorrect request  {uri}");
+                    throw new Exception($"{GetMethod} request on {uri} failed with code {response.StatusCode}: {response.StatusDescription}");
                 }
             }
         }
@@ -136,7 +136,14 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             using (var reader = new StreamReader(stream))
             using (var jsonReader = new JsonTextReader(reader))
             {
-                return serializer.Deserialize<JObject>(jsonReader);
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    return serializer.Deserialize<JObject>(jsonReader);
+                }
+                else
+                {
+                    throw new Exception($"{method} request on {uri} failed with code {response.StatusCode}: {response.StatusDescription}");
+                }                
             }
         }
 
