@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -31,25 +32,27 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             sb.AppendLine("Application: OK");
             var httpClient = new HttpClient();
             sb.AppendLine(@"Read\Write: " + Status(_options.CanUpdate == isSync));
-
             foreach (var option in _elasticConfiguration.GetElasticIndices())
             {
-
-                var uri = $"{option.Url}/{option.Name}";
-                var ok = false;
-                try
+                var uris = option.Url.Split(';').Select(n => n.Trim()).ToArray();
+                foreach (var baseUri in uris)
                 {
+                    var uri = $"{baseUri}/{option.Name}";
+                    bool isOk;
+                    try
+                    {
+                        var request = new HttpRequestMessage(HttpMethod.Head, new Uri(uri));
+                        var response = await httpClient.SendAsync(request);
+                        isOk = response.StatusCode == HttpStatusCode.OK;
 
-                    var request = new HttpRequestMessage(HttpMethod.Head, new Uri(uri));
-                    var response = await httpClient.SendAsync(request);
-                    ok = response.StatusCode == HttpStatusCode.OK;
+                    }
+                    catch (HttpRequestException)
+                    {
+                        isOk = false;
+                    }
 
+                    sb.AppendLine($@"Index '{uri}': " + Status(isOk));
                 }
-                catch (HttpRequestException)
-                {
-                }
-
-                sb.AppendLine($@"Index '{uri}': " + Status(ok));
             }
 
             return Content(sb.ToString(), "text/plain");

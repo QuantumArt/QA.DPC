@@ -291,16 +291,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 _source = new { include = GetFields(options) }
             });
 
-
-            var types = options?.SimpleFilters?
-                .Where(f => f.Name == Options.TypePath)
-                .Select(f => f.Value)
-                .FirstOrDefault();
-
             SetQuery(q, options);
             SetSorting(q, options);
-            ElasticsearchResponse<Stream> response;
+
             var client = Configuration.GetElasticClient(language, state);
+            ElasticsearchResponse<Stream> response;
+            var types = GetTypesString(options);
             if (types == null)
             {
                 response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, q.ToString());
@@ -310,6 +306,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, types, q.ToString());
             }
             return response.Body;
+        }
+
+        private string GetTypesString(ProductsOptions options)
+        {
+            var types = options?.SimpleFilters?
+                .Where(f => f.Name == Options.TypePath)
+                .Select(f => f.Value).FirstOrDefault();
+
+            return types;
         }
 
         public async Task<string[]> GetTypesAsync(string language, string state)
@@ -375,9 +380,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var queryFilter = filter as QueryFilter;
             JProperty result = null;
 
+
             if (simpleFilter != null)
             {
-                result = GetSingleFilterWithNot(simpleFilter.Name, simpleFilter.Values, disableOr, disableNot);
+                result = simpleFilter.Name != Options.TypePath
+                    ? GetSingleFilterWithNot(simpleFilter.Name, simpleFilter.Values, disableOr, disableNot)
+                    : null;
             }
 
             if (rangeFilter != null)
@@ -508,18 +516,22 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private JProperty GetSingleFilter(string field, string value, string separator)
         {
-            var isBaseField = field == Options.IdPath || field == ProductIdField;
+            var isBaseField = field == Options.IdPath || field.EndsWith("." + Options.IdPath) || field == ProductIdField;
+            var separators = (isBaseField) ? new[] {separator, BaseSeparator} : new[] {separator};
+            var isSeparated = separators.Any(n => IsSeparated(value, n));
+            var values = (isSeparated) ? value.Split(separators, StringSplitOptions.None) : new string[0];
 
-            var isSeparated = !String.IsNullOrEmpty(separator) && value.Contains(separator);
-            var values = (isSeparated) ? value.Split(new[] { separator }, StringSplitOptions.None) : new string[0];
-            var notAnalized = IsNotAnalyzedField(field);
-
-            if (isBaseField || notAnalized)
+            if (isBaseField || IsNotAnalyzedField(field))
             {
                 return (isSeparated) ? Terms(field, values) : Term(field, value);
             }
 
             return (isSeparated) ? MatchPhrases(field, values) : MatchPhrase(field, value);
+        }
+
+        private static bool IsSeparated(string value, string separator)
+        {
+            return !string.IsNullOrEmpty(separator) && value.Contains(separator);
         }
 
         private static JProperty Exists(string field)
