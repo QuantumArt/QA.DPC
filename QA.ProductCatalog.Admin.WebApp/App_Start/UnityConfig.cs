@@ -123,12 +123,12 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 	        container.RegisterType<StructureCacheTracker>();
 
             var connection = container.Resolve<IConnectionProvider>();
+            var logger = container.Resolve<ILogger>();
             if (connection.QPMode)
             {
                 foreach (var customer in container.Resolve<ICustomerProvider>().GetCustomers())
                 {
                     var code = customer.CustomerCode;
-                    var logger = container.Resolve<ILogger>();
 
                     var cacheProvider = new VersionedCustomerCacheProvider(code);
                     var invalidator = new DpcContentInvalidator(cacheProvider, logger);
@@ -164,8 +164,14 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 container.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(
                     new ContainerControlledLifetimeManager());
                 container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
-                container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All,
-                    container.Resolve<IContentInvalidator>()));
+
+                var watcher =
+                    new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), container.Resolve<IContentInvalidator>(), connection, logger);
+                var tracker = new StructureCacheTracker(connection);
+                watcher.AttachTracker(tracker);
+                watcher.Start();
+
+                container.RegisterInstance<ICacheItemWatcher>(watcher);
                 container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
 
                 container.RegisterNonQpMonitoring();

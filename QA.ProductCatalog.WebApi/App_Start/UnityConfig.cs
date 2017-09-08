@@ -98,14 +98,15 @@ namespace QA.ProductCatalog.WebApi.App_Start
                 var cacheProvider = new VersionedCustomerCacheProvider(null);
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var tracker = new StructureCacheTracker(connection);
-                var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connection, logger);
-
+                var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connection, logger);
                 watcher.AttachTracker(tracker);
 
                 unityContainer.RegisterInstance<IContentInvalidator>(invalidator);
                 unityContainer.RegisterInstance<ICacheProvider>(cacheProvider);
                 unityContainer.RegisterInstance<IVersionedCacheProvider>(cacheProvider);
                 unityContainer.RegisterInstance<ICacheItemWatcher>(watcher);
+
+                watcher.Start();
 
                 unityContainer.RegisterNonQpMonitoring();
             }
