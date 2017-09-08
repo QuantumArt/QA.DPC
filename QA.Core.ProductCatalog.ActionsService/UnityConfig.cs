@@ -104,8 +104,13 @@ namespace QA.Core.ProductCatalog.ActionsService
                 container.RegisterInstance<ICacheProvider>(container.Resolve<CacheProvider>());
                 container.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager());
                 container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
-                container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>()));
 
+
+                var watcher = new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>());
+                var tracker = new StructureCacheTracker(connection);
+                watcher.AttachTracker(tracker);
+
+                container.RegisterInstance<ICacheItemWatcher>(watcher);
                 container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
 
                 container.RegisterNonQpMonitoring();
