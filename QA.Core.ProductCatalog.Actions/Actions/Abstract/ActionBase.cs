@@ -249,15 +249,15 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				var relatedFields = (from fv in article.FieldValues.Concat(backwardFieldValues)
 									 join ef in entityFields on fv.Field.Id equals ef.FieldId
 									 where selectMode(ef).Equals(mode)
-									 select fv)
+                                     select fv)
 									 .ToArray();
 
 				//LogFieldValues(article.FieldValues, "ContentId = " + article.ContentId + " IsAggregated = " + article.IsAggregated);
 	
 				var relatedItems = (from fv in relatedFields
 									from id in fv.RelatedItems
-									where !dictionary.ContainsKey(id)
-									let f = fv.Field
+									where !dictionary.ContainsKey(id) && fv.Field.ExactType != FieldExactTypes.Classifier
+                                    let f = fv.Field
 									let contentId = backwardFieldValues.Contains(fv) ? f.ContentId : f.RelateToContentId.Value
 									group new { Id = id, FieldId = f.Id, Relation = f.RelationType } by contentId into g
 									select new { ContentId = g.Key, RelatedItems = g })
