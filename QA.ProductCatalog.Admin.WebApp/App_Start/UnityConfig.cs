@@ -39,10 +39,9 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
     {
         public static IUnityContainer Configure()
         {
-            var container = ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
-
-	        Task.Factory.StartNew(() => WarmUpHelper.WarmUp(container));
-
+            var container = RegisterTypes(new UnityContainer());
+            ObjectFactoryConfigurator.DefaultContainer = container;
+            Task.Factory.StartNew(() => WarmUpHelper.WarmUp(container));
 	        return container;
         }
 

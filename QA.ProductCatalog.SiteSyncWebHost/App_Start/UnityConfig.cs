@@ -27,7 +27,7 @@ namespace QA.ProductCatalog.SiteSyncWebHost
 
             var container = ObjectFactoryConfigurator.Configure();
 
-            ObjectFactoryConfigurator.InitializeWith(container);
+            ObjectFactoryConfigurator.DefaultContainer = container;
 
             container = ObjectFactoryConfigurator.DefaultContainer;
 

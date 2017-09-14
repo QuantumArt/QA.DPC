@@ -28,7 +28,9 @@ namespace QA.Core.ProductCatalog.ActionsService
     {
         public static IUnityContainer Configure()
         {
-            return ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
+            var container = RegisterTypes(new UnityContainer());
+            ObjectFactoryConfigurator.DefaultContainer = container;
+            return container;
         }
 
         public static UnityContainer RegisterTypes(UnityContainer container)

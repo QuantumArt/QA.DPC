@@ -42,7 +42,7 @@ namespace QA.ProductCatalog.StressTestUtility
 			Container.RegisterType<IRegionTagReplaceService, RegionTagService>();
 			Container.RegisterType<IRegionService, RegionService>();
 
-			ObjectFactoryConfigurator.InitializeWith(Container);
+			ObjectFactoryConfigurator.DefaultContainer = Container;
 		}
 	}
 }

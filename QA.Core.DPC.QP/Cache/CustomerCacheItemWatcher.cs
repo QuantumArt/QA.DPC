@@ -163,7 +163,7 @@ namespace QA.Core.DPC.QP.Cache
                         if (itemsIds.Count > 0)
                         {
                             _invalidator.InvalidateIds(_mode, itemsIds.ToArray());
-                            _logger.Debug(_ => ("Invalidating a set of ids " + string.Join(", ", itemsIds)));
+                            _logger.Debug(() => ("Invalidating a set of ids " + string.Join(", ", itemsIds)));
                         }
                     }
 
@@ -177,7 +177,7 @@ namespace QA.Core.DPC.QP.Cache
                         if (itemsTables.Count > 0)
                         {
                             _invalidator.InvalidateTables(_mode, itemsTables.ToArray());
-                            _logger.Debug(_ => ("Invalidating a set of tables " + string.Join(", ", itemsTables)));
+                            _logger.Debug(() => ("Invalidating a set of tables " + string.Join(", ", itemsTables)));
                         }
                     }
 

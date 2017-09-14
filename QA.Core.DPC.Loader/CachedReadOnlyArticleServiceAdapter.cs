@@ -57,7 +57,7 @@ namespace QA.Core.DPC.Loader
 				if (articlesToLoadIds.Any())
 					FillArticlesCache(base.List(contentId, articlesToLoadIds));
 
-				_logger.Debug(_ => string.Format("returning list of articles: {0} from cache and {1} from qp", ids.Length - articlesToLoadIds.Length, articlesToLoadIds.Length));
+				_logger.Debug(() => string.Format("returning list of articles: {0} from cache and {1} from qp", ids.Length - articlesToLoadIds.Length, articlesToLoadIds.Length));
 
 				return ids.Where(x => _loadedArticles.ContainsKey(x)).Select(x => GetLoadedArticleOrNull(x)).Where(x => x != null).ToArray();
 			}

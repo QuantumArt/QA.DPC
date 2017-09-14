@@ -26,8 +26,10 @@ namespace QA.ProductCatalog.WebApi.App_Start
 	{
 		public static IUnityContainer Configure()
 		{
-			return ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
-		}
+		    var container = RegisterTypes(new UnityContainer());
+		    ObjectFactoryConfigurator.DefaultContainer = container;
+		    return container;
+        }
 
 		private static IUnityContainer RegisterTypes(IUnityContainer unityContainer)
 		{

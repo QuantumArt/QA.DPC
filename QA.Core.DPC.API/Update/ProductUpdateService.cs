@@ -59,14 +59,14 @@ namespace QA.Core.DPC.API.Update
 
             ProcessArticlesTree(product, oldProduct, definition.StorageSchema);
 
-            _logger.Debug(_ => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
+            _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
             _articleService.BatchUpdate(_updateData);
-            _logger.Debug(_ => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
+            _logger.Debug(() => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
 
 
             if (_articlesToDelete.Any())
             {
-                _logger.Debug(_ => "Start Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
+                _logger.Debug(() => "Start Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
 
                 foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
                 {
@@ -83,7 +83,7 @@ namespace QA.Core.DPC.API.Update
                 }
             }
 
-            _logger.Debug(_ => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
+            _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
 
         }
         #endregion

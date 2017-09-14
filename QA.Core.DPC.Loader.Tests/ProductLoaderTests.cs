@@ -85,7 +85,7 @@ namespace QA.Core.DPC.Loader.Tests
             _container.RegisterInstance<ICacheProvider>(new CacheProvider());
             _container.RegisterInstance<IVersionedCacheProvider>(new VersionedCacheProvider3());
 
-            ObjectFactoryConfigurator.InitializeWith(_container);
+            ObjectFactoryConfigurator.DefaultContainer = _container;
             service = ObjectFactoryBase.Resolve<IProductService>();
 
             timer.Start();
@@ -183,8 +183,13 @@ namespace QA.Core.DPC.Loader.Tests
                 { "field_1279", "1234,5678" },
                 { "field_1385", "44" }
             };
-
-            ValidationServices.ValidateModel(model, validator, resourceDictrionary);
+            var paramObject = new ValidationParamObject()
+            {
+                Model = model,
+                Validator = validator,
+                DynamicResource = resourceDictrionary
+            };
+            ValidationServices.ValidateModel(paramObject);
         }
 
         private static void ProcessProduct(int id)

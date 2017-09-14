@@ -15,7 +15,6 @@ namespace QA.Core.ProductCatalog.Actions.Services
     {
         private readonly TransactionScope _transactionScope;
         private readonly QPConnectionScope _connectionScope;
-        private readonly IConnectionProvider _connectionProvider;
 
         public Transaction(IConnectionProvider connectionProvider, ILogger logger)
         {

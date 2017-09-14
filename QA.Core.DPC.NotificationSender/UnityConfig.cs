@@ -29,7 +29,9 @@ namespace QA.Core.DPC
 		/// <returns></returns>
 		public static IUnityContainer Configure()
 		{
-			return ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
+		    var container = RegisterTypes(new UnityContainer());
+            ObjectFactoryConfigurator.DefaultContainer = container;
+		    return container;
 		}
 
 		private static IUnityContainer RegisterTypes(UnityContainer unityContainer)
