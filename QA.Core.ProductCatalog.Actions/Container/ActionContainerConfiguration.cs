@@ -2,6 +2,7 @@
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
 using System;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Container
 {

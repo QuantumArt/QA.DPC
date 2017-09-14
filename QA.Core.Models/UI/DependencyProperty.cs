@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using QA.Core.Logger;
 
 namespace QA.Core.Models.UI
 {

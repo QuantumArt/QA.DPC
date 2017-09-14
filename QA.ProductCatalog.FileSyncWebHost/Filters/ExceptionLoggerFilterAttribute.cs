@@ -1,5 +1,6 @@
 ﻿using System.Web.Http.Filters;
 using QA.Core;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.FileSyncWebHost.Filters
 {

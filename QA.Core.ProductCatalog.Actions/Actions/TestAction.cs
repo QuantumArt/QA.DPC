@@ -5,6 +5,7 @@ using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.DTO;
 using System;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

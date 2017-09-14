@@ -7,6 +7,7 @@ using QA.Scheduler.API.Services;
 using QA.Scheduler.API.Models;
 using QA.Scheduler.Core.Schedules;
 using QA.Core;
+using QA.Core.Logger;
 
 namespace QA.Scheduler.Core.Configuration
 {

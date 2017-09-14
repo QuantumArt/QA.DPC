@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using QA.Core;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;

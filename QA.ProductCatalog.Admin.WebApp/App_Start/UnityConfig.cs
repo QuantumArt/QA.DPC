@@ -29,6 +29,7 @@ using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.ProductCatalog.Integration.Configuration;
 using QA.ProductCatalog.Integration.DAL;
 
@@ -38,10 +39,9 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
     {
         public static IUnityContainer Configure()
         {
-            var container = ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
-
-	        Task.Factory.StartNew(() => WarmUpHelper.WarmUp(container));
-
+            var container = RegisterTypes(new UnityContainer());
+            ObjectFactoryConfigurator.DefaultContainer = container;
+            Task.Factory.StartNew(() => WarmUpHelper.WarmUp(container));
 	        return container;
         }
 

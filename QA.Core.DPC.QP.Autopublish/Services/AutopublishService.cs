@@ -1,6 +1,7 @@
 ﻿using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Linq;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC.QP.Autopublish.Services
 {

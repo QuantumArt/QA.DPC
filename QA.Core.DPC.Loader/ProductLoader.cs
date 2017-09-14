@@ -25,6 +25,7 @@ using Qp8Bll = Quantumart.QP8.BLL;
 using System.IO;
 using System.Text;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using Quantumart.QP8.Constants;
 
 namespace QA.Core.DPC.Loader

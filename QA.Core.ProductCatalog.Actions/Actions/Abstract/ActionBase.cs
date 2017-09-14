@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;

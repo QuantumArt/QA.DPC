@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using QA.Core.Extensions;
+using QA.Core.Logger;
 using QA.Core.Models.Entities;
 using QA.Core.Models.UI;
 

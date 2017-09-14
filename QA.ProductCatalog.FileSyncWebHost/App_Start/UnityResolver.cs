@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Web.Http.Dependencies;
 using Microsoft.Practices.Unity;
 using QA.Core;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.FileSyncWebHost
 {

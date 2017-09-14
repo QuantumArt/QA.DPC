@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using QA.Core;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.FileSyncWebHost.Controllers
 {

@@ -18,6 +18,7 @@ using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.ProductCatalog.Integration.Configuration;
 using QA.ProductCatalog.Integration.DAL;
 
@@ -27,7 +28,9 @@ namespace QA.Core.ProductCatalog.ActionsService
     {
         public static IUnityContainer Configure()
         {
-            return ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
+            var container = RegisterTypes(new UnityContainer());
+            ObjectFactoryConfigurator.DefaultContainer = container;
+            return container;
         }
 
         public static UnityContainer RegisterTypes(UnityContainer container)

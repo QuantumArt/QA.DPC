@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Serialization;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;

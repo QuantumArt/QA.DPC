@@ -9,6 +9,7 @@ using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QA.Core;
+using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Elastic;
 
 namespace QA.ProductCatalog.ImpactService.API.Services

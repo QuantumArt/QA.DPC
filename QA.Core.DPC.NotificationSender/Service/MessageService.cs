@@ -4,6 +4,7 @@ using System.Linq;
 using System.Transactions;
 using QA.Core.Service.Interaction;
 using QA.Core.DPC.DAL;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC.Service
 {

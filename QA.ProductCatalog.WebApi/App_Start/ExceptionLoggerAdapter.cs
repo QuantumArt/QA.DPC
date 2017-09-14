@@ -6,6 +6,7 @@ using System.Text;
 using System.Web;
 using System.Web.Http.ExceptionHandling;
 using QA.Core;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {

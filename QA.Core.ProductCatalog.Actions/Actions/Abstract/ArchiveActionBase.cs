@@ -7,6 +7,7 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using System.Transactions;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {

@@ -5,6 +5,7 @@ using QA.Core.DPC.API.Update;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog;
 using QA.Core.ProductCatalog.Actions.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;

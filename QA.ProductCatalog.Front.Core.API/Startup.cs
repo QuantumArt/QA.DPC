@@ -9,8 +9,9 @@ using NLog.Extensions.Logging;
 using NLog.Web;
 using QA.Core;
 using QA.Core.DPC.Front;
+using QA.Core.Logger;
 using QA.DPC.Core.Helpers;
-using ILogger = QA.Core.ILogger;
+using ILogger = QA.Core.Logger.ILogger;
 
 namespace QA.ProductCatalog.Front.Core.API
 {

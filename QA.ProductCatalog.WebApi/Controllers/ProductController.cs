@@ -2,6 +2,7 @@
 using System.Web;
 using System.Web.Http;
 using QA.Core;
+using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -81,15 +82,17 @@ namespace QA.ProductCatalog.WebApi.Controllers
             return product;
 		}
 
-        /// <summary>
-        /// Get product built on raw data using tarantool cache
-        /// </summary>
-        /// <param name="productId">ID of the priduct</param>
-        /// <param name="definitionId">Producat definition id</param>
-        /// <param name="isLive"></param>
-        /// <param name="includeRegionTags"></param>
-        /// <returns></returns>
-        [AcceptVerbs("GET")]
+	    /// <summary>
+	    /// Get product built on raw data using tarantool cache
+	    /// </summary>
+	    /// <param name="productId">ID of the priduct</param>
+	    /// <param name="definitionId">Producat definition id</param>
+	    /// <param name="isLive"></param>
+	    /// <param name="includeRegionTags"></param>
+	    /// <param name="absent"></param>
+	    /// <param name="type"></param>
+	    /// <returns></returns>
+	    [AcceptVerbs("GET")]
         public Article TarantoolGet(int productId, int definitionId, bool isLive = false, bool includeRegionTags = false, bool absent = false, string type = null)
         {
             _logger.LogDebug(() => new { productId, definitionId, isLive }.ToString());

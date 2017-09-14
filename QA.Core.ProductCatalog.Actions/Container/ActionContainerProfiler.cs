@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Container
 {

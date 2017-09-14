@@ -3,6 +3,7 @@ using QA.Core.ProductCatalog.Actions.Services;
 using System;
 using System.Threading;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.StressTestUtility.Services
 {

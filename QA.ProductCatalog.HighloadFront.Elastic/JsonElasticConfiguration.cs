@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Nest;
 using QA.Core;
+using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.Infrastructure;

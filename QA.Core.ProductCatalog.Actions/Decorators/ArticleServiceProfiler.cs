@@ -4,6 +4,7 @@ using Quantumart.QP8.BLL.Services.DTO;
 using System;
 using System.Collections.Generic;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 using Quantumart.QP8.BLL.Services.API.Models;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators

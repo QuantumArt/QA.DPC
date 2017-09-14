@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Practices.Unity;
 using QA.Core;
+using QA.Core.Logger;
 using QA.Scheduler.API.Models;
 using QA.Scheduler.API.Services;
 using QA.Scheduler.Core.Schedules;

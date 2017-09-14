@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC.Loader
 {
@@ -22,7 +23,7 @@ namespace QA.Core.DPC.Loader
 
         public virtual void InvalidateKeys(InvalidationMode mode, params string[] keys)
         {
-            _logger.Debug(_ => "Invalidating a set of keys " + string.Join(", ", keys));
+            _logger.Debug(() => "Invalidating a set of keys " + string.Join(", ", keys));
 
             if (keys == null || keys.Length == 0)
                 return;

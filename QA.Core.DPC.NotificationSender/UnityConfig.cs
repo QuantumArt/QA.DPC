@@ -14,6 +14,7 @@ using QA.Core.DPC.QP.Autopublish.Configuration;
 using QA.Core.DPC.QP.Autopublish.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC
 {
@@ -28,7 +29,9 @@ namespace QA.Core.DPC
 		/// <returns></returns>
 		public static IUnityContainer Configure()
 		{
-			return ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
+		    var container = RegisterTypes(new UnityContainer());
+            ObjectFactoryConfigurator.DefaultContainer = container;
+		    return container;
 		}
 
 		private static IUnityContainer RegisterTypes(UnityContainer unityContainer)

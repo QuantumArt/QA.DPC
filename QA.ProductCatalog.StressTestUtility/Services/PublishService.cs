@@ -2,6 +2,7 @@
 using QA.Core.ProductCatalog.Actions;
 using System;
 using System.Threading;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 
 namespace QA.ProductCatalog.StressTestUtility.Services
