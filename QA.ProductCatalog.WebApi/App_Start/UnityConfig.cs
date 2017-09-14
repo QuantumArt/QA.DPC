@@ -14,6 +14,7 @@ using QA.Core.DPC.QP.API.Container;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;

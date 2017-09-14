@@ -2,6 +2,7 @@
 using System.Web;
 using System.Web.Http;
 using QA.Core;
+using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;

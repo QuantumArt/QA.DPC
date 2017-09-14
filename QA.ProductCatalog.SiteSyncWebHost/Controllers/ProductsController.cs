@@ -11,6 +11,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Xml;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.SiteSyncWebHost.Controllers
 {

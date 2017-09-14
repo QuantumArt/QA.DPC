@@ -2,6 +2,7 @@
 using System.Data.SqlClient;
 using System.Linq;
 using QA.Core.DPC.QP.Models;
+using QA.Core.Logger;
 using Quantumart.QP8.Configuration;
 using Quantumart.QPublishing.Database;
 

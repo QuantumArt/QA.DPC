@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 

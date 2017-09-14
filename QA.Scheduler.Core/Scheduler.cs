@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using QA.Core;
+using QA.Core.Logger;
 using QA.Scheduler.API.Services;
 
 namespace QA.Scheduler.Core

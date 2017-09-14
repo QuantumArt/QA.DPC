@@ -3,6 +3,7 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using System;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {

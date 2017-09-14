@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.Core.Cache;
+using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Tools;
 using QA.ProductCatalog.Infrastructure;

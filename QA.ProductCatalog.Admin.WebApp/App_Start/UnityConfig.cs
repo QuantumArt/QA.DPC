@@ -29,6 +29,7 @@ using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.ProductCatalog.Integration.Configuration;
 using QA.ProductCatalog.Integration.DAL;
 

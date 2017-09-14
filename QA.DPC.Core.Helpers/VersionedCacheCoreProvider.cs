@@ -5,7 +5,8 @@ using System.Threading;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using QA.Core;
-using ILogger = QA.Core.ILogger;
+using QA.Core.Logger;
+using ILogger = QA.Core.Logger.ILogger;
 
 namespace QA.DPC.Core.Helpers
 {

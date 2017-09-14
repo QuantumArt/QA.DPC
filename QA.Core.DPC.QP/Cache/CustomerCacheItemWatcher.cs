@@ -9,6 +9,7 @@ using System.Transactions;
 using QA.Core.Cache;
 using QA.Core.Data;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC.QP.Cache
 {

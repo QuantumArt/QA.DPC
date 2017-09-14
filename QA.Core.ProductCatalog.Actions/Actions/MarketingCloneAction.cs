@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Quantumart.QP8.BLL;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;

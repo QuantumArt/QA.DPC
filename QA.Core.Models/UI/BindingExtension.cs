@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Markup;
 using System.Xaml;
+using QA.Core.Logger;
 
 namespace QA.Core.Models.UI
 {

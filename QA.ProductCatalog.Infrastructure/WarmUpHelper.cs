@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Practices.Unity;
 using QA.Core;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.Infrastructure
 {

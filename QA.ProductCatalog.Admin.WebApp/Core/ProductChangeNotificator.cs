@@ -5,6 +5,7 @@ using System.Web;
 using System.Xml.Linq;
 using QA.Core;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 using QA.ProductCatalog.Admin.WebApp.Models;
 
 namespace QA.ProductCatalog.Admin.WebApp.Core

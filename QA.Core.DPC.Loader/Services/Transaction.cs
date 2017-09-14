@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Services
 {

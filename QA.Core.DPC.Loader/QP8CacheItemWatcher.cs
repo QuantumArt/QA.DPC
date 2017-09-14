@@ -22,7 +22,7 @@ namespace QA.Core.DPC.Loader
 
         protected override void GetData(Dictionary<int, ContentModification> newValues)
         {
-            using (var cs = new QPConnectionScope(_connectionString.ConnectionString))
+            using (var cs = new QPConnectionScope(_connectionString))
             {
                 var con = cs.DbConnection;
 

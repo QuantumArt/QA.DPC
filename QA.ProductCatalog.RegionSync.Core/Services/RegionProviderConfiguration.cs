@@ -1,5 +1,6 @@
 ﻿using System.Configuration;
 using QA.Core;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.RegionSync.Core.Services
 {

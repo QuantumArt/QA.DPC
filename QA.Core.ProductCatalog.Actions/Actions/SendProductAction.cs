@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;

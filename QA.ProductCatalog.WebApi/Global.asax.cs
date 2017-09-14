@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
 using QA.Core;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.WebApi
 {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions;

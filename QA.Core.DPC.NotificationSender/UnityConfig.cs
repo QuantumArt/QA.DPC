@@ -14,6 +14,7 @@ using QA.Core.DPC.QP.Autopublish.Configuration;
 using QA.Core.DPC.QP.Autopublish.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC
 {

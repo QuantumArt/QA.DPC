@@ -9,6 +9,7 @@ using QA.Core.DPC.QP.Models;
 using QA.ProductCatalog.WebApi.Controllers;
 using System.Web;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {

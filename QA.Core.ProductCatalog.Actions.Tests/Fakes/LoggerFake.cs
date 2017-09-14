@@ -1,4 +1,5 @@
 ﻿using System;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {
@@ -20,7 +21,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 		{
 		}
 
-		public void Debug(string message, params object[] parameters)
+	    public void Info(Func<string> message, params object[] parameters)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public void Debug(string message, params object[] parameters)
 		{
 		}
 
@@ -28,7 +34,17 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 		{
 		}
 
-		public void Fatal(string message, Exception exception, params object[] parameters)
+	    public void Debug(Func<string> message, params object[] parameters)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public void Error(Func<string> message, params object[] parameters)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public void Fatal(string message, Exception exception, params object[] parameters)
 		{
 		}
 
@@ -49,7 +65,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 		{
 		}
 
-		public void Dispose()
+	    public void Fatal(Func<string> message, params object[] parameters)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public void Dispose()
 		{
 		}
 

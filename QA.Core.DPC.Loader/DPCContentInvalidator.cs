@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC.Loader
 {
