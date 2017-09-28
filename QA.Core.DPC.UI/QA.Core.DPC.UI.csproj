@@ -241,6 +241,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Image.cs" />
     <Compile Include="Controls\FileLink.cs" />
     <Compile Include="Converters\NegativeConverter.cs" />
     <Compile Include="Converters\YieldConverter.cs" />
@@ -319,4 +320,3 @@
   </Target>
   -->
 </Project>
-

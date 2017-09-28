@@ -32,6 +32,7 @@ using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.ProductCatalog.Integration.Configuration;
 using QA.ProductCatalog.Integration.DAL;
+using QA.ProductCatalog.Admin.WebApp.App_Core;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Start
 {
@@ -71,7 +72,9 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 .RegisterType<ISettingsService, SettingsFromContentService>()
                 .RegisterType<IUserProvider, UserProvider>()
                 .RegisterType<IQPNotificationService, QPNotificationService>()
-                .RegisterType<IProductControlProvider, ProductControlProvider>();
+                // change default provider to filesystem-based one since it does not require app to recompile on changes.
+                // AppDataProductControlProvider does not cache reads from disk
+                .RegisterType<IProductControlProvider, AppDataProductControlProvider>();
 
             container.RegisterType<CustomActionService>(new InjectionFactory(c => new CustomActionService(c.Resolve<IConnectionProvider>().GetConnection(), 1)));
 

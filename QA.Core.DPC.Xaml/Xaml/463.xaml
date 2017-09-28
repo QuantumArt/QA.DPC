@@ -1,0 +1,219 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TabStrip xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <TabStrip.Resources>
+        <GenericConverter x:Key="relevance_converter">
+            <GenericConverter.Values>
+                <x:String>
+                    <x:Key>
+                        <x:String>NotRelevant</x:String>
+                    </x:Key>
+                    bold
+                </x:String>
+                <x:String>
+                    <x:Key>
+                        <x:String>Missing</x:String>
+                    </x:Key>
+                    bold
+                </x:String>
+            </GenericConverter.Values>
+        </GenericConverter>
+        <GenericConverter x:Key="relevance_hidden_converter">
+            <GenericConverter.Values>
+                <x:String>
+                    <x:Key>
+                        <x:String>Relevant</x:String>
+                    </x:Key>
+                    hidden
+                </x:String>
+            </GenericConverter.Values>
+        </GenericConverter>
+        <GenericConverter x:Key="decimal_to_flag_converter">
+            <GenericConverter.DefaultValue>
+                <x:String>Нет</x:String>
+            </GenericConverter.DefaultValue>
+            <GenericConverter.Values>
+                <x:String>
+                    <x:Key>
+                        <x:Decimal>1</x:Decimal>
+                    </x:Key>
+                    Да
+                </x:String>
+            </GenericConverter.Values>
+        </GenericConverter>
+        <GenericConverter x:Key="line_class_converter">
+            <GenericConverter.Values>
+                <x:String>
+                    <x:Key>
+                        <x:Boolean>False</x:Boolean>
+                    </x:Key>
+                    line-through
+                </x:String>
+            </GenericConverter.Values>
+        </GenericConverter>
+        <GroupGridView x:Key="char_grid" Items="{Binding}" GroupBy="Franchise" Width="500px">
+            <GroupGridView.GroupingTemplate>
+                <StackPanel IsHorizontal="True" UseInlineForChildBlocks="True">
+                    <Label Title="Франшиза"  FontWeight="bold"/>
+                    <Label Title=": "  FontWeight="bold"/>
+                    <ActionLink CurrentItem="{Binding }" Title="{Binding /Title}" />
+                </StackPanel>
+            </GroupGridView.GroupingTemplate>
+            <GroupGridView.Columns>
+                <GridColumn Title="" Width="15px"/>
+                <GridColumn Title="Id" Width="70px">
+                    <ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /Title.FieldDisplayName}" Width="250px">
+                    <Label Title="{Binding /Title}" />
+                </GridColumn>
+                <GridColumn Title="Лицензиар" Width="250px">
+                    <ActionLink CurrentItem="{Binding /Franchise/Licensor}" Title="{Binding /Franchise/Licensor/Title}" />
+                </GridColumn>
+            </GroupGridView.Columns>
+        </GroupGridView>
+    </TabStrip.Resources>
+    <TabStripItem Title="Общие">
+        <StackPanel>
+            <Group Title="Важно" ClassName="{Binding /ConsumerStatusCode, Converter={Resource relevance_hidden_converter}}">
+                <DisplayField Value="{Binding /ConsumerStatusText}" />
+            </Group>
+            <Group Title="{Binding /Name}">
+                <EntityEditor CurrentItem="{Binding}" DisplayAllFields="true" Title="{x:Binding Path=/Title}" HideEmptyFields="True" ShowIcons="False" Behavior="True" DisplayCollections="True" ShowCollectionsHorizontal="True" CollectionSeparator="," ExcludeFields="Type,Parameters,Aliases,ConsumerStatusCode,Relevance,IsRelevant,ConsumerLastPublishedUserName,ConsumerLastPublished,ConsumerStatusText,ConsumerCulture,Characters" />
+                <PropertyDisplay Title="{Binding /Aliases.FieldDisplayName}">
+                    <PropertyDisplay.Value>
+                        <StackPanel>
+                            <EntityCollection Items="{Binding /Aliases}">
+                                <StackPanel IsHorizontal="True" UseInlineForChildBlocks="True">
+                                    <ActionLink CurrentItem="{Binding }" ActionName="remove_article" ShowIcon="True" IconClass="delete" MaxWidth="16px" TextOverflow="Clip" Title="Удалить" />
+                                    <ActionLink CurrentItem="{Binding}" Title="{Binding /Title}" />
+                                </StackPanel>
+                            </EntityCollection>
+                            <ActionLink CurrentItem="{Binding /Aliases}" ParentEntityId="{Binding /Aliases.SubContentId}" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить">
+                                <ActionLink.FieldValues>
+                                    <InitFieldValue Field="field_2226" Value="{Binding Path=Id}" />
+                                </ActionLink.FieldValues>
+                                <ActionLink.Behavior>
+                                    <QPBehavior FieldsToBlock="field_2226" />
+                                </ActionLink.Behavior>
+                            </ActionLink>
+                        </StackPanel>
+                    </PropertyDisplay.Value>
+                </PropertyDisplay>
+                <PropertyDisplay Title="{Binding /Characters.FieldDisplayName}">
+                    <Template CellTemplate="{x:Resource char_grid}" CurrentItem="{Binding /Characters}" />
+                </PropertyDisplay>
+                <PropertyDisplay Title="{Binding /Pictures.FieldDisplayName}">
+                    <PropertyDisplay.Value>
+                        <EntityCollection Items="{Binding /Pictures}" >
+                            <StackPanel DisplayMode="InlineBlock" IsHorizontal="False" UseInlineForChildBlocks="False" ClassName="">
+                                <Image Title="{Binding /Type}" File="{Binding /Url}" Height="200px" DecorateWithLink="True" />
+                                <ActionLink CurrentItem="{Binding}" Title="{Binding Id}"/>
+                            </StackPanel>
+                        </EntityCollection>
+                    </PropertyDisplay.Value>
+                </PropertyDisplay>
+            </Group>
+            <Group Title="Статус публикации">
+                <DisplayField Value="{Binding /ConsumerLastPublished}" />
+                <DisplayField Value="{Binding /ConsumerLastPublishedUserName}" />
+                <DisplayField Value="{Binding /ConsumerStatusText}" />
+            </Group>
+        </StackPanel>
+    </TabStripItem>
+    <TabStripItem Title="{Binding /Parameters.FieldDisplayName}">
+        <StackPanel>
+            <Group Title="{Binding /Parameters.FieldDisplayName}">
+                <ActionLink CurrentItem="{Binding /Parameters}" ParentEntityId="{Binding /Parameters.SubContentId}" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить параметр">
+                    <ActionLink.FieldValues>
+                        <InitFieldValue Field="field_2191" Value="{Binding Path=Id}" />
+                    </ActionLink.FieldValues>
+                    <ActionLink.Behavior>
+                        <QPBehavior FieldsToBlock="field_2191" />
+                    </ActionLink.Behavior>
+                </ActionLink>
+                <GroupGridView Items="{Binding /Parameters}" Width="auto">
+                    <GroupGridView.RowTemplate>
+                        <GridRowTemplate Hidden="{Binding Archived}" ClassName="{Binding Visible, Converter={Resource line_class_converter}}" />
+                    </GroupGridView.RowTemplate>
+                    <GroupGridView.Columns>
+                        <GridColumn Title="" Width="30px">
+                            <GridColumn Title="Action" Width="30px">
+                                <ActionLink CurrentItem="{Binding }" ActionName="remove_article" ShowIcon="True" IconClass="delete" MaxWidth="16px" TextOverflow="Clip" Title="Удалить" />
+                            </GridColumn>
+                        </GridColumn>
+                        <GridColumn Title="Id" Width="70px">
+                            <ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+                        </GridColumn>
+                        <GridColumn Title="{Binding /ParamValueType/Prototype/Title.FieldDisplayName}" Width="250px">
+                            <ActionLink CurrentItem="{Binding /ParamValueType/Prototype}" Title="{Binding /ParamValueType/Prototype/Title}" />
+                        </GridColumn>
+                        <GridColumn Title="Значение" Width="350px">
+                            <StackPanel IsHorizontal="True" UseInlineForChildBlocks="True">
+                                <Switcher SwitchOn="{Binding /ParamValueType.Item.ContentDisplayName}">
+                                    <Label x:Key="Модификатор" Title="{Binding /ParamValueType/Value.NativeValue, Converter={Resource decimal_to_flag_converter}}" />
+                                    <Switcher.Default>
+                                        <Label Title="{Binding /ParamValueType/Value}" />
+                                    </Switcher.Default>
+                                </Switcher>
+                                <Label Title="{Binding /ParamValueType/Unit/Title}" FontWeight="bold" />
+                                <ActionLink CurrentItem="{Binding /ParamValueType/ValueObject}" Title="{Binding /ParamValueType/ValueObject/Value}" />
+                            </StackPanel>
+                        </GridColumn>
+                        <GridColumn Title="Тип параметра" Width="150px">
+                            <Label Title="{Binding /ParamValueType.Item.ContentDisplayName}" />
+                        </GridColumn>
+                    </GroupGridView.Columns>
+                </GroupGridView>
+            </Group>
+
+        </StackPanel>
+    </TabStripItem>
+    <Group Title="SKU">
+        <EntityEditor CurrentItem="{Binding /SKU.Item}" DisplayAllFields="true" Title="sku" HideEmptyFields="True" ShowIcons="False" Behavior="True" DisplayCollections="True" ShowCollectionsHorizontal="True" CollectionSeparator="," ExcludeFields="Characters" />
+        <Label Title="" FontWeight="bolder"/>
+        <PropertyDisplay Title="{Binding /SKU/Characters.FieldDisplayName}">
+            <Template CellTemplate="{x:Resource char_grid}" CurrentItem="{Binding /SKU/Characters}" />
+        </PropertyDisplay>
+    </Group>
+    <Group Title="{Binding /Recommended.FieldDisplayName}">
+        <ActionLink CurrentItem="{Binding /Recommended}" ParentEntityId="{Binding /Recommended.SubContentId}" ShowIcon="True" IconClass="add" ActionName="new_article" Title="Добавить">
+            <ActionLink.FieldValues>
+                <InitFieldValue Field="field_2215" Value="{Binding Path=Id}" />
+            </ActionLink.FieldValues>
+            <ActionLink.Behavior>
+                <QPBehavior FieldsToBlock="field_2215" />
+            </ActionLink.Behavior>
+        </ActionLink>
+        <GroupGridView Items="{Binding /Recommended}" Width="auto">
+            <GroupGridView.RowTemplate>
+                <GridRowTemplate Hidden="{Binding Archived}" ClassName="{Binding Visible, Converter={Resource line_class_converter}}" />
+            </GroupGridView.RowTemplate>
+            <GroupGridView.Columns>
+                <GridColumn Title="" Width="30px">
+                    <GridColumn Title="Action" Width="30px">
+                        <ActionLink CurrentItem="{Binding }" ActionName="remove_article" ShowIcon="True" IconClass="delete" MaxWidth="16px" TextOverflow="Clip" Title="Удалить" />
+                    </GridColumn>
+                </GridColumn>
+                <GridColumn Title="Id" Width="70px">
+                    <ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+                </GridColumn>
+
+                <GridColumn Title="{Binding /Type.FieldDisplayName}" Width="1800px">
+                    <Label Title="{Binding /Type}"/>
+                </GridColumn>
+                <GridColumn Title="{Binding /ProductTitle.FieldDisplayName}" Width="450px">
+                    <Label Title="{Binding /ProductTitle}"/>
+                </GridColumn>
+                <GridColumn Title="{Binding /RecommendedProductYandexId.FieldDisplayName}" Width="250px">
+                    <Label Title="{Binding /RecommendedProductYandexId}"/>
+                </GridColumn>
+                <GridColumn Title="{Binding /RecommendedProduct.FieldDisplayName}" Width="250px">
+                    <ActionLink CurrentItem="{Binding /RecommendedProduct}" Title="{Binding /RecommendedProduct.Item.Id}" />
+                </GridColumn>
+                <GridColumn Title="{Binding /IsSupplement.FieldDisplayName}" Width="250px">
+                    <Label Title="{Binding /IsSupplement.NativeValue, Converter={Resource decimal_to_flag_converter}}"/>
+                </GridColumn>
+            </GroupGridView.Columns>
+        </GroupGridView>
+    </Group>
+</TabStrip>

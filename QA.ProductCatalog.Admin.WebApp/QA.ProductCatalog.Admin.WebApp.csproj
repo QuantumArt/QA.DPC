@@ -115,10 +115,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
+      <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
+      <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.Interception, Version=2.1.505.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\Unity.Interception.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Interception.dll</HintPath>
@@ -127,7 +127,7 @@
       <HintPath>$(SolutionDir)packages\Unity.Interception.2.1.505.2\lib\NET35\Microsoft.Practices.Unity.Interception.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.Unity.RegistrationByConvention, Version=4.0.0.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
+      <HintPath>..\..\packages\Unity.4.0.1\lib\net45\Microsoft.Practices.Unity.RegistrationByConvention.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TextTemplating.Interfaces.10.0, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\Quantumart.2.1.6\lib\net45\Microsoft.VisualStudio.TextTemplating.Interfaces.10.0.dll</HintPath>
@@ -152,16 +152,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core, Version=3.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Core.3.1.1\lib\net45\QA.Core.dll</HintPath>
+      <HintPath>..\..\packages\QA.Core.3.1.1\lib\net45\QA.Core.dll</HintPath>
     </Reference>
     <Reference Include="QA.Core.Data, Version=3.0.5.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\QA.Core.Data.3.0.5\lib\net45\QA.Core.Data.dll</HintPath>
     </Reference>
     <Reference Include="QA.Core.Service.Interaction, Version=3.0.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Core.Service.Interaction.3.0.5\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
+      <HintPath>..\..\packages\QA.Core.Service.Interaction.3.0.5\lib\net45\QA.Core.Service.Interaction.dll</HintPath>
     </Reference>
     <Reference Include="QA.Core.Web, Version=3.0.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Core.Web.3.0.6\lib\net45\QA.Core.Web.dll</HintPath>
+      <HintPath>..\..\packages\QA.Core.Web.3.0.6\lib\net45\QA.Core.Web.dll</HintPath>
     </Reference>
     <Reference Include="QA.Validation.Xaml, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.1.1.0\lib\net40\QA.Validation.Xaml.dll</HintPath>
@@ -268,6 +268,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App_Core\AppDataProductControlProvider.cs" />
     <Compile Include="App_Start\TaskContainerConfiguration.cs" />
     <Compile Include="Binders\ContentBinder.cs" />
     <Compile Include="Controllers\DefinitionEditorController.cs" />
@@ -524,11 +525,9 @@
     <Content Include="Views\Shared\DisplayTemplates\DisplayField.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\FileLink.cshtml" />
     <Content Include="Views\HighloadFront\Index.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\Image.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Core\" />
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config">
       <SubType>Designer</SubType>
@@ -617,6 +616,31 @@
       <Name>QA.Core.ProductCatalog.Actions</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\controls\287.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\controls\288.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\controls\339.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\controls\463.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_Data\controls\m\339.xaml">
+      <SubType>Designer</SubType>
+    </Content>
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -683,4 +707,3 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
-
