@@ -343,7 +343,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var filters = productsOptions.Filters;
             if (filters != null)
             {
-                var conditions = filters.Select(n => CreateFilter(n, productsOptions.DisableOr, productsOptions.DisableNot));
+                var conditions = filters.Select(n => CreateFilter(n, productsOptions.DisableOr, productsOptions.DisableNot, productsOptions.DisableLike));
                 var shouldGroups = new List<List<JProperty>>();
                 var currentGroup = new List<JProperty>();
                 foreach (var condition in conditions)
@@ -374,7 +374,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        private JProperty CreateFilter(IElasticFilter filter, string[] disableOr, string[] disableNot)
+        private JProperty CreateFilter(IElasticFilter filter, string[] disableOr, string[] disableNot, string[] disableLike)
         {
             var simpleFilter = filter as SimpleFilter;
             var rangeFilter = filter as RangeFilter;
@@ -385,7 +385,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (simpleFilter != null)
             {
                 result = simpleFilter.Name != Options.TypePath
-                    ? GetSingleFilterWithNot(simpleFilter.Name, simpleFilter.Values, disableOr, disableNot)
+                    ? GetSingleFilterWithNot(simpleFilter.Name, simpleFilter.Values, disableOr, disableNot, disableLike)
                     : null;
             }
 
@@ -454,11 +454,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        private JProperty GetSingleFilterWithNot(string field, StringValues values, string[] disabledOrFields, string[] disabledNotFields)
+        private JProperty GetSingleFilterWithNot(string field, StringValues values, string[] disabledOrFields, string[] disabledNotFields, string[] disableLikeFields)
         {
             var conditions = StringValues.IsNullOrEmpty(values)
                 ? null
-                : values.Select(n => GetSingleFilterWithNot(field, n, disabledOrFields, disabledNotFields)).ToArray();
+                : values.Select(n => GetSingleFilterWithNot(field, n, disabledOrFields, disabledNotFields, disableLikeFields)).ToArray();
 
             if (conditions == null || conditions.Length == 0)
                 return null;
@@ -470,11 +470,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return result;
         }
 
-        private JProperty GetSingleFilterWithNot(string field, string value, string[] disabledOrFields, string[] disabledNotFields)
+        private JProperty GetSingleFilterWithNot(string field, string value, string[] disabledOrFields, string[] disabledNotFields, string[] disableLikeFields)
         {
             JProperty result;
             var actualSeparator = GetActualSeparator(field, disabledOrFields);
-            bool hasNegation;
+            bool disableLike = disableLikeFields.Contains(field);
+            bool hasNegation;            
             var actualValue = GetActualValue(field, value, disabledNotFields, out hasNegation);
 
             if (actualValue == "null")
@@ -484,7 +485,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
             else
             {
-                result = GetSingleFilter(field, actualValue, actualSeparator);  
+                result = GetSingleFilter(field, actualValue, actualSeparator, disableLike);  
             }
 
             if (hasNegation)
@@ -515,16 +516,37 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return actualSeparator;
         }
 
-        private JProperty GetSingleFilter(string field, string value, string separator)
+        private JProperty GetSingleFilter(string field, string value, string separator, bool  disableLike)
         {
             var isBaseField = field == Options.IdPath || field.EndsWith("." + Options.IdPath) || field == ProductIdField;
             var separators = (isBaseField) ? new[] {separator, BaseSeparator} : new[] {separator};
-            var isSeparated = separators.Any(n => IsSeparated(value, n));
+            var isSeparated = separators.Any(n => IsSeparated(value, n));             
             var values = (isSeparated) ? value.Split(separators, StringSplitOptions.None) : new string[0];
 
             if (isBaseField || IsNotAnalyzedField(field))
             {
-                return (isSeparated) ? Terms(field, values) : Term(field, value);
+                if (isSeparated)
+                {
+                    if (!disableLike && values.Any(v => IsWildcard(v)))
+                    {
+                        return Wildcards(field, values);                        
+                    }
+                    else
+                    {
+                        return Terms(field, values);
+                    }
+                }
+                else
+                {
+                    if (!disableLike && IsWildcard(value))
+                    {
+                        return Wildcard(field, value);
+                    }
+                    else
+                    {
+                        return Term(field, value);
+                    }
+                }                
             }
 
             return (isSeparated) ? MatchPhrases(field, values) : MatchPhrase(field, value);
@@ -535,9 +557,37 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return !string.IsNullOrEmpty(separator) && value.Contains(separator);
         }
 
+        private bool IsWildcard(string value)
+        {
+            return !string.IsNullOrEmpty(Options.WildcardStarMark) && value.Contains(Options.WildcardStarMark)
+                || !string.IsNullOrEmpty(Options.WildcardQuestionMark) && value.Contains(Options.WildcardQuestionMark);
+        }
+
         private static JProperty Exists(string field)
         {
             return new JProperty("exists", new JObject(new JProperty("field", field)));
+        }
+
+        private JProperty Wildcard(string field, string value)
+        {
+            var actualValue = value;
+
+            if (!string.IsNullOrEmpty(Options.WildcardStarMark))
+            {
+                actualValue = actualValue.Replace(Options.WildcardStarMark, "*");
+            }
+
+            if (!string.IsNullOrEmpty(Options.WildcardQuestionMark))
+            {
+                actualValue = actualValue.Replace(Options.WildcardQuestionMark, "?");
+            }
+
+            return new JProperty("wildcard", new JObject(new JProperty(field, actualValue)));
+        }
+
+        private JProperty Wildcards(string field, string[] values)
+        {
+            return Should(values.Select(v => Wildcard(field, v)));
         }
 
         private static JProperty Term(string field, string value)
