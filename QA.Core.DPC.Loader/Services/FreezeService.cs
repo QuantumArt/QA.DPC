@@ -30,7 +30,8 @@ namespace QA.Core.DPC.Loader.Services
             from
                 content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
             where
-                FreezeDate < @date
+                FreezeDate < @date  and
+               ' + ex.ATTRIBUTE_NAME + ' is not null
             union'
         from
             content_attribute base
