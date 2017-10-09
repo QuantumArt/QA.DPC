@@ -1,0 +1,30 @@
+﻿@using QA.Core.Web
+@model Image
+@{
+    var uri = Model.Url ?? Model.TryGetUrl();
+    if (string.IsNullOrEmpty(uri))
+    {
+        return;
+    }
+}
+
+@if (Model.DecorateWithLink)
+{
+    <a href="@uri" target="_blank">@RenderImage(uri)</a>
+}
+else
+{
+    @:@RenderImage(uri)
+}
+
+@helper RenderImage(string uri)
+{
+    <div class="control-image__container">
+        <span class="control-image__tooltip hidden"> </span>
+        <img src="@uri" alt="Image is unavailable" title="@Model.Title" class="control-image__img" style="@CheckStyle(Model.MaxWidth, "max-width")
+     @CheckStyle(Model.Height, "height") @CheckStyle(Model.Width, "width") @CheckStyle(Model.MaxHeight, "max-height")" />
+    </div>
+}
+
+@helper CheckStyle(string model, string css)
+{<text>@(model != null ? (css + ": " + model) + ";" : "")</text>}

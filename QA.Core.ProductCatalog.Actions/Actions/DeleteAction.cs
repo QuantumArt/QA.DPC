@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using System.Transactions;
+using QA.Core.Logger;
 using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions

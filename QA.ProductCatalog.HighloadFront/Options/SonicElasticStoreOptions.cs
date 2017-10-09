@@ -37,6 +37,10 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public string DisjunctionMark { get; set; }
 
+        public string WildcardStarMark { get; set; }
+
+        public string WildcardQuestionMark { get; set; }
+
         public string EscapeCharacter { get; set; }
 
         public ArrayIndexingSettings[] IndexingOptions { get; set; }

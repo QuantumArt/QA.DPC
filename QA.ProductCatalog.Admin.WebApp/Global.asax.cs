@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 using QA.Core;
+using QA.Core.Logger;
 using QA.ProductCatalog.Admin.WebApp.App_Start;
 
 namespace QA.ProductCatalog.Admin.WebApp

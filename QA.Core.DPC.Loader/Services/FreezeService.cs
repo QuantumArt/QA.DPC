@@ -26,11 +26,12 @@ namespace QA.Core.DPC.Loader.Services
             @query = @query +
 	        '
 	        select
-                ' + ex.ATTRIBUTE_NAME + ' Id
+                [' + ex.ATTRIBUTE_NAME + '] Id
             from
                 content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
             where
-                FreezeDate < @date
+                FreezeDate < @date  and
+               [' + ex.ATTRIBUTE_NAME + '] is not null
             union'
         from
             content_attribute base
@@ -74,12 +75,12 @@ namespace QA.Core.DPC.Loader.Services
 	        @query = @query +
 	        '
 	        select
-		        ' + ex.ATTRIBUTE_NAME + ' Id
+		        [' + ex.ATTRIBUTE_NAME + '] Id
 	        from
 		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
 	        where
 		        FreezeDate >= @date and
-		        ' + ex.ATTRIBUTE_NAME + ' in (select Id from @ids)
+		        [' + ex.ATTRIBUTE_NAME + '] in (select Id from @ids)
 	        union'
         from
 	        content_attribute base
@@ -128,7 +129,7 @@ namespace QA.Core.DPC.Loader.Services
 	        from
 		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
 	        where
-		        ' + ex.ATTRIBUTE_NAME + ' = @id and
+		        [' + ex.ATTRIBUTE_NAME + '] = @id and
 		        FreezeDate is not null
 	        union'
         from
@@ -180,7 +181,7 @@ namespace QA.Core.DPC.Loader.Services
 	        from
 		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
 	        where
-		        ' + ex.ATTRIBUTE_NAME + ' in (select Id from @ids)
+		        [' + ex.ATTRIBUTE_NAME + '] in (select Id from @ids)
 	        union'
         from
 	        content_attribute base

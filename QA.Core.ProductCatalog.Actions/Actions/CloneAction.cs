@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.Core.ProductCatalog.Actions

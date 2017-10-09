@@ -36,7 +36,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly Func<string, IArticleFormatter> _getFormatter;
         private readonly IProductLocalizationService _localizationService;
 
-        public ProductController(Func<string, string, IAction> getAction, IVersionedCacheProvider versionedCacheProvider, Func<string, IArticleFormatter> getFormatter, IProductLocalizationService localizationService)
+        public ProductController(Func<string, string, IAction> getAction,
+            IVersionedCacheProvider versionedCacheProvider,
+            Func<string, IArticleFormatter> getFormatter, 
+            IProductLocalizationService localizationService)
         {
             _getAction = getAction;
             _versionedCacheProvider = versionedCacheProvider;
@@ -45,7 +48,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
-        public ActionResult Index(int content_item_id, string actionCode, bool live = false, string[] filters = null, bool includeRelevanceInfo = true, bool localize = false, string lang = null)
+        public ActionResult Index(int content_item_id,
+            string actionCode, 
+            bool live = false,
+            string[] filters = null,
+            bool includeRelevanceInfo = true, 
+            bool localize = false,
+            string lang = null)
         {    
             if (content_item_id <= 0)
             {

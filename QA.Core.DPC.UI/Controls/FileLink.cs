@@ -5,29 +5,50 @@ using QA.ProductCatalog.Infrastructure;
 namespace QA.Core.DPC.UI.Controls
 {
     public class FileLink : Label
-    { 
+    {
+        static FileLink()
+        {
+            // do not move this line outside of constructor!
+            FileProperty = DependencyProperty.Register("File", typeof(PlainArticleField), typeof(FileLink));
+        }
         public string GetFileLink()
         {
-            var field = File;
+
+            return GetUrl(File) ?? "javascript:void();";
+        }
+        public string TryGetUrl()
+        {
+            return GetUrl(File) ?? "javascript:void();";
+        }
+
+        private static string GetUrl(PlainArticleField field)
+        {
+            if (field == null) return null;
+            var value = field.Value;
+
+            if (value == null) return null;
+
             if
-            (
-                field != null &&
-                field.FieldId.HasValue &&
+            (field.FieldId.HasValue &&
                 !string.IsNullOrEmpty(field.Value)
                 && (field.PlainFieldType == PlainFieldType.File
                     || field.PlainFieldType == PlainFieldType.DynamicImage
                     || field.PlainFieldType == PlainFieldType.Image)
             )
             {
-                string baseUri = ObjectFactoryBase.Resolve<IDBConnector>().GetUrlForFileAttribute(field.FieldId.Value);                
+                string baseUri = ObjectFactoryBase.Resolve<IDBConnector>().GetUrlForFileAttribute(field.FieldId.Value);
                 return $"{baseUri}/{field.Value}";
+            }
+            else if (field.PlainFieldType == PlainFieldType.String || field.PlainFieldType == PlainFieldType.StringEnum)
+            {
+                return field.Value;
             }
             else
             {
-                return "javascript:void();";
+                return null;
             }
         }
-    
+
         public PlainArticleField File
         {
             get { return (PlainArticleField)GetValue(FileProperty); }
@@ -35,7 +56,6 @@ namespace QA.Core.DPC.UI.Controls
         }
 
         // Using a DependencyProperty as the backing store for File.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty FileProperty =
-            DependencyProperty.Register("File", typeof(PlainArticleField), typeof(FileLink));
+        public static readonly DependencyProperty FileProperty;
     }
 }

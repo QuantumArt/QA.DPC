@@ -6,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using QA.Core;
 using QA.Core.DPC.Front;
+using QA.Core.Logger;
 using QA.Core.Service.Interaction;
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers

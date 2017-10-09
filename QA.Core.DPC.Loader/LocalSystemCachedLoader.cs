@@ -14,6 +14,7 @@ using System.Xaml;
 using System.IO;
 using System.IO.Compression;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC.Loader
 {

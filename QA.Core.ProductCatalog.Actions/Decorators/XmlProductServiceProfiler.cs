@@ -3,6 +3,7 @@ using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Linq;
 using System.Xml.Linq;
+using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators

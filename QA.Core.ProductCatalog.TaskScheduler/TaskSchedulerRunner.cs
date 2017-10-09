@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Timers;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using Quartz;
 using Quartz.Impl.Matchers;

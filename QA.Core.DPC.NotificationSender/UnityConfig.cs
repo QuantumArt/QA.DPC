@@ -11,6 +11,7 @@ using QA.Core.DPC.QP.Autopublish.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
@@ -30,7 +31,9 @@ namespace QA.Core.DPC
 		/// <returns></returns>
 		public static IUnityContainer Configure()
 		{
-			return ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
+		    var container = RegisterTypes(new UnityContainer());
+            ObjectFactoryConfigurator.DefaultContainer = container;
+		    return container;
 		}
 
 		private static IUnityContainer RegisterTypes(UnityContainer unityContainer)
@@ -47,11 +50,12 @@ namespace QA.Core.DPC
             unityContainer.RegisterType<INotificationService, NotificationService>();
             unityContainer.RegisterType<IStatusProvider, StatusProvider>();
 
-            unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();
+            unityContainer.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>();          
 
             unityContainer.LoadConfiguration("Default");
 
             var connection = unityContainer.Resolve<IConnectionProvider>();
+            var logger = unityContainer.Resolve<ILogger>();
             unityContainer.RegisterType<NotificationsModelDataContext>(new InjectionFactory(c => new NotificationsModelDataContext(c.Resolve<IConnectionProvider>().GetConnection(QP.Models.Service.Notification))));
 
             if (connection.QPMode)
@@ -60,13 +64,11 @@ namespace QA.Core.DPC
                 foreach (var customer in unityContainer.Resolve<ICustomerProvider>().GetCustomers())
                 {
                     var code = customer.CustomerCode;
-
-                    var logger = unityContainer.Resolve<ILogger>();
+                    
                     var cacheProvider = new VersionedCustomerCacheProvider(code);
                     var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                     var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
-                    
-                    var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connectionProvider, logger, TimeSpan.FromMinutes(1), 1000);
+                    var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromMinutes(1), invalidator, connectionProvider, logger);
                     var tracker = new StructureCacheTracker(connectionProvider);
                     watcher.AttachTracker(tracker);
                     watcher.Start();
@@ -84,12 +86,17 @@ namespace QA.Core.DPC
             }
             else if (connection.HasConnection(QP.Models.Service.Admin))
             {
-                unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
+                var cacheProvider = new VersionedCustomerCacheProvider(null);
+                var invalidator = new DpcContentInvalidator(cacheProvider, logger);
+                var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromMinutes(1), invalidator, connection, logger);
+                var tracker = new StructureCacheTracker(connection);                
+                watcher.AttachTracker(tracker);
+                watcher.Start();
 
-                unityContainer.RegisterType<IContentInvalidator, DpcContentInvalidator>();
-                unityContainer.RegisterInstance<ICacheProvider>(unityContainer.Resolve<CacheProvider>());
-                unityContainer.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(new ContainerControlledLifetimeManager());
-                unityContainer.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, unityContainer.Resolve<IContentInvalidator>()));
+                unityContainer.RegisterInstance<IContentInvalidator>(invalidator);
+                unityContainer.RegisterInstance<ICacheProvider>(cacheProvider);
+                unityContainer.RegisterInstance<IVersionedCacheProvider>(cacheProvider);
+                unityContainer.RegisterInstance<ICacheItemWatcher>(watcher);                
             }
             else
             {

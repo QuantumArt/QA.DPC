@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 
 namespace QA.ProductCatalog.StressTestUtility.Services
 {

@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using QA.Core;
+using QA.Core.Logger;
 
 namespace QA.Scheduler.API.Services
 {

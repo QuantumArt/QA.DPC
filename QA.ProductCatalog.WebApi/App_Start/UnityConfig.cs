@@ -14,6 +14,7 @@ using QA.Core.DPC.QP.API.Container;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
@@ -25,8 +26,10 @@ namespace QA.ProductCatalog.WebApi.App_Start
 	{
 		public static IUnityContainer Configure()
 		{
-			return ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
-		}
+		    var container = RegisterTypes(new UnityContainer());
+		    ObjectFactoryConfigurator.DefaultContainer = container;
+		    return container;
+        }
 
 		private static IUnityContainer RegisterTypes(IUnityContainer unityContainer)
 		{
@@ -98,14 +101,15 @@ namespace QA.ProductCatalog.WebApi.App_Start
                 var cacheProvider = new VersionedCustomerCacheProvider(null);
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var tracker = new StructureCacheTracker(connection);
-                var watcher = new CustomerQP8CacheItemWatcher(InvalidationMode.All, invalidator, connection, logger);
-
+                var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connection, logger);
                 watcher.AttachTracker(tracker);
 
                 unityContainer.RegisterInstance<IContentInvalidator>(invalidator);
                 unityContainer.RegisterInstance<ICacheProvider>(cacheProvider);
                 unityContainer.RegisterInstance<IVersionedCacheProvider>(cacheProvider);
                 unityContainer.RegisterInstance<ICacheItemWatcher>(watcher);
+
+                watcher.Start();
 
                 unityContainer.RegisterNonQpMonitoring();
             }

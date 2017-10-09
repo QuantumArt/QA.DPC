@@ -108,8 +108,21 @@ QA.Product.Index = QA.Product.Index || (function () {
             }
         });
 
-        function setParamsToLS()
-        {
+        $('.control-image__img').each(function () {
+            if (this.naturalWidth && this.naturalHeight) {
+                let d = `${this.naturalWidth}x${this.naturalHeight}`;
+                $(this).parent().find('.control-image__tooltip').html(d).attr('data-dimensions', d);
+            }
+        });
+
+        $('.control-image__container').hover(function () {
+            $(this).find('.control-image__tooltip').filter('[data-dimensions]').removeClass('hidden');
+        },
+            function () {
+                $(this).find('.control-image__tooltip').addClass('hidden');
+            });
+
+        function setParamsToLS() {
             var activeElem = $("#" + QA.Utils.hostId()).context.activeElement;
             var elemID = $(activeElem).attr('aria-activedescendant');
             var tabElem = $("#" + elemID).parents('.tabstrip').first().data("name")

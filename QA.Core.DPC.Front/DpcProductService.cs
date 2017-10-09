@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using QA.Core.DPC.Front.DAL;
+using QA.Core.Logger;
 using QA.Core.Service.Interaction;
 
 namespace QA.Core.DPC.Front

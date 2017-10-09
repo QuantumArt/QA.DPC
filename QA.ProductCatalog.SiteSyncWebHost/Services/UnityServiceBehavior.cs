@@ -10,9 +10,8 @@ namespace QA.ProductCatalog.SiteSyncWebHost.Services
 	public class UnityServiceBehavior : IServiceBehavior
 	{
 		public UnityInstanceProvider InstanceProvider  { get; set; }
-		private ServiceHost serviceHost = null;
 
-		public UnityServiceBehavior()
+	    public UnityServiceBehavior()
 		{
 			InstanceProvider = new UnityInstanceProvider();
 		}

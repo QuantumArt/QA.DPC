@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using QA.Core;
+using QA.Core.Logger;
 using QA.ProductCatalog.ImpactService.API.Services;
 using QA.DPC.Core.Helpers;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
@@ -47,7 +48,7 @@ namespace QA.ProductCatalog.ImpactService.API
             services.AddMemoryCache();
 
             services.AddScoped(typeof(ISearchRepository), typeof(ElasticSearchRepository));
-            services.AddSingleton<Core.ILogger>(n => new NLogLogger("NLog.config"));
+            services.AddSingleton<Core.Logger.ILogger>(n => new NLogLogger("NLog.config"));
 
         }
 

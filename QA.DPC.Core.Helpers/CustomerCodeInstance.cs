@@ -6,6 +6,7 @@ using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 
 namespace QA.DPC.Core.Helpers
 {

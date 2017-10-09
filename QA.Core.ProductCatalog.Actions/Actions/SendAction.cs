@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.ProductCatalog.Infrastructure;

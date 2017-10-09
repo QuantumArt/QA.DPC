@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {

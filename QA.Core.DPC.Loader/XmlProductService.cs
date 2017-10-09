@@ -7,6 +7,7 @@ using System.Linq;
 using System.Xml.Linq;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
@@ -334,11 +335,11 @@ namespace QA.Core.DPC.Loader
 
         private object ConvertValue(PlainArticleField article, CallContext ctx)
 		{
-		    var renderFileAsImage = article.CustomProperties?.ContainsKey(RenderTextFieldAsXmlName) ?? false;
+		    var renderFileAsImage = GetBoolProperty(article, RenderFileFieldAsImage);
 
             if (article.PlainFieldType == PlainFieldType.VisualEdit || article.PlainFieldType == PlainFieldType.Textbox)
 			{
-                if (renderFileAsImage)
+                if (GetBoolProperty(article, RenderTextFieldAsXmlName))
 				{
 					XElement parsedElement;
 
@@ -458,6 +459,21 @@ namespace QA.Core.DPC.Loader
 				Value = tag.Value
 			};
 		}
+
+        private bool GetBoolProperty(ArticleField article, string propertyKey)
+        {
+            object value;
+
+            if (article.CustomProperties != null && article.CustomProperties.TryGetValue(propertyKey, out value))
+            {
+                if (value is bool)
+                {
+                    return (bool)value;
+                }
+            }
+
+            return false;
+        }
 
         private class CallContext
 		{

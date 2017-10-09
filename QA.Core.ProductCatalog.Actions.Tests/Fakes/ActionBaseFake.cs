@@ -4,6 +4,7 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {

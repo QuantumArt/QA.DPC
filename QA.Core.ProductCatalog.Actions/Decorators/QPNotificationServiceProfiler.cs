@@ -2,6 +2,7 @@
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Threading.Tasks;
+using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {

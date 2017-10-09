@@ -9,6 +9,7 @@ using System.Transactions;
 using QA.Core.Cache;
 using QA.Core.Data;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC.QP.Cache
 {
@@ -162,7 +163,7 @@ namespace QA.Core.DPC.QP.Cache
                         if (itemsIds.Count > 0)
                         {
                             _invalidator.InvalidateIds(_mode, itemsIds.ToArray());
-                            _logger.Debug(_ => ("Invalidating a set of ids " + string.Join(", ", itemsIds)));
+                            _logger.Debug(() => ("Invalidating a set of ids " + string.Join(", ", itemsIds)));
                         }
                     }
 
@@ -176,7 +177,7 @@ namespace QA.Core.DPC.QP.Cache
                         if (itemsTables.Count > 0)
                         {
                             _invalidator.InvalidateTables(_mode, itemsTables.ToArray());
-                            _logger.Debug(_ => ("Invalidating a set of tables " + string.Join(", ", itemsTables)));
+                            _logger.Debug(() => ("Invalidating a set of tables " + string.Join(", ", itemsTables)));
                         }
                     }
 

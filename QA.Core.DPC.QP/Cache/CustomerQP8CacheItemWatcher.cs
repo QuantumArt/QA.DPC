@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using Quantumart.QP8.BLL;
 
 namespace QA.Core.DPC.QP.Cache

@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using QA.Core.Logger;
 
 namespace QA.Core.DPC.API
 {

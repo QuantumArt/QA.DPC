@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Markup;
+using QA.Core.Logger;
 
 namespace QA.Core.Models.UI
 {

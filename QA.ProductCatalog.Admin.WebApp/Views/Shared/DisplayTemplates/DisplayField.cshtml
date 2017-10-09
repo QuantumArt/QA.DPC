@@ -10,7 +10,7 @@
     }
 }
 
-<dl class="plain-field row">
+<dl class="plain-field row @(Model.ClassName??String.Empty)">
     <dt class="plain-field-capture label">@field.FieldDisplayName: </dt>
     <dd class="plain-field-value field">
         @if (field.PlainFieldType == PlainFieldType.Boolean)
@@ -19,13 +19,13 @@
                    disabled="disabled" @(value == "1" ? "checked='checked'" : "")
                    data-value="@(field.NativeValue)" />
         }
-        else if (field.PlainFieldType == PlainFieldType.VisualEdit)
+        else if (field.PlainFieldType == PlainFieldType.VisualEdit|| field.PlainFieldType == PlainFieldType.Textbox)
         {
-            <textarea class="plainfield__text" readonly="readonly" cols="45" rows="2">@value</textarea>
+            <textarea class="plainfield__text__area" readonly="readonly" cols="65" rows="5">@value</textarea>
         }
-        else if (field.PlainFieldType == PlainFieldType.Textbox)
+        else if (field.PlainFieldType == PlainFieldType.String)
         {
-            <input type="text" class="plainfield__text" readonly="readonly" value="@value" />
+            <input type="text" class="plainfield__text" readonly="readonly" value="@value" />        
         }
         else if (field.PlainFieldType == PlainFieldType.Image || field.PlainFieldType == PlainFieldType.DynamicImage)
         {

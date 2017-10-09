@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using QA.Core.DPC.QP.Services;
-using ILogger = QA.Core.ILogger;
+using ILogger = QA.Core.Logger.ILogger;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.DPC.Core.Helpers

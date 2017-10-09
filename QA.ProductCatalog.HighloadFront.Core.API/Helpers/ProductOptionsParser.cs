@@ -24,8 +24,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
             var perPage = properties["per_page"].FirstOrDefault();
             var disableOr = properties["disable_or"].FirstOrDefault();
             var disableNot = properties["disable_not"].FirstOrDefault();
+            var disableLike = properties["disable_like"].FirstOrDefault();
 
-            var exceptKeys = new[] {"sort", "order", "fields", "page", "per_page", "disable_or", "disable_not", "customerCode"};
+            var exceptKeys = new[] {"sort", "order", "fields", "page", "per_page", "disable_or", "disable_not", "disable_like", "customerCode" };
             var filters = queryCollection.Where(n => !exceptKeys.Contains(n.Key)).ToArray();
 
             var result = new ProductsOptions
@@ -35,6 +36,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 PropertiesFilter = fields?.Split(',').ToList(),
                 DisableOr = string.IsNullOrEmpty(disableOr) ? new string[] { } : disableOr.Split(','),
                 DisableNot = string.IsNullOrEmpty(disableNot) ? new string[] { } : disableNot.Split(','),
+                DisableLike = string.IsNullOrEmpty(disableLike) ? new string[] { } : disableLike.Split(','),
                 Filters = filters.Select(n => CreateFilter(n, options)).ToList()
             };
 

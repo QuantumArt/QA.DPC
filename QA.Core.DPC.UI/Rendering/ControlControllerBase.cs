@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using QA.Core.Logger;
 using QA.Core.Models.UI;
 
 namespace QA.Core.DPC.UI

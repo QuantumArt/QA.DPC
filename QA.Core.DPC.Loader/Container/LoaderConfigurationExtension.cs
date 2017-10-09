@@ -8,6 +8,7 @@ using Quantumart.QP8.BLL.Services.API;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using Quantumart.QP8.BLL;
 
 namespace QA.Core.DPC.Loader.Container

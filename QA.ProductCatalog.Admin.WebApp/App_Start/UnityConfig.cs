@@ -29,8 +29,10 @@ using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.ProductCatalog.Integration.Configuration;
 using QA.ProductCatalog.Integration.DAL;
+using QA.ProductCatalog.Admin.WebApp.App_Core;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Start
 {
@@ -38,10 +40,9 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
     {
         public static IUnityContainer Configure()
         {
-            var container = ObjectFactoryConfigurator.InitializeWith(RegisterTypes(new UnityContainer()));
-
-	        Task.Factory.StartNew(() => WarmUpHelper.WarmUp(container));
-
+            var container = RegisterTypes(new UnityContainer());
+            ObjectFactoryConfigurator.DefaultContainer = container;
+            Task.Factory.StartNew(() => WarmUpHelper.WarmUp(container));
 	        return container;
         }
 
@@ -71,7 +72,9 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 .RegisterType<ISettingsService, SettingsFromContentService>()
                 .RegisterType<IUserProvider, UserProvider>()
                 .RegisterType<IQPNotificationService, QPNotificationService>()
-                .RegisterType<IProductControlProvider, ProductControlProvider>();
+                // change default provider to filesystem-based one since it does not require app to recompile on changes.
+                // AppDataProductControlProvider does not cache reads from disk
+                .RegisterType<IProductControlProvider, AppDataProductControlProvider>();
 
             container.RegisterType<CustomActionService>(new InjectionFactory(c => new CustomActionService(c.Resolve<IConnectionProvider>().GetConnection(), 1)));
 
@@ -123,12 +126,12 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 	        container.RegisterType<StructureCacheTracker>();
 
             var connection = container.Resolve<IConnectionProvider>();
+            var logger = container.Resolve<ILogger>();
             if (connection.QPMode)
             {
                 foreach (var customer in container.Resolve<ICustomerProvider>().GetCustomers())
                 {
                     var code = customer.CustomerCode;
-                    var logger = container.Resolve<ILogger>();
 
                     var cacheProvider = new VersionedCustomerCacheProvider(code);
                     var invalidator = new DpcContentInvalidator(cacheProvider, logger);
@@ -164,8 +167,14 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 container.RegisterType<IVersionedCacheProvider, VersionedCacheProvider3>(
                     new ContainerControlledLifetimeManager());
                 container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
-                container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All,
-                    container.Resolve<IContentInvalidator>()));
+
+                var watcher =
+                    new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), container.Resolve<IContentInvalidator>(), connection, logger);
+                var tracker = new StructureCacheTracker(connection);
+                watcher.AttachTracker(tracker);
+                watcher.Start();
+
+                container.RegisterInstance<ICacheItemWatcher>(watcher);
                 container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
 
                 container.RegisterNonQpMonitoring();

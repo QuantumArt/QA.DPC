@@ -3,6 +3,7 @@ using QA.Core;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.Web;
@@ -41,7 +42,7 @@ namespace QA.ProductCatalog.StressTestUtility
 			Container.RegisterType<IRegionTagReplaceService, RegionTagService>();
 			Container.RegisterType<IRegionService, RegionService>();
 
-			ObjectFactoryConfigurator.InitializeWith(Container);
+			ObjectFactoryConfigurator.DefaultContainer = Container;
 		}
 	}
 }

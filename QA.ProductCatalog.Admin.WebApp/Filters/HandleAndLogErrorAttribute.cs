@@ -1,4 +1,5 @@
 ﻿using QA.Core;
+using QA.Core.Logger;
 
 namespace System.Web.Mvc
 {

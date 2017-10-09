@@ -29,6 +29,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public string[] DisableNot { get; set; }
 
+        public string[] DisableLike { get; set; }
+
     }
 
     public interface IElasticFilter

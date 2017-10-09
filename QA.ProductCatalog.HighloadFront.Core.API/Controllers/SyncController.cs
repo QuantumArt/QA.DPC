@@ -9,6 +9,7 @@ using QA.ProductCatalog.HighloadFront.Models;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.Core;
 using Microsoft.Extensions.Options;
+using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
