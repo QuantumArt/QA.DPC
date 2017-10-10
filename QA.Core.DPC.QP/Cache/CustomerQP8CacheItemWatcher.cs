@@ -15,7 +15,11 @@ namespace QA.Core.DPC.QP.Cache
         public CustomerQP8CacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, IConnectionProvider connectionProvider, ILogger logger)
             : base(mode, invalidator, connectionProvider, logger)
         {
+        }
 
+        public CustomerQP8CacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, IConnectionProvider connectionProvider, ILogger logger, TimeSpan pollPeriod, int dueTime)
+            : base(mode, pollPeriod, invalidator, connectionProvider, logger, dueTime, true)
+        {
         }
 
         protected override void GetData(Dictionary<int, ContentModification> newValues)

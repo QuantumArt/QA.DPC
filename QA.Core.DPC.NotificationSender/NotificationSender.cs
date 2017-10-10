@@ -83,76 +83,87 @@ namespace QA.Core.DPC
             _identityProvider.Identity = new Identity(customerCode);
             var configProvider = ObjectFactoryBase.Resolve<INotificationProvider>();
             var logger = ObjectFactoryBase.Resolve<ILogger>();
-            logger.Info("start UpdateConfiguration for {0}", customerCode);
-            int delay = 0;
-			var items = _senders.Zip(_lockers.Keys, (s, k) => new { Sender = s, Key = k });
-            var config = ConfigDictionary.AddOrUpdate(customerCode, code => configProvider.GetConfiguration(), (code, cfg) => configProvider.GetConfiguration());
+            
+            try
+            {
+                logger.Info("start UpdateConfiguration for {0}", customerCode);
 
-			foreach (var channel in config.Channels.Where(c => c.DegreeOfParallelism > 0))
-			{
-                var key = GetKey(channel.Name, customerCode);
+                int delay = 0;
+                var items = _senders.Zip(_lockers.Keys, (s, k) => new { Sender = s, Key = k });
+                var config = ConfigDictionary.AddOrUpdate(customerCode, code => configProvider.GetConfiguration(), (code, cfg) => configProvider.GetConfiguration());
 
-                if (_lockers.ContainsKey(key))
-				{
-					var sender = items.First(itm => itm.Key == key).Sender;
-					sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval));
-                    logger.Info("Updete sender for {0} whith delay {1} and interval {2}", key, delay, config.CheckInterval);
-                }
-				else
-				{
-                    var state = new ChannelState { BlockState = null, ErrorsCount = 0 };
-                    var descriptor = new ChannelDescriptor { ChannelName = channel.Name, CustomerCode = customerCode };
-                    _lockers.Add(key, state);
-					_senders.Add(new Timer((SendToOneChannel), descriptor, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval)));
-                    logger.Info("Add sender for {0} whith delay {1} and interval {2}", key, delay, config.CheckInterval);
-                }
+                foreach (var channel in config.Channels.Where(c => c.DegreeOfParallelism > 0))
+                {
+                    var key = GetKey(channel.Name, customerCode);
 
-				delay++;
-			}
-
-		    if (customerCode != SingleCustomerProvider.Key)
-		    {
-		        var autopublishKey = GetKey(AutopublishKey, customerCode);
-
-                if (_lockers.ContainsKey(autopublishKey))
-		        {
-		            var sender = items.First(itm => itm.Key == autopublishKey).Sender;
-
-                    if (config.Autopublish)
+                    if (_lockers.ContainsKey(key))
                     {
+                        var sender = items.First(itm => itm.Key == key).Sender;
                         sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval));
-                        logger.Info("Updete autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+                        logger.Info("Updete sender for {0} whith delay {1} and interval {2}", key, delay, config.CheckInterval);
                     }
                     else
                     {
-                        sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, config.CheckInterval));
-                        logger.Info("Stop autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+                        var state = new ChannelState { BlockState = null, ErrorsCount = 0 };
+                        var descriptor = new ChannelDescriptor { ChannelName = channel.Name, CustomerCode = customerCode };
+                        _lockers.Add(key, state);
+                        _senders.Add(new Timer((SendToOneChannel), descriptor, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval)));
+                        logger.Info("Add sender for {0} whith delay {1} and interval {2}", key, delay, config.CheckInterval);
                     }
+
+                    delay++;
                 }
-		        else if (config.Autopublish)
-		        {
-		            var state = new ChannelState { BlockState = null, ErrorsCount = 0 };
-		            _lockers.Add(autopublishKey, state);
-		            _senders.Add(new Timer((Autopublish), customerCode, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval)));
-		            logger.Info("Add autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
-		        }
 
-		        delay++;
+                if (customerCode != SingleCustomerProvider.Key)
+                {
+                    var autopublishKey = GetKey(AutopublishKey, customerCode);
 
-		        var itemsToStop = items
-		            .Where(itm =>
-		                itm.Key.StartsWith(customerCode) &&
-		                itm.Key != autopublishKey &&
-		                !config.Channels.Any(c => GetKey(c.Name, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
+                    if (_lockers.ContainsKey(autopublishKey))
+                    {
+                        var sender = items.First(itm => itm.Key == autopublishKey).Sender;
 
-		        foreach (var item in itemsToStop)
-		        {
-		            item.Sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, config.CheckInterval));
-		            logger.Info("Stop sender for {0} whith delay {1}", item.Key, delay);
-		        }
+                        if (config.Autopublish)
+                        {
+                            sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval));
+                            logger.Info("Updete autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+                        }
+                        else
+                        {
+                            sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, config.CheckInterval));
+                            logger.Info("Stop autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+                        }
+                    }
+                    else if (config.Autopublish)
+                    {
+                        var state = new ChannelState { BlockState = null, ErrorsCount = 0 };
+                        _lockers.Add(autopublishKey, state);
+                        _senders.Add(new Timer((Autopublish), customerCode, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval)));
+                        logger.Info("Add autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+                    }
+
+                    delay++;
+
+                    var itemsToStop = items
+                        .Where(itm =>
+                            itm.Key.StartsWith(customerCode) &&
+                            itm.Key != autopublishKey &&
+                            !config.Channels.Any(c => GetKey(c.Name, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
+
+                    foreach (var item in itemsToStop)
+                    {
+                        item.Sender.Change(new TimeSpan(0, 0, 0, 0, -1), new TimeSpan(0, 0, config.CheckInterval));
+                        logger.Info("Stop sender for {0} whith delay {1}", item.Key, delay);
+                    }
+                }                
             }
-
-            logger.Info("end UpdateConfiguration for {0}", customerCode);
+            catch (Exception ex)
+            {
+                logger.ErrorException($"can not UpdateConfiguration for {customerCode}", ex);
+            }
+            finally
+            {
+                logger.Info("end UpdateConfiguration for {0}", customerCode);
+            }
         }
 
         private static string GetKey(string channelName, string customerCode)
@@ -231,9 +242,26 @@ namespace QA.Core.DPC
         public static void Autopublish(object stateInfo)
         {
             var customerCode = stateInfo as string;
-            var task = ObjectFactoryBase.Resolve<ITask>();
+            var autopublishKey = GetKey(AutopublishKey, customerCode);
+            var state = _lockers[autopublishKey];
 
-            task.Run(customerCode, null, null, null);
+            if (Monitor.TryEnter(state))
+            {
+                try
+                {
+                    var task = ObjectFactoryBase.Resolve<ITask>();
+                    task.Run(customerCode, null, null, null);
+                }
+                finally
+                {
+                    Monitor.Exit(state);
+                }
+            }
+            else
+            {
+                var logger = ObjectFactoryBase.Resolve<ILogger>();
+                logger.Info("Автопубликация для {1} все еще занята отправкой сообщений", customerCode);
+            }
         }
 
 		private static async Task SendOneMessage(

@@ -23,7 +23,7 @@
             </fieldset>
         }
         <fieldset>
-            <legend>Общие настройки</legend>
+            <legend>Системные настройки</legend>
             <div class="gr-wrapper">
                 <div class="group-panel-item">
                     <dl class="plain-field row">
@@ -40,7 +40,7 @@
                     </dl>
                 </div>
              </div>
-    </fieldset>
+        </fieldset>
 
         <fieldset>
             <legend>Каналы</legend>
@@ -86,6 +86,86 @@
                 }
                 </tbody>
             </table>
+        </fieldset>
+
+        <fieldset>
+            <legend>Общие настройки</legend>
+            <div class="gr-wrapper">
+                <div class="group-panel-item">
+                    <dl class="plain-field row">
+                        <dt title="Определяет, будут ли изменения в статьях автоматически попадать на витрины" class="plain-field-capture label " style="">Автопубликация</dt>
+                        <dd style="" class="plain-field-value field">
+                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.Autopublish)</span>
+                        </dd>
+                        @if (Model.CurrentSettings.Autopublish != Model.ActualSettings.Autopublish)
+                        {
+                        <dd style="" class="plain-field-value field">
+                            <div title="" class="refresh icon" style=""></div>
+                        </dd>
+                        }
+                    </dl>
+                    <dl class="plain-field row">
+                        <dt title="Интервал проверки новых нотификаций для отправки" class="plain-field-capture label " style="">Интервал отправки</dt>
+                        <dd style="" class="plain-field-value field">
+                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.CheckInterval) с</span>
+                        </dd>
+                        @if (Model.CurrentSettings.CheckInterval != Model.ActualSettings.CheckInterval)
+                        {
+                            <dd style="" class="plain-field-value field">
+                                <div title="" class="refresh icon" style=""></div>
+                            </dd>
+                        }
+                    </dl>
+                    <dl class="plain-field row">
+                        <dt title="Интервал ожидания, когда новых уведомлений не отправляется для этого потребителя" class="plain-field-capture label " style="">Интервал отправки при ошибках</dt>
+                        <dd style="" class="plain-field-value field">
+                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.WaitIntervalAfterErrors) с</span>
+                        </dd>
+                        @if (Model.CurrentSettings.WaitIntervalAfterErrors != Model.ActualSettings.WaitIntervalAfterErrors)
+                        {
+                            <dd style="" class="plain-field-value field">
+                                <div title="" class="refresh icon" style=""></div>
+                            </dd>
+                        }
+                    </dl>
+                    <dl class="plain-field row">
+                        <dt title="Количество ошибок при отправке перед интервалом ожидания" class="plain-field-capture label " style="">Количество ошибок</dt>
+                        <dd style="" class="plain-field-value field">
+                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.ErrorCountBeforeWait)</span>
+                        </dd>
+                        @if (Model.CurrentSettings.ErrorCountBeforeWait != Model.ActualSettings.ErrorCountBeforeWait)
+                        {
+                            <dd style="" class="plain-field-value field">
+                                <div title="" class="refresh icon" style=""></div>
+                            </dd>
+                        }
+                    </dl>
+                    <dl class="plain-field row">
+                        <dt title="Количество обрабатываемых сообщений за раз" class="plain-field-capture label " style="">Размер пакета сообщений</dt>
+                        <dd style="" class="plain-field-value field">
+                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.PackageSize)</span>
+                        </dd>
+                        @if (Model.CurrentSettings.PackageSize != Model.ActualSettings.PackageSize)
+                        {
+                            <dd style="" class="plain-field-value field">
+                                <div title="" class="refresh icon" style=""></div>
+                            </dd>
+                        }
+                    </dl>
+                    <dl class="plain-field row">
+                        <dt title="Таймаут для отправки нотификаций" class="plain-field-capture label " style="">Таймаут отправки на витрину</dt>
+                        <dd style="" class="plain-field-value field">
+                            <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.TimeOut) c</span>
+                        </dd>
+                        @if (Model.CurrentSettings.TimeOut != Model.ActualSettings.TimeOut)
+                        {
+                            <dd style="" class="plain-field-value field">
+                                <div title="" class="refresh icon" style=""></div>
+                            </dd>
+                        }
+                    </dl>
+                </div>
+            </div>
         </fieldset>
     }
 </div>
