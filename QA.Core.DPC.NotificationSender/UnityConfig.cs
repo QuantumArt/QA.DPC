@@ -86,6 +86,7 @@ namespace QA.Core.DPC
             }
             else if (connection.HasConnection(QP.Models.Service.Admin))
             {
+
                 var cacheProvider = new VersionedCustomerCacheProvider(null);
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromMinutes(1), invalidator, connection, logger);
@@ -93,6 +94,7 @@ namespace QA.Core.DPC
                 watcher.AttachTracker(tracker);
                 watcher.Start();
 
+                unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
                 unityContainer.RegisterInstance<IContentInvalidator>(invalidator);
                 unityContainer.RegisterInstance<ICacheProvider>(cacheProvider);
                 unityContainer.RegisterInstance<IVersionedCacheProvider>(cacheProvider);
