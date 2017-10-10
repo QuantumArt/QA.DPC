@@ -3,10 +3,6 @@
   <PropertyGroup>
     <TargetFramework>net452</TargetFramework>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
-    <PreserveCompilationContext>true</PreserveCompilationContext>
-    <AssemblyName>QA.ProductCatalog.ImpactService.API</AssemblyName>
-    <OutputType>Exe</OutputType>
-    <PackageId>QA.ProductCatalog.ImpactService.API</PackageId>
   </PropertyGroup>
   
   <ItemGroup>
@@ -36,13 +32,7 @@
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="1.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
     <PackageReference Include="System.Net.Http" Version="4.3.2" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-*" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.0.0-rtm-beta5" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.4.0" />
   </ItemGroup>
-
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net452' ">
-    <Reference Include="System" />
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
-
 </Project>
