@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<TabStrip xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <TabStrip.Resources>
+        <GenericConverter x:Key="line_class_converter">
+            <GenericConverter.Values>
+                <x:String>
+                    <x:Key>
+                        <x:Boolean>False</x:Boolean>
+                    </x:Key>
+                    line-through
+                </x:String>
+            </GenericConverter.Values>
+        </GenericConverter>
+      <StringFormatConverter x:Key="get_brand_url" Format="https://market.yandex.ru/brands/{0}" Parameter0="{Binding /MarketId}" />
+    </TabStrip.Resources>
+    <TabStripItem Title="Общие">
+        <Group Title="{Binding /Title}">
+            <EntityEditor CurrentItem="{Binding}" DisplayAllFields="true" Title="{x:Binding Path=/Title}" HideEmptyFields="True" ShowIcons="False" Behavior="True" DisplayCollections="True" ShowCollectionsHorizontal="True" CollectionSeparator=","  ExcludeFields="History,MarketId,ConsumerStatusCode,Relevance,IsRelevant,ConsumerLastPublishedUserName,ConsumerLastPublished,ConsumerStatusText,ConsumerCulture"/>
+
+            <PropertyDisplay Title="Сcылка на Маркет">
+                <PropertyDisplay.Value>
+                    <SimpleLink Title="{Binding Converter={Resource get_brand_url}}" IconClass="link" Href="{Binding Converter={Resource get_brand_url}}" />
+                </PropertyDisplay.Value>
+            </PropertyDisplay>
+
+            <GroupGridView Items="{Binding /History}" Width="auto"  OrderBy="DateFrom">
+                <GroupGridView.RowTemplate>
+                    <GridRowTemplate Hidden="{Binding Archived}" ClassName="{Binding Visible, Converter={Resource line_class_converter}}" />
+                </GroupGridView.RowTemplate>
+                <GroupGridView.Columns>
+                    <GridColumn Title="Id" Width="70px">
+                        <ActionLink CurrentItem="{Binding}" Title="{Binding Id}" />
+                    </GridColumn>
+                    <GridColumn Title="{Binding /Licensee.FieldDisplayName}" Width="250px">
+                        <ActionLink CurrentItem="{Binding /Licensee}" Title="{Binding /Licensee/Title}" />
+                    </GridColumn>
+                    <GridColumn Title="{Binding /DateFrom.FieldDisplayName}" Width="250px">
+                        <Label Title="{Binding /DateFrom.NativeValue}"/>
+                    </GridColumn>
+                    <GridColumn Title="{Binding /DateTo.FieldDisplayName}" Width="250px">
+                        <Label Title="{Binding /DateTo.NativeValue}"/>
+                    </GridColumn>
+                </GroupGridView.Columns>
+            </GroupGridView>
+
+        </Group>
+
+    </TabStripItem>
+
+</TabStrip>
