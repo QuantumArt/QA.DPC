@@ -526,8 +526,13 @@
     <Content Include="Views\Shared\DisplayTemplates\FileLink.cshtml" />
     <Content Include="Views\HighloadFront\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Image.cshtml" />
+    <Content Include="Views\Shared\DisplayTemplates\SimpleLink.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="App_Data\controls\480.xaml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
       <SubType>Designer</SubType>
@@ -707,4 +712,3 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
-

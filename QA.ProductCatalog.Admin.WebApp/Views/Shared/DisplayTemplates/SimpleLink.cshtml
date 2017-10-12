@@ -1,0 +1,19 @@
+﻿@using QA.Core.Web
+@model SimpleLink
+
+@{
+    if (Model == null || Model.Hidden) { return; }
+
+    var title = Model.Title;
+    var href = Model.Href;
+    if (String.IsNullOrWhiteSpace(title) || String.IsNullOrWhiteSpace(href))
+    {
+        return;
+    }
+
+}
+@if (!string.IsNullOrWhiteSpace(Model.IconClass))
+{ 
+    <span class="icon @Model.IconClass">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+}
+<a class="js @Model.ClassName" title="@href" href="@(href)" target="@(Model.OpenInNewWindow ? "_blank" : "")"> @(title)</a>
