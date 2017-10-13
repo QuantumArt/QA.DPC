@@ -100,7 +100,13 @@ namespace QA.ProductCatalog.Integration.Notifications {
         private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private QA.ProductCatalog.Integration.Notifications.SettingsInfo ActualSettingsField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
         private QA.ProductCatalog.Integration.Notifications.ChannelInfo[] ChannelsField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private QA.ProductCatalog.Integration.Notifications.SettingsInfo CurrentSettingsField;
         
         [System.Runtime.Serialization.OptionalFieldAttribute()]
         private bool IsActualField;
@@ -122,6 +128,19 @@ namespace QA.ProductCatalog.Integration.Notifications {
         }
         
         [System.Runtime.Serialization.DataMemberAttribute()]
+        public QA.ProductCatalog.Integration.Notifications.SettingsInfo ActualSettings {
+            get {
+                return this.ActualSettingsField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.ActualSettingsField, value) != true)) {
+                    this.ActualSettingsField = value;
+                    this.RaisePropertyChanged("ActualSettings");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
         public QA.ProductCatalog.Integration.Notifications.ChannelInfo[] Channels {
             get {
                 return this.ChannelsField;
@@ -130,6 +149,19 @@ namespace QA.ProductCatalog.Integration.Notifications {
                 if ((object.ReferenceEquals(this.ChannelsField, value) != true)) {
                     this.ChannelsField = value;
                     this.RaisePropertyChanged("Channels");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public QA.ProductCatalog.Integration.Notifications.SettingsInfo CurrentSettings {
+            get {
+                return this.CurrentSettingsField;
+            }
+            set {
+                if ((object.ReferenceEquals(this.CurrentSettingsField, value) != true)) {
+                    this.CurrentSettingsField = value;
+                    this.RaisePropertyChanged("CurrentSettings");
                 }
             }
         }
@@ -169,6 +201,131 @@ namespace QA.ProductCatalog.Integration.Notifications {
                 if ((this.StartedField.Equals(value) != true)) {
                     this.StartedField = value;
                     this.RaisePropertyChanged("Started");
+                }
+            }
+        }
+        
+        public event System.ComponentModel.PropertyChangedEventHandler PropertyChanged;
+        
+        protected void RaisePropertyChanged(string propertyName) {
+            System.ComponentModel.PropertyChangedEventHandler propertyChanged = this.PropertyChanged;
+            if ((propertyChanged != null)) {
+                propertyChanged(this, new System.ComponentModel.PropertyChangedEventArgs(propertyName));
+            }
+        }
+    }
+    
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.Runtime.Serialization", "4.0.0.0")]
+    [System.Runtime.Serialization.DataContractAttribute(Name="SettingsInfo", Namespace="http://schemas.datacontract.org/2004/07/QA.Core.DPC")]
+    [System.SerializableAttribute()]
+    public partial class SettingsInfo : object, System.Runtime.Serialization.IExtensibleDataObject, System.ComponentModel.INotifyPropertyChanged {
+        
+        [System.NonSerializedAttribute()]
+        private System.Runtime.Serialization.ExtensionDataObject extensionDataField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private bool AutopublishField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int CheckIntervalField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int ErrorCountBeforeWaitField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int PackageSizeField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int TimeOutField;
+        
+        [System.Runtime.Serialization.OptionalFieldAttribute()]
+        private int WaitIntervalAfterErrorsField;
+        
+        [global::System.ComponentModel.BrowsableAttribute(false)]
+        public System.Runtime.Serialization.ExtensionDataObject ExtensionData {
+            get {
+                return this.extensionDataField;
+            }
+            set {
+                this.extensionDataField = value;
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public bool Autopublish {
+            get {
+                return this.AutopublishField;
+            }
+            set {
+                if ((this.AutopublishField.Equals(value) != true)) {
+                    this.AutopublishField = value;
+                    this.RaisePropertyChanged("Autopublish");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int CheckInterval {
+            get {
+                return this.CheckIntervalField;
+            }
+            set {
+                if ((this.CheckIntervalField.Equals(value) != true)) {
+                    this.CheckIntervalField = value;
+                    this.RaisePropertyChanged("CheckInterval");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int ErrorCountBeforeWait {
+            get {
+                return this.ErrorCountBeforeWaitField;
+            }
+            set {
+                if ((this.ErrorCountBeforeWaitField.Equals(value) != true)) {
+                    this.ErrorCountBeforeWaitField = value;
+                    this.RaisePropertyChanged("ErrorCountBeforeWait");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int PackageSize {
+            get {
+                return this.PackageSizeField;
+            }
+            set {
+                if ((this.PackageSizeField.Equals(value) != true)) {
+                    this.PackageSizeField = value;
+                    this.RaisePropertyChanged("PackageSize");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int TimeOut {
+            get {
+                return this.TimeOutField;
+            }
+            set {
+                if ((this.TimeOutField.Equals(value) != true)) {
+                    this.TimeOutField = value;
+                    this.RaisePropertyChanged("TimeOut");
+                }
+            }
+        }
+        
+        [System.Runtime.Serialization.DataMemberAttribute()]
+        public int WaitIntervalAfterErrors {
+            get {
+                return this.WaitIntervalAfterErrorsField;
+            }
+            set {
+                if ((this.WaitIntervalAfterErrorsField.Equals(value) != true)) {
+                    this.WaitIntervalAfterErrorsField = value;
+                    this.RaisePropertyChanged("WaitIntervalAfterErrors");
                 }
             }
         }

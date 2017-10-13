@@ -125,7 +125,7 @@ namespace QA.Core.DPC
             var actualConfiguration = provider.GetConfiguration();
 
             var channels = actualConfiguration.Channels.Select(c => c.Name)
-                .Union(currentConfiguration.Channels.Select(c => c.Name))
+                .Union(currentConfiguration == null ? new string[0] : currentConfiguration.Channels.Select(c => c.Name))
                 .Distinct();
 
             Dictionary<string, int> countMap;
@@ -144,13 +144,33 @@ namespace QA.Core.DPC
                 Started = NotificationSender.Started,
                 NotificationProvider = provider.GetType().Name,
                 IsActual = actualConfiguration.IsEqualTo(currentConfiguration),
+                ActualSettings = new SettingsInfo
+                {
+                    Autopublish = actualConfiguration.Autopublish,
+                    CheckInterval = actualConfiguration.CheckInterval,
+                    ErrorCountBeforeWait = actualConfiguration.ErrorCountBeforeWait,
+                    PackageSize = actualConfiguration.PackageSize,
+                    TimeOut = actualConfiguration.TimeOut,
+                    WaitIntervalAfterErrors = actualConfiguration.WaitIntervalAfterErrors
+                },
+                CurrentSettings = currentConfiguration == null ?
+                new SettingsInfo() :
+                new SettingsInfo
+                {
+                    Autopublish = currentConfiguration.Autopublish,
+                    CheckInterval = currentConfiguration.CheckInterval,
+                    ErrorCountBeforeWait = currentConfiguration.ErrorCountBeforeWait,
+                    PackageSize = currentConfiguration.PackageSize,
+                    TimeOut = currentConfiguration.TimeOut,
+                    WaitIntervalAfterErrors = currentConfiguration.WaitIntervalAfterErrors
+                },
                 Channels = (from channel in channels
                            join s in chennelsStatistic on channel equals s.Name into d
                            from s in d.DefaultIfEmpty()
                            select new ChannelInfo
                            {
                                Name = channel,
-                               State = GetState(actualConfiguration.Channels.FirstOrDefault(c => c.Name == channel), currentConfiguration.Channels.FirstOrDefault(c => c.Name == channel)),
+                               State = GetState(actualConfiguration.Channels.FirstOrDefault(c => c.Name == channel), currentConfiguration?.Channels.FirstOrDefault(c => c.Name == channel)),
                                Count = countMap.ContainsKey(channel) ? countMap[channel] : 0,
                                LastId = s?.LastId,
                                LastQueued = s?.LastQueued,
@@ -164,9 +184,20 @@ namespace QA.Core.DPC
 
         private static NotificationSenderConfig GetCurrentConfiguration(string customerCode)
         {
-            return NotificationSender.ConfigDictionary.ContainsKey(customerCode)
-                ? NotificationSender.ConfigDictionary[customerCode]
-                : NotificationSender.ConfigDictionary[SingleCustomerProvider.Key];
+            NotificationSenderConfig config;
+
+            if (NotificationSender.ConfigDictionary.TryGetValue(customerCode, out config))
+            {
+                return config;
+            }
+            else if (NotificationSender.ConfigDictionary.TryGetValue(SingleCustomerProvider.Key, out config))
+            {
+                return config;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private State GetState(NotificationChannel actual, NotificationChannel current)

@@ -56,6 +56,7 @@ namespace QA.ProductCatalog.Infrastructure
                 TimeOut == config.TimeOut &&
                 WaitIntervalAfterErrors == config.WaitIntervalAfterErrors &&
                 Autopublish == config.Autopublish &&
+                Channels.Count == config.Channels.Count &&
                 Channels.Zip(config.Channels, (f,s) => f.IsEqualTo(s)).All(s => s);
         }
     }
