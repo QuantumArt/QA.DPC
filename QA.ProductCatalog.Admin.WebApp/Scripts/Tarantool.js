@@ -62,13 +62,13 @@
     $(document).ready(function () {
         moment.locale('ru');
         ko.bindingHandlers.updateProgress = {
-            init: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+            init: function (element, valueAccessor, allBindings, viewModel) {
                 $(element).kendoProgressBar({
                     value: viewModel.progress(),
                     type: 'percent'
                 });
             },
-            update: function (element, valueAccessor, allBindings, viewModel, bindingContext) {
+            update: function (element, valueAccessor, allBindings, viewModel) {
                 $(element).data('kendoProgressBar').value(viewModel.progress());
             }
         };
