@@ -274,6 +274,7 @@
     <Compile Include="Controllers\DefinitionEditorController.cs" />
     <Compile Include="Controllers\HighloadFrontController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
+    <Compile Include="Controllers\TarantoolController.cs" />
     <Compile Include="Core\Adapters\ActionAdapterBase.cs" />
     <Compile Include="Core\Adapters\CountActionAdapter.cs" />
     <Compile Include="Core\Adapters\TaskActionAdapter.cs" />
@@ -484,6 +485,7 @@
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <None Include="Scripts\_references.js" />
     <Content Include="Scripts\Schedule.js" />
+    <Content Include="Scripts\Tarantool.js" />
     <Content Include="Scripts\vanilla.helpers.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -527,6 +529,7 @@
     <Content Include="Views\HighloadFront\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Image.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SimpleLink.cshtml" />
+    <Content Include="Views\Tarantool\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Data\controls\480.xaml">

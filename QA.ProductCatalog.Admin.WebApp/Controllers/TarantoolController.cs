@@ -1,5 +1,4 @@
-﻿using QA.Core.Web;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -61,7 +60,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             using (var client = new HttpClient())
             {
-                var result = await client.PostAsync(uri, null);                
+                var result = await client.PostAsync(uri, null);
                 return GetJson(await result.Content.ReadAsStringAsync());
             }
         }
