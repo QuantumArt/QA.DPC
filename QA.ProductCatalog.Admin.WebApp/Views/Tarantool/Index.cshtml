@@ -1,0 +1,43 @@
+﻿@using QA.ProductCatalog.Integration.Notifications
+<div class="formLayout">
+    <fieldset>
+        <legend>Tarantool</legend>
+        <div class="gr-wrapper" id="customercode" data-customer-code="@ViewBag.CustomerCode">
+            <div class="group-panel-item">
+                <dl class="plain-field row">
+                    <dt title="Статус задачи" class="plain-field-capture label " style="">Статус</dt>
+                    <dd style="" class="plain-field-value field">
+                        <img data-bind="attr: { src: getStateLogo }" src="~/Content/img/icons/0.gif" />
+                        <span title="" class="label None" style="" data-bind="text: state"/>
+                    </dd>
+                </dl>
+                <dl class="plain-field row">
+                    <dt title="Действие" class="plain-field-capture label " style="">Действие</dt>
+                    <dd style="" class="plain-field-value field">
+                        <span title="" class="label None" style="">
+                            <a id="import" href="#" class="js" data-bind="visible: canImport">импортировать</a>
+                            <a id="stop" href="#" class="js" data-bind="visible: canStop">остановить</a>
+                        </span>
+                    </dd>
+                </dl>
+                <dl class="plain-field row">
+                    <dt title="Прогресс" class="plain-field-capture label " style="">Прогресс</dt>
+                    <dd style="" class="plain-field-value field">
+                        <div data-bind="updateProgress: progress"></div>                        
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </fieldset>
+</div>
+
+@section head{
+    @Styles.Render("~/content/KendoUI/KendoUIStyles")
+}
+
+@section scripts{
+    @Scripts.Render("~/bundles/moment")
+    @Scripts.Render("~/bundles/knockout")
+    @Scripts.Render("~/bundles/KendoUI")
+    @Scripts.Render("~/Scripts/Tarantool.js")
+}

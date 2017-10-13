@@ -272,6 +272,7 @@
     <Compile Include="App_Start\TaskContainerConfiguration.cs" />
     <Compile Include="Binders\ContentBinder.cs" />
     <Compile Include="Controllers\DefinitionEditorController.cs" />
+    <Compile Include="Controllers\TarantoolController.cs" />
     <Compile Include="Controllers\HighloadFrontController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
     <Compile Include="Core\Adapters\ActionAdapterBase.cs" />
@@ -454,6 +455,7 @@
     <Content Include="Scripts\ContentIncludes\DefinitionEditorButton.js" />
     <Content Include="Scripts\ContentIncludes\Transliterate.js" />
     <Content Include="Scripts\DefinitionEditor.js" />
+    <Content Include="Scripts\Tarantool.js" />
     <Content Include="Scripts\HighloadFront.js" />
     <Content Include="Scripts\jqCron.en.js" />
     <Content Include="Scripts\jqCron.js" />
@@ -526,6 +528,7 @@
     <Content Include="Views\Shared\DisplayTemplates\FileLink.cshtml" />
     <Content Include="Views\HighloadFront\Index.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\Image.cshtml" />
+    <Content Include="Views\Tarantool\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -707,4 +710,3 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
-
