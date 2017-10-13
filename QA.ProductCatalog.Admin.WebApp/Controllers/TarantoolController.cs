@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QA.Core.Web;
+using System;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -6,7 +7,7 @@ using System.Web.Mvc;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    //[RequireCustomAction]
+    [RequireCustomAction]
     public class TarantoolController : Controller
     {
         public Uri GetBaseUrl()

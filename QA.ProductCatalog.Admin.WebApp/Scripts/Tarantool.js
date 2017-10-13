@@ -12,22 +12,22 @@
     this.getStateLogo = ko.pureComputed(function () {
         var state = this.state();
         if (state == 'Running') {
-            return '../Content/img/TaskStates/Running16.png';
+            return 'Content/img/TaskStates/Running16.png';
         }
         else if (state == 'Finished') {
-            return '../Content/img/TaskStates/Done16.png';
+            return 'Content/img/TaskStates/Done16.png';
         }
         else if (state == 'Error' || state == 'NotAvailable') {
-            return '../Content/img/TaskStates/Failed16.png';
+            return 'Content/img/TaskStates/Failed16.png';
         }
         else if (state == 'Canceled' || state == 'Canceling') {
-            return '../Content/img/TaskStates/Cancelled16.png';
+            return 'Content/img/TaskStates/Cancelled16.png';
         }
         else if (state == 'NotRunned') {
-            return '../Content/img/TaskStates/New16.png';
+            return 'Content/img/TaskStates/New16.png';
         }
         else {
-            return '../Content/img/icons/0.gif';
+            return 'Content/img/icons/0.gif';
         }
     }, this);
 }
