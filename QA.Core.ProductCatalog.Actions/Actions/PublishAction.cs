@@ -146,8 +146,8 @@ namespace QA.Core.ProductCatalog.Actions
 
                 using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
-                    DoWithLogging("NotificationService.SendProducts stage", transactionId, () => NotificationService.SendProducts(stageProducts, true, userName, userId, localize, channels));
-                    DoWithLogging("NotificationService.SendProducts live", transactionId, () => NotificationService.SendProducts(liveProducts, false, userName, userId, localize, channels));
+                    DoWithLogging("NotificationService.SendProducts stage", transactionId, () => NotificationService.SendProducts(stageProducts, true, userName, userId, localize, false, channels));
+                    DoWithLogging("NotificationService.SendProducts live", transactionId, () => NotificationService.SendProducts(liveProducts, false, userName, userId, localize, false, channels));
                 }
 			}
 			catch (Exception ex)

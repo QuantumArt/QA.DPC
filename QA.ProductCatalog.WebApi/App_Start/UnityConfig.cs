@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.Practices.Unity;
+﻿using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
 using QA.Core.Cache;
@@ -11,14 +10,15 @@ using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Notification.Services;
 using QA.Core.DPC.QP.API.Container;
+using QA.Core.DPC.QP.Autopublish.Configuration;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
-using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Integration.Configuration;
+using System;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
@@ -33,6 +33,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
 
 		private static IUnityContainer RegisterTypes(IUnityContainer unityContainer)
 		{
+            unityContainer.AddNewExtension<QPAutopublishContainerConfiguration>();
             unityContainer.AddNewExtension<QPContainerConfiguration>();
             unityContainer.AddNewExtension<FormattersContainerConfiguration>();
 			unityContainer.AddNewExtension<APIContainerConfiguration>();

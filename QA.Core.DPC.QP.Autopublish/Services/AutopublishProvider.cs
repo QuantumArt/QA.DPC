@@ -14,6 +14,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
     {
         private const string DeleteMethod = "DELETE";
         private const string GetMethod = "GET";
+        private const string PostMethod = "POST";
 
         private readonly ISettingsService _settingsService;
         private readonly Uri _baseTntUri;
@@ -56,28 +57,28 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                   .ToArray();
         }
 
-        public ProductDescriptor GetProduct(ProductItem item, string format)
+        public void PublishProduct(ProductItem item)
         {
-            var url = GetProductUrl(item, format);
-            var result = RequestProduct(url);
+            var url = GetAutopublishUrl(item);
+            var uri = new Uri(_baseWebApiUri, url);
+            var request = (HttpWebRequest)WebRequest.Create(uri);
+            request.Method = PostMethod;
+            request.Accept = "application/json";
 
-            return new ProductDescriptor
+            using (var response = (HttpWebResponse)request.GetResponse())
+            using (var stream = response.GetResponseStream())
+            using (var reader = new StreamReader(stream))
             {
-                CustomerCode = item.CustomerCode,
-                ProductId = item.ProductId,
-                DefinitionId = item.DefinitionId,
-                Action = item.Action,
-                IsArchiveOld = item.IsArchiveOld,
-                IsArchiveNew = item.IsArchiveNew,
-                IsVisibleOld = item.IsVisibleOld,
-                IsVisibleNew = item.IsVisibleNew,
-                StatusOld = item.StatusOld,
-                StatusNew = item.StatusNew,
-                IsUnited = item.IsUnited,
-                TypeOld = item.TypeOld,
-                TypeNew = item.TypeNew,
-                Product = result
-            };
+                if (response.StatusCode == HttpStatusCode.OK)
+                {
+                    return;
+                }
+                else
+                {
+                    throw new Exception($"{PostMethod} request on {uri} failed with code {response.StatusCode}: {response.StatusDescription}");
+                }
+            }
+
         }
 
         public void Dequeue(ProductItem item)
@@ -152,11 +153,9 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             return $"{customerCode}/product-building/autopub";
         }
 
-        private string GetProductUrl(ProductItem item, string format)
+        private string GetAutopublishUrl(ProductItem item)
         {
-            var absent = item.PublishAction != PublishAction.Publish;
-            var type = item.TypeNew ?? item.TypeOld;
-            return $"api/{item.CustomerCode}/tarantool/{format}/{item.ProductId}?definitionId={item.DefinitionId}&absent={absent}&type={type}&isLive={!item.IsUnited}&includeRegionTags=false";
+            return $"api/{item.CustomerCode}/tarantool/publish";
         }
 
         private string GetDequeueUrl(ProductItem item)

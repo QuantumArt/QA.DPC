@@ -7,6 +7,8 @@ using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
+using QA.Core.DPC.QP.Autopublish.Services;
+using QA.Core.DPC.QP.Autopublish.Models;
 
 namespace QA.ProductCatalog.WebApi.Controllers
 {
@@ -18,6 +20,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 	{
 		private readonly IProductAPIService _databaseProductService;
         private readonly IProductSimpleAPIService _tarantoolProductService;
+        private readonly IAutopublishProcessor _autopublishProcessor;
         private readonly ILogger _logger;
 
 		public ProductController(IProductAPIService databaseProductService, IProductSimpleAPIService tarantoolProductService, ILogger logger)
@@ -112,6 +115,12 @@ namespace QA.ProductCatalog.WebApi.Controllers
             }            
 
             return product;
+        }
+
+        [AcceptVerbs("POST")]
+        public int TarantoolPublish(ProductItem item)
+        {
+            return _autopublishProcessor.Publish(item);
         }
 
 

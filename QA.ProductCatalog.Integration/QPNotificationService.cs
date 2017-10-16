@@ -35,36 +35,36 @@ namespace QA.ProductCatalog.Integration
         {
         }
 
-        public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+        public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, bool autopublish, string[] forcedСhannels = null)
         {
-            return await PushProductsAsync(products, isStage, userName, userId, Put, localize, forcedСhannels);
+            return await PushProductsAsync(products, isStage, userName, userId, Put, localize, autopublish, forcedСhannels);
         }
 
-        public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+        public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, bool localize, bool autopublish, string[] forcedСhannels = null)
         {
-            return PushProducts(products, isStage, userName, userId, Put, localize, forcedСhannels);
+            return PushProducts(products, isStage, userName, userId, Put, localize, autopublish, forcedСhannels);
         }
 
-        public async Task DeleteProductsAsync(Article[] products, string userName, int userId, string[] forcedСhannels = null)
+        public async Task DeleteProductsAsync(Article[] products, string userName, int userId, bool autopublish, string[] forcedСhannels = null)
         {
-            await PushProductsAsync(products, true, userName, userId, Delete, false, forcedСhannels);
-            await PushProductsAsync(products, false, userName, userId, Delete, false, forcedСhannels);
+            await PushProductsAsync(products, true, userName, userId, Delete, false, autopublish, forcedСhannels);
+            await PushProductsAsync(products, false, userName, userId, Delete, false, autopublish, forcedСhannels);
         }
 
-        public void DeleteProducts(Article[] products, string userName, int userId, string[] forcedСhannels = null)
+        public void DeleteProducts(Article[] products, string userName, int userId, bool autopublish, string[] forcedСhannels = null)
         {
-            PushProducts(products, true, userName, userId, Delete, false, forcedСhannels);
-            PushProducts(products, false, userName, userId, Delete, false, forcedСhannels);
+            PushProducts(products, true, userName, userId, Delete, false, autopublish, forcedСhannels);
+            PushProducts(products, false, userName, userId, Delete, false, autopublish, forcedСhannels);
         }
 
         public async Task UnpublishProductsAsync(Article[] products, string userName, int userId, string[] forcedСhannels = null)
         {
-            await PushProductsAsync(products, false, userName, userId, Delete, false, forcedСhannels);
+            await PushProductsAsync(products, false, userName, userId, Delete, false, false, forcedСhannels);
         }
 
         public void UnpublishProducts(Article[] products, string userName, int userId, string[] forcedСhannels = null)
         {
-            PushProducts(products, false, userName, userId, Delete, false, forcedСhannels);
+            PushProducts(products, false, userName, userId, Delete, false, false, forcedСhannels);
         }
 
         private string Convert(Article product, string formatter)
@@ -72,10 +72,10 @@ namespace QA.ProductCatalog.Integration
             return _getFormatter(formatter).Serialize(product, ArticleFilter.DefaultFilter, true);
         }
 
-        private int[] PushProducts(Article[] products, bool isStage, string userName, int userId, string method, bool localize, string[] forcedСhannels)
+        private int[] PushProducts(Article[] products, bool isStage, string userName, int userId, string method, bool localize, bool autopublish, string[] forcedСhannels)
         {
             var service = new NotificationServiceClient();
-            var notifications = GetNotifications(products, isStage, forcedСhannels, localize);
+            var notifications = GetNotifications(products, isStage, forcedСhannels, localize, autopublish);
             if (notifications == null)
             {
                 return null;
@@ -90,10 +90,10 @@ namespace QA.ProductCatalog.Integration
             return notifications.Select(n => n.ProductId).ToArray();
         }
 
-        private async Task<int[]> PushProductsAsync(Article[] products, bool isStage, string userName, int userId, string method, bool localize, string[] forcedСhannels)
+        private async Task<int[]> PushProductsAsync(Article[] products, bool isStage, string userName, int userId, string method, bool localize, bool autopublish, string[] forcedСhannels)
         {
             var service = new NotificationServiceClient();
-            var notifications = GetNotifications(products, isStage, forcedСhannels, localize);
+            var notifications = GetNotifications(products, isStage, forcedСhannels, localize, autopublish);
 
             if (notifications == null)
             {
@@ -108,7 +108,7 @@ namespace QA.ProductCatalog.Integration
             return notifications.Select(n => n.ProductId).ToArray();
         }
 
-        private NotificationItem[] GetNotifications(Article[] products, bool isStage, string[] forcedСhannels, bool localize)
+        private NotificationItem[] GetNotifications(Article[] products, bool isStage, string[] forcedСhannels, bool localize, bool autopublish)
         {
             var channels = _channelProvider.GetArticles();
             NotificationItem[] notifications = null;
@@ -131,9 +131,9 @@ namespace QA.ProductCatalog.Integration
                     }).ToArray();
 
             }
-            else if (channels.Any(c => !c.Autopublish))
+            else if (channels.Any(c => c.Autopublish == autopublish))
             {
-                channels = channels.Where(c => c.IsStage == isStage && !c.Autopublish).ToArray();
+                channels = channels.Where(c => c.IsStage == isStage && c.Autopublish == autopublish).ToArray();
 
                 if (channels.Any())
                 {
@@ -176,7 +176,7 @@ namespace QA.ProductCatalog.Integration
                     }
                 }
             }
-            else
+            else if (!autopublish)
             {
                 throw new Exception("Не найдено каналов для публикации");
             }

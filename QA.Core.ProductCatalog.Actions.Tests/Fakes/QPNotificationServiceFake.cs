@@ -29,22 +29,22 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 			throw new System.NotImplementedException();
 		}
 
-		public Task<int[]> SendProductsAsync(Models.Entities.Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+		public Task<int[]> SendProductsAsync(Models.Entities.Article[] products, bool isStage, string userName, int userId, bool localize, bool autopublish, string[] forcedСhannels = null)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public int[] SendProducts(Models.Entities.Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+		public int[] SendProducts(Models.Entities.Article[] products, bool isStage, string userName, int userId, bool localize, bool autopublish, string[] forcedСhannels = null)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public Task DeleteProductsAsync(Models.Entities.Article[] products, string userName, int userId, string[] forcedСhannels = null)
+		public Task DeleteProductsAsync(Models.Entities.Article[] products, string userName, int userId, bool autopublish, string[] forcedСhannels = null)
 		{
 			throw new System.NotImplementedException();
 		}
 
-		public void DeleteProducts(Models.Entities.Article[] products, string userName, int userId, string[] forcedСhannels = null)
+		public void DeleteProducts(Models.Entities.Article[] products, string userName, int userId, bool autopublish, string[] forcedСhannels = null)
 		{
 			throw new System.NotImplementedException();
 		}

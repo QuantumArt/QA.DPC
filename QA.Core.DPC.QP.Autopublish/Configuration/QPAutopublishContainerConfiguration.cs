@@ -8,6 +8,7 @@ namespace QA.Core.DPC.QP.Autopublish.Configuration
     {
         protected override void Initialize()
         {
+            Container.RegisterType<IAutopublishProcessor, AutopublishProcessor>();
             Container.RegisterType<IAutopublishProvider, AutopublishProvider>();
             Container.RegisterType<ITask, AutopublishService>();
         }
