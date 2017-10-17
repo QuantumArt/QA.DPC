@@ -23,10 +23,11 @@ namespace QA.ProductCatalog.WebApi.Controllers
         private readonly IAutopublishProcessor _autopublishProcessor;
         private readonly ILogger _logger;
 
-		public ProductController(IProductAPIService databaseProductService, IProductSimpleAPIService tarantoolProductService, ILogger logger)
+		public ProductController(IProductAPIService databaseProductService, IProductSimpleAPIService tarantoolProductService, IAutopublishProcessor autopublishProcessor, ILogger logger)
 		{
 			_databaseProductService = databaseProductService;
             _tarantoolProductService = tarantoolProductService;
+            _autopublishProcessor = autopublishProcessor;
             _logger = logger;
 		}
 
@@ -117,10 +118,18 @@ namespace QA.ProductCatalog.WebApi.Controllers
             return product;
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="item"></param>
+        /// <param name="localize"></param>
+        /// <returns></returns>
         [AcceptVerbs("POST")]
-        public int TarantoolPublish(ProductItem item)
+        public int TarantoolPublish(int productId, ProductItem item, bool localize = true)
         {
-            return _autopublishProcessor.Publish(item);
+            return _autopublishProcessor.Publish(item, localize);
         }
 
 

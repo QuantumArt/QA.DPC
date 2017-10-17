@@ -7,6 +7,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace QA.Core.DPC.QP.Autopublish.Services
 {
@@ -60,19 +61,17 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         public void PublishProduct(ProductItem item)
         {
             var serializer = new JsonSerializer();
-            var url = GetAutopublishUrl(item);
+            var url = GetAutopublishUrl(item, true);
             var uri = new Uri(_baseWebApiUri, url);
             var request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = PostMethod;
-            request.Accept = "application/json";
-            
+            request.ContentType = "application/octet-stream";
+         
             using (var stream = request.GetRequestStream())
-            using (var writer = new StreamWriter(stream))
-            using (var jsonWriter = new JsonTextWriter(writer))
             {
-                serializer.Serialize(jsonWriter, item);
-                jsonWriter.Flush();
-            }
+                new BinaryFormatter().Serialize(stream, item);
+                stream.Flush();
+            }                
 
             using (var response = (HttpWebResponse)request.GetResponse())
             {
@@ -137,9 +136,9 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             return $"{customerCode}/product-building/autopub";
         }
 
-        private string GetAutopublishUrl(ProductItem item)
+        private string GetAutopublishUrl(ProductItem item, bool localize)
         {
-            return $"api/{item.CustomerCode}/tarantool/publish/json";
+            return $"api/{item.CustomerCode}/tarantool/publish/binary/{item.ProductId}?localize={localize}";
         }
 
         private string GetDequeueUrl(ProductItem item)

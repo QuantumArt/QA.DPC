@@ -19,14 +19,14 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             _productService = productService;
             _logger = logger;
         }
-        public int Publish(ProductItem item)
+        public int Publish(ProductItem item, bool localize)
         {
             var isLive = !item.IsUnited;
 
             if (item.PublishAction == PublishAction.Publish)
             {
                 var product = _productService.GetProduct(item.ProductId, item.DefinitionId, isLive);
-                _notificationService.SendProducts(new[] { product }, isLive, UserName, UserId, true, true);
+                _notificationService.SendProducts(new[] { product }, isLive, UserName, UserId, localize, true);
             }
             else if (item.PublishAction == PublishAction.Delete)
             {
