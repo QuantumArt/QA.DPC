@@ -59,15 +59,22 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         public void PublishProduct(ProductItem item)
         {
+            var serializer = new JsonSerializer();
             var url = GetAutopublishUrl(item);
             var uri = new Uri(_baseWebApiUri, url);
             var request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = PostMethod;
             request.Accept = "application/json";
+            
+            using (var stream = request.GetRequestStream())
+            using (var writer = new StreamWriter(stream))
+            using (var jsonWriter = new JsonTextWriter(writer))
+            {
+                serializer.Serialize(jsonWriter, item);
+                jsonWriter.Flush();
+            }
 
             using (var response = (HttpWebResponse)request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            using (var reader = new StreamReader(stream))
             {
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
@@ -78,7 +85,6 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                     throw new Exception($"{PostMethod} request on {uri} failed with code {response.StatusCode}: {response.StatusDescription}");
                 }
             }
-
         }
 
         public void Dequeue(ProductItem item)
@@ -101,28 +107,6 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             }
         }
 
-        private string RequestProduct(string url)
-        {
-            var uri = new Uri(_baseWebApiUri, url);
-            var request = (HttpWebRequest)WebRequest.Create(uri);
-            request.Method = GetMethod;
-            request.Accept = "application/json";
-
-            using (var response = (HttpWebResponse)request.GetResponse())
-            using (var stream = response.GetResponseStream())
-            using (var reader = new StreamReader(stream))
-            {
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    return reader.ReadToEnd();
-                }
-                else
-                {
-                    throw new Exception($"{GetMethod} request on {uri} failed with code {response.StatusCode}: {response.StatusDescription}");
-                }
-            }
-        }
-
         private JObject RequestQueue(string url, string method)
         {
             var uri = new Uri(_baseTntUri, url);
@@ -130,7 +114,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             request.Method = method;
             request.Accept = "application/json";
 
-            var serializer = new JsonSerializer();         
+            var serializer = new JsonSerializer();
 
             using (var response = (HttpWebResponse)request.GetResponse())
             using (var stream = response.GetResponseStream())
@@ -155,7 +139,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         private string GetAutopublishUrl(ProductItem item)
         {
-            return $"api/{item.CustomerCode}/tarantool/publish";
+            return $"api/{item.CustomerCode}/tarantool/publish/json";
         }
 
         private string GetDequeueUrl(ProductItem item)
