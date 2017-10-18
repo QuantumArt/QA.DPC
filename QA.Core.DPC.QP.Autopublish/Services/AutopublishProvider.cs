@@ -60,22 +60,21 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
         public void PublishProduct(ProductItem item)
         {
-            var serializer = new JsonSerializer();
             var url = GetAutopublishUrl(item, true);
             var uri = new Uri(_baseWebApiUri, url);
             var request = (HttpWebRequest)WebRequest.Create(uri);
             request.Method = PostMethod;
             request.ContentType = "application/octet-stream";
-         
+
             using (var stream = request.GetRequestStream())
             {
                 new BinaryFormatter().Serialize(stream, item);
                 stream.Flush();
-            }                
+            }
 
             using (var response = (HttpWebResponse)request.GetResponse())
             {
-                if (response.StatusCode == HttpStatusCode.OK)
+                if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
                 {
                     return;
                 }

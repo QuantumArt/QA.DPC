@@ -127,9 +127,9 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="localize"></param>
         /// <returns></returns>
         [AcceptVerbs("POST")]
-        public int TarantoolPublish(int productId, ProductItem item, bool localize = true)
+        public void TarantoolPublish(int productId, ProductItem item, bool localize = true)
         {
-            return _autopublishProcessor.Publish(item, localize);
+            _autopublishProcessor.Publish(item, localize);
         }
 
 
