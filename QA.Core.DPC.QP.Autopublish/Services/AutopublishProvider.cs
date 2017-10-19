@@ -80,7 +80,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                 }
                 else
                 {
-                    throw new Exception($"{PostMethod} request on {uri} failed with code {response.StatusCode}: {response.StatusDescription}");
+                    throw new Exception($"{PostMethod} request on {uri} failed because of {response.StatusCode}: {response.StatusDescription}");
                 }
             }
         }
