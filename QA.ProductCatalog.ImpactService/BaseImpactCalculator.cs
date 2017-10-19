@@ -216,6 +216,7 @@ namespace QA.ProductCatalog.ImpactService
 
             if (hasImpact)
             {
+                link["IsSelected"] = true;
                 var linkParameters = link.SelectToken("Parent.Parameters");
                 if (linkParameters != null)
                 {
