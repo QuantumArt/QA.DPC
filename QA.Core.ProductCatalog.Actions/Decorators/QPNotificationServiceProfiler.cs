@@ -20,24 +20,24 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			Service = _notificationService.GetType().Name;
 		}
 
-		public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+		public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, bool autopublish, string[] forcedСhannels = null)
 		{
 		
 				var token = CallMethod("SendProductsAsync", "isStage = {0}", isStage);
-				var result = await _notificationService.SendProductsAsync(products, isStage, userName, userId, localize, forcedСhannels);
+				var result = await _notificationService.SendProductsAsync(products, isStage, userName, userId, localize, autopublish, forcedСhannels);
 				EndMethod(token);
 				return result;
 		}
 
-		public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+		public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, bool localize, bool autopublish, string[] forcedСhannels = null)
 		{
 			var token = CallMethod("SendProducts", "isStage = {0}", isStage);
-			var result = _notificationService.SendProducts(products, isStage, userName, userId, localize, forcedСhannels);
+			var result = _notificationService.SendProducts(products, isStage, userName, userId, localize, autopublish, forcedСhannels);
 			EndMethod(token);
 			return result;
 		}
 
-		public Task DeleteProductsAsync(Article[] products, string userName, int userId, string[] forcedСhannels = null)
+		public Task DeleteProductsAsync(Article[] products, string userName, int userId, bool autopublish, string[] forcedСhannels = null)
 		{
 			return new Task(() =>
 			{
@@ -57,7 +57,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			});
 		}
 
-		public void DeleteProducts(Article[] products, string userName, int userId, string[] forcedСhannels = null)
+		public void DeleteProducts(Article[] products, string userName, int userId, bool autopublish, string[] forcedСhannels = null)
 		{
 			var token = CallMethod("DeleteProducts", "ids = {0}", string.Join(",", null));
 			//_notificationService.DeleteProducts(ids, userName, userId);

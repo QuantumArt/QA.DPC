@@ -1,5 +1,8 @@
-﻿namespace QA.Core.DPC.QP.Autopublish.Models
+﻿using System;
+
+namespace QA.Core.DPC.QP.Autopublish.Models
 {
+    [Serializable]
     public class ProductItem
     {
         private const string PublishedStatus = "Published";

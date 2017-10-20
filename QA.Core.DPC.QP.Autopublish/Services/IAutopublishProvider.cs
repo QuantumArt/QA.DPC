@@ -6,7 +6,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
     public interface IAutopublishProvider
     {
         ProductItem[] Peek(string customerCode);
-        ProductDescriptor GetProduct(ProductItem item, string format);
+        void PublishProduct(ProductItem item);
         void Dequeue(ProductItem item);
     }
 }

@@ -36,7 +36,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             try
             {
-				await _notificationService.SendProductsAsync(products, true, context.UserName, context.UserId, false);
+				await _notificationService.SendProductsAsync(products, true, context.UserName, context.UserId, false, false);
             }
             catch (Exception ex)
             {

@@ -76,7 +76,7 @@ namespace QA.Core.ProductCatalog.Actions
 		{
 			try
 			{
-				NotificationService.DeleteProducts(products, UserName, UserId, channels);
+				NotificationService.DeleteProducts(products, UserName, UserId, false, channels);
 			}
 			catch (Exception ex)
 			{

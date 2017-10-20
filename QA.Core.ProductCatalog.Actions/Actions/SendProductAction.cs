@@ -273,11 +273,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                                 ArticleFilter.LiveFilter.Filter(prodsLive)
                                 .Section(sectionSize)
                                 .Select(z => tl.QpNotificationService
-                                    .SendProductsAsync(z.ToArray(), false, context.UserName, context.UserId, localize, channels)
+                                    .SendProductsAsync(z.ToArray(), false, context.UserName, context.UserId, localize, false, channels)
                                     .ContinueWith(y => UpdateFilteredIds(filteredInLive, y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed)))
                                 .Concat(ArticleFilter.DefaultFilter.Filter(prodsStage)
                                     .Section(sectionSize)
-                                    .Select(z => tl.QpNotificationService.SendProductsAsync(z.ToArray(), true, context.UserName, context.UserId, localize, channels)
+                                    .Select(z => tl.QpNotificationService.SendProductsAsync(z.ToArray(), true, context.UserName, context.UserId, localize, false, channels)
                                     .ContinueWith(y => UpdateFilteredIds(filteredInStage, y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed))))
                                 .ToArray();
 
@@ -384,7 +384,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     // их надо удалить с витрин
                     var service = ObjectFactoryBase.Resolve<IQPNotificationService>();
                     var productService = ObjectFactoryBase.Resolve<IProductService>();
-                    Task.WhenAll(productsToRemove.Section(20).Select(s => service.DeleteProductsAsync(productService.GetSimpleProductsByIds(s.ToArray()), context.UserName, context.UserId))).Wait();
+                    Task.WhenAll(productsToRemove.Section(20).Select(s => service.DeleteProductsAsync(productService.GetSimpleProductsByIds(s.ToArray()), context.UserName, context.UserId, false))).Wait();
                 }
             }
 

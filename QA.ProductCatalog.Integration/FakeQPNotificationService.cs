@@ -10,13 +10,13 @@ namespace QA.ProductCatalog.Integration
 {
 	public class FakeQPNotificationService : IQPNotificationService
 	{
-        public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+        public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, bool autopublish, string[] forcedСhannels = null)
         {
             await Task.Delay(100);
             return new int[0];
         }
 
-        public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, bool localize, string[] forcedСhannels = null)
+        public int[] SendProducts(Article[] products, bool isStage, string userName, int userId, bool localize, bool autopublish, string[] forcedСhannels = null)
         {
             return new int[0];
         }     
@@ -53,12 +53,12 @@ namespace QA.ProductCatalog.Integration
 			throw new NotImplementedException();
 		}
 
-		public Task DeleteProductsAsync(QA.Core.Models.Entities.Article[] products, string userName, int userId, string[] forcedСhannels = null)
+		public Task DeleteProductsAsync(QA.Core.Models.Entities.Article[] products, string userName, int userId, bool autopublish, string[] forcedСhannels = null)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DeleteProducts(QA.Core.Models.Entities.Article[] products, string userName, int userId, string[] forcedСhannels = null)
+		public void DeleteProducts(QA.Core.Models.Entities.Article[] products, string userName, int userId, bool autopublish, string[] forcedСhannels = null)
 		{
 			throw new NotImplementedException();
 		}
