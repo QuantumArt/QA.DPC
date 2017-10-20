@@ -72,16 +72,32 @@ namespace QA.Core.DPC.QP.Autopublish.Services
                 stream.Flush();
             }
 
-            using (var response = (HttpWebResponse)request.GetResponse())
+            try
             {
-                if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
+                using (var response = (HttpWebResponse)request.GetResponse())
                 {
-                    return;
+                    if (response.StatusCode == HttpStatusCode.OK || response.StatusCode == HttpStatusCode.NoContent)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        throw new Exception($"{PostMethod} request on {uri} failed because of {response.StatusCode}: {response.StatusDescription}");
+                    }
                 }
-                else
+            }
+            catch (WebException ex)
+            {
+                Exception innerException = null;
+                var formatter = new BinaryFormatter();
+                var response = ex.Response as HttpWebResponse;
+
+                using (var stream = ex.Response.GetResponseStream())
                 {
-                    throw new Exception($"{PostMethod} request on {uri} failed because of {response.StatusCode}: {response.StatusDescription}");
+                    innerException = formatter.Deserialize(stream) as Exception;
                 }
+              
+                throw new Exception($"{PostMethod} request on {uri} failed because of {response.StatusCode} in {response.StatusDescription}", innerException);
             }
         }
 
