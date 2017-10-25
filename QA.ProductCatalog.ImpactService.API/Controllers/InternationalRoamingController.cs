@@ -28,10 +28,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         public async Task<ActionResult> Get(string countryCode, [FromQuery] bool isB2C = true, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
         {
 
-            var searchOptions = new SearchOptions()
+            var searchOptions = new SearchOptions
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
-                IndexName = ConfigurationOptions.GetIndexName(state, language),
+                IndexName = ConfigurationOptions.GetIndexName(state, language)
             };
 
             ActionResult result = null;
@@ -41,7 +41,15 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             try
             {
                 searchOptions.TypeName = "RoamingCountry";
-                json = await SearchRepo.GetRoamingCountry(countryCode, searchOptions);
+                if (int.TryParse(countryCode, out int countryId))
+                {
+                    json = (await SearchRepo.GetProducts(new[] {countryId}, searchOptions)).First();
+                    countryCode = json.SelectToken("Alias").ToString();
+                }
+                else
+                {
+                    json = await SearchRepo.GetRoamingCountry(countryCode, searchOptions);
+                }
 
                 searchOptions.TypeName = "RoamingScale";
                 ids = await SearchRepo.GetRoamingScaleForCountry(countryCode, isB2C, searchOptions);
@@ -89,7 +97,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         public async Task<ActionResult> Get(int id, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState,
             string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
-            var searchOptions = new SearchOptions()
+            var searchOptions = new SearchOptions
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
                 IndexName = ConfigurationOptions.GetIndexName(state, language)
@@ -118,7 +126,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
 
-            var searchOptions = new SearchOptions()
+            var searchOptions = new SearchOptions
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
                 IndexName = ConfigurationOptions.GetIndexName(state, language)
