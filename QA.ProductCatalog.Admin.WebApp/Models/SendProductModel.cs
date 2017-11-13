@@ -135,11 +135,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 						var tasks =
 							ps1
 							.Section(Math.Min(bundleSize, 5))
-							.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), false, userName, userId, false))
+							.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), false, userName, userId, false, false))
 							.Union
 							(ps2
 							.Section(Math.Min(bundleSize, 5))
-							.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), true, userName, userId, false))
+							.Select(z => tl.QPNotificationService.SendProductsAsync(z.ToArray(), true, userName, userId, false, false))
 							).ToList();
 
                         Task.WhenAll(tasks).Wait();
@@ -175,7 +175,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
                     var service = ObjectFactoryBase.Resolve<IQPNotificationService>();
 
 					Task.WhenAll(productsToRemove
-							.Section(20).Select(s => service.DeleteProductsAsync(s.Select(id => new Article() { Id = id }).ToArray(), userName, userId)))
+							.Section(20).Select(s => service.DeleteProductsAsync(s.Select(id => new Article() { Id = id }).ToArray(), userName, userId, false)))
 						.Wait();
                 }
             }

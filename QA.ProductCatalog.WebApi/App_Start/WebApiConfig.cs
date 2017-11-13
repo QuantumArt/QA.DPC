@@ -12,6 +12,7 @@ using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.WebApi.App_Start;
 using QA.ProductCatalog.WebApi.Filters;
 using QA.Core.Models.Configuration;
+using QA.Core.DPC.QP.Autopublish.Models;
 
 namespace QA.ProductCatalog.WebApi
 {
@@ -48,12 +49,13 @@ namespace QA.ProductCatalog.WebApi
 
             config.MapHttpAttributeRoutes();
 
+
             config.Routes.MapHttpRoute(
-               name: "GetProduct",
-               routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
-               defaults: new { controller = "Product", action="GetProduct" },
-               constraints: new { id = @"\d+", format = FormatConstraints }
-           );
+                name: "PublishTarantoolProduct",
+                routeTemplate: $"api/{customerCode}tarantool/publish/{{format}}/{{productId}}",
+                defaults: new { controller = "Product", action = "TarantoolPublish" },
+                constraints: new { productId = @"\d+", format = FormatConstraints }
+            );
 
             config.Routes.MapHttpRoute(
                 name: "GetTarantoolProduct",
@@ -61,6 +63,13 @@ namespace QA.ProductCatalog.WebApi
                 defaults: new { controller = "Product", action = "TarantoolGet" },
                 constraints: new { productId = @"\d+", format = FormatConstraints }
             );
+
+            config.Routes.MapHttpRoute(
+               name: "GetProduct",
+               routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
+               defaults: new { controller = "Product", action="GetProduct" },
+               constraints: new { id = @"\d+", format = FormatConstraints }
+           );                  
 
             config.Routes.MapHttpRoute(
                 name: "PostProduct",
@@ -115,6 +124,7 @@ namespace QA.ProductCatalog.WebApi
             config.Formatters.AddModelMediaTypeFormatter<JsonSchemaFormatter, Content>(container, JsonMappingValue, JsonMediaType, RegisterMediaTypeMappings);
             config.Formatters.AddModelMediaTypeFormatter<JsonProductFormatter, Article>(container, JsonMappingValue, JsonMediaType, RegisterMediaTypeMappings);
             config.Formatters.AddModelMediaTypeFormatter<PdfProductFormatter, Article>(container, PdfMappingValue, PdfMediaType, RegisterMediaTypeMappings);
+            config.Formatters.AddModelMediaTypeFormatter<BinaryModelFormatter<ProductItem>, ProductItem>(container, BinaryMappingValue, BinaryMediaType, RegisterMediaTypeMappings);
             config.Formatters.AddModelMediaTypeFormatter<BinaryModelFormatter<Content>, Content>(container, BinaryMappingValue, BinaryMediaType, RegisterMediaTypeMappings);
             config.Formatters.AddModelMediaTypeFormatter<BinaryModelFormatter<Article>, Article>(container, BinaryMappingValue, BinaryMediaType, RegisterMediaTypeMappings);
             config.Formatters.AddModelMediaTypeFormatter<BinaryModelFormatter<int[]>, int[]>(container, BinaryMappingValue, BinaryMediaType, RegisterMediaTypeMappings);

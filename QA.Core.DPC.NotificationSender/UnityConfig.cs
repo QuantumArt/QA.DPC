@@ -40,7 +40,6 @@ namespace QA.Core.DPC
 		{
             unityContainer.AddNewExtension<QPContainerConfiguration>();
            
-            unityContainer.RegisterType<INotificationAutopublishProvider, NotificationAutopublishProvider>();
             unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			unityContainer.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
 			unityContainer.RegisterType<IServiceFactory, ServiceFactory>();

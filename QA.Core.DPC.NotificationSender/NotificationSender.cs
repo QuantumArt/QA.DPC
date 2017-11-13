@@ -260,7 +260,7 @@ namespace QA.Core.DPC
             else
             {
                 var logger = ObjectFactoryBase.Resolve<ILogger>();
-                logger.Info("Автопубликация для {1} все еще занята отправкой сообщений", customerCode);
+                logger.Info("Автопубликация для {0} все еще занята отправкой сообщений", customerCode);
             }
         }
 

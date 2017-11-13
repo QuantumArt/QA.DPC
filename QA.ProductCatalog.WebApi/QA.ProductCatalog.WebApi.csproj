@@ -347,6 +347,10 @@
       <Project>{e4b62953-ca39-4d73-9473-21c64101de17}</Project>
       <Name>QA.Core.DPC.QP.API</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.QP.Autopublish\QA.Core.DPC.QP.Autopublish.csproj">
+      <Project>{1BC33243-2C97-4C9C-B711-8697E8FD0882}</Project>
+      <Name>QA.Core.DPC.QP.Autopublish</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj">
       <Project>{d894f71e-c027-4b58-8930-1d44a65727cb}</Project>
       <Name>QA.Core.DPC.QP</Name>
@@ -475,4 +479,3 @@
   </Target>
   -->
 </Project>
-

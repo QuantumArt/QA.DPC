@@ -247,7 +247,7 @@ namespace QA.Core.DPC.Loader.Tests
             {
                 var content = service.GetProductById(id);
                 ConfigurationSerializer.GetXml(content);
-                var result = nService.SendProductsAsync(new[] { content }, true, "Admin", 1, false);
+                var result = nService.SendProductsAsync(new[] { content }, true, "Admin", 1, false, false);
                 tasks.Add(result);
             }
 

@@ -7,6 +7,8 @@ using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
+using QA.Core.DPC.QP.Autopublish.Services;
+using QA.Core.DPC.QP.Autopublish.Models;
 
 namespace QA.ProductCatalog.WebApi.Controllers
 {
@@ -18,12 +20,14 @@ namespace QA.ProductCatalog.WebApi.Controllers
 	{
 		private readonly IProductAPIService _databaseProductService;
         private readonly IProductSimpleAPIService _tarantoolProductService;
+        private readonly IAutopublishProcessor _autopublishProcessor;
         private readonly ILogger _logger;
 
-		public ProductController(IProductAPIService databaseProductService, IProductSimpleAPIService tarantoolProductService, ILogger logger)
+		public ProductController(IProductAPIService databaseProductService, IProductSimpleAPIService tarantoolProductService, IAutopublishProcessor autopublishProcessor, ILogger logger)
 		{
 			_databaseProductService = databaseProductService;
             _tarantoolProductService = tarantoolProductService;
+            _autopublishProcessor = autopublishProcessor;
             _logger = logger;
 		}
 
@@ -112,6 +116,20 @@ namespace QA.ProductCatalog.WebApi.Controllers
             }            
 
             return product;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="productId"></param>
+        /// <param name="item"></param>
+        /// <param name="localize"></param>
+        /// <returns></returns>
+        [AcceptVerbs("POST")]
+        public void TarantoolPublish(int productId, ProductItem item, bool localize = true)
+        {
+            _autopublishProcessor.Publish(item, localize);
         }
 
 

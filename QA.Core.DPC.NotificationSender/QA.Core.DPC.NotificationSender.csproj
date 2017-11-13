@@ -295,7 +295,6 @@
     </Compile>
     <Compile Include="INotificationService.cs" />
     <Compile Include="NotificationItem.cs" />
-    <Compile Include="NotificationAutopublishProvider.cs" />
     <Compile Include="NotificationSender.cs">
       <SubType>Component</SubType>
     </Compile>
