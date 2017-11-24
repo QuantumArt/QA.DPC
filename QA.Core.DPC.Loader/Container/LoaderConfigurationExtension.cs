@@ -1,21 +1,24 @@
-﻿using System;
-using System.Configuration;
-using Microsoft.Practices.Unity;
+﻿using Microsoft.Practices.Unity;
+using QA.Core.Cache;
+using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Cache;
+using QA.Core.DPC.QP.Configuration;
+using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.Web;
 using QA.ProductCatalog.Infrastructure;
-using Quantumart.QP8.BLL.Services.API;
-using QA.Core.Cache;
-using QA.Core.DPC.Loader.Services;
-using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
 using Quantumart.QP8.BLL;
+using Quantumart.QP8.BLL.Services.API;
+using System;
+using System.Configuration;
 
 namespace QA.Core.DPC.Loader.Container
 {
     public class LoaderConfigurationExtension : LoaderConfigurationExtensionBase<ProductLoader> { }
     public class LocalSystemCachedLoaderConfigurationExtension : LoaderConfigurationExtensionBase<LocalSystemCachedLoader> { }
-    
+
     public class LoaderConfigurationExtensionBase<TLoader> : UnityContainerExtension
         where TLoader : IProductService
     {
@@ -100,7 +103,7 @@ namespace QA.Core.DPC.Loader.Container
                 ));
 
             Container.RegisterType<ILocalizationSettingsService, LocalizationSettingsService>();
-            Container.RegisterType<IProductLocalizationService, ProductLocalizationService>();            
+            Container.RegisterType<IProductLocalizationService, ProductLocalizationService>();
 
             Container.RegisterType<IArticleDependencyService, ArticleDependencyService>(
                 new InjectionFactory(c => new ArticleDependencyService(
@@ -118,6 +121,34 @@ namespace QA.Core.DPC.Loader.Container
 
                 Container.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>("ProductLoaderWarmUpProvider", new InjectionConstructor(typeof(ProductLoader), typeof(ILogger), loaderWarmUpProductId));
             }
+        }
+    }
+
+    public static class CacheExtensions
+    {
+        public static FactoryBuilder RegisterConsolidationCache(this IUnityContainer container, bool autoRegister)
+        {
+            return container.RegisterCustomFactory(autoRegister, (context, code, connectionString) =>
+            {
+                var logger = container.Resolve<ILogger>();
+                var cacheProvider = new VersionedCustomerCacheProvider(code);
+                var invalidator = new DpcContentInvalidator(cacheProvider, logger);
+                var connectionProvider = new ExplicitConnectionProvider(connectionString);
+                var tracker = new StructureCacheTracker(connectionProvider);
+                var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
+
+                context.Register<ICacheProvider>(code, cacheProvider);
+                context.Register<IVersionedCacheProvider>(code, cacheProvider);
+                context.Register<IContentInvalidator>(code, invalidator);
+                context.Register<ICacheItemWatcher>(code, watcher);
+
+                watcher.AttachTracker(tracker);
+                watcher.Start();
+            })
+            .For<ICacheProvider>()
+            .For<IVersionedCacheProvider>()
+            .For<IContentInvalidator>()
+            .For<ICacheItemWatcher>();
         }
     }
 }

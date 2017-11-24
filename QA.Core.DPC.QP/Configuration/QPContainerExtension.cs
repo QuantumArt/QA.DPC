@@ -1,6 +1,9 @@
 ﻿using Microsoft.Practices.Unity;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using System;
+using System.Threading;
 
 namespace QA.Core.DPC.QP.Configuration
 {
@@ -10,38 +13,81 @@ namespace QA.Core.DPC.QP.Configuration
         {
             return container.Resolve<IIdentityProvider>().Identity.CustomerCode;
         }
+    
+        public static FactoryBuilder RegisterFactory<T>(this IUnityContainer container, bool autoRegister)
+        where T : IFactory
+        {
+            var factoryName = typeof(T).Name;
+            container.RegisterType<IFactory, T>(factoryName, new ContainerControlledLifetimeManager(), new InjectionConstructor(autoRegister));
+            var factory = container.Resolve<IFactory>(factoryName);
 
-        public static void RegisterFactory<F, T>(this IUnityContainer container)
-            where F : IFactory<T>
+            return new FactoryBuilder
+            {
+                Container = container,
+                FactoryName = factoryName
+            };
+        }
+        
+        public static FactoryBuilder RegisterCustomFactory(this IUnityContainer container, bool autoRegister, Action<IRegistrationContext, string, string> registration)
+        {
+            var factoryName = $"{nameof(CustomFactory)}_{Guid.NewGuid()}";
+            container.RegisterType<IFactory, CustomFactory>(factoryName, new ContainerControlledLifetimeManager(), new InjectionConstructor(registration, typeof(ICustomerProvider), typeof(ILogger), autoRegister));
+
+            return new FactoryBuilder
+            {
+                Container = container,
+                FactoryName = factoryName
+            };
+        }
+
+        public static FactoryBuilder RegisterNullFactory(this IUnityContainer container)
+        {
+            return container.RegisterCustomFactory(false, (context, code, connectionString) => { });
+        }
+
+        public static FactoryBuilder For<T>(this FactoryBuilder builder)
             where T : class
         {
-            container.RegisterType<IFactory<T>, F>(new ContainerControlledLifetimeManager());
-            container.RegisterType<T>(new InjectionFactory(c => c.Resolve<IFactory<T>>().Create()));
+            builder.Container.RegisterType<T>(new InjectionFactory(c => c.Resolve<IFactory>(builder.FactoryName).Resolve<T>(c.GetCustomerCode())));
+            return builder;
         }
 
-        public static void RegisterFactory<T>(this IUnityContainer container, Func<string, T> factory)
-           where T : class
-        {
-            container.RegisterType<IFactory<T>, CustomFactory<T>>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionFactory(c => new CustomFactory<T>(c.Resolve<IIdentityProvider>(), factory))
-            );
+        public static FactoryBuilder ForWatcher(this FactoryBuilder builder, string name = null)
 
-            container.RegisterType<T>(new InjectionFactory(c => c.Resolve<IFactory<T>>().Create()));
+        {
+            if (name == null)
+            {
+                builder.Container.RegisterType<IFactoryWatcher>(new InjectionFactory(c => c.Resolve<IFactoryWatcher>(builder.FactoryName)));
+            }
+            else
+            {
+                builder.Container.RegisterType<IFactoryWatcher>(name, new InjectionFactory(c => c.Resolve<IFactoryWatcher>(builder.FactoryName)));
+            }
+            
+            return builder;
         }
 
-        public static void RegisterFactory<T>(this IUnityContainer container, Func<IUnityContainer, string, T> factory)
-          where T : class
+        public static FactoryBuilder With<T>(this FactoryBuilder builder, TimeSpan interval)
+           where T : IFactoryWatcher
         {
-            container.RegisterType<IFactory<T>, CustomFactory<T>>(
-                new ContainerControlledLifetimeManager(),
-                new InjectionFactory(
-                    c => new CustomFactory<T>(c.Resolve<IIdentityProvider>(),
-                    customerCode => factory(container, customerCode))
-                )
-            );
+            var factory = builder.Container.Resolve<IFactory>(builder.FactoryName);
+            builder.Container.RegisterType<IFactoryWatcher, T>(builder.FactoryName, new ContainerControlledLifetimeManager(), new InjectionConstructor(interval, factory, typeof(ICustomerProvider), typeof(ILogger)));            
 
-            container.RegisterType<T>(new InjectionFactory(c => c.Resolve<IFactory<T>>().Create()));
+            return builder;
+        }
+
+        public static FactoryBuilder With<T>(this FactoryBuilder builder)
+         where T : IFactoryWatcher
+        {
+            return builder.With<T>(Timeout.InfiniteTimeSpan);
+        }
+
+        public static FactoryBuilder Watch(this FactoryBuilder builder)
+        {
+            var watcher = builder.Container.Resolve<IFactoryWatcher>(builder.FactoryName);
+            watcher.Start();
+
+            return builder;
         }
     }
 }

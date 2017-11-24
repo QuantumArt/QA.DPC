@@ -2,10 +2,7 @@
 using QA.Core.Logger;
 using QA.ProductCatalog.Infrastructure;
 using System;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Runtime.Serialization.Formatters.Binary;
 
 namespace QA.Core.DPC.QP.Autopublish.Services
 {
@@ -45,7 +42,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
 
                             _autopublishProvider.Dequeue(item);
                             _logger.LogInfo(() => $"Autopublish dequeue {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} with action {item.PublishAction} for {customerCode}");
-                        }                       
+                        }
                         catch (Exception ex)
                         {
                             _logger.ErrorException($"Can't autopublish {(item.IsUnited ? "stage" : "live")} product {item.ProductId} by definition {item.DefinitionId} with action {item.PublishAction} for {customerCode}", ex);
@@ -59,7 +56,7 @@ namespace QA.Core.DPC.QP.Autopublish.Services
             }
             catch(Exception ex)
             {
-                _logger.ErrorException($"Can't run autopublish for {customerCode}", ex);
+                throw new Exception($"Can't run autopublish for {customerCode}", ex);
             }
         }
     }

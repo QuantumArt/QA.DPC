@@ -109,10 +109,7 @@ namespace QA.Core.DPC
 
         public void UpdateConfiguration(string customerCode)
 		{
-			if (OnUpdateConfiguration != null)
-			{
-				OnUpdateConfiguration(this, customerCode);
-            }
+            OnUpdateConfiguration?.Invoke(this, customerCode);
         }
 
         public ConfigurationInfo GetConfigurationInfo(string customerCode)

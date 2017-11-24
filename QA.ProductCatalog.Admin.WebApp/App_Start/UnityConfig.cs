@@ -129,49 +129,35 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             var logger = container.Resolve<ILogger>();
             if (connection.QPMode)
             {
-                container.RegisterFactory<IVersionedCacheProvider>(code => new VersionedCustomerCacheProvider(code));
-                container.RegisterType<ICacheProvider, IVersionedCacheProvider>();
-                container.RegisterFactory<IContentInvalidator>((c, code) => new DpcContentInvalidator(c.Resolve<IVersionedCacheProvider>(), c.Resolve<ILogger>()));
+                foreach (var customer in container.Resolve<ICustomerProvider>().GetCustomers())
+                {
+                    var code = customer.CustomerCode;
 
-                container.RegisterFactory<ICacheItemWatcher>((c, code) => {
-                    var connectionProvider = c.Resolve<IConnectionProvider>();
-                    var invalidator = c.Resolve<IContentInvalidator>();
+                    var cacheProvider = new VersionedCustomerCacheProvider(code);
+                    var invalidator = new DpcContentInvalidator(cacheProvider, logger);
+                    var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
                     var tracker = new StructureCacheTracker(connectionProvider);
-                    var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
+                    var watcher =
+                        new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
+
                     watcher.AttachTracker(tracker);
-                    return watcher;
-                });
 
+                    container.RegisterInstance<IContentInvalidator>(code, invalidator);
+                    container.RegisterInstance<ICacheProvider>(code, cacheProvider);
+                    container.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
+                    container.RegisterInstance<ICacheItemWatcher>(code, watcher);
 
-                //foreach (var customer in container.Resolve<ICustomerProvider>().GetCustomers())
-                //{
-                //    var code = customer.CustomerCode;
+                    watcher.Start();
+                }
 
-                //    var cacheProvider = new VersionedCustomerCacheProvider(code);
-                //    var invalidator = new DpcContentInvalidator(cacheProvider, logger);
-                //    var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
-                //    var tracker = new StructureCacheTracker(connectionProvider);
-                //    var watcher =
-                //        new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
-
-                //    watcher.AttachTracker(tracker);
-
-                //    container.RegisterInstance<IContentInvalidator>(code, invalidator);
-                //    container.RegisterInstance<ICacheProvider>(code, cacheProvider);
-                //    container.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
-                //    container.RegisterInstance<ICacheItemWatcher>(code, watcher);
-
-                //    watcher.Start();
-                //}
-
-                //container.RegisterType<IContentInvalidator>(
-                //    new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.GetCustomerCode())));
-                //container.RegisterType<ICacheProvider>(
-                //    new InjectionFactory(c => c.Resolve<ICacheProvider>(c.GetCustomerCode())));
-                //container.RegisterType<IVersionedCacheProvider>(
-                //    new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
-                //container.RegisterType<ICacheItemWatcher>(
-                //    new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));
+                container.RegisterType<IContentInvalidator>(
+                    new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.GetCustomerCode())));
+                container.RegisterType<ICacheProvider>(
+                    new InjectionFactory(c => c.Resolve<ICacheProvider>(c.GetCustomerCode())));
+                container.RegisterType<IVersionedCacheProvider>(
+                    new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
+                container.RegisterType<ICacheItemWatcher>(
+                    new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));
 
                 container.RegisterQpMonitoring();
             }

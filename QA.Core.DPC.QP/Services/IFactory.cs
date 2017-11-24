@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace QA.Core.DPC.QP.Services
 {
-    public interface IFactory<T> where T : class
+    public interface IFactory
     {
-        T Create();
+        T Resolve<T>(string key);
+        void Register(string key);
+        void Clear(string key);
+        void Clear();
+        Dictionary<string, string>  Invalidator { get; }
     }
 }
