@@ -12,5 +12,9 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         Task<bool> IsOneMacroRegion(string[] regions, SearchOptions options);
 
+        Task<int[]> GetRoamingScaleForCountry(string code, bool isB2C, SearchOptions options);
+
+        Task<JObject> GetRoamingCountry(string code, SearchOptions options);
+
     }
 }

@@ -74,7 +74,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
         }
 
-        protected async Task<ActionResult> LoadProducts(int id, int[] serviceIds, SearchOptions searchOptions)
+        protected async Task<ActionResult> LoadProducts(int id, int[] serviceIds, SearchOptions searchOptions, bool loadServicesSilently = false)
         {
             ActionResult result = null;
             var addrString = GetAddressString(searchOptions);
@@ -103,6 +103,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                         var service = results.FirstOrDefault(m => (int)m["Id"] == serviceId);
                         if (service == null)
                         {
+                            if (loadServicesSilently) continue;
                             var message = $"Service {serviceId} is not found";
                             Logger.LogError($"{message}. {addrString}");
                             result = NotFound(message);

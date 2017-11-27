@@ -8,7 +8,6 @@ using Elasticsearch.Net;
 using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QA.Core;
 using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Elastic;
 
@@ -56,6 +55,80 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return $@"{{ _source: [""Region.Parent.Alias""], ""query"" : {{ ""terms"" : {{ ""Region.Alias"" : [{regions}] }}}}}}";
         }
 
+        private string GetRoamingCountryQuery(string code)
+        {
+            return 
+                $@"{{ 
+                    _source: [""*""], 
+                    query : {{ 
+                        bool : {{ 
+                            should : [
+                                {{ term : 
+                                    {{ ""Country.Code"" : ""{code}"" }}
+                                }}, 
+                                {{ term : 
+                                    {{ ""Alias"" : ""{code}"" }}
+                                }}
+                            ] 
+                        }} 
+                    }}
+                }}";
+        }
+
+        private string GetRoamingScaleQuery(string code, bool isB2C)
+        {
+            var modifier = isB2C ? "IsForMainSite" : "IsForCorpSite";
+            return
+
+                $@"{{ 
+                    from: 0,
+                    size: 1,
+                    _source: {{
+                        include: [
+                            ""ServicesOnRoamingScale.Service.MarketingProduct.Title"",
+                            ""ServicesOnRoamingScale.Service.Id"",
+                            ""Id""
+                        ]
+                    }},
+                    query: {{
+                        bool: {{
+                            should: [ 
+                                {{
+                                    bool: {{
+                                        must: [ 
+                                            {{
+                                                match_phrase: {{
+                                                    ""MarketingProduct.Countries.Country.Code"": {{
+                                                        query: ""{code}"",
+                                                        operator: ""and""
+                                                    }}
+                                                }}
+                                            }},
+                                            {{
+                                                term: {{ ""MarketingProduct.Modifiers.Alias"": ""{modifier}"" }}
+                                            }}
+                                        ]
+                                    }}
+                                }},
+                                {{
+                                    bool: {{
+                                        must: [
+                                            {{
+                                                term: {{ ""MarketingProduct.Countries.Alias"": ""{code}"" }}
+                                            }},
+                                            {{
+                                                term: {{ ""MarketingProduct.Modifiers.Alias"": ""{modifier}"" }}
+                                            }}
+                                        ]
+                                    }}
+                                }}
+                            ]
+                        }}
+                    }}
+                }}
+            }}";
+        }
+
 
         public async Task<JObject[]> GetProducts(int[] productIds, SearchOptions options)
         {
@@ -76,6 +149,32 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             var aliases = JObject.Parse(regionResult)
                 .SelectTokens($"{_sourceQuery}.Region.Parent.Alias").Select(n => n.ToString()).ToArray();
             return aliases.Length > 1 && aliases.Distinct().Count() == 1;
+        }
+
+        public async Task<int[]> GetRoamingScaleForCountry(string code, bool isB2C, SearchOptions options)
+        {
+            var query = GetRoamingScaleQuery(code, isB2C);
+            var country = await GetContent(query, options);
+            var countryObj = JObject.Parse(country).SelectToken(_sourceQuery);
+            if (countryObj == null)
+                throw new Exception($"Roaming scale for country with code '{code}' not found");
+            var result = new List<int> {int.Parse(countryObj["Id"].ToString())};
+            result.AddRange(countryObj
+                .SelectTokens($"ServicesOnRoamingScale.[?(@.Service)].Service.Id")
+                .Select(n => int.Parse(n.ToString()))
+            );
+            return result.ToArray();
+        }
+
+        public async Task<JObject> GetRoamingCountry(string code, SearchOptions options)
+        {
+            var query = GetRoamingCountryQuery(code.ToLowerInvariant());
+            var regionResult = await GetContent(query, options);
+            var obj = JObject.Parse(regionResult);
+            var result = (JObject)obj.SelectToken(_sourceQuery);
+            if (result == null)
+                throw new Exception($"Roaming country code '{code}' not found");
+            return result;
         }
 
         private async Task<string> ProcessRegionTags(int[] productIds, string input, SearchOptions options)
