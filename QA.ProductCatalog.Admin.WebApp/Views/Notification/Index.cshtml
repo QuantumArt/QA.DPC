@@ -11,6 +11,15 @@
             </div>
         </fieldset>
     }
+    else if (Model.ActualSettings == null && Model.CurrentSettings == null)
+    {
+        <fieldset>
+            <legend>Важно</legend>
+            <div class="gr-wrapper">
+                Данный кастомер код не работает в режиме консолидации
+            </div>
+        </fieldset>
+    }
     else
     {
         if (!Model.IsActual)
@@ -58,7 +67,7 @@
                 </thead>
                 <tbody>
                 @foreach (var channel in Model.Channels)
-                {
+    {
                     <tr>
                         <td>@channel.Name</td>
                         <td>@channel.Count</td>
@@ -98,7 +107,7 @@
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.Autopublish)</span>
                         </dd>
                         @if (Model.CurrentSettings.Autopublish != Model.ActualSettings.Autopublish)
-                        {
+    {
                         <dd style="" class="plain-field-value field">
                             <div title="" class="refresh icon" style=""></div>
                         </dd>
@@ -110,7 +119,7 @@
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.CheckInterval) с</span>
                         </dd>
                         @if (Model.CurrentSettings.CheckInterval != Model.ActualSettings.CheckInterval)
-                        {
+    {
                             <dd style="" class="plain-field-value field">
                                 <div title="" class="refresh icon" style=""></div>
                             </dd>
@@ -122,7 +131,7 @@
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.WaitIntervalAfterErrors) с</span>
                         </dd>
                         @if (Model.CurrentSettings.WaitIntervalAfterErrors != Model.ActualSettings.WaitIntervalAfterErrors)
-                        {
+    {
                             <dd style="" class="plain-field-value field">
                                 <div title="" class="refresh icon" style=""></div>
                             </dd>
@@ -134,7 +143,7 @@
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.ErrorCountBeforeWait)</span>
                         </dd>
                         @if (Model.CurrentSettings.ErrorCountBeforeWait != Model.ActualSettings.ErrorCountBeforeWait)
-                        {
+    {
                             <dd style="" class="plain-field-value field">
                                 <div title="" class="refresh icon" style=""></div>
                             </dd>
@@ -146,7 +155,7 @@
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.PackageSize)</span>
                         </dd>
                         @if (Model.CurrentSettings.PackageSize != Model.ActualSettings.PackageSize)
-                        {
+    {
                             <dd style="" class="plain-field-value field">
                                 <div title="" class="refresh icon" style=""></div>
                             </dd>
@@ -158,7 +167,7 @@
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.TimeOut) c</span>
                         </dd>
                         @if (Model.CurrentSettings.TimeOut != Model.ActualSettings.TimeOut)
-                        {
+    {
                             <dd style="" class="plain-field-value field">
                                 <div title="" class="refresh icon" style=""></div>
                             </dd>
