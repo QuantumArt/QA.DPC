@@ -31,9 +31,9 @@ namespace QA.Core.ProductCatalog.ActionsService
         {
             UnityConfig.Configure();
 
-            _factoryWatcher = ObjectFactoryBase.Resolve<IFactoryWatcher>();            
+            _factoryWatcher = ObjectFactoryBase.Resolve<IFactoryWatcher>();
             _factoryWatcher.OnConfigurationModify += _factoryWatcher_OnConfigurationModify;
-            _factoryWatcher.Start();            
+            _factoryWatcher.Start();
 
             if (Settings.Default.EnableSheduleProcess)
             {
@@ -45,6 +45,13 @@ namespace QA.Core.ProductCatalog.ActionsService
 
         private void _factoryWatcher_OnConfigurationModify(object sender, FactoryWatcherEventArgs e)
         {
+            var stoppedCustomerCodes = _runnersDictionary.Where(de => de.Value.All(t => t.State == StateEnum.Stopped)).Select(de => de.Key).ToArray();
+
+            foreach (var code in stoppedCustomerCodes)
+            {
+                _runnersDictionary.Remove(code);
+            }
+
             foreach (var code in e.DeletedCodes)
             {
                 RemoveCode(code);
@@ -53,14 +60,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             foreach (var code in e.Newcodes)
             {
                 AddCode(code);
-            }
-
-            var stoppedCustomerCodes = _runnersDictionary.Where(de => de.Value.All(t => t.State == StateEnum.Stopped)).Select(de => de.Key).ToArray();
-
-            foreach (var code in stoppedCustomerCodes)
-            {
-                _runnersDictionary.Remove(code);
-            }
+            }          
         }
 
         private void AddCode(string customerCode)
@@ -116,7 +116,6 @@ namespace QA.Core.ProductCatalog.ActionsService
         protected override void OnStop()
         {
             _factoryWatcher.OnConfigurationModify -= _factoryWatcher_OnConfigurationModify;
-            _factoryWatcher.Stop();
 
             foreach (var code in _runnersDictionary.Keys)
             {
@@ -134,6 +133,7 @@ namespace QA.Core.ProductCatalog.ActionsService
                 Thread.Sleep(500);
             }
 
+            _factoryWatcher.Stop();
             _runnersDictionary.Clear();
         }
     }
