@@ -13,7 +13,6 @@ using QA.Core.ProductCatalog.TaskScheduler;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Integration.Configuration;
-using QA.Validation.Xaml.Extensions.Rules;
 using Quartz;
 using System;
 using System.Configuration;
@@ -31,8 +30,6 @@ namespace QA.Core.ProductCatalog.ActionsService
 
         public static UnityContainer RegisterTypes(UnityContainer container)
         {
-            var type = typeof(ProcessRemoteValidationIf);
-
             container.AddNewExtension<QPContainerConfiguration>();
 
             container.AddNewExtension<ActionContainerConfiguration>();

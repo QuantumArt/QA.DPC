@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QA.Validation.Xaml.Extensions.Rules;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -66,6 +67,11 @@ namespace QA.Core.ProductCatalog.ActionsService
             Console.WriteLine(@"1");
             // Keep the console alive for a second to allow the user to see the message.
             Thread.Sleep(1000);
+        }
+
+        internal static RemoteValidationResult ProceedRemoteValidation()
+        {
+            return new RemoteValidationResult();
         }
     }
 }
