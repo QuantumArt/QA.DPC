@@ -64,17 +64,17 @@ namespace QA.Core.DPC
             if (connection.QPMode)
             {
                 unityContainer.AddNewExtension<QPAutopublishContainerConfiguration>();
-                unityContainer.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>(watcherInterval).ForWatcher();
+                unityContainer.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>(watcherInterval).As<IFactoryWatcher>();
             }
             else if (connection.HasConnection(QP.Models.Service.Admin))
             {                
                 unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
-                unityContainer.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().ForWatcher();
+                unityContainer.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().As<IFactoryWatcher>();
             }
             else
             {
                 unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
-                unityContainer.RegisterNullFactory().With<FactoryWatcher>().ForWatcher();
+                unityContainer.RegisterNullFactory().With<FactoryWatcher>().As<IFactoryWatcher>();
             }
 
             return unityContainer;

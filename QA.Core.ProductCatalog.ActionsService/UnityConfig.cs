@@ -74,13 +74,13 @@ namespace QA.Core.ProductCatalog.ActionsService
             var connection = container.Resolve<IConnectionProvider>();
             if (connection.QPMode)
             {
-                container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>(watcherInterval).ForWatcher();
+                container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>(watcherInterval).As<IFactoryWatcher>();
                 container.RegisterQpMonitoring();
             }
             else
             {                
                 container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
-                container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().ForWatcher();
+                container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().As<IFactoryWatcher>();
                 container.RegisterNonQpMonitoring();
             }
 

@@ -50,20 +50,19 @@ namespace QA.Core.DPC.QP.Configuration
         {
             builder.Container.RegisterType<T>(new InjectionFactory(c => c.Resolve<IFactory>(builder.FactoryName).Resolve<T>(c.GetCustomerCode())));
             return builder;
-        }
+        }     
 
-        public static FactoryBuilder ForWatcher(this FactoryBuilder builder, string name = null)
-
+        public static FactoryBuilder As<T>(this FactoryBuilder builder, string name = null)
         {
             if (name == null)
             {
-                builder.Container.RegisterType<IFactoryWatcher>(new InjectionFactory(c => c.Resolve<IFactoryWatcher>(builder.FactoryName)));
+                builder.Container.RegisterType<T>(new InjectionFactory(c => c.Resolve<T>(builder.FactoryName)));
             }
             else
             {
-                builder.Container.RegisterType<IFactoryWatcher>(name, new InjectionFactory(c => c.Resolve<IFactoryWatcher>(builder.FactoryName)));
+                builder.Container.RegisterType<T>(name, new InjectionFactory(c => c.Resolve<T>(builder.FactoryName)));
             }
-            
+
             return builder;
         }
 

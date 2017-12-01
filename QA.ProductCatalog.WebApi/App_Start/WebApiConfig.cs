@@ -113,6 +113,13 @@ namespace QA.ProductCatalog.WebApi
                 constraints: new { format = FormatConstraints }
             );
 
+            config.Routes.MapHttpRoute(
+              name: "Statistic",
+              routeTemplate: "statistic/{action}/{format}",
+              defaults: new { controller = "Statistic", format = "json" },
+              constraints: new { format = FormatConstraints }
+            );
+
             #endregion
 
             #region Formatters
