@@ -24,6 +24,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             bool inside = false, startExport = false, exporting = false;
             int depth = 0, exportDepth = 0, l = 0, batchSize, count = 1, found = 0, entityNumber = 0;
             char prev = (char)0;
+            char pprev = (char)0;
             writer.Write("[");
             var findInWhole = !depthToSearch.HasValue;
             int deep = depthToSearch ?? 0;
@@ -71,7 +72,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     }
                     if (c == '"')
                     {
-                        if (prev != '\\')
+                        if (prev != '\\' || pprev == '\\')
                             inside = !inside;
                     }
 
@@ -96,6 +97,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                         }
                     }
 
+                    pprev = prev;
                     prev = c;
                 }
             }

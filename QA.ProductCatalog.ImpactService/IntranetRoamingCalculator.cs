@@ -109,7 +109,7 @@ namespace QA.ProductCatalog.ImpactService
 
         public JObject FilterScale(string region, JObject[] scales)
         {
-            var defaultScale = scales.SingleOrDefault(n => n.SelectToken("MarketingProduct.Regions") == null);
+            var defaultScale = scales.FirstOrDefault(n => n.SelectToken("MarketingProduct.Regions") == null);
             foreach (var scale in scales)
             {
                 var regionAliases =
