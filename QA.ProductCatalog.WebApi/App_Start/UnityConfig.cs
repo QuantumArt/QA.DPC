@@ -76,7 +76,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
             else
             {
                 unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
-                unityContainer.RegisterConsolidationCache(autoRegister).As<IFactory>().With<FactoryWatcher>().Watch();
+                unityContainer.RegisterConsolidationCache(autoRegister, SingleCustomerProvider.Key).As<IFactory>().With<FactoryWatcher>().Watch();
                 unityContainer.RegisterNonQpMonitoring();
             }
 

@@ -45,10 +45,10 @@ namespace QA.Core.DPC.QP.Configuration
             return container.RegisterCustomFactory(false, (context, code, connectionString) => { });
         }
 
-        public static FactoryBuilder For<T>(this FactoryBuilder builder)
+        public static FactoryBuilder For<T>(this FactoryBuilder builder, string code = null)
             where T : class
         {
-            builder.Container.RegisterType<T>(new InjectionFactory(c => c.Resolve<IFactory>(builder.FactoryName).Resolve<T>(c.GetCustomerCode())));
+            builder.Container.RegisterType<T>(new InjectionFactory(c => c.Resolve<IFactory>(builder.FactoryName).Resolve<T>(code ?? c.GetCustomerCode())));
             return builder;
         }     
 

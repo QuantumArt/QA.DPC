@@ -13,6 +13,10 @@ namespace QA.ProductCatalog.WebApi.Controllers
             _factory = factory;
         }
 
+        /// <summary>
+        /// Customer codes initialized with cache
+        /// </summary>
+        /// <returns></returns>
         [AcceptVerbs("GET")]
         public string[] Cache()
         {

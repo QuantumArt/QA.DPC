@@ -132,7 +132,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             else
             {
                 container.RegisterType<ICustomerProvider, SingleCustomerProvider>();
-                container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().Watch();
+                container.RegisterConsolidationCache(autoRegister, SingleCustomerProvider.Key).With<FactoryWatcher>().Watch();
                 container.RegisterNonQpMonitoring();
             }
 

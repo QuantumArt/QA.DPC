@@ -126,29 +126,31 @@ namespace QA.Core.DPC.Loader.Container
 
     public static class CacheExtensions
     {
-        public static FactoryBuilder RegisterConsolidationCache(this IUnityContainer container, bool autoRegister)
+        public static FactoryBuilder RegisterConsolidationCache(this IUnityContainer container, bool autoRegister, string defaultCode = null)
         {
             return container.RegisterCustomFactory(autoRegister, (context, code, connectionString) =>
             {
+                var cuttentcode = defaultCode ?? code;
+
                 var logger = container.Resolve<ILogger>();
-                var cacheProvider = new VersionedCustomerCacheProvider(code);
+                var cacheProvider = new VersionedCustomerCacheProvider(cuttentcode);
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var connectionProvider = new ExplicitConnectionProvider(connectionString);
                 var tracker = new StructureCacheTracker(connectionProvider);
                 var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
 
-                context.Register<ICacheProvider>(code, cacheProvider);
-                context.Register<IVersionedCacheProvider>(code, cacheProvider);
-                context.Register<IContentInvalidator>(code, invalidator);
-                context.Register<ICacheItemWatcher>(code, watcher);
+                context.Register<ICacheProvider>(cuttentcode, cacheProvider);
+                context.Register<IVersionedCacheProvider>(cuttentcode, cacheProvider);
+                context.Register<IContentInvalidator>(cuttentcode, invalidator);
+                context.Register<ICacheItemWatcher>(cuttentcode, watcher);
 
                 watcher.AttachTracker(tracker);
                 watcher.Start();
             })
-            .For<ICacheProvider>()
-            .For<IVersionedCacheProvider>()
-            .For<IContentInvalidator>()
-            .For<ICacheItemWatcher>();
+            .For<ICacheProvider>(defaultCode)
+            .For<IVersionedCacheProvider>(defaultCode)
+            .For<IContentInvalidator>(defaultCode)
+            .For<ICacheItemWatcher>(defaultCode);
         }
     }
 }
