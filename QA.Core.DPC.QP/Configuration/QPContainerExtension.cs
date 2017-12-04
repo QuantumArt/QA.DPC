@@ -11,7 +11,7 @@ namespace QA.Core.DPC.QP.Configuration
     {
         public static string GetCustomerCode(this IUnityContainer container)
         {
-            return container.Resolve<IIdentityProvider>().Identity.CustomerCode;
+            return container.Resolve<IIdentityProvider>().Identity.CustomerCode ?? SingleCustomerProvider.Key;
         }
     
         public static FactoryBuilder RegisterFactory<T>(this IUnityContainer container, bool autoRegister)

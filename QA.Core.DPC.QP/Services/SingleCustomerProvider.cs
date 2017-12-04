@@ -6,7 +6,7 @@ namespace QA.Core.DPC.QP.Services
 {
     public class SingleCustomerProvider : ICustomerProvider
     {
-        public const string Key = "current";
+        public const string Key = "current##";
 
         public string GetConnectionString(string customerCode)
         {
