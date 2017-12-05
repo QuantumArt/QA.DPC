@@ -130,19 +130,19 @@ namespace QA.Core.DPC.Loader.Container
         {
             return container.RegisterCustomFactory(autoRegister, (context, code, connectionString) =>
             {
-                var cuttentcode = defaultCode ?? code;
+                var currentCode = defaultCode ?? code;
 
                 var logger = container.Resolve<ILogger>();
-                var cacheProvider = new VersionedCustomerCacheProvider(cuttentcode);
+                var cacheProvider = new VersionedCustomerCacheProvider(currentCode);
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var connectionProvider = new ExplicitConnectionProvider(connectionString);
                 var tracker = new StructureCacheTracker(connectionProvider);
                 var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
 
-                context.Register<ICacheProvider>(cuttentcode, cacheProvider);
-                context.Register<IVersionedCacheProvider>(cuttentcode, cacheProvider);
-                context.Register<IContentInvalidator>(cuttentcode, invalidator);
-                context.Register<ICacheItemWatcher>(cuttentcode, watcher);
+                context.Register<ICacheProvider>(currentCode, cacheProvider);
+                context.Register<IVersionedCacheProvider>(currentCode, cacheProvider);
+                context.Register<IContentInvalidator>(currentCode, invalidator);
+                context.Register<ICacheItemWatcher>(currentCode, watcher);
 
                 watcher.AttachTracker(tracker);
                 watcher.Start();

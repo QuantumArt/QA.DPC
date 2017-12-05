@@ -8,6 +8,6 @@ namespace QA.Core.DPC.QP.Services
         void Register(string key);
         void Clear(string key);
         void Clear();
-        Dictionary<string, string>  Invalidator { get; }
+        Dictionary<string, string> Invalidator { get; }
     }
 }

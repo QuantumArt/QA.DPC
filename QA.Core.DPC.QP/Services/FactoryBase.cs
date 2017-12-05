@@ -26,9 +26,7 @@ namespace QA.Core.DPC.QP.Services
 
         void IRegistrationContext.Register<T>(string key, T value)
         {            
-            Dictionary<Type, object> internalContainer;
-
-            if (!_container.TryGetValue(key, out internalContainer))
+            if (!_container.TryGetValue(key, out var internalContainer))
             {
                 internalContainer = new Dictionary<Type, object>();
                 _container[key] = internalContainer;
@@ -108,7 +106,7 @@ namespace QA.Core.DPC.QP.Services
         {
             _container.Keys
                 .ToList()
-                .ForEach(key => Clear(key));
+                .ForEach(Clear);
 
             Invalidator
                 .Clear();

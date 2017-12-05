@@ -4,15 +4,15 @@ namespace QA.Core.DPC.QP.Models
 {
     public class FactoryWatcherEventArgs : EventArgs
     {
-        public FactoryWatcherEventArgs(string[] deletedCodes, string[] modifiedCodes, string[] newcodes)
+        public FactoryWatcherEventArgs(string[] deletedCodes, string[] modifiedCodes, string[] newCodes)
         {
             DeletedCodes = deletedCodes;
             ModifiedCodes = modifiedCodes;
-            Newcodes = newcodes;
+            NewCodes = newCodes;
         }
 
         public string[] DeletedCodes { get; private set; }
         public string[] ModifiedCodes { get; private set; }
-        public string[] Newcodes { get; private set; }
+        public string[] NewCodes { get; private set; }
     }
 }

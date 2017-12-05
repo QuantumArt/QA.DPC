@@ -23,7 +23,7 @@ namespace QA.Core.DPC
         private const string AutopublishKey = "Autopublish";
 		public static ConcurrentDictionary<string, NotificationSenderConfig> ConfigDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
 	    public static DateTime Started = DateTime.MinValue;
-        private static string KeySeparator = "##";
+        private static string KeySeparator = "#~→";
 
         static ICustomerProvider _customerProvider;
         static IIdentityProvider _identityProvider;
@@ -70,7 +70,7 @@ namespace QA.Core.DPC
                 UpdateConfiguration(code);
             }
 
-            foreach (var code in e.Newcodes)
+            foreach (var code in e.NewCodes)
             {
                 UpdateConfiguration(code);
             }

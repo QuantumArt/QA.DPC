@@ -57,7 +57,7 @@ namespace QA.Core.ProductCatalog.ActionsService
                 RemoveCode(code);
             }
 
-            foreach (var code in e.Newcodes)
+            foreach (var code in e.NewCodes)
             {
                 AddCode(code);
             }          
