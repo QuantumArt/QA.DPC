@@ -23,7 +23,7 @@ namespace QA.Core.DPC
         private const string AutopublishKey = "Autopublish";
 		public static ConcurrentDictionary<string, NotificationSenderConfig> ConfigDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
 	    public static DateTime Started = DateTime.MinValue;
-        private static string KrySeparator = "##";
+        private static string KeySeparator = "##";
 
         static ICustomerProvider _customerProvider;
         static IIdentityProvider _identityProvider;
@@ -218,7 +218,7 @@ namespace QA.Core.DPC
 
         private static string GetKeyPrefix(string customerCode)
         {
-            return $"{customerCode}_{KrySeparator}";
+            return $"{customerCode}_{KeySeparator}";
         }
 
         private static string GetKey(string channelName, string customerCode)
