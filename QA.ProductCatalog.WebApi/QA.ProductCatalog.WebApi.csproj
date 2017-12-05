@@ -304,6 +304,7 @@
     <Compile Include="Controllers\ProductController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controllers\StatisticController.cs" />
     <Compile Include="Filters\ExceptionFormatterFilterAttribute.cs" />
     <Compile Include="Filters\ExceptionLoggerFilterAttribute.cs" />
     <Compile Include="Global.asax.cs">

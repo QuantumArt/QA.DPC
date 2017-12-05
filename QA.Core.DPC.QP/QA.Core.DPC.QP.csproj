@@ -179,20 +179,29 @@
     <Compile Include="Configuration\QPContainerConfiguration.cs" />
     <Compile Include="Configuration\QPContainerExtension.cs" />
     <Compile Include="Exceptions\ConsolidationException.cs" />
+    <Compile Include="Models\FactoryWatcherEventArgs.cs" />
+    <Compile Include="Models\FactoryBuilder.cs" />
     <Compile Include="Models\Service.cs" />
     <Compile Include="Models\Customer.cs" />
     <Compile Include="Models\Identity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Cache\CustomerCacheItemWatcher.cs" />
     <Compile Include="Cache\CustomerQP8CacheItemWatcher.cs" />
+    <Compile Include="Services\ConnectionWatcher.cs" />
+    <Compile Include="Services\CustomFactory.cs" />
     <Compile Include="Services\ExplicitConnectionProvider.cs" />
     <Compile Include="Services\ConnectionProvider.cs" />
+    <Compile Include="Services\FactoryBase.cs" />
+    <Compile Include="Services\FactoryWatcher.cs" />
     <Compile Include="Services\IdentityProvider.cs" />
     <Compile Include="Services\CustomerProvider.cs" />
     <Compile Include="Services\IConnectionProvider.cs" />
+    <Compile Include="Services\IFactory.cs" />
+    <Compile Include="Services\IFactoryWatcher.cs" />
     <Compile Include="Services\IIdentityProvider.cs" />
     <Compile Include="Services\ICustomerProvider.cs" />
     <Compile Include="Cache\VersionedCustomerCacheProvider.cs" />
+    <Compile Include="Services\IRegistrationContext.cs" />
     <Compile Include="Services\SingleCustomerProvider.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -208,4 +217,3 @@
   </Target>
   -->
 </Project>
-

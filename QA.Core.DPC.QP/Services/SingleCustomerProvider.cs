@@ -1,5 +1,6 @@
-﻿using System;
-using QA.Core.DPC.QP.Models;
+﻿using QA.Core.DPC.QP.Models;
+using System;
+using System.Configuration;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -9,7 +10,14 @@ namespace QA.Core.DPC.QP.Services
 
         public string GetConnectionString(string customerCode)
         {
-            throw new NotImplementedException();
+            if (customerCode == Key)
+            {
+                return ConfigurationManager.ConnectionStrings["qp_database"]?.ConnectionString;
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
         }
 
         public Customer[] GetCustomers()
@@ -19,7 +27,7 @@ namespace QA.Core.DPC.QP.Services
                 new Customer
                 {
                     CustomerCode = Key,
-                    ConnectionString = null
+                    ConnectionString = GetConnectionString(Key)
                 }
             };
         }

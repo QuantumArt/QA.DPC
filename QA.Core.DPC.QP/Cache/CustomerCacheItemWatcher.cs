@@ -15,8 +15,8 @@ namespace QA.Core.DPC.QP.Cache
 {
     public class CustomerCacheItemWatcher : IDisposable, ICacheItemWatcher
     {
-        private static readonly object Locker = new object();
-        private static bool _disposing;
+        private readonly object Locker = new object();
+        private bool _disposing;
         private readonly Timer _timer;
         protected readonly string ConnectionString;
         private Dictionary<int, ContentModification> _modifications = new Dictionary<int, ContentModification>();

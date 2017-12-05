@@ -3,14 +3,15 @@ using Microsoft.Practices.Unity.Configuration;
 using QA.Core.Cache;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.Loader;
+using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Notification.Services;
 using QA.Core.DPC.QP.API.Services;
 using QA.Core.DPC.QP.Autopublish.Configuration;
-using QA.Core.DPC.QP.Autopublish.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Service;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
@@ -57,51 +58,23 @@ namespace QA.Core.DPC
             var logger = unityContainer.Resolve<ILogger>();
             unityContainer.RegisterType<NotificationsModelDataContext>(new InjectionFactory(c => new NotificationsModelDataContext(c.Resolve<IConnectionProvider>().GetConnection(QP.Models.Service.Notification))));
 
+            var autoRegister = true;
+            var watcherInterval = TimeSpan.FromMinutes(1);
+
             if (connection.QPMode)
             {
                 unityContainer.AddNewExtension<QPAutopublishContainerConfiguration>();
-                foreach (var customer in unityContainer.Resolve<ICustomerProvider>().GetCustomers())
-                {
-                    var code = customer.CustomerCode;
-                    
-                    var cacheProvider = new VersionedCustomerCacheProvider(code);
-                    var invalidator = new DpcContentInvalidator(cacheProvider, logger);
-                    var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
-                    var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromMinutes(1), invalidator, connectionProvider, logger);
-                    var tracker = new StructureCacheTracker(connectionProvider);
-                    watcher.AttachTracker(tracker);
-                    watcher.Start();
-
-                    unityContainer.RegisterInstance<IContentInvalidator>(code, invalidator);
-                    unityContainer.RegisterInstance<ICacheProvider>(code, cacheProvider);
-                    unityContainer.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
-                    unityContainer.RegisterInstance<ICacheItemWatcher>(code, watcher);
-                }
-
-                unityContainer.RegisterType<IContentInvalidator>(new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.GetCustomerCode())));
-                unityContainer.RegisterType<ICacheProvider>(new InjectionFactory(c => c.Resolve<ICacheProvider>(c.GetCustomerCode())));
-                unityContainer.RegisterType<IVersionedCacheProvider>(new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
-                unityContainer.RegisterType<ICacheItemWatcher>(new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));
+                unityContainer.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>(watcherInterval).As<IFactoryWatcher>();
             }
             else if (connection.HasConnection(QP.Models.Service.Admin))
-            {
-
-                var cacheProvider = new VersionedCustomerCacheProvider(null);
-                var invalidator = new DpcContentInvalidator(cacheProvider, logger);
-                var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromMinutes(1), invalidator, connection, logger);
-                var tracker = new StructureCacheTracker(connection);                
-                watcher.AttachTracker(tracker);
-                watcher.Start();
-
+            {                
                 unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
-                unityContainer.RegisterInstance<IContentInvalidator>(invalidator);
-                unityContainer.RegisterInstance<ICacheProvider>(cacheProvider);
-                unityContainer.RegisterInstance<IVersionedCacheProvider>(cacheProvider);
-                unityContainer.RegisterInstance<ICacheItemWatcher>(watcher);                
+                unityContainer.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().As<IFactoryWatcher>();
             }
             else
             {
                 unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
+                unityContainer.RegisterNullFactory().With<FactoryWatcher>().As<IFactoryWatcher>();
             }
 
             return unityContainer;

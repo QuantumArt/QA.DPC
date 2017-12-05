@@ -1,7 +1,6 @@
 ﻿using Microsoft.Practices.Unity;
 using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
-using QA.Core.Cache;
 using QA.Core.DocumentGenerator;
 using QA.Core.DPC.API.Container;
 using QA.Core.DPC.Formatters.Configuration;
@@ -11,7 +10,6 @@ using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Notification.Services;
 using QA.Core.DPC.QP.API.Container;
 using QA.Core.DPC.QP.Autopublish.Configuration;
-using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
@@ -66,52 +64,19 @@ namespace QA.ProductCatalog.WebApi.App_Start
             unityContainer.RegisterType<StructureCacheTracker>();
 
             var connection = unityContainer.Resolve<IConnectionProvider>();
-
 		    var logger = unityContainer.Resolve<ILogger>();
-		    if (connection.QPMode)
+            var autoRegister = true;
+            var watcherInterval = TimeSpan.FromMinutes(1);
+
+            if (connection.QPMode)
             {
-                foreach (var customer in unityContainer.Resolve<ICustomerProvider>().GetCustomers())
-                {
-                    var code = customer.CustomerCode;
-
-                    var cacheProvider = new VersionedCustomerCacheProvider(code);
-                    var invalidator = new DpcContentInvalidator(cacheProvider, logger);
-                    var connectionProvider = new ExplicitConnectionProvider(customer.ConnectionString);
-                    var tracker = new StructureCacheTracker(connectionProvider);
-                    var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
-
-                    watcher.AttachTracker(tracker);
-
-                    unityContainer.RegisterInstance<IContentInvalidator>(code, invalidator);
-                    unityContainer.RegisterInstance<ICacheProvider>(code, cacheProvider);
-                    unityContainer.RegisterInstance<IVersionedCacheProvider>(code, cacheProvider);
-                    unityContainer.RegisterInstance<ICacheItemWatcher>(code, watcher);
-
-                    watcher.Start();
-                }
-
-                unityContainer.RegisterType<IContentInvalidator>(new InjectionFactory(c => c.Resolve<IContentInvalidator>(c.GetCustomerCode())));
-                unityContainer.RegisterType<ICacheProvider>(new InjectionFactory(c => c.Resolve<ICacheProvider>(c.GetCustomerCode())));
-                unityContainer.RegisterType<IVersionedCacheProvider>(new InjectionFactory(c => c.Resolve<IVersionedCacheProvider>(c.GetCustomerCode())));
-                unityContainer.RegisterType<ICacheItemWatcher>(new InjectionFactory(c => c.Resolve<ICacheItemWatcher>(c.GetCustomerCode())));
-
+                unityContainer.RegisterConsolidationCache(autoRegister).As<IFactory>().With<FactoryWatcher>(watcherInterval).Watch();
                 unityContainer.RegisterQpMonitoring();
             }
             else
             {
-                var cacheProvider = new VersionedCustomerCacheProvider(null);
-                var invalidator = new DpcContentInvalidator(cacheProvider, logger);
-                var tracker = new StructureCacheTracker(connection);
-                var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connection, logger);
-                watcher.AttachTracker(tracker);
-
-                unityContainer.RegisterInstance<IContentInvalidator>(invalidator);
-                unityContainer.RegisterInstance<ICacheProvider>(cacheProvider);
-                unityContainer.RegisterInstance<IVersionedCacheProvider>(cacheProvider);
-                unityContainer.RegisterInstance<ICacheItemWatcher>(watcher);
-
-                watcher.Start();
-
+                unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
+                unityContainer.RegisterConsolidationCache(autoRegister, SingleCustomerProvider.Key).As<IFactory>().With<FactoryWatcher>().Watch();
                 unityContainer.RegisterNonQpMonitoring();
             }
 

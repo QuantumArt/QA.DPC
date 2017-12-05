@@ -1,6 +1,7 @@
 ﻿using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.Service;
+using QA.Core.Logger;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Concurrent;
@@ -14,7 +15,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Schedulers;
-using QA.Core.Logger;
 
 namespace QA.Core.DPC
 {
@@ -23,16 +23,16 @@ namespace QA.Core.DPC
         private const string AutopublishKey = "Autopublish";
 		public static ConcurrentDictionary<string, NotificationSenderConfig> ConfigDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
 	    public static DateTime Started = DateTime.MinValue;
+        private static string KeySeparator = "#~→";
 
         static ICustomerProvider _customerProvider;
         static IIdentityProvider _identityProvider;
+        static IFactoryWatcher _configurationWatcher;
 
         public ServiceHost serviceHost = null;
 
 		private readonly List<Timer> _senders = new List<Timer>();
 		static readonly Dictionary<string, ChannelState> _lockers = new Dictionary<string, ChannelState>();
-
-
 
 		public NotificationSender()
 		{
@@ -40,30 +40,51 @@ namespace QA.Core.DPC
 			UnityConfig.Configure();
             _customerProvider = ObjectFactoryBase.Resolve<ICustomerProvider>();
             _identityProvider = ObjectFactoryBase.Resolve<IIdentityProvider>();
+            _configurationWatcher = ObjectFactoryBase.Resolve<IFactoryWatcher>();
         }
 
 		protected override void OnStart(string[] args)
 		{
 		    Started = DateTime.Now;
-            foreach (var customer in _customerProvider.GetCustomers())
-            {
-                UpdateConfiguration(customer.CustomerCode);
-            }
 
-			NotificationService.OnUpdateConfiguration += NotificationService_OnUpdateConfiguration;
+            NotificationService.OnUpdateConfiguration += NotificationService_OnUpdateConfiguration;
+            _configurationWatcher.OnConfigurationModify += _configurationWatcher_OnConfigurationModify;
+            _configurationWatcher.Start();
 
-			if (serviceHost != null)
+            if (serviceHost != null)
 				serviceHost.Close();
 
 			serviceHost = new ServiceHost(typeof(NotificationService));
 			serviceHost.Open();
 		}
 
-		protected override void OnStop()
+        private void _configurationWatcher_OnConfigurationModify(object sender, FactoryWatcherEventArgs e)
         {
-			NotificationService.OnUpdateConfiguration -= NotificationService_OnUpdateConfiguration;
+            foreach (var code in e.DeletedCodes)
+            {
+                StopConfiguration(code);
+            }
 
-			if (serviceHost != null)
+            foreach (var code in e.ModifiedCodes)
+            {
+                UpdateConfiguration(code);
+            }
+
+            foreach (var code in e.NewCodes)
+            {
+                UpdateConfiguration(code);
+            }
+
+        }
+
+        protected override void OnStop()
+        {            
+            NotificationService.OnUpdateConfiguration -= NotificationService_OnUpdateConfiguration;
+            _configurationWatcher.OnConfigurationModify -= _configurationWatcher_OnConfigurationModify;
+            _configurationWatcher.Stop();
+
+
+            if (serviceHost != null)
             {
                 serviceHost.Close();
                 serviceHost = null;
@@ -78,7 +99,36 @@ namespace QA.Core.DPC
             }
         }
 
-		private void UpdateConfiguration(string customerCode)
+        private void StopConfiguration(string customerCode)
+        {
+            if (customerCode != SingleCustomerProvider.Key)
+            {
+                var logger = ObjectFactoryBase.Resolve<ILogger>();
+
+                try
+                {
+                    logger.Info("start StopConfiguration for {0}", customerCode);
+                    var items = _senders.Zip(_lockers.Keys, (s, k) => new { Sender = s, Key = k });
+                    var itemsToStop = items.Where(itm => itm.Key.StartsWith(GetKeyPrefix(customerCode)));
+
+                    foreach (var item in itemsToStop)
+                    {                     
+                        item.Sender.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+                        logger.Info("Stop sender for {0}", item.Key);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.ErrorException($"can not StopConfiguration for {customerCode}", ex);
+                }
+                finally
+                {
+                    logger.Info("end StopConfiguration for {0}", customerCode);
+                }
+            }
+        }
+
+        private void UpdateConfiguration(string customerCode)
 		{
             _identityProvider.Identity = new Identity(customerCode);
             var configProvider = ObjectFactoryBase.Resolve<INotificationProvider>();
@@ -100,7 +150,7 @@ namespace QA.Core.DPC
                     {
                         var sender = items.First(itm => itm.Key == key).Sender;
                         sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval));
-                        logger.Info("Updete sender for {0} whith delay {1} and interval {2}", key, delay, config.CheckInterval);
+                        logger.Info("Update sender for {0} whith delay {1} and interval {2}", key, delay, config.CheckInterval);
                     }
                     else
                     {
@@ -125,7 +175,7 @@ namespace QA.Core.DPC
                         if (config.Autopublish)
                         {
                             sender.Change(new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval));
-                            logger.Info("Updete autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
+                            logger.Info("Update autopublish for {0} whith delay {1} and interval {2}", autopublishKey, delay, config.CheckInterval);
                         }
                         else
                         {
@@ -145,7 +195,7 @@ namespace QA.Core.DPC
 
                     var itemsToStop = items
                         .Where(itm =>
-                            itm.Key.StartsWith(customerCode) &&
+                            itm.Key.StartsWith(GetKeyPrefix(customerCode)) &&
                             itm.Key != autopublishKey &&
                             !config.Channels.Any(c => GetKey(c.Name, customerCode) == itm.Key && c.DegreeOfParallelism > 0));
 
@@ -166,16 +216,21 @@ namespace QA.Core.DPC
             }
         }
 
+        private static string GetKeyPrefix(string customerCode)
+        {
+            return $"{customerCode}_{KeySeparator}";
+        }
+
         private static string GetKey(string channelName, string customerCode)
         {
-            return $"{customerCode}_{channelName}";
+            return $"{GetKeyPrefix(customerCode)}_{channelName}";
         }
 		private void NotificationService_OnUpdateConfiguration(object sender, string customerCode)
 		{
 			UpdateConfiguration(customerCode);
 		}
 
-		public static void SendToOneChannel(object stateInfo)
+        public static void SendToOneChannel(object stateInfo)
         {            
             var descriptor = (ChannelDescriptor)stateInfo;
             _identityProvider.Identity = new Identity(descriptor.CustomerCode);
@@ -184,15 +239,15 @@ namespace QA.Core.DPC
             var config = ConfigDictionary[descriptor.CustomerCode];
 
             try
-            {
+            {                
                 var key = GetKey(descriptor.ChannelName, descriptor.CustomerCode);
                 var state = _lockers[key];
 
-				if (Monitor.TryEnter(state))
+                if (Monitor.TryEnter(state))
                 {
                     try
                     {
-						if (!state.BlockState.HasValue || state.BlockState.Value.AddSeconds(config.WaitIntervalAfterErrors) <= DateTime.Now)
+                        if (!state.BlockState.HasValue || state.BlockState.Value.AddSeconds(config.WaitIntervalAfterErrors) <= DateTime.Now)
                         {
 							if (state.BlockState.HasValue)
                             {
@@ -200,9 +255,9 @@ namespace QA.Core.DPC
 								state.BlockState = null; //снимаем блокировку, если прошел указанные интервал и пробуем отправить снова
                             }
 
-							IMessageService service = ObjectFactoryBase.Resolve<IMessageService>();
+                            var service = ObjectFactoryBase.Resolve<IMessageService>();
+                            var res = service.GetMessagesToSend(descriptor.ChannelName, config.PackageSize);
 
-							var res = service.GetMessagesToSend(descriptor.ChannelName, config.PackageSize);
                             if (res.IsSucceeded)
                             {
 								var channel = GetChannel(config, descriptor.ChannelName);
@@ -221,6 +276,11 @@ namespace QA.Core.DPC
                                     logger.Info("Выставление временной блокировки попыток отправки сообщений для канала {0}, кастомер код {1}", channel.Name, descriptor.CustomerCode);
 								}
                             }
+                            else
+                            {
+                                state.BlockState = DateTime.Now;
+                                logger.LogInfo(() => $"Очередь для канала {descriptor.ChannelName}, кастомер код {descriptor.CustomerCode} недоступна, выставление временной блокировки попыток отправки сообщений");
+                            }
                         }
                     }
                     finally
@@ -230,9 +290,9 @@ namespace QA.Core.DPC
                 }
                 else
                 {                    
-                    logger.Info("Очередь для канала {0}, кастомер код {1} все еще занята отправкой сообщений", descriptor.ChannelName, descriptor.CustomerCode);
+                    logger.Info($"Очередь для канала {0}, кастомер код {1} все еще занята отправкой сообщений", descriptor.ChannelName, descriptor.CustomerCode);
                 }
-            }
+            }           
             catch (Exception ex)
             {
                 logger.ErrorException("Ошибка при обработке сообщений из очереди для канала {0}, кастомер код {1}", ex, descriptor.ChannelName, descriptor.CustomerCode);
@@ -243,14 +303,25 @@ namespace QA.Core.DPC
         {
             var customerCode = stateInfo as string;
             var autopublishKey = GetKey(AutopublishKey, customerCode);
+            var config = ConfigDictionary[customerCode];
             var state = _lockers[autopublishKey];
 
             if (Monitor.TryEnter(state))
             {
                 try
                 {
-                    var task = ObjectFactoryBase.Resolve<ITask>();
-                    task.Run(customerCode, null, null, null);
+                    if (!state.BlockState.HasValue || state.BlockState.Value.AddSeconds(config.WaitIntervalAfterErrors) <= DateTime.Now)
+                    {
+                        var task = ObjectFactoryBase.Resolve<ITask>();
+                        task.Run(customerCode, null, null, null);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    state.BlockState = DateTime.Now;
+                    var logger = ObjectFactoryBase.Resolve<ILogger>();
+                    logger.LogInfo(() => $"Автопубликация для кастомер кодя {customerCode} недоступна, выставление временной блокировки попыток отправки сообщений");
+                    logger.ErrorException($"Can't run autopublish for {customerCode}", ex);
                 }
                 finally
                 {

@@ -109,18 +109,28 @@ namespace QA.Core.DPC
 
         public void UpdateConfiguration(string customerCode)
 		{
-			if (OnUpdateConfiguration != null)
-			{
-				OnUpdateConfiguration(this, customerCode);
-            }
+            OnUpdateConfiguration?.Invoke(this, customerCode);
         }
 
         public ConfigurationInfo GetConfigurationInfo(string customerCode)
         {
             _identityProvider.Identity = new Identity(customerCode);
-            var channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
-            var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
+            INotificationProvider provider;
 
+            try
+            {
+                provider = ObjectFactoryBase.Resolve<INotificationProvider>();
+            }
+            catch
+            {
+                return new ConfigurationInfo
+                {
+                    ActualSettings = null,
+                    CurrentSettings = null
+                };
+            }
+
+            var channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
             var currentConfiguration = GetCurrentConfiguration(customerCode);
             var actualConfiguration = provider.GetConfiguration();
 
