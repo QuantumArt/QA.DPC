@@ -58,7 +58,7 @@ namespace QA.Core.DPC
             var logger = unityContainer.Resolve<ILogger>();
             unityContainer.RegisterType<NotificationsModelDataContext>(new InjectionFactory(c => new NotificationsModelDataContext(c.Resolve<IConnectionProvider>().GetConnection(QP.Models.Service.Notification))));
 
-            var autoRegister = false;
+            var autoRegister = true;
             var watcherInterval = TimeSpan.FromMinutes(1);
 
             if (connection.QPMode)
