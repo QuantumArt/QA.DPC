@@ -121,11 +121,16 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                     StopTask = () => taskService.Cancel(taskFromQueueInfo.ID);
                                 }
 
-                                task.Run(taskFromQueueInfo.Data, taskFromQueueInfo.Config, taskFromQueueInfo.BinData, executionContext);
-
-                                lock (_stateLoker)
+                                try
                                 {
-                                    StopTask = null;
+                                    task.Run(taskFromQueueInfo.Data, taskFromQueueInfo.Config, taskFromQueueInfo.BinData, executionContext);
+                                }
+                                finally
+                                {
+                                    lock (_stateLoker)
+                                    {
+                                        StopTask = null;
+                                    }
                                 }
 
                                 taskService.ChangeTaskState(taskIdToRun.Value, executionContext.IsCancelled ? ActionsRunnerModel.State.Cancelled : ActionsRunnerModel.State.Done, executionContext.Message);
