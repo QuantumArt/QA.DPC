@@ -114,6 +114,7 @@ namespace QA.Core.DPC.QP.Cache
         /// </summary>
         public virtual void Dispose()
         {
+            _cache.Dispose();
         }
 
 

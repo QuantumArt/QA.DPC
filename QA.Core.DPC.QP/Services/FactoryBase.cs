@@ -93,6 +93,7 @@ namespace QA.Core.DPC.QP.Services
                 if (_container.TryGetValue(key, out Dictionary<Type, object> internalContainer))
                 {
                     internalContainer.Values
+                        .Distinct()
                         .OfType<IDisposable>()
                         .ToList()
                         .ForEach(x => x.Dispose());
