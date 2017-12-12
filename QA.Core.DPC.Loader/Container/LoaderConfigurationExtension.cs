@@ -12,6 +12,7 @@ using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 
 namespace QA.Core.DPC.Loader.Container
@@ -97,7 +98,7 @@ namespace QA.Core.DPC.Loader.Container
                     new ResolvedParameter<IReadOnlyArticleService>("CachedReadOnlyArticleServiceAdapter"),
                     new ResolvedParameter<IFieldService>("FieldServiceAdapterAlwaysAdmin"),
                     typeof(ISettingsService),
-                    typeof(IConsumerMonitoringService),
+                    typeof(IList<IConsumerMonitoringService>),
                     typeof(IArticleFormatter),
                     typeof(IConnectionProvider)
                 ));
