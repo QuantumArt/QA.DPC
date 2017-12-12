@@ -376,7 +376,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             if (productsToRemove.Length > 0)
             {
                 // проверяем, какие из проблемных продуктов присутствуют на витрине
-                productsToRemove = ObjectFactoryBase.Resolve<IConsumerMonitoringService>().FindExistingProducts(productsToRemove);
+                productsToRemove = ObjectFactoryBase
+                    .Resolve<IList<IConsumerMonitoringService>>()
+                    .SelectMany(s => s.FindExistingProducts(productsToRemove))
+                    .Distinct()
+                    .ToArray();
 
                 if (productsToRemove.Length > 0)
                 {

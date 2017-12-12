@@ -45,7 +45,7 @@ namespace QA.Core.DPC.Loader
         private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly IFieldService _fieldService;
         private readonly ISettingsService _settingsService;
-        private readonly IConsumerMonitoringService _consumerMonitoringService;
+        private readonly IList<IConsumerMonitoringService> _consumerMonitoringServices;
         private readonly IArticleFormatter _formatter;
 
         private IReadOnlyArticleService ArticleService { get; }
@@ -54,7 +54,7 @@ namespace QA.Core.DPC.Loader
         public ProductLoader(IContentDefinitionService definitionService, ILogger logger,
             IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher,
             IReadOnlyArticleService articleService, IFieldService fieldService, ISettingsService settingsService,
-            IConsumerMonitoringService consumerMonitoringService, IArticleFormatter formatter, IConnectionProvider connectionProvider)
+            IList<IConsumerMonitoringService> consumerMonitoringServices, IArticleFormatter formatter, IConnectionProvider connectionProvider)
         {
             _definitionService = definitionService;
             _logger = logger;
@@ -63,7 +63,7 @@ namespace QA.Core.DPC.Loader
             ArticleService = articleService;
             _fieldService = fieldService;
             _settingsService = settingsService;
-            _consumerMonitoringService = consumerMonitoringService;
+            _consumerMonitoringServices = consumerMonitoringServices;
             _formatter = formatter;
 
             _connectionString = connectionProvider.GetConnection();
@@ -261,8 +261,19 @@ namespace QA.Core.DPC.Loader
 
             if (missingIds.Any())
             {
-                var idsToСlarify = _consumerMonitoringService.FindExistingProducts(missingIds);
-                products.AddRange(missingIds.Select(id => GetMissingProduct(idsToСlarify, id)));
+                foreach (var consumerMonitoringService in _consumerMonitoringServices)
+                {
+                    var idsToСlarify = consumerMonitoringService.FindExistingProducts(missingIds);
+                    products.AddRange(idsToСlarify.Select(id => GetReferenceProduct(consumerMonitoringService, id)));
+                    missingIds = missingIds.Except(idsToСlarify).ToArray();
+
+                    if (!missingIds.Any())
+                    {
+                        break;
+                    }
+                }
+
+                products.AddRange(missingIds.Select(id => GetMissingProduct(id)));
             }
 
             products.AddRange(existingItems.Select(item => GetExistingProduct(item)));
@@ -317,23 +328,8 @@ namespace QA.Core.DPC.Loader
             return product;
         }
 
-        private Article GetMissingProduct(IEnumerable<int> idsToСlarify, int id)
+        private Article GetMissingProduct(int id)
         {
-            if (idsToСlarify.Contains(id))
-            {
-                var productData = _consumerMonitoringService.GetProduct(id);
-
-                if (!string.IsNullOrEmpty(productData))
-                {
-                    using (var prductStream = new MemoryStream(Encoding.UTF8.GetBytes(productData)))
-                    {
-                        var procTask = _formatter.Read(prductStream);
-                        procTask.Wait();
-                        return procTask.Result;
-                    }
-                }
-            }
-
             return new Article
             {
                 Id = id,
@@ -343,6 +339,23 @@ namespace QA.Core.DPC.Loader
                 ContentName = string.Empty,
                 IsPublished = true
             };
+        }
+
+        private Article GetReferenceProduct(IConsumerMonitoringService consumerMonitoringService, int id)
+        {
+            var productData = consumerMonitoringService.GetProduct(id);
+
+            if (!string.IsNullOrEmpty(productData))
+            {
+                using (var prductStream = new MemoryStream(Encoding.UTF8.GetBytes(productData)))
+                {
+                    var procTask = _formatter.Read(prductStream);
+                    procTask.Wait();
+                    return procTask.Result;
+                }
+            }
+
+            return GetMissingProduct(id);
         }
 
         /// <summary>
