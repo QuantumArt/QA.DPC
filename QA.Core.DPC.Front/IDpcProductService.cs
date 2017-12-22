@@ -10,7 +10,7 @@ namespace QA.Core.DPC.Front
 
         ServiceResult UpdateProduct(ProductLocator locator, Product product, string data, string userName, int userId);
 
-        ServiceResult DeleteProduct(ProductLocator locator, int id);
+        ServiceResult DeleteProduct(ProductLocator locator, int id, string data);
 
     }
 }

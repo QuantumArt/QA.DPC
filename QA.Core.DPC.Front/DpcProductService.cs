@@ -143,6 +143,8 @@ namespace QA.Core.DPC.Front
                         ctx.Products.InsertOnSubmit(p);
                     }
 
+                    UpdateProductVersion(ctx, p, product.Regions.Select(r => r.Id), false);
+
                     ctx.SubmitChanges();
                     regionIds.AddRange(p.ProductRegions.Select(x => x.RegionId));
                     foreach (var r in regionIds)
@@ -153,7 +155,7 @@ namespace QA.Core.DPC.Front
             });
         }
 
-        public ServiceResult DeleteProduct(ProductLocator locator, int id)
+        public ServiceResult DeleteProduct(ProductLocator locator, int id, string data)
         {
             return RunAction(new UserContext(), null, () =>
             {
@@ -163,9 +165,53 @@ namespace QA.Core.DPC.Front
                     if (p != null)
                     {
                         ctx.DeleteProduct(p.Id);
+                        p.Data = data;
+                        UpdateProductVersion(ctx, p, null, true);
+                        ctx.SubmitChanges();
                     }
                 }
             });
+        }
+
+        public void UpdateProductVersion(DpcModelDataContext ctx, DAL.Product p, IEnumerable<int> regionIds, bool deleted)
+        {
+            var pv = new ProductVersion
+            {
+                Modification = DateTime.Now,
+                Deleted = deleted,
+                DpcId = p.DpcId,
+                Alias = p.Alias,
+                Created = p.Created,
+                Updated = p.Updated,
+                Data = p.Data,
+                Hash = p.Hash,
+                Format = p.Format,
+                IsLive = p.IsLive,
+                Language = p.Language,
+                MarketingProductId = p.MarketingProductId,
+                ProductType = p.ProductType,
+                Slug = p.Slug,
+                Title = p.Title,
+                UserUpdated = p.UserUpdated,
+                UserUpdatedId = p.UserUpdatedId,
+                Version = p.Version
+            };
+
+            ctx.ProductVersions.InsertOnSubmit(pv);
+
+            if (!deleted)
+            {
+                foreach (var rid in regionIds)
+                {
+                    var pr = new ProductRegionVersion
+                    {
+                        RegionId = rid,
+                        ProductVersion = pv
+                    };
+
+                    ctx.ProductRegionVersions.InsertOnSubmit(pr);
+                }
+            }
         }
 
         private static string GetHash(string data)

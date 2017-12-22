@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace QA.Core.DPC.Front.DAL
 {
-	[DatabaseAttribute(Name=@"dpc_web")]
+	[DatabaseAttribute(Name=@"mts_catalog")]
 	public partial class DpcModelDataContext : DataContext
 	{
 		private static MappingSource mappingSource = new AttributeMappingSource();
@@ -29,9 +29,20 @@ namespace QA.Core.DPC.Front.DAL
 		partial void InsertProduct(Product instance);
 		partial void UpdateProduct(Product instance);
 		partial void DeleteProduct(Product instance);
+		partial void InsertProductRegionVersion(ProductRegionVersion instance);
+		partial void UpdateProductRegionVersion(ProductRegionVersion instance);
+		partial void DeleteProductRegionVersion(ProductRegionVersion instance);
+		partial void InsertProductVersion(ProductVersion instance);
+		partial void UpdateProductVersion(ProductVersion instance);
+		partial void DeleteProductVersion(ProductVersion instance);
 		#endregion
 		
 		#region Construction
+		public DpcModelDataContext() :
+			base(ConfigurationManager.ConnectionStrings["dpc_web"]?.ConnectionString, mappingSource)
+		{
+			OnCreated();
+		}
 	
 		public DpcModelDataContext(string connection) :
 			base(connection, mappingSource)
@@ -67,6 +78,16 @@ namespace QA.Core.DPC.Front.DAL
 		public Table<Product> Products
 		{
 			get { return GetTable<Product>(); }
+		}
+		
+		public Table<ProductRegionVersion> ProductRegionVersions
+		{
+			get { return GetTable<ProductRegionVersion>(); }
+		}
+		
+		public Table<ProductVersion> ProductVersions
+		{
+			get { return GetTable<ProductVersion>(); }
 		}
 		
 		#endregion
@@ -596,6 +617,552 @@ namespace QA.Core.DPC.Front.DAL
 		{
 			SendPropertyChanging();
 			entity.Product = null;
+		}
+		#endregion
+	}
+}
+
+namespace QA.Core.DPC.Front.DAL
+{	
+	[Table(Name=@"dbo.ProductRegionVersions")]
+	public partial class ProductRegionVersion : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		#region Property Change Event Handling
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		public virtual void SendPropertyChanging()
+		{
+			if (PropertyChanging != null) {
+				PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+			
+		public virtual void SendPropertyChanged(String propertyName)
+		{
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		#endregion
+		
+		#region Extensibility Method Definitions
+		partial void OnLoaded();
+		partial void OnValidate(ChangeAction action);
+		partial void OnCreated();
+		#endregion
+
+		#region Construction
+		public ProductRegionVersion()
+		{
+			_ProductVersion = default(EntityRef<ProductVersion>); 
+			OnCreated();
+		}
+		#endregion
+
+		#region Column Mappings
+		partial void OnIdChanging(int value);
+		partial void OnIdChanged();
+		private int _Id;
+		[Column(Storage=@"_Id", AutoSync=AutoSync.OnInsert, DbType=@"Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true, UpdateCheck=UpdateCheck.Never)]
+		public int Id
+		{
+			get { return _Id; }
+			set {
+				if (_Id != value) {
+					OnIdChanging(value);
+					SendPropertyChanging();
+					_Id = value;
+					SendPropertyChanged("Id");
+					OnIdChanged();
+				}
+			}
+		}
+		
+		partial void OnProductVersionIdChanging(int value);
+		partial void OnProductVersionIdChanged();
+		private int _ProductVersionId;
+		[Column(Storage=@"_ProductVersionId", DbType=@"Int NOT NULL", CanBeNull=false)]
+		public int ProductVersionId
+		{
+			get { return _ProductVersionId; }
+			set {
+				if (_ProductVersionId != value) {
+					if (_ProductVersion.HasLoadedOrAssignedValue) {
+						throw new ForeignKeyReferenceAlreadyHasValueException();
+					}
+					OnProductVersionIdChanging(value);
+					SendPropertyChanging();
+					_ProductVersionId = value;
+					SendPropertyChanged("ProductVersionId");
+					OnProductVersionIdChanged();
+				}
+			}
+		}
+		
+		partial void OnRegionIdChanging(int value);
+		partial void OnRegionIdChanged();
+		private int _RegionId;
+		[Column(Storage=@"_RegionId", DbType=@"Int NOT NULL", CanBeNull=false)]
+		public int RegionId
+		{
+			get { return _RegionId; }
+			set {
+				if (_RegionId != value) {
+					OnRegionIdChanging(value);
+					SendPropertyChanging();
+					_RegionId = value;
+					SendPropertyChanged("RegionId");
+					OnRegionIdChanged();
+				}
+			}
+		}
+		
+		#endregion
+		
+		#region Associations
+		private EntityRef<ProductVersion> _ProductVersion;
+		[Association(Name=@"ProductVersion_ProductRegionVersion", Storage=@"_ProductVersion", ThisKey=@"ProductVersionId", OtherKey=@"Id", IsForeignKey=true)]
+		public ProductVersion ProductVersion
+		{
+			get {
+				return _ProductVersion.Entity;
+			}
+			set {
+				ProductVersion previousValue = _ProductVersion.Entity;
+				if ((previousValue != value) || (!_ProductVersion.HasLoadedOrAssignedValue)) {
+					SendPropertyChanging();
+					if (previousValue != null) {
+						_ProductVersion.Entity = null;
+						previousValue.ProductRegionVersions.Remove(this);
+					}
+					_ProductVersion.Entity = value;
+					if (value != null) {
+						value.ProductRegionVersions.Add(this);
+						_ProductVersionId = value.Id;
+					}
+					else {
+						_ProductVersionId = default(int);
+					}
+					SendPropertyChanged("ProductVersion");
+				}
+			}
+		}
+
+		#endregion
+	}
+}
+
+namespace QA.Core.DPC.Front.DAL
+{	
+	[Table(Name=@"dbo.ProductVersions")]
+	public partial class ProductVersion : INotifyPropertyChanging, INotifyPropertyChanged
+	{
+		#region Property Change Event Handling
+		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
+		
+		public event PropertyChangingEventHandler PropertyChanging;
+		public event PropertyChangedEventHandler PropertyChanged;
+		
+		public virtual void SendPropertyChanging()
+		{
+			if (PropertyChanging != null) {
+				PropertyChanging(this, emptyChangingEventArgs);
+			}
+		}
+			
+		public virtual void SendPropertyChanged(String propertyName)
+		{
+			if (PropertyChanged != null) {
+				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+		#endregion
+		
+		#region Extensibility Method Definitions
+		partial void OnLoaded();
+		partial void OnValidate(ChangeAction action);
+		partial void OnCreated();
+		#endregion
+
+		#region Construction
+		public ProductVersion()
+		{
+			_ProductRegionVersions = new EntitySet<ProductRegionVersion>(attach_ProductRegionVersions, detach_ProductRegionVersions);
+			OnCreated();
+		}
+		#endregion
+
+		#region Column Mappings
+		partial void OnIdChanging(int value);
+		partial void OnIdChanged();
+		private int _Id;
+		[Column(Storage=@"_Id", AutoSync=AutoSync.OnInsert, DbType=@"Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true, UpdateCheck=UpdateCheck.Never)]
+		public int Id
+		{
+			get { return _Id; }
+			set {
+				if (_Id != value) {
+					OnIdChanging(value);
+					SendPropertyChanging();
+					_Id = value;
+					SendPropertyChanged("Id");
+					OnIdChanged();
+				}
+			}
+		}
+		
+		partial void OnDeletedChanging(bool value);
+		partial void OnDeletedChanged();
+		private bool _Deleted;
+		[Column(Storage=@"_Deleted", DbType=@"Bit NOT NULL", CanBeNull=false)]
+		public bool Deleted
+		{
+			get { return _Deleted; }
+			set {
+				if (_Deleted != value) {
+					OnDeletedChanging(value);
+					SendPropertyChanging();
+					_Deleted = value;
+					SendPropertyChanged("Deleted");
+					OnDeletedChanged();
+				}
+			}
+		}
+		
+		partial void OnModificationChanging(DateTime value);
+		partial void OnModificationChanged();
+		private DateTime _Modification;
+		[Column(Storage=@"_Modification", DbType=@"DateTime NOT NULL", CanBeNull=false)]
+		public DateTime Modification
+		{
+			get { return _Modification; }
+			set {
+				if (_Modification != value) {
+					OnModificationChanging(value);
+					SendPropertyChanging();
+					_Modification = value;
+					SendPropertyChanged("Modification");
+					OnModificationChanged();
+				}
+			}
+		}
+		
+		partial void OnDpcIdChanging(int value);
+		partial void OnDpcIdChanged();
+		private int _DpcId;
+		[Column(Storage=@"_DpcId", DbType=@"Int NOT NULL", CanBeNull=false)]
+		public int DpcId
+		{
+			get { return _DpcId; }
+			set {
+				if (_DpcId != value) {
+					OnDpcIdChanging(value);
+					SendPropertyChanging();
+					_DpcId = value;
+					SendPropertyChanged("DpcId");
+					OnDpcIdChanged();
+				}
+			}
+		}
+		
+		partial void OnSlugChanging(string value);
+		partial void OnSlugChanged();
+		private string _Slug;
+		[Column(Storage=@"_Slug", DbType=@"NVarChar(50)")]
+		public string Slug
+		{
+			get { return _Slug; }
+			set {
+				if (_Slug != value) {
+					OnSlugChanging(value);
+					SendPropertyChanging();
+					_Slug = value;
+					SendPropertyChanged("Slug");
+					OnSlugChanged();
+				}
+			}
+		}
+		
+		partial void OnVersionChanging(int value);
+		partial void OnVersionChanged();
+		private int _Version;
+		[Column(Storage=@"_Version", DbType=@"Int NOT NULL", CanBeNull=false)]
+		public int Version
+		{
+			get { return _Version; }
+			set {
+				if (_Version != value) {
+					OnVersionChanging(value);
+					SendPropertyChanging();
+					_Version = value;
+					SendPropertyChanged("Version");
+					OnVersionChanged();
+				}
+			}
+		}
+		
+		partial void OnIsLiveChanging(bool value);
+		partial void OnIsLiveChanged();
+		private bool _IsLive;
+		[Column(Storage=@"_IsLive", DbType=@"Bit NOT NULL", CanBeNull=false)]
+		public bool IsLive
+		{
+			get { return _IsLive; }
+			set {
+				if (_IsLive != value) {
+					OnIsLiveChanging(value);
+					SendPropertyChanging();
+					_IsLive = value;
+					SendPropertyChanged("IsLive");
+					OnIsLiveChanged();
+				}
+			}
+		}
+		
+		partial void OnLanguageChanging(string value);
+		partial void OnLanguageChanged();
+		private string _Language;
+		[Column(Storage=@"_Language", DbType=@"NVarChar(10)")]
+		public string Language
+		{
+			get { return _Language; }
+			set {
+				if (_Language != value) {
+					OnLanguageChanging(value);
+					SendPropertyChanging();
+					_Language = value;
+					SendPropertyChanged("Language");
+					OnLanguageChanged();
+				}
+			}
+		}
+		
+		partial void OnFormatChanging(string value);
+		partial void OnFormatChanged();
+		private string _Format;
+		[Column(Storage=@"_Format", DbType=@"NVarChar(10) NOT NULL", CanBeNull=false)]
+		public string Format
+		{
+			get { return _Format; }
+			set {
+				if (_Format != value) {
+					OnFormatChanging(value);
+					SendPropertyChanging();
+					_Format = value;
+					SendPropertyChanged("Format");
+					OnFormatChanged();
+				}
+			}
+		}
+		
+		partial void OnDataChanging(string value);
+		partial void OnDataChanged();
+		private string _Data;
+		[Column(Storage=@"_Data", DbType=@"NVarChar(MAX) NOT NULL", CanBeNull=false)]
+		public string Data
+		{
+			get { return _Data; }
+			set {
+				if (_Data != value) {
+					OnDataChanging(value);
+					SendPropertyChanging();
+					_Data = value;
+					SendPropertyChanged("Data");
+					OnDataChanged();
+				}
+			}
+		}
+		
+		partial void OnAliasChanging(string value);
+		partial void OnAliasChanged();
+		private string _Alias;
+		[Column(Storage=@"_Alias", DbType=@"NVarChar(250)")]
+		public string Alias
+		{
+			get { return _Alias; }
+			set {
+				if (_Alias != value) {
+					OnAliasChanging(value);
+					SendPropertyChanging();
+					_Alias = value;
+					SendPropertyChanged("Alias");
+					OnAliasChanged();
+				}
+			}
+		}
+		
+		partial void OnCreatedChanging(DateTime value);
+		partial void OnCreatedChanged();
+		private DateTime _Created;
+		[Column(Storage=@"_Created", DbType=@"DateTime NOT NULL", CanBeNull=false)]
+		public DateTime Created
+		{
+			get { return _Created; }
+			set {
+				if (_Created != value) {
+					OnCreatedChanging(value);
+					SendPropertyChanging();
+					_Created = value;
+					SendPropertyChanged("Created");
+					OnCreatedChanged();
+				}
+			}
+		}
+		
+		partial void OnUpdatedChanging(DateTime value);
+		partial void OnUpdatedChanged();
+		private DateTime _Updated;
+		[Column(Storage=@"_Updated", DbType=@"DateTime NOT NULL", CanBeNull=false)]
+		public DateTime Updated
+		{
+			get { return _Updated; }
+			set {
+				if (_Updated != value) {
+					OnUpdatedChanging(value);
+					SendPropertyChanging();
+					_Updated = value;
+					SendPropertyChanged("Updated");
+					OnUpdatedChanged();
+				}
+			}
+		}
+		
+		partial void OnHashChanging(string value);
+		partial void OnHashChanged();
+		private string _Hash;
+		[Column(Storage=@"_Hash", DbType=@"NVarChar(2000) NOT NULL", CanBeNull=false)]
+		public string Hash
+		{
+			get { return _Hash; }
+			set {
+				if (_Hash != value) {
+					OnHashChanging(value);
+					SendPropertyChanging();
+					_Hash = value;
+					SendPropertyChanged("Hash");
+					OnHashChanged();
+				}
+			}
+		}
+		
+		partial void OnMarketingProductIdChanging(int? value);
+		partial void OnMarketingProductIdChanged();
+		private int? _MarketingProductId;
+		[Column(Storage=@"_MarketingProductId", DbType=@"Int")]
+		public int? MarketingProductId
+		{
+			get { return _MarketingProductId; }
+			set {
+				if (_MarketingProductId != value) {
+					OnMarketingProductIdChanging(value);
+					SendPropertyChanging();
+					_MarketingProductId = value;
+					SendPropertyChanged("MarketingProductId");
+					OnMarketingProductIdChanged();
+				}
+			}
+		}
+		
+		partial void OnTitleChanging(string value);
+		partial void OnTitleChanged();
+		private string _Title;
+		[Column(Storage=@"_Title", DbType=@"NVarChar(500)")]
+		public string Title
+		{
+			get { return _Title; }
+			set {
+				if (_Title != value) {
+					OnTitleChanging(value);
+					SendPropertyChanging();
+					_Title = value;
+					SendPropertyChanged("Title");
+					OnTitleChanged();
+				}
+			}
+		}
+		
+		partial void OnUserUpdatedChanging(string value);
+		partial void OnUserUpdatedChanged();
+		private string _UserUpdated;
+		[Column(Storage=@"_UserUpdated", DbType=@"NVarChar(50)")]
+		public string UserUpdated
+		{
+			get { return _UserUpdated; }
+			set {
+				if (_UserUpdated != value) {
+					OnUserUpdatedChanging(value);
+					SendPropertyChanging();
+					_UserUpdated = value;
+					SendPropertyChanged("UserUpdated");
+					OnUserUpdatedChanged();
+				}
+			}
+		}
+		
+		partial void OnUserUpdatedIdChanging(int? value);
+		partial void OnUserUpdatedIdChanged();
+		private int? _UserUpdatedId;
+		[Column(Storage=@"_UserUpdatedId", DbType=@"Int")]
+		public int? UserUpdatedId
+		{
+			get { return _UserUpdatedId; }
+			set {
+				if (_UserUpdatedId != value) {
+					OnUserUpdatedIdChanging(value);
+					SendPropertyChanging();
+					_UserUpdatedId = value;
+					SendPropertyChanged("UserUpdatedId");
+					OnUserUpdatedIdChanged();
+				}
+			}
+		}
+		
+		partial void OnProductTypeChanging(string value);
+		partial void OnProductTypeChanged();
+		private string _ProductType;
+		[Column(Storage=@"_ProductType", DbType=@"NVarChar(250)")]
+		public string ProductType
+		{
+			get { return _ProductType; }
+			set {
+				if (_ProductType != value) {
+					OnProductTypeChanging(value);
+					SendPropertyChanging();
+					_ProductType = value;
+					SendPropertyChanged("ProductType");
+					OnProductTypeChanged();
+				}
+			}
+		}
+		
+		#endregion
+		
+		#region Associations
+		private EntitySet<ProductRegionVersion> _ProductRegionVersions;
+		[Association(Name=@"ProductVersion_ProductRegionVersion", Storage=@"_ProductRegionVersions", ThisKey=@"Id", OtherKey=@"ProductVersionId")]
+		public EntitySet<ProductRegionVersion> ProductRegionVersions
+		{
+			get {
+				return _ProductRegionVersions;
+			}
+			set {
+				_ProductRegionVersions.Assign(value);
+			}
+		}
+
+		private void attach_ProductRegionVersions(ProductRegionVersion entity)
+		{
+			SendPropertyChanging();
+			entity.ProductVersion = this;
+		}
+		
+		private void detach_ProductRegionVersions(ProductRegionVersion entity)
+		{
+			SendPropertyChanging();
+			entity.ProductVersion = null;
 		}
 		#endregion
 	}

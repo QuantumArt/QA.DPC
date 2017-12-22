@@ -89,7 +89,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                     {
                         Logger.Info($"Deleting product {p.Id}...");
 
-                        var res2 = ProductService.DeleteProduct(locator, p.Id);
+                        var res2 = ProductService.DeleteProduct(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
                             throw new Exception($"Error while deleting product {p.Id}: {res2.Error.Message}");
