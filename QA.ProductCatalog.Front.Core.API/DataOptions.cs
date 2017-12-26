@@ -3,5 +3,6 @@
     public class DataOptions
     {
         public string FixedConnectionString { get; set; }
+        public bool UseProductVersions { get; set; }
     }
 }

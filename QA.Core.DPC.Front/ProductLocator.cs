@@ -24,6 +24,9 @@ namespace QA.Core.DPC.Front
         [BindNever]
         public string FixedConnectionString { get; set; }
 
+        [BindNever]
+        public bool UseProductVersions { get; set; }
+
         public bool IsLive { get; set; }
 
         [ModelBinder(Name = "language")]
