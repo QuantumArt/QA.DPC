@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Transactions;
 using QA.Core.DPC.Front.DAL;
 using QA.Core.Logger;
 using QA.Core.Service.Interaction;
@@ -323,6 +324,7 @@ namespace QA.Core.DPC.Front
         public int[] GetAllProductVersionId(ProductLocator locator, int page, int pageSize, DateTime date)
         {
             using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+            using (new TransactionScope(TransactionScopeOption.Required, new TransactionOptions() { IsolationLevel = IsolationLevel.ReadUncommitted }))
             {
                 var productVersions = ctx.GetProductVersions(locator, date);
 
