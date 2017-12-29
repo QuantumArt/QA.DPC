@@ -16,7 +16,7 @@ using System.Reflection;
 
 namespace QA.Core.DPC.Front.DAL
 {
-	[DatabaseAttribute(Name=@"mts_catalog")]
+	[DatabaseAttribute(Name=@"dpc_web")]
 	public partial class DpcModelDataContext : DataContext
 	{
 		private static MappingSource mappingSource = new AttributeMappingSource();
