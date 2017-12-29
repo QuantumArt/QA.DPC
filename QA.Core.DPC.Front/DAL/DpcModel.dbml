@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?><Database Name="mts_catalog" EntityNamespace="QA.Core.DPC.Front.DAL" ContextNamespace="QA.Core.DPC.Front.DAL" Class="DpcModelDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=mscsql01;Initial Catalog=mts_catalog;Integrated Security=True" SettingsObjectName="QA.Core.DPC.Front.Properties.Settings" SettingsPropertyName="mts_catalogConnectionString" Provider="System.Data.SqlClient" />
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Database Name="dpc_web" EntityNamespace="QA.Core.DPC.Front.DAL" ContextNamespace="QA.Core.DPC.Front.DAL" Class="DpcModelDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">  
   <Table Name="dbo.ProductRegions" Member="ProductRegions">
     <Type Name="ProductRegion">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />

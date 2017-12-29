@@ -38,11 +38,6 @@ namespace QA.Core.DPC.Front.DAL
 		#endregion
 		
 		#region Construction
-		public DpcModelDataContext() :
-			base(ConfigurationManager.ConnectionStrings["dpc_web"]?.ConnectionString, mappingSource)
-		{
-			OnCreated();
-		}
 	
 		public DpcModelDataContext(string connection) :
 			base(connection, mappingSource)
