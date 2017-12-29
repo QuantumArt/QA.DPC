@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Database Name="dpc_web" EntityNamespace="QA.Core.DPC.Front.DAL" ContextNamespace="QA.Core.DPC.Front.DAL" Class="DpcModelDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+<Database Name="dpc_web" EntityNamespace="QA.Core.DPC.Front.DAL" ContextNamespace="QA.Core.DPC.Front.DAL" Class="DpcModelDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">  
   <Table Name="dbo.ProductRegions" Member="ProductRegions">
     <Type Name="ProductRegion">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -28,6 +28,38 @@
       <Column Name="UserUpdatedId" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="ProductType" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
       <Association Name="Product_ProductRegion" Member="ProductRegions" ThisKey="Id" OtherKey="ProductId" Type="ProductRegion" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ProductRegionVersions" Member="ProductRegionVersions">
+    <Type Name="ProductRegionVersion">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ProductVersionId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="RegionId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="ProductVersion_ProductRegionVersion" Member="ProductVersion" ThisKey="ProductVersionId" OtherKey="Id" Type="ProductVersion" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.ProductVersions" Member="ProductVersions">
+    <Type Name="ProductVersion">
+      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Deleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Modification" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="DpcId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Slug" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="Version" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsLive" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Language" Type="System.String" DbType="NVarChar(10)" CanBeNull="true" />
+      <Column Name="Format" Type="System.String" DbType="NVarChar(10) NOT NULL" CanBeNull="false" />
+      <Column Name="Data" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="Alias" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Column Name="Created" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="Updated" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="Hash" Type="System.String" DbType="NVarChar(2000) NOT NULL" CanBeNull="false" />
+      <Column Name="MarketingProductId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(500)" CanBeNull="true" />
+      <Column Name="UserUpdated" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
+      <Column Name="UserUpdatedId" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ProductType" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
+      <Association Name="ProductVersion_ProductRegionVersion" Member="ProductRegionVersions" ThisKey="Id" OtherKey="ProductVersionId" Type="ProductRegionVersion" />
     </Type>
   </Table>
   <Function Name="dbo.RegionUpdated" Method="RegionUpdated">

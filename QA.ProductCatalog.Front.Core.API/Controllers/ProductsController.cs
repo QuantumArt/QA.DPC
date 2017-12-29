@@ -32,7 +32,6 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         [HttpGet]
         [HttpGet("{language}/{state}")]
-
         public ActionResult GetProductIds(ProductLocator locator, int page, DateTime? date, int pageSize = Int32.MaxValue)
         {
             ApplyOptions(locator);
@@ -50,7 +49,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 return Content($"<ids>{ints2}</ids>", XmlHeader);
             }
 
-        }
+        }              
 
         [HttpGet("{id:int}")]
         [HttpGet("{language}/{state}/{id:int}")]
@@ -67,6 +66,40 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 ? Content(data.Product, JsonHeader)
                 : Content(data.Product, XmlHeader);
 
+        }
+
+        [HttpGet]
+        [HttpGet("{language}/{state}/{date}")]
+        public ActionResult GetProductVersionIds(ProductLocator locator, int page, DateTime date, int pageSize = Int32.MaxValue)
+        {
+            ApplyOptions(locator);
+            var ints = DpcService.GetAllProductVersionId(locator, page, pageSize, date);
+
+            if (locator.Format == "json")
+            {
+                return Json(ints);
+            }
+            else
+            {
+                var ints2 = String.Join("", ints.Select(n => $"<id>{n}</id>").ToList());
+                return Content($"<ids>{ints2}</ids>", XmlHeader);
+            }
+        }
+
+
+        [HttpGet("{id:int}")]
+        [HttpGet("{language}/{state}/{date}/{id:int}")]
+        public ActionResult GetProductVersion(ProductLocator locator, int id, DateTime date)
+        {
+            ApplyOptions(locator);
+            var data = DpcService.GetProductVersionData(locator, id, date);
+
+            if (data == null)
+                return BadRequest($"Product version {id} is not found");
+
+            return (locator.Format == "json")
+                ? Content(data.Product, JsonHeader)
+                : Content(data.Product, XmlHeader);
         }
 
         private static MediaTypeHeaderValue JsonHeader => new MediaTypeHeaderValue("application/json") { Charset = Encoding.UTF8.WebName};
@@ -89,7 +122,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                     {
                         Logger.Info($"Deleting product {p.Id}...");
 
-                        var res2 = ProductService.DeleteProduct(locator, p.Id);
+                        var res2 = ProductService.DeleteProduct(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
                             throw new Exception($"Error while deleting product {p.Id}: {res2.Error.Message}");
@@ -187,8 +220,10 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         {
             if (!String.IsNullOrEmpty(Options.FixedConnectionString))
             {
-                locator.FixedConnectionString = Options.FixedConnectionString;
+                locator.FixedConnectionString = Options.FixedConnectionString;                
             }
+
+            locator.UseProductVersions = Options.UseProductVersions;
         }
     }
 }
