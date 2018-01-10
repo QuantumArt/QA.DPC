@@ -68,6 +68,7 @@ namespace QA.ProductCatalog.Infrastructure
 	                            Name,
 	                            Address,
 	                            State,
+                                [Language],
 	                            IsDefault,
 	                            DoTrace,
 	                            [Date],
