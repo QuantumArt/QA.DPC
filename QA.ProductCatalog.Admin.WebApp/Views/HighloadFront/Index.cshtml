@@ -7,7 +7,8 @@
                 <tr>
                     <th>По умолчанию</th>
                     <th width="100px" align="center">Язык</th>
-                    <th width="130px">Тип</th>
+                    <th width="100px">Тип</th>
+                    <th width="150px">Дата</th>
                     <th colspan="2">Обработка</th>
                     <th width="200px">Обновление</th>
                     <th width="300px"></th>
@@ -16,12 +17,13 @@
             <tbody data-bind="foreach: tasks">
                 <tr>
                     <td align="center">
-                        <input type="checkbox" disabled  data-bind="checked: IsDefault"/>
+                        <input type="checkbox" disabled data-bind="checked: IsDefault" />
                     </td>
                     <td align="center" data-bind="text: ChannelLanguage"></td>
-                    <td align="center" data-bind="text: ChannelState"></td>                    
+                    <td align="center" data-bind="text: ChannelState"></td>
+                    <td align="center" data-bind="text: getDate(ChannelDate)"></td>                    
                     <td width="20" align="center">
-                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/Content/img/icons/0.gif"/>
+                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/Content/img/icons/0.gif" />
                     </td>
                     <td width="100">
                         <img src="~/Content/KendoUI/Default/loading.gif" style="display:none" />

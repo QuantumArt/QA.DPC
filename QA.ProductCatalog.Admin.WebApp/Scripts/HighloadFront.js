@@ -77,6 +77,14 @@ function getTimePassed(time1, time2) {
     return null;
 }
 
+function getDate(date) {
+    if (date) {
+        return moment(date).calendar();
+    }
+
+    return null;
+}
+
 function getTaskStateLogo(state) {
     if (state == null) {
         return 'Content/img/icons/0.gif';
