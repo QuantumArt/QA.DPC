@@ -21,7 +21,7 @@
                     </td>
                     <td align="center" data-bind="text: ChannelLanguage"></td>
                     <td align="center" data-bind="text: ChannelState"></td>
-                    <td align="center" data-bind="text: moment(ChannelDate).format()"></td>                    
+                    <td align="center" data-bind="text: getDate(ChannelDate)"></td>                    
                     <td width="20" align="center">
                         <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/Content/img/icons/0.gif" />
                     </td>
