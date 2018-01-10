@@ -1,4 +1,6 @@
-﻿namespace QA.ProductCatalog.Infrastructure
+﻿using System;
+
+namespace QA.ProductCatalog.Infrastructure
 {
 	public class ElasticIndex
 	{
@@ -16,5 +18,6 @@
 
         public string ReindexUrl { get; set; }
 
+        public DateTime? Date { get; set; }
     }
 }

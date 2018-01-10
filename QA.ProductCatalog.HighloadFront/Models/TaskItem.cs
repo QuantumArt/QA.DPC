@@ -10,6 +10,7 @@ namespace QA.ProductCatalog.HighloadFront.Models
     {
         public string ChannelLanguage { get; set; }
         public string ChannelState { get; set; }
+        public DateTime? ChannelDate { get; set; }
         public bool IsDefault { get; set; }
         public int? TaskId { get; set; }
         public State? TaskState { get; set; }

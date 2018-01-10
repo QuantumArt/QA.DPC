@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Elasticsearch.Net;
+﻿using Elasticsearch.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Nest;
-using QA.Core;
 using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -104,7 +103,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public string GetReindexUrl(string language, string state)
         {
-            return GetElasticIndices().FirstOrDefault(n => n.Language == language && n.State == state)?.ReindexUrl;
+            return this.GetReindexUrlInternal(language, state);
         }
 
         public string GetUserName(string token)

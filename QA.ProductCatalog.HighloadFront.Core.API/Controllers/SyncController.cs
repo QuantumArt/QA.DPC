@@ -147,7 +147,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 {
                     ChannelLanguage = o.Language,
                     ChannelState = o.State,
-                    IsDefault = o.IsDefault,
+                    ChannelDate = o.Date,
+                    IsDefault = o.IsDefault,                    
                     TaskId = t?.ID,
                     TaskProgress = t?.Progress,
                     TaskState = (State?)t?.StateID,
