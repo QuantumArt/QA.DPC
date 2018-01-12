@@ -111,7 +111,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         [HttpDelete("{language}/{state}")]
         public ActionResult DeleteProduct(ProductLocator locator, [FromBody] string data)
         {
-            if (locator.InstanceId != Options.InstanceId)
+            if (!ValidateInstance(locator.InstanceId, Options.InstanceId))
             {
                 return InstanceError(locator.InstanceId, Options.InstanceId);
             }
@@ -156,7 +156,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         [HttpPut("{language}/{state}")]
         public ActionResult PutProduct(ProductLocator locator, [FromBody] string data, [FromQuery(Name = "UserId")] int userId, [FromQuery(Name = "UserName")] string userName)
         {
-            if (locator.InstanceId != Options.InstanceId)
+            if (!ValidateInstance(locator.InstanceId, Options.InstanceId))
             {
                 return InstanceError(locator.InstanceId, Options.InstanceId);
             }
@@ -209,6 +209,11 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             {
                 return ProceedParseError(data, res1);
             }
+        }
+
+        private bool ValidateInstance(string instanceId, string actualInstanceId)
+        {
+            return instanceId == actualInstanceId || string.IsNullOrEmpty(instanceId) && string.IsNullOrEmpty(actualInstanceId);
         }
 
         private ActionResult InstanceError(string instanceId, string actualInstanceId)

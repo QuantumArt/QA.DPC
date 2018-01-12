@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.SiteSyncWebHost.Controllers
             var logger = ObjectFactoryBase.Resolve<ILogger>();
             var actualInstanceId = ConfigurationManager.AppSettings["DPC.InstanceId"];
 
-            if (instanceId != actualInstanceId)
+            if (!(string.IsNullOrEmpty(instanceId) && string.IsNullOrEmpty(actualInstanceId)) && instanceId != actualInstanceId)
             {
                 logger.LogInfo(() => $"InstanceId {instanceId} указан неверно, должен быть {actualInstanceId}");
                 return new ForbiddenActionResult();
