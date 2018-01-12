@@ -466,7 +466,7 @@ namespace QA.Core.DPC
                 "&ProductId=" + message.Key +
                 "&isStage=" + channel.IsStage +
                 "&customerCode=" + customerCode +
-                "InstanceId=" + instanceId;
+                "&InstanceId=" + instanceId;
         }
 
 		private static NotificationChannel GetChannel(NotificationSenderConfig config, string channel)
