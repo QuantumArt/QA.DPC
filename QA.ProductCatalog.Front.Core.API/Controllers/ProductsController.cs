@@ -8,6 +8,7 @@ using QA.Core;
 using QA.Core.DPC.Front;
 using QA.Core.Logger;
 using QA.Core.Service.Interaction;
+using QA.ProductCatalog.Front.Core.API.ActionResults;
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
 {
@@ -110,6 +111,11 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         [HttpDelete("{language}/{state}")]
         public ActionResult DeleteProduct(ProductLocator locator, [FromBody] string data)
         {
+            if (locator.InstanceId != Options.InstanceId)
+            {
+                return InstanceError(locator.InstanceId, Options.InstanceId);
+            }
+
             ApplyOptions(locator);
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products != null)
@@ -150,6 +156,11 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         [HttpPut("{language}/{state}")]
         public ActionResult PutProduct(ProductLocator locator, [FromBody] string data, [FromQuery(Name = "UserId")] int userId, [FromQuery(Name = "UserName")] string userName)
         {
+            if (locator.InstanceId != Options.InstanceId)
+            {
+                return InstanceError(locator.InstanceId, Options.InstanceId);
+            }
+
             ApplyOptions(locator);
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products?.Any() == true)
@@ -198,6 +209,12 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             {
                 return ProceedParseError(data, res1);
             }
+        }
+
+        private ActionResult InstanceError(string instanceId, string actualInstanceId)
+        {
+            Logger.LogInfo(() => $"InstanceId {instanceId} is wrong. Must be {actualInstanceId}");
+            return new ForbiddenActionResult();
         }
 
         private ActionResult ProceedParseError(string data, ServiceResult<ProductInfo> res1)
