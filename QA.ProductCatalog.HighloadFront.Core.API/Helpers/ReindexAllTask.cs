@@ -31,8 +31,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
             {
                 try
                 {
-                    _manager.DeleteAllASync(language, state).Wait();
-                    _importer.ImportAsync(executionContext, language, state).Wait();
+                    if (_importer.ValidateInstance(language, state))
+                    {
+                        _manager.DeleteAllASync(language, state).Wait();
+                        _importer.ImportAsync(executionContext, language, state).Wait();
+                    }
+                    else
+                    {
+                        throw new Exception($"Не удалось пройти валидацию по InstanceId");
+                    }
                 }
                 finally
                 {

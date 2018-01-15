@@ -1,16 +1,15 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using QA.Core.Logger;
+using QA.Core.ProductCatalog.ActionsRunnerModel;
+using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.HighloadFront.Models;
+using QA.ProductCatalog.HighloadFront.Options;
 using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using QA.ProductCatalog.HighloadFront.Elastic;
-using QA.ProductCatalog.HighloadFront.Models;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
-using QA.Core;
-using Microsoft.Extensions.Options;
-using QA.Core.Logger;
-using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
@@ -39,8 +38,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         [HttpPut]
         [Route("{language}/{state}")]
-        public async Task<HttpResponseMessage> Put([FromBody]PushMessage message, string language, string state)
+        public async Task<HttpResponseMessage> Put([FromBody]PushMessage message, string language, string state, string instanceId = null)
         {
+            if (!ValidateInstance(instanceId, _dataOptions.InstanceId))
+            {
+                return CreateForbiddenResult(instanceId, _dataOptions.InstanceId);
+            }
 
             var syncer = _configuration.GetSyncer(language, state);
             var product = message.Product;
@@ -73,8 +76,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         [HttpDelete]
         [Route("{language}/{state}")]
-        public async Task<object> Delete([FromBody]PushMessage message, string language, string state)
+        public async Task<object> Delete([FromBody]PushMessage message, string language, string state, string instanceId = null)
         {
+            if (!ValidateInstance(instanceId, _dataOptions.InstanceId))
+            {
+                return CreateForbiddenResult(instanceId, _dataOptions.InstanceId);
+            }
+
             var syncer = _configuration.GetSyncer(language, state);
             var product = message.Product;
 
@@ -174,5 +182,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             return new HttpResponseMessage(HttpStatusCode.OK);
         }
+
+        private HttpResponseMessage CreateForbiddenResult(string instanceId, string actualInstanceId)
+        {
+            Logger.LogInfo(() => $"InstanceId {instanceId} указан неверно, должен быть {actualInstanceId}");            
+            return new HttpResponseMessage(HttpStatusCode.Forbidden);
+        }
+
+        private bool ValidateInstance(string instanceId, string actualInstanceId)
+        {
+            return instanceId == actualInstanceId || string.IsNullOrEmpty(instanceId) && string.IsNullOrEmpty(actualInstanceId);
+        }   
     }
 }

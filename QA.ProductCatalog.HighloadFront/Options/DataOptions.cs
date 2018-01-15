@@ -6,6 +6,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
     {
         public bool CanUpdate { get; set; }
 
+        public string InstanceId { get; set; }
+
         public bool QpMode { get; set; }
         
         public string FixedCustomerCode { get; set; }

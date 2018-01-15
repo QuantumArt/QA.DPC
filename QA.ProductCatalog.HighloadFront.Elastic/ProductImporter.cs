@@ -37,6 +37,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _customerCode = customerCode;
         }
 
+        public bool ValidateInstance(string language, string state)
+        {
+            var reindexUrl = _configuration.GetReindexUrl(language, state);
+            var url = $"{reindexUrl}/ValidateInstance";
+            var result = GetContent(url).Result;
+            var validation = JsonConvert.DeserializeObject<bool>(result.Item1);
+            return validation;
+        }
+
         public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state)
         {
             if(executionContext.IsCancellationRequested)
@@ -118,7 +127,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 client.BaseAddress = new Uri(url);
                 client.DefaultRequestHeaders.Accept.Clear();
-                url += "?customerCode=" + _customerCode;
+                url += $"?customerCode={_customerCode}&instanceId={_options.InstanceId}";
                 var response = await client.GetAsync(url);
                 modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
 
