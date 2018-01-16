@@ -38,7 +38,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         [HttpPut]
         [Route("{language}/{state}")]
-        public async Task<HttpResponseMessage> Put([FromBody]PushMessage message, string language, string state, string instanceId = null)
+        public async Task<IActionResult> Put([FromBody]PushMessage message, string language, string state, string instanceId = null)
         {
             if (!ValidateInstance(instanceId, _dataOptions.InstanceId))
             {
@@ -100,7 +100,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 try
                 {
                     var result = await Manager.DeleteAsync(product, language, state);
-
                     return CreateResult(result, Logger);
                 }
                 finally
@@ -168,25 +167,21 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             return r.ToArray();
         }
 
-        private static HttpResponseMessage CreateResult(SonicResult results, ILogger logger)
+        private static IActionResult CreateResult(SonicResult results, ILogger logger)
         {
             if (!results.Succeeded)
             {
                 logger.ErrorException(results.ToString(), results.GetException());
-
-                return new HttpResponseMessage(HttpStatusCode.InternalServerError)
-                {
-                    Content = new StringContent(results.ToString())
-                };
+                return new ContentResult() { Content = results.ToString(), StatusCode = 500 };
             }
 
-            return new HttpResponseMessage(HttpStatusCode.OK);
+            return new OkResult();
         }
 
-        private HttpResponseMessage CreateForbiddenResult(string instanceId, string actualInstanceId)
+        private IActionResult CreateForbiddenResult(string instanceId, string actualInstanceId)
         {
             Logger.LogInfo(() => $"InstanceId {instanceId} указан неверно, должен быть {actualInstanceId}");            
-            return new HttpResponseMessage(HttpStatusCode.Forbidden);
+            return new ForbidResult();
         }
 
         private bool ValidateInstance(string instanceId, string actualInstanceId)
