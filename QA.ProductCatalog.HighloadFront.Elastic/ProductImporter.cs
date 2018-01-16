@@ -25,15 +25,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly ProductManager _manager;
 
         private readonly HarvesterOptions _options;
+        private readonly DataOptions _dataOptions;
 
         private readonly string _customerCode;
 
-        public ProductImporter(IOptions<HarvesterOptions> optionsAccessor, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
+        public ProductImporter(IOptions<HarvesterOptions> optionsAccessor, IOptions<DataOptions> dataOptionsAccessor, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
         {
             _logger = logger;
             _manager = manager;
             _configuration = configuration;
             _options = optionsAccessor?.Value ?? new HarvesterOptions();
+            _dataOptions = dataOptionsAccessor?.Value ?? new DataOptions();
             _customerCode = customerCode;
         }
 
@@ -127,7 +129,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 client.BaseAddress = new Uri(url);
                 client.DefaultRequestHeaders.Accept.Clear();
-                url += $"?customerCode={_customerCode}&instanceId={_options.InstanceId}";
+                url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
                 var response = await client.GetAsync(url);
                 modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
 
