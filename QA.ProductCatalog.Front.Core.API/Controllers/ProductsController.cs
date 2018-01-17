@@ -39,6 +39,13 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             return ValidateInstance(locator.InstanceId, Options.InstanceId);
         }
 
+        [HttpGet("{date}/ValidateInstance")]
+        [HttpGet("{language}/{state}/{date}/ValidateInstance")]
+        public bool ValidateInstance(ProductLocator locator, DateTime date)
+        {
+            return ValidateInstance(locator.InstanceId, Options.InstanceId);
+        }
+
         [HttpGet]
         [HttpGet("{language}/{state}")]
         public ActionResult GetProductIds(ProductLocator locator, int page, DateTime? date, int pageSize = Int32.MaxValue)
