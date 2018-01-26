@@ -6,6 +6,7 @@ using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -136,7 +137,8 @@ namespace QA.Core.DPC
             
             try
             {
-                logger.Info("start UpdateConfiguration for {0}", customerCode);
+                string instanceId = ConfigurationManager.AppSettings["DPC.InstanceId"];
+                logger.Info("start UpdateConfiguration for {0}; InstanceId = {1}", customerCode, instanceId);
 
                 int delay = 0;
                 var items = _senders.Zip(_lockers.Keys, (s, k) => new { Sender = s, Key = k });
@@ -155,7 +157,7 @@ namespace QA.Core.DPC
                     else
                     {
                         var state = new ChannelState { BlockState = null, ErrorsCount = 0 };
-                        var descriptor = new ChannelDescriptor { ChannelName = channel.Name, CustomerCode = customerCode };
+                        var descriptor = new ChannelDescriptor { ChannelName = channel.Name, CustomerCode = customerCode, InstanceId = instanceId };
                         _lockers.Add(key, state);
                         _senders.Add(new Timer((SendToOneChannel), descriptor, new TimeSpan(0, 0, delay), new TimeSpan(0, 0, config.CheckInterval)));
                         logger.Info("Add sender for {0} whith delay {1} and interval {2}", key, delay, config.CheckInterval);
@@ -265,7 +267,7 @@ namespace QA.Core.DPC
 								var localState = new ChannelState() { ErrorsCount = 0 };
 								var factoryMap = res.Result.Select(m => m.Key).Distinct().ToDictionary(k => k, k => new TaskFactory(new OrderedTaskScheduler()));
 								var tasks = res.Result
-                                    .Select(m => SendOneMessage(descriptor.CustomerCode, config, channel, service, m, semaphore, factoryMap[m.Key], localState, channelService, logger))
+                                    .Select(m => SendOneMessage(descriptor.CustomerCode, descriptor.InstanceId, config, channel, service, m, semaphore, factoryMap[m.Key], localState, channelService, logger))
                                     .ToArray();
                                 
 								Task.WaitAll(tasks);
@@ -337,6 +339,7 @@ namespace QA.Core.DPC
 
 		private static async Task SendOneMessage(
             string customerCode,
+            string instanceId,
             NotificationSenderConfig config,
             NotificationChannel channel,
             IMessageService service,
@@ -359,7 +362,7 @@ namespace QA.Core.DPC
 
 				var timer = new Stopwatch();
 				timer.Start();
-				string url = GetUrl(customerCode, channel, message);
+				string url = GetUrl(customerCode, instanceId, channel, message);
 			
 				try
 				{
@@ -453,7 +456,7 @@ namespace QA.Core.DPC
 			});
 		}
 
-		private static string GetUrl(string customerCode, NotificationChannel channel, Message message)
+		private static string GetUrl(string customerCode, string instanceId,  NotificationChannel channel, Message message)
 		{
             return
                 channel.Url +
@@ -462,7 +465,8 @@ namespace QA.Core.DPC
                 "&MsgId=" + message.Id +
                 "&ProductId=" + message.Key +
                 "&isStage=" + channel.IsStage +
-                "&customerCode=" + customerCode;
+                "&customerCode=" + customerCode +
+                "&InstanceId=" + instanceId;
         }
 
 		private static NotificationChannel GetChannel(NotificationSenderConfig config, string channel)

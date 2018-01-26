@@ -8,6 +8,7 @@ using QA.Core;
 using QA.Core.DPC.Front;
 using QA.Core.Logger;
 using QA.Core.Service.Interaction;
+using QA.ProductCatalog.Front.Core.API.ActionResults;
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
 {
@@ -28,6 +29,21 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             Logger = logger;
             DpcService = dpcService;
             Options = options.Value;
+        }
+
+
+        [HttpGet("ValidateInstance")]
+        [HttpGet("{language}/{state}/ValidateInstance")]
+        public bool ValidateInstance(ProductLocator locator)
+        {
+            return ValidateInstance(locator.InstanceId, Options.InstanceId);
+        }
+
+        [HttpGet("{date}/ValidateInstance")]
+        [HttpGet("{language}/{state}/{date}/ValidateInstance")]
+        public bool ValidateInstance(ProductLocator locator, DateTime date)
+        {
+            return ValidateInstance(locator.InstanceId, Options.InstanceId);
         }
 
         [HttpGet]
@@ -110,6 +126,11 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         [HttpDelete("{language}/{state}")]
         public ActionResult DeleteProduct(ProductLocator locator, [FromBody] string data)
         {
+            if (!ValidateInstance(locator.InstanceId, Options.InstanceId))
+            {
+                return InstanceError(locator.InstanceId, Options.InstanceId);
+            }
+
             ApplyOptions(locator);
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products != null)
@@ -150,6 +171,11 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         [HttpPut("{language}/{state}")]
         public ActionResult PutProduct(ProductLocator locator, [FromBody] string data, [FromQuery(Name = "UserId")] int userId, [FromQuery(Name = "UserName")] string userName)
         {
+            if (!ValidateInstance(locator.InstanceId, Options.InstanceId))
+            {
+                return InstanceError(locator.InstanceId, Options.InstanceId);
+            }
+
             ApplyOptions(locator);
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products?.Any() == true)
@@ -198,6 +224,17 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             {
                 return ProceedParseError(data, res1);
             }
+        }
+
+        private bool ValidateInstance(string instanceId, string actualInstanceId)
+        {
+            return instanceId == actualInstanceId || string.IsNullOrEmpty(instanceId) && string.IsNullOrEmpty(actualInstanceId);
+        }
+
+        private ActionResult InstanceError(string instanceId, string actualInstanceId)
+        {
+            Logger.LogInfo(() => $"InstanceId {instanceId} is wrong. Must be {actualInstanceId}");
+            return new ForbiddenActionResult();
         }
 
         private ActionResult ProceedParseError(string data, ServiceResult<ProductInfo> res1)

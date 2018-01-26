@@ -278,6 +278,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActionResults\ForbiddenActionResult.cs" />
     <Compile Include="App_Start\UnityConfig.cs" />
     <Compile Include="Controllers\HealthCheckController.cs" />
     <Compile Include="Controllers\ProductsController.cs" />
@@ -416,4 +417,3 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
-

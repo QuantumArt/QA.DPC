@@ -1,17 +1,13 @@
 ﻿
 using QA.Core;
 using QA.Core.DPC.Integration;
+using QA.Core.Logger;
+using QA.ProductCatalog.SiteSyncWebHost.ActionResults;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
-using System.Xml;
-using QA.Core.Logger;
 
 namespace QA.ProductCatalog.SiteSyncWebHost.Controllers
 {
@@ -21,12 +17,19 @@ namespace QA.ProductCatalog.SiteSyncWebHost.Controllers
         // GET: /Products/
 
         
-        public ActionResult Send()
+        public ActionResult Send(string instanceId = null)
         {
             IDpcProductService service = ObjectFactoryBase.Resolve<IDpcProductService>();
             
-            ILogger logger = ObjectFactoryBase.Resolve<ILogger>();
-            
+            var logger = ObjectFactoryBase.Resolve<ILogger>();
+            var actualInstanceId = ConfigurationManager.AppSettings["DPC.InstanceId"];
+
+            if (!(string.IsNullOrEmpty(instanceId) && string.IsNullOrEmpty(actualInstanceId)) && instanceId != actualInstanceId)
+            {
+                logger.LogInfo(() => $"InstanceId {instanceId} указан неверно, должен быть {actualInstanceId}");
+                return new ForbiddenActionResult();
+            }
+
             string data = "";
             using (StreamReader inputStream = new StreamReader(Request.InputStream))
             {

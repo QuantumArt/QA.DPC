@@ -21,6 +21,9 @@ namespace QA.Core.DPC.Front
         [ModelBinder(Name = "customerCode")]
         public string CustomerCode { get; set; }
 
+        [ModelBinder(Name = "instanceId")]
+        public string InstanceId { get; set; }
+
         [BindNever]
         public string FixedConnectionString { get; set; }
 

@@ -25,16 +25,27 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly ProductManager _manager;
 
         private readonly HarvesterOptions _options;
+        private readonly DataOptions _dataOptions;
 
         private readonly string _customerCode;
 
-        public ProductImporter(IOptions<HarvesterOptions> optionsAccessor, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
+        public ProductImporter(IOptions<HarvesterOptions> optionsAccessor, IOptions<DataOptions> dataOptionsAccessor, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
         {
             _logger = logger;
             _manager = manager;
             _configuration = configuration;
             _options = optionsAccessor?.Value ?? new HarvesterOptions();
+            _dataOptions = dataOptionsAccessor?.Value ?? new DataOptions();
             _customerCode = customerCode;
+        }
+
+        public bool ValidateInstance(string language, string state)
+        {
+            var reindexUrl = _configuration.GetReindexUrl(language, state);
+            var url = $"{reindexUrl}/ValidateInstance";
+            var result = GetContent(url).Result;
+            var validation = JsonConvert.DeserializeObject<bool>(result.Item1);
+            return validation;
         }
 
         public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state)
@@ -118,7 +129,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 client.BaseAddress = new Uri(url);
                 client.DefaultRequestHeaders.Accept.Clear();
-                url += "?customerCode=" + _customerCode;
+                url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
                 var response = await client.GetAsync(url);
                 modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
 
