@@ -29,15 +29,7 @@
       <Column Name="ProductType" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
       <Association Name="Product_ProductRegion" Member="ProductRegions" ThisKey="Id" OtherKey="ProductId" Type="ProductRegion" />
     </Type>
-  </Table>
-  <Table Name="dbo.ProductRegionVersions" Member="ProductRegionVersions">
-    <Type Name="ProductRegionVersion">
-      <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
-      <Column Name="ProductVersionId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Column Name="RegionId" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
-      <Association Name="ProductVersion_ProductRegionVersion" Member="ProductVersion" ThisKey="ProductVersionId" OtherKey="Id" Type="ProductVersion" IsForeignKey="true" />
-    </Type>
-  </Table>
+  </Table> 
   <Table Name="dbo.ProductVersions" Member="ProductVersions">
     <Type Name="ProductVersion">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
@@ -59,7 +51,6 @@
       <Column Name="UserUpdated" Type="System.String" DbType="NVarChar(50)" CanBeNull="true" />
       <Column Name="UserUpdatedId" Type="System.Int32" DbType="Int" CanBeNull="true" />
       <Column Name="ProductType" Type="System.String" DbType="NVarChar(250)" CanBeNull="true" />
-      <Association Name="ProductVersion_ProductRegionVersion" Member="ProductRegionVersions" ThisKey="Id" OtherKey="ProductVersionId" Type="ProductRegionVersion" />
     </Type>
   </Table>
   <Function Name="dbo.RegionUpdated" Method="RegionUpdated">

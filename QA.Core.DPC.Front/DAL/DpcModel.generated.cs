@@ -29,9 +29,6 @@ namespace QA.Core.DPC.Front.DAL
 		partial void InsertProduct(Product instance);
 		partial void UpdateProduct(Product instance);
 		partial void DeleteProduct(Product instance);
-		partial void InsertProductRegionVersion(ProductRegionVersion instance);
-		partial void UpdateProductRegionVersion(ProductRegionVersion instance);
-		partial void DeleteProductRegionVersion(ProductRegionVersion instance);
 		partial void InsertProductVersion(ProductVersion instance);
 		partial void UpdateProductVersion(ProductVersion instance);
 		partial void DeleteProductVersion(ProductVersion instance);
@@ -73,11 +70,6 @@ namespace QA.Core.DPC.Front.DAL
 		public Table<Product> Products
 		{
 			get { return GetTable<Product>(); }
-		}
-		
-		public Table<ProductRegionVersion> ProductRegionVersions
-		{
-			get { return GetTable<ProductRegionVersion>(); }
 		}
 		
 		public Table<ProductVersion> ProductVersions
@@ -619,139 +611,6 @@ namespace QA.Core.DPC.Front.DAL
 
 namespace QA.Core.DPC.Front.DAL
 {	
-	[Table(Name=@"dbo.ProductRegionVersions")]
-	public partial class ProductRegionVersion : INotifyPropertyChanging, INotifyPropertyChanged
-	{
-		#region Property Change Event Handling
-		private static PropertyChangingEventArgs emptyChangingEventArgs = new PropertyChangingEventArgs(String.Empty);
-		
-		public event PropertyChangingEventHandler PropertyChanging;
-		public event PropertyChangedEventHandler PropertyChanged;
-		
-		public virtual void SendPropertyChanging()
-		{
-			if (PropertyChanging != null) {
-				PropertyChanging(this, emptyChangingEventArgs);
-			}
-		}
-			
-		public virtual void SendPropertyChanged(String propertyName)
-		{
-			if (PropertyChanged != null) {
-				PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-			}
-		}
-		#endregion
-		
-		#region Extensibility Method Definitions
-		partial void OnLoaded();
-		partial void OnValidate(ChangeAction action);
-		partial void OnCreated();
-		#endregion
-
-		#region Construction
-		public ProductRegionVersion()
-		{
-			_ProductVersion = default(EntityRef<ProductVersion>); 
-			OnCreated();
-		}
-		#endregion
-
-		#region Column Mappings
-		partial void OnIdChanging(int value);
-		partial void OnIdChanged();
-		private int _Id;
-		[Column(Storage=@"_Id", AutoSync=AutoSync.OnInsert, DbType=@"Int NOT NULL IDENTITY", IsPrimaryKey=true, IsDbGenerated=true, UpdateCheck=UpdateCheck.Never)]
-		public int Id
-		{
-			get { return _Id; }
-			set {
-				if (_Id != value) {
-					OnIdChanging(value);
-					SendPropertyChanging();
-					_Id = value;
-					SendPropertyChanged("Id");
-					OnIdChanged();
-				}
-			}
-		}
-		
-		partial void OnProductVersionIdChanging(int value);
-		partial void OnProductVersionIdChanged();
-		private int _ProductVersionId;
-		[Column(Storage=@"_ProductVersionId", DbType=@"Int NOT NULL", CanBeNull=false)]
-		public int ProductVersionId
-		{
-			get { return _ProductVersionId; }
-			set {
-				if (_ProductVersionId != value) {
-					if (_ProductVersion.HasLoadedOrAssignedValue) {
-						throw new ForeignKeyReferenceAlreadyHasValueException();
-					}
-					OnProductVersionIdChanging(value);
-					SendPropertyChanging();
-					_ProductVersionId = value;
-					SendPropertyChanged("ProductVersionId");
-					OnProductVersionIdChanged();
-				}
-			}
-		}
-		
-		partial void OnRegionIdChanging(int value);
-		partial void OnRegionIdChanged();
-		private int _RegionId;
-		[Column(Storage=@"_RegionId", DbType=@"Int NOT NULL", CanBeNull=false)]
-		public int RegionId
-		{
-			get { return _RegionId; }
-			set {
-				if (_RegionId != value) {
-					OnRegionIdChanging(value);
-					SendPropertyChanging();
-					_RegionId = value;
-					SendPropertyChanged("RegionId");
-					OnRegionIdChanged();
-				}
-			}
-		}
-		
-		#endregion
-		
-		#region Associations
-		private EntityRef<ProductVersion> _ProductVersion;
-		[Association(Name=@"ProductVersion_ProductRegionVersion", Storage=@"_ProductVersion", ThisKey=@"ProductVersionId", OtherKey=@"Id", IsForeignKey=true)]
-		public ProductVersion ProductVersion
-		{
-			get {
-				return _ProductVersion.Entity;
-			}
-			set {
-				ProductVersion previousValue = _ProductVersion.Entity;
-				if ((previousValue != value) || (!_ProductVersion.HasLoadedOrAssignedValue)) {
-					SendPropertyChanging();
-					if (previousValue != null) {
-						_ProductVersion.Entity = null;
-						previousValue.ProductRegionVersions.Remove(this);
-					}
-					_ProductVersion.Entity = value;
-					if (value != null) {
-						value.ProductRegionVersions.Add(this);
-						_ProductVersionId = value.Id;
-					}
-					else {
-						_ProductVersionId = default(int);
-					}
-					SendPropertyChanged("ProductVersion");
-				}
-			}
-		}
-
-		#endregion
-	}
-}
-
-namespace QA.Core.DPC.Front.DAL
-{	
 	[Table(Name=@"dbo.ProductVersions")]
 	public partial class ProductVersion : INotifyPropertyChanging, INotifyPropertyChanged
 	{
@@ -785,7 +644,6 @@ namespace QA.Core.DPC.Front.DAL
 		#region Construction
 		public ProductVersion()
 		{
-			_ProductRegionVersions = new EntitySet<ProductRegionVersion>(attach_ProductRegionVersions, detach_ProductRegionVersions);
 			OnCreated();
 		}
 		#endregion
@@ -1133,32 +991,6 @@ namespace QA.Core.DPC.Front.DAL
 			}
 		}
 		
-		#endregion
-		
-		#region Associations
-		private EntitySet<ProductRegionVersion> _ProductRegionVersions;
-		[Association(Name=@"ProductVersion_ProductRegionVersion", Storage=@"_ProductRegionVersions", ThisKey=@"Id", OtherKey=@"ProductVersionId")]
-		public EntitySet<ProductRegionVersion> ProductRegionVersions
-		{
-			get {
-				return _ProductRegionVersions;
-			}
-			set {
-				_ProductRegionVersions.Assign(value);
-			}
-		}
-
-		private void attach_ProductRegionVersions(ProductRegionVersion entity)
-		{
-			SendPropertyChanging();
-			entity.ProductVersion = this;
-		}
-		
-		private void detach_ProductRegionVersions(ProductRegionVersion entity)
-		{
-			SendPropertyChanging();
-			entity.ProductVersion = null;
-		}
 		#endregion
 	}
 }

@@ -21,24 +21,11 @@
         <classShapeMoniker Id="c4cff8be-a716-449c-b7bb-d20352ba87f5" />
       </nodes>
     </associationConnector>
-    <classShape Id="673ddc50-c5a9-4ceb-96c8-890cbcbaa253" absoluteBounds="3.625, 6.125, 2, 1.3862939453125">
-      <DataClassMoniker Name="/DpcModelDataContext/ProductRegionVersion" />
-      <nestedChildShapes>
-        <elementListCompartment Id="700654ee-2434-4a1b-9850-040b86be5c35" absoluteBounds="3.6400000000000006, 6.585, 1.9700000000000002, 0.8262939453125" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
-      </nestedChildShapes>
-    </classShape>
     <classShape Id="2645fa87-02d4-4cbe-b9f4-fb944e8a8d81" absoluteBounds="0.75, 5.75, 2, 4.4631168619791666">
       <DataClassMoniker Name="/DpcModelDataContext/ProductVersion" />
       <nestedChildShapes>
         <elementListCompartment Id="fbb9dcc1-d656-46a2-9750-ea20553b9a56" absoluteBounds="0.76500000000000012, 6.21, 1.9700000000000002, 3.903116861979167" name="DataPropertiesCompartment" titleTextColor="Black" itemTextColor="Black" />
       </nestedChildShapes>
     </classShape>
-    <associationConnector edgePoints="[(2.75 : 6.81814697265625); (3.625 : 6.81814697265625)]" fixedFrom="Algorithm" fixedTo="Algorithm">
-      <AssociationMoniker Name="/DpcModelDataContext/ProductVersion/ProductVersion_ProductRegionVersion" />
-      <nodes>
-        <classShapeMoniker Id="2645fa87-02d4-4cbe-b9f4-fb944e8a8d81" />
-        <classShapeMoniker Id="673ddc50-c5a9-4ceb-96c8-890cbcbaa253" />
-      </nodes>
-    </associationConnector>
   </nestedChildShapes>
 </ordesignerObjectsDiagram>

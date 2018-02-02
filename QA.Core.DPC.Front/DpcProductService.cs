@@ -187,21 +187,7 @@ namespace QA.Core.DPC.Front
             var pv = MapProductVersion(p, modification);
             pv.Deleted = false;
 
-            ctx.ProductVersions.InsertOnSubmit(pv);
-
-            if (regionIds != null)
-            {
-                foreach (var rid in regionIds)
-                {
-                    var pr = new ProductRegionVersion
-                    {
-                        RegionId = rid,
-                        ProductVersion = pv
-                    };
-
-                    ctx.ProductRegionVersions.InsertOnSubmit(pr);
-                }
-            }
+            ctx.ProductVersions.InsertOnSubmit(pv);        
         }
 
         private void UpdateDeletedProductVersion(DpcModelDataContext ctx, DAL.Product p, string data)
