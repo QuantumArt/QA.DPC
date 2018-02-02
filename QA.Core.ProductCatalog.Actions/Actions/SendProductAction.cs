@@ -392,7 +392,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 }
             }
 
-            int[] notFound = missing.Except(productsToRemove).Except(excluded).Except(frozen).ToArray();
+            int[] notFound = missing.Except(productsToRemove).Except(excluded).Except(frozen).Except(validationErrors.Keys).ToArray();
 
             string message = "";
 
