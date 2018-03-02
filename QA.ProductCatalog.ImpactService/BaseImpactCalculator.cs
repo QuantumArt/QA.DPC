@@ -730,6 +730,12 @@ namespace QA.ProductCatalog.ImpactService
             return inParams.Union(parentParams).ToArray();
         }
 
+        private bool IsProductForCorpSite(JObject product)
+        {
+            return product.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains("IsForCorpSite")
+                            || product.SelectTokens("MarketingProduct.Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains("IsForCorpSite");
+        }
+
         public void SaveServicesOnProduct(JObject product, IEnumerable<JToken> servicesOnProduct)
         {
             if (product == null) return;
@@ -741,6 +747,17 @@ namespace QA.ProductCatalog.ImpactService
             else
             {
                 var filtered = servicesOnProduct.ToDictionary(n => (int)n["Id"], m => m);
+                if (IsProductForCorpSite(product))
+                {
+                    foreach (var srv in filtered.Values.Select(n => n.SelectToken("Service")).Where(n => n != null))
+                    {
+                        if (srv["CorpLink"] != null)
+                        {
+                            srv["Link"] = srv["CorpLink"];
+                        }
+                    }
+                }
+
                 var toDelete = ((JArray) root).Where(n => !filtered.ContainsKey((int) n["Id"])).ToArray();
 
                 foreach (var item in toDelete)
