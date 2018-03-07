@@ -156,6 +156,7 @@ namespace QA.ProductCatalog.WebApi
             exceptionFormatters.AddModelMediaTypeFormatter<BinaryModelFormatter<Exception>, Exception>(container, BinaryMappingValue, BinaryMediaType, RegisterMediaTypeMappings);
             config.Filters.Add(new ExceptionFormatterFilterAttribute(exceptionFormatters));
             config.Filters.Add(container.Resolve<ExceptionLoggerFilterAttribute>());
+            config.Filters.Add(container.Resolve<AuthorizationFilterAttribute>());
 
             GlobalConfiguration.Configuration.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 
