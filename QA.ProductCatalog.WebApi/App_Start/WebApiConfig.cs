@@ -45,80 +45,80 @@ namespace QA.ProductCatalog.WebApi
 
             #region Routing
             var connection = container.Resolve<IConnectionProvider>();
-            var customerCode = connection.QPMode ? "{customerCode}/" : string.Empty;
+            DynamicRoutePrefixAttribute.InitialPrefix = connection.QPMode ? "api/{customerCode}" : "api";            
 
             config.MapHttpAttributeRoutes();
 
 
-            config.Routes.MapHttpRoute(
-                name: "PublishTarantoolProduct",
-                routeTemplate: $"api/{customerCode}tarantool/publish/{{format}}/{{productId}}",
-                defaults: new { controller = "Product", action = "TarantoolPublish" },
-                constraints: new { productId = @"\d+", format = FormatConstraints }
-            );
+           // config.Routes.MapHttpRoute(
+           //     name: "PublishTarantoolProduct",
+           //     routeTemplate: $"api/{customerCode}tarantool/publish/{{format}}/{{productId}}",
+           //     defaults: new { controller = "Product", action = "TarantoolPublish" },
+           //     constraints: new { productId = @"\d+", format = FormatConstraints }
+           // );
 
-            config.Routes.MapHttpRoute(
-                name: "GetTarantoolProduct",
-                routeTemplate: $"api/{customerCode}tarantool/{{format}}/{{productId}}",
-                defaults: new { controller = "Product", action = "TarantoolGet" },
-                constraints: new { productId = @"\d+", format = FormatConstraints }
-            );
+           // config.Routes.MapHttpRoute(
+           //     name: "GetTarantoolProduct",
+           //     routeTemplate: $"api/{customerCode}tarantool/{{format}}/{{productId}}",
+           //     defaults: new { controller = "Product", action = "TarantoolGet" },
+           //     constraints: new { productId = @"\d+", format = FormatConstraints }
+           // );
 
-            config.Routes.MapHttpRoute(
-               name: "GetProduct",
-               routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
-               defaults: new { controller = "Product", action="GetProduct" },
-               constraints: new { id = @"\d+", format = FormatConstraints }
-           );                  
+           // config.Routes.MapHttpRoute(
+           //    name: "GetProduct",
+           //    routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
+           //    defaults: new { controller = "Product", action="GetProduct" },
+           //    constraints: new { id = @"\d+", format = FormatConstraints }
+           //);                  
 
-            config.Routes.MapHttpRoute(
-                name: "PostProduct",
-                routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
-                defaults: new { controller = "Product", action = "Post" },
-                constraints: new { id = @"\d+", format = FormatConstraints }
-            );
+           // config.Routes.MapHttpRoute(
+           //     name: "PostProduct",
+           //     routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
+           //     defaults: new { controller = "Product", action = "Post" },
+           //     constraints: new { id = @"\d+", format = FormatConstraints }
+           // );
 
-            config.Routes.MapHttpRoute(
-                name: "CustomAction",
-                routeTemplate: $"api/{customerCode}custom/{{format}}/{{name}}/{{id}}",
-                defaults: new { controller = "Product", action = "CustomAction" },
-                constraints: new { id = @"\d+", format = FormatConstraints }
-            );
+           // config.Routes.MapHttpRoute(
+           //     name: "CustomAction",
+           //     routeTemplate: $"api/{customerCode}custom/{{format}}/{{name}}/{{id}}",
+           //     defaults: new { controller = "Product", action = "CustomAction" },
+           //     constraints: new { id = @"\d+", format = FormatConstraints }
+           // );
 
-            config.Routes.MapHttpRoute(
-                name: "DeleteProduct",
-                routeTemplate: $"api/{customerCode}{{format}}/{{id}}",
-                defaults: new { controller = "Product", action = "Delete" },
-                constraints: new { id = @"\d+", format = FormatConstraints }
-            );
+           // config.Routes.MapHttpRoute(
+           //     name: "DeleteProduct",
+           //     routeTemplate: $"api/{customerCode}{{format}}/{{id}}",
+           //     defaults: new { controller = "Product", action = "Delete" },
+           //     constraints: new { id = @"\d+", format = FormatConstraints }
+           // );
 
-            config.Routes.MapHttpRoute(
-                name: "ListProduct",
-                routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}",
-                defaults: new { controller = "Product", action = "List", format = JsonMappingValue },
-                constraints: new { format = FormatConstraints }
-            );
+           // config.Routes.MapHttpRoute(
+           //     name: "ListProduct",
+           //     routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}",
+           //     defaults: new { controller = "Product", action = "List", format = JsonMappingValue },
+           //     constraints: new { format = FormatConstraints }
+           // );
 
-            config.Routes.MapHttpRoute(
-                name: "SearchProduct",
-                routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/search/{{format}}/{{query}}",
-                defaults: new { controller = "Product", action = "Search" },
-                constraints: new { format = FormatConstraints }
-            );
+           // config.Routes.MapHttpRoute(
+           //     name: "SearchProduct",
+           //     routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/search/{{format}}/{{query}}",
+           //     defaults: new { controller = "Product", action = "Search" },
+           //     constraints: new { format = FormatConstraints }
+           // );
 
-            config.Routes.MapHttpRoute(
-                name: "Schema",
-                routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/schema/{{format}}",
-                defaults: new { controller = "Product", action = "Schema" },
-                constraints: new { format = FormatConstraints }
-            );
+           // config.Routes.MapHttpRoute(
+           //     name: "Schema",
+           //     routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/schema/{{format}}",
+           //     defaults: new { controller = "Product", action = "Schema" },
+           //     constraints: new { format = FormatConstraints }
+           // );
 
-            config.Routes.MapHttpRoute(
-              name: "Statistic",
-              routeTemplate: "statistic/{action}/{format}",
-              defaults: new { controller = "Statistic", format = "json" },
-              constraints: new { format = FormatConstraints }
-            );
+           // config.Routes.MapHttpRoute(
+           //   name: "Statistic",
+           //   routeTemplate: "statistic/{action}/{format}",
+           //   defaults: new { controller = "Statistic", format = "json" },
+           //   constraints: new { format = FormatConstraints }
+           // );
 
             #endregion
 

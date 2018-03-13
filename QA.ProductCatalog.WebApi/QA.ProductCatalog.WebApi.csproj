@@ -307,6 +307,7 @@
     </Compile>
     <Compile Include="Controllers\StatisticController.cs" />
     <Compile Include="Filters\AuthorizationFilterAttribute.cs" />
+    <Compile Include="Filters\DynamicRoutePrefixAttribute.cs" />
     <Compile Include="Filters\ExceptionFormatterFilterAttribute.cs" />
     <Compile Include="Filters\ExceptionLoggerFilterAttribute.cs" />
     <Compile Include="Global.asax.cs">

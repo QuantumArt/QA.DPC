@@ -16,7 +16,7 @@ namespace QA.ProductCatalog.WebApi.Filters
 
         public override void OnAuthorization(HttpActionContext actionContext)
         {
-            if (!_identityProvider.Identity.IsAuthenticated)
+            if (_identityProvider.Identity != null && !_identityProvider.Identity.IsAuthenticated)
             {
                 HandleUnauthorizedRequest(actionContext);
             }

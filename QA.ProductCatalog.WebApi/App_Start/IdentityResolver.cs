@@ -8,6 +8,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
+using System.Web.Http.Routing;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
@@ -40,15 +41,17 @@ namespace QA.ProductCatalog.WebApi.App_Start
 
         public void ResolveIdentity(HttpRequest httpRequest)
         {
-            var customerCode = httpRequest.RequestContext.RouteData.Values["customerCode"] as string;
+            var subroutes = ((IHttpRouteData[])httpRequest.RequestContext.RouteData.Values["MS_SubRoutes"]).FirstOrDefault();
+            var customerCode = subroutes.Values["customerCode"] as string;
+
             Identity identity = null;            
 
             if (UseAuthorization())
             {                
                 var method = httpRequest.HttpMethod;
                 var token = httpRequest.Headers["X-Auth-Token"];
-                var slug = httpRequest.RequestContext.RouteData.Values["slug"] as string;
-                var version = httpRequest.RequestContext.RouteData.Values["version"] as string;
+                var slug = subroutes.Values["slug"] as string;
+                var version = subroutes.Values["version"] as string;
 
                 var userId = GetUserId(slug, version, token, method);
 
@@ -86,7 +89,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
             int authorizationCoontentId = GetContentId(SettingsTitles.API_AUTHORIZATION_CONTENT_ID);
             int tokensCoontentId = GetContentId(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID);
             int servicesCoontentId = GetContentId(SettingsTitles.PRODUCT_SERVICES_CONTENT_ID);
-            string field = method == "GET" ? "Read" : "Write";
+            string field = method == "GET" ? "Read Service" : "Write Service";
 
             return string.Format(QueryTemplate, authorizationCoontentId, tokensCoontentId, servicesCoontentId, field);
         }
