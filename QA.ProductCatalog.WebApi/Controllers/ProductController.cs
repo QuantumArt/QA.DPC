@@ -42,7 +42,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{version}/{slug}/{format}")]
+        [Route("{version}/{slug}/{format:media_type_mapping=json}")]
         public Dictionary<string, object>[] List(string slug, string version, bool isLive = false, long startRow = 0, long pageSize = int.MaxValue)
 		{
 			_logger.LogDebug(() => new { slug, version, isLive, startRow, pageSize }.ToString());
@@ -58,6 +58,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="isLive"></param>
         /// <returns></returns>
 		[HttpGet]
+        [Route("{version}/{slug}/search/{format:media_type_mapping}/{query}")]
         public int[] Search(string slug, string version, string query, bool isLive = false)
 		{
 			_logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
@@ -75,7 +76,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="includeRegionTags"></param>
         /// <returns></returns>
         [HttpGet]
-        [Route("{version}/{slug}/{format}/{id:int}")]
+        [Route("{version}/{slug}/{format:media_type_mapping}/{id:int}")]
         public Article GetProduct(string slug, string version, int id, bool isLive = false, bool includeRegionTags=false)
 		{
 			_logger.LogDebug(() => new { slug, version, id, isLive }.ToString());
@@ -100,6 +101,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="type"></param>
         /// <returns></returns>
         [HttpGet]
+        [Route("tarantool/{format:media_type_mapping}/{productId:int}")]        
         public Article TarantoolGet(int productId, int definitionId, bool isLive = false, bool includeRegionTags = false, bool absent = false, string type = null)
         {
             _logger.LogDebug(() => new { productId, definitionId, isLive }.ToString());
@@ -121,7 +123,6 @@ namespace QA.ProductCatalog.WebApi.Controllers
             return product;
         }
 
-
         /// <summary>
         /// 
         /// </summary>
@@ -130,6 +131,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="localize"></param>
         /// <returns></returns>
         [HttpPost]
+        [Route("tarantool/publish/{format:media_type_mapping}/{productId:int}")]
         public void TarantoolPublish(int productId, ProductItem item, bool localize = true)
         {
             _autopublishProcessor.Publish(item, localize);
@@ -144,19 +146,19 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="product"></param>
         /// <param name="isLive"></param>
         [HttpPost]
-        [Route("{version}/{slug}/{format}/{id:int}")]
+        [Route("{version}/{slug}/{format:media_type_mapping}/{id:int}")]
         public void Post(string slug, string version, Article product, bool isLive = false)
 		{
 			_logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId, isLive }.ToString());
 			_databaseProductService.UpdateProduct(slug, version, product, isLive);
 		}
 
-
         /// <summary>
         /// Remove product
         /// </summary>
         /// <param name="id"></param>
         [HttpDelete]
+        [Route("{format:media_type_mapping}/{id:int}")]
         public void Delete(int id)
 		{
 			_logger.LogDebug(() => new { id }.ToString());
@@ -170,6 +172,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="id"></param>
         /// <param name="parameters"></param>
 		[HttpPost]
+        [Route("custom/{format:media_type_mapping}/{name}/{id:int}")]
         public void CustomAction(string name, int id, Dictionary<string, string> parameters)
 		{
 			_logger.LogDebug(() => new { name, id }.ToString());
@@ -185,6 +188,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="includeRegionTags"></param>
         /// <returns></returns>
 		[HttpGet]
+        [Route("{version}/{slug}/schema/{format:media_type_mapping}")]
         public Content Schema(string slug, string version, bool forList = false, bool includeRegionTags = false)
 		{
 			_logger.LogDebug(() => new { slug, version, forList }.ToString());

@@ -19,7 +19,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [Route("Cache/{format}")]        
+        [Route("Cache/{format:media_type_mapping=json}")]        
         public string[] Cache()
         {
             return _factory.Invalidator.Keys.ToArray();

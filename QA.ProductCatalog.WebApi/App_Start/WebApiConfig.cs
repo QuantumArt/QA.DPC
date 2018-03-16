@@ -13,6 +13,7 @@ using QA.ProductCatalog.WebApi.App_Start;
 using QA.ProductCatalog.WebApi.Filters;
 using QA.Core.Models.Configuration;
 using QA.Core.DPC.QP.Autopublish.Models;
+using System.Web.Http.Routing;
 
 namespace QA.ProductCatalog.WebApi
 {
@@ -24,102 +25,31 @@ namespace QA.ProductCatalog.WebApi
         private const string JsonMappingValue = "json";
         private const string PdfMappingValue = "pdf";
         private const string BinaryMappingValue = "binary";
+        private const string JsonDefinitionMappingValue = "jsonDefinition";
+        private const string JsonDefinition2MappingValue = "jsonDefinition2";
         private const string XmlMediaType = "application/xml";
         private const string XamlMediaType = "application/xaml+xml";
         private const string JsonMediaType = "application/json";
         private const string PdfMediaType = "application/pdf";
         private const string BinaryMediaType = "application/octet-stream";
-        private const string JsonDefinitionMappingValue = "jsonDefinition";
-        private const string JsonDefinition2MappingValue = "jsonDefinition2";
-        private static readonly string FormatConstraints = $"{XamlMappingValue}|{XmlMappingValue}|{JsonMappingValue}|{PdfMappingValue}|{BinaryMappingValue}|{JsonDefinitionMappingValue}|{JsonDefinitionMappingValue}";
-
+        public static readonly string[] MappingsValues = new[] { XamlMappingValue, XmlMappingValue, JsonMappingValue, PdfMappingValue, BinaryMappingValue, JsonDefinitionMappingValue, JsonDefinition2MappingValue };
         #endregion
 
         public static void Register(HttpConfiguration config)
         {
             #region IOC container
             var container = UnityConfig.Configure();
-            config.DependencyResolver = new UnityResolver(container);
-            //config.Services.Add(typeof(IExceptionLogger), new ExceptionLoggerAdapter());
+            config.DependencyResolver = new UnityResolver(container);            
             #endregion
 
             #region Routing
             var connection = container.Resolve<IConnectionProvider>();
-            DynamicRoutePrefixAttribute.InitialPrefix = connection.QPMode ? "api/{customerCode}" : "api";            
+            DynamicRoutePrefixAttribute.InitialPrefix = connection.QPMode ? "api/{customerCode}" : "api";
 
-            config.MapHttpAttributeRoutes();
+            var constraintResolver = new DefaultInlineConstraintResolver();
+            constraintResolver.ConstraintMap.Add("media_type_mapping", typeof(MediaTypeMappingConstraint));
 
-
-           // config.Routes.MapHttpRoute(
-           //     name: "PublishTarantoolProduct",
-           //     routeTemplate: $"api/{customerCode}tarantool/publish/{{format}}/{{productId}}",
-           //     defaults: new { controller = "Product", action = "TarantoolPublish" },
-           //     constraints: new { productId = @"\d+", format = FormatConstraints }
-           // );
-
-           // config.Routes.MapHttpRoute(
-           //     name: "GetTarantoolProduct",
-           //     routeTemplate: $"api/{customerCode}tarantool/{{format}}/{{productId}}",
-           //     defaults: new { controller = "Product", action = "TarantoolGet" },
-           //     constraints: new { productId = @"\d+", format = FormatConstraints }
-           // );
-
-           // config.Routes.MapHttpRoute(
-           //    name: "GetProduct",
-           //    routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
-           //    defaults: new { controller = "Product", action="GetProduct" },
-           //    constraints: new { id = @"\d+", format = FormatConstraints }
-           //);                  
-
-           // config.Routes.MapHttpRoute(
-           //     name: "PostProduct",
-           //     routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}/{{id}}",
-           //     defaults: new { controller = "Product", action = "Post" },
-           //     constraints: new { id = @"\d+", format = FormatConstraints }
-           // );
-
-           // config.Routes.MapHttpRoute(
-           //     name: "CustomAction",
-           //     routeTemplate: $"api/{customerCode}custom/{{format}}/{{name}}/{{id}}",
-           //     defaults: new { controller = "Product", action = "CustomAction" },
-           //     constraints: new { id = @"\d+", format = FormatConstraints }
-           // );
-
-           // config.Routes.MapHttpRoute(
-           //     name: "DeleteProduct",
-           //     routeTemplate: $"api/{customerCode}{{format}}/{{id}}",
-           //     defaults: new { controller = "Product", action = "Delete" },
-           //     constraints: new { id = @"\d+", format = FormatConstraints }
-           // );
-
-           // config.Routes.MapHttpRoute(
-           //     name: "ListProduct",
-           //     routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/{{format}}",
-           //     defaults: new { controller = "Product", action = "List", format = JsonMappingValue },
-           //     constraints: new { format = FormatConstraints }
-           // );
-
-           // config.Routes.MapHttpRoute(
-           //     name: "SearchProduct",
-           //     routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/search/{{format}}/{{query}}",
-           //     defaults: new { controller = "Product", action = "Search" },
-           //     constraints: new { format = FormatConstraints }
-           // );
-
-           // config.Routes.MapHttpRoute(
-           //     name: "Schema",
-           //     routeTemplate: $"api/{customerCode}{{version}}/{{slug}}/schema/{{format}}",
-           //     defaults: new { controller = "Product", action = "Schema" },
-           //     constraints: new { format = FormatConstraints }
-           // );
-
-           // config.Routes.MapHttpRoute(
-           //   name: "Statistic",
-           //   routeTemplate: "statistic/{action}/{format}",
-           //   defaults: new { controller = "Statistic", format = "json" },
-           //   constraints: new { format = FormatConstraints }
-           // );
-
+            config.MapHttpAttributeRoutes(constraintResolver);
             #endregion
 
             #region Formatters
