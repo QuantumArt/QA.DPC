@@ -12,7 +12,7 @@ namespace QA.Core.DPC.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.1.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.5.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -26,11 +26,11 @@ namespace QA.Core.DPC.Properties {
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
-        [global::System.Configuration.DefaultSettingValueAttribute("Data Source=MSCSQL01;Initial Catalog=beeline_dpc_notifications;Integrated Securit" +
-            "y=True")]
-        public string beeline_dpc_notificationsConnectionString {
+        [global::System.Configuration.DefaultSettingValueAttribute("Application Name=DPC_Admin;Initial Catalog=catalog;Data Source=dbserver;User ID=u" +
+            "ser;Password=pass;")]
+        public string notification_database {
             get {
-                return ((string)(this["beeline_dpc_notificationsConnectionString"]));
+                return ((string)(this["notification_database"]));
             }
         }
     }
