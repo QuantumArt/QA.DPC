@@ -30,15 +30,6 @@ namespace QA.Core.DPC.Loader
         private readonly VirtualFieldPathEvaluator _virtualFieldPathEvaluator;
         private readonly IRegionTagReplaceService _regionTagReplaceService;
 
-        internal class PlainFieldFileInfo
-        {
-            public string Name { get; set; }
-
-            public int FileSizeBytes { get; set; }
-
-            public string AbsoluteUrl { get; set; }
-        }
-
         public JsonProductService(
             IConnectionProvider connectionProvider,
             ILogger logger,
@@ -96,16 +87,40 @@ namespace QA.Core.DPC.Loader
         private const string _productPropertyName = "product";
         private const string _regionTagsPropertyName = "regionTags";
         
+        private class SchemaContext
+        {
+            /// <summary>
+            /// Набор контентов, которые повторяются при создании схемы
+            /// </summary>
+            public HashSet<Content> RepeatedContents = new HashSet<Content>();
+
+            /// <summary>
+            /// Созданные схемы для различных контентов
+            /// </summary>
+            public Dictionary<Content, JSchema> GeneratedSchemas = new Dictionary<Content, JSchema>();
+
+            /// <summary>
+            /// Значения вирутальных полей
+            /// </summary>
+            public Dictionary<Tuple<Content, string>, Field> VirtualFields 
+                = new Dictionary<Tuple<Content, string>, Field>();
+
+            /// <summary>
+            /// Cписок виртуальных полей которые надо игнорировать при создании схемы
+            /// </summary>
+            public List<Tuple<Content, Field>> IgnoredFields = new List<Tuple<Content, Field>>();
+        }
+
         public JSchema GetSchema(Content definition, bool forList = false, bool includeRegionTags = false)
         {
-            var foundFields = new Dictionary<Tuple<Content, string>, Field>();
+            var context = new SchemaContext();
+            
+            FillVirtualFieldsInfo(definition, context);
 
-            var fieldsToIgnore = new List<Tuple<Content, Field>>();
+            JSchema rootSchema = GetSchemaRecursive(definition, forList, context);
 
-            FillVirtualFieldsInfo(definition, foundFields, fieldsToIgnore);
+            FillSchemaDefinitions(rootSchema, context);
 
-            JSchema rootSchema = GetSchemaRecursive(
-                definition, forList, new Dictionary<Content, JSchema>(), foundFields, fieldsToIgnore);
 
             if (includeRegionTags)
             {
@@ -150,14 +165,50 @@ namespace QA.Core.DPC.Loader
 
                 return schemaWithRegionTags;
             }
-
+            
             return rootSchema;
         }
 
+        /// <summary>
+        /// Выносит повторяющиеся схемы контентов в поле "definitions" объекта <paramref name="rootSchema"/>
+        /// </summary>
+        private void FillSchemaDefinitions(JSchema rootSchema, SchemaContext context)
+        {
+            if (context.RepeatedContents.Count == 0)
+            {
+                return;
+            }
+
+            var definitions = new JObject();
+            var contentIndexesByName = new Dictionary<string, int>();
+
+            foreach (Content content in context.RepeatedContents)
+            {
+                string name = ListQpFields(content.ContentId).First().Content.NetName;
+
+                if (contentIndexesByName.ContainsKey(name))
+                {
+                    name += contentIndexesByName[name]++;
+                }
+                else
+                {
+                    contentIndexesByName[name] = 1;
+                }
+                
+                definitions[name] = context.GeneratedSchemas[content];
+            }
+
+            rootSchema.ExtensionData["definitions"] = definitions;
+        }
+
+        /// <summary>
+        /// Рекурсивно обходит <see cref="Content"/> и заполняет
+        /// <see cref="SchemaContext.IgnoredFields"/> - список полей которые надо игнорировать при создании схемы
+        /// и <see cref="SchemaContext.VirtualFields"/> - значения вирутальных полей
+        /// </summary>
         private void FillVirtualFieldsInfo(
             Content definition,
-            Dictionary<Tuple<Content, string>, Field> foundFields,
-            List<Tuple<Content, Field>> fieldsToDelete,
+            SchemaContext context,
             HashSet<Content> parentContents = null)
         {
             if (parentContents == null)
@@ -168,46 +219,45 @@ namespace QA.Core.DPC.Loader
             {
                 return;
             }
-
             parentContents.Add(definition);
 
-            foreach (var field in definition.Fields)
+            foreach (Field field in definition.Fields)
             {
                 if (field is BaseVirtualField baseField)
                 {
-                    ProcessVirtualField(baseField, definition, foundFields, fieldsToDelete);
+                    ProcessVirtualField(baseField, definition, context);
                 }
                 else if (field is EntityField entityField)
                 {
-                    FillVirtualFieldsInfo(entityField.Content, foundFields, fieldsToDelete, parentContents);
+                    FillVirtualFieldsInfo(entityField.Content, context, parentContents);
                 }
                 else if (field is ExtensionField extensionField)
                 {
                     foreach (Content content in extensionField.ContentMapping.Values)
                     {
-                        FillVirtualFieldsInfo(content, foundFields, fieldsToDelete, parentContents);
+                        FillVirtualFieldsInfo(content, context, parentContents);
                     }
                 }
             }
         }
 
         /// <summary>
-        /// Рекурсивно обходит Content и заполняет список полей которые
-        /// надо игнорировать при создании схемы и значения вирутальных полей
+        /// Рекурсивно обходит <see cref="Content"/> и заполняет
+        /// <see cref="SchemaContext.IgnoredFields"/> - список полей которые надо игнорировать при создании схемы
+        /// и <see cref="SchemaContext.VirtualFields"/> - значения вирутальных полей
         /// </summary>
         private void ProcessVirtualField(
             BaseVirtualField baseVirtualField,
             Content definition,
-            Dictionary<Tuple<Content, string>, Field> foundFields,
-            List<Tuple<Content, Field>> fieldsToDelete)
+            SchemaContext context)
         {
             if (baseVirtualField is VirtualMultiEntityField virtualMultiEntityField)
             {
                 string path = virtualMultiEntityField.Path;
 
-                var keyInFoundFieldsDic = new Tuple<Content, string>(definition, path);
+                var virtualFieldKey = new Tuple<Content, string>(definition, path);
 
-                if (foundFields.ContainsKey(keyInFoundFieldsDic))
+                if (context.VirtualFields.ContainsKey(virtualFieldKey))
                 {
                     return;
                 }
@@ -220,10 +270,10 @@ namespace QA.Core.DPC.Loader
 
                 if (!hasFilter)
                 {
-                    fieldsToDelete.Add(new Tuple<Content, Field>(parent, foundField));
+                    context.IgnoredFields.Add(new Tuple<Content, Field>(parent, foundField));
                 }
 
-                foundFields[keyInFoundFieldsDic] = foundField;
+                context.VirtualFields[virtualFieldKey] = foundField;
 
                 if (!(foundField is EntityField foundEntityField))
                 {
@@ -231,23 +281,23 @@ namespace QA.Core.DPC.Loader
                 }
                 foreach (BaseVirtualField childField in virtualMultiEntityField.Fields)
                 {
-                    ProcessVirtualField(childField, foundEntityField.Content, foundFields, fieldsToDelete);
+                    ProcessVirtualField(childField, foundEntityField.Content, context);
                 }
             }
             else if (baseVirtualField is VirtualEntityField virtualEntityField)
             {
                 foreach (BaseVirtualField childField in virtualEntityField.Fields)
                 {
-                    ProcessVirtualField(childField, definition, foundFields, fieldsToDelete);
+                    ProcessVirtualField(childField, definition, context);
                 }
             }
             else if (baseVirtualField is VirtualField virtualField)
             {
                 string path = virtualField.Path;
 
-                var keyInFoundFieldsDic = new Tuple<Content, string>(definition, path);
+                var virtualFieldKey = new Tuple<Content, string>(definition, path);
 
-                if (foundFields.ContainsKey(keyInFoundFieldsDic))
+                if (context.VirtualFields.ContainsKey(virtualFieldKey))
                 {
                     return;
                 }
@@ -260,28 +310,29 @@ namespace QA.Core.DPC.Loader
 
                 if (!hasFilter)
                 {
-                    fieldsToDelete.Add(new Tuple<Content, Field>(parent, fieldToMove));
+                    context.IgnoredFields.Add(new Tuple<Content, Field>(parent, fieldToMove));
                 }
 
-                foundFields[keyInFoundFieldsDic] = fieldToMove;
+                context.VirtualFields[virtualFieldKey] = fieldToMove;
             }
         }
-        
-        private JSchema GetSchemaRecursive(
-            Content definition,
-            bool forList,
-            Dictionary<Content, JSchema> generatedSchemas,
-            Dictionary<Tuple<Content, string>, Field> foundVirtualFields,
-            List<Tuple<Content, Field>> fieldsToIgnore)
+
+        /// <summary>
+        /// Рекурсивно обходит <see cref="Content"/>, генерирует корневую схему и заполняет
+        /// <see cref="SchemaContext.GeneratedSchemas"/> - созданные схемы контентов
+        /// и <see cref="SchemaContext.RepeatedContents"/> - повторяющиеся контенты
+        /// </summary>
+        private JSchema GetSchemaRecursive(Content definition, bool forList, SchemaContext context)
         {
-            if (generatedSchemas.ContainsKey(definition))
+            if (context.GeneratedSchemas.ContainsKey(definition))
             {
-                return generatedSchemas[definition];
+                context.RepeatedContents.Add(definition);
+                return context.GeneratedSchemas[definition];
             }
 
             var contentSchema = new JSchema { Type = JSchemaType.Object };
 
-            generatedSchemas[definition] = contentSchema;
+            context.GeneratedSchemas[definition] = contentSchema;
 
             contentSchema.Properties.Add(ID_PROP_NAME, new JSchema
             {
@@ -290,7 +341,7 @@ namespace QA.Core.DPC.Loader
 
             contentSchema.Required.Add(ID_PROP_NAME);
 
-            var qpFields = _fieldService.List(definition.ContentId).ToArray();
+            var qpFields = ListQpFields(definition.ContentId).ToArray();
 
             foreach (Field field in definition.Fields
                 .Where(f => !(f is Dictionaries)
@@ -305,9 +356,9 @@ namespace QA.Core.DPC.Loader
                 if (field is BaseVirtualField baseVirtualField)
                 {
                     contentSchema.Properties[field.FieldName] = GetVirtualFieldSchema(
-                        baseVirtualField, definition, generatedSchemas, fieldsToIgnore, foundVirtualFields);
+                        baseVirtualField, definition, context);
                 }
-                else if (!fieldsToIgnore.Contains(new Tuple<Content, Field>(definition, field)))
+                else if (!context.IgnoredFields.Contains(new Tuple<Content, Field>(definition, field)))
                 {
                     var qpField = field is BackwardRelationField
                         ? _fieldService.Read(field.FieldId)
@@ -320,13 +371,11 @@ namespace QA.Core.DPC.Loader
                     }
                     if (field is ExtensionField extensionField)
                     {
-                        MergeExtensionFieldSchema(
-                            extensionField, contentSchema, generatedSchemas, foundVirtualFields, fieldsToIgnore);
+                        MergeExtensionFieldSchema(extensionField, contentSchema, context);
                     }
                     else
                     {
-                        contentSchema.Properties[field.FieldName] = GetFieldSchema(
-                            field, qpField, forList, generatedSchemas, foundVirtualFields, fieldsToIgnore);
+                        contentSchema.Properties[field.FieldName] = GetFieldSchema(field, qpField, forList, context);
                     }
                 }
             }
@@ -336,7 +385,8 @@ namespace QA.Core.DPC.Loader
                 var fieldsToAdd = qpFields
                     .Where(f => f.RelationType == Quantumart.QP8.BLL.RelationType.None
                         && definition.Fields.All(y => y.FieldId != f.Id))
-                    .Where(f => !fieldsToIgnore.Any(t => t.Item1.Equals(definition) && t.Item2.FieldId == f.Id));
+                    .Where(f => !context.IgnoredFields
+                        .Any(t => t.Item1.Equals(definition) && t.Item2.FieldId == f.Id));
 
                 foreach (var qpField in fieldsToAdd)
                 {
@@ -357,11 +407,7 @@ namespace QA.Core.DPC.Loader
         }
 
         private void MergeExtensionFieldSchema(
-            ExtensionField field,
-            JSchema contentSchema,
-            Dictionary<Content, JSchema> generatedSchemas,
-            Dictionary<Tuple<Content, string>, Field> foundVirtualFields,
-            List<Tuple<Content, Field>> fieldsToIgnore)
+            ExtensionField field, JSchema contentSchema, SchemaContext context)
         {
             contentSchema.Properties.Add(field.FieldName, new JSchema { Type = JSchemaType.String });
 
@@ -381,8 +427,7 @@ namespace QA.Core.DPC.Loader
                     foreach (Field extField in groupFields)
                     {
                         JSchema extFieldSchema = GetFieldSchema(
-                            extField, _fieldService.Read(extField.FieldId), false,
-                            generatedSchemas, foundVirtualFields, fieldsToIgnore);
+                            extField, _fieldService.Read(extField.FieldId), false, context);
 
                         sameNameExtensionFieldsSchema.OneOf.Add(extFieldSchema);
                     }
@@ -390,8 +435,7 @@ namespace QA.Core.DPC.Loader
                 else
                 {
                     sameNameExtensionFieldsSchema = GetFieldSchema(
-                        groupFields[0], _fieldService.Read(groupFields[0].FieldId), false,
-                        generatedSchemas, foundVirtualFields, fieldsToIgnore);
+                        groupFields[0], _fieldService.Read(groupFields[0].FieldId), false, context);
                 }
 
                 contentSchema.Properties[contentFieldGroup.Key] = sameNameExtensionFieldsSchema;
@@ -399,11 +443,7 @@ namespace QA.Core.DPC.Loader
         }
 
         private JSchema GetFieldSchema(
-            Field field,
-            Quantumart.QP8.BLL.Field qpField,
-            bool forList, Dictionary<Content, JSchema> generatedSchemas,
-            Dictionary<Tuple<Content, string>, Field> foundVirtualFields,
-            List<Tuple<Content, Field>> fieldsToIgnore)
+            Field field, Quantumart.QP8.BLL.Field qpField, bool forList, SchemaContext context)
         {
             if (qpField == null && !(field is BaseVirtualField))
             {
@@ -419,8 +459,7 @@ namespace QA.Core.DPC.Loader
                 var backwardFieldSchema = new JSchema { Type = JSchemaType.Array };
 
                 JSchema backwardItemSchema = GetSchemaRecursive(
-                    backwardRelationalField.Content, forList, generatedSchemas,
-                    foundVirtualFields, fieldsToIgnore);
+                    backwardRelationalField.Content, forList, context);
 
                 backwardFieldSchema.Items.Add(backwardItemSchema);
 
@@ -432,15 +471,13 @@ namespace QA.Core.DPC.Loader
 
                 if (qpField.RelationType == Quantumart.QP8.BLL.RelationType.OneToMany)
                 {
-                    return GetSchemaRecursive(
-                        fieldContent, forList, generatedSchemas, foundVirtualFields, fieldsToIgnore);
+                    return GetSchemaRecursive(fieldContent, forList, context);
                 }
                 else
                 {
                     var arrayFieldSchema = new JSchema { Type = JSchemaType.Array };
 
-                    JSchema arrayItemSchema = GetSchemaRecursive(
-                        fieldContent, forList, generatedSchemas, foundVirtualFields, fieldsToIgnore);
+                    JSchema arrayItemSchema = GetSchemaRecursive(fieldContent, forList, context);
 
                     arrayFieldSchema.Items.Add(arrayItemSchema);
 
@@ -454,17 +491,13 @@ namespace QA.Core.DPC.Loader
         }
         
         private JSchema GetVirtualFieldSchema(
-            BaseVirtualField baseVirtualField,
-            Content definition,
-            Dictionary<Content, JSchema> generatedSchemas,
-            List<Tuple<Content, Field>> fieldsToIgnore,
-            Dictionary<Tuple<Content, string>, Field> foundVirtualFields)
+            BaseVirtualField baseVirtualField, Content definition, SchemaContext context)
         {
             if (baseVirtualField is VirtualMultiEntityField virtualMultiEntityField)
             {
                 var boundFieldKey = new Tuple<Content, string>(definition, virtualMultiEntityField.Path);
 
-                Field boundField = foundVirtualFields[boundFieldKey];
+                Field boundField = context.VirtualFields[boundFieldKey];
 
                 var contentForArrayFields = ((EntityField)boundField).Content;
 
@@ -472,8 +505,7 @@ namespace QA.Core.DPC.Loader
 
                 foreach (BaseVirtualField childField in virtualMultiEntityField.Fields)
                 {
-                    JSchema childfieldSchema = GetVirtualFieldSchema(
-                        childField, contentForArrayFields, generatedSchemas, fieldsToIgnore, foundVirtualFields);
+                    JSchema childfieldSchema = GetVirtualFieldSchema(childField, contentForArrayFields, context);
 
                     itemSchema.Properties[childField.FieldName] = childfieldSchema;
                 }
@@ -492,8 +524,7 @@ namespace QA.Core.DPC.Loader
 
                 foreach (BaseVirtualField childField in fields)
                 {
-                    JSchema childfieldSchema = GetVirtualFieldSchema(
-                        childField, definition, generatedSchemas, fieldsToIgnore, foundVirtualFields);
+                    JSchema childfieldSchema = GetVirtualFieldSchema(childField, definition, context);
 
                     virtualEntityFieldSchema.Properties[childField.FieldName] = childfieldSchema;
                 }
@@ -510,15 +541,28 @@ namespace QA.Core.DPC.Loader
                 {
                     var virtualFieldKey = new Tuple<Content, string>(definition, virtualField.Path);
 
-                    return GetFieldSchema(
-                        foundVirtualFields[virtualFieldKey], null, false,
-                        generatedSchemas, foundVirtualFields, fieldsToIgnore);
+                    return GetFieldSchema(context.VirtualFields[virtualFieldKey], null, false, context);
                 }
             }
             else
             {
                 throw new Exception($"Поле типа {baseVirtualField.GetType()} не поддерживается");
             }
+        }
+        
+        private readonly Dictionary<int, Quantumart.QP8.BLL.Field[]> _qpFieldsByContentId
+            = new Dictionary<int, Quantumart.QP8.BLL.Field[]>();
+
+        /// <summary>
+        /// Мемоизация <see cref="FieldService.List(int)"/>. Сокращает количество вызовов до 4 раз.
+        /// </summary>
+        private Quantumart.QP8.BLL.Field[] ListQpFields(int contentId)
+        {
+            if (_qpFieldsByContentId.ContainsKey(contentId))
+            {
+                return _qpFieldsByContentId[contentId];
+            }
+            return _qpFieldsByContentId[contentId] = _fieldService.List(contentId).ToArray();
         }
 
         private static JSchemaType ConvertTypeToJsType(Type type)
@@ -643,6 +687,15 @@ namespace QA.Core.DPC.Loader
                 default:
                     return plainArticleField.NativeValue;
             }
+        }
+
+        internal class PlainFieldFileInfo
+        {
+            public string Name { get; set; }
+
+            public int FileSizeBytes { get; set; }
+
+            public string AbsoluteUrl { get; set; }
         }
 
         private Dictionary<string, object> ConvertArticle(Article article, IArticleFilter filter)
