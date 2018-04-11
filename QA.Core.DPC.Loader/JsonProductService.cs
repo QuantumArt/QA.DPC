@@ -130,7 +130,6 @@ namespace QA.Core.DPC.Loader
             
             if (includeRegionTags)
             {
-                // todo
                 JSchema schemaWithRegionTags = new JSchema { Type = JSchemaType.Object };
 
                 schemaWithRegionTags.Properties.Add(_productPropertyName, rootSchema);
@@ -190,9 +189,11 @@ namespace QA.Core.DPC.Loader
 
             foreach (Content content in context.RepeatedContents)
             {
-                var qpContent = _contentService.Read(content.ContentId);
+                JSchema schema = context.SchemasByContent[content];
 
-                string name = qpContent.NetName;
+                string name = schema.ExtensionData.ContainsKey("contentName")
+                    ? (string)schema.ExtensionData["contentName"]
+                    : null;
 
                 if (String.IsNullOrWhiteSpace(name))
                 {
@@ -207,8 +208,8 @@ namespace QA.Core.DPC.Loader
                 {
                     contentIndexesByName[name] = 1;
                 }
-                
-                definitions[name] = context.SchemasByContent[content];
+
+                definitions[name] = schema;
             }
 
             rootSchema.ExtensionData["definitions"] = definitions;
@@ -329,7 +330,7 @@ namespace QA.Core.DPC.Loader
                 context.VirtualFields[virtualFieldKey] = fieldToMove;
             }
         }
-
+        
         /// <summary>
         /// Рекурсивно обходит <see cref="Content"/>, генерирует корневую схему и заполняет
         /// <see cref="SchemaContext.SchemasByContent"/> - созданные схемы контентов
@@ -342,8 +343,8 @@ namespace QA.Core.DPC.Loader
                 context.RepeatedContents.Add(definition);
                 return context.SchemasByContent[definition];
             }
-
-            var contentSchema = new JSchema { Type = JSchemaType.Object };
+            
+            var contentSchema = CreateContentSchema(definition);
 
             context.SchemasByContent[definition] = contentSchema;
 
@@ -384,7 +385,7 @@ namespace QA.Core.DPC.Loader
                     }
                     if (field is ExtensionField extensionField)
                     {
-                        MergeExtensionFieldSchema(extensionField, contentSchema, context);
+                        MergeExtensionFieldSchema(extensionField, qpField, contentSchema, context);
                     }
                     else
                     {
@@ -409,20 +410,84 @@ namespace QA.Core.DPC.Loader
 
             if (forList)
             {
-                var arraySchema = new JSchema { Type = JSchemaType.Array };
-
-                arraySchema.Items.Add(contentSchema);
-
-                return arraySchema;
+                return new JSchema { Type = JSchemaType.Array, Items = { contentSchema } };
             }
 
             return contentSchema;
         }
 
-        private void MergeExtensionFieldSchema(
-            ExtensionField field, JSchema contentSchema, SchemaContext context)
+        private JSchema CreateContentSchema(Content content)
         {
-            contentSchema.Properties.Add(field.FieldName, new JSchema { Type = JSchemaType.String });
+            var qpContent = _contentService.Read(content.ContentId);
+
+            var schema = new JSchema { Type = JSchemaType.Object, AllowAdditionalProperties = false };
+
+            schema.Description =
+                !String.IsNullOrWhiteSpace(qpContent.Description)
+                    ? qpContent.Description
+                    : !String.IsNullOrWhiteSpace(qpContent.FriendlySingularName)
+                        ? qpContent.FriendlySingularName
+                        : !String.IsNullOrWhiteSpace(qpContent.Name)
+                            ? qpContent.Name
+                            : null;
+
+            schema.ExtensionData["contentId"] = qpContent.Id;
+
+            if (!String.IsNullOrWhiteSpace(qpContent.NetName))
+            {
+                schema.ExtensionData["contentName"] = qpContent.NetName;
+            }
+            if (!String.IsNullOrWhiteSpace(qpContent.Name))
+            {
+                schema.ExtensionData["contentTitle"] = qpContent.Name;
+            }
+            if (!String.IsNullOrWhiteSpace(qpContent.Description))
+            {
+                schema.ExtensionData["contentDescription"] = qpContent.Description;
+            }
+
+            return schema;
+        }
+
+        /// <param name="field">Can be null</param>
+        private static JSchema AttachFieldData(Field field, Quantumart.QP8.BLL.Field qpField, JSchema schema)
+        {
+            schema.Description = 
+                !String.IsNullOrWhiteSpace(qpField.Description)
+                    ? qpField.Description
+                    : !String.IsNullOrWhiteSpace(qpField.FriendlyName)
+                        ? qpField.FriendlyName
+                        : schema.Description;
+
+            // TODO: schema.Default
+
+            schema.ExtensionData["fieldId"] = field?.FieldId ?? qpField.Id;
+            schema.ExtensionData["fieldName"] = field?.FieldName ?? qpField.Name;
+
+            string fieldType = field?.FieldType ?? qpField.ExactType.ToString();
+
+            if (!String.IsNullOrWhiteSpace(fieldType))
+            {
+                schema.ExtensionData["fieldType"] = fieldType;
+            }
+            if (!String.IsNullOrWhiteSpace(qpField.FriendlyName))
+            {
+                schema.ExtensionData["fieldTitle"] = qpField.FriendlyName;
+            }
+            if (!String.IsNullOrWhiteSpace(qpField.Description) && qpField.Description != "&nbsp;")
+            {
+                schema.ExtensionData["fieldDescription"] = qpField.Description;
+            }
+            
+            return schema;
+        }
+
+        private void MergeExtensionFieldSchema(
+            ExtensionField field, Quantumart.QP8.BLL.Field qpField, JSchema contentSchema, SchemaContext context)
+        {
+            JSchema extensionSchema = AttachFieldData(field, qpField, new JSchema { Type = JSchemaType.String });
+
+            contentSchema.Properties.Add(field.FieldName, extensionSchema);
 
             var contentFieldGroups = field.ContentMapping.Values
                 .SelectMany(x => x.Fields)
@@ -463,20 +528,18 @@ namespace QA.Core.DPC.Loader
                 qpField = _fieldService.Read(field.FieldId);
             }
 
-            if (field is PlainField)
+            if (field is PlainField plainField)
             {
-                return GetPlainFieldSchema(qpField);
+                return GetPlainFieldSchema(qpField, plainField);
             }
             else if (field is BackwardRelationField backwardRelationalField)
             {
-                var backwardFieldSchema = new JSchema { Type = JSchemaType.Array };
+                JSchema backwardItemSchema = GetSchemaRecursive(backwardRelationalField.Content, forList, context);
 
-                JSchema backwardItemSchema = GetSchemaRecursive(
-                    backwardRelationalField.Content, forList, context);
-
-                backwardFieldSchema.Items.Add(backwardItemSchema);
-
-                return backwardFieldSchema;
+                return AttachFieldData(field, qpField, new JSchema
+                {
+                    Type = JSchemaType.Array, Items = { backwardItemSchema }
+                });
             }
             else if (field is EntityField entityField)
             {
@@ -484,17 +547,16 @@ namespace QA.Core.DPC.Loader
 
                 if (qpField.RelationType == Quantumart.QP8.BLL.RelationType.OneToMany)
                 {
-                    return GetSchemaRecursive(fieldContent, forList, context);
+                    return AttachFieldData(field, qpField, GetSchemaRecursive(fieldContent, forList, context));
                 }
                 else
                 {
-                    var arrayFieldSchema = new JSchema { Type = JSchemaType.Array };
-
                     JSchema arrayItemSchema = GetSchemaRecursive(fieldContent, forList, context);
 
-                    arrayFieldSchema.Items.Add(arrayItemSchema);
-
-                    return arrayFieldSchema;
+                    return AttachFieldData(field, qpField, new JSchema
+                    {
+                        Type = JSchemaType.Array, Items = { arrayItemSchema }
+                    });
                 }
             }
             else
@@ -523,11 +585,7 @@ namespace QA.Core.DPC.Loader
                     itemSchema.Properties[childField.FieldName] = childfieldSchema;
                 }
 
-                var virtualMultiEntityFieldSchema = new JSchema { Type = JSchemaType.Array };
-
-                virtualMultiEntityFieldSchema.Items.Add(itemSchema);
-
-                return virtualMultiEntityFieldSchema;
+                return new JSchema { Type = JSchemaType.Array, Items = { itemSchema } };
             }
             else if (baseVirtualField is VirtualEntityField virtualEntityField)
             {
@@ -577,14 +635,14 @@ namespace QA.Core.DPC.Loader
             throw new Exception("Схема не поддерживает конвертер возвращающий тип " + type);
         }
         
-        private static JSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field field)
+        private static JSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField, PlainField field = null)
         {
             var schema = new JSchema();
 
-            switch (field.ExactType)
+            switch (qpField.ExactType)
             {
                 case FieldExactTypes.Numeric:
-                    schema.Type = field.IsInteger ? JSchemaType.Integer : JSchemaType.Number;
+                    schema.Type = qpField.IsInteger ? JSchemaType.Integer : JSchemaType.Number;
                     break;
 
                 case FieldExactTypes.File:
@@ -619,7 +677,7 @@ namespace QA.Core.DPC.Loader
                     break;
             }
 
-            return schema;
+            return AttachFieldData(field, qpField, schema);
         }
 
         private object GetPlainArticleFieldValue(PlainArticleField plainArticleField)
