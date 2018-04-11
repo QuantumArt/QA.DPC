@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
@@ -124,7 +125,7 @@ namespace QA.Core.DPC.Loader
 
             FillVirtualFieldsInfo(definition, context);
 
-            JSchema rootSchema = GetSchemaRecursive(definition, forList, context);
+            JSchema rootSchema = GetSchemaRecursive(definition, context, forList);
 
             FillSchemaDefinitions(rootSchema, context);
             
@@ -336,7 +337,7 @@ namespace QA.Core.DPC.Loader
         /// <see cref="SchemaContext.SchemasByContent"/> - созданные схемы контентов
         /// и <see cref="SchemaContext.RepeatedContents"/> - повторяющиеся контенты
         /// </summary>
-        private JSchema GetSchemaRecursive(Content definition, bool forList, SchemaContext context)
+        private JSchema GetSchemaRecursive(Content definition, SchemaContext context, bool forList)
         {
             if (context.SchemasByContent.ContainsKey(definition))
             {
@@ -389,7 +390,7 @@ namespace QA.Core.DPC.Loader
                     }
                     else
                     {
-                        contentSchema.Properties[field.FieldName] = GetFieldSchema(field, qpField, forList, context);
+                        contentSchema.Properties[field.FieldName] = GetFieldSchema(field, qpField, context, forList);
                     }
                 }
             }
@@ -423,11 +424,11 @@ namespace QA.Core.DPC.Loader
             var schema = new JSchema { Type = JSchemaType.Object, AllowAdditionalProperties = false };
 
             schema.Description =
-                !String.IsNullOrWhiteSpace(qpContent.Description)
+                !IsHtmlWhiteSpace(qpContent.Description)
                     ? qpContent.Description
-                    : !String.IsNullOrWhiteSpace(qpContent.FriendlySingularName)
+                    : !IsHtmlWhiteSpace(qpContent.FriendlySingularName)
                         ? qpContent.FriendlySingularName
-                        : !String.IsNullOrWhiteSpace(qpContent.Name)
+                        : !IsHtmlWhiteSpace(qpContent.Name)
                             ? qpContent.Name
                             : null;
 
@@ -437,11 +438,11 @@ namespace QA.Core.DPC.Loader
             {
                 schema.ExtensionData["contentName"] = qpContent.NetName;
             }
-            if (!String.IsNullOrWhiteSpace(qpContent.Name))
+            if (!IsHtmlWhiteSpace(qpContent.Name))
             {
                 schema.ExtensionData["contentTitle"] = qpContent.Name;
             }
-            if (!String.IsNullOrWhiteSpace(qpContent.Description))
+            if (!IsHtmlWhiteSpace(qpContent.Description))
             {
                 schema.ExtensionData["contentDescription"] = qpContent.Description;
             }
@@ -453,9 +454,9 @@ namespace QA.Core.DPC.Loader
         private static JSchema AttachFieldData(Field field, Quantumart.QP8.BLL.Field qpField, JSchema schema)
         {
             schema.Description = 
-                !String.IsNullOrWhiteSpace(qpField.Description)
+                !IsHtmlWhiteSpace(qpField.Description)
                     ? qpField.Description
-                    : !String.IsNullOrWhiteSpace(qpField.FriendlyName)
+                    : !IsHtmlWhiteSpace(qpField.FriendlyName)
                         ? qpField.FriendlyName
                         : schema.Description;
 
@@ -466,20 +467,26 @@ namespace QA.Core.DPC.Loader
 
             string fieldType = field?.FieldType ?? qpField.ExactType.ToString();
 
-            if (!String.IsNullOrWhiteSpace(fieldType))
+            if (!String.IsNullOrEmpty(fieldType))
             {
                 schema.ExtensionData["fieldType"] = fieldType;
             }
-            if (!String.IsNullOrWhiteSpace(qpField.FriendlyName))
+            if (!IsHtmlWhiteSpace(qpField.FriendlyName))
             {
                 schema.ExtensionData["fieldTitle"] = qpField.FriendlyName;
             }
-            if (!String.IsNullOrWhiteSpace(qpField.Description) && qpField.Description != "&nbsp;")
+            if (!IsHtmlWhiteSpace(qpField.Description))
             {
                 schema.ExtensionData["fieldDescription"] = qpField.Description;
             }
             
             return schema;
+        }
+
+        private static bool IsHtmlWhiteSpace(string str)
+        {
+            return String.IsNullOrEmpty(str) 
+                || String.IsNullOrWhiteSpace(WebUtility.HtmlDecode(str));
         }
 
         private void MergeExtensionFieldSchema(
@@ -490,38 +497,44 @@ namespace QA.Core.DPC.Loader
             contentSchema.Properties.Add(field.FieldName, extensionSchema);
 
             var contentFieldGroups = field.ContentMapping.Values
-                .SelectMany(x => x.Fields)
-                .GroupBy(x => x.FieldName);
+                .SelectMany(c => c.Fields
+                    .Select(f => new { Content = c, Field = f }))
+                .GroupBy(x => x.Field.FieldName);
 
             foreach (var contentFieldGroup in contentFieldGroups)
             {
-                Field[] groupFields = contentFieldGroup.ToArray();
+                var groupFields = contentFieldGroup.ToArray();
 
                 JSchema sameNameExtensionFieldsSchema;
                 if (groupFields.Length > 1)
                 {
                     sameNameExtensionFieldsSchema = new JSchema { Type = JSchemaType.Object };
 
-                    foreach (Field extField in groupFields)
+                    foreach (var contentField in groupFields)
                     {
+                        Field extField = contentField.Field;
+
                         JSchema extFieldSchema = GetFieldSchema(
-                            extField, _fieldService.Read(extField.FieldId), false, context);
+                            extField, _fieldService.Read(extField.FieldId), context, false);
 
                         sameNameExtensionFieldsSchema.OneOf.Add(extFieldSchema);
                     }
                 }
                 else
                 {
+                    Field extField = groupFields[0].Field;
+
                     sameNameExtensionFieldsSchema = GetFieldSchema(
-                        groupFields[0], _fieldService.Read(groupFields[0].FieldId), false, context);
+                        extField, _fieldService.Read(extField.FieldId), context, false);
                 }
 
                 contentSchema.Properties[contentFieldGroup.Key] = sameNameExtensionFieldsSchema;
             }
         }
 
+        /// <param name="qpField">Can be null</param>
         private JSchema GetFieldSchema(
-            Field field, Quantumart.QP8.BLL.Field qpField, bool forList, SchemaContext context)
+            Field field, Quantumart.QP8.BLL.Field qpField, SchemaContext context, bool forList)
         {
             if (qpField == null && !(field is BaseVirtualField))
             {
@@ -534,7 +547,7 @@ namespace QA.Core.DPC.Loader
             }
             else if (field is BackwardRelationField backwardRelationalField)
             {
-                JSchema backwardItemSchema = GetSchemaRecursive(backwardRelationalField.Content, forList, context);
+                JSchema backwardItemSchema = GetSchemaRecursive(backwardRelationalField.Content, context, forList);
 
                 return AttachFieldData(field, qpField, new JSchema
                 {
@@ -547,11 +560,11 @@ namespace QA.Core.DPC.Loader
 
                 if (qpField.RelationType == Quantumart.QP8.BLL.RelationType.OneToMany)
                 {
-                    return AttachFieldData(field, qpField, GetSchemaRecursive(fieldContent, forList, context));
+                    return AttachFieldData(field, qpField, GetSchemaRecursive(fieldContent, context, forList));
                 }
                 else
                 {
-                    JSchema arrayItemSchema = GetSchemaRecursive(fieldContent, forList, context);
+                    JSchema arrayItemSchema = GetSchemaRecursive(fieldContent, context, forList);
 
                     return AttachFieldData(field, qpField, new JSchema
                     {
@@ -612,7 +625,7 @@ namespace QA.Core.DPC.Loader
                 {
                     var virtualFieldKey = new Tuple<Content, string>(definition, virtualField.Path);
 
-                    return GetFieldSchema(context.VirtualFields[virtualFieldKey], null, false, context);
+                    return GetFieldSchema(context.VirtualFields[virtualFieldKey], null, context, false);
                 }
             }
             else
