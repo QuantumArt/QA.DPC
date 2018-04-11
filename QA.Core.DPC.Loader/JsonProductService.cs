@@ -17,6 +17,7 @@ using Article = QA.Core.Models.Entities.Article;
 using Content = QA.Core.Models.Configuration.Content;
 using Field = QA.Core.Models.Configuration.Field;
 using FieldService = Quantumart.QP8.BLL.Services.API.FieldService;
+using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
 
 namespace QA.Core.DPC.Loader
 {
@@ -24,6 +25,7 @@ namespace QA.Core.DPC.Loader
     {
         private const string ID_PROP_NAME = "Id";
 
+        private readonly ContentService _contentService;
         private readonly FieldService _fieldService;
         private readonly ILogger _logger;
         private readonly DBConnector _dbConnector;
@@ -33,11 +35,13 @@ namespace QA.Core.DPC.Loader
         public JsonProductService(
             IConnectionProvider connectionProvider,
             ILogger logger,
+            ContentService contentService,
             FieldService fieldService,
             VirtualFieldPathEvaluator virtualFieldPathEvaluator,
             IRegionTagReplaceService regionTagReplaceService)
         {
             _logger = logger;
+            _contentService = contentService;
             _fieldService = fieldService;
 
             var connectionString = connectionProvider.GetConnection();
@@ -97,7 +101,7 @@ namespace QA.Core.DPC.Loader
             /// <summary>
             /// Созданные схемы для различных контентов
             /// </summary>
-            public Dictionary<Content, JSchema> GeneratedSchemas = new Dictionary<Content, JSchema>();
+            public Dictionary<Content, JSchema> SchemasByContent = new Dictionary<Content, JSchema>();
 
             /// <summary>
             /// Значения вирутальных полей
@@ -113,15 +117,17 @@ namespace QA.Core.DPC.Loader
 
         public JSchema GetSchema(Content definition, bool forList = false, bool includeRegionTags = false)
         {
+            _contentService.LoadStructureCache();
+            _fieldService.LoadStructureCache();
+
             var context = new SchemaContext();
-            
+
             FillVirtualFieldsInfo(definition, context);
 
             JSchema rootSchema = GetSchemaRecursive(definition, forList, context);
 
             FillSchemaDefinitions(rootSchema, context);
-
-
+            
             if (includeRegionTags)
             {
                 // todo
@@ -184,7 +190,14 @@ namespace QA.Core.DPC.Loader
 
             foreach (Content content in context.RepeatedContents)
             {
-                string name = ListQpFields(content.ContentId).First().Content.NetName;
+                var qpContent = _contentService.Read(content.ContentId);
+
+                string name = qpContent.NetName;
+
+                if (String.IsNullOrWhiteSpace(name))
+                {
+                    name = $"Content{content.ContentId}";
+                }
 
                 if (contentIndexesByName.ContainsKey(name))
                 {
@@ -195,7 +208,7 @@ namespace QA.Core.DPC.Loader
                     contentIndexesByName[name] = 1;
                 }
                 
-                definitions[name] = context.GeneratedSchemas[content];
+                definitions[name] = context.SchemasByContent[content];
             }
 
             rootSchema.ExtensionData["definitions"] = definitions;
@@ -319,20 +332,20 @@ namespace QA.Core.DPC.Loader
 
         /// <summary>
         /// Рекурсивно обходит <see cref="Content"/>, генерирует корневую схему и заполняет
-        /// <see cref="SchemaContext.GeneratedSchemas"/> - созданные схемы контентов
+        /// <see cref="SchemaContext.SchemasByContent"/> - созданные схемы контентов
         /// и <see cref="SchemaContext.RepeatedContents"/> - повторяющиеся контенты
         /// </summary>
         private JSchema GetSchemaRecursive(Content definition, bool forList, SchemaContext context)
         {
-            if (context.GeneratedSchemas.ContainsKey(definition))
+            if (context.SchemasByContent.ContainsKey(definition))
             {
                 context.RepeatedContents.Add(definition);
-                return context.GeneratedSchemas[definition];
+                return context.SchemasByContent[definition];
             }
 
             var contentSchema = new JSchema { Type = JSchemaType.Object };
 
-            context.GeneratedSchemas[definition] = contentSchema;
+            context.SchemasByContent[definition] = contentSchema;
 
             contentSchema.Properties.Add(ID_PROP_NAME, new JSchema
             {
@@ -341,7 +354,7 @@ namespace QA.Core.DPC.Loader
 
             contentSchema.Required.Add(ID_PROP_NAME);
 
-            var qpFields = ListQpFields(definition.ContentId).ToArray();
+            var qpFields = _fieldService.List(definition.ContentId).ToArray();
 
             foreach (Field field in definition.Fields
                 .Where(f => !(f is Dictionaries)
@@ -550,21 +563,6 @@ namespace QA.Core.DPC.Loader
             }
         }
         
-        private readonly Dictionary<int, Quantumart.QP8.BLL.Field[]> _qpFieldsByContentId
-            = new Dictionary<int, Quantumart.QP8.BLL.Field[]>();
-
-        /// <summary>
-        /// Мемоизация <see cref="FieldService.List(int)"/>. Сокращает количество вызовов до 4 раз.
-        /// </summary>
-        private Quantumart.QP8.BLL.Field[] ListQpFields(int contentId)
-        {
-            if (_qpFieldsByContentId.ContainsKey(contentId))
-            {
-                return _qpFieldsByContentId[contentId];
-            }
-            return _qpFieldsByContentId[contentId] = _fieldService.List(contentId).ToArray();
-        }
-
         private static JSchemaType ConvertTypeToJsType(Type type)
         {
             if (type == typeof(bool))
