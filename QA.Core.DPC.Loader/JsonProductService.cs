@@ -125,7 +125,7 @@ namespace QA.Core.DPC.Loader
 
             FillVirtualFieldsInfo(definition, context);
 
-            JSchema rootSchema = GetSchemaRecursive(definition, context, forList);
+            JSchema rootSchema = GetSchemaRecursive(definition, context, forList, "");
 
             FillSchemaDefinitions(rootSchema, context);
             
@@ -337,15 +337,17 @@ namespace QA.Core.DPC.Loader
         /// <see cref="SchemaContext.SchemasByContent"/> - созданные схемы контентов
         /// и <see cref="SchemaContext.RepeatedContents"/> - повторяющиеся контенты
         /// </summary>
-        private JSchema GetSchemaRecursive(Content definition, SchemaContext context, bool forList)
+        private JSchema GetSchemaRecursive(Content definition, SchemaContext context, bool forList, string path)
         {
+            path += $"/{definition.ContentId}";
+
             if (context.SchemasByContent.ContainsKey(definition))
             {
                 context.RepeatedContents.Add(definition);
                 return context.SchemasByContent[definition];
             }
             
-            var contentSchema = CreateContentSchema(definition);
+            var contentSchema = CreateContentSchema(definition, path);
 
             context.SchemasByContent[definition] = contentSchema;
 
@@ -384,13 +386,15 @@ namespace QA.Core.DPC.Loader
                         throw new Exception($@"В definition указано поле id={
                             field.FieldId} которого нет в контенте id={definition.ContentId}");
                     }
+                    
                     if (field is ExtensionField extensionField)
                     {
-                        MergeExtensionFieldSchema(extensionField, qpField, contentSchema, context);
+                        MergeExtensionFieldSchema(extensionField, qpField, contentSchema, context, path);
                     }
                     else
                     {
-                        contentSchema.Properties[field.FieldName] = GetFieldSchema(field, qpField, context, forList);
+                        contentSchema.Properties[field.FieldName] = GetFieldSchema(
+                            field, qpField, context, forList, path);
                     }
                 }
             }
@@ -417,7 +421,7 @@ namespace QA.Core.DPC.Loader
             return contentSchema;
         }
 
-        private JSchema CreateContentSchema(Content content)
+        private JSchema CreateContentSchema(Content content, string path)
         {
             var qpContent = _contentService.Read(content.ContentId);
 
@@ -433,6 +437,7 @@ namespace QA.Core.DPC.Loader
                             : null;
 
             schema.ExtensionData["contentId"] = qpContent.Id;
+            schema.ExtensionData["contentPath"] = path;
 
             if (!String.IsNullOrWhiteSpace(qpContent.NetName))
             {
@@ -490,8 +495,14 @@ namespace QA.Core.DPC.Loader
         }
 
         private void MergeExtensionFieldSchema(
-            ExtensionField field, Quantumart.QP8.BLL.Field qpField, JSchema contentSchema, SchemaContext context)
+            ExtensionField field,
+            Quantumart.QP8.BLL.Field qpField,
+            JSchema contentSchema,
+            SchemaContext context,
+            string path)
         {
+            path += $":{field.FieldId}";
+
             JSchema extensionSchema = AttachFieldData(field, qpField, new JSchema { Type = JSchemaType.String });
 
             contentSchema.Properties.Add(field.FieldName, extensionSchema);
@@ -503,29 +514,33 @@ namespace QA.Core.DPC.Loader
 
             foreach (var contentFieldGroup in contentFieldGroups)
             {
-                var groupFields = contentFieldGroup.ToArray();
+                JSchema[] groupSchemas = contentFieldGroup
+                    .Select(contentField =>
+                    {
+                        Content extContent = contentField.Content;
+                        Field extField = contentField.Field;
+
+                        var extQpField = _fieldService.Read(extField.FieldId);
+
+                        string extPath = $"{path}/{extContent.ContentId}";
+
+                        return GetFieldSchema(extField, extQpField, context, false, extPath);
+                    })
+                    .ToArray();
 
                 JSchema sameNameExtensionFieldsSchema;
-                if (groupFields.Length > 1)
+                if (groupSchemas.Length > 1)
                 {
                     sameNameExtensionFieldsSchema = new JSchema { Type = JSchemaType.Object };
 
-                    foreach (var contentField in groupFields)
+                    foreach (JSchema extFieldSchema in groupSchemas)
                     {
-                        Field extField = contentField.Field;
-
-                        JSchema extFieldSchema = GetFieldSchema(
-                            extField, _fieldService.Read(extField.FieldId), context, false);
-
                         sameNameExtensionFieldsSchema.OneOf.Add(extFieldSchema);
                     }
                 }
                 else
                 {
-                    Field extField = groupFields[0].Field;
-
-                    sameNameExtensionFieldsSchema = GetFieldSchema(
-                        extField, _fieldService.Read(extField.FieldId), context, false);
+                    sameNameExtensionFieldsSchema = groupSchemas[0];
                 }
 
                 contentSchema.Properties[contentFieldGroup.Key] = sameNameExtensionFieldsSchema;
@@ -534,8 +549,10 @@ namespace QA.Core.DPC.Loader
 
         /// <param name="qpField">Can be null</param>
         private JSchema GetFieldSchema(
-            Field field, Quantumart.QP8.BLL.Field qpField, SchemaContext context, bool forList)
+            Field field, Quantumart.QP8.BLL.Field qpField, SchemaContext context, bool forList, string path)
         {
+            path += $":{field.FieldId}";
+
             if (qpField == null && !(field is BaseVirtualField))
             {
                 qpField = _fieldService.Read(field.FieldId);
@@ -547,7 +564,7 @@ namespace QA.Core.DPC.Loader
             }
             else if (field is BackwardRelationField backwardRelationalField)
             {
-                JSchema backwardItemSchema = GetSchemaRecursive(backwardRelationalField.Content, context, forList);
+                JSchema backwardItemSchema = GetSchemaRecursive(backwardRelationalField.Content, context, forList, path);
 
                 return AttachFieldData(field, qpField, new JSchema
                 {
@@ -560,11 +577,11 @@ namespace QA.Core.DPC.Loader
 
                 if (qpField.RelationType == Quantumart.QP8.BLL.RelationType.OneToMany)
                 {
-                    return AttachFieldData(field, qpField, GetSchemaRecursive(fieldContent, context, forList));
+                    return AttachFieldData(field, qpField, GetSchemaRecursive(fieldContent, context, forList, path));
                 }
                 else
                 {
-                    JSchema arrayItemSchema = GetSchemaRecursive(fieldContent, context, forList);
+                    JSchema arrayItemSchema = GetSchemaRecursive(fieldContent, context, forList, path);
 
                     return AttachFieldData(field, qpField, new JSchema
                     {
@@ -625,7 +642,7 @@ namespace QA.Core.DPC.Loader
                 {
                     var virtualFieldKey = new Tuple<Content, string>(definition, virtualField.Path);
 
-                    return GetFieldSchema(context.VirtualFields[virtualFieldKey], null, context, false);
+                    return GetFieldSchema(context.VirtualFields[virtualFieldKey], null, context, false, "/virtual");
                 }
             }
             else
