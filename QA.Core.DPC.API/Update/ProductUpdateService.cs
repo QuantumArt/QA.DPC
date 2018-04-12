@@ -20,39 +20,94 @@ namespace QA.Core.DPC.API.Update
 {
     public class ProductUpdateService : IProductUpdateService
     {
-        #region Private properties
         private readonly IProductService _productService;
         private readonly IArticleService _articleService;
+        private readonly IFieldService _fieldService;
+        private readonly DeleteAction _deleteAction;
         private readonly ILogger _logger;
 
         private readonly List<ArticleData> _updateData = new List<ArticleData>();
         private readonly Dictionary<int, Content> _articlesToDelete = new Dictionary<int, Content>();
-        private readonly IFieldService _fieldService;
-        private readonly DeleteAction _deleteAction;
 
         private IArticleFilter _filter;
 
-        #endregion
-
-        #region Constructor
-        public ProductUpdateService(IProductService productService, IArticleService articleService, ILogger logger, IFieldService fieldService, DeleteAction deleteAction)
+        public ProductUpdateService(
+            IProductService productService,
+            IArticleService articleService,
+            IFieldService fieldService,
+            DeleteAction deleteAction,
+            ILogger logger)
         {
             _productService = productService;
             _articleService = articleService;
+            _fieldService = new CachedFieldService(fieldService);
             _logger = logger;
-            _fieldService = fieldService;
             _deleteAction = deleteAction;
         }
+
+        #region CachedFieldService
+
+        private class CachedFieldService : IFieldService
+        {
+            private readonly Dictionary<int, Quantumart.QP8.BLL.Field> _fieldsById
+                = new Dictionary<int, Quantumart.QP8.BLL.Field>();
+
+            private readonly Dictionary<int, List<Quantumart.QP8.BLL.Field>> _fieldsByContentId
+                = new Dictionary<int, List<Quantumart.QP8.BLL.Field>>();
+
+            private readonly Dictionary<int, List<Quantumart.QP8.BLL.Field>> _relatedFieldsByContentId
+                = new Dictionary<int, List<Quantumart.QP8.BLL.Field>>();
+
+            private readonly IFieldService _fieldService;
+
+            public CachedFieldService(IFieldService fieldService)
+            {
+                _fieldService = fieldService;
+            }
+
+            public QPConnectionScope CreateQpConnectionScope()
+            {
+                return _fieldService.CreateQpConnectionScope();
+            }
+
+            public IEnumerable<Quantumart.QP8.BLL.Field> List(int contentId)
+            {
+                return _fieldsByContentId.ContainsKey(contentId)
+                    ? _fieldsByContentId[contentId]
+                    : _fieldsByContentId[contentId] = _fieldService
+                        .List(contentId)
+                        .Select(field => _fieldsById[field.Id] = field)
+                        .ToList();
+            }
+
+            public IEnumerable<Quantumart.QP8.BLL.Field> ListRelated(int contentId)
+            {
+                return _relatedFieldsByContentId.ContainsKey(contentId)
+                    ? _relatedFieldsByContentId[contentId]
+                    : _relatedFieldsByContentId[contentId] = _fieldService
+                        .ListRelated(contentId)
+                        .Select(field => _fieldsById[field.Id] = field)
+                        .ToList();
+                
+            }
+
+            public Quantumart.QP8.BLL.Field Read(int id)
+            {
+                return _fieldsById.ContainsKey(id)
+                    ? _fieldsById[id]
+                    : _fieldsById[id] = _fieldService.Read(id);
+            }
+        }
+
         #endregion
 
-        #region IProductUpdateService implementation
+        #region IProductUpdateService
 
         public void Update(Article product, ProductDefinition definition, bool isLive = false)
         {
-            var oldProduct = _productService.GetProductById(product.Id, isLive, definition);
+            Article oldProduct = _productService.GetProductById(product.Id, isLive, definition);
 
             _updateData.Clear();
-
             _articlesToDelete.Clear();
 
             _filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
@@ -67,41 +122,40 @@ namespace QA.Core.DPC.API.Update
             if (_articlesToDelete.Any())
             {
                 _logger.Debug(() => "Start Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
-
                 foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
                 {
                     try
                     {
                         var qpArticle = _articleService.Read(articleToDeleteKv.Key);
 
-                        _deleteAction.DeleteProduct(qpArticle, new ProductDefinition { StorageSchema = articleToDeleteKv.Value }, true, false, null);
+                        _deleteAction.DeleteProduct(
+                            qpArticle, new ProductDefinition { StorageSchema = articleToDeleteKv.Value },
+                            true, false, null);
                     }
                     catch (MessageResultException ex)
                     {
                         _logger.ErrorException("Не удалось удалить статью {0}", ex, articleToDeleteKv.Key);
                     }
                 }
+                _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
             }
-
-            _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
-
         }
+
         #endregion
 
-        #region Private methods
-
-
-
+        /// <exception cref="ArgumentNullException" />
+        /// <exception cref="InvalidOperationException" />
         private void ProcessArticlesTree(Article newArticle, Article existingArticle, Content definition)
         {
             if (newArticle == null || !_filter.Matches(newArticle))
+            {
                 return;
-
+            }
             if (!_filter.Matches(existingArticle))
+            {
                 existingArticle = null;
-
-            if (definition == null)
-                throw new ArgumentNullException("definition");
+            }
+            if (definition == null) throw new ArgumentNullException(nameof(definition));
 
             ArticleData newArticleUpdateData = new ArticleData
             {
@@ -109,61 +163,69 @@ namespace QA.Core.DPC.API.Update
                 Id = newArticle.Id
             };
 
-            List<int> plainFieldIds = definition.Fields.Where(x => x is PlainField).Select(x => x.FieldId).ToList();
+            List<int> plainFieldIds = definition.Fields
+                .Where(x => x is PlainField)
+                .Select(x => x.FieldId)
+                .ToList();
 
             if (definition.LoadAllPlainFields)
             {
                 plainFieldIds.AddRange(
                     _fieldService.List(definition.ContentId)
-                        .Where(x => x.RelationType == RelationType.None && definition.Fields.All(y => y.FieldId != x.Id))
+                        .Where(x => x.RelationType == RelationType.None
+                            && definition.Fields.All(y => y.FieldId != x.Id))
                         .Select(x => x.Id));
             }
 
-            newArticleUpdateData.Fields.AddRange(
-                newArticle.Fields.Values.OfType<PlainArticleField>()
-                    .Where(x => plainFieldIds.Contains(x.FieldId.Value) && (existingArticle == null || existingArticle.Fields.Values.OfType<PlainArticleField>()
-                                                                                                       .All(y => y.FieldId != x.FieldId || !ComparePlainFields(x, y))))
-                    .Select(x => new FieldData { Id = x.FieldId.Value, Value = x.Value }));
+            var updatedFields = newArticle.Fields.Values
+                .OfType<PlainArticleField>()
+                .Where(x => plainFieldIds.Contains(x.FieldId.Value)
+                    && (existingArticle == null
+                        || existingArticle.Fields.Values
+                            .OfType<PlainArticleField>()
+                            .All(y => y.FieldId != x.FieldId || !HasEqualNativeValues(x, y))))
+                .Select(x => new FieldData { Id = x.FieldId.Value, Value = x.Value });
+
+            newArticleUpdateData.Fields.AddRange(updatedFields);
 
             var associationFieldsInfo = (
                 from fieldDef in definition.Fields.OfType<Association>()
                 join field in newArticle.Fields.Values on fieldDef.FieldId equals field.FieldId
-                select
-                    new
-                    {
-                        field,
-                        oldField = existingArticle?.Fields.Values.Single(x => x.FieldId == field.FieldId),
-                        fieldDef
-                    }).ToArray();
+                select new
+                {
+                    field,
+                    oldField = existingArticle?.Fields.Values.Single(x => x.FieldId == field.FieldId),
+                    fieldDef
+                }).ToArray();
 
             foreach (var fieldToSyncInfo in associationFieldsInfo)
             {
-                if (fieldToSyncInfo.fieldDef is BackwardRelationField)
+                if (fieldToSyncInfo.fieldDef is BackwardRelationField backwardRelationFieldDef)
                 {
-                    BackwardArticleField oldField = (BackwardArticleField)fieldToSyncInfo.oldField, field = (BackwardArticleField)fieldToSyncInfo.field;
+                    BackwardArticleField oldField = (BackwardArticleField)fieldToSyncInfo.oldField;
+                    BackwardArticleField field = (BackwardArticleField)fieldToSyncInfo.field;
 
-                    int[] idsToAdd =
-                        field.GetArticles(_filter)
-                            .Where(x => oldField == null || oldField.GetArticles(_filter).All(y => y.Id != x.Id))
-                            .Select(x => x.Id)
-                            .ToArray();
+                    int[] idsToAdd = field.GetArticles(_filter)
+                        .Where(x => oldField == null || oldField.GetArticles(_filter).All(y => y.Id != x.Id))
+                        .Select(x => x.Id)
+                        .ToArray();
 
-                    int[] idsToRemove = oldField?.GetArticles(_filter).Select(x => x.Id).Where(x => field.GetArticles(_filter).All(y => y.Id != x)).ToArray() ?? new int[] { };
-
-                    BackwardRelationField backwardRelationFieldDef = (BackwardRelationField)fieldToSyncInfo.fieldDef;
-
+                    int[] idsToRemove = oldField?.GetArticles(_filter)
+                        .Select(x => x.Id)
+                        .Where(x => field.GetArticles(_filter).All(y => y.Id != x))
+                        .ToArray() ?? new int[0];
+                    
                     _updateData.AddRange(idsToAdd.Select(x => new ArticleData
                     {
                         Id = x,
                         ContentId = backwardRelationFieldDef.Content.ContentId,
-                        Fields =
-                            new List<FieldData>
-                            {
-                                new FieldData {Id = field.FieldId.Value, ArticleIds = new[] {newArticle.Id}}
-                            }
+                        Fields = new List<FieldData>
+                        {
+                            new FieldData { Id = field.FieldId.Value, ArticleIds = new[] { newArticle.Id } }
+                        }
                     }));
 
-                    if (fieldToSyncInfo.fieldDef.DeletingMode == DeletingMode.Delete)
+                    if (backwardRelationFieldDef.DeletingMode == DeletingMode.Delete)
                     {
                         foreach (int idToRemove in idsToRemove)
                         {
@@ -171,32 +233,40 @@ namespace QA.Core.DPC.API.Update
                         }
                     }
                     else
+                    {
                         _updateData.AddRange(idsToRemove.Select(x => new ArticleData
                         {
                             Id = x,
                             ContentId = backwardRelationFieldDef.Content.ContentId
                         }));
+                    }
                 }
-                else if (fieldToSyncInfo.fieldDef is ExtensionField)
+                else if (fieldToSyncInfo.fieldDef is ExtensionField extensionFieldDef)
                 {
-                    ExtensionArticleField oldField = (ExtensionArticleField)fieldToSyncInfo.oldField, field = (ExtensionArticleField)fieldToSyncInfo.field;
+                    ExtensionArticleField oldField = (ExtensionArticleField)fieldToSyncInfo.oldField;
+                    ExtensionArticleField field = (ExtensionArticleField)fieldToSyncInfo.field;
 
                     if (oldField == null || field.Value != oldField.Value)
                     {
                         newArticleUpdateData.Fields.Add(new FieldData
                         {
-                            Id = fieldToSyncInfo.fieldDef.FieldId,
+                            Id = extensionFieldDef.FieldId,
                             Value = field.Value,
                             ArticleIds = field.Item == null ? null : new[] { field.Item.Id }
                         });
 
                         if (oldField?.Item != null)
-                            _articlesToDelete[oldField.Item.Id] = ((ExtensionField)fieldToSyncInfo.fieldDef).ContentMapping[oldField.Item.ContentId];
+                        {
+                            _articlesToDelete[oldField.Item.Id] = extensionFieldDef
+                                .ContentMapping[oldField.Item.ContentId];
+                        }
                     }
                 }
                 else if (fieldToSyncInfo.field is SingleArticleField)
                 {
-                    SingleArticleField oldField = (SingleArticleField)fieldToSyncInfo.oldField, field = (SingleArticleField)fieldToSyncInfo.field;
+                    SingleArticleField oldField = (SingleArticleField)fieldToSyncInfo.oldField;
+                    SingleArticleField field = (SingleArticleField)fieldToSyncInfo.field;
+                    EntityField entityFieldDef = (EntityField)fieldToSyncInfo.fieldDef;
 
                     Article item = field.GetItem(_filter);
 
@@ -210,13 +280,17 @@ namespace QA.Core.DPC.API.Update
                             ArticleIds = item == null ? null : new[] { item.Id }
                         });
 
-                        if (oldItem != null && fieldToSyncInfo.fieldDef.DeletingMode == DeletingMode.Delete)
-                            _articlesToDelete[oldItem.Id] = ((EntityField)fieldToSyncInfo.fieldDef).Content;
+                        if (oldItem != null && entityFieldDef.DeletingMode == DeletingMode.Delete)
+                        {
+                            _articlesToDelete[oldItem.Id] = entityFieldDef.Content;
+                        }
                     }
                 }
                 else if (fieldToSyncInfo.field is MultiArticleField)
                 {
-                    MultiArticleField oldField = (MultiArticleField)fieldToSyncInfo.oldField, field = (MultiArticleField)fieldToSyncInfo.field;
+                    MultiArticleField oldField = (MultiArticleField)fieldToSyncInfo.oldField;
+                    MultiArticleField field = (MultiArticleField)fieldToSyncInfo.field;
+                    EntityField entityFieldDef = (EntityField)fieldToSyncInfo.fieldDef;
 
                     var items = field.GetArticles(_filter).ToArray();
 
@@ -224,68 +298,80 @@ namespace QA.Core.DPC.API.Update
 
                     if (items.Length != (oldItems?.Length ?? 0) || items.Any(x => oldItems.All(y => y.Id != x.Id)))
                     {
-                        newArticleUpdateData.Fields.Add(new FieldData { Id = field.FieldId.Value, ArticleIds = items.Select(x => x.Id).ToArray() });
-
-                        if (fieldToSyncInfo.fieldDef.DeletingMode == DeletingMode.Delete)
+                        newArticleUpdateData.Fields.Add(new FieldData
                         {
-                            int[] idsToRemove = oldItems?.Where(x => items.All(y => y.Id != x.Id)).Select(x => x.Id).ToArray() ?? new int[] { };
+                            Id = field.FieldId.Value, ArticleIds = items.Select(x => x.Id).ToArray()
+                        });
+
+                        if (entityFieldDef.DeletingMode == DeletingMode.Delete)
+                        {
+                            int[] idsToRemove = oldItems?
+                                .Where(x => items.All(y => y.Id != x.Id))
+                                .Select(x => x.Id)
+                                .ToArray() ?? new int[0];
 
                             foreach (int idToRemove in idsToRemove)
                             {
-                                _articlesToDelete[idToRemove] = ((EntityField)fieldToSyncInfo.fieldDef).Content;
+                                _articlesToDelete[idToRemove] = entityFieldDef.Content;
                             }
                         }
                     }
                 }
             }
 
-            //if (newArticleUpdateData.Fields.Any())
+            // if (newArticleUpdateData.Fields.Any())
             _updateData.Add(newArticleUpdateData);
 
-            foreach (var fieldInfo in associationFieldsInfo.Where(x => x.fieldDef.UpdatingMode == UpdatingMode.Update))
+            foreach (var fieldInfo in associationFieldsInfo
+                .Where(x => x.fieldDef.UpdatingMode == UpdatingMode.Update))
             {
                 Article[] oldFieldsArticles = fieldInfo.oldField == null
-                    ? new Article[] { }
+                    ? new Article[0]
                     : GetChildArticles(fieldInfo.oldField, _filter).ToArray();
 
                 foreach (Article childArticle in GetChildArticles(fieldInfo.field, _filter))
                 {
-                    Content childArticleDef = fieldInfo.fieldDef.Contents.SingleOrDefault(x => x.ContentId == childArticle.ContentId);
+                    Content childArticleDef = fieldInfo.fieldDef.Contents
+                        .SingleOrDefault(x => x.ContentId == childArticle.ContentId);
 
                     if (childArticleDef == null)
-                        throw new Exception(string.Format("В описании продукта у поля {0} не может быть ContentId={1}, который у статьи id={2}",
-                                fieldInfo.field.FieldId, childArticle.ContentId, childArticle.Id));
+                    {
+                        throw new InvalidOperationException($@"В описании продукта у поля {fieldInfo.field.FieldId
+                            } не может быть ContentId={childArticle.ContentId
+                            }, который у статьи id={childArticle.Id}");
+                    }
 
-                    ProcessArticlesTree(childArticle, oldFieldsArticles.SingleOrDefault(x => x.Id == childArticle.Id), childArticleDef);
+                    Article oldChildArticle = oldFieldsArticles.SingleOrDefault(x => x.Id == childArticle.Id);
+
+                    ProcessArticlesTree(childArticle, oldChildArticle, childArticleDef);
                 }
             }
         }
 
-        private static bool ComparePlainFields(PlainArticleField plainArticleField, PlainArticleField otherPlainArticleField)
+        private static bool HasEqualNativeValues(
+            PlainArticleField plainArticleField, PlainArticleField otherPlainArticleField)
         {
-            return plainArticleField.NativeValue == null && otherPlainArticleField.NativeValue == null ||
-                   plainArticleField.NativeValue != null && plainArticleField.NativeValue.Equals(otherPlainArticleField.NativeValue);
+            return plainArticleField.NativeValue == null
+                    ? otherPlainArticleField.NativeValue == null
+                    : plainArticleField.NativeValue.Equals(otherPlainArticleField.NativeValue);
         }
 
         private IEnumerable<Article> GetChildArticles(ArticleField field, IArticleFilter filter)
         {
-            IEnumerable<Article> childArticles;
-
-            if (field is IGetArticle)
+            if (field is IGetArticle getArticle)
             {
-                var childArticle = ((IGetArticle)field).GetItem(filter);
+                Article childArticle = getArticle.GetItem(filter);
 
-                childArticles = childArticle != null ? new[] { childArticle } : new Article[] { };
+                return childArticle != null ? new[] { childArticle } : new Article[0];
             }
-            else if (field is IGetArticles)
+            else if (field is IGetArticles getArticles)
             {
-                childArticles = ((IGetArticles)field).GetArticles(filter);
+                return getArticles.GetArticles(filter);
             }
-            else childArticles = new Article[] { };
-
-            return childArticles;
+            else
+            {
+                return new Article[0];
+            }
         }
-
-        #endregion
     }
 }
