@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><Database Name="beeline_dpc_notifications" Class="NotificationsModelDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
-  <Connection Mode="AppSettings" ConnectionString="Data Source=MSCSQL01;Initial Catalog=beeline_dpc_notifications;Persist Security Info=True;User ID=sa" SettingsObjectName="QA.Core.DPC.Properties.Settings" SettingsPropertyName="beeline_dpc_notificationsConnectionString" Provider="System.Data.SqlClient" />
+  <Connection Mode="AppSettings" ConnectionString="Data Source=dbserver;Initial Catalog=notifications;User ID=user" SettingsObjectName="QA.Core.DPC.Properties.Settings" SettingsPropertyName="notification_database" Provider="System.Data.SqlClient" />
   <Table Name="dbo.Messages" Member="Messages">
     <Type Name="Message">
       <Column Name="Id" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
