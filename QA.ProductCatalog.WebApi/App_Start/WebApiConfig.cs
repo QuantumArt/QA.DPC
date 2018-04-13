@@ -31,7 +31,8 @@ namespace QA.ProductCatalog.WebApi
         private const string BinaryMediaType = "application/octet-stream";
         private const string JsonDefinitionMappingValue = "jsonDefinition";
         private const string JsonDefinition2MappingValue = "jsonDefinition2";
-        private static readonly string FormatConstraints = $"{XamlMappingValue}|{XmlMappingValue}|{JsonMappingValue}|{PdfMappingValue}|{BinaryMappingValue}|{JsonDefinitionMappingValue}|{JsonDefinitionMappingValue}";
+        private const string EditorJsonMappingValue = "editorJson";
+        private static readonly string FormatConstraints = $"{XamlMappingValue}|{XmlMappingValue}|{JsonMappingValue}|{PdfMappingValue}|{BinaryMappingValue}|{JsonDefinitionMappingValue}|{JsonDefinition2MappingValue}|{EditorJsonMappingValue}";
 
         #endregion
 
@@ -139,6 +140,7 @@ namespace QA.ProductCatalog.WebApi
             config.Formatters.AddModelMediaTypeFormatter<BinaryModelFormatter<Dictionary<string, string>>, Dictionary<string, string>>(container, BinaryMappingValue, BinaryMediaType, RegisterMediaTypeMappings);
             config.Formatters.AddModelMediaTypeFormatter<JsonDefinitionSchemaFormatter, Content>(container, JsonDefinitionMappingValue, JsonMediaType, RegisterMediaTypeMappings);
             config.Formatters.AddModelMediaTypeFormatter<JsonDefinitionSchemaClassifiersAsBackwardsFormatter, Content>(container, JsonDefinition2MappingValue, JsonMediaType, RegisterMediaTypeMappings);
+            config.Formatters.AddModelMediaTypeFormatter<EditorSchemaFormatter, Content>(container, EditorJsonMappingValue, JsonMediaType, RegisterMediaTypeMappings);
 
             var unsupportedMediatypeFormatter = new ResponseExceptionMediaTypeFormatter(HttpStatusCode.UnsupportedMediaType, PdfMediaType);
             config.Formatters.Add(unsupportedMediatypeFormatter);

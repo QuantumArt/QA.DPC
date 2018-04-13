@@ -655,6 +655,7 @@ namespace QA.Core.DPC.Loader
 
                 case FieldExactTypes.File:
                     schema.Type = JSchemaType.Object;
+                    schema.AllowAdditionalProperties = false;
 
                     schema.Required.Add("Name");
                     schema.Required.Add("AbsoluteUrl");

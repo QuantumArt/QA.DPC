@@ -251,6 +251,7 @@
     <Compile Include="Formatting\RouteDataMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\BinaryModelFormatter.cs" />
+    <Compile Include="Services\EditorSchemaFormatter.cs" />
     <Compile Include="Services\JsonDefinitionSchemaFormatter.cs" />
     <Compile Include="Services\JsonProductFormatter.cs" />
     <Compile Include="Services\JsonSchemaFormatter.cs" />
@@ -291,4 +292,3 @@
   </Target>
   -->
 </Project>
-

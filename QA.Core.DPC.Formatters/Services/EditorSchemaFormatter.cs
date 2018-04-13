@@ -1,0 +1,447 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Microsoft.Practices.Unity;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
+using QA.Core.DPC.Loader;
+using QA.Core.Models.Configuration;
+using QA.Core.ProductCatalog.Actions.Services;
+using QA.ProductCatalog.Infrastructure;
+using Quantumart.QP8.BLL.ListItems;
+using Quantumart.QP8.BLL.Services.API;
+using Quantumart.QP8.Constants;
+
+namespace QA.Core.DPC.Formatters.Services
+{
+    public class EditorSchemaFormatter : IFormatter<Content>
+    {
+        private readonly ContentService _contentService;
+        private readonly FieldService _fieldService;
+        private readonly VirtualFieldPathEvaluator _virtualFieldPathEvaluator;
+
+        public EditorSchemaFormatter(
+            ContentService contentService,
+            FieldService fieldService,
+            VirtualFieldPathEvaluator virtualFieldPathEvaluator)
+        {
+            _contentService = contentService;
+            _fieldService = fieldService;
+            _virtualFieldPathEvaluator = virtualFieldPathEvaluator;
+        }
+        
+        #region Models
+
+        private class ContentSchema
+        {
+            public int ContentId { get; set; }
+            public string ContentPath { get; set; }
+            public string ContentName { get; set; }
+            public string ContentTitle { get; set; }
+            public string ContentDescription { get; set; }
+
+            public Dictionary<string, FieldSchema> Fields { get; set; }
+                = new Dictionary<string, FieldSchema>();
+        }
+
+        private class FieldSchema
+        {
+            public int FieldId { get; set; }
+            public string FieldName { get; set; }
+            public string FieldTitle { get; set; }
+            public string FiedlDescription { get; set; }
+            public int FieldOrder { get; set; }
+            public bool IsRequired { get; set; }
+            public FieldExactTypes FieldType { get; set; }
+        }
+
+        private class EnumFieldSchema : FieldSchema
+        {
+            public StringEnumItem[] Items { get; set; } = new StringEnumItem[0];
+        }
+
+        private class RelationFieldSchema : FieldSchema
+        {
+            public ContentSchema Content { get; set; }
+        }
+
+        private class ExtensionFieldSchema : FieldSchema
+        {
+            public Dictionary<string, ContentSchema> Contents { get; set; }
+                = new Dictionary<string, ContentSchema>();
+        }
+        
+        #endregion
+
+        #region IFormatter
+
+        public Task<Content> Read(Stream stream)
+        {
+            throw new NotSupportedException();
+        }
+
+        public async Task Write(Stream stream, Content content)
+        {
+            _contentService.LoadStructureCache();
+            _fieldService.LoadStructureCache();
+
+            ContentSchema schema = GetSchema(content);
+
+            string data = JsonConvert.SerializeObject(schema, new JsonSerializerSettings
+            {
+                Formatting = Newtonsoft.Json.Formatting.Indented,
+                // ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore,
+                // TODO: extract "definitions"
+                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                Converters = { new StringEnumConverter() }
+            });
+
+            using (var writer = new StreamWriter(stream))
+            {
+                await writer.WriteAsync(data);
+                await writer.FlushAsync();
+            }
+        }
+
+        #endregion
+
+        private class SchemaContext
+        {
+            /// <summary>
+            /// Набор контентов, которые повторяются при создании схемы
+            /// </summary>
+            public HashSet<Content> RepeatedContents = new HashSet<Content>();
+
+            /// <summary>
+            /// Созданные схемы для различных контентов
+            /// </summary>
+            public Dictionary<Content, ContentSchema> SchemasByContent
+                = new Dictionary<Content, ContentSchema>();
+
+            /// <summary>
+            /// Значения вирутальных полей
+            /// </summary>
+            public Dictionary<Tuple<Content, string>, Field> VirtualFields
+                = new Dictionary<Tuple<Content, string>, Field>();
+
+            /// <summary>
+            /// Cписок виртуальных полей которые надо игнорировать при создании схемы
+            /// </summary>
+            public List<Tuple<Content, Field>> IgnoredFields = new List<Tuple<Content, Field>>();
+        }
+
+        /// <exception cref="NotSupportedException" />
+        /// <exception cref="InvalidOperationException" />
+        private ContentSchema GetSchema(Content content)
+        {
+            var context = new SchemaContext();
+
+            FillVirtualFieldsInfo(content, context);
+
+            return GetContentSchema(content, context, "");
+        }
+
+        /// <summary>
+        /// Рекурсивно обходит <see cref="Content"/> и заполняет
+        /// <see cref="SchemaContext.IgnoredFields"/> - список полей которые надо игнорировать при создании схемы
+        /// и <see cref="SchemaContext.VirtualFields"/> - значения вирутальных полей
+        /// </summary>
+        private void FillVirtualFieldsInfo(
+            Content content,
+            SchemaContext context,
+            HashSet<Content> visitedContents = null)
+        {
+            if (visitedContents == null)
+            {
+                visitedContents = new HashSet<Content>();
+            }
+            else if (visitedContents.Contains(content))
+            {
+                return;
+            }
+            visitedContents.Add(content);
+
+            foreach (Field field in content.Fields)
+            {
+                if (field is BaseVirtualField baseField)
+                {
+                    ProcessVirtualField(baseField, content, context);
+                }
+                else if (field is EntityField entityField)
+                {
+                    FillVirtualFieldsInfo(entityField.Content, context, visitedContents);
+                }
+                else if (field is ExtensionField extensionField)
+                {
+                    foreach (Content extContent in extensionField.ContentMapping.Values)
+                    {
+                        FillVirtualFieldsInfo(extContent, context, visitedContents);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Рекурсивно обходит <see cref="Content"/> и заполняет
+        /// <see cref="SchemaContext.IgnoredFields"/> - список полей которые надо игнорировать при создании схемы
+        /// и <see cref="SchemaContext.VirtualFields"/> - значения вирутальных полей
+        /// </summary>
+        /// <exception cref="InvalidOperationException" />
+        private void ProcessVirtualField(
+            BaseVirtualField baseVirtualField,
+            Content definition,
+            SchemaContext context)
+        {
+            if (baseVirtualField is VirtualMultiEntityField virtualMultiEntityField)
+            {
+                string path = virtualMultiEntityField.Path;
+
+                var virtualFieldKey = Tuple.Create(definition, path);
+
+                if (context.VirtualFields.ContainsKey(virtualFieldKey))
+                {
+                    return;
+                }
+
+                Field foundField = _virtualFieldPathEvaluator
+                    .GetFieldByPath(path, definition, out bool hasFilter, out Content parent);
+
+                if (!hasFilter)
+                {
+                    context.IgnoredFields.Add(Tuple.Create(parent, foundField));
+                }
+
+                context.VirtualFields[virtualFieldKey] = foundField;
+
+                if (foundField is EntityField foundEntityField)
+                {
+                    foreach (BaseVirtualField childField in virtualMultiEntityField.Fields)
+                    {
+                        ProcessVirtualField(childField, foundEntityField.Content, context);
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException(
+                        "В Path VirtualMultiEntityField должны быть только поля EntityField или наследники");
+                }
+                
+            }
+            else if (baseVirtualField is VirtualEntityField virtualEntityField)
+            {
+                foreach (BaseVirtualField childField in virtualEntityField.Fields)
+                {
+                    ProcessVirtualField(childField, definition, context);
+                }
+            }
+            else if (baseVirtualField is VirtualField virtualField)
+            {
+                string path = virtualField.Path;
+
+                var virtualFieldKey = Tuple.Create(definition, path);
+
+                if (context.VirtualFields.ContainsKey(virtualFieldKey))
+                {
+                    return;
+                }
+
+                Field fieldToMove = _virtualFieldPathEvaluator
+                    .GetFieldByPath(path, definition, out bool hasFilter, out Content parent);
+
+                if (!hasFilter)
+                {
+                    context.IgnoredFields.Add(Tuple.Create(parent, fieldToMove));
+                }
+
+                context.VirtualFields[virtualFieldKey] = fieldToMove;
+            }
+        }
+
+        /// <summary>
+        /// Рекурсивно обходит <see cref="Content"/>, генерирует корневую схему и заполняет
+        /// <see cref="SchemaContext.SchemasByContent"/> - созданные схемы контентов
+        /// и <see cref="SchemaContext.RepeatedContents"/> - повторяющиеся контенты
+        /// </summary>
+        /// <exception cref="NotSupportedException" />
+        /// <exception cref="InvalidOperationException" />
+        private ContentSchema GetContentSchema(Content content, SchemaContext context, string path)
+        {
+            path += $"/{content.ContentId}";
+
+            if (context.SchemasByContent.ContainsKey(content))
+            {
+                context.RepeatedContents.Add(content);
+                return context.SchemasByContent[content];
+            }
+
+            ContentSchema contentSchema = CreateContentSchema(content, path);
+
+            context.SchemasByContent[content] = contentSchema;
+
+            var qpFields = _fieldService.List(content.ContentId).ToArray();
+
+            var fieldsToAdd = content.Fields
+                .Where(field => !(field is Dictionaries || field is BaseVirtualField)
+                    && !context.IgnoredFields.Contains(Tuple.Create(content, field)));
+
+            foreach (Field field in fieldsToAdd)
+            {
+                if (field.FieldName == null)
+                {
+                    throw new InvalidOperationException(
+                        $"FieldName is null: {new { field.FieldId, field.FieldName }}");
+                }
+
+                var qpField = field is BackwardRelationField
+                        ? _fieldService.Read(field.FieldId)
+                        : qpFields.SingleOrDefault(f => f.Id == field.FieldId);
+
+                if (qpField == null)
+                {
+                    throw new InvalidOperationException($@"В definition указано поле id={
+                        field.FieldId} которого нет в контенте id={content.ContentId}");
+                }
+
+                contentSchema.Fields[field.FieldName] = GetFieldSchema(field, qpField, context, path);
+            }
+
+            if (content.LoadAllPlainFields)
+            {
+                var qpFieldsToAdd = qpFields
+                    .Where(qpField => qpField.RelationType == Quantumart.QP8.BLL.RelationType.None
+                        && content.Fields.All(field => field.FieldId != qpField.Id)
+                        && !context.IgnoredFields
+                            .Any(tuple => tuple.Item1.Equals(content)
+                                && tuple.Item2.FieldId == qpField.Id));
+
+                foreach (var qpField in qpFieldsToAdd)
+                {
+                    contentSchema.Fields[qpField.Name] = GetFieldSchema(null, qpField, context, path);
+                }
+            }
+            
+            return contentSchema;
+        }
+
+        private ContentSchema CreateContentSchema(Content content, string path)
+        {
+            var qpContent = _contentService.Read(content.ContentId);
+
+            var schema = new ContentSchema
+            {
+                ContentId = qpContent.Id,
+                ContentPath = path,
+            };
+
+            if (!String.IsNullOrWhiteSpace(qpContent.NetName))
+            {
+                schema.ContentName = qpContent.NetName;
+            }
+            if (!IsHtmlWhiteSpace(qpContent.Name))
+            {
+                schema.ContentTitle = qpContent.Name;
+            }
+            if (!IsHtmlWhiteSpace(qpContent.Description))
+            {
+                schema.ContentDescription = qpContent.Description;
+            }
+
+            return schema;
+        }
+        
+        /// <exception cref="NotSupportedException" />
+        /// <exception cref="InvalidOperationException" />
+        private FieldSchema GetFieldSchema(
+            Field field, Quantumart.QP8.BLL.Field qpField, SchemaContext context, string path)
+        {
+            path += $":{field?.FieldId ?? qpField.Id}";
+            
+            FieldSchema fieldSchema;
+            
+            if (field == null || field is PlainField)
+            {
+                fieldSchema = GetPlainFieldSchema(qpField);
+            }
+            else if (field is EntityField entityField)
+            {
+                fieldSchema = new RelationFieldSchema
+                {
+                    Content = GetContentSchema(entityField.Content, context, path)
+                };
+            }
+            else if (field is ExtensionField extensionField)
+            {
+                fieldSchema = GetExtensionFieldSchema(extensionField, context, path);
+            }
+            else
+            {
+                throw new NotSupportedException($"Поля типа {field.GetType()} не поддерживается");
+            }
+
+            fieldSchema.FieldId = field?.FieldId ?? qpField.Id;
+            fieldSchema.FieldName = field?.FieldName ?? qpField.Name;
+            fieldSchema.FieldOrder = qpField.Order;
+            fieldSchema.FieldType = qpField.ExactType;
+
+            if (!IsHtmlWhiteSpace(qpField.FriendlyName))
+            {
+                fieldSchema.FieldTitle = qpField.FriendlyName;
+            }
+            if (!IsHtmlWhiteSpace(qpField.Description))
+            {
+                fieldSchema.FiedlDescription = qpField.Description;
+            }
+
+            return fieldSchema;
+        }
+
+        /// <exception cref="NotSupportedException" />
+        /// <exception cref="InvalidOperationException" />
+        private FieldSchema GetExtensionFieldSchema(
+            ExtensionField extensionField, SchemaContext context, string path)
+        {
+            var contentSchemas = new Dictionary<string, ContentSchema>();
+
+            foreach (Content content in extensionField.ContentMapping.Values)
+            {
+                var qpContent = _contentService.Read(content.ContentId);
+
+                if (!String.IsNullOrEmpty(qpContent.NetName)
+                    && !contentSchemas.ContainsKey(qpContent.NetName))
+                {
+                    contentSchemas[qpContent.NetName] = GetContentSchema(content, context, path);
+                }
+            }
+
+            return new ExtensionFieldSchema { Contents = contentSchemas };
+        }
+
+        private static FieldSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField)
+        {
+            if (qpField.ExactType == FieldExactTypes.StringEnum)
+            {
+                return new EnumFieldSchema { Items = qpField.StringEnumItems.ToArray() };
+            }
+
+            // TODO: other field types
+
+            return new FieldSchema();
+        }
+
+        #region Utils
+
+        private static bool IsHtmlWhiteSpace(string str)
+        {
+            return String.IsNullOrEmpty(str)
+                || String.IsNullOrWhiteSpace(WebUtility.HtmlDecode(str));
+        }
+
+        #endregion
+    }
+}
