@@ -8,7 +8,7 @@ namespace QA.Core.DPC.QP.Services
     public class ConnectionProvider : IConnectionProvider
     {
         private const string AdminKey = "qp_database";
-        private const string NotificationKey = "QA.Core.DPC.Properties.Settings.beeline_dpc_notificationsConnectionString";
+        private const string NotificationKey = "QA.Core.DPC.Properties.Settings.notification_database";
         private const string ActionsKey = "TaskRunnerEntities";
 
         private readonly ICustomerProvider _customerProvider;

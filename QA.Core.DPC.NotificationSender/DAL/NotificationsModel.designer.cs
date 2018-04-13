@@ -36,7 +36,7 @@ namespace QA.Core.DPC.DAL
     #endregion
 		
 		public NotificationsModelDataContext() : 
-				base(global::QA.Core.DPC.Properties.Settings.Default.beeline_dpc_notificationsConnectionString, mappingSource)
+				base(global::QA.Core.DPC.Properties.Settings.Default.notification_database, mappingSource)
 		{
 			OnCreated();
 		}
