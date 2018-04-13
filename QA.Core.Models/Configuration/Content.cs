@@ -88,7 +88,7 @@ namespace QA.Core.Models.Configuration
 				field.FillChildContents(parents);
 			}
 		}
-
+        
 		/// <summary>
 		/// хеш код по всей глубине контена с учетом того что могут быть циклы
 		/// </summary>
@@ -134,7 +134,6 @@ namespace QA.Core.Models.Configuration
             }
 
             visitedContents.Add(this, other);
-            visitedContents.Add(other, this);
 
             return ContentId == other.ContentId
 			    && LoadAllPlainFields == other.LoadAllPlainFields
