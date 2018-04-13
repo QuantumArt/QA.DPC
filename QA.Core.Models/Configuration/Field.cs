@@ -1,10 +1,9 @@
-﻿using System;
+﻿using QA.Core.Models.Tools;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Markup;
 
 namespace QA.Core.Models.Configuration
@@ -40,15 +39,18 @@ namespace QA.Core.Models.Configuration
 
 		public override bool Equals(object obj)
 		{
-		    return RecursiveEquals(obj as Field, new List<Tuple<Content, Content>>()) && CustomProperties == ((Field) obj).CustomProperties;
+		    return RecursiveEquals(obj as Field, new ReferenceDictionary<Content, Content>())
+                && CustomProperties == ((Field)obj).CustomProperties;
 		}
 
-		internal virtual bool RecursiveEquals(Field other, List<Tuple<Content, Content>> visitedContents)
+		internal virtual bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
-			if (other == null || other.GetType() != GetType())
-				return false;
+            if (other == null || other.GetType() != GetType())
+            {
+                return false;
+            }
 
-			return FieldId == other.FieldId;
+            return FieldId == other.FieldId;
 		}
 
 		public override int GetHashCode()
@@ -56,7 +58,7 @@ namespace QA.Core.Models.Configuration
 			return FieldId.GetHashCode();
 		}
 
-		internal virtual int GetRecurciveHashCode(List<Content> list)
+		internal virtual int GetRecurciveHashCode(ReferenceHashSet<Content> visitedContents)
 		{
 			return GetHashCode();
 		}
@@ -68,10 +70,12 @@ namespace QA.Core.Models.Configuration
 		[DefaultValue(false)]
 		public bool ShowInList { get; set; }
 
-		internal override bool RecursiveEquals(Field other, List<Tuple<Content, Content>> visitedContents)
+		internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
-			if (!base.RecursiveEquals(other, visitedContents))
-				return false;
+            if (!base.RecursiveEquals(other, visitedContents))
+            {
+                return false;
+            }
 
 			return ShowInList == ((PlainField)other).ShowInList;
 		}
@@ -101,16 +105,18 @@ namespace QA.Core.Models.Configuration
 			DeletingMode = DeletingMode.Keep;
 		}
 
-		internal override bool RecursiveEquals(Field other, List<Tuple<Content, Content>> visitedContents)
+		internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
-			if (!base.RecursiveEquals(other, visitedContents))
-				return false;
+            if (!base.RecursiveEquals(other, visitedContents))
+            {
+                return false;
+            }
 
 			var otherAsAssociation = (Association)other;
 
 			return CloningMode == otherAsAssociation.CloningMode
-				   && DeletingMode == otherAsAssociation.DeletingMode
-                   && UpdatingMode == otherAsAssociation.UpdatingMode;
+				&& DeletingMode == otherAsAssociation.DeletingMode
+                && UpdatingMode == otherAsAssociation.UpdatingMode;
 		}
 
 		public override int GetHashCode()
@@ -118,9 +124,7 @@ namespace QA.Core.Models.Configuration
 			int hash = base.GetHashCode();
 
 			hash = HashHelper.CombineHashCodes(hash, CloningMode.GetHashCode());
-			
 			hash = HashHelper.CombineHashCodes(hash, DeletingMode.GetHashCode());
-
             hash = HashHelper.CombineHashCodes(hash, UpdatingMode.GetHashCode());
 
             return hash;
@@ -130,8 +134,6 @@ namespace QA.Core.Models.Configuration
 	[ContentProperty("Content")]
 	public class EntityField : Association
 	{
-       
-
         /// <summary>
         /// опциональный дефинишен для клонирования, если null то используется Content
         /// </summary>
@@ -142,35 +144,42 @@ namespace QA.Core.Models.Configuration
 
 		internal override void FillChildContents(List<Content> parents)
 		{
-			if (Content == null)
-				return;
+            if (Content == null)
+            {
+                return;
+            }
 
 			Content.FillChildContents(parents);
 		}
 
-	    public override Content[] Contents { get { return new[] {Content}; } }
+	    public override Content[] Contents => new[] { Content };
 
-	    internal override bool RecursiveEquals(Field other, List<Tuple<Content, Content>> visitedContents)
+        internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
-			return base.RecursiveEquals(other, visitedContents) &&
-				   Content.RecursiveEquals(((EntityField)other).Content, visitedContents) &&
-                   (CloneDefinition == null && ((EntityField)other).CloneDefinition == null || CloneDefinition != null && CloneDefinition.RecursiveEquals(((EntityField)other).CloneDefinition, visitedContents));
+			return base.RecursiveEquals(other, visitedContents)
+                && Content.RecursiveEquals(((EntityField)other).Content, visitedContents)
+                && CloneDefinition == null
+                    ? ((EntityField)other).CloneDefinition == null
+                    : CloneDefinition.RecursiveEquals(((EntityField)other).CloneDefinition, visitedContents);
 		}
 
 		public override int GetHashCode()
 		{
-			return GetRecurciveHashCode(new List<Content>());
+			return GetRecurciveHashCode(new ReferenceHashSet<Content>());
 		}
 
-		internal override int GetRecurciveHashCode(List<Content> list)
+		internal override int GetRecurciveHashCode(ReferenceHashSet<Content> visitedContents)
 		{
 			int hash = base.GetHashCode();
 
-			if (Content != null)
-				hash = HashHelper.CombineHashCodes(hash, Content.GetRecurciveHashCode(list));
-
-            if(CloneDefinition!=null)
-                hash = HashHelper.CombineHashCodes(hash, CloneDefinition.GetRecurciveHashCode(list));
+            if (Content != null)
+            {
+                hash = HashHelper.CombineHashCodes(hash, Content.GetRecurciveHashCode(visitedContents));
+            }
+            if (CloneDefinition != null)
+            {
+                hash = HashHelper.CombineHashCodes(hash, CloneDefinition.GetRecurciveHashCode(visitedContents));
+            }
 
             return hash;
 		}
@@ -191,40 +200,45 @@ namespace QA.Core.Models.Configuration
 
 		internal override void FillChildContents(List<Content> parents)
 		{
-			foreach (var content in ContentMapping.Values)
+			foreach (Content content in ContentMapping.Values)
 			{
 				content.FillChildContents(parents);
 			}
 		}
 
-	    public override Content[] Contents { get { return ContentMapping.Values.ToArray(); } }
+	    public override Content[] Contents => ContentMapping.Values.ToArray();
 
-	    internal override bool RecursiveEquals(Field other, List<Tuple<Content, Content>> visitedContents)
+        internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
-			if (!base.RecursiveEquals(other, visitedContents))
-				return false;
+            if (!base.RecursiveEquals(other, visitedContents))
+            {
+                return false;
+            }
 
 			var otherExtensionField = (ExtensionField)other;
 
 			return ContentMapping.Values.Count == otherExtensionField.ContentMapping.Values.Count
-				   &&
-				   ContentMapping.Values.All(
-					   x =>
-						   otherExtensionField.ContentMapping.Values.Any(
-							   y => y.ContentId == x.ContentId && x.RecursiveEquals(y, visitedContents)));
+				&& ContentMapping.Values
+                    .All(x => otherExtensionField.ContentMapping.Values
+                        .Any(y => y.ContentId == x.ContentId && x.RecursiveEquals(y, visitedContents)));
 		}
-
-
+        
 		public override int GetHashCode()
 		{
-			return GetRecurciveHashCode(new List<Content>());
+			return GetRecurciveHashCode(new ReferenceHashSet<Content>());
 		}
 
-		internal override int GetRecurciveHashCode(List<Content> list)
+		internal override int GetRecurciveHashCode(ReferenceHashSet<Content> visitedContents)
 		{
 			int hash = base.GetHashCode();
 
-			return ContentMapping.Values.OrderBy(x => x.ContentId).Aggregate(hash, (current, content) => HashHelper.CombineHashCodes(current, content.GetRecurciveHashCode(list)));
+            foreach (Content content in ContentMapping.Values.OrderBy(x => x.ContentId))
+            {
+                int contentHash = content.GetRecurciveHashCode(visitedContents);
+                hash = HashHelper.CombineHashCodes(hash, contentHash);
+            }
+
+            return hash;
 		}
 	}
 
@@ -235,20 +249,15 @@ namespace QA.Core.Models.Configuration
 		private TimeSpan _defaultCachePeriod;
 
 		[DefaultValue(null)]
-		public override string FieldName { get { return null; } set{} }
+		public override string FieldName { get { return null; } set {} }
 
 		[DisplayName("Период кеширования по умолчанию")]
 		public TimeSpan DefaultCachePeriod
 		{
-			get
-			{
-				if (_defaultCachePeriod < _minimum)
-					return _minimum;
-
-				return _defaultCachePeriod;
-			}
-			set { _defaultCachePeriod = value; }
+            get => _defaultCachePeriod < _minimum ? _minimum : _defaultCachePeriod;
+            set { _defaultCachePeriod = value; }
 		}
+
 		/// <summary>
 		/// Маппинг 
 		/// </summary>
@@ -262,55 +271,55 @@ namespace QA.Core.Models.Configuration
 
 		public TimeSpan? GetCachePeriodForContent(int id)
 		{
-			Content c;
-			if (ContentDictionaries.TryGetValue(id, out c))
-			{
-				// берем XmlMappingBehavior.CachePeriod="00:10:00" или DefaultCachePeriod="00:05:00"
-				return XmlMappingBehavior.RetrieveCachePeriod(c) ?? DefaultCachePeriod;
-			}
-			else
-			{
-				return null;
-			}
-		}
-
-
-		public override int FieldId
-		{
-			get
-			{
-				return 0;
-			}
-		}
+            if (ContentDictionaries.TryGetValue(id, out Content c))
+            {
+                // берем XmlMappingBehavior.CachePeriod="00:10:00" или DefaultCachePeriod="00:05:00"
+                return XmlMappingBehavior.RetrieveCachePeriod(c) ?? DefaultCachePeriod;
+            }
+            else
+            {
+                return null;
+            }
+        }
+        
+        public override int FieldId => 0;
 
 		internal override void FillChildContents(List<Content> parents)
 		{
 			return;
 		}
 
-		internal override bool RecursiveEquals(Field other, List<Tuple<Content, Content>> visitedContents)
+		internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
-			if (!base.RecursiveEquals(other, visitedContents))
-				return false;
+            if (!base.RecursiveEquals(other, visitedContents))
+            {
+                return false;
+            }
 
 			var otherField = (Dictionaries)other;
 
 			return ContentDictionaries.Values.Count == otherField.ContentDictionaries.Values.Count
-				   &&
-				   ContentDictionaries.Values.All(
-					   x =>
-						   otherField.ContentDictionaries.Values.Any(
-							   y => y.ContentId == x.ContentId && x.RecursiveEquals(y, visitedContents)));
+				&& ContentDictionaries.Values
+                    .All(x => otherField.ContentDictionaries.Values
+                        .Any(y => y.ContentId == x.ContentId && x.RecursiveEquals(y, visitedContents)));
 		}
 
 		public override int GetHashCode()
 		{
-			return GetRecurciveHashCode(new List<Content>());
+			return GetRecurciveHashCode(new ReferenceHashSet<Content>());
 		}
 
-		internal override int GetRecurciveHashCode(List<Content> list)
+		internal override int GetRecurciveHashCode(ReferenceHashSet<Content> visitedContents)
 		{
-			return ContentDictionaries.Values.OrderBy(x => x.ContentId).Aggregate(FieldId.GetHashCode(), (current, content) => HashHelper.CombineHashCodes(current, content.GetRecurciveHashCode(list)));
+            int hash = FieldId.GetHashCode();
+
+            foreach (Content content in ContentDictionaries.Values.OrderBy(x => x.ContentId))
+            {
+                int contentHash = content.GetRecurciveHashCode(visitedContents);
+                hash = HashHelper.CombineHashCodes(hash, contentHash);
+            }
+
+            return hash;
 		}
 	}
 }

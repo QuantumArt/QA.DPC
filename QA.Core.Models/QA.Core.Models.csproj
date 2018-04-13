@@ -309,6 +309,7 @@
     <Compile Include="IValueConverterWithType.cs" />
     <Compile Include="Processors\DPathProcessor.cs" />
     <Compile Include="Processors\HierarchySorter.cs" />
+    <Compile Include="Tools\ReferenceCollections.cs" />
     <Compile Include="TreeNode.cs" />
     <Compile Include="UI\Binding.cs" />
     <Compile Include="UI\BindingExtension.cs" />
@@ -361,4 +362,3 @@
   </Target>
   -->
 </Project>
-
