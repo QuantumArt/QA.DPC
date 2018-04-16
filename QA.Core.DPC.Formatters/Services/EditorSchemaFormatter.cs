@@ -34,10 +34,20 @@ namespace QA.Core.DPC.Formatters.Services
             _fieldService = fieldService;
             _virtualFieldPathEvaluator = virtualFieldPathEvaluator;
         }
-        
+
         #region Models
 
-        private class ContentSchema
+        private class ProductSchema
+        {
+            public IContentSchema Content { get; set; }
+
+            public Dictionary<string, ContentSchema> Definitions { get; set; }
+                = new Dictionary<string, ContentSchema>();
+        }
+
+        public interface IContentSchema { }
+
+        private class ContentSchema : IContentSchema
         {
             public int ContentId { get; set; }
             public string ContentPath { get; set; }
@@ -49,6 +59,12 @@ namespace QA.Core.DPC.Formatters.Services
                 = new Dictionary<string, FieldSchema>();
         }
 
+        private class ContentSchemaRef : IContentSchema
+        {
+            [JsonProperty("$ref")]
+            public string Ref { get; set; }
+        }
+        
         private class FieldSchema
         {
             public int FieldId { get; set; }
@@ -67,13 +83,13 @@ namespace QA.Core.DPC.Formatters.Services
 
         private class RelationFieldSchema : FieldSchema
         {
-            public ContentSchema Content { get; set; }
+            public IContentSchema Content { get; set; }
         }
 
         private class ExtensionFieldSchema : FieldSchema
         {
-            public Dictionary<string, ContentSchema> Contents { get; set; }
-                = new Dictionary<string, ContentSchema>();
+            public Dictionary<string, IContentSchema> Contents { get; set; }
+                = new Dictionary<string, IContentSchema>();
         }
         
         #endregion
@@ -90,15 +106,13 @@ namespace QA.Core.DPC.Formatters.Services
             _contentService.LoadStructureCache();
             _fieldService.LoadStructureCache();
 
-            ContentSchema schema = GetSchema(content);
+            ProductSchema schema = GetSchema(content);
 
             string data = JsonConvert.SerializeObject(schema, new JsonSerializerSettings
             {
-                Formatting = Newtonsoft.Json.Formatting.Indented,
                 // ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Formatting = Newtonsoft.Json.Formatting.Indented,
                 NullValueHandling = NullValueHandling.Ignore,
-                // TODO: extract "definitions"
-                ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
                 Converters = { new StringEnumConverter() }
             });
 
@@ -114,17 +128,6 @@ namespace QA.Core.DPC.Formatters.Services
         private class SchemaContext
         {
             /// <summary>
-            /// Набор контентов, которые повторяются при создании схемы
-            /// </summary>
-            public HashSet<Content> RepeatedContents = new HashSet<Content>();
-
-            /// <summary>
-            /// Созданные схемы для различных контентов
-            /// </summary>
-            public Dictionary<Content, ContentSchema> SchemasByContent
-                = new Dictionary<Content, ContentSchema>();
-
-            /// <summary>
             /// Значения вирутальных полей
             /// </summary>
             public Dictionary<Tuple<Content, string>, Field> VirtualFields
@@ -134,19 +137,38 @@ namespace QA.Core.DPC.Formatters.Services
             /// Cписок виртуальных полей которые надо игнорировать при создании схемы
             /// </summary>
             public List<Tuple<Content, Field>> IgnoredFields = new List<Tuple<Content, Field>>();
+
+            /// <summary>
+            /// Созданные схемы для различных контентов
+            /// </summary>
+            public Dictionary<Content, ContentSchema> SchemasByContent
+                = new Dictionary<Content, ContentSchema>();
+
+            /// <summary>
+            /// Набор схем контентов, которые повторяются при обходе <see cref="Content"/>
+            /// </summary>
+            public HashSet<ContentSchema> RepeatedSchemas = new HashSet<ContentSchema>();
+
+            /// <summary>
+            /// Имена ссылок на повторяющиеся контенты
+            /// </summary>
+            public Dictionary<ContentSchema, string> DefinitionNamesBySchema
+                = new Dictionary<ContentSchema, string>();
         }
 
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
-        private ContentSchema GetSchema(Content content)
+        private ProductSchema GetSchema(Content content)
         {
             var context = new SchemaContext();
 
             FillVirtualFieldsInfo(content, context);
 
-            return GetContentSchema(content, context, "");
+            ContentSchema contentSchema = GetContentSchema(content, context, "");
+            
+            return GetProductSchema(contentSchema, context);
         }
-
+        
         /// <summary>
         /// Рекурсивно обходит <see cref="Content"/> и заполняет
         /// <see cref="SchemaContext.IgnoredFields"/> - список полей которые надо игнорировать при создании схемы
@@ -276,8 +298,9 @@ namespace QA.Core.DPC.Formatters.Services
 
             if (context.SchemasByContent.ContainsKey(content))
             {
-                context.RepeatedContents.Add(content);
-                return context.SchemasByContent[content];
+                ContentSchema repeatedSchema = context.SchemasByContent[content];
+                context.RepeatedSchemas.Add(repeatedSchema);
+                return repeatedSchema;
             }
 
             ContentSchema contentSchema = CreateContentSchema(content, path);
@@ -406,7 +429,7 @@ namespace QA.Core.DPC.Formatters.Services
         private FieldSchema GetExtensionFieldSchema(
             ExtensionField extensionField, SchemaContext context, string path)
         {
-            var contentSchemas = new Dictionary<string, ContentSchema>();
+            var contentSchemas = new Dictionary<string, IContentSchema>();
 
             foreach (Content content in extensionField.ContentMapping.Values)
             {
@@ -432,6 +455,74 @@ namespace QA.Core.DPC.Formatters.Services
             // TODO: other field types
 
             return new FieldSchema();
+        }
+
+        private ProductSchema GetProductSchema(ContentSchema contentSchema, SchemaContext context)
+        {
+            context.DefinitionNamesBySchema = context.RepeatedSchemas
+                .GroupBy(schema => schema.ContentName ?? $"Content{schema.ContentId}")
+                .SelectMany(group => group.Select((schema, i) => new
+                {
+                    Key = schema,
+                    Value = $"{group.Key}{(i == 0 ? "" : i.ToString())}",
+                }))
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+
+            return new ProductSchema
+            {
+                Content = DeduplicateContentSchema(contentSchema, context, new HashSet<ContentSchema>()),
+
+                Definitions = context.DefinitionNamesBySchema
+                    .ToDictionary(pair => pair.Value, pair => pair.Key),
+            };
+        }
+
+        private IContentSchema DeduplicateContentSchema(
+            IContentSchema schema, SchemaContext context, HashSet<ContentSchema> visitedSchemas)
+        {
+            if (schema is ContentSchema contentSchema)
+            {
+                if (visitedSchemas.Contains(contentSchema))
+                {
+                    return GetSchemaRef(contentSchema, context);
+                }
+
+                visitedSchemas.Add(contentSchema);
+                
+                foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
+                {
+                    if (fieldSchema is RelationFieldSchema relationSchema)
+                    {
+                        relationSchema.Content = DeduplicateContentSchema(
+                            relationSchema.Content, context, visitedSchemas);
+                    }
+                    else if (fieldSchema is ExtensionFieldSchema extensionSchema)
+                    {
+                        foreach (var pair in extensionSchema.Contents.ToArray())
+                        {
+                            extensionSchema.Contents[pair.Key] = DeduplicateContentSchema(
+                                pair.Value, context, visitedSchemas);
+                        }
+                    }
+                }
+
+                if (context.RepeatedSchemas.Contains(contentSchema))
+                {
+                    return GetSchemaRef(contentSchema, context);
+                }
+            }
+
+            return schema;
+        }
+
+        private ContentSchemaRef GetSchemaRef(ContentSchema contentSchema, SchemaContext context)
+        {
+            string name = context.DefinitionNamesBySchema[contentSchema];
+
+            return new ContentSchemaRef
+            {
+                Ref = $"#/{nameof(ProductSchema.Definitions)}/{name}"
+            };
         }
 
         #region Utils
