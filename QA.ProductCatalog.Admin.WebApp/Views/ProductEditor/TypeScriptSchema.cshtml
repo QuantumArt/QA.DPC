@@ -1,0 +1,21 @@
+﻿@model QA.ProductCatalog.Admin.WebApp.Models.ProductEditorSchemaModel
+@{ Layout = null; }
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>@(ViewBag.Title ?? "DPC")</title>
+    <script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+</head>
+<body>
+    <pre><code id="typeScriptCode">Loading...</code></pre>
+    <script type="text/javascript">
+        window.productEditorSchema = {
+            jsonSchema: @Html.Raw(Model.JsonSchema),
+            editorSchema: @Html.Raw(Model.EditorSchema)
+        };
+    </script>
+    <script src="~/Scripts/Bundles/ProductEditor/TypeScriptSchema.js"></script>
+</body>
+</html>

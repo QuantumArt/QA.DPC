@@ -117,6 +117,16 @@ namespace QA.Core.DPC.Loader
 
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
+        public string GetSchemaString(Content definition, bool prettyPrint = true)
+        {
+            return JsonConvert.SerializeObject(GetSchema(definition), new JsonSerializerSettings
+            {
+                Formatting = prettyPrint ? Formatting.Indented : Formatting.None,
+            });
+        }
+
+        /// <exception cref="NotSupportedException" />
+        /// <exception cref="InvalidOperationException" />
         public JSchema GetSchema(Content definition, bool forList = false, bool includeRegionTags = false)
         {
             _contentService.LoadStructureCache();

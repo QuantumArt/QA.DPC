@@ -70,7 +70,7 @@ namespace QA.Core.DPC.Formatters.Services
             public int FieldId { get; set; }
             public string FieldName { get; set; }
             public string FieldTitle { get; set; }
-            public string FiedlDescription { get; set; }
+            public string FieldDescription { get; set; }
             public int FieldOrder { get; set; }
             public bool IsRequired { get; set; }
             public FieldExactTypes FieldType { get; set; }
@@ -106,19 +106,11 @@ namespace QA.Core.DPC.Formatters.Services
             _contentService.LoadStructureCache();
             _fieldService.LoadStructureCache();
 
-            ProductSchema schema = GetSchema(content);
-
-            string data = JsonConvert.SerializeObject(schema, new JsonSerializerSettings
-            {
-                // ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Formatting = Newtonsoft.Json.Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-                Converters = { new StringEnumConverter() }
-            });
+            string schema = GetSchema(content);
 
             using (var writer = new StreamWriter(stream))
             {
-                await writer.WriteAsync(data);
+                await writer.WriteAsync(schema);
                 await writer.FlushAsync();
             }
         }
@@ -158,15 +150,26 @@ namespace QA.Core.DPC.Formatters.Services
 
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
-        private ProductSchema GetSchema(Content content)
+        public string GetSchema(Content content, bool prettyPrint = true)
         {
             var context = new SchemaContext();
 
             FillVirtualFieldsInfo(content, context);
 
             ContentSchema contentSchema = GetContentSchema(content, context, "");
-            
-            return GetProductSchema(contentSchema, context);
+
+            ProductSchema productSchema = GetProductSchema(contentSchema, context);
+
+            return JsonConvert.SerializeObject(productSchema, new JsonSerializerSettings
+            {
+                // ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Formatting = prettyPrint
+                    ? Newtonsoft.Json.Formatting.Indented
+                    : Newtonsoft.Json.Formatting.None,
+
+                NullValueHandling = NullValueHandling.Ignore,
+                Converters = { new StringEnumConverter() }
+            });
         }
         
         /// <summary>
@@ -356,26 +359,14 @@ namespace QA.Core.DPC.Formatters.Services
         {
             var qpContent = _contentService.Read(content.ContentId);
 
-            var schema = new ContentSchema
+            return new ContentSchema
             {
                 ContentId = qpContent.Id,
                 ContentPath = path,
+                ContentName = String.IsNullOrWhiteSpace(qpContent.NetName) ? "" : qpContent.NetName,
+                ContentTitle = IsHtmlWhiteSpace(qpContent.Name) ? "" : qpContent.Name,
+                ContentDescription = IsHtmlWhiteSpace(qpContent.Description) ? "" : qpContent.Description,
             };
-
-            if (!String.IsNullOrWhiteSpace(qpContent.NetName))
-            {
-                schema.ContentName = qpContent.NetName;
-            }
-            if (!IsHtmlWhiteSpace(qpContent.Name))
-            {
-                schema.ContentTitle = qpContent.Name;
-            }
-            if (!IsHtmlWhiteSpace(qpContent.Description))
-            {
-                schema.ContentDescription = qpContent.Description;
-            }
-
-            return schema;
         }
         
         /// <exception cref="NotSupportedException" />
@@ -408,18 +399,13 @@ namespace QA.Core.DPC.Formatters.Services
             }
 
             fieldSchema.FieldId = field?.FieldId ?? qpField.Id;
-            fieldSchema.FieldName = field?.FieldName ?? qpField.Name;
+            fieldSchema.FieldName = field?.FieldName ?? qpField.Name ?? "";
             fieldSchema.FieldOrder = qpField.Order;
             fieldSchema.FieldType = qpField.ExactType;
+            fieldSchema.FieldTitle = IsHtmlWhiteSpace(qpField.FriendlyName) ? "" : qpField.FriendlyName;
+            fieldSchema.FieldDescription = IsHtmlWhiteSpace(qpField.Description) ? "" : qpField.Description;
 
-            if (!IsHtmlWhiteSpace(qpField.FriendlyName))
-            {
-                fieldSchema.FieldTitle = qpField.FriendlyName;
-            }
-            if (!IsHtmlWhiteSpace(qpField.Description))
-            {
-                fieldSchema.FiedlDescription = qpField.Description;
-            }
+            // TODO: fieldSchema.IsRequired
 
             return fieldSchema;
         }
@@ -460,7 +446,9 @@ namespace QA.Core.DPC.Formatters.Services
         private ProductSchema GetProductSchema(ContentSchema contentSchema, SchemaContext context)
         {
             context.DefinitionNamesBySchema = context.RepeatedSchemas
-                .GroupBy(schema => schema.ContentName ?? $"Content{schema.ContentId}")
+                .GroupBy(schema => String.IsNullOrEmpty(schema.ContentName)
+                    ? $"Content{schema.ContentId}" 
+                    : schema.ContentName)
                 .SelectMany(group => group.Select((schema, i) => new
                 {
                     Key = schema,
