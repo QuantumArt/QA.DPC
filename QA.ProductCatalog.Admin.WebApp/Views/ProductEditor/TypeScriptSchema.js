@@ -9,9 +9,11 @@ jsonToTypeScript
   .compile(jsonSchema, "ProductDefinition")
   .then(fixJsonDeclarations)
   .then(jsonDeclarations => {
-    const editorDeclarations = compileEritorSchema(editorSchema);
+    const editorDeclarations = compileEritorSchemaDeclarations(editorSchema);
+    const editorObject = compileEritorSchemaObject(editorSchema);
 
-    const code = jsonDeclarations + "\n" + editorDeclarations;
+    const code =
+      jsonDeclarations + editorDeclarations + "\n" + editorObject + "\n";
 
     document.querySelector("#typeScriptCode").innerHTML = code;
 
@@ -37,14 +39,17 @@ function fixJsonDeclarations(jsonDeclarations) {
  * @param {object} editorSchema
  * @returns {string} Код TypeScript
  */
-function compileEritorSchema(editorSchema) {
+function compileEritorSchemaDeclarations(editorSchema) {
   const productSchema = JSON.parse(JSON.stringify(editorSchema));
+  const content = productSchema.Content;
   const definitions = productSchema.Definitions;
   delete productSchema.Definitions;
 
-  const result = [
-    `export interface ProductDefinitionSchema ${replaceRefs(productSchema)}`
-  ];
+  const procuctInterface = `
+/** Описание полей продукта */
+export interface ProductDefinitionSchema ${replaceRefs(content)}`;
+
+  const result = [procuctInterface];
 
   Object.keys(definitions).forEach(name => {
     result.push(`interface ${name}Schema ${replaceRefs(definitions[name])}`);
@@ -62,6 +67,7 @@ function replaceRefs(schema) {
   const MARKER = "__gGDoQEM6rY3nczztvX68__";
   const typeMarkerRegex = new RegExp(`"${MARKER}([a-z]+)${MARKER}"`, "g");
   const refRegex = /\{\s*"?\$ref"?:\s*"#\/Definitions\/([A-Za-z0-9]+)"\s*}/gm;
+
   const valueTypeReplacer = (key, value) => {
     if (key === "$ref") {
       return value;
@@ -121,6 +127,51 @@ function prettyPrint(object, replacer = (_k, v) => v) {
 function isObject(value) {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
+
+/**
+ * Преобразовать JSON схемы в код объекта схемы
+ * @param {object} editorSchema
+ * @returns {string} Код TypeScript
+ */
+const compileEritorSchemaObject = editorSchema => `
+/** Описание полей продукта */
+export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>(${prettyPrint(
+  editorSchema
+)});
+
+function linkJsonRefs<T>(schema: any): T {
+  const definitions = schema.Definitions;
+  delete schema.Definitions;
+  visitObject(schema, definitions, new Set());
+  return schema.Content;
+}
+
+function visitObject(object: any, definitions: object, visited: Set<object>): void {
+  if (typeof object === "object" && object !== null) {
+    if (visited.has(object)) {
+      return;
+    }
+    visited.add(object);
+
+    if (Array.isArray(object)) {
+      object.forEach((value, index) => {
+        object[index] = resolveRef(value, definitions);
+        visitObject(object[index], definitions, visited);
+      });
+    } else {
+      Object.keys(object).forEach(key => {
+        object[key] = resolveRef(object[key], definitions);
+        visitObject(object[key], definitions, visited);
+      });
+    }
+  }
+}
+
+function resolveRef(object: any, definitions: object): any {
+  return typeof object === "object" && object !== null && "$ref" in object
+    ? definitions[object.$ref.slice(14)]
+    : object;
+}`;
 
 /**
  * Скачать текст как UTF-8 файл
