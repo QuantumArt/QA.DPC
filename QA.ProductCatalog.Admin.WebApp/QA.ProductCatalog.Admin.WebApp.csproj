@@ -26,6 +26,7 @@
     <SccProvider>SAK</SccProvider>
     <WebGreaseLibPath>$(SolutionDir)\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
     <TargetFrameworkProfile />
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -270,6 +271,7 @@
     <Compile Include="App_Core\AppDataProductControlProvider.cs" />
     <Compile Include="App_Start\TaskContainerConfiguration.cs" />
     <Compile Include="Binders\ContentBinder.cs" />
+    <Compile Include="Controllers\ProductEditorController.cs" />
     <Compile Include="Controllers\DefinitionEditorController.cs" />
     <Compile Include="Controllers\HighloadFrontController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
@@ -314,6 +316,7 @@
     <Compile Include="Models\DefinitionTreeNode.cs" />
     <Compile Include="Models\KendoGridFilter.cs" />
     <Compile Include="Models\KendoTreeNode.cs" />
+    <Compile Include="Models\ProductEditorSchemaModel.cs" />
     <Compile Include="Models\ProductState.cs" />
     <Compile Include="Models\SendProductModel.cs" />
     <Compile Include="Models\CustomActionTaskModel.cs" />
@@ -430,6 +433,9 @@
     <Content Include="Content\Site.css" />
     <Content Include="Content\XmlViewer.css" />
     <Content Include="Global.asax" />
+    <Content Include="package-lock.json">
+      <DependentUpon>package.json</DependentUpon>
+    </Content>
     <Content Include="Scripts\AutoUpdateStrategy.js" />
     <Content Include="Scripts\codemirror\addon\edit\closetag.js" />
     <Content Include="Scripts\codemirror\addon\edit\matchtags.js" />
@@ -478,6 +484,10 @@
       <TransformOnBuild>true</TransformOnBuild>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Scripts\Bundles\**\*.*" />
+    <Content Include="webpack.config.js" />
+    <Content Include="package.json" />
+    <Content Include=".editorconfig" />
     <None Include="Properties\PublishProfiles\localhost.pubxml" />
     <None Include="Properties\PublishProfiles\ms-dpcdvlp001.pubxml" />
     <None Include="Properties\PublishProfiles\mscdev01-biryukov.pubxml" />
@@ -486,6 +496,7 @@
     <Content Include="Scripts\Schedule.js" />
     <Content Include="Scripts\Tarantool.js" />
     <Content Include="Scripts\vanilla.helpers.js" />
+    <Content Include="Views\ProductEditor\TypeScriptSchema.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -529,6 +540,8 @@
     <Content Include="Views\Shared\DisplayTemplates\Image.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SimpleLink.cshtml" />
     <Content Include="Views\Tarantool\Index.cshtml" />
+    <Content Include="Views\ProductEditor\TypeScriptSchema.cshtml" />
+    <Content Include="tsconfig.json" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Data\controls\480.xaml">
@@ -648,6 +661,9 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ClientApp\Utils\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -714,4 +730,3 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
-

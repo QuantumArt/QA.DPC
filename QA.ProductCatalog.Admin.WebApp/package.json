@@ -1,0 +1,43 @@
+{
+  "name": "qa.productcatalog.admin.webapp",
+  "version": "1.0.0",
+  "description": "DPC Admin Web App",
+  "scripts": {
+    "build-dev": "webpack --mode development",
+    "build-prod": "webpack --mode production",
+    "webpack": "webpack --mode development --watch",
+    "test": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://tfs01:8080/tfs/QuantumartCollection/_git/QA.DPC"
+  },
+  "devDependencies": {
+    "@types/node": "^9.6.5",
+    "@types/react": "^16.3.10",
+    "@types/webpack-env": "^1.13.6",
+    "autoprefixer": "^8.3.0",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "glob": "^7.1.2",
+    "node-sass": "^4.8.3",
+    "postcss-loader": "^2.1.4",
+    "sass-loader": "^7.0.1",
+    "style-loader": "^0.20.3",
+    "ts-loader": "^4.2.0",
+    "tsconfig-paths-webpack-plugin": "^3.0.3",
+    "typescript": "^2.8.1",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.5.0",
+    "webpack-cli": "^2.0.14"
+  },
+  "dependencies": {
+    "classnames": "^2.2.5",
+    "json-schema-to-typescript": "^5.4.0",
+    "mobx": "^4.1.1",
+    "mobx-react": "^5.0.0",
+    "react": "^16.3.1",
+    "react-dom": "^16.3.1",
+    "tslib": "^1.9.0"
+  }
+}

@@ -1,0 +1,19 @@
+﻿[*.cs]
+indent_size = 4
+max_line_length = 120
+insert_final_newline = false
+
+[*.{html,cshtml}]
+indent_size = 2
+max_line_length = 120
+insert_final_newline = false
+
+[*.{ts,tsx}]
+indent_size = 2
+max_line_length = 100
+insert_final_newline = true
+
+[*.{js,jsx,css,scss}]
+indent_size = 2
+max_line_length = 80
+insert_final_newline = true

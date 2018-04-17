@@ -1,0 +1,76 @@
+const path = require("path");
+const glob = require("glob");
+const webpack = require("webpack");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+
+const viewsDir = path.resolve(__dirname, "./Views");
+
+const views = new Set(glob.sync(path.resolve(viewsDir, "**/*.cshtml")));
+
+const entries = glob
+  // all .js and .ts files from ~/Views folder
+  .sync(path.resolve(viewsDir, "**/*.@(ts|js)"))
+  // that have .cshtml view with same name
+  .filter(page => views.has(page.slice(0, -3) + ".cshtml"))
+  // grouped to dictionary by path relative to ~/Views folder
+  .reduce((entries, page) => {
+    const name = page.slice(viewsDir.length, -3);
+    entries[name] = page;
+    return entries;
+  }, {});
+
+module.exports = (env, argv) => ({
+  entry: entries,
+  resolve: {
+    extensions: [".js", ".ts", ".jsx", ".tsx"],
+    plugins: [
+      new TsconfigPathsPlugin({
+        configFile: path.resolve(__dirname, "tsconfig.json")
+      })
+    ]
+  },
+  output: {
+    filename: "[name].js",
+    path: path.resolve(__dirname, "./Scripts/Bundles")
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(tsx?|jsx?)$/,
+        include: /(ClientApp|Views)/,
+        use: [
+          {
+            loader: "ts-loader",
+            options: {
+              // transpileOnly: argv.mode !== "production",
+              configFile: path.resolve(__dirname, "tsconfig.json")
+            }
+          }
+        ]
+      },
+      {
+        test: /\.(scss|css)$/,
+        use: [
+          "style-loader",
+          {
+            loader: "css-loader",
+            options: { minimize: argv.mode === "production" }
+          },
+          {
+            loader: "postcss-loader",
+            options: {
+              plugins: [require("autoprefixer")]
+            }
+          },
+          "sass-loader"
+        ]
+      },
+      { test: /\.(png|jpg|jpeg|gif|svg)$/, use: "url-loader?limit=10000" }
+    ]
+  },
+  plugins: [
+    new webpack.DefinePlugin({
+      "process.env.NODE_ENV": JSON.stringify(argv.mode)
+    })
+  ]
+});
