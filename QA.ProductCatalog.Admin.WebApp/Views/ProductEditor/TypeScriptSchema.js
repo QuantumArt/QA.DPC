@@ -15,7 +15,8 @@ jsonToTypeScript
     const code =
       jsonDeclarations + editorDeclarations + "\n" + editorObject + "\n";
 
-    document.querySelector("#typeScriptCode").innerHTML = code;
+    // @ts-ignore
+    document.querySelector("#typeScriptCode").innerText = code;
 
     download("ProductDefinition.ts", code);
   });
@@ -47,12 +48,20 @@ function compileEritorSchemaDeclarations(editorSchema) {
 
   const procuctInterface = `
 /** Описание полей продукта */
-export interface ProductDefinitionSchema ${replaceRefs(content)}`;
+export interface ProductDefinitionSchema ${replaceRefs(
+    content,
+    "ProductDefinitionSchema"
+  )}`;
 
   const result = [procuctInterface];
 
   Object.keys(definitions).forEach(name => {
-    result.push(`interface ${name}Schema ${replaceRefs(definitions[name])}`);
+    result.push(
+      `interface ${name}Schema ${replaceRefs(
+        definitions[name],
+        `${name}Schema`
+      )}`
+    );
   });
 
   return result.join("\n");
@@ -61,12 +70,55 @@ export interface ProductDefinitionSchema ${replaceRefs(content)}`;
 /**
  * Заменить ссылки вида { $ref: "#/Definitions/Type" } на имена интерфейсов вида Type
  * @param {object} schema
+ * @param {string} interfaceName
  * @returns {string} Код TypeScript
  */
-function replaceRefs(schema) {
+function replaceRefs(schema, interfaceName) {
   const MARKER = "__gGDoQEM6rY3nczztvX68__";
-  const typeMarkerRegex = new RegExp(`"${MARKER}([a-z]+)${MARKER}"`, "g");
-  const refRegex = /\{\s*"?\$ref"?:\s*"#\/Definitions\/([A-Za-z0-9]+)"\s*}/gm;
+  const identifierRegex = /^[-_$A-Za-z][-_$A-Za-z0-9]*$/;
+  const typeRegex = new RegExp(`${MARKER}(.+)${MARKER}`);
+  const typeStringRegex = new RegExp(`"${MARKER}(.+)${MARKER}"`, "g");
+  const refStringRegex = /\{\s*"?\$ref"?:\s*"#\/Definitions\/([A-Za-z0-9]+)"\s*}/gm;
+
+  function visitObject(object, path) {
+    if (typeof object === "object" && object !== null) {
+      if (Array.isArray(object)) {
+        object.forEach((value, index) => {
+          visitObject(value, path + `['${index}']`);
+        });
+      } else {
+        Object.keys(object).forEach(key => {
+          if (
+            object.ContentId &&
+            Object.keys(object.Fields).some(
+              fieldName =>
+                object.Fields[fieldName].Content ||
+                object.Fields[fieldName].Contents
+            )
+          ) {
+            object.include = `${MARKER}(selector: (fields: ${path}['Fields']) => Selection[]) => string[]${MARKER}`;
+          } else if (object.FieldId) {
+            if (
+              object.Content &&
+              object.Content.ContentId &&
+              Object.keys(object.Content.Fields).some(
+                fieldName =>
+                  object.Content.Fields[fieldName].Content ||
+                  object.Content.Fields[fieldName].Contents
+              )
+            ) {
+              object.include = `${MARKER}(selector: (fields: ${path}['Content']['Fields']) => Selection[]) => string[]${MARKER}`;
+            } else if (object.Contents) {
+              object.include = `${MARKER}(selector: (contents: ${path}['Contents']) => string[][]) => string[]${MARKER}`;
+            }
+          }
+          visitObject(object[key], path + `['${key}']`);
+        });
+      }
+    }
+  }
+
+  visitObject(schema, interfaceName);
 
   const valueTypeReplacer = (key, value) => {
     if (key === "$ref") {
@@ -77,15 +129,17 @@ function replaceRefs(schema) {
     }
     if (
       typeof value === "string" &&
-      !/^[-_$A-Za-z][-_$A-Za-z0-9]*$/.test(value)
+      !identifierRegex.test(value) &&
+      !typeRegex.test(value)
     ) {
       return `${MARKER}string${MARKER}`;
     }
     return value;
   };
+
   return prettyPrint(schema, valueTypeReplacer)
-    .replace(typeMarkerRegex, "$1")
-    .replace(refRegex, "$1Schema");
+    .replace(typeStringRegex, "$1")
+    .replace(refStringRegex, "$1Schema");
 }
 
 /**
@@ -97,7 +151,7 @@ function replaceRefs(schema) {
 function prettyPrint(object, replacer = (_k, v) => v) {
   const MARKER = "__aklB9Qpj5Gtf7X2wEoYV__";
   const keyRegex = /^[_$A-Za-z][_$A-Za-z0-9]*$/;
-  const keyMarkerRegex = new RegExp(
+  const keyStringRegex = new RegExp(
     `"${MARKER}(${keyRegex.source.slice(1, -1)})${MARKER}":`,
     "g"
   );
@@ -121,7 +175,7 @@ function prettyPrint(object, replacer = (_k, v) => v) {
 
   // prettier-ignore
   return JSON.stringify(object, combinedReplacer, 2)
-    .replace(keyMarkerRegex, "$1:");
+    .replace(keyStringRegex, "$1:");
 }
 
 function isObject(value) {
@@ -163,6 +217,21 @@ function visitObject(object: any, definitions: object, visited: Set<object>): vo
         object[key] = resolveRef(object[key], definitions);
         visitObject(object[key], definitions, visited);
       });
+      if (object.ContentId) {
+        object.include = includeContent;
+      } else if (object.FieldId) {
+        if (
+          object.Content && (
+            object.FieldType === "M2ORelation" ||
+            object.FieldType === "O2MRelation" ||
+            object.FieldType === "M2MRelation"
+          )
+        ) {
+          object.include = includeRelation;
+        } else if (object.Contents && object.FieldType === "Classifier") {
+          object.include = includeExtension;
+        }
+      }
     }
   }
 }
@@ -171,6 +240,41 @@ function resolveRef(object: any, definitions: object): any {
   return typeof object === "object" && object !== null && "$ref" in object
     ? definitions[object.$ref.slice(14)]
     : object;
+}
+
+type Selection = { Content: object } | { Contents: object } | string[];
+
+function includeContent(selector: (fields: object) => Selection[]): string[] {
+  const paths = [this.ContentPath];
+  selector(this.Fields).forEach((field: any, i) => {
+    if (field.Content) {
+      paths.push(field.Content.ContentPath);
+    } else if (field.Contents) {
+      const contentsPaths = Object.keys(field.Contents).map(key => field.Contents[key].ContentPath);
+      paths.push(...contentsPaths);
+    } else if (Array.isArray(field) && typeof (field[0] === "string")) {
+      paths.push(...field);
+    } else {
+      throw new TypeError("Invalid field selection [" + i + "]: " + field);
+    }
+  });
+  return paths;
+}
+
+function includeRelation(selector: (fields: object) => Selection[]): string[] {
+  return includeContent.call(this.Content, selector);
+}
+
+function includeExtension(selector: (contents: object) => string[][]): string[] {
+  const paths = Object.keys(this.Contents).map(key => this.Contents[key].ContentPath);
+  selector(this.Contents).forEach((content: any, i) => {
+    if (Array.isArray(content) && typeof (content[0] === "string")) {
+      paths.push(...content);
+    } else {
+      throw new TypeError("Invalid content selection [" + i + "]: " + content);
+    }
+  });
+  return paths;
 }`;
 
 /**

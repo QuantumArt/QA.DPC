@@ -15,7 +15,6 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noEmitOnError": true,
     "jsx": "react",
     "lib": ["es6", "es2016.array.include", "es2017.object", "dom"],
     "types": ["node", "webpack-env"],
