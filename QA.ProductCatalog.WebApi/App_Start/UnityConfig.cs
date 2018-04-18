@@ -37,7 +37,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
 			unityContainer.AddNewExtension<APIContainerConfiguration>();
             unityContainer.AddNewExtension<QPAPIContainerConfiguration>();
 
-            unityContainer.RegisterType<IUserProvider, ConfigurableUserProvider>();
+            unityContainer.RegisterType<IUserProvider, IdentityUserProvider>();
 
 			unityContainer.RegisterType<ISettingsService, SettingsFromContentService>();
 

@@ -316,6 +316,7 @@
     <Compile Include="Services\IArticleDependencyService.cs" />
     <Compile Include="Services\IArticleService.cs" />
     <Compile Include="Services\IContentService.cs" />
+    <Compile Include="Services\IdentityUserProvider.cs" />
     <Compile Include="Services\IFieldService.cs" />
     <Compile Include="Services\IProductContentResolver.cs" />
     <Compile Include="Services\IProductPdfTemplateService.cs" />
