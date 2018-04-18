@@ -8,8 +8,8 @@ using System.Windows.Markup;
 
 namespace QA.Core.Models.Configuration
 {
-	public abstract class Field
-	{
+    public abstract class Field
+    {
         /// <summary>
         /// специфичные для конкретных сериализаторов свойства
         /// лоадер их не использует
@@ -22,15 +22,42 @@ namespace QA.Core.Models.Configuration
         }
 
         [DisplayName("Имя поля")]
-		public virtual string FieldName { get; set; }
+        public virtual string FieldName { get; set; }
 
-		public virtual int FieldId { get; set; }
+        public virtual int FieldId { get; set; }
 
-	    [DefaultValue(null)]
+        [DefaultValue(null)]
         public virtual string FieldType { get; set; }
 
-	    [DefaultValue(null)]
+        [DefaultValue(null)]
         public NumberType? NumberType { get; set; }
+
+        public Field DeepCopy()
+        {
+            return DeepCopy(new ReferenceDictionary<object, object>());
+        }
+
+        internal Field DeepCopy(ReferenceDictionary<object, object> visited)
+        {
+            if (visited.TryGetValue(this, out object value))
+            {
+                return (Field)value;
+            }
+
+            var field = (Field)MemberwiseClone();
+
+            visited[this] = field;
+
+            CopyMembers(field, visited);
+
+            return field;
+        }
+
+        protected virtual void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        {
+            field.CustomProperties = CustomProperties?
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
 
         internal virtual void FillChildContents(List<Content> parents)
 		{
@@ -62,7 +89,7 @@ namespace QA.Core.Models.Configuration
 		{
 			return GetHashCode();
 		}
-	}
+    }
 
 	public sealed class PlainField : Field
 	{
@@ -142,7 +169,16 @@ namespace QA.Core.Models.Configuration
 
 		public Content Content { get; set; }
 
-		internal override void FillChildContents(List<Content> parents)
+        protected override void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        {
+            base.CopyMembers(field, visited);
+            var entityField = (EntityField)field;
+
+            entityField.CloneDefinition = CloneDefinition?.DeepCopy(visited);
+            entityField.Content = Content?.DeepCopy(visited);
+        }
+
+        internal override void FillChildContents(List<Content> parents)
 		{
             if (Content == null)
             {
@@ -158,9 +194,9 @@ namespace QA.Core.Models.Configuration
 		{
 			return base.RecursiveEquals(other, visitedContents)
                 && Content.RecursiveEquals(((EntityField)other).Content, visitedContents)
-                && CloneDefinition == null
+                && (CloneDefinition == null
                     ? ((EntityField)other).CloneDefinition == null
-                    : CloneDefinition.RecursiveEquals(((EntityField)other).CloneDefinition, visitedContents);
+                    : CloneDefinition.RecursiveEquals(((EntityField)other).CloneDefinition, visitedContents));
 		}
 
 		public override int GetHashCode()
@@ -198,7 +234,16 @@ namespace QA.Core.Models.Configuration
 			ContentMapping = new Dictionary<int, Content>();
 		}
 
-		internal override void FillChildContents(List<Content> parents)
+        protected override void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        {
+            base.CopyMembers(field, visited);
+            var extensionField = (ExtensionField)field;
+
+            extensionField.ContentMapping = ContentMapping?
+                .ToDictionary(pair => pair.Key, pair => pair.Value.DeepCopy(visited));
+        }
+
+        internal override void FillChildContents(List<Content> parents)
 		{
 			foreach (Content content in ContentMapping.Values)
 			{
@@ -269,7 +314,16 @@ namespace QA.Core.Models.Configuration
 			DefaultCachePeriod = TimeSpan.FromMinutes(10);
 		}
 
-		public TimeSpan? GetCachePeriodForContent(int id)
+        protected override void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        {
+            base.CopyMembers(field, visited);
+            var dictionaries = (Dictionaries)field;
+
+            dictionaries.ContentDictionaries = ContentDictionaries?
+                .ToDictionary(pair => pair.Key, pair => pair.Value.DeepCopy(visited));
+        }
+
+        public TimeSpan? GetCachePeriodForContent(int id)
 		{
             if (ContentDictionaries.TryGetValue(id, out Content c))
             {

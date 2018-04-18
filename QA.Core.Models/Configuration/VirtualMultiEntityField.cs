@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Markup;
 
 namespace QA.Core.Models.Configuration
 {
@@ -18,15 +13,9 @@ namespace QA.Core.Models.Configuration
 
 		public override bool Equals(object obj)
 		{
-			if (!base.Equals(obj))
-				return false;
-
-			var otherVirtualField = obj as VirtualMultiEntityField;
-
-			if (otherVirtualField == null)
-				return false;
-
-			return otherVirtualField.Path == Path;
+            return base.Equals(obj)
+                && obj is VirtualMultiEntityField otherVirtualField
+                && otherVirtualField.Path == Path;
 		}
 	}
 }

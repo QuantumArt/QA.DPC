@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using QA.Core.Models.Tools;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Markup;
 
 namespace QA.Core.Models.Configuration
@@ -12,29 +9,40 @@ namespace QA.Core.Models.Configuration
 	{
 		private BaseVirtualField[] _fields;
 
-		public BaseVirtualField[] Fields { get { return _fields ?? new BaseVirtualField[0]; } set { _fields = value; } }
+		public BaseVirtualField[] Fields
+        {
+            get => _fields ?? new BaseVirtualField[0];
+            set { _fields = value; }
+        }
 
-		public override int GetHashCode()
+        protected override void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        {
+            base.CopyMembers(field, visited);
+            var virtualEntityField = (VirtualEntityField)field;
+
+            virtualEntityField._fields = _fields?
+                .Select(baseField => (BaseVirtualField)baseField.DeepCopy(visited))
+                .ToArray();
+        }
+
+        public override int GetHashCode()
 		{
-			int currentHash = base.GetHashCode();
+			int hash = base.GetHashCode();
 
-			foreach (var field in Fields)
-				currentHash = HashHelper.CombineHashCodes(currentHash, field.GetHashCode());
+			foreach (BaseVirtualField field in Fields)
+            {
+                hash = HashHelper.CombineHashCodes(hash, field.GetHashCode());
+            }
 
-			return currentHash;
+			return hash;
 		}
 
 		public override bool Equals(object obj)
 		{
-			if (!base.Equals(obj))
-				return false;
-
-			VirtualEntityField otherVirtualField = obj as VirtualEntityField;
-
-			if (otherVirtualField == null)
-				return false;
-
-			return Fields.Length == otherVirtualField.Fields.Length && Fields.All(x => otherVirtualField.Fields.Any(y => y.Equals(x)));
+            return base.Equals(obj)
+                && obj is VirtualEntityField otherVirtualField
+                && Fields.Length == otherVirtualField.Fields.Length
+                && Fields.All(x => otherVirtualField.Fields.Any(y => y.Equals(x)));
 		}
 	}
 }
