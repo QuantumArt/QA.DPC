@@ -527,8 +527,7 @@ namespace QA.Core.DPC.Formatters.Services
             public Dictionary<Content, Content> ContentPrototypesByValue
                 = new Dictionary<Content, Content>();
 
-            public ReferenceHashSet<Content> VisitedContentPrototypes
-                = new ReferenceHashSet<Content>();
+            public ReferenceHashSet<Content> VisitedContents = new ReferenceHashSet<Content>();
 
             public HashSet<string> SelectedFieldPaths;
         }
@@ -537,32 +536,32 @@ namespace QA.Core.DPC.Formatters.Services
             = new Regex("^(/[1-9][0-9]*:[1-9][0-9]*)*/[1-9][0-9]*$", RegexOptions.Compiled);
 
         /// <exception cref="InvalidOperationException" />
-        public Content GetPartialContent(Content content, string[] paths)
+        public Content GetPartialContent(Content rootContent, string[] contentPaths)
         {
-            if (content == null) throw new ArgumentNullException(nameof(content));
-            if (paths == null) throw new ArgumentNullException(nameof(paths));
-            if (paths.Length == 0) throw new ArgumentException("Paths should not be empty", nameof(paths));
+            if (rootContent == null) throw new ArgumentNullException(nameof(rootContent));
+            if (contentPaths == null) throw new ArgumentNullException(nameof(contentPaths));
+            if (contentPaths.Length == 0) throw new ArgumentException("Paths should not be empty", nameof(contentPaths));
 
-            for (int i = 0; i < paths.Length; i++)
+            for (int i = 0; i < contentPaths.Length; i++)
             {
-                if (!PathRegex.IsMatch(paths[i]))
+                if (!PathRegex.IsMatch(contentPaths[i]))
                 {
-                    throw new InvalidOperationException($"Path [{i}] \"{paths[i]}\" is invalid");
+                    throw new InvalidOperationException($"Path [{i}] \"{contentPaths[i]}\" is invalid");
                 }
             }
 
-            Content rootContent = GetRootContent(content, paths[0]);
+            Content foundContent = FindContentByPath(rootContent, contentPaths[0]);
 
             var context = new PartialContentContext
             {
-                SelectedFieldPaths = new HashSet<string>(paths.Skip(1).Select(GetFieldPath))
+                SelectedFieldPaths = new HashSet<string>(contentPaths.Skip(1).Select(GetFieldPath))
             };
 
-            FillContentPrototypesDictionary(content, context);
+            FillContentPrototypesDictionary(rootContent, context);
 
-            RemoveNotSelectedFields(content, context, "");
+            RemoveNotSelectedFields(rootContent, context, "");
 
-            return context.ContentPrototypesByReference[rootContent];
+            return context.ContentPrototypesByReference[foundContent];
         }
 
         private static string GetFieldPath(string fieldContentPath)
@@ -571,11 +570,11 @@ namespace QA.Core.DPC.Formatters.Services
         }
 
         /// <exception cref="InvalidOperationException" />
-        private Content GetRootContent(Content content, string rootPath)
+        private Content FindContentByPath(Content content, string contentPath)
         {
-            var pathNotFound = new InvalidOperationException($"Content not found for path \"{rootPath}\"");
+            var pathNotFound = new InvalidOperationException($"Content not found for path \"{contentPath}\"");
 
-            string[] pathSegments = rootPath.Split(':');
+            string[] pathSegments = contentPath.Split(':');
 
             string[] rootContent = pathSegments[0].Split('/');
             int rootContentId = Int32.Parse(rootContent[1]);
@@ -647,29 +646,39 @@ namespace QA.Core.DPC.Formatters.Services
 
         private void RemoveNotSelectedFields(Content content, PartialContentContext context, string fieldPath)
         {
-            Content prototype = context.ContentPrototypesByReference[content];
-
-            if (context.VisitedContentPrototypes.Contains(prototype))
+            if (context.VisitedContents.Contains(content))
             {
                 return;
             }
 
-            context.VisitedContentPrototypes.Add(prototype);
+            context.VisitedContents.Add(content);
 
-            string contentPath = fieldPath + $"/{prototype.ContentId}";
+            string contentPath = fieldPath + $"/{content.ContentId}";
 
-            foreach (Association field in prototype.Fields.OfType<Association>().ToArray())
+            foreach (Association field in content.Fields.OfType<Association>().ToArray())
             {
                 fieldPath = contentPath + $":{field.FieldId}";
 
-                foreach (Content childContent in field.Contents)
+                if (field is EntityField entityField)
                 {
-                    RemoveNotSelectedFields(childContent, context, fieldPath);
+                    entityField.Content = context.ContentPrototypesByReference[entityField.Content];
+                }
+                else if (field is ExtensionField extensionField)
+                {
+                    foreach (var pair in extensionField.ContentMapping.ToArray())
+                    {
+                        extensionField.ContentMapping[pair.Key] = context.ContentPrototypesByReference[pair.Value];
+                    }
                 }
 
                 if (!context.SelectedFieldPaths.Contains(fieldPath))
                 {
-                    prototype.Fields.Remove(field);
+                    content.Fields.Remove(field);
+                }
+
+                foreach (Content childContent in field.Contents)
+                {
+                    RemoveNotSelectedFields(childContent, context, fieldPath);
                 }
             }
         }
