@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Practices.Unity;
 using Newtonsoft.Json;
@@ -11,6 +12,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using QA.Core.DPC.Loader;
 using QA.Core.Models.Configuration;
+using QA.Core.Models.Tools;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.ListItems;
@@ -152,6 +154,8 @@ namespace QA.Core.DPC.Formatters.Services
         /// <exception cref="InvalidOperationException" />
         public string GetSchema(Content content, bool prettyPrint = true)
         {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+
             var context = new SchemaContext();
 
             FillVirtualFieldsInfo(content, context);
@@ -512,6 +516,165 @@ namespace QA.Core.DPC.Formatters.Services
                 Ref = $"#/{nameof(ProductSchema.Definitions)}/{name}"
             };
         }
+
+        #region PartialContent
+
+        private class PartialContentContext
+        {
+            public ReferenceDictionary<Content, Content> ContentPrototypesByReference
+                = new ReferenceDictionary<Content, Content>();
+
+            public Dictionary<Content, Content> ContentPrototypesByValue
+                = new Dictionary<Content, Content>();
+
+            public ReferenceHashSet<Content> VisitedContentPrototypes
+                = new ReferenceHashSet<Content>();
+
+            public HashSet<string> SelectedFieldPaths;
+        }
+
+        private static readonly Regex PathRegex 
+            = new Regex("^(/[1-9][0-9]*:[1-9][0-9]*)*/[1-9][0-9]*$", RegexOptions.Compiled);
+
+        /// <exception cref="InvalidOperationException" />
+        public Content GetPartialContent(Content content, string[] paths)
+        {
+            if (content == null) throw new ArgumentNullException(nameof(content));
+            if (paths == null) throw new ArgumentNullException(nameof(paths));
+            if (paths.Length == 0) throw new ArgumentException("Paths should not be empty", nameof(paths));
+
+            for (int i = 0; i < paths.Length; i++)
+            {
+                if (!PathRegex.IsMatch(paths[i]))
+                {
+                    throw new InvalidOperationException($"Path [{i}] \"{paths[i]}\" is invalid");
+                }
+            }
+
+            Content rootContent = GetRootContent(content, paths[0]);
+
+            var context = new PartialContentContext
+            {
+                SelectedFieldPaths = new HashSet<string>(paths.Skip(1).Select(GetFieldPath))
+            };
+
+            FillContentPrototypesDictionary(content, context);
+
+            RemoveNotSelectedFields(content, context, "");
+
+            return context.ContentPrototypesByReference[rootContent];
+        }
+
+        private static string GetFieldPath(string fieldContentPath)
+        {
+            return fieldContentPath.Substring(0, fieldContentPath.LastIndexOf('/'));
+        }
+
+        /// <exception cref="InvalidOperationException" />
+        private Content GetRootContent(Content content, string rootPath)
+        {
+            var pathNotFound = new InvalidOperationException($"Content not found for path \"{rootPath}\"");
+
+            string[] pathSegments = rootPath.Split(':');
+
+            string[] rootContent = pathSegments[0].Split('/');
+            int rootContentId = Int32.Parse(rootContent[1]);
+            if (content.ContentId != rootContentId)
+            {
+                throw pathNotFound;
+            }
+
+            foreach (string pathSegment in pathSegments.Skip(1))
+            {
+                string[] fieldContent = pathSegment.Split('/');
+                int fieldId = Int32.Parse(fieldContent[0]);
+                int contentId = Int32.Parse(fieldContent[1]);
+
+                Field field = content.Fields.FirstOrDefault(f => f.FieldId == fieldId);
+
+                if (field is EntityField entityField)
+                {
+                    content = entityField.Content;
+
+                    if (content.ContentId != contentId)
+                    {
+                        throw pathNotFound;
+                    }
+                }
+                else if (field is ExtensionField extensionField)
+                {
+                    content = extensionField.ContentMapping.Values
+                        .FirstOrDefault(c => c.ContentId == contentId);
+
+                    if (content == null)
+                    {
+                        throw pathNotFound;
+                    }
+                }
+                else
+                {
+                    throw pathNotFound;
+                }
+            }
+
+            return content;
+        }
+        
+        private void FillContentPrototypesDictionary(Content content, PartialContentContext context)
+        {
+            if (context.ContentPrototypesByReference.ContainsKey(content))
+            {
+                return;
+            }
+            if (context.ContentPrototypesByValue.ContainsKey(content))
+            {
+                context.ContentPrototypesByReference[content] = context.ContentPrototypesByValue[content];
+            }
+            else
+            {
+                context.ContentPrototypesByValue[content] = content;
+                context.ContentPrototypesByReference[content] = content;
+            }
+            
+            foreach (Association field in content.Fields.OfType<Association>())
+            {
+                foreach (Content childContent in field.Contents)
+                {
+                    FillContentPrototypesDictionary(childContent, context);
+                }
+            }
+        }
+
+        private void RemoveNotSelectedFields(Content content, PartialContentContext context, string fieldPath)
+        {
+            Content prototype = context.ContentPrototypesByReference[content];
+
+            if (context.VisitedContentPrototypes.Contains(prototype))
+            {
+                return;
+            }
+
+            context.VisitedContentPrototypes.Add(prototype);
+
+            string contentPath = fieldPath + $"/{prototype.ContentId}";
+
+            foreach (Association field in prototype.Fields.OfType<Association>().ToArray())
+            {
+                fieldPath = contentPath + $":{field.FieldId}";
+
+                foreach (Content childContent in field.Contents)
+                {
+                    RemoveNotSelectedFields(childContent, context, fieldPath);
+                }
+
+                if (!context.SelectedFieldPaths.Contains(fieldPath))
+                {
+                    prototype.Fields.Remove(field);
+                }
+            }
+        }
+
+        #endregion
 
         #region Utils
 
