@@ -34,9 +34,9 @@ namespace QA.ProductCatalog.WebApi.App_Start
 			{
                 if (serviceType == typeof(ProductController) && HttpContext.Current != null)
                 {
-                    var route = HttpContext.Current.Request.RequestContext.RouteData;
-                    var customerCode = route.Values["customerCode"] as string;
-                    _container.Resolve<IIdentityProvider>().Identity = new Identity(customerCode);
+                    var request = HttpContext.Current.Request;
+                    _container.Resolve<IdentityResolverBase>().ResolveIdentity(request);
+                    _container.Resolve<IdentityResolver>().ResolveIdentity(request);
                 }
 
                 return _container.Resolve(serviceType);

@@ -10,16 +10,16 @@ namespace QA.Core.DPC.QP.Models
         public string CustomerCode { get; private set; }
         public int UserId { get; private set; }
 
-        public Identity()
+        public Identity(int userId = 0, bool isAuthenticated = false)
         {
-            IsAuthenticated = false;
-            UserId = 0;
+            UserId = userId;
+            IsAuthenticated = isAuthenticated;            
         }
 
-        public Identity(string customerCode)
-            : this()
+        public Identity(string customerCode, int userId = 0, bool isAuthenticated = false)
+            : this(userId, isAuthenticated)
         {
             CustomerCode = customerCode;
-        }
+        }       
     }
 }

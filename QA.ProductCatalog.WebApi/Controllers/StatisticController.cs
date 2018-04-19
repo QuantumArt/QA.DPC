@@ -4,6 +4,7 @@ using System.Web.Http;
 
 namespace QA.ProductCatalog.WebApi.Controllers
 {
+    [RoutePrefix("statistic")]
     public class StatisticController : ApiController
     {
         private readonly IFactory _factory;
@@ -17,7 +18,8 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// Customer codes initialized with cache
         /// </summary>
         /// <returns></returns>
-        [AcceptVerbs("GET")]
+        [HttpGet]
+        [Route("Cache/{format:media_type_mapping=json}")]        
         public string[] Cache()
         {
             return _factory.Invalidator.Keys.ToArray();
