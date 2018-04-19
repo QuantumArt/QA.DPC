@@ -1,23 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using QA.Core.DPC.Loader;
+using QA.Core.Models.Configuration;
+using QA.Core.Models.Tools;
+using QA.ProductCatalog.Infrastructure;
+using Quantumart.QP8.BLL.ListItems;
+using Quantumart.QP8.BLL.Services.API;
+using Quantumart.QP8.Constants;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Practices.Unity;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
-using QA.Core.DPC.Loader;
-using QA.Core.Models.Configuration;
-using QA.Core.Models.Tools;
-using QA.Core.ProductCatalog.Actions.Services;
-using QA.ProductCatalog.Infrastructure;
-using Quantumart.QP8.BLL.ListItems;
-using Quantumart.QP8.BLL.Services.API;
-using Quantumart.QP8.Constants;
 
 namespace QA.Core.DPC.Formatters.Services
 {
@@ -66,7 +63,7 @@ namespace QA.Core.DPC.Formatters.Services
             [JsonProperty("$ref")]
             public string Ref { get; set; }
         }
-        
+
         private class FieldSchema
         {
             public int FieldId { get; set; }
@@ -93,7 +90,7 @@ namespace QA.Core.DPC.Formatters.Services
             public Dictionary<string, IContentSchema> Contents { get; set; }
                 = new Dictionary<string, IContentSchema>();
         }
-        
+
         #endregion
 
         #region IFormatter
@@ -175,7 +172,7 @@ namespace QA.Core.DPC.Formatters.Services
                 Converters = { new StringEnumConverter() }
             });
         }
-        
+
         /// <summary>
         /// Рекурсивно обходит <see cref="Content"/> и заполняет
         /// <see cref="SchemaContext.IgnoredFields"/> - список полей которые надо игнорировать при создании схемы
@@ -260,7 +257,6 @@ namespace QA.Core.DPC.Formatters.Services
                     throw new InvalidOperationException(
                         "В Path VirtualMultiEntityField должны быть только поля EntityField или наследники");
                 }
-                
             }
             else if (baseVirtualField is VirtualEntityField virtualEntityField)
             {
@@ -355,7 +351,7 @@ namespace QA.Core.DPC.Formatters.Services
                     contentSchema.Fields[qpField.Name] = GetFieldSchema(null, qpField, context, path);
                 }
             }
-            
+
             return contentSchema;
         }
 
@@ -372,16 +368,16 @@ namespace QA.Core.DPC.Formatters.Services
                 ContentDescription = IsHtmlWhiteSpace(qpContent.Description) ? "" : qpContent.Description,
             };
         }
-        
+
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
         private FieldSchema GetFieldSchema(
             Field field, Quantumart.QP8.BLL.Field qpField, SchemaContext context, string path)
         {
             path += $":{field?.FieldId ?? qpField.Id}";
-            
+
             FieldSchema fieldSchema;
-            
+
             if (field == null || field is PlainField)
             {
                 fieldSchema = GetPlainFieldSchema(qpField);
@@ -451,7 +447,7 @@ namespace QA.Core.DPC.Formatters.Services
         {
             context.DefinitionNamesBySchema = context.RepeatedSchemas
                 .GroupBy(schema => String.IsNullOrEmpty(schema.ContentName)
-                    ? $"Content{schema.ContentId}" 
+                    ? $"Content{schema.ContentId}"
                     : schema.ContentName)
                 .SelectMany(group => group.Select((schema, i) => new
                 {
@@ -480,7 +476,7 @@ namespace QA.Core.DPC.Formatters.Services
                 }
 
                 visitedSchemas.Add(contentSchema);
-                
+
                 foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
                 {
                     if (fieldSchema is RelationFieldSchema relationSchema)
@@ -521,18 +517,16 @@ namespace QA.Core.DPC.Formatters.Services
 
         private class PartialContentContext
         {
-            public ReferenceDictionary<Content, Content> ContentPrototypesByReference
-                = new ReferenceDictionary<Content, Content>();
+            public ReferenceDictionary<Content, Content> ContentPrototypesByReference;
 
-            public Dictionary<Content, Content> ContentPrototypesByValue
-                = new Dictionary<Content, Content>();
+            public Dictionary<Content, Content> ContentPrototypesByValue;
 
-            public ReferenceHashSet<Content> VisitedContents = new ReferenceHashSet<Content>();
+            public ReferenceHashSet<Content> VisitedContents;
 
             public HashSet<string> SelectedFieldPaths;
         }
 
-        private static readonly Regex PathRegex 
+        private static readonly Regex PathRegex
             = new Regex("^(/[1-9][0-9]*:[1-9][0-9]*)*/[1-9][0-9]*$", RegexOptions.Compiled);
 
         /// <exception cref="InvalidOperationException" />
@@ -550,23 +544,87 @@ namespace QA.Core.DPC.Formatters.Services
                 }
             }
 
-            Content foundContent = FindContentByPath(rootContent, contentPaths[0]);
+            var context = new PartialContentContext();
 
-            var context = new PartialContentContext
-            {
-                SelectedFieldPaths = new HashSet<string>(contentPaths.Skip(1).Select(GetFieldPath))
-            };
-
+            // находим дубликаты контентов и сохраняем в словаре
+            context.ContentPrototypesByReference = new ReferenceDictionary<Content, Content>();
+            context.ContentPrototypesByValue = new Dictionary<Content, Content>();
             FillContentPrototypesDictionary(rootContent, context);
 
+            // заменяем дубликаты контентов на их прообразы
+            context.VisitedContents = new ReferenceHashSet<Content>();
+            DecuplicateContents(rootContent, context);
+
+            // находим контент по пути
+            Content foundContent = FindContentByPath(rootContent, contentPaths[0]);
+
+            // удаляем все связи между контентами, кроме описанных в contentPaths
+            context.VisitedContents = new ReferenceHashSet<Content>();
+            context.SelectedFieldPaths = new HashSet<string>(contentPaths.Skip(1).Select(GetFieldPath));
             RemoveNotSelectedFields(rootContent, context, "");
 
-            return context.ContentPrototypesByReference[foundContent];
+            return foundContent;
         }
 
         private static string GetFieldPath(string fieldContentPath)
         {
             return fieldContentPath.Substring(0, fieldContentPath.LastIndexOf('/'));
+        }
+
+        private void FillContentPrototypesDictionary(Content content, PartialContentContext context)
+        {
+            if (context.ContentPrototypesByReference.ContainsKey(content))
+            {
+                return;
+            }
+            if (context.ContentPrototypesByValue.ContainsKey(content))
+            {
+                context.ContentPrototypesByReference[content] = context.ContentPrototypesByValue[content];
+            }
+            else
+            {
+                context.ContentPrototypesByValue[content] = content;
+                context.ContentPrototypesByReference[content] = content;
+            }
+
+            foreach (Association field in content.Fields.OfType<Association>())
+            {
+                foreach (Content childContent in field.Contents)
+                {
+                    FillContentPrototypesDictionary(childContent, context);
+                }
+            }
+        }
+
+        private void DecuplicateContents(Content content, PartialContentContext context)
+        {
+            if (context.VisitedContents.Contains(content))
+            {
+                return;
+            }
+
+            context.VisitedContents.Add(content);
+
+            foreach (Field field in content.Fields)
+            {
+                if (field is EntityField entityField)
+                {
+                    entityField.Content = context.ContentPrototypesByReference[entityField.Content];
+
+                    DecuplicateContents(entityField.Content, context);
+                }
+                else if (field is ExtensionField extensionField)
+                {
+                    foreach (var pair in extensionField.ContentMapping.ToArray())
+                    {
+                        Content childContent = context.ContentPrototypesByReference[pair.Value];
+
+                        extensionField.ContentMapping[pair.Key] = childContent;
+
+                        DecuplicateContents(childContent, context);
+                    }
+                }
+            }
         }
 
         /// <exception cref="InvalidOperationException" />
@@ -618,31 +676,6 @@ namespace QA.Core.DPC.Formatters.Services
 
             return content;
         }
-        
-        private void FillContentPrototypesDictionary(Content content, PartialContentContext context)
-        {
-            if (context.ContentPrototypesByReference.ContainsKey(content))
-            {
-                return;
-            }
-            if (context.ContentPrototypesByValue.ContainsKey(content))
-            {
-                context.ContentPrototypesByReference[content] = context.ContentPrototypesByValue[content];
-            }
-            else
-            {
-                context.ContentPrototypesByValue[content] = content;
-                context.ContentPrototypesByReference[content] = content;
-            }
-            
-            foreach (Association field in content.Fields.OfType<Association>())
-            {
-                foreach (Content childContent in field.Contents)
-                {
-                    FillContentPrototypesDictionary(childContent, context);
-                }
-            }
-        }
 
         private void RemoveNotSelectedFields(Content content, PartialContentContext context, string fieldPath)
         {
@@ -658,18 +691,6 @@ namespace QA.Core.DPC.Formatters.Services
             foreach (Association field in content.Fields.OfType<Association>().ToArray())
             {
                 fieldPath = contentPath + $":{field.FieldId}";
-
-                if (field is EntityField entityField)
-                {
-                    entityField.Content = context.ContentPrototypesByReference[entityField.Content];
-                }
-                else if (field is ExtensionField extensionField)
-                {
-                    foreach (var pair in extensionField.ContentMapping.ToArray())
-                    {
-                        extensionField.ContentMapping[pair.Key] = context.ContentPrototypesByReference[pair.Value];
-                    }
-                }
 
                 if (!context.SelectedFieldPaths.Contains(fieldPath))
                 {
