@@ -56,8 +56,11 @@ namespace QA.Core.DPC.Loader
 
         public Article DeserializeProduct(string productJson, Content definition)
         {
-            var rootArticleDictionary = JsonConvert.DeserializeObject<JObject>(productJson);
+            return DeserializeProduct(JsonConvert.DeserializeObject<JObject>(productJson), definition);
+        }
 
+        public Article DeserializeProduct(JObject rootArticleDictionary, Content definition)
+        {
             var product = rootArticleDictionary.SelectToken("product");
             if (product != null)
             {
@@ -773,7 +776,7 @@ namespace QA.Core.DPC.Loader
             public string AbsoluteUrl { get; set; }
         }
 
-        private Dictionary<string, object> ConvertArticle(Article article, IArticleFilter filter)
+        public Dictionary<string, object> ConvertArticle(Article article, IArticleFilter filter)
         {
             if (article == null || !article.Visible || article.Archived || !filter.Matches(article))
             {

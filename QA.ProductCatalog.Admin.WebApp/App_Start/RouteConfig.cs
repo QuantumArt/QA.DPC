@@ -13,6 +13,8 @@ namespace QA.ProductCatalog.Admin.WebApp
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
+            routes.MapMvcAttributeRoutes();
+
             routes.MapRoute(
                 name: "1",
                 url: "{controller}/publicate/preaction/{id}",

@@ -546,6 +546,9 @@ namespace QA.Core.DPC.Formatters.Services
 
             var context = new PartialContentContext();
 
+            // клонируем rootContent, потому что его описание будет изменено в RemoveNotSelectedFields
+            rootContent = rootContent.DeepCopy();
+
             // находим дубликаты контентов и сохраняем в словаре
             context.ContentPrototypesByReference = new ReferenceDictionary<Content, Content>();
             context.ContentPrototypesByValue = new Dictionary<Content, Content>();

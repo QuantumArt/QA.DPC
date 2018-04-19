@@ -271,6 +271,7 @@
     <Compile Include="App_Core\AppDataProductControlProvider.cs" />
     <Compile Include="App_Start\TaskContainerConfiguration.cs" />
     <Compile Include="Binders\ContentBinder.cs" />
+    <Compile Include="Binders\JsonModelBinder.cs" />
     <Compile Include="Controllers\ProductEditorController.cs" />
     <Compile Include="Controllers\DefinitionEditorController.cs" />
     <Compile Include="Controllers\HighloadFrontController.cs" />
@@ -582,6 +583,10 @@
     <ProjectReference Include="..\QA.Core.DocumentGenerator\QA.Core.DocumentGenerator.csproj">
       <Project>{7bf30688-370a-4290-89e4-ef9181d373e4}</Project>
       <Name>QA.Core.DocumentGenerator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.API\QA.Core.DPC.API.csproj">
+      <Project>{F14BB090-9951-49BA-BE2B-80027F155D65}</Project>
+      <Name>QA.Core.DPC.API</Name>
     </ProjectReference>
     <ProjectReference Include="..\QA.Core.DPC.Notification\QA.Core.DPC.Notification.csproj">
       <Project>{d0e2cb2d-042a-4882-8e6d-bbb0966fb47b}</Project>
