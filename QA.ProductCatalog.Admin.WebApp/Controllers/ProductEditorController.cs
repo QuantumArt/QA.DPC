@@ -131,6 +131,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var partialDefinition = new ProductDefinition { StorageSchema = partialContent };
 
             // TODO: what about validation ?
+            // TODO: what about Id-s of new articles ?
             // _productUpdateService.Update(partialProduct, partialDefinition, request.IsLive);
 
             return new HttpStatusCodeResult(HttpStatusCode.NoContent);
