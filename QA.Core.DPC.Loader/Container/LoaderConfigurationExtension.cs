@@ -35,6 +35,7 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<ContentService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetContentService()));
             Container.RegisterType<IFieldService, FieldServiceAdapter>(new HttpContextLifetimeManager());
             Container.RegisterType<IContentService, ContentServiceAdapter>(new HttpContextLifetimeManager());
+            Container.RegisterType<IProductContentResolver, ProductContentResolver>();
 
             Container.RegisterType<IFreezeService, FreezeService>();
 
