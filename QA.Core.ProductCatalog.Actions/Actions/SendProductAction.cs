@@ -315,7 +315,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                             var publishActionContext = new ActionContext
                             {
                                 ContentItemIds = prodsToPublishIds,
-                                Parameters = new Dictionary<string, string>() { { ignoredStatusKey, ignoredStatus } }
+                                Parameters = new Dictionary<string, string>() { { ignoredStatusKey, ignoredStatus } },
+                                UserId = context.UserId,
+                                UserName = context.UserName
                             };
 
                             try
