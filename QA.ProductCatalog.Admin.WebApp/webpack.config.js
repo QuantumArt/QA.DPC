@@ -8,13 +8,18 @@ const viewsDir = path.resolve(__dirname, "./Views");
 const views = new Set(glob.sync(path.resolve(viewsDir, "**/*.cshtml")));
 
 const entries = glob
-  // all .js and .ts files from ~/Views folder
-  .sync(path.resolve(viewsDir, "**/*.@(ts|js)"))
+  // all .js, .jsx, ts and .tsx files from ~/Views folder
+  .sync(path.resolve(viewsDir, "**/*.@(js|ts)"))
   // that have .cshtml view with same name
   .filter(page => views.has(page.slice(0, -3) + ".cshtml"))
+  .concat(
+    glob
+      .sync(path.resolve(viewsDir, "**/*.@(jsx|tsx)"))
+      .filter(page => views.has(page.slice(0, -4) + ".cshtml"))
+  )
   // grouped to dictionary by path relative to ~/Views folder
   .reduce((entries, page) => {
-    const name = page.slice(viewsDir.length, -3);
+    const name = /(.*)\.(js|ts|jsx|tsx)$/.exec(page.slice(viewsDir.length))[1];
     entries[name] = page;
     return entries;
   }, {});
