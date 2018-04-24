@@ -8,6 +8,7 @@ using QA.Core.Models.Entities;
 using QA.ProductCatalog.Admin.WebApp.Binders;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.Infrastructure;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
@@ -15,6 +16,7 @@ using System.Web.Mvc;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
+    [RoutePrefix("ProductEditor")]
     public class ProductEditorController : Controller
     {
         private readonly IContentDefinitionService _contentDefinitionService;
@@ -37,15 +39,45 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorSchemaFormatter = editorSchemaFormatter;
         }
 
+        [Route("{editorName}/{articleId}")]
+        public ActionResult Index(string editorName, int articleId)
+        {
+            return View(editorName);
+        }
+
+        private bool TryGetContent(
+            int? productTypeId, int? contentId, string slug, string version, out Content content)
+        {
+            if (productTypeId != null && productTypeId > 0 || contentId != null && contentId > 0)
+            {
+                content = _contentDefinitionService.GetDefinitionForContent(productTypeId ?? 0, contentId ?? 0);
+                return true;
+            }
+            if (!String.IsNullOrEmpty(slug) && !String.IsNullOrEmpty(version))
+            {
+                content = _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+                return true;
+            }
+            content = null;
+            return false;
+        }
+
         /// <summary>
         /// Построить TypeScript-описание продукта и схему для редактора.
         /// </summary>
+        /// <param name="productTypeId">
+        /// Id ProductContent или MarketingProductContent для статьи из справочника "Типы продуктов"
+        /// </param>
+        /// <param name="contentId">Id контента</param>
         /// <param name="slug">Имя продукта</param>
         /// <param name="version">Версия продукта</param>
         [HttpGet]
-        public ActionResult TypeScriptSchema(string slug, string version)
+        public ActionResult TypeScriptSchema(int? productTypeId, int? contentId, string slug, string version)
         {
-            Content content = _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+            if (!TryGetContent(productTypeId, contentId, slug, version, out Content content))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             string jsonSchema = _jsonProductService.GetSchemaString(content, false);
 
@@ -62,6 +94,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// Построить JSON-схему части продукта, начиная с корневого контента,
         /// описанного путём <paramref name="contentPaths"/>[0].
         /// </summary>
+        /// <param name="productTypeId">
+        /// Id ProductContent или MarketingProductContent для статьи из справочника "Типы продуктов"
+        /// </param>
+        /// <param name="contentId">Id контента</param>
         /// <param name="slug">Имя продукта</param>
         /// <param name="version">Версия продукта</param>
         /// <param name="contentPaths">
@@ -72,9 +108,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <returns>JSON-схема продукта</returns>
         [HttpPost]
         public ActionResult PartialJsonSchema(
-            string slug, string version, [ModelBinder(typeof(JsonModelBinder))] string[] contentPaths)
+            int? productTypeId, int? contentId, string slug, string version,
+            [ModelBinder(typeof(JsonModelBinder))] string[] contentPaths)
         {
-            Content content = _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+            if (!TryGetContent(productTypeId, contentId, slug, version, out Content content))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             Content partialContent = _editorSchemaFormatter.GetPartialContent(content.DeepCopy(), contentPaths);
 
@@ -86,15 +126,23 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <summary>
         /// Получить JSON продукта по его <see cref="Article.Id"/>.
         /// </summary>
+        /// <param name="productTypeId">
+        /// Id ProductContent или MarketingProductContent для статьи из справочника "Типы продуктов"
+        /// </param>
+        /// <param name="contentId">Id контента</param>
         /// <param name="slug">Имя продукта</param>
         /// <param name="version">Версия продукта</param>
         /// <param name="id"><see cref="Article.Id"/></param>
         /// <param name="isLive"></param>
         /// <returns>JSON продукта</returns>
         [HttpGet]
-        public ActionResult GetProduct(string slug, string version, int id, bool isLive = false)
+        public ActionResult GetProduct(
+            int? productTypeId, int? contentId, string slug, string version, int id, bool isLive = false)
         {
-            Content content = _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+            if (!TryGetContent(productTypeId, contentId, slug, version, out Content content))
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             var productDefinition = new ProductDefinition { StorageSchema = content };
 
@@ -117,13 +165,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         public ActionResult SavePartialProduct(
             [ModelBinder(typeof(JsonModelBinder))] PartialProductRequest request)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || !TryGetContent(
+                request.ProductTypeId, request.ContentId, request.Slug, request.Version, out Content content))
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-
-            Content content = _contentDefinitionService.GetServiceDefinition(request.Slug, request.Version).Content;
-
+            
             Content partialContent = _editorSchemaFormatter.GetPartialContent(content, request.ContentPaths);
 
             Article partialProduct = _jsonProductService.DeserializeProduct(request.PartialProduct, partialContent);
@@ -140,15 +187,23 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         public class PartialProductRequest
         {
             /// <summary>
+            /// Id ProductContent или MarketingProductContent для статьи из справочника "Типы продуктов"
+            /// </summary>
+            public int? ProductTypeId { get; set; }
+
+            /// <summary>
+            /// Id контента
+            /// </summary>
+            public int? ContentId { get; set; }
+
+            /// <summary>
             /// Имя продукта
             /// </summary>
-            [Required]
             public string Slug { get; set; }
 
             /// <summary>
             /// Версия продукта
             /// </summary>
-            [Required]
             public string Version { get; set; }
 
             /// <summary>
