@@ -84,7 +84,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 						ContentId = productContentId,
 						ContentItemIds = filteredProductIds,
 						ActionCode = context.ActionCode,
-						Parameters = context.Parameters
+						Parameters = context.Parameters,
+                        UserId = context.UserId,
+                        UserName = context.UserName
 					};
 
 					message = publishService.Process(productContext);

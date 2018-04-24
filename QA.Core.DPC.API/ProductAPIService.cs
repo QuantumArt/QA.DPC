@@ -80,8 +80,16 @@ namespace QA.Core.DPC.API
 		public void CustomAction(string actionName, int[] ids, Dictionary<string, string> parameters, int contentId = default(int))
 		{
 			int userId = _userProvider.GetUserId();
+		    string userName = _userProvider.GetUserName();
 			var action = _getAction(actionName);
-			var context = new ActionContext { ContentItemIds = ids, UserId = userId, Parameters = parameters ?? new Dictionary<string, string>(), ContentId = contentId };
+			var context = new ActionContext
+			{
+			    ContentItemIds = ids,
+                UserId = userId,
+                UserName = userName,
+                Parameters = parameters ?? new Dictionary<string, string>(),
+                ContentId = contentId
+			};
 			action.Process(context);
 		}
 

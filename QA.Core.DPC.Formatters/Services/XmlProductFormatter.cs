@@ -7,6 +7,8 @@ using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Configuration;
 using QA.Core.DPC.Formatters.Configuration;
+using QA.Core.DPC.Loader.Services;
+using System.Xml.XPath;
 
 namespace QA.Core.DPC.Formatters.Services
 {
@@ -15,13 +17,15 @@ namespace QA.Core.DPC.Formatters.Services
 		private readonly IXmlProductService _xmlProductService;
 		private readonly IContentDefinitionService _contentDefinitionService;
 	    private readonly ISettingsService _settingsService;
+        private readonly IProductContentResolver _productContentResolver;
 
-        public XmlProductFormatter(IXmlProductService xmlProductService, IContentDefinitionService contentDefinitionService, ISettingsService settingsService)
+        public XmlProductFormatter(IXmlProductService xmlProductService, IContentDefinitionService contentDefinitionService, ISettingsService settingsService, IProductContentResolver productContentResolver)
 		{
 			_xmlProductService = xmlProductService;
 			_contentDefinitionService = contentDefinitionService;
 		    _settingsService = settingsService;
-		}
+            _productContentResolver = productContentResolver;
+        }
 
 		public Task<Article> Read(Stream stream)
 		{
@@ -35,11 +39,26 @@ namespace QA.Core.DPC.Formatters.Services
 		    string version = (string)context?.Request.RequestContext?.RouteData?.Values["version"];
 
             var productXml = XDocument.Load(stream);
-            var definition = (slug == null && version == null) ?
-		        _contentDefinitionService.GetDefinitionForContent(0, int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCTS_CONTENT_ID))) :
-		        _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+            Content definition = null;
+
+            if (slug == null && version == null)
+            {
+                var type = GetTypeName(productXml);
+                var contentId = _productContentResolver.GetContentIdByType(type);
+                definition = _contentDefinitionService.GetDefinitionForContent(0, contentId);
+            }
+            else
+            {
+                definition = _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+            }
+
 			return ReadProduct(productXml, definition);
 		}
+
+        private string GetTypeName(XDocument productXml)
+        {
+            return productXml.XPathSelectElement("ProductInfo/Products/Product/Type")?.Value;
+        }
 
 		public Article ReadProduct(XDocument productXml, Content definition)
 		{

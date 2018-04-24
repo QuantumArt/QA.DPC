@@ -318,6 +318,7 @@
     <Compile Include="Services\IContentService.cs" />
     <Compile Include="Services\IdentityUserProvider.cs" />
     <Compile Include="Services\IFieldService.cs" />
+    <Compile Include="Services\IProductContentResolver.cs" />
     <Compile Include="Services\IProductPdfTemplateService.cs" />
     <Compile Include="Services\IQPService.cs" />
     <Compile Include="Services\IReadOnlyArticleService.cs" />
@@ -325,6 +326,7 @@
     <Compile Include="Services\ITransaction.cs" />
     <Compile Include="Services\LocalizationSettingsService.cs" />
     <Compile Include="Services\NotesFromContentService.cs" />
+    <Compile Include="Services\ProductContentResolver.cs" />
     <Compile Include="Services\ProductLocalizationService.cs" />
     <Compile Include="Services\ProductPdfTemplateService.cs" />
     <Compile Include="CacheTags.cs" />

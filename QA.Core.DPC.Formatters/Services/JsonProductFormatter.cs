@@ -5,6 +5,10 @@ using QA.Core.Models.Entities;
 using QA.Core.DPC.Loader;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.DPC.Formatters.Configuration;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using QA.Core.DPC.Loader.Services;
+using QA.Core.Models.Configuration;
 
 namespace QA.Core.DPC.Formatters.Services
 {
@@ -13,13 +17,16 @@ namespace QA.Core.DPC.Formatters.Services
 		private readonly IJsonProductService _jsonProductService;
 		private readonly IContentDefinitionService _contentDefinitionService;
 	    private readonly ISettingsService _settingsService;
+        private readonly IProductContentResolver _productContentResolver;
 
-		public JsonProductFormatter(IJsonProductService jsonProductService, IContentDefinitionService contentDefinitionService, ISettingsService settingsService)
+
+        public JsonProductFormatter(IJsonProductService jsonProductService, IContentDefinitionService contentDefinitionService, ISettingsService settingsService, IProductContentResolver productContentResolver)
 		{
 			_jsonProductService = jsonProductService;
 			_contentDefinitionService = contentDefinitionService;
 		    _settingsService = settingsService;
-		}
+            _productContentResolver = productContentResolver;
+        }
 
 		public async Task<Article> Read(Stream stream)
 		{
@@ -32,15 +39,30 @@ namespace QA.Core.DPC.Formatters.Services
 				string slug = (string)context?.Request.RequestContext?.RouteData?.Values["slug"];
 				string version = (string)context?.Request.RequestContext?.RouteData?.Values["version"];
 
-				var definition = (slug == null && version == null) ? 
-                    _contentDefinitionService.GetDefinitionForContent(0, int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCTS_CONTENT_ID))) :
-                    _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+                Content definition = null;
 
-				return _jsonProductService.DeserializeProduct(line, definition);
+                if (slug == null && version == null)
+                {
+                    var type = GetTypeName(line);
+                    var contentId = _productContentResolver.GetContentIdByType(type);
+                    definition = _contentDefinitionService.GetDefinitionForContent(0, contentId);
+                }
+                else
+                {
+                    definition = _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+                }
+
+                return _jsonProductService.DeserializeProduct(line, definition);
 			}
 		}
 
-		public async Task Write(Stream stream, Article product)
+        private string GetTypeName(string product)
+        {
+            var json = JsonConvert.DeserializeObject<JObject>(product);
+            return json.SelectToken("product.Type")?.Value<string>();
+        }
+
+        public async Task Write(Stream stream, Article product)
 		{
 			var articleFilter = (IArticleFilter)HttpContext.Current.Items["ArticleFilter"];
 			bool includeRegionTags = (bool)HttpContext.Current.Items["includeRegionTags"];
