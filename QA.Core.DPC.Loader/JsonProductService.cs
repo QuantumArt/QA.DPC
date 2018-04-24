@@ -19,6 +19,7 @@ using Content = QA.Core.Models.Configuration.Content;
 using Field = QA.Core.Models.Configuration.Field;
 using FieldService = Quantumart.QP8.BLL.Services.API.FieldService;
 using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
+using System.Text.RegularExpressions;
 
 namespace QA.Core.DPC.Loader
 {
@@ -118,14 +119,23 @@ namespace QA.Core.DPC.Loader
             public List<Tuple<Content, Field>> IgnoredFields = new List<Tuple<Content, Field>>();
         }
 
+        private static Regex RefRegex = new Regex(@"(""\$ref"":\s?""#.*)/items/0(.*"")", RegexOptions.Compiled);
+
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
         public string GetSchemaString(Content definition, bool prettyPrint = true)
         {
-            return JsonConvert.SerializeObject(GetSchema(definition), new JsonSerializerSettings
+            string schema = JsonConvert.SerializeObject(GetSchema(definition), new JsonSerializerSettings
             {
                 Formatting = prettyPrint ? Formatting.Indented : Formatting.None,
             });
+
+            while (RefRegex.IsMatch(schema))
+            {
+                schema = RefRegex.Replace(schema, m => m.Groups[1].Value + "/items" + m.Groups[2].Value);
+            }
+
+            return schema;
         }
 
         /// <exception cref="NotSupportedException" />
