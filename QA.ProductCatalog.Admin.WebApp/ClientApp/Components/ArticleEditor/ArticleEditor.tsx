@@ -11,7 +11,9 @@ type Props = {
 export class ArticleEditor extends Component<Props> {
   render() {
     const { contentSchema, article } = this.props;
-    return <div>{contentSchema.Fields.map(f => this.renderField(f, article))}</div>;
+    const fields = Object.values(contentSchema.Fields);
+
+    return <div>{fields.map(f => this.renderField(f, article))}</div>;
   }
 
   renderField(fieldSchema, article) {

@@ -3,7 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { observable } from "mobx";
 import { ArticleEditor } from "../../ClientApp/Components/ArticleEditor/ArticleEditor";
-import { productDefinitionSchema } from "../../ClientApp/Editors/MtsEquipment/ProductDefinition";
+import { productDefinitionSchema } from "../../ClientApp/Editors/MtsFixTariff/ProductDefinition";
 
 (async () => {
   const element = document.getElementById("editor");
@@ -12,13 +12,15 @@ import { productDefinitionSchema } from "../../ClientApp/Editors/MtsEquipment/Pr
   const query = document.location.search;
 
   const response = await fetch(
-    `${rootUrl}/ProductEditor/GetProduct${query}&productTypeId=503&id=${articleId}`
+    `${rootUrl}/ProductEditor/GetProduct${query}&articleId=${articleId}`
   );
   if (response.ok) {
-    const article = observable(await response.json());
+    const article = await response.json();
+
+    console.log(article);
 
     ReactDOM.render(
-      <ArticleEditor article={article} contentSchema={productDefinitionSchema} />,
+      <ArticleEditor article={observable(article)} contentSchema={productDefinitionSchema} />,
       element
     );
   } else {
