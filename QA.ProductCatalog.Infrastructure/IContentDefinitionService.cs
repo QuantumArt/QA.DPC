@@ -8,6 +8,8 @@ namespace QA.ProductCatalog.Infrastructure
 
 		Content[] GetDefinitions(bool isLive = false);
 
+        Content GetDefinitionById(int productDefinitionId, bool isLive = false);
+
         string GetControlDefinition(int contentId, int productTypeId);
 
 		ServiceDefinition GetServiceDefinition(string slug, string version, bool clearExtensions = false);

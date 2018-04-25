@@ -57,12 +57,16 @@ namespace QA.Core.DPC.Loader
 			_articleService = articleService;
 			_connectionString = connectionProvider.GetConnection(); 
 		}
-		#endregion
+        #endregion
 
-		#region IContentDefinitionService
-		
+        #region IContentDefinitionService
 
-		public Content GetDefinitionForContent(int productTypeId, int contentId, bool isLive = false)
+        public Content GetDefinitionById(int productDefinitionId, bool isLive = false)
+        {
+            return (Content)XamlConfigurationParser.CreateFrom(GetDefinitionXml(productDefinitionId, isLive));
+        }
+
+        public Content GetDefinitionForContent(int productTypeId, int contentId, bool isLive = false)
 		{
 			return (Content)XamlConfigurationParser.CreateFrom(GetDefinitionXml(productTypeId, contentId, isLive));
 		}
