@@ -76,19 +76,36 @@ namespace QA.ProductCatalog.WebApi.App_Start
 
                 if (userId.HasValue)
                 {
-                    identity = new Identity(customerCode, userId.Value, true);
+                    var userName = GetUserName(userId.Value);
+                    identity = new Identity(customerCode, userId.Value, userName, true);
                 }
                 else
                 {
-                    identity = new Identity(customerCode, 0, false);
+                    identity = new Identity(customerCode);
                 }
             }
             else
             {
-                identity = new Identity(customerCode, GetDefaultUserId(), true);
+                var defaultUserId = GetDefaultUserId();
+                var defaultUserName = GetUserName(defaultUserId);
+                identity = new Identity(customerCode, defaultUserId, defaultUserName, true);
             }
 
             _identityProvider.Identity = identity;
+        }
+
+        private string GetUserName(int userId)
+        {
+            var connection = _connectionProvider.GetConnection();
+            var dbConnector = new DBConnector(connection);
+
+            var sqlCommand = new SqlCommand();
+
+            sqlCommand.CommandText = " select first_name + ' ' + last_name as name from users where [user_id] = @id";
+            sqlCommand.Parameters.AddWithValue("@id", userId);
+
+            var dt = dbConnector.GetRealData(sqlCommand);
+            return dt.Rows.Count > 0 ? (string)dt.Rows[0]["name"] : String.Empty;
         }
 
         private bool UseAuthorization()
