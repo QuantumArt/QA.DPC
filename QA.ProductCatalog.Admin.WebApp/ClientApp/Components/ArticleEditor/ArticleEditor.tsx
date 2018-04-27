@@ -5,15 +5,27 @@ import { Input, Checkbox } from "../FormControls/FormControls";
 type Props = {
   article: any;
   contentSchema: any;
+  contentPaths: string[];
 };
 
 @observer
 export class ArticleEditor extends Component<Props> {
   render() {
     const { contentSchema, article } = this.props;
-    const fields = Object.values(contentSchema.Fields);
+    const fields: any[] = Object.values(contentSchema.Fields);
 
-    return <div>{fields.map(f => this.renderField(f, article))}</div>;
+    return (
+      <div>
+        {fields.map(f => (
+          <div key={f.FieldId}>
+            <label>
+              {f.FieldName}:
+              {this.renderField(f, article)}
+            </label>
+          </div>
+        ))}
+      </div>
+    );
   }
 
   renderField(fieldSchema, article) {

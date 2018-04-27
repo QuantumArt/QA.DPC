@@ -3,7 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { observable } from "mobx";
 import { ArticleEditor } from "../../ClientApp/Components/ArticleEditor/ArticleEditor";
-import { productDefinitionSchema } from "../../ClientApp/Editors/MtsFixTariff/ProductDefinition";
+import { productDefinitionSchema as schema } from "../../ClientApp/Editors/MtsFixTariff/ProductDefinition";
 
 (async () => {
   const element = document.getElementById("editor");
@@ -20,7 +20,14 @@ import { productDefinitionSchema } from "../../ClientApp/Editors/MtsFixTariff/Pr
     console.log(article);
 
     ReactDOM.render(
-      <ArticleEditor article={observable(article)} contentSchema={productDefinitionSchema} />,
+      <ArticleEditor
+        article={observable(article)}
+        contentSchema={schema}
+        contentPaths={schema.include(p => [
+          p.MarketingProduct.include(m => [m.Modifiers]),
+          p.Modifiers
+        ])}
+      />,
       element
     );
   } else {

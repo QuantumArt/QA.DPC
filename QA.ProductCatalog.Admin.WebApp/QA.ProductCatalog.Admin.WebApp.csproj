@@ -545,7 +545,7 @@
     <Content Include="Views\Tarantool\Index.cshtml" />
     <Content Include="Views\ProductEditor\TypeScriptSchema.cshtml" />
     <Content Include="tsconfig.json" />
-    <Content Include="Views\ProductEditor\MtsEquipment.cshtml" />
+    <None Include="Views\ProductEditor\MtsFixTariff.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Data\controls\480.xaml">
@@ -673,7 +673,7 @@
     <Folder Include="ClientApp\Utils\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Views\ProductEditor\MtsEquipment.tsx" />
+    <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff.tsx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
