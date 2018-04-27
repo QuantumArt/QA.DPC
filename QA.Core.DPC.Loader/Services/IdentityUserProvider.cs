@@ -20,7 +20,7 @@ namespace QA.Core.ProductCatalog.Actions.Services
 
         public string GetUserName()
         {
-            throw new NotImplementedException();
+            return _identityProvider.Identity.Name;
         }
     }
 }

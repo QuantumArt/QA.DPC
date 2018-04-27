@@ -23,7 +23,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
             var subroutes = ((IHttpRouteData[])httpRequest.RequestContext.RouteData.Values["MS_SubRoutes"]).FirstOrDefault();
             var customerCode = GetRoute(subroutes, "customerCode");
 
-            _identityProvider.Identity = new Identity(customerCode, GetDefaultUserId(), false);
+            _identityProvider.Identity = new Identity(customerCode, GetDefaultUserId());
         }
 
         protected string GetRoute(IHttpRouteData subroutes, string key)
