@@ -76,6 +76,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 articleIdsToCheckRelationsByContentId = Helpers.GetContentIds(productIds, _provider.GetConnection());
             }
 
+            productIds = Helpers.ExceptArchivedProducts(context.ContentId,productIds, _articleService);
+
             if (productIds.Length == 0)
                 throw new Exception("Не найдено ни одного продукта");
 
