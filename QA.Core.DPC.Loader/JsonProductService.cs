@@ -98,6 +98,11 @@ namespace QA.Core.DPC.Loader
         private class SchemaContext
         {
             /// <summary>
+            /// Исключать ли из схемы виртуальные поля
+            /// </summary>
+            public bool ExcludeVirtualFields;
+
+            /// <summary>
             /// Набор контентов, которые повторяются при создании схемы
             /// </summary>
             public HashSet<Content> RepeatedContents = new HashSet<Content>();
@@ -121,38 +126,58 @@ namespace QA.Core.DPC.Loader
 
         private static Regex RefRegex = new Regex(@"(""\$ref"":\s?""#.*)/items/0(.*"")", RegexOptions.Compiled);
 
+        /// <remarks>
+        /// <see cref="JSchema"/> не до конца совместима с RFC 6901: JSON Pointer.
+        /// Для ссылок на массивы генерируется JSON Pointer вида:
+        /// <c>{ "$ref": "#/definitions/MyDefinition/items/0"}</c>, а должен —
+        /// <c>{ "$ref": "#/definitions/MyDefinition/items"}</c>.
+        /// Но корректные ссылки <see cref="JSchema.Parse(string)"/> не сможет потом распарсить.
+        /// </remarks>
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
-        public string GetSchemaString(Content definition, bool prettyPrint = true)
+        public string GetEditorJsonSchemaString(Content definition)
         {
-            string schema = JsonConvert.SerializeObject(GetSchema(definition), new JsonSerializerSettings
-            {
-                Formatting = prettyPrint ? Formatting.Indented : Formatting.None,
-            });
+            JSchema schema = GetSchema(
+                definition,
+                forList: false,
+                includeRegionTags: false,
+                excludeVirtualFields: true);
 
-            while (RefRegex.IsMatch(schema))
+            string schemaJson = JsonConvert.SerializeObject(schema);
+            
+            while (RefRegex.IsMatch(schemaJson))
             {
-                schema = RefRegex.Replace(schema, m => m.Groups[1].Value + "/items" + m.Groups[2].Value);
+                schemaJson = RefRegex.Replace(schemaJson, m => m.Groups[1].Value + "/items" + m.Groups[2].Value);
             }
 
-            return schema;
+            return schemaJson;
         }
 
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
         public JSchema GetSchema(Content definition, bool forList = false, bool includeRegionTags = false)
         {
+            return GetSchema(definition, forList, includeRegionTags, excludeVirtualFields: false);
+        }
+
+        /// <exception cref="NotSupportedException" />
+        /// <exception cref="InvalidOperationException" />
+        private JSchema GetSchema(Content definition, bool forList, bool includeRegionTags, bool excludeVirtualFields)
+        {
             _contentService.LoadStructureCache();
             _fieldService.LoadStructureCache();
 
-            var context = new SchemaContext();
+            var context = new SchemaContext
+            {
+                ExcludeVirtualFields = excludeVirtualFields
+            };
 
             FillVirtualFieldsInfo(definition, context);
 
             JSchema rootSchema = GetSchemaRecursive(definition, context, forList);
 
             FillSchemaDefinitions(rootSchema, context);
-            
+
             if (includeRegionTags)
             {
                 JSchema schemaWithRegionTags = new JSchema { Type = JSchemaType.Object };
@@ -389,8 +414,11 @@ namespace QA.Core.DPC.Loader
 
                 if (field is BaseVirtualField baseVirtualField)
                 {
-                    contentSchema.Properties[field.FieldName] = GetVirtualFieldSchema(
-                        baseVirtualField, definition, context);
+                    if (!context.ExcludeVirtualFields)
+                    {
+                        contentSchema.Properties[field.FieldName] = GetVirtualFieldSchema(
+                            baseVirtualField, definition, context);
+                    }
                 }
                 else if (!context.IgnoredFields.Contains(Tuple.Create(definition, field)))
                 {

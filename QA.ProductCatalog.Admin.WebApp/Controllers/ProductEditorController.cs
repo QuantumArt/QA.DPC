@@ -59,8 +59,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             Content content = _contentDefinitionService.GetDefinitionById(productDefinitionId, isLive);
 
-            string jsonSchema = _jsonProductService.GetSchemaString(content, false);
-
+            string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(content);
+            
             string editorSchema = _editorSchemaFormatter.GetSchema(content, false);
 
             return View(new ProductEditorSchemaModel
@@ -91,7 +91,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             Content partialContent = _editorSchemaFormatter.GetPartialContent(content.DeepCopy(), contentPaths);
 
-            string jsonSchema = _jsonProductService.GetSchemaString(partialContent, false);
+            string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(partialContent);
 
             return Content(jsonSchema, "application/json");
         }
