@@ -1,4 +1,5 @@
-﻿using System.Security.Principal;
+﻿using System;
+using System.Security.Principal;
 
 namespace QA.Core.DPC.QP.Models
 {
@@ -10,14 +11,15 @@ namespace QA.Core.DPC.QP.Models
         public string CustomerCode { get; private set; }
         public int UserId { get; private set; }
 
-        public Identity(int userId = 0, bool isAuthenticated = false)
+        public Identity(int userId = 0, string userName = "", bool isAuthenticated = false)
         {
             UserId = userId;
-            IsAuthenticated = isAuthenticated;            
+            Name = userName;
+            IsAuthenticated = isAuthenticated;
         }
 
-        public Identity(string customerCode, int userId = 0, bool isAuthenticated = false)
-            : this(userId, isAuthenticated)
+        public Identity(string customerCode, int userId = 0, string userName = "", bool isAuthenticated = false)
+            : this(userId, userName, isAuthenticated)
         {
             CustomerCode = customerCode;
         }       

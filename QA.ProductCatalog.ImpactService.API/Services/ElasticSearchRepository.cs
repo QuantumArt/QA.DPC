@@ -44,9 +44,14 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return query;
         }
 
-        private string GetRegionQuery(string regionAlias)
+        private string GetRegionFromRoamingQuery(string regionAlias)
         {
             return $@"{{ _source: [""Region.Id""], ""query"" : {{ ""term"" : {{ ""Region.Alias"" : ""{regionAlias}"" }}}}}}";
+        }
+
+        private string GetRegionQuery(string regionAlias)
+        {
+            return $@"{{ _source: [""Id""], ""query"" : {{ ""term"" : {{ ""Alias"" : ""{regionAlias}"" }}}}}}";
         }
 
         private string GetMrQuery(string[] regionAliases)
@@ -223,10 +228,10 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             if (options.HomeRegion == null) return 0;
 
             var newOptions = options.Clone();
-            newOptions.TypeName = "RoamingRegion";
+            newOptions.TypeName = "Region";
             var regionResult = await GetContent(GetRegionQuery(newOptions.HomeRegion), newOptions);
             var homeRegionIdToken = JObject.Parse(regionResult)
-                .SelectTokens(_sourceQuery)?.FirstOrDefault()?.SelectToken("Region.Id");
+                .SelectTokens(_sourceQuery)?.FirstOrDefault()?.SelectToken("Id");
             return homeRegionIdToken != null ? (int) homeRegionIdToken : 0;
         }
 
