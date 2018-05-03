@@ -111,7 +111,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             IArticleFilter filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
-            Dictionary<string, object> data = _jsonProductService.ConvertArticle(article, filter);
+            Dictionary<string, object> data = _jsonProductService
+                .ConvertArticle(article, filter, includeVirtualFields: false, includeNulls: true);
 
             string json = JsonConvert.SerializeObject(data);
 

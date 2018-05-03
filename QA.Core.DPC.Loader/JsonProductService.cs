@@ -20,6 +20,7 @@ using Field = QA.Core.Models.Configuration.Field;
 using FieldService = Quantumart.QP8.BLL.Services.API.FieldService;
 using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace QA.Core.DPC.Loader
 {
@@ -75,10 +76,12 @@ namespace QA.Core.DPC.Loader
 
         public string SerializeProduct(Article article, IArticleFilter filter, bool includeRegionTags = false)
         {
-            string productJson = JsonConvert.SerializeObject(ConvertArticle(article, filter), Formatting.Indented);
-            var regionField = article.GetField("Regions") as MultiArticleField;
+            Dictionary<string, object> product = ConvertArticle(
+                article, filter, includeVirtualFields: true, includeNulls: false);
 
-            if (includeRegionTags && regionField != null)
+            string productJson = JsonConvert.SerializeObject(product, Formatting.Indented);
+            
+            if (includeRegionTags && article.GetField("Regions") is MultiArticleField regionField)
             {
                 int[] regionIds = regionField.Items.Keys.ToArray();
 
@@ -814,28 +817,86 @@ namespace QA.Core.DPC.Loader
             public string AbsoluteUrl { get; set; }
         }
 
-        public Dictionary<string, object> ConvertArticle(Article article, IArticleFilter filter)
+        private class ConvertArticleContext
         {
-            if (article == null || !article.Visible || article.Archived || !filter.Matches(article))
+            public IArticleFilter Filter;
+
+            public bool IncludeNulls;
+
+            public bool IncludeVirtualFields;
+
+            public bool ShouldIncludeField(ArticleField field)
+            {
+                if (field is VirtualArticleField)
+                {
+                    return IncludeVirtualFields;
+                }
+                if (field is VirtualMultiArticleField)
+                {
+                    return IncludeVirtualFields;
+                }
+                return true;
+            }
+
+            public bool ShouldIncludeValue(object value)
+            {
+                if (IncludeNulls)
+                {
+                    return true;
+                }
+                if (value == null)
+                {
+                    return false;
+                }
+                if (value is string str)
+                {
+                    return !String.IsNullOrEmpty(str);
+                }
+                if (value is ICollection collection)
+                {
+                    return collection.Count > 0;
+                }
+
+                return true;
+            }
+        }
+
+        public Dictionary<string, object> ConvertArticle(
+            Article article, IArticleFilter filter, bool includeVirtualFields, bool includeNulls)
+        {
+            return ConvertArticle(article, new ConvertArticleContext
+            {
+                Filter = filter,
+                IncludeNulls = includeNulls,
+                IncludeVirtualFields = includeVirtualFields,
+            });
+        }
+
+        private Dictionary<string, object> ConvertArticle(Article article, ConvertArticleContext context)
+        {
+            if (article == null || !article.Visible || article.Archived || !context.Filter.Matches(article))
             {
                 return null;
             }
 
             var dict = new Dictionary<string, object> { { IdProp, article.Id } };
-
+            
             foreach (ArticleField field in article.Fields.Values)
             {
-                if (field is ExtensionArticleField extensionArticleField)
+                if (context.ShouldIncludeField(field))
                 {
-                    MergeExtensionFields(dict, extensionArticleField, filter);
-                }
-                else
-                {
-                    object value = ConvertField(field, filter);
-
-                    if (value != null && !(value is string && string.IsNullOrEmpty((string)value)))
+                    if (field is ExtensionArticleField extensionArticleField)
                     {
-                        dict[field.FieldName] = value;
+                        MergeExtensionFields(dict, extensionArticleField, context);
+                    }
+                    else
+                    {
+                        object value = ConvertField(field, context);
+
+                        if (context.ShouldIncludeValue(value))
+                        {
+                            dict[field.FieldName] = value;
+                        }
                     }
                 }
             }
@@ -844,10 +905,14 @@ namespace QA.Core.DPC.Loader
         }
 
         private void MergeExtensionFields(
-            Dictionary<string, object> dict, ExtensionArticleField field, IArticleFilter filter)
+            Dictionary<string, object> dict, ExtensionArticleField field, ConvertArticleContext context)
         {
             if (field.Item == null)
             {
+                if (context.IncludeNulls)
+                {
+                    dict[field.FieldName] = null;
+                }
                 return;
             }
 
@@ -855,17 +920,20 @@ namespace QA.Core.DPC.Loader
 
             foreach (ArticleField childField in field.Item.Fields.Values)
             {
-                object value = ConvertField(childField, filter);
-
-                if (value != null && !(value is string && string.IsNullOrEmpty((string)value)))
+                if (context.ShouldIncludeField(childField))
                 {
-                    dict[childField.FieldName] = value;
+                    object value = ConvertField(childField, context);
+
+                    if (context.ShouldIncludeValue(value))
+                    {
+                        dict[field.FieldName] = value;
+                    }
                 }
             }
         }
 
         /// <exception cref="NotSupportedException" />
-        private object ConvertField(ArticleField field, IArticleFilter filter)
+        private object ConvertField(ArticleField field, ConvertArticleContext context)
         {
             if (field is PlainArticleField plainArticleField)
             {
@@ -873,26 +941,25 @@ namespace QA.Core.DPC.Loader
             }
             if (field is SingleArticleField singleArticleField)
             {
-                return ConvertArticle(singleArticleField.GetItem(filter), filter);
+                return ConvertArticle(singleArticleField.GetItem(context.Filter), context);
             }
             if (field is MultiArticleField multiArticleField)
             {
-                var articles = multiArticleField
-                    .GetArticles(filter)
-                    .Select(x => ConvertArticle(x, filter))
+                return multiArticleField
+                    .GetArticles(context.Filter)
+                    .Select(f => ConvertArticle(f, context))
                     .ToArray();
-
-                return articles.Length == 0 ? null : articles;
             }
             if (field is VirtualArticleField virtualArticleField)
             {
                 return virtualArticleField.Fields
-                    .Select(x => new { fieldName = x.FieldName, value = ConvertField(x, filter) })
-                    .ToDictionary(x => x.fieldName, x => x.value);
+                    .ToDictionary(f => f.FieldName, f => ConvertField(f, context));
             }
             if (field is VirtualMultiArticleField virtualMultiArticleField)
             {
-                return virtualMultiArticleField.VirtualArticles.Select(x => ConvertField(x, filter));
+                return virtualMultiArticleField.VirtualArticles
+                    .Select(f => ConvertField(f, context))
+                    .ToArray();
             }
 
             throw new NotSupportedException($"Поле типа {field.GetType()} не поддерживается");
