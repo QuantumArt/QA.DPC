@@ -52,13 +52,7 @@ namespace QA.Core.ProductCatalog.Actions
 		{
 			return articleService.GetFieldValues(allIds, contentId, "Id").Select(int.Parse).ToArray();
 		}
-
-        public static int[] ExceptArchivedProducts(int contentId, int[] ids, IArticleService articleService)
-        {
-            var products = articleService.List(contentId, ids).Where(w => w.Archived).Select(s => s.Id);
-            return ids.Except(products).ToArray();
-        }
-
+        
         public static int[] GetAllProductIds(int siteId, int productsContentId, string connectionString)
 		{
 			var dbConnector = new DBConnector(connectionString);
