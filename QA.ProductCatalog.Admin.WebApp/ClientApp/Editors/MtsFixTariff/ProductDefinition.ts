@@ -50,63 +50,6 @@ export interface ProductDefinition {
      */
     Priority?: number;
     /**
-     * Маркетинговый продукт
-     */
-    MarketingProduct?: {
-      Id: number;
-      Group?: ProductParameterGroup;
-      Parent?: MarketingProductParameter1;
-      BaseParameter?: BaseParameter;
-      Zone?: TariffZone;
-      Direction?: Direction;
-      /**
-       * Модификаторы базового параметра
-       */
-      BaseParameterModifiers?: BaseParameterModifier[];
-      /**
-       * Модификаторы
-       */
-      Modifiers?: ParameterModifier[];
-      Unit?: Unit;
-      /**
-       * Группа продуктов
-       */
-      ProductGroup?: {
-        Id: number;
-        /**
-         * Название
-         */
-        Title?: string;
-        /**
-         * Псевдоним
-         */
-        Alias?: string;
-        SortOrder?: number;
-        Description?: string;
-        ScreenName?: string;
-        OldSiteId?: number;
-        OldCorpSiteId?: number;
-        Type?: string;
-      };
-      /**
-       * Название
-       */
-      Title?: string;
-      /**
-       * Порядок
-       */
-      SortOrder?: number;
-      /**
-       * Числовое значение
-       */
-      NumValue?: number;
-      /**
-       * Текстовое значение
-       */
-      Value?: string;
-      Description?: string;
-    }[];
-    /**
      * Преимущества
      */
     Advantages?: Advantage[];
@@ -362,13 +305,7 @@ export interface ProductDefinition {
      */
     Parameters?: {
       Id: number;
-      Group?: ProductParameterGroup1;
-      /**
-       * Родительский параметр
-       */
-      Parent?: {
-        Id: number;
-      };
+      Group?: ProductParameterGroup;
       BaseParameter?: BaseParameter;
       Zone?: TariffZone;
       Direction?: Direction;
@@ -381,6 +318,7 @@ export interface ProductDefinition {
        */
       Modifiers?: ParameterModifier[];
       Unit?: Unit;
+      Choice?: ParameterChoice;
       /**
        * Название
        */
@@ -426,9 +364,7 @@ export interface ProductDefinition {
            * Название
            */
           Title?: string;
-          Group?: ProductParameterGroup;
-          Parameter?: ProductParameter;
-          Parent?: ProductParameter1;
+          Group?: ProductParameterGroup1;
           BaseParameter?: BaseParameter;
           Zone?: TariffZone;
           Direction?: Direction;
@@ -460,11 +396,6 @@ export interface ProductDefinition {
           ProductGroup?: {
             Id: number;
           };
-          MatrixParent?: LinkParameter;
-          /**
-           * Множественный выбор
-           */
-          MultipleChoice?: MarketingProductParameter[];
           Choice?: ParameterChoice;
         }[];
         /**
@@ -543,14 +474,7 @@ export interface ProductDefinition {
           Direction?: Direction;
           Zone?: TariffZone;
           BaseParameter?: BaseParameter;
-          Parent?: ProductParameter;
-          Parameter?: ProductParameter;
-          Group?: ProductParameterGroup1;
-          MatrixParent?: LinkParameter;
-          /**
-           * Множественный выбор
-           */
-          MultipleChoice?: MarketingProductParameter[];
+          Group?: ProductParameterGroup;
           Choice?: ParameterChoice;
         }[];
         /**
@@ -731,33 +655,6 @@ export interface ProductDefinition {
           Zone?: TariffZone;
           BaseParameter?: BaseParameter;
           /**
-           * Родительский параметр матрицы связей
-           */
-          MatrixParent?: {
-            Id: number;
-            /**
-             * Название
-             */
-            Title?: string;
-            /**
-             * Порядок
-             */
-            SortOrder?: number;
-            /**
-             * Числовое значение
-             */
-            NumValue?: number;
-            /**
-             * Текстовое значение
-             */
-            Value?: string;
-            Description?: string;
-            OldSiteId?: number;
-            OldCorpSiteId?: number;
-            OldPointId?: number;
-            OldCorpPointId?: number;
-          };
-          /**
            * Группа параметров
            */
           Group?: {
@@ -790,45 +687,6 @@ export interface ProductDefinition {
              */
             TitleForIcin?: string;
           };
-          /**
-           * Родительский параметр тарифа
-           */
-          Parent?: {
-            Id: number;
-            /**
-             * Название
-             */
-            Title?: string;
-            /**
-             * Название для МГМН
-             */
-            TitleForIcin?: string;
-            /**
-             * Порядок
-             */
-            SortOrder?: number;
-            /**
-             * Числовое значение
-             */
-            NumValue?: number;
-            /**
-             * Текстовое значение
-             */
-            Value?: string;
-            Description?: string;
-            /**
-             * Изображение параметра
-             */
-            Image?: string;
-            OldSiteId?: number;
-            OldCorpSiteId?: number;
-            OldPointId?: number;
-            OldCorpPointId?: number;
-          };
-          /**
-           * Множественный выбор
-           */
-          MultipleChoice?: MarketingProductParameter[];
           Choice?: ParameterChoice;
           /**
            * Название
@@ -922,8 +780,17 @@ export interface ProductDefinition {
    */
   Parameters?: {
     Id: number;
-    Group?: ProductParameterGroup;
-    Parent?: ProductParameter1;
+    Group?: ProductParameterGroup1;
+    /**
+     * Родительский параметр
+     */
+    Parent?: {
+      Id: number;
+      /**
+       * Название
+       */
+      Title?: string;
+    };
     BaseParameter?: BaseParameter;
     Zone?: TariffZone;
     Direction?: Direction;
@@ -1022,12 +889,6 @@ export interface ProductDefinition {
    */
   FixConnectAction?: {
     Id: number;
-    /**
-     * Акция фиксированной связи
-     */
-    FixConnectAction?: {
-      Id: number;
-    };
     MarketingDevice?: MarketingProduct;
     /**
      * Матрица связей
@@ -1043,8 +904,6 @@ export interface ProductDefinition {
        */
       Parameters?: {
         Id: number;
-        Parameter?: ProductParameter;
-        Parent?: ProductParameter1;
         BaseParameter?: BaseParameter;
         Zone?: TariffZone;
         Direction?: Direction;
@@ -1074,27 +933,6 @@ export interface ProductDefinition {
          */
         Value?: string;
         Description?: string;
-        /**
-         * Родительский параметр матрицы связей
-         */
-        MatrixParent?: {
-          Id: number;
-          /**
-           * Порядок
-           */
-          SortOrder?: number;
-        };
-        /**
-         * Множественный выбор
-         */
-        MultipleChoice?: MarketingProductParameter1[];
-        /**
-         * Выбор
-         */
-        Choice?: {
-          Id: number;
-          Title?: string;
-        };
       }[];
       /**
        * Модификаторы
@@ -1121,150 +959,6 @@ interface ProductModifer {
    * Псевдоним
    */
   Alias?: string;
-}
-/**
- * Группа параметров
- */
-interface ProductParameterGroup {
-  Id: number;
-  /**
-   * Название
-   */
-  Title?: string;
-  /**
-   * Псевдоним
-   */
-  Alias?: string;
-  /**
-   * Порядок
-   */
-  SortOrder?: number;
-  /**
-   * Изображение
-   */
-  ImageSvg?: {
-    Name: string;
-    AbsoluteUrl: string;
-    FileSizeBytes: number;
-  };
-}
-/**
- * Родительский параметр
- */
-interface MarketingProductParameter1 {
-  Id: number;
-  /**
-   * Название
-   */
-  Title?: string;
-}
-/**
- * Базовый параметр
- */
-interface BaseParameter {
-  Id: number;
-  /**
-   * Название
-   */
-  Title?: string;
-  /**
-   * Псевдоним
-   */
-  Alias?: string;
-  AllowZone?: boolean;
-  AllowDirection?: boolean;
-}
-/**
- * Зона действия базового параметра
- */
-interface TariffZone {
-  Id: number;
-  /**
-   * Название
-   */
-  Title?: string;
-  /**
-   * Псевдоним
-   */
-  Alias?: string;
-}
-/**
- * Направление действия базового параметра
- */
-interface Direction {
-  Id: number;
-  /**
-   * Название
-   */
-  Title?: string;
-  /**
-   * Псевдоним
-   */
-  Alias?: string;
-}
-/**
- * Модификаторы базовых параметров продуктов
- */
-interface BaseParameterModifier {
-  Id: number;
-  /**
-   * Название
-   */
-  Title?: string;
-  /**
-   * Псевдоним
-   */
-  Alias?: string;
-  Type?: "Step" | "Package" | "Zone" | "Direction" | "Refining";
-}
-/**
- * Модификаторы параметров продуктов
- */
-interface ParameterModifier {
-  Id: number;
-  /**
-   * Название
-   */
-  Title?: string;
-  /**
-   * Псевдоним
-   */
-  Alias?: string;
-}
-/**
- * Единица измерения
- */
-interface Unit {
-  Id: number;
-  Alias?: string;
-  Title?: string;
-  Display?: string;
-  /**
-   * Размерность
-   */
-  QuotaUnit?:
-    | "mb"
-    | "gb"
-    | "kb"
-    | "tb"
-    | "min"
-    | "message"
-    | "rub"
-    | "sms"
-    | "mms"
-    | "mbit"
-    | "step";
-  /**
-   * Период
-   */
-  QuotaPeriod?:
-    | "daily"
-    | "weekly"
-    | "monthly"
-    | "hourly"
-    | "minutely"
-    | "every_second"
-    | "annually";
 }
 /**
  * Преимущества маркетинговых продуктов
@@ -1455,7 +1149,7 @@ interface MarketingProduct2 {
 /**
  * Группа параметров
  */
-interface ProductParameterGroup1 {
+interface ProductParameterGroup {
   Id: number;
   /**
    * Порядок
@@ -1480,6 +1174,123 @@ interface ProductParameterGroup1 {
   Type?: string;
 }
 /**
+ * Базовый параметр
+ */
+interface BaseParameter {
+  Id: number;
+  /**
+   * Название
+   */
+  Title?: string;
+  /**
+   * Псевдоним
+   */
+  Alias?: string;
+  AllowZone?: boolean;
+  AllowDirection?: boolean;
+}
+/**
+ * Зона действия базового параметра
+ */
+interface TariffZone {
+  Id: number;
+  /**
+   * Название
+   */
+  Title?: string;
+  /**
+   * Псевдоним
+   */
+  Alias?: string;
+}
+/**
+ * Направление действия базового параметра
+ */
+interface Direction {
+  Id: number;
+  /**
+   * Название
+   */
+  Title?: string;
+  /**
+   * Псевдоним
+   */
+  Alias?: string;
+}
+/**
+ * Модификаторы базовых параметров продуктов
+ */
+interface BaseParameterModifier {
+  Id: number;
+  /**
+   * Название
+   */
+  Title?: string;
+  /**
+   * Псевдоним
+   */
+  Alias?: string;
+  Type?: "Step" | "Package" | "Zone" | "Direction" | "Refining";
+}
+/**
+ * Модификаторы параметров продуктов
+ */
+interface ParameterModifier {
+  Id: number;
+  /**
+   * Название
+   */
+  Title?: string;
+  /**
+   * Псевдоним
+   */
+  Alias?: string;
+}
+/**
+ * Единица измерения
+ */
+interface Unit {
+  Id: number;
+  Alias?: string;
+  Title?: string;
+  Display?: string;
+  /**
+   * Размерность
+   */
+  QuotaUnit?:
+    | "mb"
+    | "gb"
+    | "kb"
+    | "tb"
+    | "min"
+    | "message"
+    | "rub"
+    | "sms"
+    | "mms"
+    | "mbit"
+    | "step";
+  /**
+   * Период
+   */
+  QuotaPeriod?:
+    | "daily"
+    | "weekly"
+    | "monthly"
+    | "hourly"
+    | "minutely"
+    | "every_second"
+    | "annually";
+}
+/**
+ * Выбор
+ */
+interface ParameterChoice {
+  Id: number;
+  Title?: string;
+  Alias?: string;
+  OldSiteId?: number;
+}
+/**
  * Модификаторы связей
  */
 interface LinkModifier {
@@ -1494,58 +1305,30 @@ interface LinkModifier {
   Alias?: string;
 }
 /**
- * Параметр тарифа
+ * Группа параметров
  */
-interface ProductParameter {
-  Id: number;
-}
-/**
- * Родительский параметр тарифа
- */
-interface ProductParameter1 {
+interface ProductParameterGroup1 {
   Id: number;
   /**
    * Название
    */
   Title?: string;
-}
-/**
- * Родительский параметр матрицы связей
- */
-interface LinkParameter {
-  Id: number;
-}
-/**
- * Параметры маркетинговых продуктов
- */
-interface MarketingProductParameter {
-  Id: number;
   /**
-   * Название
+   * Псевдоним
    */
-  Title?: string;
+  Alias?: string;
   /**
    * Порядок
    */
   SortOrder?: number;
   /**
-   * Числовое значение
+   * Изображение
    */
-  NumValue?: number;
-  /**
-   * Текстовое значение
-   */
-  Value?: string;
-  Description?: string;
-}
-/**
- * Выбор
- */
-interface ParameterChoice {
-  Id: number;
-  Title?: string;
-  Alias?: string;
-  OldSiteId?: number;
+  ImageSvg?: {
+    Name: string;
+    AbsoluteUrl: string;
+    FileSizeBytes: number;
+  };
 }
 /**
  * Регионы
@@ -1671,249 +1454,6 @@ export interface ProductDefinitionSchema {
             FieldOrder: number;
             IsRequired: false;
             FieldType: "Numeric";
-          };
-          MarketingProduct: {
-            Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "MarketingProductParameter";
-              ContentTitle: string;
-              ContentDescription: string;
-              Fields: {
-                Group: {
-                  Content: ProductParameterGroupSchema;
-                  FieldId: number;
-                  FieldName: "Group";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "O2MRelation";
-                };
-                Parent: {
-                  Content: MarketingProductParameter1Schema;
-                  FieldId: number;
-                  FieldName: "Parent";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "O2MRelation";
-                };
-                BaseParameter: {
-                  Content: BaseParameterSchema;
-                  FieldId: number;
-                  FieldName: "BaseParameter";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "O2MRelation";
-                };
-                Zone: {
-                  Content: TariffZoneSchema;
-                  FieldId: number;
-                  FieldName: "Zone";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "O2MRelation";
-                };
-                Direction: {
-                  Content: DirectionSchema;
-                  FieldId: number;
-                  FieldName: "Direction";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "O2MRelation";
-                };
-                BaseParameterModifiers: {
-                  Content: BaseParameterModifierSchema;
-                  FieldId: number;
-                  FieldName: "BaseParameterModifiers";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "M2MRelation";
-                };
-                Modifiers: {
-                  Content: ParameterModifierSchema;
-                  FieldId: number;
-                  FieldName: "Modifiers";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "M2MRelation";
-                };
-                Unit: {
-                  Content: UnitSchema;
-                  FieldId: number;
-                  FieldName: "Unit";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "O2MRelation";
-                };
-                ProductGroup: {
-                  Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "Group";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    Fields: {
-                      Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                      Alias: {
-                        FieldId: number;
-                        FieldName: "Alias";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                      SortOrder: {
-                        FieldId: number;
-                        FieldName: "SortOrder";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "Numeric";
-                      };
-                      Description: {
-                        FieldId: number;
-                        FieldName: "Description";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "Textbox";
-                      };
-                      ScreenName: {
-                        FieldId: number;
-                        FieldName: "ScreenName";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                      OldSiteId: {
-                        FieldId: number;
-                        FieldName: "OldSiteId";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "Numeric";
-                      };
-                      OldCorpSiteId: {
-                        FieldId: number;
-                        FieldName: "OldCorpSiteId";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "Numeric";
-                      };
-                      Type: {
-                        FieldId: number;
-                        FieldName: "Type";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                    };
-                  };
-                  FieldId: number;
-                  FieldName: "ProductGroup";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "O2MRelation";
-                };
-                Title: {
-                  FieldId: number;
-                  FieldName: "Title";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "String";
-                };
-                SortOrder: {
-                  FieldId: number;
-                  FieldName: "SortOrder";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "Numeric";
-                };
-                NumValue: {
-                  FieldId: number;
-                  FieldName: "NumValue";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "Numeric";
-                };
-                Value: {
-                  FieldId: number;
-                  FieldName: "Value";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "VisualEdit";
-                };
-                Description: {
-                  FieldId: number;
-                  FieldName: "Description";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "VisualEdit";
-                };
-              };
-              include: (
-                selector: (
-                  fields: ProductDefinitionSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["MarketingProduct"]["Content"]["Fields"]
-                ) => Selection[]
-              ) => string[];
-            };
-            FieldId: number;
-            FieldName: "MarketingProduct";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            IsRequired: false;
-            FieldType: "O2MRelation";
-            include: (
-              selector: (
-                fields: ProductDefinitionSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["MarketingProduct"]["Content"]["Fields"]
-              ) => Selection[]
-            ) => string[];
           };
           Advantages: {
             Content: AdvantageSchema;
@@ -2942,26 +2482,9 @@ export interface ProductDefinitionSchema {
               ContentDescription: string;
               Fields: {
                 Group: {
-                  Content: ProductParameterGroup1Schema;
+                  Content: ProductParameterGroupSchema;
                   FieldId: number;
                   FieldName: "Group";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "O2MRelation";
-                };
-                Parent: {
-                  Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "MarketingProductParameter";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    Fields: {};
-                  };
-                  FieldId: number;
-                  FieldName: "Parent";
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
@@ -3022,6 +2545,16 @@ export interface ProductDefinitionSchema {
                   Content: UnitSchema;
                   FieldId: number;
                   FieldName: "Unit";
+                  FieldTitle: string;
+                  FieldDescription: string;
+                  FieldOrder: number;
+                  IsRequired: false;
+                  FieldType: "O2MRelation";
+                };
+                Choice: {
+                  Content: ParameterChoiceSchema;
+                  FieldId: number;
+                  FieldName: "Choice";
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
@@ -3146,29 +2679,9 @@ export interface ProductDefinitionSchema {
                               FieldType: "String";
                             };
                             Group: {
-                              Content: ProductParameterGroupSchema;
+                              Content: ProductParameterGroup1Schema;
                               FieldId: number;
                               FieldName: "Group";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "O2MRelation";
-                            };
-                            Parameter: {
-                              Content: ProductParameterSchema;
-                              FieldId: number;
-                              FieldName: "Parameter";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "O2MRelation";
-                            };
-                            Parent: {
-                              Content: ProductParameter1Schema;
-                              FieldId: number;
-                              FieldName: "Parent";
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
@@ -3287,26 +2800,6 @@ export interface ProductDefinitionSchema {
                               FieldOrder: number;
                               IsRequired: false;
                               FieldType: "O2MRelation";
-                            };
-                            MatrixParent: {
-                              Content: LinkParameterSchema;
-                              FieldId: number;
-                              FieldName: "MatrixParent";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "O2MRelation";
-                            };
-                            MultipleChoice: {
-                              Content: MarketingProductParameterSchema;
-                              FieldId: number;
-                              FieldName: "MultipleChoice";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "M2MRelation";
                             };
                             Choice: {
                               Content: ParameterChoiceSchema;
@@ -3764,28 +3257,8 @@ export interface ProductDefinitionSchema {
                               IsRequired: false;
                               FieldType: "O2MRelation";
                             };
-                            Parent: {
-                              Content: ProductParameterSchema;
-                              FieldId: number;
-                              FieldName: "Parent";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "O2MRelation";
-                            };
-                            Parameter: {
-                              Content: ProductParameterSchema;
-                              FieldId: number;
-                              FieldName: "Parameter";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "O2MRelation";
-                            };
                             Group: {
-                              Content: ProductParameterGroup1Schema;
+                              Content: ProductParameterGroupSchema;
                               FieldId: number;
                               FieldName: "Group";
                               FieldTitle: string;
@@ -3793,26 +3266,6 @@ export interface ProductDefinitionSchema {
                               FieldOrder: number;
                               IsRequired: false;
                               FieldType: "O2MRelation";
-                            };
-                            MatrixParent: {
-                              Content: LinkParameterSchema;
-                              FieldId: number;
-                              FieldName: "MatrixParent";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "O2MRelation";
-                            };
-                            MultipleChoice: {
-                              Content: MarketingProductParameterSchema;
-                              FieldId: number;
-                              FieldName: "MultipleChoice";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "M2MRelation";
                             };
                             Choice: {
                               Content: ParameterChoiceSchema;
@@ -4470,105 +3923,6 @@ export interface ProductDefinitionSchema {
                               IsRequired: false;
                               FieldType: "O2MRelation";
                             };
-                            MatrixParent: {
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "LinkParameter";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  SortOrder: {
-                                    FieldId: number;
-                                    FieldName: "SortOrder";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  NumValue: {
-                                    FieldId: number;
-                                    FieldName: "NumValue";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  Value: {
-                                    FieldId: number;
-                                    FieldName: "Value";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "VisualEdit";
-                                  };
-                                  Description: {
-                                    FieldId: number;
-                                    FieldName: "Description";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "VisualEdit";
-                                  };
-                                  OldSiteId: {
-                                    FieldId: number;
-                                    FieldName: "OldSiteId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  OldCorpSiteId: {
-                                    FieldId: number;
-                                    FieldName: "OldCorpSiteId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  OldPointId: {
-                                    FieldId: number;
-                                    FieldName: "OldPointId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  OldCorpPointId: {
-                                    FieldId: number;
-                                    FieldName: "OldCorpPointId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                };
-                              };
-                              FieldId: number;
-                              FieldName: "MatrixParent";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "O2MRelation";
-                            };
                             Group: {
                               Content: {
                                 ContentId: number;
@@ -4658,133 +4012,6 @@ export interface ProductDefinitionSchema {
                               FieldOrder: number;
                               IsRequired: false;
                               FieldType: "O2MRelation";
-                            };
-                            Parent: {
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ProductParameter";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  TitleForIcin: {
-                                    FieldId: number;
-                                    FieldName: "TitleForIcin";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  SortOrder: {
-                                    FieldId: number;
-                                    FieldName: "SortOrder";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  NumValue: {
-                                    FieldId: number;
-                                    FieldName: "NumValue";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  Value: {
-                                    FieldId: number;
-                                    FieldName: "Value";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "VisualEdit";
-                                  };
-                                  Description: {
-                                    FieldId: number;
-                                    FieldName: "Description";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "VisualEdit";
-                                  };
-                                  Image: {
-                                    FieldId: number;
-                                    FieldName: "Image";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Image";
-                                  };
-                                  OldSiteId: {
-                                    FieldId: number;
-                                    FieldName: "OldSiteId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  OldCorpSiteId: {
-                                    FieldId: number;
-                                    FieldName: "OldCorpSiteId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  OldPointId: {
-                                    FieldId: number;
-                                    FieldName: "OldPointId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  OldCorpPointId: {
-                                    FieldId: number;
-                                    FieldName: "OldCorpPointId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                };
-                              };
-                              FieldId: number;
-                              FieldName: "Parent";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "O2MRelation";
-                            };
-                            MultipleChoice: {
-                              Content: MarketingProductParameterSchema;
-                              FieldId: number;
-                              FieldName: "MultipleChoice";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "M2MRelation";
                             };
                             Choice: {
                               Content: ParameterChoiceSchema;
@@ -5112,7 +4339,7 @@ export interface ProductDefinitionSchema {
         ContentDescription: string;
         Fields: {
           Group: {
-            Content: ProductParameterGroupSchema;
+            Content: ProductParameterGroup1Schema;
             FieldId: number;
             FieldName: "Group";
             FieldTitle: string;
@@ -5122,7 +4349,24 @@ export interface ProductDefinitionSchema {
             FieldType: "O2MRelation";
           };
           Parent: {
-            Content: ProductParameter1Schema;
+            Content: {
+              ContentId: number;
+              ContentPath: string;
+              ContentName: "ProductParameter";
+              ContentTitle: string;
+              ContentDescription: string;
+              Fields: {
+                Title: {
+                  FieldId: number;
+                  FieldName: "Title";
+                  FieldTitle: string;
+                  FieldDescription: string;
+                  FieldOrder: number;
+                  IsRequired: false;
+                  FieldType: "String";
+                };
+              };
+            };
             FieldId: number;
             FieldName: "Parent";
             FieldTitle: string;
@@ -5639,23 +4883,6 @@ export interface ProductDefinitionSchema {
         ContentTitle: string;
         ContentDescription: string;
         Fields: {
-          FixConnectAction: {
-            Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "Product";
-              ContentTitle: string;
-              ContentDescription: string;
-              Fields: {};
-            };
-            FieldId: number;
-            FieldName: "FixConnectAction";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            IsRequired: false;
-            FieldType: "O2MRelation";
-          };
           MarketingDevice: {
             Content: MarketingProductSchema;
             FieldId: number;
@@ -5691,26 +4918,6 @@ export interface ProductDefinitionSchema {
                     ContentTitle: string;
                     ContentDescription: string;
                     Fields: {
-                      Parameter: {
-                        Content: ProductParameterSchema;
-                        FieldId: number;
-                        FieldName: "Parameter";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "O2MRelation";
-                      };
-                      Parent: {
-                        Content: ProductParameter1Schema;
-                        FieldId: number;
-                        FieldName: "Parent";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "O2MRelation";
-                      };
                       BaseParameter: {
                         Content: BaseParameterSchema;
                         FieldId: number;
@@ -5815,70 +5022,6 @@ export interface ProductDefinitionSchema {
                         FieldOrder: number;
                         IsRequired: false;
                         FieldType: "VisualEdit";
-                      };
-                      MatrixParent: {
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "LinkParameter";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          Fields: {
-                            SortOrder: {
-                              FieldId: number;
-                              FieldName: "SortOrder";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "Numeric";
-                            };
-                          };
-                        };
-                        FieldId: number;
-                        FieldName: "MatrixParent";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "O2MRelation";
-                      };
-                      MultipleChoice: {
-                        Content: MarketingProductParameter1Schema;
-                        FieldId: number;
-                        FieldName: "MultipleChoice";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "M2MRelation";
-                      };
-                      Choice: {
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "ParameterChoice";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          Fields: {
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                          };
-                        };
-                        FieldId: number;
-                        FieldName: "Choice";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "O2MRelation";
                       };
                     };
                     include: (
@@ -6784,10 +5927,10 @@ interface UnitSchema {
     };
   };
 }
-interface ProductParameterGroupSchema {
+interface ParameterChoiceSchema {
   ContentId: number;
   ContentPath: string;
-  ContentName: "ProductParameterGroup";
+  ContentName: "ParameterChoice";
   ContentTitle: string;
   ContentDescription: string;
   Fields: {
@@ -6809,27 +5952,18 @@ interface ProductParameterGroupSchema {
       IsRequired: false;
       FieldType: "String";
     };
-    SortOrder: {
+    OldSiteId: {
       FieldId: number;
-      FieldName: "SortOrder";
+      FieldName: "OldSiteId";
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
       IsRequired: false;
       FieldType: "Numeric";
     };
-    ImageSvg: {
-      FieldId: number;
-      FieldName: "ImageSvg";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      IsRequired: false;
-      FieldType: "File";
-    };
   };
 }
-interface ProductParameterGroup1Schema {
+interface ProductParameterGroupSchema {
   ContentId: number;
   ContentPath: string;
   ContentName: "ProductParameterGroup";
@@ -6883,116 +6017,10 @@ interface ProductParameterGroup1Schema {
     };
   };
 }
-interface ProductParameterSchema {
+interface ProductParameterGroup1Schema {
   ContentId: number;
   ContentPath: string;
-  ContentName: "ProductParameter";
-  ContentTitle: string;
-  ContentDescription: string;
-  Fields: {};
-}
-interface ProductParameter1Schema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "ProductParameter";
-  ContentTitle: string;
-  ContentDescription: string;
-  Fields: {
-    Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      IsRequired: false;
-      FieldType: "String";
-    };
-  };
-}
-interface LinkParameterSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "LinkParameter";
-  ContentTitle: string;
-  ContentDescription: string;
-  Fields: {};
-}
-interface MarketingProductParameterSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "MarketingProductParameter";
-  ContentTitle: string;
-  ContentDescription: string;
-  Fields: {
-    Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      IsRequired: false;
-      FieldType: "String";
-    };
-    SortOrder: {
-      FieldId: number;
-      FieldName: "SortOrder";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      IsRequired: false;
-      FieldType: "Numeric";
-    };
-    NumValue: {
-      FieldId: number;
-      FieldName: "NumValue";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      IsRequired: false;
-      FieldType: "Numeric";
-    };
-    Value: {
-      FieldId: number;
-      FieldName: "Value";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      IsRequired: false;
-      FieldType: "VisualEdit";
-    };
-    Description: {
-      FieldId: number;
-      FieldName: "Description";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      IsRequired: false;
-      FieldType: "VisualEdit";
-    };
-  };
-}
-interface MarketingProductParameter1Schema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "MarketingProductParameter";
-  ContentTitle: string;
-  ContentDescription: string;
-  Fields: {
-    Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      IsRequired: false;
-      FieldType: "String";
-    };
-  };
-}
-interface ParameterChoiceSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "ParameterChoice";
+  ContentName: "ProductParameterGroup";
   ContentTitle: string;
   ContentDescription: string;
   Fields: {
@@ -7014,14 +6042,23 @@ interface ParameterChoiceSchema {
       IsRequired: false;
       FieldType: "String";
     };
-    OldSiteId: {
+    SortOrder: {
       FieldId: number;
-      FieldName: "OldSiteId";
+      FieldName: "SortOrder";
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
       IsRequired: false;
       FieldType: "Numeric";
+    };
+    ImageSvg: {
+      FieldId: number;
+      FieldName: "ImageSvg";
+      FieldTitle: string;
+      FieldDescription: string;
+      FieldOrder: number;
+      IsRequired: false;
+      FieldType: "File";
     };
   };
 }
@@ -7270,255 +6307,6 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
               FieldOrder: 19,
               IsRequired: false,
               FieldType: "Numeric"
-            },
-            MarketingProduct: {
-              Content: {
-                ContentId: 424,
-                ContentPath: "/339:1542/383:1851/424",
-                ContentName: "MarketingProductParameter",
-                ContentTitle: "Параметры маркетинговых продуктов",
-                ContentDescription: "",
-                Fields: {
-                  Group: {
-                    Content: {
-                      $ref: "#/Definitions/ProductParameterGroup"
-                    },
-                    FieldId: 1852,
-                    FieldName: "Group",
-                    FieldTitle: "Группа параметров",
-                    FieldDescription: "",
-                    FieldOrder: 3,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
-                  },
-                  Parent: {
-                    Content: {
-                      $ref: "#/Definitions/MarketingProductParameter1"
-                    },
-                    FieldId: 1853,
-                    FieldName: "Parent",
-                    FieldTitle: "Родительский параметр",
-                    FieldDescription: "",
-                    FieldOrder: 4,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
-                  },
-                  BaseParameter: {
-                    Content: {
-                      $ref: "#/Definitions/BaseParameter"
-                    },
-                    FieldId: 1854,
-                    FieldName: "BaseParameter",
-                    FieldTitle: "Базовый параметр",
-                    FieldDescription: "",
-                    FieldOrder: 5,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
-                  },
-                  Zone: {
-                    Content: {
-                      $ref: "#/Definitions/TariffZone"
-                    },
-                    FieldId: 1855,
-                    FieldName: "Zone",
-                    FieldTitle: "Зона действия базового параметра",
-                    FieldDescription: "",
-                    FieldOrder: 6,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
-                  },
-                  Direction: {
-                    Content: {
-                      $ref: "#/Definitions/Direction"
-                    },
-                    FieldId: 1856,
-                    FieldName: "Direction",
-                    FieldTitle: "Направление действия базового параметра",
-                    FieldDescription: "",
-                    FieldOrder: 7,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
-                  },
-                  BaseParameterModifiers: {
-                    Content: {
-                      $ref: "#/Definitions/BaseParameterModifier"
-                    },
-                    FieldId: 1857,
-                    FieldName: "BaseParameterModifiers",
-                    FieldTitle: "Модификаторы базового параметра",
-                    FieldDescription: "",
-                    FieldOrder: 8,
-                    IsRequired: false,
-                    FieldType: "M2MRelation"
-                  },
-                  Modifiers: {
-                    Content: {
-                      $ref: "#/Definitions/ParameterModifier"
-                    },
-                    FieldId: 1858,
-                    FieldName: "Modifiers",
-                    FieldTitle: "Модификаторы",
-                    FieldDescription: "",
-                    FieldOrder: 9,
-                    IsRequired: false,
-                    FieldType: "M2MRelation"
-                  },
-                  Unit: {
-                    Content: {
-                      $ref: "#/Definitions/Unit"
-                    },
-                    FieldId: 1862,
-                    FieldName: "Unit",
-                    FieldTitle: "Единица измерения",
-                    FieldDescription: "",
-                    FieldOrder: 13,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
-                  },
-                  ProductGroup: {
-                    Content: {
-                      ContentId: 340,
-                      ContentPath: "/339:1542/383:1851/424:1864/340",
-                      ContentName: "Group",
-                      ContentTitle: "Группы продуктов",
-                      ContentDescription: "",
-                      Fields: {
-                        Title: {
-                          FieldId: 1329,
-                          FieldName: "Title",
-                          FieldTitle: "Название",
-                          FieldDescription: "",
-                          FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
-                        },
-                        Alias: {
-                          FieldId: 1754,
-                          FieldName: "Alias",
-                          FieldTitle: "Псевдоним",
-                          FieldDescription: "",
-                          FieldOrder: 2,
-                          IsRequired: false,
-                          FieldType: "String"
-                        },
-                        SortOrder: {
-                          FieldId: 1743,
-                          FieldName: "SortOrder",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 3,
-                          IsRequired: false,
-                          FieldType: "Numeric"
-                        },
-                        Description: {
-                          FieldId: 1748,
-                          FieldName: "Description",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 8,
-                          IsRequired: false,
-                          FieldType: "Textbox"
-                        },
-                        ScreenName: {
-                          FieldId: 1749,
-                          FieldName: "ScreenName",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 9,
-                          IsRequired: false,
-                          FieldType: "String"
-                        },
-                        OldSiteId: {
-                          FieldId: 1538,
-                          FieldName: "OldSiteId",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 10,
-                          IsRequired: false,
-                          FieldType: "Numeric"
-                        },
-                        OldCorpSiteId: {
-                          FieldId: 1775,
-                          FieldName: "OldCorpSiteId",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 11,
-                          IsRequired: false,
-                          FieldType: "Numeric"
-                        },
-                        Type: {
-                          FieldId: 2056,
-                          FieldName: "Type",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 14,
-                          IsRequired: false,
-                          FieldType: "String"
-                        }
-                      }
-                    },
-                    FieldId: 1864,
-                    FieldName: "ProductGroup",
-                    FieldTitle: "Группа продуктов",
-                    FieldDescription: "",
-                    FieldOrder: 17,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
-                  },
-                  Title: {
-                    FieldId: 1849,
-                    FieldName: "Title",
-                    FieldTitle: "Название",
-                    FieldDescription: "",
-                    FieldOrder: 1,
-                    IsRequired: false,
-                    FieldType: "String"
-                  },
-                  SortOrder: {
-                    FieldId: 1859,
-                    FieldName: "SortOrder",
-                    FieldTitle: "Порядок",
-                    FieldDescription: "",
-                    FieldOrder: 10,
-                    IsRequired: false,
-                    FieldType: "Numeric"
-                  },
-                  NumValue: {
-                    FieldId: 1860,
-                    FieldName: "NumValue",
-                    FieldTitle: "Числовое значение",
-                    FieldDescription: "",
-                    FieldOrder: 11,
-                    IsRequired: false,
-                    FieldType: "Numeric"
-                  },
-                  Value: {
-                    FieldId: 1861,
-                    FieldName: "Value",
-                    FieldTitle: "Текстовое значение",
-                    FieldDescription: "",
-                    FieldOrder: 12,
-                    IsRequired: false,
-                    FieldType: "VisualEdit"
-                  },
-                  Description: {
-                    FieldId: 1863,
-                    FieldName: "Description",
-                    FieldTitle: "",
-                    FieldDescription: "",
-                    FieldOrder: 14,
-                    IsRequired: false,
-                    FieldType: "VisualEdit"
-                  }
-                }
-              },
-              FieldId: 1851,
-              FieldName: "MarketingProduct",
-              FieldTitle: "Маркетинговый продукт",
-              FieldDescription: "",
-              FieldOrder: 2,
-              IsRequired: false,
-              FieldType: "O2MRelation"
             },
             Advantages: {
               Content: {
@@ -8501,30 +7289,13 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                 Fields: {
                   Group: {
                     Content: {
-                      $ref: "#/Definitions/ProductParameterGroup1"
+                      $ref: "#/Definitions/ProductParameterGroup"
                     },
                     FieldId: 1852,
                     FieldName: "Group",
                     FieldTitle: "Группа параметров",
                     FieldDescription: "",
                     FieldOrder: 3,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
-                  },
-                  Parent: {
-                    Content: {
-                      ContentId: 424,
-                      ContentPath: "/339:1542/383:1869/424:1853/424",
-                      ContentName: "MarketingProductParameter",
-                      ContentTitle: "Параметры маркетинговых продуктов",
-                      ContentDescription: "",
-                      Fields: {}
-                    },
-                    FieldId: 1853,
-                    FieldName: "Parent",
-                    FieldTitle: "Родительский параметр",
-                    FieldDescription: "",
-                    FieldOrder: 4,
                     IsRequired: false,
                     FieldType: "O2MRelation"
                   },
@@ -8597,6 +7368,18 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                     FieldTitle: "Единица измерения",
                     FieldDescription: "",
                     FieldOrder: 13,
+                    IsRequired: false,
+                    FieldType: "O2MRelation"
+                  },
+                  Choice: {
+                    Content: {
+                      $ref: "#/Definitions/ParameterChoice"
+                    },
+                    FieldId: 2685,
+                    FieldName: "Choice",
+                    FieldTitle: "Выбор",
+                    FieldDescription: "",
+                    FieldOrder: 15,
                     IsRequired: false,
                     FieldType: "O2MRelation"
                   },
@@ -8711,37 +7494,13 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                               },
                               Group: {
                                 Content: {
-                                  $ref: "#/Definitions/ProductParameterGroup"
+                                  $ref: "#/Definitions/ProductParameterGroup1"
                                 },
                                 FieldId: 1678,
                                 FieldName: "Group",
                                 FieldTitle: "Группа параметров",
                                 FieldDescription: "",
                                 FieldOrder: 3,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
-                              },
-                              Parameter: {
-                                Content: {
-                                  $ref: "#/Definitions/ProductParameter"
-                                },
-                                FieldId: 1451,
-                                FieldName: "Parameter",
-                                FieldTitle: "Параметр тарифа",
-                                FieldDescription: "",
-                                FieldOrder: 4,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
-                              },
-                              Parent: {
-                                Content: {
-                                  $ref: "#/Definitions/ProductParameter1"
-                                },
-                                FieldId: 1726,
-                                FieldName: "Parent",
-                                FieldTitle: "Родительский параметр тарифа",
-                                FieldDescription: "",
-                                FieldOrder: 5,
                                 IsRequired: false,
                                 FieldType: "O2MRelation"
                               },
@@ -8869,30 +7628,6 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                                 FieldOrder: 19,
                                 IsRequired: false,
                                 FieldType: "O2MRelation"
-                              },
-                              MatrixParent: {
-                                Content: {
-                                  $ref: "#/Definitions/LinkParameter"
-                                },
-                                FieldId: 2122,
-                                FieldName: "MatrixParent",
-                                FieldTitle: "Родительский параметр матрицы связей",
-                                FieldDescription: "",
-                                FieldOrder: 6,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
-                              },
-                              MultipleChoice: {
-                                Content: {
-                                  $ref: "#/Definitions/MarketingProductParameter"
-                                },
-                                FieldId: 2686,
-                                FieldName: "MultipleChoice",
-                                FieldTitle: "Множественный выбор",
-                                FieldDescription: "",
-                                FieldOrder: 16,
-                                IsRequired: false,
-                                FieldType: "M2MRelation"
                               },
                               Choice: {
                                 Content: {
@@ -9335,33 +8070,9 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                                 IsRequired: false,
                                 FieldType: "O2MRelation"
                               },
-                              Parent: {
-                                Content: {
-                                  $ref: "#/Definitions/ProductParameter"
-                                },
-                                FieldId: 1726,
-                                FieldName: "Parent",
-                                FieldTitle: "Родительский параметр тарифа",
-                                FieldDescription: "",
-                                FieldOrder: 5,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
-                              },
-                              Parameter: {
-                                Content: {
-                                  $ref: "#/Definitions/ProductParameter"
-                                },
-                                FieldId: 1451,
-                                FieldName: "Parameter",
-                                FieldTitle: "Параметр тарифа",
-                                FieldDescription: "",
-                                FieldOrder: 4,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
-                              },
                               Group: {
                                 Content: {
-                                  $ref: "#/Definitions/ProductParameterGroup1"
+                                  $ref: "#/Definitions/ProductParameterGroup"
                                 },
                                 FieldId: 1678,
                                 FieldName: "Group",
@@ -9370,30 +8081,6 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                                 FieldOrder: 3,
                                 IsRequired: false,
                                 FieldType: "O2MRelation"
-                              },
-                              MatrixParent: {
-                                Content: {
-                                  $ref: "#/Definitions/LinkParameter"
-                                },
-                                FieldId: 2122,
-                                FieldName: "MatrixParent",
-                                FieldTitle: "Родительский параметр матрицы связей",
-                                FieldDescription: "",
-                                FieldOrder: 6,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
-                              },
-                              MultipleChoice: {
-                                Content: {
-                                  $ref: "#/Definitions/MarketingProductParameter"
-                                },
-                                FieldId: 2686,
-                                FieldName: "MultipleChoice",
-                                FieldTitle: "Множественный выбор",
-                                FieldDescription: "",
-                                FieldOrder: 16,
-                                IsRequired: false,
-                                FieldType: "M2MRelation"
                               },
                               Choice: {
                                 Content: {
@@ -10029,105 +8716,6 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                                 IsRequired: false,
                                 FieldType: "O2MRelation"
                               },
-                              MatrixParent: {
-                                Content: {
-                                  ContentId: 362,
-                                  ContentPath: "/339:1542/383:2538/512:2536/361:1431/362:2122/362",
-                                  ContentName: "LinkParameter",
-                                  ContentTitle: "Параметры связей",
-                                  ContentDescription: "",
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1418,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    SortOrder: {
-                                      FieldId: 1425,
-                                      FieldName: "SortOrder",
-                                      FieldTitle: "Порядок",
-                                      FieldDescription: "",
-                                      FieldOrder: 12,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    NumValue: {
-                                      FieldId: 1426,
-                                      FieldName: "NumValue",
-                                      FieldTitle: "Числовое значение",
-                                      FieldDescription: "",
-                                      FieldOrder: 13,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    Value: {
-                                      FieldId: 1427,
-                                      FieldName: "Value",
-                                      FieldTitle: "Текстовое значение",
-                                      FieldDescription: "",
-                                      FieldOrder: 14,
-                                      IsRequired: false,
-                                      FieldType: "VisualEdit"
-                                    },
-                                    Description: {
-                                      FieldId: 1429,
-                                      FieldName: "Description",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 16,
-                                      IsRequired: false,
-                                      FieldType: "VisualEdit"
-                                    },
-                                    OldSiteId: {
-                                      FieldId: 1656,
-                                      FieldName: "OldSiteId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 20,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    OldCorpSiteId: {
-                                      FieldId: 1772,
-                                      FieldName: "OldCorpSiteId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 21,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    OldPointId: {
-                                      FieldId: 1658,
-                                      FieldName: "OldPointId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 22,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    OldCorpPointId: {
-                                      FieldId: 1774,
-                                      FieldName: "OldCorpPointId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 23,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    }
-                                  }
-                                },
-                                FieldId: 2122,
-                                FieldName: "MatrixParent",
-                                FieldTitle: "Родительский параметр матрицы связей",
-                                FieldDescription: "",
-                                FieldOrder: 6,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
-                              },
                               Group: {
                                 Content: {
                                   ContentId: 378,
@@ -10217,135 +8805,6 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                                 FieldOrder: 3,
                                 IsRequired: false,
                                 FieldType: "O2MRelation"
-                              },
-                              Parent: {
-                                Content: {
-                                  ContentId: 354,
-                                  ContentPath: "/339:1542/383:2538/512:2536/361:1431/362:1726/354",
-                                  ContentName: "ProductParameter",
-                                  ContentTitle: "Параметры продуктов",
-                                  ContentDescription: "",
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1373,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    TitleForIcin: {
-                                      FieldId: 2048,
-                                      FieldName: "TitleForIcin",
-                                      FieldTitle: "Название для МГМН",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    SortOrder: {
-                                      FieldId: 1381,
-                                      FieldName: "SortOrder",
-                                      FieldTitle: "Порядок",
-                                      FieldDescription: "",
-                                      FieldOrder: 11,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    NumValue: {
-                                      FieldId: 1382,
-                                      FieldName: "NumValue",
-                                      FieldTitle: "Числовое значение",
-                                      FieldDescription: "",
-                                      FieldOrder: 12,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    Value: {
-                                      FieldId: 1383,
-                                      FieldName: "Value",
-                                      FieldTitle: "Текстовое значение",
-                                      FieldDescription: "",
-                                      FieldOrder: 13,
-                                      IsRequired: false,
-                                      FieldType: "VisualEdit"
-                                    },
-                                    Description: {
-                                      FieldId: 1387,
-                                      FieldName: "Description",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 15,
-                                      IsRequired: false,
-                                      FieldType: "VisualEdit"
-                                    },
-                                    Image: {
-                                      FieldId: 2022,
-                                      FieldName: "Image",
-                                      FieldTitle: "Изображение параметра",
-                                      FieldDescription: "",
-                                      FieldOrder: 19,
-                                      IsRequired: false,
-                                      FieldType: "Image"
-                                    },
-                                    OldSiteId: {
-                                      FieldId: 1589,
-                                      FieldName: "OldSiteId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 20,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    OldCorpSiteId: {
-                                      FieldId: 1769,
-                                      FieldName: "OldCorpSiteId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 21,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    OldPointId: {
-                                      FieldId: 1590,
-                                      FieldName: "OldPointId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 22,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    OldCorpPointId: {
-                                      FieldId: 1770,
-                                      FieldName: "OldCorpPointId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 23,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    }
-                                  }
-                                },
-                                FieldId: 1726,
-                                FieldName: "Parent",
-                                FieldTitle: "Родительский параметр тарифа",
-                                FieldDescription: "",
-                                FieldOrder: 5,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
-                              },
-                              MultipleChoice: {
-                                Content: {
-                                  $ref: "#/Definitions/MarketingProductParameter"
-                                },
-                                FieldId: 2686,
-                                FieldName: "MultipleChoice",
-                                FieldTitle: "Множественный выбор",
-                                FieldDescription: "",
-                                FieldOrder: 16,
-                                IsRequired: false,
-                                FieldType: "M2MRelation"
                               },
                               Choice: {
                                 Content: {
@@ -10640,7 +9099,7 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
           Fields: {
             Group: {
               Content: {
-                $ref: "#/Definitions/ProductParameterGroup"
+                $ref: "#/Definitions/ProductParameterGroup1"
               },
               FieldId: 1506,
               FieldName: "Group",
@@ -10652,7 +9111,22 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
             },
             Parent: {
               Content: {
-                $ref: "#/Definitions/ProductParameter1"
+                ContentId: 354,
+                ContentPath: "/339:1403/354:1642/354",
+                ContentName: "ProductParameter",
+                ContentTitle: "Параметры продуктов",
+                ContentDescription: "",
+                Fields: {
+                  Title: {
+                    FieldId: 1373,
+                    FieldName: "Title",
+                    FieldTitle: "Название",
+                    FieldDescription: "",
+                    FieldOrder: 1,
+                    IsRequired: false,
+                    FieldType: "String"
+                  }
+                }
               },
               FieldId: 1642,
               FieldName: "Parent",
@@ -11148,23 +9622,6 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
           ContentTitle: "Акционное оборудование",
           ContentDescription: "Оборудование для акций фиксированной связи",
           Fields: {
-            FixConnectAction: {
-              Content: {
-                ContentId: 339,
-                ContentPath: "/339:2537/512:2537/339",
-                ContentName: "Product",
-                ContentTitle: "Продукты",
-                ContentDescription: "",
-                Fields: {}
-              },
-              FieldId: 2537,
-              FieldName: "FixConnectAction",
-              FieldTitle: "Акция фиксированной связи",
-              FieldDescription: "",
-              FieldOrder: 1,
-              IsRequired: false,
-              FieldType: "O2MRelation"
-            },
             MarketingDevice: {
               Content: {
                 $ref: "#/Definitions/MarketingProduct"
@@ -11202,30 +9659,6 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                       ContentTitle: "Параметры связей",
                       ContentDescription: "",
                       Fields: {
-                        Parameter: {
-                          Content: {
-                            $ref: "#/Definitions/ProductParameter"
-                          },
-                          FieldId: 1451,
-                          FieldName: "Parameter",
-                          FieldTitle: "Параметр тарифа",
-                          FieldDescription: "",
-                          FieldOrder: 4,
-                          IsRequired: false,
-                          FieldType: "O2MRelation"
-                        },
-                        Parent: {
-                          Content: {
-                            $ref: "#/Definitions/ProductParameter1"
-                          },
-                          FieldId: 1726,
-                          FieldName: "Parent",
-                          FieldTitle: "Родительский параметр тарифа",
-                          FieldDescription: "",
-                          FieldOrder: 5,
-                          IsRequired: false,
-                          FieldType: "O2MRelation"
-                        },
                         BaseParameter: {
                           Content: {
                             $ref: "#/Definitions/BaseParameter"
@@ -11342,72 +9775,6 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
                           FieldOrder: 16,
                           IsRequired: false,
                           FieldType: "VisualEdit"
-                        },
-                        MatrixParent: {
-                          Content: {
-                            ContentId: 362,
-                            ContentPath: "/339:2537/512:2536/361:1431/362:2122/362",
-                            ContentName: "LinkParameter",
-                            ContentTitle: "Параметры связей",
-                            ContentDescription: "",
-                            Fields: {
-                              SortOrder: {
-                                FieldId: 1425,
-                                FieldName: "SortOrder",
-                                FieldTitle: "Порядок",
-                                FieldDescription: "",
-                                FieldOrder: 12,
-                                IsRequired: false,
-                                FieldType: "Numeric"
-                              }
-                            }
-                          },
-                          FieldId: 2122,
-                          FieldName: "MatrixParent",
-                          FieldTitle: "Родительский параметр матрицы связей",
-                          FieldDescription: "",
-                          FieldOrder: 6,
-                          IsRequired: false,
-                          FieldType: "O2MRelation"
-                        },
-                        MultipleChoice: {
-                          Content: {
-                            $ref: "#/Definitions/MarketingProductParameter1"
-                          },
-                          FieldId: 2686,
-                          FieldName: "MultipleChoice",
-                          FieldTitle: "Множественный выбор",
-                          FieldDescription: "",
-                          FieldOrder: 16,
-                          IsRequired: false,
-                          FieldType: "M2MRelation"
-                        },
-                        Choice: {
-                          Content: {
-                            ContentId: 488,
-                            ContentPath: "/339:2537/512:2536/361:1431/362:2687/488",
-                            ContentName: "ParameterChoice",
-                            ContentTitle: "Варианты выбора для параметров",
-                            ContentDescription: "",
-                            Fields: {
-                              Title: {
-                                FieldId: 2379,
-                                FieldName: "Title",
-                                FieldTitle: "",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              }
-                            }
-                          },
-                          FieldId: 2687,
-                          FieldName: "Choice",
-                          FieldTitle: "Выбор",
-                          FieldDescription: "",
-                          FieldOrder: 17,
-                          IsRequired: false,
-                          FieldType: "O2MRelation"
                         }
                       }
                     },
@@ -11930,7 +10297,7 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
     },
     BaseParameter: {
       ContentId: 350,
-      ContentPath: "/339:1542/383:1851/424:1854/350",
+      ContentPath: "/339:1542/383:1869/424:1854/350",
       ContentName: "BaseParameter",
       ContentTitle: "Базовые параметры продуктов",
       ContentDescription: "",
@@ -11975,7 +10342,7 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
     },
     TariffZone: {
       ContentId: 346,
-      ContentPath: "/339:1542/383:1851/424:1855/346",
+      ContentPath: "/339:1542/383:1869/424:1855/346",
       ContentName: "TariffZone",
       ContentTitle: "Тарифные зоны",
       ContentDescription: "",
@@ -12002,7 +10369,7 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
     },
     Direction: {
       ContentId: 347,
-      ContentPath: "/339:1542/383:1851/424:1856/347",
+      ContentPath: "/339:1542/383:1869/424:1856/347",
       ContentName: "Direction",
       ContentTitle: "Направления соединения",
       ContentDescription: "",
@@ -12029,7 +10396,7 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
     },
     BaseParameterModifier: {
       ContentId: 351,
-      ContentPath: "/339:1542/383:1851/424:1857/351",
+      ContentPath: "/339:1542/383:1869/424:1857/351",
       ContentName: "BaseParameterModifier",
       ContentTitle: "Модификаторы базовых параметров продуктов",
       ContentDescription: "",
@@ -12097,7 +10464,7 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
     },
     ParameterModifier: {
       ContentId: 352,
-      ContentPath: "/339:1542/383:1851/424:1858/352",
+      ContentPath: "/339:1542/383:1869/424:1858/352",
       ContentName: "ParameterModifier",
       ContentTitle: "Модификаторы параметров продуктов",
       ContentDescription: "",
@@ -12124,7 +10491,7 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
     },
     Unit: {
       ContentId: 355,
-      ContentPath: "/339:1542/383:1851/424:1862/355",
+      ContentPath: "/339:1542/383:1869/424:1862/355",
       ContentName: "Unit",
       ContentTitle: "Единицы измерения",
       ContentDescription: "",
@@ -12288,52 +10655,43 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
         }
       }
     },
-    ProductParameterGroup: {
-      ContentId: 378,
-      ContentPath: "/339:1542/383:1851/424:1852/378",
-      ContentName: "ProductParameterGroup",
-      ContentTitle: "Группы параметров продуктов",
+    ParameterChoice: {
+      ContentId: 488,
+      ContentPath: "/339:1542/383:1869/424:2685/488",
+      ContentName: "ParameterChoice",
+      ContentTitle: "Варианты выбора для параметров",
       ContentDescription: "",
       Fields: {
         Title: {
-          FieldId: 1496,
+          FieldId: 2379,
           FieldName: "Title",
-          FieldTitle: "Название",
+          FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 1,
           IsRequired: false,
           FieldType: "String"
         },
         Alias: {
-          FieldId: 2049,
+          FieldId: 2380,
           FieldName: "Alias",
-          FieldTitle: "Псевдоним",
+          FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 2,
           IsRequired: false,
           FieldType: "String"
         },
-        SortOrder: {
-          FieldId: 1500,
-          FieldName: "SortOrder",
-          FieldTitle: "Порядок",
+        OldSiteId: {
+          FieldId: 2382,
+          FieldName: "OldSiteId",
+          FieldTitle: "",
           FieldDescription: "",
-          FieldOrder: 3,
+          FieldOrder: 4,
           IsRequired: false,
           FieldType: "Numeric"
-        },
-        ImageSvg: {
-          FieldId: 2029,
-          FieldName: "ImageSvg",
-          FieldTitle: "Изображение",
-          FieldDescription: "",
-          FieldOrder: 7,
-          IsRequired: false,
-          FieldType: "File"
         }
       }
     },
-    ProductParameterGroup1: {
+    ProductParameterGroup: {
       ContentId: 378,
       ContentPath: "/339:1542/383:1869/424:1852/378",
       ContentName: "ProductParameterGroup",
@@ -12387,145 +10745,48 @@ export const productDefinitionSchema = linkJsonRefs<ProductDefinitionSchema>({
         }
       }
     },
-    ProductParameter: {
-      ContentId: 354,
-      ContentPath: "/339:1542/383:2531/511:2530/361:1431/362:1451/354",
-      ContentName: "ProductParameter",
-      ContentTitle: "Параметры продуктов",
-      ContentDescription: "",
-      Fields: {}
-    },
-    ProductParameter1: {
-      ContentId: 354,
-      ContentPath: "/339:1542/383:2531/511:2530/361:1431/362:1726/354",
-      ContentName: "ProductParameter",
-      ContentTitle: "Параметры продуктов",
+    ProductParameterGroup1: {
+      ContentId: 378,
+      ContentPath: "/339:1542/383:2531/511:2530/361:1431/362:1678/378",
+      ContentName: "ProductParameterGroup",
+      ContentTitle: "Группы параметров продуктов",
       ContentDescription: "",
       Fields: {
         Title: {
-          FieldId: 1373,
+          FieldId: 1496,
           FieldName: "Title",
           FieldTitle: "Название",
-          FieldDescription: "",
-          FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
-        }
-      }
-    },
-    LinkParameter: {
-      ContentId: 362,
-      ContentPath: "/339:1542/383:2531/511:2530/361:1431/362:2122/362",
-      ContentName: "LinkParameter",
-      ContentTitle: "Параметры связей",
-      ContentDescription: "",
-      Fields: {}
-    },
-    MarketingProductParameter: {
-      ContentId: 424,
-      ContentPath: "/339:1542/383:2531/511:2530/361:1431/362:2686/424",
-      ContentName: "MarketingProductParameter",
-      ContentTitle: "Параметры маркетинговых продуктов",
-      ContentDescription: "",
-      Fields: {
-        Title: {
-          FieldId: 1849,
-          FieldName: "Title",
-          FieldTitle: "Название",
-          FieldDescription: "",
-          FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
-        },
-        SortOrder: {
-          FieldId: 1859,
-          FieldName: "SortOrder",
-          FieldTitle: "Порядок",
-          FieldDescription: "",
-          FieldOrder: 10,
-          IsRequired: false,
-          FieldType: "Numeric"
-        },
-        NumValue: {
-          FieldId: 1860,
-          FieldName: "NumValue",
-          FieldTitle: "Числовое значение",
-          FieldDescription: "",
-          FieldOrder: 11,
-          IsRequired: false,
-          FieldType: "Numeric"
-        },
-        Value: {
-          FieldId: 1861,
-          FieldName: "Value",
-          FieldTitle: "Текстовое значение",
-          FieldDescription: "",
-          FieldOrder: 12,
-          IsRequired: false,
-          FieldType: "VisualEdit"
-        },
-        Description: {
-          FieldId: 1863,
-          FieldName: "Description",
-          FieldTitle: "",
-          FieldDescription: "",
-          FieldOrder: 14,
-          IsRequired: false,
-          FieldType: "VisualEdit"
-        }
-      }
-    },
-    MarketingProductParameter1: {
-      ContentId: 424,
-      ContentPath: "/339:1542/383:1851/424:1853/424",
-      ContentName: "MarketingProductParameter",
-      ContentTitle: "Параметры маркетинговых продуктов",
-      ContentDescription: "",
-      Fields: {
-        Title: {
-          FieldId: 1849,
-          FieldName: "Title",
-          FieldTitle: "Название",
-          FieldDescription: "",
-          FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
-        }
-      }
-    },
-    ParameterChoice: {
-      ContentId: 488,
-      ContentPath: "/339:1542/383:2531/511:2530/361:1431/362:2687/488",
-      ContentName: "ParameterChoice",
-      ContentTitle: "Варианты выбора для параметров",
-      ContentDescription: "",
-      Fields: {
-        Title: {
-          FieldId: 2379,
-          FieldName: "Title",
-          FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 1,
           IsRequired: false,
           FieldType: "String"
         },
         Alias: {
-          FieldId: 2380,
+          FieldId: 2049,
           FieldName: "Alias",
-          FieldTitle: "",
+          FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
           IsRequired: false,
           FieldType: "String"
         },
-        OldSiteId: {
-          FieldId: 2382,
-          FieldName: "OldSiteId",
-          FieldTitle: "",
+        SortOrder: {
+          FieldId: 1500,
+          FieldName: "SortOrder",
+          FieldTitle: "Порядок",
           FieldDescription: "",
-          FieldOrder: 4,
+          FieldOrder: 3,
           IsRequired: false,
           FieldType: "Numeric"
+        },
+        ImageSvg: {
+          FieldId: 2029,
+          FieldName: "ImageSvg",
+          FieldTitle: "Изображение",
+          FieldDescription: "",
+          FieldOrder: 7,
+          IsRequired: false,
+          FieldType: "File"
         }
       }
     },
