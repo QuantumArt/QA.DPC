@@ -101,7 +101,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </summary>
         /// <returns>JSON продукта</returns>
         [HttpGet]
-        public ActionResult GetProduct(int articleId, bool isLive = false)
+        public ContentResult GetProduct(int articleId, bool isLive = false)
         {
             Content content = GetContentByArticleId(articleId, isLive);
 
@@ -117,6 +117,19 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             string json = JsonConvert.SerializeObject(data);
 
             return Content(json, "application/json");
+        }
+
+        private static System.Collections.Concurrent.ConcurrentDictionary<int, ContentResult> _cache
+            = new System.Collections.Concurrent.ConcurrentDictionary<int, ContentResult>();
+
+        [HttpGet]
+        public ActionResult GetProductTest(int articleId, bool refresh = false)
+        {
+            if (refresh)
+            {
+                _cache.TryRemove(articleId, out var _);
+            }
+            return _cache.GetOrAdd(articleId, _ => GetProduct(articleId));
         }
 
         private Content GetContentByArticleId(int articleId, bool isLive)

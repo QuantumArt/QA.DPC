@@ -12,7 +12,7 @@ import { productDefinitionSchema as schema } from "../../ClientApp/Editors/MtsFi
   const query = document.location.search;
 
   const response = await fetch(
-    `${rootUrl}/ProductEditor/GetProduct${query}&articleId=${articleId}`
+    `${rootUrl}/ProductEditor/GetProductTest${query}&articleId=${articleId}`
   );
   if (response.ok) {
     const article = await response.json();
