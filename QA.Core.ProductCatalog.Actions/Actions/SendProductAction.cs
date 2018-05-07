@@ -173,9 +173,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                             return tl;
                         }
-
+                        
                         //Валидация продуктов
-                        foreach (int id in prodsStage.Select(s => s.Id))
+                        foreach (int id in prodsStage.Where(w => !w.Archived && w.Visible).Select(s => s.Id))
                         {
                             var xamlValidationErrors = _articleService.XamlValidationById(id);
                             if (!xamlValidationErrors.IsEmpty)
