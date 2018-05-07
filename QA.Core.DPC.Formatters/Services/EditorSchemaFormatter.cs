@@ -22,16 +22,16 @@ namespace QA.Core.DPC.Formatters.Services
     {
         private readonly ContentService _contentService;
         private readonly FieldService _fieldService;
-        private readonly VirtualFieldPathEvaluator _virtualFieldPathEvaluator;
+        private readonly VirtualFieldContextService _virtualFieldContextService;
 
         public EditorSchemaFormatter(
             ContentService contentService,
             FieldService fieldService,
-            VirtualFieldPathEvaluator virtualFieldPathEvaluator)
+            VirtualFieldContextService virtualFieldContextService)
         {
             _contentService = contentService;
             _fieldService = fieldService;
-            _virtualFieldPathEvaluator = virtualFieldPathEvaluator;
+            _virtualFieldContextService = virtualFieldContextService;
         }
 
         #region Models
@@ -119,15 +119,9 @@ namespace QA.Core.DPC.Formatters.Services
         private class SchemaContext
         {
             /// <summary>
-            /// Значения вирутальных полей
-            /// </summary>
-            public Dictionary<Tuple<Content, string>, Field> VirtualFields
-                = new Dictionary<Tuple<Content, string>, Field>();
-
-            /// <summary>
             /// Cписок виртуальных полей которые надо игнорировать при создании схемы
             /// </summary>
-            public List<Tuple<Content, Field>> IgnoredFields = new List<Tuple<Content, Field>>();
+            public List<Tuple<Content, Field>> IgnoredFields;
 
             /// <summary>
             /// Созданные схемы для различных контентов
@@ -153,9 +147,12 @@ namespace QA.Core.DPC.Formatters.Services
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
 
-            var context = new SchemaContext();
+            VirtualFieldContext virtualFieldContext = _virtualFieldContextService.GetVirtualFieldContext(content);
 
-            FillVirtualFieldsInfo(content, context);
+            var context = new SchemaContext
+            {
+                IgnoredFields = virtualFieldContext.IgnoredFields,
+            };
 
             ContentSchema contentSchema = GetContentSchema(content, context, "");
 
@@ -172,122 +169,7 @@ namespace QA.Core.DPC.Formatters.Services
                 Converters = { new StringEnumConverter() }
             });
         }
-
-        /// <summary>
-        /// Рекурсивно обходит <see cref="Content"/> и заполняет
-        /// <see cref="SchemaContext.IgnoredFields"/> - список полей которые надо игнорировать при создании схемы
-        /// и <see cref="SchemaContext.VirtualFields"/> - значения вирутальных полей
-        /// </summary>
-        private void FillVirtualFieldsInfo(
-            Content content,
-            SchemaContext context,
-            HashSet<Content> visitedContents = null)
-        {
-            if (visitedContents == null)
-            {
-                visitedContents = new HashSet<Content>();
-            }
-            else if (visitedContents.Contains(content))
-            {
-                return;
-            }
-            visitedContents.Add(content);
-
-            foreach (Field field in content.Fields)
-            {
-                if (field is BaseVirtualField baseField)
-                {
-                    ProcessVirtualField(baseField, content, context);
-                }
-                else if (field is EntityField entityField)
-                {
-                    FillVirtualFieldsInfo(entityField.Content, context, visitedContents);
-                }
-                else if (field is ExtensionField extensionField)
-                {
-                    foreach (Content extContent in extensionField.ContentMapping.Values)
-                    {
-                        FillVirtualFieldsInfo(extContent, context, visitedContents);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Рекурсивно обходит <see cref="Content"/> и заполняет
-        /// <see cref="SchemaContext.IgnoredFields"/> - список полей которые надо игнорировать при создании схемы
-        /// и <see cref="SchemaContext.VirtualFields"/> - значения вирутальных полей
-        /// </summary>
-        /// <exception cref="InvalidOperationException" />
-        private void ProcessVirtualField(
-            BaseVirtualField baseVirtualField,
-            Content definition,
-            SchemaContext context)
-        {
-            if (baseVirtualField is VirtualMultiEntityField virtualMultiEntityField)
-            {
-                string path = virtualMultiEntityField.Path;
-
-                var virtualFieldKey = Tuple.Create(definition, path);
-
-                if (context.VirtualFields.ContainsKey(virtualFieldKey))
-                {
-                    return;
-                }
-
-                Field foundField = _virtualFieldPathEvaluator
-                    .GetFieldByPath(path, definition, out bool hasFilter, out Content parent);
-
-                if (!hasFilter)
-                {
-                    context.IgnoredFields.Add(Tuple.Create(parent, foundField));
-                }
-
-                context.VirtualFields[virtualFieldKey] = foundField;
-
-                if (foundField is EntityField foundEntityField)
-                {
-                    foreach (BaseVirtualField childField in virtualMultiEntityField.Fields)
-                    {
-                        ProcessVirtualField(childField, foundEntityField.Content, context);
-                    }
-                }
-                else
-                {
-                    throw new InvalidOperationException(
-                        "В Path VirtualMultiEntityField должны быть только поля EntityField или наследники");
-                }
-            }
-            else if (baseVirtualField is VirtualEntityField virtualEntityField)
-            {
-                foreach (BaseVirtualField childField in virtualEntityField.Fields)
-                {
-                    ProcessVirtualField(childField, definition, context);
-                }
-            }
-            else if (baseVirtualField is VirtualField virtualField)
-            {
-                string path = virtualField.Path;
-
-                var virtualFieldKey = Tuple.Create(definition, path);
-
-                if (context.VirtualFields.ContainsKey(virtualFieldKey))
-                {
-                    return;
-                }
-
-                Field fieldToMove = _virtualFieldPathEvaluator
-                    .GetFieldByPath(path, definition, out bool hasFilter, out Content parent);
-
-                if (!hasFilter)
-                {
-                    context.IgnoredFields.Add(Tuple.Create(parent, fieldToMove));
-                }
-
-                context.VirtualFields[virtualFieldKey] = fieldToMove;
-            }
-        }
-
+        
         /// <summary>
         /// Рекурсивно обходит <see cref="Content"/>, генерирует корневую схему и заполняет
         /// <see cref="SchemaContext.SchemasByContent"/> - созданные схемы контентов

@@ -339,6 +339,7 @@
     <Compile Include="SettingsFromQpService.cs" />
     <Compile Include="SettingsServiceBase.cs" />
     <Compile Include="VirtualFieldPathEvaluator.cs" />
+    <Compile Include="VirtualFieldContextService.cs" />
     <Compile Include="XmlProductDataSource.cs" />
     <Compile Include="XmlProductService.cs" />
   </ItemGroup>
