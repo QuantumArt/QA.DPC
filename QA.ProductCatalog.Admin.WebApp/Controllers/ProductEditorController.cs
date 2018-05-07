@@ -26,6 +26,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IProductUpdateService _productUpdateService;
         private readonly JsonProductService _jsonProductService;
         private readonly IReadOnlyArticleService _articleService;
+        private readonly MergeContentDefinitionService _mergeContentDefinitionService;
         private readonly EditorSchemaFormatter _editorSchemaFormatter;
 
         public ProductEditorController(
@@ -34,6 +35,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IProductUpdateService productUpdateService,
             JsonProductService jsonProductService,
             IReadOnlyArticleService articleService,
+            MergeContentDefinitionService mergeContentDefinitionService,
             EditorSchemaFormatter editorSchemaFormatter)
         {
             _contentDefinitionService = contentDefinitionService;
@@ -41,6 +43,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _productUpdateService = productUpdateService;
             _jsonProductService = jsonProductService;
             _articleService = articleService;
+            _mergeContentDefinitionService = mergeContentDefinitionService;
             _editorSchemaFormatter = editorSchemaFormatter;
         }
 
@@ -57,11 +60,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         [HttpGet]
         public ActionResult TypeScriptSchema(int productDefinitionId, bool isLive = false)
         {
-            Content content = _contentDefinitionService.GetDefinitionById(productDefinitionId, isLive);
+            Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
 
             string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(content);
-            
-            string editorSchema = _editorSchemaFormatter.GetSchema(content, false);
+
+            string editorSchema = _editorSchemaFormatter.GetSchemaString(content, prettyPrint: false);
 
             return View(new ProductEditorSchemaModel
             {
@@ -69,7 +72,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 EditorSchema = editorSchema,
             });
         }
-
+        
         /// <summary>
         /// Построить JSON-схему части продукта, начиная с корневого контента,
         /// описанного путём <paramref name="contentPaths"/>[0].
@@ -87,9 +90,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             [ModelBinder(typeof(JsonModelBinder))] string[] contentPaths,
             bool isLive = false)
         {
-            Content content = _contentDefinitionService.GetDefinitionById(productDefinitionId, isLive);
+            Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
 
-            Content partialContent = _editorSchemaFormatter.GetPartialContent(content.DeepCopy(), contentPaths);
+            Content partialContent = _editorSchemaFormatter.GetPartialContent(content, contentPaths);
 
             string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(partialContent);
 
@@ -131,23 +134,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
             return _cache.GetOrAdd(articleId, _ => GetProduct(articleId));
         }
-
-        private Content GetContentByArticleId(int articleId, bool isLive)
-        {
-            _articleService.IsLive = isLive;
-
-            var qpArticle = _articleService.Read(articleId);
-
-            string productTypeField = qpArticle.FieldValues
-                .Where(x => x.Field.IsClassifier)
-                .Select(x => x.Value)
-                .FirstOrDefault();
-
-            int productTypeId = Int32.Parse(productTypeField);
-
-            return _contentDefinitionService.GetDefinitionForContent(productTypeId, qpArticle.ContentId);
-        }
-
+        
         /// <summary>
         /// Сохранить часть продукта начиная с корневого контента,
         /// описанного путём <see cref="PartialProductRequest.ContentPaths"/>[0].
@@ -161,8 +148,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Content content = _contentDefinitionService
-                .GetDefinitionById(request.ProductDefinitionId, request.IsLive);
+            Content content = GetContentByProductDefinitionId(request.ProductDefinitionId, request.IsLive);
 
             Content partialContent = _editorSchemaFormatter.GetPartialContent(content, request.ContentPaths);
 
@@ -202,6 +188,39 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             /// </summary>
             [Required]
             public JObject PartialProduct { get; set; }
+        }
+
+        private Content GetContentByProductDefinitionId(int productDefinitionId, bool isLive)
+        {
+            Content content = _contentDefinitionService
+                .GetDefinitionById(productDefinitionId, isLive)
+                .DeepCopy();
+
+            _mergeContentDefinitionService.MergeDuplicatedContents(content);
+
+            return content;
+        }
+
+        private Content GetContentByArticleId(int articleId, bool isLive)
+        {
+            _articleService.IsLive = isLive;
+
+            var qpArticle = _articleService.Read(articleId);
+
+            string productTypeField = qpArticle.FieldValues
+                .Where(x => x.Field.IsClassifier)
+                .Select(x => x.Value)
+                .FirstOrDefault();
+
+            int productTypeId = Int32.Parse(productTypeField);
+
+            Content content = _contentDefinitionService
+                .GetDefinitionForContent(productTypeId, qpArticle.ContentId)
+                .DeepCopy();
+
+            _mergeContentDefinitionService.MergeDuplicatedContents(content);
+
+            return content;
         }
     }
 }

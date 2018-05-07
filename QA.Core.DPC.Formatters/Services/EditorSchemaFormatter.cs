@@ -105,7 +105,7 @@ namespace QA.Core.DPC.Formatters.Services
             _contentService.LoadStructureCache();
             _fieldService.LoadStructureCache();
 
-            string schema = GetSchema(content);
+            string schema = GetSchemaString(content, prettyPrint: true);
 
             using (var writer = new StreamWriter(stream))
             {
@@ -143,7 +143,7 @@ namespace QA.Core.DPC.Formatters.Services
 
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
-        public string GetSchema(Content content, bool prettyPrint = true)
+        public string GetSchemaString(Content content, bool prettyPrint = true)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
 
