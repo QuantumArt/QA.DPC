@@ -124,17 +124,13 @@ namespace QA.Core.DPC.Loader
             /// Созданные схемы для различных контентов
             /// </summary>
             public Dictionary<Content, JSchema> SchemasByContent = new Dictionary<Content, JSchema>();
+
+            /// <summary>
+            /// Имена ссылок на повторяющиеся схемы контентов
+            /// </summary>
+            public Dictionary<JSchema, string> DefinitionNamesBySchema = new Dictionary<JSchema, string>();
         }
 
-        private static Regex RefRegex = new Regex(@"(""\$ref"":\s?""#.*)/items/0(.*"")", RegexOptions.Compiled);
-
-        /// <remarks>
-        /// <see cref="JSchema"/> не до конца совместима с RFC 6901: JSON Pointer.
-        /// Для ссылок на массивы генерируется JSON Pointer вида:
-        /// <c>{ "$ref": "#/definitions/MyDefinition/items/0"}</c>, а должен —
-        /// <c>{ "$ref": "#/definitions/MyDefinition/items"}</c>.
-        /// Но корректные ссылки <see cref="JSchema.Parse(string)"/> не сможет потом распарсить.
-        /// </remarks>
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
         public string GetEditorJsonSchemaString(Content definition)
@@ -144,15 +140,8 @@ namespace QA.Core.DPC.Loader
                 forList: false,
                 includeRegionTags: false,
                 excludeVirtualFields: true);
-
-            string schemaJson = JsonConvert.SerializeObject(schema);
             
-            while (RefRegex.IsMatch(schemaJson))
-            {
-                schemaJson = RefRegex.Replace(schemaJson, m => m.Groups[1].Value + "/items" + m.Groups[2].Value);
-            }
-
-            return schemaJson;
+            return JsonConvert.SerializeObject(schema);
         }
 
         /// <exception cref="NotSupportedException" />
@@ -179,9 +168,7 @@ namespace QA.Core.DPC.Loader
             };
 
             JSchema rootSchema = GetSchemaRecursive(definition, context, forList);
-
-            FillSchemaDefinitions(rootSchema, context);
-
+            
             if (includeRegionTags)
             {
                 JSchema schemaWithRegionTags = new JSchema { Type = JSchemaType.Object };
@@ -222,14 +209,23 @@ namespace QA.Core.DPC.Loader
 
                 schemaWithRegionTags.Properties.Add(RegionTagsProp, regionTagsSchema);
 
+                FillSchemaDefinitions(schemaWithRegionTags, context);
+
+                DeduplicateJsonSchema(schemaWithRegionTags, context);
+
                 return schemaWithRegionTags;
             }
             
+            FillSchemaDefinitions(rootSchema, context);
+
+            DeduplicateJsonSchema(rootSchema, context);
+
             return rootSchema;
         }
 
         /// <summary>
         /// Выносит повторяющиеся схемы контентов в поле "definitions" объекта <paramref name="rootSchema"/>
+        /// и заполняет ими <see cref="SchemaContext.DefinitionNamesBySchema"/>
         /// </summary>
         private void FillSchemaDefinitions(JSchema rootSchema, SchemaContext context)
         {
@@ -238,35 +234,118 @@ namespace QA.Core.DPC.Loader
                 return;
             }
 
+            var contentNamePairs = context.RepeatedContents
+                .GroupBy(content =>
+                {
+                    string name = _contentService.Read(content.ContentId).NetName;
+
+                    return String.IsNullOrWhiteSpace(name) ? $"Content{content.ContentId}" : name;
+                })
+                .SelectMany(group => group.Select((content, i) => new
+                {
+                    Content = content,
+                    SchemaName = $"{group.Key}{(i == 0 ? "" : i.ToString())}",
+                }));
+
             var definitions = new JObject();
-            var contentIndexesByName = new Dictionary<string, int>();
 
-            foreach (Content content in context.RepeatedContents)
+            foreach (var pair in contentNamePairs)
             {
-                JSchema schema = context.SchemasByContent[content];
+                JSchema schema = context.SchemasByContent[pair.Content];
 
-                string name = _contentService.Read(content.ContentId).NetName;
+                context.DefinitionNamesBySchema[schema] = pair.SchemaName;
 
-                if (String.IsNullOrWhiteSpace(name))
-                {
-                    name = $"Content{content.ContentId}";
-                }
-
-                if (contentIndexesByName.ContainsKey(name))
-                {
-                    name += contentIndexesByName[name]++;
-                }
-                else
-                {
-                    contentIndexesByName[name] = 1;
-                }
-
-                definitions[name] = schema;
+                definitions[pair.SchemaName] = schema;
             }
 
             rootSchema.ExtensionData["definitions"] = definitions;
         }
         
+        /// <summary>
+        /// Заменяет вхождения повторяющихся JSON схем на JSON Pointer вида
+        /// <c>{ "$ref": "#/definitions/ContentName" }</c>.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="JSchema"/> не до конца совместима с RFC 6901: JSON Pointer.
+        /// По-умолчанию генерируются ссылки вида
+        /// <c>{ "$ref": "#/definitions/MarketingProduct/properties/MarketingDevices/items/0" }</c>
+        /// Поэтому используется кастомная генерация ссылок.
+        /// </remarks>
+        private void DeduplicateJsonSchema(JSchema rootSchema, SchemaContext context)
+        {
+            foreach (JSchema definitionSchema in context.DefinitionNamesBySchema.Keys)
+            {
+                DeduplicateJsonSchemaFields(definitionSchema, context);
+            }
+
+            DeduplicateJsonSchemaFields(rootSchema, context);
+        }
+        
+        private void DeduplicateJsonSchemaFields(JSchema schema, SchemaContext context)
+        {
+            schema.AdditionalProperties = DeduplicateJsonSchemaInstance(schema.AdditionalProperties, context);
+            schema.AdditionalItems = DeduplicateJsonSchemaInstance(schema.AdditionalItems, context);
+            schema.Not = DeduplicateJsonSchemaInstance(schema.Not, context);
+
+            DeduplicateJsonSchemaList(schema.OneOf, context);
+            DeduplicateJsonSchemaList(schema.AllOf, context);
+            DeduplicateJsonSchemaList(schema.AnyOf, context);
+            DeduplicateJsonSchemaList(schema.Items, context);
+
+            DeduplicateJsonSchemaDict(schema.PatternProperties, context);
+            DeduplicateJsonSchemaDict(schema.Properties, context);
+        }
+
+        private void DeduplicateJsonSchemaList(IList<JSchema> schemaList, SchemaContext context)
+        {
+            if (schemaList?.Count > 0)
+            {
+                JSchema[] schemaListItems = schemaList.ToArray();
+
+                schemaList.Clear();
+
+                foreach (JSchema schema in schemaListItems)
+                {
+                    schemaList.Add(DeduplicateJsonSchemaInstance(schema, context));
+                }
+            }
+        }
+
+        private void DeduplicateJsonSchemaDict(IDictionary<string , JSchema> schemaDict, SchemaContext context)
+        {
+            if (schemaDict?.Count > 0)
+            {
+                var schemaDictPairs = schemaDict.ToArray();
+
+                schemaDict.Clear();
+
+                foreach (var pair in schemaDictPairs)
+                {
+                    schemaDict[pair.Key] = DeduplicateJsonSchemaInstance(pair.Value, context);
+                }
+            }
+        }
+        
+        private JSchema DeduplicateJsonSchemaInstance(JSchema schema, SchemaContext context)
+        {
+            if (schema == null || schema.ExtensionData.ContainsKey("$ref"))
+            {
+                return schema;
+            }
+
+            if (context.DefinitionNamesBySchema.TryGetValue(schema, out string schemaName))
+            {
+                return new JSchema
+                {
+                    ExtensionData = { { "$ref", $"#/definitions/{schemaName}" } }
+                };
+            }
+
+            DeduplicateJsonSchemaFields(schema, context);
+
+            return schema;
+        }
+
         /// <summary>
         /// Рекурсивно обходит <see cref="Content"/>, генерирует корневую схему и заполняет
         /// <see cref="SchemaContext.SchemasByContent"/> - созданные схемы контентов

@@ -26,7 +26,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IProductUpdateService _productUpdateService;
         private readonly JsonProductService _jsonProductService;
         private readonly IReadOnlyArticleService _articleService;
-        private readonly MergeContentDefinitionService _mergeContentDefinitionService;
         private readonly EditorSchemaFormatter _editorSchemaFormatter;
 
         public ProductEditorController(
@@ -35,7 +34,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IProductUpdateService productUpdateService,
             JsonProductService jsonProductService,
             IReadOnlyArticleService articleService,
-            MergeContentDefinitionService mergeContentDefinitionService,
             EditorSchemaFormatter editorSchemaFormatter)
         {
             _contentDefinitionService = contentDefinitionService;
@@ -43,7 +41,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _productUpdateService = productUpdateService;
             _jsonProductService = jsonProductService;
             _articleService = articleService;
-            _mergeContentDefinitionService = mergeContentDefinitionService;
             _editorSchemaFormatter = editorSchemaFormatter;
         }
 
@@ -196,8 +193,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .GetDefinitionById(productDefinitionId, isLive)
                 .DeepCopy();
 
-            _mergeContentDefinitionService.MergeDuplicatedContents(content);
-
             return content;
         }
 
@@ -217,8 +212,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             Content content = _contentDefinitionService
                 .GetDefinitionForContent(productTypeId, qpArticle.ContentId)
                 .DeepCopy();
-
-            _mergeContentDefinitionService.MergeDuplicatedContents(content);
 
             return content;
         }

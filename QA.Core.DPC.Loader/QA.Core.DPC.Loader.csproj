@@ -311,7 +311,6 @@
     <Compile Include="Services\DBConnectorProxy.cs" />
     <Compile Include="Services\DefinitionEditorService.cs" />
     <Compile Include="Services\ContentServiceAdapter.cs" />
-    <Compile Include="MergeContentDefinitionService.cs" />
     <Compile Include="Services\FieldServiceAdapter.cs" />
     <Compile Include="Services\FreezeService.cs" />
     <Compile Include="Services\IArticleDependencyService.cs" />
