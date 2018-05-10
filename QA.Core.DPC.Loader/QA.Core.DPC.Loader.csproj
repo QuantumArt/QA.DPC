@@ -283,6 +283,7 @@
     <Compile Include="Container\LoaderConfigurationExtension.cs" />
     <Compile Include="ContentDefinitionService.cs" />
     <Compile Include="DPCContentInvalidator.cs" />
+    <Compile Include="EditorProductService.cs" />
     <Compile Include="FakeProductLoader.cs" />
     <Compile Include="IJsonProductService.cs" />
     <Compile Include="JsonProductDataSource.cs" />

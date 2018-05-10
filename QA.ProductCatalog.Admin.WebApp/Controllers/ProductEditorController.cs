@@ -26,7 +26,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IProductUpdateService _productUpdateService;
         private readonly JsonProductService _jsonProductService;
         private readonly IReadOnlyArticleService _articleService;
-        private readonly EditorSchemaFormatter _editorSchemaFormatter;
+        private readonly EditorProductService _editorProductService;
 
         public ProductEditorController(
             IContentDefinitionService contentDefinitionService,
@@ -34,14 +34,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IProductUpdateService productUpdateService,
             JsonProductService jsonProductService,
             IReadOnlyArticleService articleService,
-            EditorSchemaFormatter editorSchemaFormatter)
+            EditorProductService editorProductService)
         {
             _contentDefinitionService = contentDefinitionService;
             _productService = productService;
             _productUpdateService = productUpdateService;
             _jsonProductService = jsonProductService;
             _articleService = articleService;
-            _editorSchemaFormatter = editorSchemaFormatter;
+            _editorProductService = editorProductService;
         }
 
         [Route("{editorName}/{articleId}")]
@@ -61,7 +61,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(content);
 
-            string editorSchema = _editorSchemaFormatter.GetSchemaString(content, prettyPrint: false);
+            string editorSchema = _editorProductService.GetSchemaString(content, prettyPrint: false);
 
             return View(new ProductEditorSchemaModel
             {
@@ -89,7 +89,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
 
-            Content partialContent = _editorSchemaFormatter.GetPartialContent(content, contentPaths);
+            Content partialContent = _editorProductService.GetPartialContent(content, contentPaths);
 
             string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(partialContent);
 
@@ -111,8 +111,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             IArticleFilter filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
-            Dictionary<string, object> data = _jsonProductService
-                .ConvertArticle(article, filter, includeVirtualFields: false, includeNulls: true);
+            Dictionary<string, object> data = _editorProductService.ConvertArticle(article, filter);
 
             string json = JsonConvert.SerializeObject(data);
 
@@ -147,7 +146,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             Content content = GetContentByProductDefinitionId(request.ProductDefinitionId, request.IsLive);
 
-            Content partialContent = _editorSchemaFormatter.GetPartialContent(content, request.ContentPaths);
+            Content partialContent = _editorProductService.GetPartialContent(content, request.ContentPaths);
 
             Article partialProduct = _jsonProductService.DeserializeProduct(request.PartialProduct, partialContent);
 

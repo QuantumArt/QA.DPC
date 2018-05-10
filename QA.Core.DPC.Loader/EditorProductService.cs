@@ -1,34 +1,37 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using QA.Core.DPC.Loader;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Tools;
-using QA.ProductCatalog.Infrastructure;
+using QA.Core.Models.Entities;
 using Quantumart.QP8.BLL.ListItems;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.Constants;
+using Quantumart.QPublishing.Database;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace QA.Core.DPC.Formatters.Services
+namespace QA.Core.DPC.Loader
 {
-    public class EditorSchemaFormatter : IFormatter<Content>
+    public class EditorProductService
     {
+        private const string IdProp = "Id";
+
+        private readonly DBConnector _dbConnector;
         private readonly ContentService _contentService;
         private readonly FieldService _fieldService;
         private readonly VirtualFieldContextService _virtualFieldContextService;
 
-        public EditorSchemaFormatter(
+        public EditorProductService(
+            DBConnector dbConnector,
             ContentService contentService,
             FieldService fieldService,
             VirtualFieldContextService virtualFieldContextService)
         {
+            _dbConnector = dbConnector;
             _contentService = contentService;
             _fieldService = fieldService;
             _virtualFieldContextService = virtualFieldContextService;
@@ -44,7 +47,7 @@ namespace QA.Core.DPC.Formatters.Services
                 = new Dictionary<string, ContentSchema>();
         }
 
-        public interface IContentSchema { }
+        private interface IContentSchema { }
 
         private class ContentSchema : IContentSchema
         {
@@ -90,32 +93,9 @@ namespace QA.Core.DPC.Formatters.Services
             public Dictionary<string, IContentSchema> Contents { get; set; }
                 = new Dictionary<string, IContentSchema>();
         }
-
+        
         #endregion
-
-        #region IFormatter
-
-        public Task<Content> Read(Stream stream)
-        {
-            throw new NotSupportedException();
-        }
-
-        public async Task Write(Stream stream, Content content)
-        {
-            _contentService.LoadStructureCache();
-            _fieldService.LoadStructureCache();
-
-            string schema = GetSchemaString(content, prettyPrint: true);
-
-            using (var writer = new StreamWriter(stream))
-            {
-                await writer.WriteAsync(schema);
-                await writer.FlushAsync();
-            }
-        }
-
-        #endregion
-
+        
         private class SchemaContext
         {
             /// <summary>
@@ -161,15 +141,12 @@ namespace QA.Core.DPC.Formatters.Services
             return JsonConvert.SerializeObject(productSchema, new JsonSerializerSettings
             {
                 // ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                Formatting = prettyPrint
-                    ? Newtonsoft.Json.Formatting.Indented
-                    : Newtonsoft.Json.Formatting.None,
-
+                Formatting = prettyPrint ? Formatting.Indented : Formatting.None,
                 NullValueHandling = NullValueHandling.Ignore,
                 Converters = { new StringEnumConverter() }
             });
         }
-        
+
         /// <summary>
         /// Рекурсивно обходит <see cref="Content"/>, генерирует корневую схему и заполняет
         /// <see cref="SchemaContext.SchemasByContent"/> - созданные схемы контентов
@@ -597,6 +574,170 @@ namespace QA.Core.DPC.Formatters.Services
         {
             return String.IsNullOrEmpty(str)
                 || String.IsNullOrWhiteSpace(WebUtility.HtmlDecode(str));
+        }
+
+        #endregion
+
+        #region Formatting
+
+        private class ArticleFileField
+        {
+            public string Name { get; set; }
+            
+            public string AbsoluteUrl { get; set; }
+        }
+
+        private class ArticleExtensionField
+        {
+            public string Value { get; set; }
+
+            public Dictionary<string, object> Contents { get; set; }
+        }
+
+        private class ArticleContext
+        {
+            public IArticleFilter Filter;
+
+            public bool ShouldIncludeArticle(Article article)
+            {
+                return article != null
+                    && article.Visible
+                    && !article.Archived
+                    && Filter.Matches(article);
+            }
+
+            public bool ShouldIncludeField(ArticleField field)
+            {
+                switch (field)
+                {
+                    case VirtualArticleField _:
+                    case VirtualMultiArticleField _:
+                        return false;
+                    default:
+                        return true;
+                }
+            }
+        }
+
+        public Dictionary<string, object> ConvertArticle(Article article, IArticleFilter filter)
+        {
+            return ConvertArticle(article, new ArticleContext { Filter = filter });
+        }
+
+        private Dictionary<string, object> ConvertArticle(Article article, ArticleContext context)
+        {
+            if (!context.ShouldIncludeArticle(article))
+            {
+                return null;
+            }
+
+            var dict = new Dictionary<string, object>
+            {
+                [IdProp] = article.Id
+            };
+
+            foreach (ArticleField field in article.Fields.Values)
+            {
+                if (context.ShouldIncludeField(field))
+                {
+                    dict[field.FieldName] = ConvertField(field, context);
+                }
+            }
+
+            return dict;
+        }
+        
+        /// <exception cref="NotSupportedException" />
+        private object ConvertField(ArticleField field, ArticleContext context)
+        {
+            if (field is PlainArticleField plainArticleField)
+            {
+                return ConvertPlainField(plainArticleField);
+            }
+            if (field is SingleArticleField singleArticleField)
+            {
+                return ConvertArticle(singleArticleField.GetItem(context.Filter), context);
+            }
+            if (field is MultiArticleField multiArticleField)
+            {
+                return multiArticleField
+                    .GetArticles(context.Filter)
+                    .Select(f => ConvertArticle(f, context))
+                    .ToArray();
+            }
+            if (field is ExtensionArticleField extensionArticleField)
+            {
+                Article article = extensionArticleField.Item;
+                if (article == null)
+                {
+                    return new ArticleExtensionField
+                    {
+                        Contents = new Dictionary<string, object>()
+                    };
+                }
+                return new ArticleExtensionField
+                {
+                    Value = article.ContentName,
+                    Contents = new Dictionary<string, object>
+                    {
+                        [article.ContentName] = ConvertArticle(article, context),
+                    },
+                };
+            }
+
+            throw new NotSupportedException($"Поле типа {field.GetType()} не поддерживается");
+        }
+        
+        private object ConvertPlainField(PlainArticleField plainArticleField)
+        {
+            if (plainArticleField.NativeValue == null)
+            {
+                return null;
+            }
+
+            switch (plainArticleField.PlainFieldType)
+            {
+                case PlainFieldType.File:
+                {
+                    if (String.IsNullOrWhiteSpace(plainArticleField.Value))
+                    {
+                        return null;
+                    }
+
+                    string path = Common.GetFileFromQpFieldPath(
+                        _dbConnector, plainArticleField.FieldId.Value, plainArticleField.Value);
+                    
+                    return new ArticleFileField
+                    {
+                        Name = plainArticleField.Value.Contains("/")
+                            ? plainArticleField.Value.Substring(plainArticleField.Value.LastIndexOf("/") + 1)
+                            : plainArticleField.Value,
+                        
+                        AbsoluteUrl = String.Format("{0}/{1}",
+                            _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
+                            plainArticleField.Value)
+                    };
+                }
+
+                case PlainFieldType.Image:
+                case PlainFieldType.DynamicImage:
+                {
+                    if (String.IsNullOrWhiteSpace(plainArticleField.Value))
+                    {
+                        return null;
+                    }
+
+                    return String.Format("{0}/{1}",
+                        _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
+                        plainArticleField.Value);
+                }
+
+                case PlainFieldType.Boolean:
+                    return (decimal)plainArticleField.NativeValue == 1;
+
+                default:
+                    return plainArticleField.NativeValue;
+            }
         }
 
         #endregion
