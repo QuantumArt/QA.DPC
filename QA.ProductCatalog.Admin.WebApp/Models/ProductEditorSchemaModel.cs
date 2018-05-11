@@ -7,5 +7,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         public string JsonSchema { get; set; }
 
         public string EditorSchema { get; set; }
+
+        public string ObjectShapes { get; set; }
     }
 }

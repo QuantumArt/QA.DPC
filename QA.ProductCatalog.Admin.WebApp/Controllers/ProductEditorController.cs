@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.Loader;
+using QA.Core.DPC.Loader.Editor;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
@@ -26,7 +27,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IProductUpdateService _productUpdateService;
         private readonly JsonProductService _jsonProductService;
         private readonly IReadOnlyArticleService _articleService;
-        private readonly EditorProductService _editorProductService;
+        private readonly EditorSchemaService _editorSchemaService;
+        private readonly EditorDataService _editorDataService;
+        private readonly EditorObjectShapeService _editorObjectShapeService;
+        private readonly EditorPartialContentService _editorPartialContentService;
 
         public ProductEditorController(
             IContentDefinitionService contentDefinitionService,
@@ -34,14 +38,20 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IProductUpdateService productUpdateService,
             JsonProductService jsonProductService,
             IReadOnlyArticleService articleService,
-            EditorProductService editorProductService)
+            EditorSchemaService editorSchemaService,
+            EditorDataService editorDataService,
+            EditorObjectShapeService editorObjectShapeService,
+            EditorPartialContentService editorPartialContentService)
         {
             _contentDefinitionService = contentDefinitionService;
             _productService = productService;
             _productUpdateService = productUpdateService;
             _jsonProductService = jsonProductService;
             _articleService = articleService;
-            _editorProductService = editorProductService;
+            _editorSchemaService = editorSchemaService;
+            _editorDataService = editorDataService;
+            _editorObjectShapeService = editorObjectShapeService;
+            _editorPartialContentService = editorPartialContentService;
         }
 
         [Route("{editorName}/{articleId}")]
@@ -51,7 +61,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
         
         /// <summary>
-        /// Построить TypeScript-описание продукта и схему для редактора.
+        /// Построить TypeScript-описание продукта.
         /// </summary>
         /// <param name="productDefinitionId">Id описания продукта</param>
         [HttpGet]
@@ -61,22 +71,50 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(content);
 
-            string editorSchema = _editorProductService.GetSchemaString(content, prettyPrint: false);
-
             return View(new ProductEditorSchemaModel
             {
                 JsonSchema = jsonSchema,
-                EditorSchema = editorSchema,
             });
         }
-        
+
+        /// <summary>
+        /// Построить схему для редактора продукта.
+        /// </summary>
+        /// <param name="productDefinitionId">Id описания продукта</param>
+        [HttpGet]
+        public ActionResult ProductEditorSchema(int productDefinitionId, bool isLive = false)
+        {
+            Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
+            
+            ProductSchema productSchema = _editorSchemaService.GetSchema(content);
+
+            var objectShapes = _editorObjectShapeService.GetContentShapes(productSchema);
+
+            string editorSchemaJson = JsonConvert.SerializeObject(productSchema, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Include,
+                Converters = { new StringEnumConverter() }
+            });
+
+            string objectShapesJson = JsonConvert.SerializeObject(objectShapes, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Include,
+            });
+
+            return View(new ProductEditorSchemaModel
+            {
+                EditorSchema = editorSchemaJson,
+                ObjectShapes = objectShapesJson,
+            });
+        }
+
         /// <summary>
         /// Построить JSON-схему части продукта, начиная с корневого контента,
         /// описанного путём <paramref name="contentPaths"/>[0].
         /// </summary>
         /// <param name="productDefinitionId">Id описания продукта</param>
         /// <param name="contentPaths">
-        /// Массив путей контентов в продукте в формате <c>/contentId:fieldId/.../contentId</c>.
+        /// Массив путей контентов в продукте в формате <c>"/contentId:fieldId/.../contentId"</c>.
         /// Первый путь в массиве соответствует корневому контенту, остальные — его связям.
         /// Пример: <c>[ "/339:1326/290", "/339:1326/290:1587/379" ]</c>.
         /// </param>
@@ -89,7 +127,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
 
-            Content partialContent = _editorProductService.GetPartialContent(content, contentPaths);
+            Content partialContent = _editorPartialContentService.GetPartialContent(content, contentPaths);
 
             string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(partialContent);
 
@@ -109,9 +147,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             Article article = _productService.GetProductById(articleId, isLive, productDefinition);
 
+            // TODO: maybe cache
+            ProductSchema productSchema = _editorSchemaService.GetSchema(content);
+
+            var shapesByContentId = _editorObjectShapeService.GetContentShapes(productSchema);
+
             IArticleFilter filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
-            Dictionary<string, object> data = _editorProductService.ConvertArticle(article, filter);
+            ContentObject data = _editorDataService.ConvertArticle(article, filter, shapesByContentId);
 
             string json = JsonConvert.SerializeObject(data);
 
@@ -146,8 +189,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             Content content = GetContentByProductDefinitionId(request.ProductDefinitionId, request.IsLive);
 
-            Content partialContent = _editorProductService.GetPartialContent(content, request.ContentPaths);
+            Content partialContent = _editorPartialContentService.GetPartialContent(content, request.ContentPaths);
 
+            // TODO: deserialize by _editorProductService
             Article partialProduct = _jsonProductService.DeserializeProduct(request.PartialProduct, partialContent);
 
             var partialDefinition = new ProductDefinition { StorageSchema = partialContent };

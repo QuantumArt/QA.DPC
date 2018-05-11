@@ -11,8 +11,9 @@
 <body>
     <pre><code id="typeScriptCode">Loading...</code></pre>
     <script type="text/javascript">
-      window.jsonSchema = @Html.Raw(Model.JsonSchema);
+      window.editorSchema = @Html.Raw(Model.EditorSchema);
+      window.objectShapes = @Html.Raw(Model.ObjectShapes);
     </script>
-    <script src="~/Scripts/Bundles/ProductEditor/TypeScriptSchema.js"></script>
+    <script src="~/Scripts/Bundles/ProductEditor/ProductEditorSchema.js"></script>
 </body>
 </html>

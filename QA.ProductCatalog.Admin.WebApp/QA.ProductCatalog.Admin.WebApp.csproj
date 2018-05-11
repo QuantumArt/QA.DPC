@@ -488,6 +488,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Scripts\Bundles\**\*.*" />
+    <Content Include="Views\ProductEditor\ProductEditorSchema.js" />
     <Content Include="webpack.config.js" />
     <Content Include="package.json" />
     <Content Include=".editorconfig" />
@@ -546,6 +547,7 @@
     <Content Include="Views\ProductEditor\TypeScriptSchema.cshtml" />
     <Content Include="tsconfig.json" />
     <None Include="Views\ProductEditor\MtsFixTariff.cshtml" />
+    <Content Include="Views\ProductEditor\ProductEditorSchema.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Data\controls\480.xaml">

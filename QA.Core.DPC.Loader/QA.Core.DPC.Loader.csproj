@@ -283,7 +283,12 @@
     <Compile Include="Container\LoaderConfigurationExtension.cs" />
     <Compile Include="ContentDefinitionService.cs" />
     <Compile Include="DPCContentInvalidator.cs" />
-    <Compile Include="EditorProductService.cs" />
+    <Compile Include="Editor\EditorPartialContentService.cs" />
+    <Compile Include="Editor\EditorDataModels.cs" />
+    <Compile Include="Editor\EditorDataService.cs" />
+    <Compile Include="Editor\EditorSchemaModels.cs" />
+    <Compile Include="Editor\EditorSchemaService.cs" />
+    <Compile Include="Editor\EditorObjectShapeService.cs" />
     <Compile Include="FakeProductLoader.cs" />
     <Compile Include="IJsonProductService.cs" />
     <Compile Include="JsonProductDataSource.cs" />

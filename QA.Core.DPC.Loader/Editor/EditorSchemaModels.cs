@@ -1,0 +1,79 @@
+﻿using Newtonsoft.Json;
+using Quantumart.QP8.BLL.ListItems;
+using Quantumart.QP8.Constants;
+using System.Collections.Generic;
+
+namespace QA.Core.DPC.Loader.Editor
+{
+    public class ProductSchema
+    {
+        public IContentSchema Content { get; set; }
+
+        public Dictionary<string, ContentSchema> Definitions { get; set; }
+            = new Dictionary<string, ContentSchema>();
+    }
+
+    public interface IContentSchema
+    {
+        int ContentId { get; set; }
+    }
+
+    public class ContentSchema : IContentSchema
+    {
+        public int ContentId { get; set; }
+        public string ContentPath { get; set; }
+        public string ContentName { get; set; }
+        public string ContentTitle { get; set; }
+        public string ContentDescription { get; set; }
+
+        public object ObjectShape { get; set; }
+
+        public Dictionary<string, FieldSchema> Fields { get; set; }
+            = new Dictionary<string, FieldSchema>();
+    }
+
+    public class ContentSchemaRef : IContentSchema
+    {
+        [JsonIgnore]
+        public int ContentId { get; set; }
+
+        [JsonProperty("$ref")]
+        public string Ref { get; set; }
+    }
+
+    public class FieldSchema
+    {
+        public int FieldId { get; set; }
+        public string FieldName { get; set; }
+        public string FieldTitle { get; set; }
+        public string FieldDescription { get; set; }
+        public int FieldOrder { get; set; }
+        public bool IsRequired { get; set; }
+        public FieldExactTypes FieldType { get; set; }
+    }
+
+    public class EnumFieldSchema : FieldSchema
+    {
+        public StringEnumItem[] Items { get; set; } = new StringEnumItem[0];
+    }
+
+    public class RelationFieldSchema : FieldSchema
+    {
+        public bool IsBackward => false;
+
+        public IContentSchema Content { get; set; }
+    }
+
+    public class BackwardFieldSchema : FieldSchema
+    {
+        public bool IsBackward => true;
+
+        public IContentSchema Content { get; set; }
+    }
+
+    public class ExtensionFieldSchema : FieldSchema
+    {
+        public Dictionary<string, IContentSchema> Contents { get; set; }
+            = new Dictionary<string, IContentSchema>();
+    }
+}
