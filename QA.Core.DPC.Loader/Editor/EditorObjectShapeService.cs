@@ -77,7 +77,7 @@ namespace QA.Core.DPC.Loader.Editor
                                 .ToDictionary(c => c.Key, c => shapesByContentId[c.Value.ContentId])
                         };
                     }
-                    else if (fieldSchema is RelationFieldSchema backwardFieldSchema
+                    else if (fieldSchema is BackwardFieldSchema backwardFieldSchema
                         || fieldSchema.FieldType == FieldExactTypes.M2ORelation
                         || fieldSchema.FieldType == FieldExactTypes.M2MRelation)
                     {
@@ -112,7 +112,7 @@ namespace QA.Core.DPC.Loader.Editor
         {
             foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
             {
-                if (fieldSchema is RelationFieldSchema relationFieldSchema)
+                if (fieldSchema is IRelationFieldSchema relationFieldSchema)
                 {
                     if (relationFieldSchema.Content is ContentSchema childContentSchema)
                     {

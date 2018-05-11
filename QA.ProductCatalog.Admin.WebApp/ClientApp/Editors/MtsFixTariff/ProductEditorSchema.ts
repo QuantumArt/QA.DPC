@@ -1380,34 +1380,7 @@ export interface ProductEditorSchema {
                       };
                       Modifiers: {
                         IsBackward: false;
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "LinkModifier";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          ObjectShape: any;
-                          Fields: {
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Alias: {
-                              FieldId: number;
-                              FieldName: "Alias";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                          };
-                        };
+                        Content: LinkModifierSchema;
                         FieldId: number;
                         FieldName: "Modifiers";
                         FieldTitle: string;
@@ -1437,52 +1410,7 @@ export interface ProductEditorSchema {
                             };
                             Group: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ProductParameterGroup";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  SortOrder: {
-                                    FieldId: number;
-                                    FieldName: "SortOrder";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  ImageSvg: {
-                                    FieldId: number;
-                                    FieldName: "ImageSvg";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "File";
-                                  };
-                                };
-                              };
+                              Content: ProductParameterGroup1Schema;
                               FieldId: number;
                               FieldName: "Group";
                               FieldTitle: string;
@@ -1493,52 +1421,7 @@ export interface ProductEditorSchema {
                             };
                             BaseParameter: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "BaseParameter";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  AllowZone: {
-                                    FieldId: number;
-                                    FieldName: "AllowZone";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Boolean";
-                                  };
-                                  AllowDirection: {
-                                    FieldId: number;
-                                    FieldName: "AllowDirection";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Boolean";
-                                  };
-                                };
-                              };
+                              Content: BaseParameterSchema;
                               FieldId: number;
                               FieldName: "BaseParameter";
                               FieldTitle: string;
@@ -1549,34 +1432,7 @@ export interface ProductEditorSchema {
                             };
                             Zone: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "TariffZone";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: TariffZoneSchema;
                               FieldId: number;
                               FieldName: "Zone";
                               FieldTitle: string;
@@ -1587,34 +1443,7 @@ export interface ProductEditorSchema {
                             };
                             Direction: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "Direction";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: DirectionSchema;
                               FieldId: number;
                               FieldName: "Direction";
                               FieldTitle: string;
@@ -1625,75 +1454,7 @@ export interface ProductEditorSchema {
                             };
                             BaseParameterModifiers: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "BaseParameterModifier";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Type: {
-                                    Items: [
-                                      {
-                                        Value: "Step";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Package";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Zone";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Direction";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Refining";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      }
-                                    ];
-                                    FieldId: number;
-                                    FieldName: "Type";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "StringEnum";
-                                  };
-                                };
-                              };
+                              Content: BaseParameterModifierSchema;
                               FieldId: number;
                               FieldName: "BaseParameterModifiers";
                               FieldTitle: string;
@@ -1704,34 +1465,7 @@ export interface ProductEditorSchema {
                             };
                             Modifiers: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ParameterModifier";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: ParameterModifierSchema;
                               FieldId: number;
                               FieldName: "Modifiers";
                               FieldTitle: string;
@@ -1778,173 +1512,7 @@ export interface ProductEditorSchema {
                             };
                             Unit: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "Unit";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Display: {
-                                    FieldId: number;
-                                    FieldName: "Display";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  QuotaUnit: {
-                                    Items: [
-                                      {
-                                        Value: "mb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "gb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "kb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "tb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "min";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "message";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "rub";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "sms";
-                                        Alias: "SMS";
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "mms";
-                                        Alias: "MMS";
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "mbit";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "step";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      }
-                                    ];
-                                    FieldId: number;
-                                    FieldName: "QuotaUnit";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "StringEnum";
-                                  };
-                                  QuotaPeriod: {
-                                    Items: [
-                                      {
-                                        Value: "daily";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "weekly";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "monthly";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "hourly";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "minutely";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "every_second";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "annually";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      }
-                                    ];
-                                    FieldId: number;
-                                    FieldName: "QuotaPeriod";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "StringEnum";
-                                  };
-                                };
-                              };
+                              Content: UnitSchema;
                               FieldId: number;
                               FieldName: "Unit";
                               FieldTitle: string;
@@ -1974,43 +1542,7 @@ export interface ProductEditorSchema {
                             };
                             Choice: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ParameterChoice";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  OldSiteId: {
-                                    FieldId: number;
-                                    FieldName: "OldSiteId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                };
-                              };
+                              Content: ParameterChoiceSchema;
                               FieldId: number;
                               FieldName: "Choice";
                               FieldTitle: string;
@@ -2282,25 +1814,7 @@ export interface ProductEditorSchema {
                 };
                 MarketingDevice: {
                   IsBackward: false;
-                  Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "MarketingProduct";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    ObjectShape: any;
-                    Fields: {
-                      Alias: {
-                        FieldId: number;
-                        FieldName: "Alias";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                    };
-                  };
+                  Content: MarketingProduct2Schema;
                   FieldId: number;
                   FieldName: "MarketingDevice";
                   FieldTitle: string;
@@ -2311,34 +1825,7 @@ export interface ProductEditorSchema {
                 };
                 MarketingTariffs: {
                   IsBackward: false;
-                  Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "MarketingProduct";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    ObjectShape: any;
-                    Fields: {
-                      Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                      Alias: {
-                        FieldId: number;
-                        FieldName: "Alias";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                    };
-                  };
+                  Content: MarketingProduct3Schema;
                   FieldId: number;
                   FieldName: "MarketingTariffs";
                   FieldTitle: string;
@@ -2349,34 +1836,7 @@ export interface ProductEditorSchema {
                 };
                 Cities: {
                   IsBackward: false;
-                  Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "Region";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    ObjectShape: any;
-                    Fields: {
-                      Alias: {
-                        FieldId: number;
-                        FieldName: "Alias";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                      Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                    };
-                  };
+                  Content: Region1Schema;
                   FieldId: number;
                   FieldName: "Cities";
                   FieldTitle: string;
@@ -2500,173 +1960,7 @@ export interface ProductEditorSchema {
                             };
                             Unit: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "Unit";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Display: {
-                                    FieldId: number;
-                                    FieldName: "Display";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  QuotaUnit: {
-                                    Items: [
-                                      {
-                                        Value: "mb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "gb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "kb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "tb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "min";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "message";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "rub";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "sms";
-                                        Alias: "SMS";
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "mms";
-                                        Alias: "MMS";
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "mbit";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "step";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      }
-                                    ];
-                                    FieldId: number;
-                                    FieldName: "QuotaUnit";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "StringEnum";
-                                  };
-                                  QuotaPeriod: {
-                                    Items: [
-                                      {
-                                        Value: "daily";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "weekly";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "monthly";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "hourly";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "minutely";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "every_second";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "annually";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      }
-                                    ];
-                                    FieldId: number;
-                                    FieldName: "QuotaPeriod";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "StringEnum";
-                                  };
-                                };
-                              };
+                              Content: UnitSchema;
                               FieldId: number;
                               FieldName: "Unit";
                               FieldTitle: string;
@@ -2677,34 +1971,7 @@ export interface ProductEditorSchema {
                             };
                             Modifiers: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ParameterModifier";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: ParameterModifierSchema;
                               FieldId: number;
                               FieldName: "Modifiers";
                               FieldTitle: string;
@@ -2715,75 +1982,7 @@ export interface ProductEditorSchema {
                             };
                             BaseParameterModifiers: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "BaseParameterModifier";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Type: {
-                                    Items: [
-                                      {
-                                        Value: "Step";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Package";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Zone";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Direction";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Refining";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      }
-                                    ];
-                                    FieldId: number;
-                                    FieldName: "Type";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "StringEnum";
-                                  };
-                                };
-                              };
+                              Content: BaseParameterModifierSchema;
                               FieldId: number;
                               FieldName: "BaseParameterModifiers";
                               FieldTitle: string;
@@ -2794,34 +1993,7 @@ export interface ProductEditorSchema {
                             };
                             Direction: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "Direction";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: DirectionSchema;
                               FieldId: number;
                               FieldName: "Direction";
                               FieldTitle: string;
@@ -2832,34 +2004,7 @@ export interface ProductEditorSchema {
                             };
                             Zone: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "TariffZone";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: TariffZoneSchema;
                               FieldId: number;
                               FieldName: "Zone";
                               FieldTitle: string;
@@ -2870,52 +2015,7 @@ export interface ProductEditorSchema {
                             };
                             BaseParameter: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "BaseParameter";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  AllowZone: {
-                                    FieldId: number;
-                                    FieldName: "AllowZone";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Boolean";
-                                  };
-                                  AllowDirection: {
-                                    FieldId: number;
-                                    FieldName: "AllowDirection";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Boolean";
-                                  };
-                                };
-                              };
+                              Content: BaseParameterSchema;
                               FieldId: number;
                               FieldName: "BaseParameter";
                               FieldTitle: string;
@@ -2926,61 +2026,7 @@ export interface ProductEditorSchema {
                             };
                             Group: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ProductParameterGroup";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  SortOrder: {
-                                    FieldId: number;
-                                    FieldName: "SortOrder";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  ImageSvg: {
-                                    FieldId: number;
-                                    FieldName: "ImageSvg";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "File";
-                                  };
-                                  Type: {
-                                    FieldId: number;
-                                    FieldName: "Type";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: ProductParameterGroupSchema;
                               FieldId: number;
                               FieldName: "Group";
                               FieldTitle: string;
@@ -2991,43 +2037,7 @@ export interface ProductEditorSchema {
                             };
                             Choice: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ParameterChoice";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  OldSiteId: {
-                                    FieldId: number;
-                                    FieldName: "OldSiteId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                };
-                              };
+                              Content: ParameterChoiceSchema;
                               FieldId: number;
                               FieldName: "Choice";
                               FieldTitle: string;
@@ -3058,34 +2068,7 @@ export interface ProductEditorSchema {
                       };
                       Modifiers: {
                         IsBackward: false;
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "LinkModifier";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          ObjectShape: any;
-                          Fields: {
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Alias: {
-                              FieldId: number;
-                              FieldName: "Alias";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                          };
-                        };
+                        Content: LinkModifierSchema;
                         FieldId: number;
                         FieldName: "Modifiers";
                         FieldTitle: string;
@@ -3116,34 +2099,7 @@ export interface ProductEditorSchema {
                 };
                 MarketingDevice: {
                   IsBackward: false;
-                  Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "MarketingProduct";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    ObjectShape: any;
-                    Fields: {
-                      Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                      Alias: {
-                        FieldId: number;
-                        FieldName: "Alias";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                    };
-                  };
+                  Content: MarketingProduct3Schema;
                   FieldId: number;
                   FieldName: "MarketingDevice";
                   FieldTitle: string;
@@ -3154,34 +2110,7 @@ export interface ProductEditorSchema {
                 };
                 Cities: {
                   IsBackward: false;
-                  Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "Region";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    ObjectShape: any;
-                    Fields: {
-                      Alias: {
-                        FieldId: number;
-                        FieldName: "Alias";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                      Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                    };
-                  };
+                  Content: Region1Schema;
                   FieldId: number;
                   FieldName: "Cities";
                   FieldTitle: string;
@@ -3730,75 +2659,7 @@ export interface ProductEditorSchema {
                             };
                             BaseParameterModifiers: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "BaseParameterModifier";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Type: {
-                                    Items: [
-                                      {
-                                        Value: "Step";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Package";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Zone";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Direction";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      },
-                                      {
-                                        Value: "Refining";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
-                                      }
-                                    ];
-                                    FieldId: number;
-                                    FieldName: "Type";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "StringEnum";
-                                  };
-                                };
-                              };
+                              Content: BaseParameterModifierSchema;
                               FieldId: number;
                               FieldName: "BaseParameterModifiers";
                               FieldTitle: string;
@@ -3809,34 +2670,7 @@ export interface ProductEditorSchema {
                             };
                             Modifiers: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ParameterModifier";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: ParameterModifierSchema;
                               FieldId: number;
                               FieldName: "Modifiers";
                               FieldTitle: string;
@@ -3847,34 +2681,7 @@ export interface ProductEditorSchema {
                             };
                             Direction: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "Direction";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: DirectionSchema;
                               FieldId: number;
                               FieldName: "Direction";
                               FieldTitle: string;
@@ -3885,34 +2692,7 @@ export interface ProductEditorSchema {
                             };
                             Zone: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "TariffZone";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                };
-                              };
+                              Content: TariffZoneSchema;
                               FieldId: number;
                               FieldName: "Zone";
                               FieldTitle: string;
@@ -3923,52 +2703,7 @@ export interface ProductEditorSchema {
                             };
                             BaseParameter: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "BaseParameter";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  AllowZone: {
-                                    FieldId: number;
-                                    FieldName: "AllowZone";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Boolean";
-                                  };
-                                  AllowDirection: {
-                                    FieldId: number;
-                                    FieldName: "AllowDirection";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Boolean";
-                                  };
-                                };
-                              };
+                              Content: BaseParameterSchema;
                               FieldId: number;
                               FieldName: "BaseParameter";
                               FieldTitle: string;
@@ -4071,43 +2806,7 @@ export interface ProductEditorSchema {
                             };
                             Choice: {
                               IsBackward: false;
-                              Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ParameterChoice";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                ObjectShape: any;
-                                Fields: {
-                                  Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "String";
-                                  };
-                                  OldSiteId: {
-                                    FieldId: number;
-                                    FieldName: "OldSiteId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    IsRequired: false;
-                                    FieldType: "Numeric";
-                                  };
-                                };
-                              };
+                              Content: ParameterChoiceSchema;
                               FieldId: number;
                               FieldName: "Choice";
                               FieldTitle: string;
@@ -4219,34 +2918,7 @@ export interface ProductEditorSchema {
                       };
                       Modifiers: {
                         IsBackward: false;
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "LinkModifier";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          ObjectShape: any;
-                          Fields: {
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Alias: {
-                              FieldId: number;
-                              FieldName: "Alias";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                          };
-                        };
+                        Content: LinkModifierSchema;
                         FieldId: number;
                         FieldName: "Modifiers";
                         FieldTitle: string;
@@ -5042,43 +3714,7 @@ export interface ProductEditorSchema {
         Fields: {
           MarketingDevice: {
             IsBackward: false;
-            Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "MarketingProduct";
-              ContentTitle: string;
-              ContentDescription: string;
-              ObjectShape: any;
-              Fields: {
-                Title: {
-                  FieldId: number;
-                  FieldName: "Title";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "String";
-                };
-                Alias: {
-                  FieldId: number;
-                  FieldName: "Alias";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "String";
-                };
-                Priority: {
-                  FieldId: number;
-                  FieldName: "Priority";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  IsRequired: false;
-                  FieldType: "Numeric";
-                };
-              };
-            };
+            Content: MarketingProductSchema;
             FieldId: number;
             FieldName: "MarketingDevice";
             FieldTitle: string;
@@ -5118,52 +3754,7 @@ export interface ProductEditorSchema {
                     Fields: {
                       BaseParameter: {
                         IsBackward: false;
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "BaseParameter";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          ObjectShape: any;
-                          Fields: {
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Alias: {
-                              FieldId: number;
-                              FieldName: "Alias";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            AllowZone: {
-                              FieldId: number;
-                              FieldName: "AllowZone";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "Boolean";
-                            };
-                            AllowDirection: {
-                              FieldId: number;
-                              FieldName: "AllowDirection";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "Boolean";
-                            };
-                          };
-                        };
+                        Content: BaseParameterSchema;
                         FieldId: number;
                         FieldName: "BaseParameter";
                         FieldTitle: string;
@@ -5174,34 +3765,7 @@ export interface ProductEditorSchema {
                       };
                       Zone: {
                         IsBackward: false;
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "TariffZone";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          ObjectShape: any;
-                          Fields: {
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Alias: {
-                              FieldId: number;
-                              FieldName: "Alias";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                          };
-                        };
+                        Content: TariffZoneSchema;
                         FieldId: number;
                         FieldName: "Zone";
                         FieldTitle: string;
@@ -5212,34 +3776,7 @@ export interface ProductEditorSchema {
                       };
                       Direction: {
                         IsBackward: false;
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "Direction";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          ObjectShape: any;
-                          Fields: {
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Alias: {
-                              FieldId: number;
-                              FieldName: "Alias";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                          };
-                        };
+                        Content: DirectionSchema;
                         FieldId: number;
                         FieldName: "Direction";
                         FieldTitle: string;
@@ -5250,75 +3787,7 @@ export interface ProductEditorSchema {
                       };
                       BaseParameterModifiers: {
                         IsBackward: false;
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "BaseParameterModifier";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          ObjectShape: any;
-                          Fields: {
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Alias: {
-                              FieldId: number;
-                              FieldName: "Alias";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Type: {
-                              Items: [
-                                {
-                                  Value: "Step";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "Package";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "Zone";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "Direction";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "Refining";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                }
-                              ];
-                              FieldId: number;
-                              FieldName: "Type";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "StringEnum";
-                            };
-                          };
-                        };
+                        Content: BaseParameterModifierSchema;
                         FieldId: number;
                         FieldName: "BaseParameterModifiers";
                         FieldTitle: string;
@@ -5329,34 +3798,7 @@ export interface ProductEditorSchema {
                       };
                       Modifiers: {
                         IsBackward: false;
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "ParameterModifier";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          ObjectShape: any;
-                          Fields: {
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Alias: {
-                              FieldId: number;
-                              FieldName: "Alias";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                          };
-                        };
+                        Content: ParameterModifierSchema;
                         FieldId: number;
                         FieldName: "Modifiers";
                         FieldTitle: string;
@@ -5367,173 +3809,7 @@ export interface ProductEditorSchema {
                       };
                       Unit: {
                         IsBackward: false;
-                        Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "Unit";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          ObjectShape: any;
-                          Fields: {
-                            Alias: {
-                              FieldId: number;
-                              FieldName: "Alias";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            Display: {
-                              FieldId: number;
-                              FieldName: "Display";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "String";
-                            };
-                            QuotaUnit: {
-                              Items: [
-                                {
-                                  Value: "mb";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "gb";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "kb";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "tb";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "min";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "message";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "rub";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "sms";
-                                  Alias: "SMS";
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "mms";
-                                  Alias: "MMS";
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "mbit";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "step";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                }
-                              ];
-                              FieldId: number;
-                              FieldName: "QuotaUnit";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "StringEnum";
-                            };
-                            QuotaPeriod: {
-                              Items: [
-                                {
-                                  Value: "daily";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "weekly";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "monthly";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "hourly";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "minutely";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "every_second";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                },
-                                {
-                                  Value: "annually";
-                                  Alias: string;
-                                  IsDefault: false;
-                                  Invalid: false;
-                                }
-                              ];
-                              FieldId: number;
-                              FieldName: "QuotaPeriod";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              IsRequired: false;
-                              FieldType: "StringEnum";
-                            };
-                          };
-                        };
+                        Content: UnitSchema;
                         FieldId: number;
                         FieldName: "Unit";
                         FieldTitle: string;
@@ -5609,34 +3885,7 @@ export interface ProductEditorSchema {
                 };
                 Modifiers: {
                   IsBackward: false;
-                  Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "LinkModifier";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    ObjectShape: any;
-                    Fields: {
-                      Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                      Alias: {
-                        FieldId: number;
-                        FieldName: "Alias";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        IsRequired: false;
-                        FieldType: "String";
-                      };
-                    };
-                  };
+                  Content: LinkModifierSchema;
                   FieldId: number;
                   FieldName: "Modifiers";
                   FieldTitle: string;
@@ -5840,7 +4089,6 @@ interface RegionSchema {
   };
   include: (selector: (fields: RegionSchema["Fields"]) => Selection[]) => string[];
 }
-// @ts-ignore
 interface Region1Schema {
   ContentId: number;
   ContentPath: string;
@@ -6677,7 +4925,6 @@ interface ProductParameterGroup1Schema {
     };
   };
 }
-// @ts-ignore
 interface LinkModifierSchema {
   ContentId: number;
   ContentPath: string;
@@ -6813,83 +5060,41 @@ const objectShapes: any = {
     Id: null,
     Title: null,
     Alias: null,
-    Parent: [],
+    Parent: null,
     IsMainCity: null
   },
   "339": {
     Id: null,
-    MarketingProduct: [],
+    MarketingProduct: null,
     GlobalCode: null,
+    Type: null,
     Description: null,
     FullDescription: null,
     Notes: null,
     Link: null,
     SortOrder: null,
+    ForisID: null,
     Icon: null,
     PDF: {
       Name: null,
       AbsoluteUrl: null
     },
+    PdfFixedAlias: null,
+    PdfFixedLinks: null,
     StartDate: null,
     EndDate: null,
+    OldSiteId: null,
+    OldId: null,
+    OldSiteInvId: null,
+    OldCorpSiteId: null,
+    OldAliasId: null,
     Priority: null,
     ListImage: null,
     ArchiveDate: null,
     Modifiers: [],
     Parameters: [],
     Regions: [],
-    Type: {
-      Value: null,
-      Contents: {
-        Tariff: {
-          Id: null
-        },
-        Service: {
-          Id: null
-        },
-        Action: {
-          Id: null
-        },
-        RoamingScale: {
-          Id: null
-        },
-        Device: {
-          Id: null,
-          Downloads: [],
-          Inners: [],
-          FreezeDate: null,
-          FullUserGuide: {
-            Name: null,
-            AbsoluteUrl: null
-          },
-          QuickStartGuide: {
-            Name: null,
-            AbsoluteUrl: null
-          }
-        },
-        FixConnectAction: {
-          Id: null,
-          MarketingOffers: [],
-          PromoPeriod: null,
-          AfterPromo: null
-        },
-        TvPackage: {
-          Id: null
-        },
-        FixConnectTariff: {
-          Id: null,
-          TitleForSite: null
-        },
-        PhoneTariff: {
-          Id: null,
-          RostelecomLink: null
-        },
-        InternetTariff: {
-          Id: null
-        }
-      }
-    },
-    FixConnectAction: null,
+    FixConnectAction: [],
     Advantages: []
   },
   "340": {
@@ -6935,22 +5140,22 @@ const objectShapes: any = {
   },
   "354": {
     Id: null,
-    Group: [],
+    Group: null,
     Title: null,
-    Parent: [],
-    BaseParameter: [],
-    Zone: [],
-    Direction: [],
+    Parent: null,
+    BaseParameter: null,
+    Zone: null,
+    Direction: null,
     BaseParameterModifiers: [],
     Modifiers: [],
-    Unit: [],
+    Unit: null,
     SortOrder: null,
     NumValue: null,
     Value: null,
     Description: null,
     Image: null,
-    ProductGroup: [],
-    Choice: []
+    ProductGroup: null,
+    Choice: null
   },
   "355": {
     Id: null,
@@ -6958,23 +5163,120 @@ const objectShapes: any = {
     Title: null,
     Display: null,
     QuotaUnit: null,
-    QuotaPeriod: null
+    QuotaPeriod: null,
+    QuotaPeriodicity: null,
+    PeriodMultiplier: null,
+    Type: null
   },
   "360": {
     Id: null,
     Title: null,
     Alias: null
   },
+  "361": {
+    Id: null,
+    Title: null,
+    Modifiers: [],
+    Parameters: [],
+    Type: {
+      Value: null,
+      Contents: {
+        TariffTransfer: {
+          Id: null
+        },
+        MutualGroup: {
+          Id: null
+        },
+        ServiceOnTariff: {
+          Id: null,
+          Description: null
+        },
+        ServicesUpsale: {
+          Id: null,
+          Order: null
+        },
+        TariffOptionPackage: {
+          Id: null,
+          SubTitle: null,
+          Description: null,
+          Alias: null,
+          Link: null
+        },
+        ServiceRelation: {
+          Id: null
+        },
+        RoamingScaleOnTariff: {
+          Id: null
+        },
+        ServiceOnRoamingScale: {
+          Id: null
+        },
+        CrossSale: {
+          Id: null,
+          Order: null
+        },
+        MarketingCrossSale: {
+          Id: null,
+          Order: null
+        },
+        DeviceOnTariffs: {
+          Id: null,
+          Parent: null,
+          Order: null,
+          MarketingDevice: null,
+          MarketingTariffs: [],
+          Cities: []
+        },
+        DevicesForFixConnectAction: {
+          Id: null,
+          Order: null,
+          FixConnectAction: null,
+          Parent: null,
+          MarketingDevice: null
+        }
+      }
+    }
+  },
+  "362": {
+    Id: null,
+    Title: null,
+    Group: null,
+    BaseParameter: null,
+    Zone: null,
+    Direction: null,
+    BaseParameterModifiers: [],
+    Modifiers: [],
+    SortOrder: null,
+    NumValue: null,
+    Value: null,
+    Description: null,
+    Unit: null,
+    ProductGroup: null,
+    Choice: null,
+    OldSiteId: null,
+    OldCorpSiteId: null,
+    OldPointId: null,
+    OldCorpPointId: null
+  },
+  "364": {
+    Id: null
+  },
+  "365": {
+    Id: null
+  },
   "378": {
     Id: null,
-    SortOrder: null,
     Title: null,
     Alias: null,
+    SortOrder: null,
+    OldSiteId: null,
+    OldCorpSiteId: null,
     ImageSvg: {
       Name: null,
       AbsoluteUrl: null
     },
-    Type: null
+    Type: null,
+    TitleForIcin: null
   },
   "383": {
     Id: null,
@@ -7007,14 +5309,14 @@ const objectShapes: any = {
         },
         MarketingDevice: {
           Id: null,
-          DeviceType: [],
+          DeviceType: null,
           Segments: [],
-          CommunicationType: []
+          CommunicationType: null
         },
         MarketingFixConnectAction: {
           Id: null,
           Segment: [],
-          MarketingAction: [],
+          MarketingAction: null,
           StartDate: null,
           EndDate: null,
           PromoPeriod: null,
@@ -7028,13 +5330,13 @@ const objectShapes: any = {
         },
         MarketingFixConnectTariff: {
           Id: null,
-          Segment: [],
-          Category: [],
+          Segment: null,
+          Category: null,
           MarketingDevices: [],
           BonusTVPackages: [],
-          MarketingPhoneTariff: [],
-          MarketingInternetTariff: [],
-          MarketingTvPackage: [],
+          MarketingPhoneTariff: null,
+          MarketingInternetTariff: null,
+          MarketingTvPackage: null,
           TitleForSite: null
         },
         MarketingPhoneTariff: {
@@ -7047,9 +5349,9 @@ const objectShapes: any = {
     },
     FullDescription: null,
     Parameters: [],
-    TariffsOnMarketingDevice: null,
+    TariffsOnMarketingDevice: [],
     DevicesOnMarketingTariff: [],
-    ActionsOnMarketingDevice: null,
+    ActionsOnMarketingDevice: [],
     Link: null,
     DetailedDescription: null
   },
@@ -7060,6 +5362,24 @@ const objectShapes: any = {
     Id: null
   },
   "403": {
+    Id: null
+  },
+  "404": {
+    Id: null,
+    Description: null
+  },
+  "406": {
+    Id: null,
+    Order: null
+  },
+  "407": {
+    Id: null,
+    SubTitle: null,
+    Description: null,
+    Alias: null,
+    Link: null
+  },
+  "413": {
     Id: null
   },
   "415": {
@@ -7080,14 +5400,14 @@ const objectShapes: any = {
   },
   "424": {
     Id: null,
-    Group: [],
-    BaseParameter: [],
-    Zone: [],
-    Direction: [],
+    Group: null,
+    BaseParameter: null,
+    Zone: null,
+    Direction: null,
     BaseParameterModifiers: [],
     Modifiers: [],
-    Unit: [],
-    Choice: [],
+    Unit: null,
+    Choice: null,
     Title: null,
     SortOrder: null,
     NumValue: null,
@@ -7098,6 +5418,9 @@ const objectShapes: any = {
     Id: null
   },
   "435": {
+    Id: null
+  },
+  "438": {
     Id: null
   },
   "441": {
@@ -7113,6 +5436,9 @@ const objectShapes: any = {
     },
     TemplateType: null
   },
+  "444": {
+    Id: null
+  },
   "446": {
     Id: null,
     Title: null,
@@ -7126,6 +5452,14 @@ const objectShapes: any = {
     IsGift: null,
     OldSiteId: null
   },
+  "468": {
+    Id: null,
+    Order: null
+  },
+  "469": {
+    Id: null,
+    Order: null
+  },
   "471": {
     Id: null,
     Name: null,
@@ -7136,7 +5470,7 @@ const objectShapes: any = {
   },
   "472": {
     Id: null,
-    City: [],
+    City: null,
     HasIpTv: null
   },
   "478": {
@@ -7164,8 +5498,8 @@ const objectShapes: any = {
     Id: null,
     Title: null,
     Logo150: null,
-    Category: [],
-    ChannelType: [],
+    Category: null,
+    ChannelType: null,
     ShortDescription: null,
     Cities: [],
     Disabled: null,
@@ -7174,11 +5508,11 @@ const objectShapes: any = {
     LcnDvbC: null,
     LcnIpTv: null,
     LcnDvbS: null,
-    Format: [],
-    Parent: [],
+    Format: null,
+    Parent: null,
     Children: [],
     Logo40x30: null,
-    TimeZone: []
+    TimeZone: null
   },
   "488": {
     Id: null,
@@ -7188,9 +5522,9 @@ const objectShapes: any = {
   },
   "489": {
     Id: null,
-    DeviceType: [],
+    DeviceType: null,
     Segments: [],
-    CommunicationType: []
+    CommunicationType: null
   },
   "490": {
     Id: null,
@@ -7212,7 +5546,7 @@ const objectShapes: any = {
   },
   "493": {
     Id: null,
-    ConnectionType: [],
+    ConnectionType: null,
     Title: null,
     Alias: null,
     Order: null
@@ -7228,7 +5562,7 @@ const objectShapes: any = {
   "498": {
     Id: null,
     Segment: [],
-    MarketingAction: [],
+    MarketingAction: null,
     StartDate: null,
     EndDate: null,
     PromoPeriod: null,
@@ -7251,13 +5585,13 @@ const objectShapes: any = {
   },
   "504": {
     Id: null,
-    Segment: [],
-    Category: [],
+    Segment: null,
+    Category: null,
     MarketingDevices: [],
     BonusTVPackages: [],
-    MarketingPhoneTariff: [],
-    MarketingInternetTariff: [],
-    MarketingTvPackage: [],
+    MarketingPhoneTariff: null,
+    MarketingInternetTariff: null,
+    MarketingTvPackage: null,
     TitleForSite: null
   },
   "505": {
@@ -7276,6 +5610,21 @@ const objectShapes: any = {
   },
   "510": {
     Id: null
+  },
+  "511": {
+    Id: null,
+    Parent: null,
+    Order: null,
+    MarketingDevice: null,
+    MarketingTariffs: [],
+    Cities: []
+  },
+  "512": {
+    Id: null,
+    Order: null,
+    FixConnectAction: null,
+    Parent: null,
+    MarketingDevice: null
   }
 };
 
@@ -8624,32 +6973,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         Modifiers: {
                           IsBackward: false,
                           Content: {
-                            ContentId: 360,
-                            ContentPath: "/339:1542/383:2531/511:2530/361:1450/360",
-                            ContentName: "LinkModifier",
-                            ContentTitle: "Модификаторы связей",
-                            ContentDescription: "",
-                            ObjectShape: null,
-                            Fields: {
-                              Title: {
-                                FieldId: 1413,
-                                FieldName: "Title",
-                                FieldTitle: "Название",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Alias: {
-                                FieldId: 1414,
-                                FieldName: "Alias",
-                                FieldTitle: "Псевдоним",
-                                FieldDescription: "",
-                                FieldOrder: 2,
-                                IsRequired: false,
-                                FieldType: "String"
-                              }
-                            }
+                            $ref: "#/Definitions/LinkModifier"
                           },
                           FieldId: 1450,
                           FieldName: "Modifiers",
@@ -8681,50 +7005,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Group: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 378,
-                                  ContentPath: "/339:1542/383:2531/511:2530/361:1431/362:1678/378",
-                                  ContentName: "ProductParameterGroup",
-                                  ContentTitle: "Группы параметров продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1496,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 2049,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    SortOrder: {
-                                      FieldId: 1500,
-                                      FieldName: "SortOrder",
-                                      FieldTitle: "Порядок",
-                                      FieldDescription: "",
-                                      FieldOrder: 3,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    ImageSvg: {
-                                      FieldId: 2029,
-                                      FieldName: "ImageSvg",
-                                      FieldTitle: "Изображение",
-                                      FieldDescription: "",
-                                      FieldOrder: 7,
-                                      IsRequired: false,
-                                      FieldType: "File"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/ProductParameterGroup1"
                                 },
                                 FieldId: 1678,
                                 FieldName: "Group",
@@ -8737,50 +7018,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               BaseParameter: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 350,
-                                  ContentPath: "/339:1542/383:1869/424:1854/350",
-                                  ContentName: "BaseParameter",
-                                  ContentTitle: "Базовые параметры продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1358,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1359,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    AllowZone: {
-                                      FieldId: 2683,
-                                      FieldName: "AllowZone",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "Boolean"
-                                    },
-                                    AllowDirection: {
-                                      FieldId: 2684,
-                                      FieldName: "AllowDirection",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 6,
-                                      IsRequired: false,
-                                      FieldType: "Boolean"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/BaseParameter"
                                 },
                                 FieldId: 1420,
                                 FieldName: "BaseParameter",
@@ -8793,32 +7031,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Zone: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 346,
-                                  ContentPath: "/339:1542/383:1869/424:1855/346",
-                                  ContentName: "TariffZone",
-                                  ContentTitle: "Тарифные зоны",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1346,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1347,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/TariffZone"
                                 },
                                 FieldId: 1421,
                                 FieldName: "Zone",
@@ -8831,32 +7044,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Direction: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 347,
-                                  ContentPath: "/339:1542/383:1869/424:1856/347",
-                                  ContentName: "Direction",
-                                  ContentTitle: "Направления соединения",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1349,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1350,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/Direction"
                                 },
                                 FieldId: 1422,
                                 FieldName: "Direction",
@@ -8869,73 +7057,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               BaseParameterModifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 351,
-                                  ContentPath: "/339:1542/383:1869/424:1857/351",
-                                  ContentName: "BaseParameterModifier",
-                                  ContentTitle: "Модификаторы базовых параметров продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1361,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1362,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Type: {
-                                      Items: [
-                                        {
-                                          Value: "Step",
-                                          Alias: "Ступенчатая тарификация",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Package",
-                                          Alias: "Пакет",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Zone",
-                                          Alias: "Зона",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Direction",
-                                          Alias: "Направление",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Refining",
-                                          Alias: "Уточнение",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        }
-                                      ],
-                                      FieldId: 1894,
-                                      FieldName: "Type",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "StringEnum"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/BaseParameterModifier"
                                 },
                                 FieldId: 1423,
                                 FieldName: "BaseParameterModifiers",
@@ -8948,32 +7070,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Modifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 352,
-                                  ContentPath: "/339:1542/383:1869/424:1858/352",
-                                  ContentName: "ParameterModifier",
-                                  ContentTitle: "Модификаторы параметров продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1364,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1365,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/ParameterModifier"
                                 },
                                 FieldId: 1424,
                                 FieldName: "Modifiers",
@@ -9022,171 +7119,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Unit: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 355,
-                                  ContentPath: "/339:1542/383:1869/424:1862/355",
-                                  ContentName: "Unit",
-                                  ContentTitle: "Единицы измерения",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Alias: {
-                                      FieldId: 2062,
-                                      FieldName: "Alias",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Title: {
-                                      FieldId: 1384,
-                                      FieldName: "Title",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Display: {
-                                      FieldId: 1385,
-                                      FieldName: "Display",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 3,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    QuotaUnit: {
-                                      Items: [
-                                        {
-                                          Value: "mb",
-                                          Alias: "Мегабайт",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "gb",
-                                          Alias: "Гигабайт",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "kb",
-                                          Alias: "Килобайт",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "tb",
-                                          Alias: "Терабайт",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "min",
-                                          Alias: "Минута",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "message",
-                                          Alias: "Сообщение",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "rub",
-                                          Alias: "Рублей",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "sms",
-                                          Alias: "SMS",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "mms",
-                                          Alias: "MMS",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "mbit",
-                                          Alias: "Мегабит",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "step",
-                                          Alias: "Шаг",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        }
-                                      ],
-                                      FieldId: 1904,
-                                      FieldName: "QuotaUnit",
-                                      FieldTitle: "Размерность",
-                                      FieldDescription: "",
-                                      FieldOrder: 4,
-                                      IsRequired: false,
-                                      FieldType: "StringEnum"
-                                    },
-                                    QuotaPeriod: {
-                                      Items: [
-                                        {
-                                          Value: "daily",
-                                          Alias: "Сутки",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "weekly",
-                                          Alias: "Неделя",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "monthly",
-                                          Alias: "Месяц",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "hourly",
-                                          Alias: "Час",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "minutely",
-                                          Alias: "Минута",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "every_second",
-                                          Alias: "Секунда",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "annually",
-                                          Alias: "Год",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        }
-                                      ],
-                                      FieldId: 1905,
-                                      FieldName: "QuotaPeriod",
-                                      FieldTitle: "Период",
-                                      FieldDescription: "",
-                                      FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "StringEnum"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/Unit"
                                 },
                                 FieldId: 1428,
                                 FieldName: "Unit",
@@ -9218,41 +7151,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Choice: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 488,
-                                  ContentPath: "/339:1542/383:1869/424:2685/488",
-                                  ContentName: "ParameterChoice",
-                                  ContentTitle: "Варианты выбора для параметров",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 2379,
-                                      FieldName: "Title",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 2380,
-                                      FieldName: "Alias",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    OldSiteId: {
-                                      FieldId: 2382,
-                                      FieldName: "OldSiteId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 4,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/ParameterChoice"
                                 },
                                 FieldId: 2687,
                                 FieldName: "Choice",
@@ -9501,23 +7400,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   MarketingDevice: {
                     IsBackward: false,
                     Content: {
-                      ContentId: 383,
-                      ContentPath: "/339:1542/383:1540/504:2493/383",
-                      ContentName: "MarketingProduct",
-                      ContentTitle: "Маркетинговые продукты",
-                      ContentDescription: "",
-                      ObjectShape: null,
-                      Fields: {
-                        Alias: {
-                          FieldId: 1753,
-                          FieldName: "Alias",
-                          FieldTitle: "Псевдоним",
-                          FieldDescription: "",
-                          FieldOrder: 2,
-                          IsRequired: false,
-                          FieldType: "String"
-                        }
-                      }
+                      $ref: "#/Definitions/MarketingProduct2"
                     },
                     FieldId: 2531,
                     FieldName: "MarketingDevice",
@@ -9530,32 +7413,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   MarketingTariffs: {
                     IsBackward: false,
                     Content: {
-                      ContentId: 383,
-                      ContentPath: "/339:1542/383:1540/498:2564/383",
-                      ContentName: "MarketingProduct",
-                      ContentTitle: "Маркетинговые продукты",
-                      ContentDescription: "",
-                      ObjectShape: null,
-                      Fields: {
-                        Title: {
-                          FieldId: 1534,
-                          FieldName: "Title",
-                          FieldTitle: "Название",
-                          FieldDescription: "",
-                          FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
-                        },
-                        Alias: {
-                          FieldId: 1753,
-                          FieldName: "Alias",
-                          FieldTitle: "Псевдоним",
-                          FieldDescription: "",
-                          FieldOrder: 2,
-                          IsRequired: false,
-                          FieldType: "String"
-                        }
-                      }
+                      $ref: "#/Definitions/MarketingProduct3"
                     },
                     FieldId: 2532,
                     FieldName: "MarketingTariffs",
@@ -9568,32 +7426,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   Cities: {
                     IsBackward: false,
                     Content: {
-                      ContentId: 290,
-                      ContentPath: "/339:1542/383:2531/511:2533/290",
-                      ContentName: "Region",
-                      ContentTitle: "Регионы",
-                      ContentDescription: "",
-                      ObjectShape: null,
-                      Fields: {
-                        Alias: {
-                          FieldId: 1532,
-                          FieldName: "Alias",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 2,
-                          IsRequired: false,
-                          FieldType: "String"
-                        },
-                        Title: {
-                          FieldId: 1114,
-                          FieldName: "Title",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
-                        }
-                      }
+                      $ref: "#/Definitions/Region1"
                     },
                     FieldId: 2533,
                     FieldName: "Cities",
@@ -9709,171 +7542,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Unit: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 355,
-                                  ContentPath: "/339:1542/383:1869/424:1862/355",
-                                  ContentName: "Unit",
-                                  ContentTitle: "Единицы измерения",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Alias: {
-                                      FieldId: 2062,
-                                      FieldName: "Alias",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Title: {
-                                      FieldId: 1384,
-                                      FieldName: "Title",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Display: {
-                                      FieldId: 1385,
-                                      FieldName: "Display",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 3,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    QuotaUnit: {
-                                      Items: [
-                                        {
-                                          Value: "mb",
-                                          Alias: "Мегабайт",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "gb",
-                                          Alias: "Гигабайт",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "kb",
-                                          Alias: "Килобайт",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "tb",
-                                          Alias: "Терабайт",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "min",
-                                          Alias: "Минута",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "message",
-                                          Alias: "Сообщение",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "rub",
-                                          Alias: "Рублей",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "sms",
-                                          Alias: "SMS",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "mms",
-                                          Alias: "MMS",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "mbit",
-                                          Alias: "Мегабит",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "step",
-                                          Alias: "Шаг",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        }
-                                      ],
-                                      FieldId: 1904,
-                                      FieldName: "QuotaUnit",
-                                      FieldTitle: "Размерность",
-                                      FieldDescription: "",
-                                      FieldOrder: 4,
-                                      IsRequired: false,
-                                      FieldType: "StringEnum"
-                                    },
-                                    QuotaPeriod: {
-                                      Items: [
-                                        {
-                                          Value: "daily",
-                                          Alias: "Сутки",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "weekly",
-                                          Alias: "Неделя",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "monthly",
-                                          Alias: "Месяц",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "hourly",
-                                          Alias: "Час",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "minutely",
-                                          Alias: "Минута",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "every_second",
-                                          Alias: "Секунда",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "annually",
-                                          Alias: "Год",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        }
-                                      ],
-                                      FieldId: 1905,
-                                      FieldName: "QuotaPeriod",
-                                      FieldTitle: "Период",
-                                      FieldDescription: "",
-                                      FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "StringEnum"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/Unit"
                                 },
                                 FieldId: 1428,
                                 FieldName: "Unit",
@@ -9886,32 +7555,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Modifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 352,
-                                  ContentPath: "/339:1542/383:1869/424:1858/352",
-                                  ContentName: "ParameterModifier",
-                                  ContentTitle: "Модификаторы параметров продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1364,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1365,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/ParameterModifier"
                                 },
                                 FieldId: 1424,
                                 FieldName: "Modifiers",
@@ -9924,73 +7568,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               BaseParameterModifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 351,
-                                  ContentPath: "/339:1542/383:1869/424:1857/351",
-                                  ContentName: "BaseParameterModifier",
-                                  ContentTitle: "Модификаторы базовых параметров продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1361,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1362,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Type: {
-                                      Items: [
-                                        {
-                                          Value: "Step",
-                                          Alias: "Ступенчатая тарификация",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Package",
-                                          Alias: "Пакет",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Zone",
-                                          Alias: "Зона",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Direction",
-                                          Alias: "Направление",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Refining",
-                                          Alias: "Уточнение",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        }
-                                      ],
-                                      FieldId: 1894,
-                                      FieldName: "Type",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "StringEnum"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/BaseParameterModifier"
                                 },
                                 FieldId: 1423,
                                 FieldName: "BaseParameterModifiers",
@@ -10003,32 +7581,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Direction: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 347,
-                                  ContentPath: "/339:1542/383:1869/424:1856/347",
-                                  ContentName: "Direction",
-                                  ContentTitle: "Направления соединения",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1349,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1350,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/Direction"
                                 },
                                 FieldId: 1422,
                                 FieldName: "Direction",
@@ -10041,32 +7594,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Zone: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 346,
-                                  ContentPath: "/339:1542/383:1869/424:1855/346",
-                                  ContentName: "TariffZone",
-                                  ContentTitle: "Тарифные зоны",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1346,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1347,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/TariffZone"
                                 },
                                 FieldId: 1421,
                                 FieldName: "Zone",
@@ -10079,50 +7607,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               BaseParameter: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 350,
-                                  ContentPath: "/339:1542/383:1869/424:1854/350",
-                                  ContentName: "BaseParameter",
-                                  ContentTitle: "Базовые параметры продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1358,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1359,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    AllowZone: {
-                                      FieldId: 2683,
-                                      FieldName: "AllowZone",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "Boolean"
-                                    },
-                                    AllowDirection: {
-                                      FieldId: 2684,
-                                      FieldName: "AllowDirection",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 6,
-                                      IsRequired: false,
-                                      FieldType: "Boolean"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/BaseParameter"
                                 },
                                 FieldId: 1420,
                                 FieldName: "BaseParameter",
@@ -10135,59 +7620,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Group: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 378,
-                                  ContentPath: "/339:1542/383:1869/424:1852/378",
-                                  ContentName: "ProductParameterGroup",
-                                  ContentTitle: "Группы параметров продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    SortOrder: {
-                                      FieldId: 1500,
-                                      FieldName: "SortOrder",
-                                      FieldTitle: "Порядок",
-                                      FieldDescription: "",
-                                      FieldOrder: 3,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    },
-                                    Title: {
-                                      FieldId: 1496,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 2049,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    ImageSvg: {
-                                      FieldId: 2029,
-                                      FieldName: "ImageSvg",
-                                      FieldTitle: "Изображение",
-                                      FieldDescription: "",
-                                      FieldOrder: 7,
-                                      IsRequired: false,
-                                      FieldType: "File"
-                                    },
-                                    Type: {
-                                      FieldId: 2061,
-                                      FieldName: "Type",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 8,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/ProductParameterGroup"
                                 },
                                 FieldId: 1678,
                                 FieldName: "Group",
@@ -10200,41 +7633,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Choice: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 488,
-                                  ContentPath: "/339:1542/383:1869/424:2685/488",
-                                  ContentName: "ParameterChoice",
-                                  ContentTitle: "Варианты выбора для параметров",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 2379,
-                                      FieldName: "Title",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 2380,
-                                      FieldName: "Alias",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    OldSiteId: {
-                                      FieldId: 2382,
-                                      FieldName: "OldSiteId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 4,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/ParameterChoice"
                                 },
                                 FieldId: 2687,
                                 FieldName: "Choice",
@@ -10257,32 +7656,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         Modifiers: {
                           IsBackward: false,
                           Content: {
-                            ContentId: 360,
-                            ContentPath: "/339:1542/383:2531/511:2530/361:1450/360",
-                            ContentName: "LinkModifier",
-                            ContentTitle: "Модификаторы связей",
-                            ContentDescription: "",
-                            ObjectShape: null,
-                            Fields: {
-                              Title: {
-                                FieldId: 1413,
-                                FieldName: "Title",
-                                FieldTitle: "Название",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Alias: {
-                                FieldId: 1414,
-                                FieldName: "Alias",
-                                FieldTitle: "Псевдоним",
-                                FieldDescription: "",
-                                FieldOrder: 2,
-                                IsRequired: false,
-                                FieldType: "String"
-                              }
-                            }
+                            $ref: "#/Definitions/LinkModifier"
                           },
                           FieldId: 1450,
                           FieldName: "Modifiers",
@@ -10305,32 +7679,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   MarketingDevice: {
                     IsBackward: false,
                     Content: {
-                      ContentId: 383,
-                      ContentPath: "/339:1542/383:1540/498:2564/383",
-                      ContentName: "MarketingProduct",
-                      ContentTitle: "Маркетинговые продукты",
-                      ContentDescription: "",
-                      ObjectShape: null,
-                      Fields: {
-                        Title: {
-                          FieldId: 1534,
-                          FieldName: "Title",
-                          FieldTitle: "Название",
-                          FieldDescription: "",
-                          FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
-                        },
-                        Alias: {
-                          FieldId: 1753,
-                          FieldName: "Alias",
-                          FieldTitle: "Псевдоним",
-                          FieldDescription: "",
-                          FieldOrder: 2,
-                          IsRequired: false,
-                          FieldType: "String"
-                        }
-                      }
+                      $ref: "#/Definitions/MarketingProduct3"
                     },
                     FieldId: 2531,
                     FieldName: "MarketingDevice",
@@ -10343,32 +7692,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   Cities: {
                     IsBackward: false,
                     Content: {
-                      ContentId: 290,
-                      ContentPath: "/339:1542/383:2531/511:2533/290",
-                      ContentName: "Region",
-                      ContentTitle: "Регионы",
-                      ContentDescription: "",
-                      ObjectShape: null,
-                      Fields: {
-                        Alias: {
-                          FieldId: 1532,
-                          FieldName: "Alias",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 2,
-                          IsRequired: false,
-                          FieldType: "String"
-                        },
-                        Title: {
-                          FieldId: 1114,
-                          FieldName: "Title",
-                          FieldTitle: "",
-                          FieldDescription: "",
-                          FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
-                        }
-                      }
+                      $ref: "#/Definitions/Region1"
                     },
                     FieldId: 2533,
                     FieldName: "Cities",
@@ -10899,73 +8223,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               BaseParameterModifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 351,
-                                  ContentPath: "/339:1542/383:1869/424:1857/351",
-                                  ContentName: "BaseParameterModifier",
-                                  ContentTitle: "Модификаторы базовых параметров продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1361,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1362,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Type: {
-                                      Items: [
-                                        {
-                                          Value: "Step",
-                                          Alias: "Ступенчатая тарификация",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Package",
-                                          Alias: "Пакет",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Zone",
-                                          Alias: "Зона",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Direction",
-                                          Alias: "Направление",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        },
-                                        {
-                                          Value: "Refining",
-                                          Alias: "Уточнение",
-                                          IsDefault: false,
-                                          Invalid: false
-                                        }
-                                      ],
-                                      FieldId: 1894,
-                                      FieldName: "Type",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "StringEnum"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/BaseParameterModifier"
                                 },
                                 FieldId: 1423,
                                 FieldName: "BaseParameterModifiers",
@@ -10978,32 +8236,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Modifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 352,
-                                  ContentPath: "/339:1542/383:1869/424:1858/352",
-                                  ContentName: "ParameterModifier",
-                                  ContentTitle: "Модификаторы параметров продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1364,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1365,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/ParameterModifier"
                                 },
                                 FieldId: 1424,
                                 FieldName: "Modifiers",
@@ -11016,32 +8249,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Direction: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 347,
-                                  ContentPath: "/339:1542/383:1869/424:1856/347",
-                                  ContentName: "Direction",
-                                  ContentTitle: "Направления соединения",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1349,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1350,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/Direction"
                                 },
                                 FieldId: 1422,
                                 FieldName: "Direction",
@@ -11054,32 +8262,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Zone: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 346,
-                                  ContentPath: "/339:1542/383:1869/424:1855/346",
-                                  ContentName: "TariffZone",
-                                  ContentTitle: "Тарифные зоны",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1346,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1347,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/TariffZone"
                                 },
                                 FieldId: 1421,
                                 FieldName: "Zone",
@@ -11092,50 +8275,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               BaseParameter: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 350,
-                                  ContentPath: "/339:1542/383:1869/424:1854/350",
-                                  ContentName: "BaseParameter",
-                                  ContentTitle: "Базовые параметры продуктов",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 1358,
-                                      FieldName: "Title",
-                                      FieldTitle: "Название",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 1359,
-                                      FieldName: "Alias",
-                                      FieldTitle: "Псевдоним",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    AllowZone: {
-                                      FieldId: 2683,
-                                      FieldName: "AllowZone",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "Boolean"
-                                    },
-                                    AllowDirection: {
-                                      FieldId: 2684,
-                                      FieldName: "AllowDirection",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 6,
-                                      IsRequired: false,
-                                      FieldType: "Boolean"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/BaseParameter"
                                 },
                                 FieldId: 1420,
                                 FieldName: "BaseParameter",
@@ -11240,41 +8380,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               Choice: {
                                 IsBackward: false,
                                 Content: {
-                                  ContentId: 488,
-                                  ContentPath: "/339:1542/383:1869/424:2685/488",
-                                  ContentName: "ParameterChoice",
-                                  ContentTitle: "Варианты выбора для параметров",
-                                  ContentDescription: "",
-                                  ObjectShape: null,
-                                  Fields: {
-                                    Title: {
-                                      FieldId: 2379,
-                                      FieldName: "Title",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    Alias: {
-                                      FieldId: 2380,
-                                      FieldName: "Alias",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
-                                    },
-                                    OldSiteId: {
-                                      FieldId: 2382,
-                                      FieldName: "OldSiteId",
-                                      FieldTitle: "",
-                                      FieldDescription: "",
-                                      FieldOrder: 4,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
-                                    }
-                                  }
+                                  $ref: "#/Definitions/ParameterChoice"
                                 },
                                 FieldId: 2687,
                                 FieldName: "Choice",
@@ -11378,32 +8484,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         Modifiers: {
                           IsBackward: false,
                           Content: {
-                            ContentId: 360,
-                            ContentPath: "/339:1542/383:2531/511:2530/361:1450/360",
-                            ContentName: "LinkModifier",
-                            ContentTitle: "Модификаторы связей",
-                            ContentDescription: "",
-                            ObjectShape: null,
-                            Fields: {
-                              Title: {
-                                FieldId: 1413,
-                                FieldName: "Title",
-                                FieldTitle: "Название",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Alias: {
-                                FieldId: 1414,
-                                FieldName: "Alias",
-                                FieldTitle: "Псевдоним",
-                                FieldDescription: "",
-                                FieldOrder: 2,
-                                IsRequired: false,
-                                FieldType: "String"
-                              }
-                            }
+                            $ref: "#/Definitions/LinkModifier"
                           },
                           FieldId: 1450,
                           FieldName: "Modifiers",
@@ -12153,41 +9234,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             MarketingDevice: {
               IsBackward: false,
               Content: {
-                ContentId: 383,
-                ContentPath: "/339:1542/383:1540/504:2519/383",
-                ContentName: "MarketingProduct",
-                ContentTitle: "Маркетинговые продукты",
-                ContentDescription: "",
-                ObjectShape: null,
-                Fields: {
-                  Title: {
-                    FieldId: 1534,
-                    FieldName: "Title",
-                    FieldTitle: "Название",
-                    FieldDescription: "",
-                    FieldOrder: 1,
-                    IsRequired: false,
-                    FieldType: "String"
-                  },
-                  Alias: {
-                    FieldId: 1753,
-                    FieldName: "Alias",
-                    FieldTitle: "Псевдоним",
-                    FieldDescription: "",
-                    FieldOrder: 2,
-                    IsRequired: false,
-                    FieldType: "String"
-                  },
-                  Priority: {
-                    FieldId: 2032,
-                    FieldName: "Priority",
-                    FieldTitle: "Приоритет (популярность)",
-                    FieldDescription: "Сортировка по возрастанию значения приоритета",
-                    FieldOrder: 19,
-                    IsRequired: false,
-                    FieldType: "Numeric"
-                  }
-                }
+                $ref: "#/Definitions/MarketingProduct"
               },
               FieldId: 2538,
               FieldName: "MarketingDevice",
@@ -12229,50 +9276,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         BaseParameter: {
                           IsBackward: false,
                           Content: {
-                            ContentId: 350,
-                            ContentPath: "/339:1542/383:1869/424:1854/350",
-                            ContentName: "BaseParameter",
-                            ContentTitle: "Базовые параметры продуктов",
-                            ContentDescription: "",
-                            ObjectShape: null,
-                            Fields: {
-                              Title: {
-                                FieldId: 1358,
-                                FieldName: "Title",
-                                FieldTitle: "Название",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Alias: {
-                                FieldId: 1359,
-                                FieldName: "Alias",
-                                FieldTitle: "Псевдоним",
-                                FieldDescription: "",
-                                FieldOrder: 2,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              AllowZone: {
-                                FieldId: 2683,
-                                FieldName: "AllowZone",
-                                FieldTitle: "",
-                                FieldDescription: "",
-                                FieldOrder: 5,
-                                IsRequired: false,
-                                FieldType: "Boolean"
-                              },
-                              AllowDirection: {
-                                FieldId: 2684,
-                                FieldName: "AllowDirection",
-                                FieldTitle: "",
-                                FieldDescription: "",
-                                FieldOrder: 6,
-                                IsRequired: false,
-                                FieldType: "Boolean"
-                              }
-                            }
+                            $ref: "#/Definitions/BaseParameter"
                           },
                           FieldId: 1420,
                           FieldName: "BaseParameter",
@@ -12285,32 +9289,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         Zone: {
                           IsBackward: false,
                           Content: {
-                            ContentId: 346,
-                            ContentPath: "/339:1542/383:1869/424:1855/346",
-                            ContentName: "TariffZone",
-                            ContentTitle: "Тарифные зоны",
-                            ContentDescription: "",
-                            ObjectShape: null,
-                            Fields: {
-                              Title: {
-                                FieldId: 1346,
-                                FieldName: "Title",
-                                FieldTitle: "Название",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Alias: {
-                                FieldId: 1347,
-                                FieldName: "Alias",
-                                FieldTitle: "Псевдоним",
-                                FieldDescription: "",
-                                FieldOrder: 2,
-                                IsRequired: false,
-                                FieldType: "String"
-                              }
-                            }
+                            $ref: "#/Definitions/TariffZone"
                           },
                           FieldId: 1421,
                           FieldName: "Zone",
@@ -12323,32 +9302,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         Direction: {
                           IsBackward: false,
                           Content: {
-                            ContentId: 347,
-                            ContentPath: "/339:1542/383:1869/424:1856/347",
-                            ContentName: "Direction",
-                            ContentTitle: "Направления соединения",
-                            ContentDescription: "",
-                            ObjectShape: null,
-                            Fields: {
-                              Title: {
-                                FieldId: 1349,
-                                FieldName: "Title",
-                                FieldTitle: "Название",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Alias: {
-                                FieldId: 1350,
-                                FieldName: "Alias",
-                                FieldTitle: "Псевдоним",
-                                FieldDescription: "",
-                                FieldOrder: 2,
-                                IsRequired: false,
-                                FieldType: "String"
-                              }
-                            }
+                            $ref: "#/Definitions/Direction"
                           },
                           FieldId: 1422,
                           FieldName: "Direction",
@@ -12361,73 +9315,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         BaseParameterModifiers: {
                           IsBackward: false,
                           Content: {
-                            ContentId: 351,
-                            ContentPath: "/339:1542/383:1869/424:1857/351",
-                            ContentName: "BaseParameterModifier",
-                            ContentTitle: "Модификаторы базовых параметров продуктов",
-                            ContentDescription: "",
-                            ObjectShape: null,
-                            Fields: {
-                              Title: {
-                                FieldId: 1361,
-                                FieldName: "Title",
-                                FieldTitle: "Название",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Alias: {
-                                FieldId: 1362,
-                                FieldName: "Alias",
-                                FieldTitle: "Псевдоним",
-                                FieldDescription: "",
-                                FieldOrder: 2,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Type: {
-                                Items: [
-                                  {
-                                    Value: "Step",
-                                    Alias: "Ступенчатая тарификация",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "Package",
-                                    Alias: "Пакет",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "Zone",
-                                    Alias: "Зона",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "Direction",
-                                    Alias: "Направление",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "Refining",
-                                    Alias: "Уточнение",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  }
-                                ],
-                                FieldId: 1894,
-                                FieldName: "Type",
-                                FieldTitle: "",
-                                FieldDescription: "",
-                                FieldOrder: 5,
-                                IsRequired: false,
-                                FieldType: "StringEnum"
-                              }
-                            }
+                            $ref: "#/Definitions/BaseParameterModifier"
                           },
                           FieldId: 1423,
                           FieldName: "BaseParameterModifiers",
@@ -12440,32 +9328,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         Modifiers: {
                           IsBackward: false,
                           Content: {
-                            ContentId: 352,
-                            ContentPath: "/339:1542/383:1869/424:1858/352",
-                            ContentName: "ParameterModifier",
-                            ContentTitle: "Модификаторы параметров продуктов",
-                            ContentDescription: "",
-                            ObjectShape: null,
-                            Fields: {
-                              Title: {
-                                FieldId: 1364,
-                                FieldName: "Title",
-                                FieldTitle: "Название",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Alias: {
-                                FieldId: 1365,
-                                FieldName: "Alias",
-                                FieldTitle: "Псевдоним",
-                                FieldDescription: "",
-                                FieldOrder: 2,
-                                IsRequired: false,
-                                FieldType: "String"
-                              }
-                            }
+                            $ref: "#/Definitions/ParameterModifier"
                           },
                           FieldId: 1424,
                           FieldName: "Modifiers",
@@ -12478,171 +9341,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         Unit: {
                           IsBackward: false,
                           Content: {
-                            ContentId: 355,
-                            ContentPath: "/339:1542/383:1869/424:1862/355",
-                            ContentName: "Unit",
-                            ContentTitle: "Единицы измерения",
-                            ContentDescription: "",
-                            ObjectShape: null,
-                            Fields: {
-                              Alias: {
-                                FieldId: 2062,
-                                FieldName: "Alias",
-                                FieldTitle: "",
-                                FieldDescription: "",
-                                FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Title: {
-                                FieldId: 1384,
-                                FieldName: "Title",
-                                FieldTitle: "",
-                                FieldDescription: "",
-                                FieldOrder: 2,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              Display: {
-                                FieldId: 1385,
-                                FieldName: "Display",
-                                FieldTitle: "",
-                                FieldDescription: "",
-                                FieldOrder: 3,
-                                IsRequired: false,
-                                FieldType: "String"
-                              },
-                              QuotaUnit: {
-                                Items: [
-                                  {
-                                    Value: "mb",
-                                    Alias: "Мегабайт",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "gb",
-                                    Alias: "Гигабайт",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "kb",
-                                    Alias: "Килобайт",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "tb",
-                                    Alias: "Терабайт",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "min",
-                                    Alias: "Минута",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "message",
-                                    Alias: "Сообщение",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "rub",
-                                    Alias: "Рублей",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "sms",
-                                    Alias: "SMS",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "mms",
-                                    Alias: "MMS",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "mbit",
-                                    Alias: "Мегабит",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "step",
-                                    Alias: "Шаг",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  }
-                                ],
-                                FieldId: 1904,
-                                FieldName: "QuotaUnit",
-                                FieldTitle: "Размерность",
-                                FieldDescription: "",
-                                FieldOrder: 4,
-                                IsRequired: false,
-                                FieldType: "StringEnum"
-                              },
-                              QuotaPeriod: {
-                                Items: [
-                                  {
-                                    Value: "daily",
-                                    Alias: "Сутки",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "weekly",
-                                    Alias: "Неделя",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "monthly",
-                                    Alias: "Месяц",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "hourly",
-                                    Alias: "Час",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "minutely",
-                                    Alias: "Минута",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "every_second",
-                                    Alias: "Секунда",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  },
-                                  {
-                                    Value: "annually",
-                                    Alias: "Год",
-                                    IsDefault: false,
-                                    Invalid: false
-                                  }
-                                ],
-                                FieldId: 1905,
-                                FieldName: "QuotaPeriod",
-                                FieldTitle: "Период",
-                                FieldDescription: "",
-                                FieldOrder: 5,
-                                IsRequired: false,
-                                FieldType: "StringEnum"
-                              }
-                            }
+                            $ref: "#/Definitions/Unit"
                           },
                           FieldId: 1428,
                           FieldName: "Unit",
@@ -12710,32 +9409,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   Modifiers: {
                     IsBackward: false,
                     Content: {
-                      ContentId: 360,
-                      ContentPath: "/339:1542/383:2531/511:2530/361:1450/360",
-                      ContentName: "LinkModifier",
-                      ContentTitle: "Модификаторы связей",
-                      ContentDescription: "",
-                      ObjectShape: null,
-                      Fields: {
-                        Title: {
-                          FieldId: 1413,
-                          FieldName: "Title",
-                          FieldTitle: "Название",
-                          FieldDescription: "",
-                          FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
-                        },
-                        Alias: {
-                          FieldId: 1414,
-                          FieldName: "Alias",
-                          FieldTitle: "Псевдоним",
-                          FieldDescription: "",
-                          FieldOrder: 2,
-                          IsRequired: false,
-                          FieldType: "String"
-                        }
-                      }
+                      $ref: "#/Definitions/LinkModifier"
                     },
                     FieldId: 1450,
                     FieldName: "Modifiers",

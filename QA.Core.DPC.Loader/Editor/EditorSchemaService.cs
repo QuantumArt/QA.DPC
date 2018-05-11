@@ -271,7 +271,7 @@ namespace QA.Core.DPC.Loader.Editor
 
                 foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
                 {
-                    if (fieldSchema is RelationFieldSchema relationSchema)
+                    if (fieldSchema is IRelationFieldSchema relationSchema)
                     {
                         relationSchema.Content = DeduplicateContentSchema(
                             relationSchema.Content, context, visitedSchemas);

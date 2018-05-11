@@ -57,14 +57,21 @@ namespace QA.Core.DPC.Loader.Editor
         public StringEnumItem[] Items { get; set; } = new StringEnumItem[0];
     }
 
-    public class RelationFieldSchema : FieldSchema
+    public interface IRelationFieldSchema
+    {
+        bool IsBackward { get; }
+
+        IContentSchema Content { get; set; }
+    }
+
+    public class RelationFieldSchema : FieldSchema, IRelationFieldSchema
     {
         public bool IsBackward => false;
 
         public IContentSchema Content { get; set; }
     }
 
-    public class BackwardFieldSchema : FieldSchema
+    public class BackwardFieldSchema : FieldSchema, IRelationFieldSchema
     {
         public bool IsBackward => true;
 
