@@ -3,7 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { observable } from "mobx";
 import { ArticleEditor } from "../../ClientApp/Components/ArticleEditor/ArticleEditor";
-import { productDefinitionSchema as schema } from "../../ClientApp/Editors/MtsFixTariff/ProductDefinition";
+import { productEditorSchema as schema } from "../../ClientApp/Editors/MtsFixTariff/ProductEditorSchema";
 
 (async () => {
   const element = document.getElementById("editor");

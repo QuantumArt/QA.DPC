@@ -1,32 +1,13 @@
 import React, { Component } from "react";
 import { action, observable } from "mobx";
 import { observer } from "mobx-react";
-import "./FormControls.scss";
 
-export const Input = observer(({ model, name, ...props }) => {
-  const value = model[name];
-  return (
-    <input
-      type="text"
-      className="editor-input"
-      value={value == null ? "" : value}
-      onInput={action(e => {
-        // @ts-ignore
-        model[name] = e.target.value;
-      })}
-      {...props}
-    />
-  );
-});
-
-type NumericProps = {
+@observer
+export class Numeric extends Component<{
   model: any;
   name: string;
   [x: string]: any;
-};
-
-@observer
-export class Numeric extends Component<NumericProps> {
+}> {
   @observable pendingValue = "";
 
   handleChange = action(e => {
@@ -71,33 +52,3 @@ export class Numeric extends Component<NumericProps> {
     );
   }
 }
-
-// TODO: autosize
-export const Textarea = observer(({ model, name, ...props }) => {
-  const value = model[name];
-  return (
-    <textarea
-      type="text"
-      className="editor-textarea"
-      value={value == null ? "" : value}
-      onInput={action(e => {
-        // @ts-ignore
-        model[name] = e.target.value;
-      })}
-      {...props}
-    />
-  );
-});
-
-export const Checkbox = observer(({ model, name, ...props }) => (
-  <input
-    type="checkbox"
-    className="editor-checkbox"
-    checked={!!model[name]}
-    onChange={action(e => {
-      // @ts-ignore
-      model[name] = !!e.target.checked;
-    })}
-    {...props}
-  />
-));

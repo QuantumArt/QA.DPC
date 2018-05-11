@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { Input, Numeric, Textarea, Checkbox } from "../FormControls/FormControls";
+import { Checkbox, Input, Numeric, Textarea } from "../FormControls/FormControls";
 
 type Props = {
   article: any;
