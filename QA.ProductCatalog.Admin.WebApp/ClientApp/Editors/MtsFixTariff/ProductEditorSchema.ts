@@ -1,4 +1,3 @@
-// @ts-nocheck
 /** Описание полей продукта */
 export interface ProductEditorSchema {
   ContentId: number;
@@ -5841,6 +5840,7 @@ interface RegionSchema {
   };
   include: (selector: (fields: RegionSchema["Fields"]) => Selection[]) => string[];
 }
+// @ts-ignore
 interface Region1Schema {
   ContentId: number;
   ContentPath: string;
@@ -6677,6 +6677,7 @@ interface ProductParameterGroup1Schema {
     };
   };
 }
+// @ts-ignore
 interface LinkModifierSchema {
   ContentId: number;
   ContentPath: string;

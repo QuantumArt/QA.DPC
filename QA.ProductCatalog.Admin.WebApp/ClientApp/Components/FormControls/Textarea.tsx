@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { action, observable } from "mobx";
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import TextareaAutosize from "react-textarea-autosize";
 

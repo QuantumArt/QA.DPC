@@ -85,7 +85,7 @@ namespace QA.Core.DPC.Loader.Editor
             if (!context.ShapesByContentId.TryGetValue(article.ContentId, out ContentObject contentShape))
             {
                 throw new InvalidOperationException(
-                    $"Product does not contain definition for content \"{article.ContentId}\" from article \"{article.Id}\"");
+                    $"Product does not contain definition for content ({article.ContentId}) from article {article.ContentName}({article.Id})");
             }
 
             var dict = (ContentObject)contentShape.Clone();
@@ -152,7 +152,7 @@ namespace QA.Core.DPC.Loader.Editor
             else
             {
                 throw new InvalidOperationException(
-                    $"Product does not contain definition for extension field \"{field.FieldName}\"");
+                    $"Product does not contain definition for extension field {field.FieldName}");
             }
         }
 

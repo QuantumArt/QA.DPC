@@ -3,6 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { observable } from "mobx";
 import { ArticleEditor } from "../../ClientApp/Components/ArticleEditor/ArticleEditor";
+import { deduplicateArticles } from "../../ClientApp/Utils/ProductEditor";
 import { productEditorSchema as schema } from "../../ClientApp/Editors/MtsFixTariff/ProductEditorSchema";
 
 (async () => {
@@ -18,6 +19,10 @@ import { productEditorSchema as schema } from "../../ClientApp/Editors/MtsFixTar
     const article = await response.json();
 
     console.log(article);
+
+    const articlesById = deduplicateArticles(article);
+
+    console.log(articlesById);
 
     ReactDOM.render(
       <ArticleEditor
