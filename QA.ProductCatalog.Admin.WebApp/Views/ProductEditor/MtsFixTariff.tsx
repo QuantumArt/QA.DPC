@@ -1,9 +1,9 @@
 ﻿import "normalize.css/normalize.css";
 import React from "react";
 import ReactDOM from "react-dom";
-import { observable } from "mobx";
+import { toJS } from "mobx";
 import { ArticleEditor } from "../../ClientApp/Components/ArticleEditor/ArticleEditor";
-import { deduplicateArticles } from "../../ClientApp/Utils/ProductEditor";
+import { createProductModel, serializeProductModel } from "../../ClientApp/Utils/ProductEditor";
 import { productEditorSchema as schema } from "../../ClientApp/Editors/MtsFixTariff/ProductEditorSchema";
 
 (async () => {
@@ -16,17 +16,16 @@ import { productEditorSchema as schema } from "../../ClientApp/Editors/MtsFixTar
     `${rootUrl}/ProductEditor/GetProductTest${query}&articleId=${articleId}`
   );
   if (response.ok) {
-    const article = await response.json();
+    const rootArticle = await response.json();
 
-    console.log(article);
+    // @ts-ignore
+    const { article, articlesById } = createProductModel(rootArticle);
 
-    const articlesById = deduplicateArticles(article);
-
-    console.log(articlesById);
+    console.log(serializeProductModel(toJS(article)));
 
     ReactDOM.render(
       <ArticleEditor
-        article={observable(article)}
+        article={article}
         contentSchema={schema}
         contentPaths={schema.include(p => [
           p.MarketingProduct.include(m => [m.Modifiers]),
