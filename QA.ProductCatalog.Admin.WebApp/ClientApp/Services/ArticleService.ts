@@ -1,41 +1,37 @@
-import { observable, extendObservable, runInAction } from "mobx";
+import { observable, extendObservable, runInAction, toJS } from "mobx";
 
 type Article = { Id: number; [x: string]: any };
 
-/**
- * Заменить объекты c одинаковым Id на перевое вхождение такого объекта
- * @param rootArticle
- */
-export function createProductModel(rootArticle: Article) {
-  const articlesById: { [id: number]: Article } = Object.create(null);
+export class ArticleService {
+  public articlesById: { [id: number]: Article } = Object.create(null);
+  public rootArticle: Article = null;
 
-  runInAction(() => {
-    createArticles(rootArticle);
-    mergeArticles(rootArticle);
-  });
+  constructor(rootArticle: Article) {
+    runInAction(() => {
+      this.createArticles(rootArticle);
+      this.mergeArticles(rootArticle);
+    });
 
-  return {
-    articlesById,
-    article: articlesById[rootArticle.Id]
-  };
-
-  function createArticles(arg: any) {
-    if (Array.isArray(arg)) {
-      arg.forEach(createArticles);
-    } else if (isObject(arg)) {
-      if (isInteger(arg.Id) && !articlesById[arg.Id]) {
-        articlesById[arg.Id] = observable({}) as any;
-      }
-      Object.values(arg).forEach(createArticles);
-    }
+    this.rootArticle = this.articlesById[rootArticle.Id];
   }
 
-  function mergeArticles(arg: any) {
+  private createArticles = (arg: any) => {
     if (Array.isArray(arg)) {
-      arg.forEach(mergeArticles);
+      arg.forEach(this.createArticles);
+    } else if (isObject(arg)) {
+      if (isInteger(arg.Id) && !this.articlesById[arg.Id]) {
+        this.articlesById[arg.Id] = observable({}) as any;
+      }
+      Object.values(arg).forEach(this.createArticles);
+    }
+  };
+
+  private mergeArticles = (arg: any) => {
+    if (Array.isArray(arg)) {
+      arg.forEach(this.mergeArticles);
     } else if (isObject(arg)) {
       if (isInteger(arg.Id)) {
-        const article = articlesById[arg.Id];
+        const article = this.articlesById[arg.Id];
         Object.entries(arg).forEach(([key, value]: [string, any]) => {
           if (!(key in article)) {
             extendObservable(article, {
@@ -46,13 +42,13 @@ export function createProductModel(rootArticle: Article) {
           if (isObject(value) && isInteger(value.Id)) {
             // M2ORelation
             if (articleField === null) {
-              article[key] = articlesById[value.Id];
+              article[key] = this.articlesById[value.Id];
             }
           } else if (Array.isArray(value)) {
             // BackwardRelation, O2MRelation or M2MRelation
             if (value.length > 0 && articleField.length === 0) {
               article[key] = value.map(
-                el => (isObject(el) && isInteger(el.Id) ? articlesById[el.Id] : el)
+                el => (isObject(el) && isInteger(el.Id) ? this.articlesById[el.Id] : el)
               );
             }
           } else if (isObject(value) && "Value" in value && "Contents" in value) {
@@ -60,7 +56,9 @@ export function createProductModel(rootArticle: Article) {
             if (articleField === null || articleField.Value === null) {
               const contents = {};
               Object.entries(value.Contents).forEach(([name, extension]: [string, any]) => {
-                contents[name] = isInteger(extension.Id) ? articlesById[extension.Id] : extension;
+                contents[name] = isInteger(extension.Id)
+                  ? this.articlesById[extension.Id]
+                  : extension;
               });
               article[key] = {
                 Value: value.Value,
@@ -72,24 +70,25 @@ export function createProductModel(rootArticle: Article) {
           }
         });
       }
-      Object.values(arg).forEach(mergeArticles);
+      Object.values(arg).forEach(this.mergeArticles);
     }
-  }
-}
+  };
 
-export function serializeProductModel(rootArticle: Article) {
-  const isArticleVisitedById = Object.create(null);
+  public serializeArticle(article: Article) {
+    const plainArticle = toJS(article);
+    const isArticleVisitedById = Object.create(null);
 
-  return JSON.stringify(rootArticle, (_key, value) => {
-    if (isObject(value) && isInteger(value.Id)) {
-      if (isArticleVisitedById[value.Id]) {
-        return { Id: value.Id };
+    return JSON.stringify(plainArticle, (_key, value) => {
+      if (isObject(value) && isInteger(value.Id)) {
+        if (isArticleVisitedById[value.Id]) {
+          return { Id: value.Id };
+        }
+        isArticleVisitedById[value.Id] = true;
+        return value;
       }
-      isArticleVisitedById[value.Id] = true;
       return value;
-    }
-    return value;
-  });
+    });
+  }
 }
 
 function isInteger(arg): arg is number {

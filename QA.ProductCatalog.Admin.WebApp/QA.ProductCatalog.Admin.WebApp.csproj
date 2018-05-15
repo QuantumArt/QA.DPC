@@ -672,7 +672,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ClientApp\Utils\" />
+    <Folder Include="ClientApp\" />
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff.tsx" />
