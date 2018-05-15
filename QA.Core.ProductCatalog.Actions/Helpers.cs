@@ -52,8 +52,8 @@ namespace QA.Core.ProductCatalog.Actions
 		{
 			return articleService.GetFieldValues(allIds, contentId, "Id").Select(int.Parse).ToArray();
 		}
-
-		public static int[] GetAllProductIds(int siteId, int productsContentId, string connectionString)
+        
+        public static int[] GetAllProductIds(int siteId, int productsContentId, string connectionString)
 		{
 			var dbConnector = new DBConnector(connectionString);
 
