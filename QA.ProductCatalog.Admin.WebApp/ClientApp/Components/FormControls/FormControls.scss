@@ -1,6 +1,7 @@
 .editor-input,
 .editor-textarea,
-.editor-select {
+.editor-select,
+.editor-datepicker > input.form-control {
   padding: 2px 4px;
   border: 1px solid #a0a1a2;
   border-radius: 2px;
@@ -19,4 +20,18 @@
 .editor-checkbox,
 .editor-radio {
   zoom: 1.5;
+}
+
+.editor-datepicker {
+  display: inline-block;
+
+  .rdtPicker {
+    box-shadow: none;
+    border: 1px solid #a0a1a2;
+    border-radius: 2px;
+  }
+
+  .rdtActive {
+    border-radius: 2px;
+  }
 }

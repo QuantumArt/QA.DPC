@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { Checkbox, Input, Numeric, Textarea } from "../FormControls/FormControls";
+import { Checkbox, Input, Numeric, Textarea, DatePicker } from "../FormControls/FormControls";
 
 type Props = {
   article: any;
@@ -38,6 +38,12 @@ export class ArticleEditor extends Component<Props> {
         return <Checkbox model={article} name={fieldSchema.FieldName} />;
       case "Textbox":
         return <Textarea model={article} name={fieldSchema.FieldName} />;
+      case "DateTime":
+        return <DatePicker model={article} name={fieldSchema.FieldName} />;
+      case "Date":
+        return <DatePicker type="date" model={article} name={fieldSchema.FieldName} />;
+      case "Time":
+        return <DatePicker type="time" model={article} name={fieldSchema.FieldName} />;
       default:
         return null;
     }

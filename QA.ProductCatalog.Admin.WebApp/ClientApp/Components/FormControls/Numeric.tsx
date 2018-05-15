@@ -26,9 +26,7 @@ export class Numeric extends Component<{
     }
   });
 
-  handleBlur = action(e => {
-    // @ts-ignore
-    const value = e.target.value;
+  handleBlur = action(() => {
     const { model, name } = this.props;
     if (this.pendingValue) {
       this.pendingValue = "";
