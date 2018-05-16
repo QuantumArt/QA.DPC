@@ -11,6 +11,7 @@ namespace QA.Core.DPC.Loader.Editor
     public class EditorObjectShapeService
     {
         internal const string IdProp = "Id";
+        internal const string ContentIdProp = "ContentId";
 
         /// <summary>
         /// Генерация словаря с формой пустого JSON-объекта для каждого ContentId из продукта
@@ -50,7 +51,8 @@ namespace QA.Core.DPC.Loader.Editor
             {
                 shapesByContentId[contentSchema.ContentId] = new ContentObject
                 {
-                    [IdProp] = null
+                    [IdProp] = null,
+                    [ContentIdProp] = contentSchema.ContentId,
                 };
             }
 

@@ -1,4 +1,4 @@
-import { observable, extendObservable, runInAction, toJS } from "mobx";
+import { observable, extendObservable, isObservableArray, runInAction, toJS } from "mobx";
 
 type Article = { Id: number; [x: string]: any };
 
@@ -73,6 +73,30 @@ export class ArticleService {
       Object.values(arg).forEach(this.mergeArticles);
     }
   };
+
+  public addReference(editedArticle: Article, fieldName: string, relatedArticle: Article) {
+    if (!this.articlesById[relatedArticle.Id]) {
+      // TODO: merge
+    }
+    const mergedArticle = this.articlesById[relatedArticle.Id];
+    const field = editedArticle[fieldName];
+    if (isObservableArray(field)) {
+      if (!field.find(a => a.Id === mergedArticle.Id)) {
+        field.push(mergedArticle);
+      }
+    } else {
+      editedArticle[fieldName] = mergedArticle;
+    }
+  }
+
+  public removeReference(editedArticle: Article, fieldName: string, relatedArticle: Article) {
+    const field = editedArticle[fieldName];
+    if (isObservableArray(field)) {
+      field.remove(field.find(a => a.Id === relatedArticle.Id));
+    } else {
+      editedArticle[fieldName] = null;
+    }
+  }
 
   public serializeArticle(article: Article) {
     const plainArticle = toJS(article);
