@@ -5,6 +5,10 @@ namespace QA.Core.DPC.Loader.Editor
 {
     public class ContentObject : Dictionary<string, object>, ICloneable
     {
+        internal const string IdProp = "Id";
+        internal const string ContentIdProp = "ContentId";
+        internal const string TimestampProp = "Timestamp";
+
         public object Clone()
         {
             var copy = new ContentObject();

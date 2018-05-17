@@ -76,7 +76,7 @@ namespace QA.Core.DPC.Loader.Editor
 
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="NotSupportedException" />
-        private ContentObject ConvertArticle(Article article, ArticleContext context)
+        private ContentObject ConvertArticle(Article article, ArticleContext context, bool forExtension = false)
         {
             if (!context.ShouldIncludeArticle(article))
             {
@@ -90,7 +90,13 @@ namespace QA.Core.DPC.Loader.Editor
 
             var dict = (ContentObject)contentShape.Clone();
 
-            dict[EditorObjectShapeService.IdProp] = article.Id;
+            if (!forExtension)
+            {
+                dict[ContentObject.IdProp] = article.Id;
+                dict[ContentObject.ContentIdProp] = article.ContentId;
+                dict[ContentObject.TimestampProp] = article.Modified == default(DateTime)
+                    ? article.Created : article.Modified;
+            }
 
             foreach (ArticleField field in article.Fields.Values)
             {
@@ -147,7 +153,8 @@ namespace QA.Core.DPC.Loader.Editor
                 && fieldValue is ExtensionFieldObject extensionFieldObject)
             {
                 extensionFieldObject.Value = article.ContentName;
-                extensionFieldObject.Contents[article.ContentName] = ConvertArticle(article, context);
+                extensionFieldObject.Contents[article.ContentName]
+                    = ConvertArticle(article, context, forExtension: true);
             }
             else
             {

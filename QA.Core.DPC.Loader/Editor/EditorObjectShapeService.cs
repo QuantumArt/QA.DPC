@@ -10,9 +10,6 @@ namespace QA.Core.DPC.Loader.Editor
     /// </summary>
     public class EditorObjectShapeService
     {
-        internal const string IdProp = "Id";
-        internal const string ContentIdProp = "ContentId";
-
         /// <summary>
         /// Генерация словаря с формой пустого JSON-объекта для каждого ContentId из продукта
         /// </summary>
@@ -38,6 +35,8 @@ namespace QA.Core.DPC.Loader.Editor
                 FillContentShapes(definitionSchema, shapesByContentId);
             }
 
+            FixExtensionContentShapes(shapesByContentId);
+
             return shapesByContentId;
         }
 
@@ -51,8 +50,9 @@ namespace QA.Core.DPC.Loader.Editor
             {
                 shapesByContentId[contentSchema.ContentId] = new ContentObject
                 {
-                    [IdProp] = null,
-                    [ContentIdProp] = contentSchema.ContentId,
+                    [ContentObject.IdProp] = null,
+                    [ContentObject.ContentIdProp] = contentSchema.ContentId,
+                    [ContentObject.TimestampProp] = null,
                 };
             }
 
@@ -104,6 +104,37 @@ namespace QA.Core.DPC.Loader.Editor
                 }
 
                 VisitChildSchemas(contentSchema, shapesByContentId, FillContentShapes);
+            }
+        }
+
+        /// <summary>
+        /// Удаляем "Id", "ContentId" и "Timestamp" из контентов-расширений
+        /// </summary>
+        private void FixExtensionContentShapes(Dictionary<int, ContentObject> shapesByContentId)
+        {
+            foreach (ContentObject contentObject in shapesByContentId.Values)
+            {
+                foreach (var extObject in contentObject.Values.OfType<ExtensionFieldObject>())
+                {
+                    foreach (var extContentPair in extObject.Contents.ToArray())
+                    {
+                        // делаем shallow copy контента, потому что он может использоваться
+                        // как нормальный контент в других местах
+                        var extContentCopy = new ContentObject();
+                        foreach (KeyValuePair<string, object> extContentField in extContentPair.Value)
+                        {
+                            switch (extContentField.Key)
+                            {
+                                case ContentObject.IdProp:
+                                case ContentObject.ContentIdProp:
+                                case ContentObject.TimestampProp:
+                                    continue;
+                            }
+                            extContentCopy[extContentField.Key] = extContentField.Value;
+                        }
+                        extObject.Contents[extContentPair.Key] = extContentCopy;
+                    }
+                }
             }
         }
 
