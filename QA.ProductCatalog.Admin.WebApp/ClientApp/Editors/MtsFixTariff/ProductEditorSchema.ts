@@ -1,5054 +1,4833 @@
+
 /** Описание полей продукта */
 export interface ProductSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "Product";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "Product",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     MarketingProduct: {
-      IsBackward: false;
+      IsBackward: false,
       Content: {
-        ContentId: number;
-        ContentPath: string;
-        ContentName: "MarketingProduct";
-        ContentTitle: string;
-        ContentDescription: string;
-        IsExtension: false;
+        ContentId: number,
+        ContentPath: string,
+        ContentName: "MarketingProduct",
+        ContentTitle: string,
+        ContentDescription: string,
+        IsExtension: false,
         Fields: {
           Title: {
-            FieldId: number;
-            FieldName: "Title";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "String";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Title",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "String",
+            IsRequired: false
+          },
           Alias: {
-            FieldId: number;
-            FieldName: "Alias";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "String";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Alias",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "String",
+            IsRequired: false
+          },
           Description: {
-            FieldId: number;
-            FieldName: "Description";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Textbox";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Description",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Textbox",
+            IsRequired: false
+          },
           OldSiteId: {
-            FieldId: number;
-            FieldName: "OldSiteId";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Numeric";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "OldSiteId",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Numeric",
+            IsRequired: false
+          },
           OldCorpSiteId: {
-            FieldId: number;
-            FieldName: "OldCorpSiteId";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Numeric";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "OldCorpSiteId",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Numeric",
+            IsRequired: false
+          },
           ListImage: {
-            FieldId: number;
-            FieldName: "ListImage";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Image";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "ListImage",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Image",
+            IsRequired: false
+          },
           DetailsImage: {
-            FieldId: number;
-            FieldName: "DetailsImage";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Image";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "DetailsImage",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Image",
+            IsRequired: false
+          },
           ArchiveDate: {
-            FieldId: number;
-            FieldName: "ArchiveDate";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Date";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "ArchiveDate",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Date",
+            IsRequired: false
+          },
           Modifiers: {
-            IsBackward: false;
-            Content: ProductModiferSchema;
-            FieldId: number;
-            FieldName: "Modifiers";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "M2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: ProductModiferSchema,
+            FieldId: number,
+            FieldName: "Modifiers",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "M2MRelation",
+            IsRequired: false
+          },
           SortOrder: {
-            FieldId: number;
-            FieldName: "SortOrder";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Numeric";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "SortOrder",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Numeric",
+            IsRequired: false
+          },
           Priority: {
-            FieldId: number;
-            FieldName: "Priority";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Numeric";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Priority",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Numeric",
+            IsRequired: false
+          },
           Advantages: {
-            IsBackward: false;
-            Content: AdvantageSchema;
-            FieldId: number;
-            FieldName: "Advantages";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "M2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: AdvantageSchema,
+            FieldId: number,
+            FieldName: "Advantages",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "M2MRelation",
+            IsRequired: false
+          },
           Type: {
             Contents: {
               MarketingTariff: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingTariff";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
-                Fields: {};
-              };
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingTariff",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
+                Fields: {}
+              },
               MarketingService: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingService";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
-                Fields: {};
-              };
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingService",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
+                Fields: {}
+              },
               MarketingAction: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingAction";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
-                Fields: {};
-              };
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingAction",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
+                Fields: {}
+              },
               MarketingRoamingScale: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingRoamingScale";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
-                Fields: {};
-              };
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingRoamingScale",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
+                Fields: {}
+              },
               MarketingDevice: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingDevice";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingDevice",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
                 Fields: {
                   DeviceType: {
-                    IsBackward: false;
+                    IsBackward: false,
                     Content: {
-                      ContentId: number;
-                      ContentPath: string;
-                      ContentName: "EquipmentType";
-                      ContentTitle: string;
-                      ContentDescription: string;
-                      IsExtension: false;
+                      ContentId: number,
+                      ContentPath: string,
+                      ContentName: "EquipmentType",
+                      ContentTitle: string,
+                      ContentDescription: string,
+                      IsExtension: false,
                       Fields: {
                         ConnectionType: {
-                          IsBackward: false;
-                          Content: FixedTypeSchema;
-                          FieldId: number;
-                          FieldName: "ConnectionType";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "O2MRelation";
-                          IsRequired: false;
-                        };
+                          IsBackward: false,
+                          Content: FixedTypeSchema,
+                          FieldId: number,
+                          FieldName: "ConnectionType",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "O2MRelation",
+                          IsRequired: false
+                        },
                         Title: {
-                          FieldId: number;
-                          FieldName: "Title";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "String";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Title",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "String",
+                          IsRequired: false
+                        },
                         Alias: {
-                          FieldId: number;
-                          FieldName: "Alias";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "String";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Alias",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "String",
+                          IsRequired: false
+                        },
                         Order: {
-                          FieldId: number;
-                          FieldName: "Order";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "Numeric";
-                          IsRequired: false;
-                        };
-                      };
-                      include: (
-                        selector: (
-                          fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingDevice"]["Fields"]["DeviceType"]["Content"]["Fields"]
-                        ) => Selection[]
-                      ) => string[];
-                    };
-                    FieldId: number;
-                    FieldName: "DeviceType";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "O2MRelation";
-                    IsRequired: false;
-                    include: (
-                      selector: (
-                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingDevice"]["Fields"]["DeviceType"]["Content"]["Fields"]
-                      ) => Selection[]
-                    ) => string[];
-                  };
+                          FieldId: number,
+                          FieldName: "Order",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "Numeric",
+                          IsRequired: false
+                        }
+                      },
+                      include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingDevice']['Fields']['DeviceType']['Content']['Fields']) => Selection[]) => string[]
+                    },
+                    FieldId: number,
+                    FieldName: "DeviceType",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "O2MRelation",
+                    IsRequired: false,
+                    include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingDevice']['Fields']['DeviceType']['Content']['Fields']) => Selection[]) => string[]
+                  },
                   Segments: {
-                    IsBackward: false;
-                    Content: SegmentSchema;
-                    FieldId: number;
-                    FieldName: "Segments";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "M2MRelation";
-                    IsRequired: false;
-                  };
+                    IsBackward: false,
+                    Content: SegmentSchema,
+                    FieldId: number,
+                    FieldName: "Segments",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "M2MRelation",
+                    IsRequired: false
+                  },
                   CommunicationType: {
-                    IsBackward: false;
+                    IsBackward: false,
                     Content: {
-                      ContentId: number;
-                      ContentPath: string;
-                      ContentName: "CommunicationType";
-                      ContentTitle: string;
-                      ContentDescription: string;
-                      IsExtension: false;
+                      ContentId: number,
+                      ContentPath: string,
+                      ContentName: "CommunicationType",
+                      ContentTitle: string,
+                      ContentDescription: string,
+                      IsExtension: false,
                       Fields: {
                         Title: {
-                          FieldId: number;
-                          FieldName: "Title";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "String";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Title",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "String",
+                          IsRequired: false
+                        },
                         Alias: {
-                          FieldId: number;
-                          FieldName: "Alias";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "String";
-                          IsRequired: false;
-                        };
-                      };
-                    };
-                    FieldId: number;
-                    FieldName: "CommunicationType";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "O2MRelation";
-                    IsRequired: false;
-                  };
-                };
-                include: (
-                  selector: (
-                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingDevice"]["Fields"]
-                  ) => Selection[]
-                ) => string[];
-              };
+                          FieldId: number,
+                          FieldName: "Alias",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "String",
+                          IsRequired: false
+                        }
+                      }
+                    },
+                    FieldId: number,
+                    FieldName: "CommunicationType",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "O2MRelation",
+                    IsRequired: false
+                  }
+                },
+                include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingDevice']['Fields']) => Selection[]) => string[]
+              },
               MarketingFixConnectAction: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingFixConnectAction";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingFixConnectAction",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
                 Fields: {
                   Segment: {
-                    IsBackward: false;
-                    Content: SegmentSchema;
-                    FieldId: number;
-                    FieldName: "Segment";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "M2MRelation";
-                    IsRequired: false;
-                  };
+                    IsBackward: false,
+                    Content: SegmentSchema,
+                    FieldId: number,
+                    FieldName: "Segment",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "M2MRelation",
+                    IsRequired: false
+                  },
                   MarketingAction: {
-                    IsBackward: false;
-                    Content: MarketingProduct3Schema;
-                    FieldId: number;
-                    FieldName: "MarketingAction";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "O2MRelation";
-                    IsRequired: false;
-                  };
+                    IsBackward: false,
+                    Content: MarketingProduct3Schema,
+                    FieldId: number,
+                    FieldName: "MarketingAction",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "O2MRelation",
+                    IsRequired: false
+                  },
                   StartDate: {
-                    FieldId: number;
-                    FieldName: "StartDate";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "Date";
-                    IsRequired: false;
-                  };
+                    FieldId: number,
+                    FieldName: "StartDate",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "Date",
+                    IsRequired: false
+                  },
                   EndDate: {
-                    FieldId: number;
-                    FieldName: "EndDate";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "Date";
-                    IsRequired: false;
-                  };
+                    FieldId: number,
+                    FieldName: "EndDate",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "Date",
+                    IsRequired: false
+                  },
                   PromoPeriod: {
-                    FieldId: number;
-                    FieldName: "PromoPeriod";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "String";
-                    IsRequired: false;
-                  };
+                    FieldId: number,
+                    FieldName: "PromoPeriod",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "String",
+                    IsRequired: false
+                  },
                   AfterPromo: {
-                    FieldId: number;
-                    FieldName: "AfterPromo";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "String";
-                    IsRequired: false;
-                  };
-                };
-                include: (
-                  selector: (
-                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectAction"]["Fields"]
-                  ) => Selection[]
-                ) => string[];
-              };
+                    FieldId: number,
+                    FieldName: "AfterPromo",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "String",
+                    IsRequired: false
+                  }
+                },
+                include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingFixConnectAction']['Fields']) => Selection[]) => string[]
+              },
               MarketingTvPackage: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingTvPackage";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingTvPackage",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
                 Fields: {
                   Channels: {
-                    IsBackward: false;
+                    IsBackward: false,
                     Content: {
-                      ContentId: number;
-                      ContentPath: string;
-                      ContentName: "TvChannel";
-                      ContentTitle: string;
-                      ContentDescription: string;
-                      IsExtension: false;
+                      ContentId: number,
+                      ContentPath: string,
+                      ContentName: "TvChannel",
+                      ContentTitle: string,
+                      ContentDescription: string,
+                      IsExtension: false,
                       Fields: {
                         Title: {
-                          FieldId: number;
-                          FieldName: "Title";
-                          FieldTitle: string;
-                          FieldDescription: "title";
-                          FieldOrder: number;
-                          FieldType: "String";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Title",
+                          FieldTitle: string,
+                          FieldDescription: "title",
+                          FieldOrder: number,
+                          FieldType: "String",
+                          IsRequired: false
+                        },
                         ShortDescription: {
-                          FieldId: number;
-                          FieldName: "ShortDescription";
-                          FieldTitle: string;
-                          FieldDescription: "short_descr";
-                          FieldOrder: number;
-                          FieldType: "Textbox";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "ShortDescription",
+                          FieldTitle: string,
+                          FieldDescription: "short_descr",
+                          FieldOrder: number,
+                          FieldType: "Textbox",
+                          IsRequired: false
+                        },
                         Logo150: {
-                          FieldId: number;
-                          FieldName: "Logo150";
-                          FieldTitle: string;
-                          FieldDescription: "logo150";
-                          FieldOrder: number;
-                          FieldType: "Image";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Logo150",
+                          FieldTitle: string,
+                          FieldDescription: "logo150",
+                          FieldOrder: number,
+                          FieldType: "Image",
+                          IsRequired: false
+                        },
                         IsRegional: {
-                          FieldId: number;
-                          FieldName: "IsRegional";
-                          FieldTitle: string;
-                          FieldDescription: "regional_tv";
-                          FieldOrder: number;
-                          FieldType: "Boolean";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "IsRegional",
+                          FieldTitle: string,
+                          FieldDescription: "regional_tv",
+                          FieldOrder: number,
+                          FieldType: "Boolean",
+                          IsRequired: false
+                        },
                         Parent: {
-                          IsBackward: false;
+                          IsBackward: false,
                           Content: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "TvChannel";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: false;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "TvChannel",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: false,
                             Fields: {
                               Logo150: {
-                                FieldId: number;
-                                FieldName: "Logo150";
-                                FieldTitle: string;
-                                FieldDescription: "logo150";
-                                FieldOrder: number;
-                                FieldType: "Image";
-                                IsRequired: false;
-                              };
-                            };
-                          };
-                          FieldId: number;
-                          FieldName: "Parent";
-                          FieldTitle: string;
-                          FieldDescription: "ch_parent";
-                          FieldOrder: number;
-                          FieldType: "O2MRelation";
-                          IsRequired: false;
-                        };
+                                FieldId: number,
+                                FieldName: "Logo150",
+                                FieldTitle: string,
+                                FieldDescription: "logo150",
+                                FieldOrder: number,
+                                FieldType: "Image",
+                                IsRequired: false
+                              }
+                            }
+                          },
+                          FieldId: number,
+                          FieldName: "Parent",
+                          FieldTitle: string,
+                          FieldDescription: "ch_parent",
+                          FieldOrder: number,
+                          FieldType: "O2MRelation",
+                          IsRequired: false
+                        },
                         Cities: {
-                          IsBackward: false;
+                          IsBackward: false,
                           Content: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "NetworkCity";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: false;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "NetworkCity",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: false,
                             Fields: {
                               City: {
-                                IsBackward: false;
-                                Content: RegionSchema;
-                                FieldId: number;
-                                FieldName: "City";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "O2MRelation";
-                                IsRequired: false;
-                              };
+                                IsBackward: false,
+                                Content: RegionSchema,
+                                FieldId: number,
+                                FieldName: "City",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "O2MRelation",
+                                IsRequired: false
+                              },
                               HasIpTv: {
-                                FieldId: number;
-                                FieldName: "HasIpTv";
-                                FieldTitle: "IPTV";
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "Boolean";
-                                IsRequired: false;
-                              };
-                            };
-                            include: (
-                              selector: (
-                                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
-                              ) => Selection[]
-                            ) => string[];
-                          };
-                          FieldId: number;
-                          FieldName: "Cities";
-                          FieldTitle: string;
-                          FieldDescription: "cities";
-                          FieldOrder: number;
-                          FieldType: "M2MRelation";
-                          IsRequired: false;
-                          include: (
-                            selector: (
-                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
-                            ) => Selection[]
-                          ) => string[];
-                        };
+                                FieldId: number,
+                                FieldName: "HasIpTv",
+                                FieldTitle: "IPTV",
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "Boolean",
+                                IsRequired: false
+                              }
+                            },
+                            include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingTvPackage']['Fields']['Channels']['Content']['Fields']['Cities']['Content']['Fields']) => Selection[]) => string[]
+                          },
+                          FieldId: number,
+                          FieldName: "Cities",
+                          FieldTitle: string,
+                          FieldDescription: "cities",
+                          FieldOrder: number,
+                          FieldType: "M2MRelation",
+                          IsRequired: false,
+                          include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingTvPackage']['Fields']['Channels']['Content']['Fields']['Cities']['Content']['Fields']) => Selection[]) => string[]
+                        },
                         ChannelType: {
-                          IsBackward: false;
+                          IsBackward: false,
                           Content: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "ChannelType";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: false;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "ChannelType",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: false,
                             Fields: {
                               Title: {
-                                FieldId: number;
-                                FieldName: "Title";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "String";
-                                IsRequired: false;
-                              };
-                            };
-                          };
-                          FieldId: number;
-                          FieldName: "ChannelType";
-                          FieldTitle: string;
-                          FieldDescription: "ch_type";
-                          FieldOrder: number;
-                          FieldType: "O2MRelation";
-                          IsRequired: false;
-                        };
+                                FieldId: number,
+                                FieldName: "Title",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "String",
+                                IsRequired: false
+                              }
+                            }
+                          },
+                          FieldId: number,
+                          FieldName: "ChannelType",
+                          FieldTitle: string,
+                          FieldDescription: "ch_type",
+                          FieldOrder: number,
+                          FieldType: "O2MRelation",
+                          IsRequired: false
+                        },
                         Category: {
-                          IsBackward: false;
-                          Content: ChannelCategorySchema;
-                          FieldId: number;
-                          FieldName: "Category";
-                          FieldTitle: string;
-                          FieldDescription: "ch_category";
-                          FieldOrder: number;
-                          FieldType: "O2MRelation";
-                          IsRequired: false;
-                        };
+                          IsBackward: false,
+                          Content: ChannelCategorySchema,
+                          FieldId: number,
+                          FieldName: "Category",
+                          FieldTitle: string,
+                          FieldDescription: "ch_category",
+                          FieldOrder: number,
+                          FieldType: "O2MRelation",
+                          IsRequired: false
+                        },
                         IsMtsMsk: {
-                          FieldId: number;
-                          FieldName: "IsMtsMsk";
-                          FieldTitle: string;
-                          FieldDescription: "test_inMSK_mgts_XML";
-                          FieldOrder: number;
-                          FieldType: "Boolean";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "IsMtsMsk",
+                          FieldTitle: string,
+                          FieldDescription: "test_inMSK_mgts_XML",
+                          FieldOrder: number,
+                          FieldType: "Boolean",
+                          IsRequired: false
+                        },
                         LcnDvbC: {
-                          FieldId: number;
-                          FieldName: "LcnDvbC";
-                          FieldTitle: string;
-                          FieldDescription: "lcn_dvbc";
-                          FieldOrder: number;
-                          FieldType: "Numeric";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "LcnDvbC",
+                          FieldTitle: string,
+                          FieldDescription: "lcn_dvbc",
+                          FieldOrder: number,
+                          FieldType: "Numeric",
+                          IsRequired: false
+                        },
                         LcnIpTv: {
-                          FieldId: number;
-                          FieldName: "LcnIpTv";
-                          FieldTitle: string;
-                          FieldDescription: "lcn_iptv";
-                          FieldOrder: number;
-                          FieldType: "Numeric";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "LcnIpTv",
+                          FieldTitle: string,
+                          FieldDescription: "lcn_iptv",
+                          FieldOrder: number,
+                          FieldType: "Numeric",
+                          IsRequired: false
+                        },
                         LcnDvbS: {
-                          FieldId: number;
-                          FieldName: "LcnDvbS";
-                          FieldTitle: string;
-                          FieldDescription: "lcn_dvbs";
-                          FieldOrder: number;
-                          FieldType: "Numeric";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "LcnDvbS",
+                          FieldTitle: string,
+                          FieldDescription: "lcn_dvbs",
+                          FieldOrder: number,
+                          FieldType: "Numeric",
+                          IsRequired: false
+                        },
                         Disabled: {
-                          FieldId: number;
-                          FieldName: "Disabled";
-                          FieldTitle: string;
-                          FieldDescription: "offair";
-                          FieldOrder: number;
-                          FieldType: "Boolean";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Disabled",
+                          FieldTitle: string,
+                          FieldDescription: "offair",
+                          FieldOrder: number,
+                          FieldType: "Boolean",
+                          IsRequired: false
+                        },
                         Children: {
-                          IsBackward: false;
+                          IsBackward: false,
                           Content: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "TvChannel";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: false;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "TvChannel",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: false,
                             Fields: {
                               Title: {
-                                FieldId: number;
-                                FieldName: "Title";
-                                FieldTitle: string;
-                                FieldDescription: "title";
-                                FieldOrder: number;
-                                FieldType: "String";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "Title",
+                                FieldTitle: string,
+                                FieldDescription: "title",
+                                FieldOrder: number,
+                                FieldType: "String",
+                                IsRequired: false
+                              },
                               Category: {
-                                IsBackward: false;
-                                Content: ChannelCategorySchema;
-                                FieldId: number;
-                                FieldName: "Category";
-                                FieldTitle: string;
-                                FieldDescription: "ch_category";
-                                FieldOrder: number;
-                                FieldType: "O2MRelation";
-                                IsRequired: false;
-                              };
+                                IsBackward: false,
+                                Content: ChannelCategorySchema,
+                                FieldId: number,
+                                FieldName: "Category",
+                                FieldTitle: string,
+                                FieldDescription: "ch_category",
+                                FieldOrder: number,
+                                FieldType: "O2MRelation",
+                                IsRequired: false
+                              },
                               ChannelType: {
-                                IsBackward: false;
+                                IsBackward: false,
                                 Content: {
-                                  ContentId: number;
-                                  ContentPath: string;
-                                  ContentName: "ChannelType";
-                                  ContentTitle: string;
-                                  ContentDescription: string;
-                                  IsExtension: false;
+                                  ContentId: number,
+                                  ContentPath: string,
+                                  ContentName: "ChannelType",
+                                  ContentTitle: string,
+                                  ContentDescription: string,
+                                  IsExtension: false,
                                   Fields: {
                                     Title: {
-                                      FieldId: number;
-                                      FieldName: "Title";
-                                      FieldTitle: string;
-                                      FieldDescription: string;
-                                      FieldOrder: number;
-                                      FieldType: "String";
-                                      IsRequired: false;
-                                    };
+                                      FieldId: number,
+                                      FieldName: "Title",
+                                      FieldTitle: string,
+                                      FieldDescription: string,
+                                      FieldOrder: number,
+                                      FieldType: "String",
+                                      IsRequired: false
+                                    },
                                     OldSiteId: {
-                                      FieldId: number;
-                                      FieldName: "OldSiteId";
-                                      FieldTitle: string;
-                                      FieldDescription: string;
-                                      FieldOrder: number;
-                                      FieldType: "Numeric";
-                                      IsRequired: false;
-                                    };
-                                  };
-                                };
-                                FieldId: number;
-                                FieldName: "ChannelType";
-                                FieldTitle: string;
-                                FieldDescription: "ch_type";
-                                FieldOrder: number;
-                                FieldType: "O2MRelation";
-                                IsRequired: false;
-                              };
+                                      FieldId: number,
+                                      FieldName: "OldSiteId",
+                                      FieldTitle: string,
+                                      FieldDescription: string,
+                                      FieldOrder: number,
+                                      FieldType: "Numeric",
+                                      IsRequired: false
+                                    }
+                                  }
+                                },
+                                FieldId: number,
+                                FieldName: "ChannelType",
+                                FieldTitle: string,
+                                FieldDescription: "ch_type",
+                                FieldOrder: number,
+                                FieldType: "O2MRelation",
+                                IsRequired: false
+                              },
                               ShortDescription: {
-                                FieldId: number;
-                                FieldName: "ShortDescription";
-                                FieldTitle: string;
-                                FieldDescription: "short_descr";
-                                FieldOrder: number;
-                                FieldType: "Textbox";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "ShortDescription",
+                                FieldTitle: string,
+                                FieldDescription: "short_descr",
+                                FieldOrder: number,
+                                FieldType: "Textbox",
+                                IsRequired: false
+                              },
                               Cities: {
-                                IsBackward: false;
+                                IsBackward: false,
                                 Content: {
-                                  ContentId: number;
-                                  ContentPath: string;
-                                  ContentName: "NetworkCity";
-                                  ContentTitle: string;
-                                  ContentDescription: string;
-                                  IsExtension: false;
+                                  ContentId: number,
+                                  ContentPath: string,
+                                  ContentName: "NetworkCity",
+                                  ContentTitle: string,
+                                  ContentDescription: string,
+                                  IsExtension: false,
                                   Fields: {
                                     City: {
-                                      IsBackward: false;
-                                      Content: RegionSchema;
-                                      FieldId: number;
-                                      FieldName: "City";
-                                      FieldTitle: string;
-                                      FieldDescription: string;
-                                      FieldOrder: number;
-                                      FieldType: "O2MRelation";
-                                      IsRequired: false;
-                                    };
-                                  };
-                                  include: (
-                                    selector: (
-                                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
-                                    ) => Selection[]
-                                  ) => string[];
-                                };
-                                FieldId: number;
-                                FieldName: "Cities";
-                                FieldTitle: string;
-                                FieldDescription: "cities";
-                                FieldOrder: number;
-                                FieldType: "M2MRelation";
-                                IsRequired: false;
-                                include: (
-                                  selector: (
-                                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
-                                  ) => Selection[]
-                                ) => string[];
-                              };
+                                      IsBackward: false,
+                                      Content: RegionSchema,
+                                      FieldId: number,
+                                      FieldName: "City",
+                                      FieldTitle: string,
+                                      FieldDescription: string,
+                                      FieldOrder: number,
+                                      FieldType: "O2MRelation",
+                                      IsRequired: false
+                                    }
+                                  },
+                                  include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingTvPackage']['Fields']['Channels']['Content']['Fields']['Children']['Content']['Fields']['Cities']['Content']['Fields']) => Selection[]) => string[]
+                                },
+                                FieldId: number,
+                                FieldName: "Cities",
+                                FieldTitle: string,
+                                FieldDescription: "cities",
+                                FieldOrder: number,
+                                FieldType: "M2MRelation",
+                                IsRequired: false,
+                                include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingTvPackage']['Fields']['Channels']['Content']['Fields']['Children']['Content']['Fields']['Cities']['Content']['Fields']) => Selection[]) => string[]
+                              },
                               Disabled: {
-                                FieldId: number;
-                                FieldName: "Disabled";
-                                FieldTitle: string;
-                                FieldDescription: "offair";
-                                FieldOrder: number;
-                                FieldType: "Boolean";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "Disabled",
+                                FieldTitle: string,
+                                FieldDescription: "offair",
+                                FieldOrder: number,
+                                FieldType: "Boolean",
+                                IsRequired: false
+                              },
                               IsMtsMsk: {
-                                FieldId: number;
-                                FieldName: "IsMtsMsk";
-                                FieldTitle: string;
-                                FieldDescription: "test_inMSK_mgts_XML";
-                                FieldOrder: number;
-                                FieldType: "Boolean";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "IsMtsMsk",
+                                FieldTitle: string,
+                                FieldDescription: "test_inMSK_mgts_XML",
+                                FieldOrder: number,
+                                FieldType: "Boolean",
+                                IsRequired: false
+                              },
                               IsRegional: {
-                                FieldId: number;
-                                FieldName: "IsRegional";
-                                FieldTitle: string;
-                                FieldDescription: "regional_tv";
-                                FieldOrder: number;
-                                FieldType: "Boolean";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "IsRegional",
+                                FieldTitle: string,
+                                FieldDescription: "regional_tv",
+                                FieldOrder: number,
+                                FieldType: "Boolean",
+                                IsRequired: false
+                              },
                               Logo150: {
-                                FieldId: number;
-                                FieldName: "Logo150";
-                                FieldTitle: string;
-                                FieldDescription: "logo150";
-                                FieldOrder: number;
-                                FieldType: "Image";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "Logo150",
+                                FieldTitle: string,
+                                FieldDescription: "logo150",
+                                FieldOrder: number,
+                                FieldType: "Image",
+                                IsRequired: false
+                              },
                               LcnDvbC: {
-                                FieldId: number;
-                                FieldName: "LcnDvbC";
-                                FieldTitle: string;
-                                FieldDescription: "lcn_dvbc";
-                                FieldOrder: number;
-                                FieldType: "Numeric";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "LcnDvbC",
+                                FieldTitle: string,
+                                FieldDescription: "lcn_dvbc",
+                                FieldOrder: number,
+                                FieldType: "Numeric",
+                                IsRequired: false
+                              },
                               LcnIpTv: {
-                                FieldId: number;
-                                FieldName: "LcnIpTv";
-                                FieldTitle: string;
-                                FieldDescription: "lcn_iptv";
-                                FieldOrder: number;
-                                FieldType: "Numeric";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "LcnIpTv",
+                                FieldTitle: string,
+                                FieldDescription: "lcn_iptv",
+                                FieldOrder: number,
+                                FieldType: "Numeric",
+                                IsRequired: false
+                              },
                               LcnDvbS: {
-                                FieldId: number;
-                                FieldName: "LcnDvbS";
-                                FieldTitle: string;
-                                FieldDescription: "lcn_dvbs";
-                                FieldOrder: number;
-                                FieldType: "Numeric";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "LcnDvbS",
+                                FieldTitle: string,
+                                FieldDescription: "lcn_dvbs",
+                                FieldOrder: number,
+                                FieldType: "Numeric",
+                                IsRequired: false
+                              },
                               Format: {
-                                IsBackward: false;
-                                Content: ChannelFormatSchema;
-                                FieldId: number;
-                                FieldName: "Format";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "O2MRelation";
-                                IsRequired: false;
-                              };
-                            };
-                            include: (
-                              selector: (
-                                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]
-                              ) => Selection[]
-                            ) => string[];
-                          };
-                          FieldId: number;
-                          FieldName: "Children";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "M2ORelation";
-                          IsRequired: false;
-                          include: (
-                            selector: (
-                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]
-                            ) => Selection[]
-                          ) => string[];
-                        };
+                                IsBackward: false,
+                                Content: ChannelFormatSchema,
+                                FieldId: number,
+                                FieldName: "Format",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "O2MRelation",
+                                IsRequired: false
+                              }
+                            },
+                            include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingTvPackage']['Fields']['Channels']['Content']['Fields']['Children']['Content']['Fields']) => Selection[]) => string[]
+                          },
+                          FieldId: number,
+                          FieldName: "Children",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "M2ORelation",
+                          IsRequired: false,
+                          include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingTvPackage']['Fields']['Channels']['Content']['Fields']['Children']['Content']['Fields']) => Selection[]) => string[]
+                        },
                         Format: {
-                          IsBackward: false;
-                          Content: ChannelFormatSchema;
-                          FieldId: number;
-                          FieldName: "Format";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "O2MRelation";
-                          IsRequired: false;
-                        };
+                          IsBackward: false,
+                          Content: ChannelFormatSchema,
+                          FieldId: number,
+                          FieldName: "Format",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "O2MRelation",
+                          IsRequired: false
+                        },
                         Logo40x30: {
-                          FieldId: number;
-                          FieldName: "Logo40x30";
-                          FieldTitle: string;
-                          FieldDescription: "logo40x30";
-                          FieldOrder: number;
-                          FieldType: "Image";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Logo40x30",
+                          FieldTitle: string,
+                          FieldDescription: "logo40x30",
+                          FieldOrder: number,
+                          FieldType: "Image",
+                          IsRequired: false
+                        },
                         TimeZone: {
-                          IsBackward: false;
+                          IsBackward: false,
                           Content: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "TimeZone";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: false;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "TimeZone",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: false,
                             Fields: {
                               Name: {
-                                FieldId: number;
-                                FieldName: "Name";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "String";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "Name",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "String",
+                                IsRequired: false
+                              },
                               Code: {
-                                FieldId: number;
-                                FieldName: "Code";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "String";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "Code",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "String",
+                                IsRequired: false
+                              },
                               UTC: {
-                                FieldId: number;
-                                FieldName: "UTC";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "String";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "UTC",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "String",
+                                IsRequired: false
+                              },
                               MSK: {
-                                FieldId: number;
-                                FieldName: "MSK";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "String";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "MSK",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "String",
+                                IsRequired: false
+                              },
                               OldSiteId: {
-                                FieldId: number;
-                                FieldName: "OldSiteId";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "Numeric";
-                                IsRequired: false;
-                              };
-                            };
-                          };
-                          FieldId: number;
-                          FieldName: "TimeZone";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "O2MRelation";
-                          IsRequired: false;
-                        };
-                      };
-                      include: (
-                        selector: (
-                          fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]
-                        ) => Selection[]
-                      ) => string[];
-                    };
-                    FieldId: number;
-                    FieldName: "Channels";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "M2MRelation";
-                    IsRequired: false;
-                    include: (
-                      selector: (
-                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]
-                      ) => Selection[]
-                    ) => string[];
-                  };
+                                FieldId: number,
+                                FieldName: "OldSiteId",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "Numeric",
+                                IsRequired: false
+                              }
+                            }
+                          },
+                          FieldId: number,
+                          FieldName: "TimeZone",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "O2MRelation",
+                          IsRequired: false
+                        }
+                      },
+                      include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingTvPackage']['Fields']['Channels']['Content']['Fields']) => Selection[]) => string[]
+                    },
+                    FieldId: number,
+                    FieldName: "Channels",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "M2MRelation",
+                    IsRequired: false,
+                    include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingTvPackage']['Fields']['Channels']['Content']['Fields']) => Selection[]) => string[]
+                  },
                   TitleForSite: {
-                    FieldId: number;
-                    FieldName: "TitleForSite";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "String";
-                    IsRequired: false;
-                  };
+                    FieldId: number,
+                    FieldName: "TitleForSite",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "String",
+                    IsRequired: false
+                  },
                   PackageType: {
                     Items: [
                       {
-                        Value: "Base";
-                        Alias: string;
-                        IsDefault: false;
-                        Invalid: false;
+                        Value: "Base",
+                        Alias: string,
+                        IsDefault: false,
+                        Invalid: false
                       },
                       {
-                        Value: "Additional";
-                        Alias: string;
-                        IsDefault: false;
-                        Invalid: false;
+                        Value: "Additional",
+                        Alias: string,
+                        IsDefault: false,
+                        Invalid: false
                       }
-                    ];
-                    FieldId: number;
-                    FieldName: "PackageType";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "StringEnum";
-                    IsRequired: false;
-                  };
-                };
-                include: (
-                  selector: (
-                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]
-                  ) => Selection[]
-                ) => string[];
-              };
+                    ],
+                    FieldId: number,
+                    FieldName: "PackageType",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "StringEnum",
+                    IsRequired: false
+                  }
+                },
+                include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingTvPackage']['Fields']) => Selection[]) => string[]
+              },
               MarketingFixConnectTariff: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingFixConnectTariff";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingFixConnectTariff",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
                 Fields: {
                   Segment: {
-                    IsBackward: false;
-                    Content: SegmentSchema;
-                    FieldId: number;
-                    FieldName: "Segment";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "O2MRelation";
-                    IsRequired: false;
-                  };
+                    IsBackward: false,
+                    Content: SegmentSchema,
+                    FieldId: number,
+                    FieldName: "Segment",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "O2MRelation",
+                    IsRequired: false
+                  },
                   Category: {
-                    IsBackward: false;
+                    IsBackward: false,
                     Content: {
-                      ContentId: number;
-                      ContentPath: string;
-                      ContentName: "TariffCategory";
-                      ContentTitle: string;
-                      ContentDescription: string;
-                      IsExtension: false;
+                      ContentId: number,
+                      ContentPath: string,
+                      ContentName: "TariffCategory",
+                      ContentTitle: string,
+                      ContentDescription: string,
+                      IsExtension: false,
                       Fields: {
                         ConnectionTypes: {
-                          IsBackward: false;
-                          Content: FixedTypeSchema;
-                          FieldId: number;
-                          FieldName: "ConnectionTypes";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "M2MRelation";
-                          IsRequired: false;
-                        };
+                          IsBackward: false,
+                          Content: FixedTypeSchema,
+                          FieldId: number,
+                          FieldName: "ConnectionTypes",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "M2MRelation",
+                          IsRequired: false
+                        },
                         Title: {
-                          FieldId: number;
-                          FieldName: "Title";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "String";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Title",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "String",
+                          IsRequired: false
+                        },
                         Alias: {
-                          FieldId: number;
-                          FieldName: "Alias";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "String";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Alias",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "String",
+                          IsRequired: false
+                        },
                         Image: {
-                          FieldId: number;
-                          FieldName: "Image";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "Image";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Image",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "Image",
+                          IsRequired: false
+                        },
                         Order: {
-                          FieldId: number;
-                          FieldName: "Order";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "Numeric";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "Order",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "Numeric",
+                          IsRequired: false
+                        },
                         ImageSvg: {
-                          FieldId: number;
-                          FieldName: "ImageSvg";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "File";
-                          IsRequired: false;
-                        };
+                          FieldId: number,
+                          FieldName: "ImageSvg",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "File",
+                          IsRequired: false
+                        },
                         TemplateType: {
                           Items: [
                             {
-                              Value: "Tv";
-                              Alias: string;
-                              IsDefault: false;
-                              Invalid: false;
+                              Value: "Tv",
+                              Alias: string,
+                              IsDefault: false,
+                              Invalid: false
                             },
                             {
-                              Value: "Phone";
-                              Alias: string;
-                              IsDefault: false;
-                              Invalid: false;
+                              Value: "Phone",
+                              Alias: string,
+                              IsDefault: false,
+                              Invalid: false
                             }
-                          ];
-                          FieldId: number;
-                          FieldName: "TemplateType";
-                          FieldTitle: string;
-                          FieldDescription: string;
-                          FieldOrder: number;
-                          FieldType: "StringEnum";
-                          IsRequired: false;
-                        };
-                      };
-                      include: (
-                        selector: (
-                          fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectTariff"]["Fields"]["Category"]["Content"]["Fields"]
-                        ) => Selection[]
-                      ) => string[];
-                    };
-                    FieldId: number;
-                    FieldName: "Category";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "O2MRelation";
-                    IsRequired: false;
-                    include: (
-                      selector: (
-                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectTariff"]["Fields"]["Category"]["Content"]["Fields"]
-                      ) => Selection[]
-                    ) => string[];
-                  };
+                          ],
+                          FieldId: number,
+                          FieldName: "TemplateType",
+                          FieldTitle: string,
+                          FieldDescription: string,
+                          FieldOrder: number,
+                          FieldType: "StringEnum",
+                          IsRequired: false
+                        }
+                      },
+                      include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingFixConnectTariff']['Fields']['Category']['Content']['Fields']) => Selection[]) => string[]
+                    },
+                    FieldId: number,
+                    FieldName: "Category",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "O2MRelation",
+                    IsRequired: false,
+                    include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingFixConnectTariff']['Fields']['Category']['Content']['Fields']) => Selection[]) => string[]
+                  },
                   MarketingDevices: {
-                    IsBackward: false;
-                    Content: MarketingProductSchema;
-                    FieldId: number;
-                    FieldName: "MarketingDevices";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "M2MRelation";
-                    IsRequired: false;
-                  };
+                    IsBackward: false,
+                    Content: MarketingProductSchema,
+                    FieldId: number,
+                    FieldName: "MarketingDevices",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "M2MRelation",
+                    IsRequired: false
+                  },
                   BonusTVPackages: {
-                    IsBackward: false;
-                    Content: MarketingProductSchema;
-                    FieldId: number;
-                    FieldName: "BonusTVPackages";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "M2MRelation";
-                    IsRequired: false;
-                  };
+                    IsBackward: false,
+                    Content: MarketingProductSchema,
+                    FieldId: number,
+                    FieldName: "BonusTVPackages",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "M2MRelation",
+                    IsRequired: false
+                  },
                   MarketingPhoneTariff: {
-                    IsBackward: false;
-                    Content: MarketingProduct1Schema;
-                    FieldId: number;
-                    FieldName: "MarketingPhoneTariff";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "O2MRelation";
-                    IsRequired: false;
-                  };
+                    IsBackward: false,
+                    Content: MarketingProduct1Schema,
+                    FieldId: number,
+                    FieldName: "MarketingPhoneTariff",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "O2MRelation",
+                    IsRequired: false
+                  },
                   MarketingInternetTariff: {
-                    IsBackward: false;
-                    Content: MarketingProduct1Schema;
-                    FieldId: number;
-                    FieldName: "MarketingInternetTariff";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "O2MRelation";
-                    IsRequired: false;
-                  };
+                    IsBackward: false,
+                    Content: MarketingProduct1Schema,
+                    FieldId: number,
+                    FieldName: "MarketingInternetTariff",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "O2MRelation",
+                    IsRequired: false
+                  },
                   MarketingTvPackage: {
-                    IsBackward: false;
-                    Content: MarketingProduct2Schema;
-                    FieldId: number;
-                    FieldName: "MarketingTvPackage";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "O2MRelation";
-                    IsRequired: false;
-                  };
+                    IsBackward: false,
+                    Content: MarketingProduct2Schema,
+                    FieldId: number,
+                    FieldName: "MarketingTvPackage",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "O2MRelation",
+                    IsRequired: false
+                  },
                   TitleForSite: {
-                    FieldId: number;
-                    FieldName: "TitleForSite";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "String";
-                    IsRequired: false;
-                  };
-                };
-                include: (
-                  selector: (
-                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectTariff"]["Fields"]
-                  ) => Selection[]
-                ) => string[];
-              };
+                    FieldId: number,
+                    FieldName: "TitleForSite",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "String",
+                    IsRequired: false
+                  }
+                },
+                include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']['MarketingFixConnectTariff']['Fields']) => Selection[]) => string[]
+              },
               MarketingPhoneTariff: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingPhoneTariff";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
-                Fields: {};
-              };
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingPhoneTariff",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
+                Fields: {}
+              },
               MarketingInternetTariff: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "MarketingInternetTariff";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: true;
-                Fields: {};
-              };
-            };
-            FieldId: number;
-            FieldName: "Type";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Classifier";
-            IsRequired: false;
-            include: (
-              selector: (
-                contents: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]
-              ) => string[][]
-            ) => string[];
-          };
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "MarketingInternetTariff",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: true,
+                Fields: {}
+              }
+            },
+            FieldId: number,
+            FieldName: "Type",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Classifier",
+            IsRequired: false,
+            include: (selector: (contents: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Type']['Contents']) => string[][]) => string[]
+          },
           FullDescription: {
-            FieldId: number;
-            FieldName: "FullDescription";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "VisualEdit";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "FullDescription",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "VisualEdit",
+            IsRequired: false
+          },
           Parameters: {
-            IsBackward: false;
+            IsBackward: false,
             Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "MarketingProductParameter";
-              ContentTitle: string;
-              ContentDescription: string;
-              IsExtension: false;
+              ContentId: number,
+              ContentPath: string,
+              ContentName: "MarketingProductParameter",
+              ContentTitle: string,
+              ContentDescription: string,
+              IsExtension: false,
               Fields: {
                 Group: {
-                  IsBackward: false;
-                  Content: ProductParameterGroupSchema;
-                  FieldId: number;
-                  FieldName: "Group";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: ProductParameterGroupSchema,
+                  FieldId: number,
+                  FieldName: "Group",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false
+                },
                 BaseParameter: {
-                  IsBackward: false;
-                  Content: BaseParameterSchema;
-                  FieldId: number;
-                  FieldName: "BaseParameter";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: BaseParameterSchema,
+                  FieldId: number,
+                  FieldName: "BaseParameter",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false
+                },
                 Zone: {
-                  IsBackward: false;
-                  Content: TariffZoneSchema;
-                  FieldId: number;
-                  FieldName: "Zone";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: TariffZoneSchema,
+                  FieldId: number,
+                  FieldName: "Zone",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false
+                },
                 Direction: {
-                  IsBackward: false;
-                  Content: DirectionSchema;
-                  FieldId: number;
-                  FieldName: "Direction";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: DirectionSchema,
+                  FieldId: number,
+                  FieldName: "Direction",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false
+                },
                 BaseParameterModifiers: {
-                  IsBackward: false;
-                  Content: BaseParameterModifierSchema;
-                  FieldId: number;
-                  FieldName: "BaseParameterModifiers";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "M2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: BaseParameterModifierSchema,
+                  FieldId: number,
+                  FieldName: "BaseParameterModifiers",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "M2MRelation",
+                  IsRequired: false
+                },
                 Modifiers: {
-                  IsBackward: false;
-                  Content: ParameterModifierSchema;
-                  FieldId: number;
-                  FieldName: "Modifiers";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "M2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: ParameterModifierSchema,
+                  FieldId: number,
+                  FieldName: "Modifiers",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "M2MRelation",
+                  IsRequired: false
+                },
                 Unit: {
-                  IsBackward: false;
-                  Content: UnitSchema;
-                  FieldId: number;
-                  FieldName: "Unit";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: UnitSchema,
+                  FieldId: number,
+                  FieldName: "Unit",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false
+                },
                 Choice: {
-                  IsBackward: false;
-                  Content: ParameterChoiceSchema;
-                  FieldId: number;
-                  FieldName: "Choice";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: ParameterChoiceSchema,
+                  FieldId: number,
+                  FieldName: "Choice",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false
+                },
                 Title: {
-                  FieldId: number;
-                  FieldName: "Title";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "String";
-                  IsRequired: false;
-                };
+                  FieldId: number,
+                  FieldName: "Title",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "String",
+                  IsRequired: false
+                },
                 SortOrder: {
-                  FieldId: number;
-                  FieldName: "SortOrder";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "Numeric";
-                  IsRequired: false;
-                };
+                  FieldId: number,
+                  FieldName: "SortOrder",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "Numeric",
+                  IsRequired: false
+                },
                 NumValue: {
-                  FieldId: number;
-                  FieldName: "NumValue";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "Numeric";
-                  IsRequired: false;
-                };
+                  FieldId: number,
+                  FieldName: "NumValue",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "Numeric",
+                  IsRequired: false
+                },
                 Value: {
-                  FieldId: number;
-                  FieldName: "Value";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "VisualEdit";
-                  IsRequired: false;
-                };
+                  FieldId: number,
+                  FieldName: "Value",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "VisualEdit",
+                  IsRequired: false
+                },
                 Description: {
-                  FieldId: number;
-                  FieldName: "Description";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "VisualEdit";
-                  IsRequired: false;
-                };
-              };
-              include: (
-                selector: (
-                  fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-                ) => Selection[]
-              ) => string[];
-            };
-            FieldId: number;
-            FieldName: "Parameters";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "M2ORelation";
-            IsRequired: false;
-            include: (
-              selector: (
-                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-              ) => Selection[]
-            ) => string[];
-          };
+                  FieldId: number,
+                  FieldName: "Description",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "VisualEdit",
+                  IsRequired: false
+                }
+              },
+              include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+            },
+            FieldId: number,
+            FieldName: "Parameters",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "M2ORelation",
+            IsRequired: false,
+            include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+          },
           TariffsOnMarketingDevice: {
-            IsBackward: true;
+            IsBackward: true,
             Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "DeviceOnTariffs";
-              ContentTitle: string;
-              ContentDescription: string;
-              IsExtension: false;
+              ContentId: number,
+              ContentPath: string,
+              ContentName: "DeviceOnTariffs",
+              ContentTitle: string,
+              ContentDescription: string,
+              IsExtension: false,
               Fields: {
                 Parent: {
-                  IsBackward: false;
+                  IsBackward: false,
                   Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "ProductRelation";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    IsExtension: false;
+                    ContentId: number,
+                    ContentPath: string,
+                    ContentName: "ProductRelation",
+                    ContentTitle: string,
+                    ContentDescription: string,
+                    IsExtension: false,
                     Fields: {
                       Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Title",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       Modifiers: {
-                        IsBackward: false;
-                        Content: LinkModifierSchema;
-                        FieldId: number;
-                        FieldName: "Modifiers";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "M2MRelation";
-                        IsRequired: false;
-                      };
+                        IsBackward: false,
+                        Content: LinkModifierSchema,
+                        FieldId: number,
+                        FieldName: "Modifiers",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "M2MRelation",
+                        IsRequired: false
+                      },
                       Parameters: {
-                        IsBackward: false;
+                        IsBackward: false,
                         Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "LinkParameter";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          IsExtension: false;
+                          ContentId: number,
+                          ContentPath: string,
+                          ContentName: "LinkParameter",
+                          ContentTitle: string,
+                          ContentDescription: string,
+                          IsExtension: false,
                           Fields: {
                             Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "String";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "Title",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "String",
+                              IsRequired: false
+                            },
                             Group: {
-                              IsBackward: false;
-                              Content: ProductParameterGroup1Schema;
-                              FieldId: number;
-                              FieldName: "Group";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: ProductParameterGroup1Schema,
+                              FieldId: number,
+                              FieldName: "Group",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             BaseParameter: {
-                              IsBackward: false;
-                              Content: BaseParameterSchema;
-                              FieldId: number;
-                              FieldName: "BaseParameter";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: BaseParameterSchema,
+                              FieldId: number,
+                              FieldName: "BaseParameter",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Zone: {
-                              IsBackward: false;
-                              Content: TariffZoneSchema;
-                              FieldId: number;
-                              FieldName: "Zone";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: TariffZoneSchema,
+                              FieldId: number,
+                              FieldName: "Zone",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Direction: {
-                              IsBackward: false;
-                              Content: DirectionSchema;
-                              FieldId: number;
-                              FieldName: "Direction";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: DirectionSchema,
+                              FieldId: number,
+                              FieldName: "Direction",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             BaseParameterModifiers: {
-                              IsBackward: false;
-                              Content: BaseParameterModifierSchema;
-                              FieldId: number;
-                              FieldName: "BaseParameterModifiers";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "M2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: BaseParameterModifierSchema,
+                              FieldId: number,
+                              FieldName: "BaseParameterModifiers",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "M2MRelation",
+                              IsRequired: false
+                            },
                             Modifiers: {
-                              IsBackward: false;
-                              Content: ParameterModifierSchema;
-                              FieldId: number;
-                              FieldName: "Modifiers";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "M2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: ParameterModifierSchema,
+                              FieldId: number,
+                              FieldName: "Modifiers",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "M2MRelation",
+                              IsRequired: false
+                            },
                             SortOrder: {
-                              FieldId: number;
-                              FieldName: "SortOrder";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "SortOrder",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            },
                             NumValue: {
-                              FieldId: number;
-                              FieldName: "NumValue";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "NumValue",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            },
                             Value: {
-                              FieldId: number;
-                              FieldName: "Value";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "VisualEdit";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "Value",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "VisualEdit",
+                              IsRequired: false
+                            },
                             Description: {
-                              FieldId: number;
-                              FieldName: "Description";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "VisualEdit";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "Description",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "VisualEdit",
+                              IsRequired: false
+                            },
                             Unit: {
-                              IsBackward: false;
-                              Content: UnitSchema;
-                              FieldId: number;
-                              FieldName: "Unit";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: UnitSchema,
+                              FieldId: number,
+                              FieldName: "Unit",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             ProductGroup: {
-                              IsBackward: false;
+                              IsBackward: false,
                               Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "Group";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                IsExtension: false;
-                                Fields: {};
-                              };
-                              FieldId: number;
-                              FieldName: "ProductGroup";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                                ContentId: number,
+                                ContentPath: string,
+                                ContentName: "Group",
+                                ContentTitle: string,
+                                ContentDescription: string,
+                                IsExtension: false,
+                                Fields: {}
+                              },
+                              FieldId: number,
+                              FieldName: "ProductGroup",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Choice: {
-                              IsBackward: false;
-                              Content: ParameterChoiceSchema;
-                              FieldId: number;
-                              FieldName: "Choice";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
-                          };
-                          include: (
-                            selector: (
-                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-                            ) => Selection[]
-                          ) => string[];
-                        };
-                        FieldId: number;
-                        FieldName: "Parameters";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "M2ORelation";
-                        IsRequired: false;
-                        include: (
-                          selector: (
-                            fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-                          ) => Selection[]
-                        ) => string[];
-                      };
+                              IsBackward: false,
+                              Content: ParameterChoiceSchema,
+                              FieldId: number,
+                              FieldName: "Choice",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            }
+                          },
+                          include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['TariffsOnMarketingDevice']['Content']['Fields']['Parent']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+                        },
+                        FieldId: number,
+                        FieldName: "Parameters",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "M2ORelation",
+                        IsRequired: false,
+                        include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['TariffsOnMarketingDevice']['Content']['Fields']['Parent']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+                      },
                       Type: {
                         Contents: {
                           TariffTransfer: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "TariffTransfer";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
-                            Fields: {};
-                          };
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "TariffTransfer",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
+                            Fields: {}
+                          },
                           MutualGroup: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "MutualGroup";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
-                            Fields: {};
-                          };
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "MutualGroup",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
+                            Fields: {}
+                          },
                           ServiceOnTariff: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "ServiceOnTariff";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "ServiceOnTariff",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
                             Fields: {
                               Description: {
-                                FieldId: number;
-                                FieldName: "Description";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "Textbox";
-                                IsRequired: false;
-                              };
-                            };
-                          };
+                                FieldId: number,
+                                FieldName: "Description",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "Textbox",
+                                IsRequired: false
+                              }
+                            }
+                          },
                           ServicesUpsale: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "ServicesUpsale";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "ServicesUpsale",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
                             Fields: {
                               Order: {
-                                FieldId: number;
-                                FieldName: "Order";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "Numeric";
-                                IsRequired: false;
-                              };
-                            };
-                          };
+                                FieldId: number,
+                                FieldName: "Order",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "Numeric",
+                                IsRequired: false
+                              }
+                            }
+                          },
                           TariffOptionPackage: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "TariffOptionPackage";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "TariffOptionPackage",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
                             Fields: {
                               SubTitle: {
-                                FieldId: number;
-                                FieldName: "SubTitle";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "Textbox";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "SubTitle",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "Textbox",
+                                IsRequired: false
+                              },
                               Description: {
-                                FieldId: number;
-                                FieldName: "Description";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "VisualEdit";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "Description",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "VisualEdit",
+                                IsRequired: false
+                              },
                               Alias: {
-                                FieldId: number;
-                                FieldName: "Alias";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "String";
-                                IsRequired: false;
-                              };
+                                FieldId: number,
+                                FieldName: "Alias",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "String",
+                                IsRequired: false
+                              },
                               Link: {
-                                FieldId: number;
-                                FieldName: "Link";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "String";
-                                IsRequired: false;
-                              };
-                            };
-                          };
+                                FieldId: number,
+                                FieldName: "Link",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "String",
+                                IsRequired: false
+                              }
+                            }
+                          },
                           ServiceRelation: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "ServiceRelation";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
-                            Fields: {};
-                          };
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "ServiceRelation",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
+                            Fields: {}
+                          },
                           RoamingScaleOnTariff: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "RoamingScaleOnTariff";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
-                            Fields: {};
-                          };
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "RoamingScaleOnTariff",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
+                            Fields: {}
+                          },
                           ServiceOnRoamingScale: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "ServiceOnRoamingScale";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
-                            Fields: {};
-                          };
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "ServiceOnRoamingScale",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
+                            Fields: {}
+                          },
                           CrossSale: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "CrossSale";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "CrossSale",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
                             Fields: {
                               Order: {
-                                FieldId: number;
-                                FieldName: "Order";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "Numeric";
-                                IsRequired: false;
-                              };
-                            };
-                          };
+                                FieldId: number,
+                                FieldName: "Order",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "Numeric",
+                                IsRequired: false
+                              }
+                            }
+                          },
                           MarketingCrossSale: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "MarketingCrossSale";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "MarketingCrossSale",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
                             Fields: {
                               Order: {
-                                FieldId: number;
-                                FieldName: "Order";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "Numeric";
-                                IsRequired: false;
-                              };
-                            };
-                          };
+                                FieldId: number,
+                                FieldName: "Order",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "Numeric",
+                                IsRequired: false
+                              }
+                            }
+                          },
                           DeviceOnTariffs: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "DeviceOnTariffs";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "DeviceOnTariffs",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
                             Fields: {
                               Order: {
-                                FieldId: number;
-                                FieldName: "Order";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "Numeric";
-                                IsRequired: false;
-                              };
-                            };
-                          };
+                                FieldId: number,
+                                FieldName: "Order",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "Numeric",
+                                IsRequired: false
+                              }
+                            }
+                          },
                           DevicesForFixConnectAction: {
-                            ContentId: number;
-                            ContentPath: string;
-                            ContentName: "DevicesForFixConnectAction";
-                            ContentTitle: string;
-                            ContentDescription: string;
-                            IsExtension: true;
+                            ContentId: number,
+                            ContentPath: string,
+                            ContentName: "DevicesForFixConnectAction",
+                            ContentTitle: string,
+                            ContentDescription: string,
+                            IsExtension: true,
                             Fields: {
                               Order: {
-                                FieldId: number;
-                                FieldName: "Order";
-                                FieldTitle: string;
-                                FieldDescription: string;
-                                FieldOrder: number;
-                                FieldType: "Numeric";
-                                IsRequired: false;
-                              };
-                            };
-                          };
-                        };
-                        FieldId: number;
-                        FieldName: "Type";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Classifier";
-                        IsRequired: false;
-                        include: (
-                          selector: (
-                            contents: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Type"]["Contents"]
-                          ) => string[][]
-                        ) => string[];
-                      };
-                    };
-                    include: (
-                      selector: (
-                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
-                      ) => Selection[]
-                    ) => string[];
-                  };
-                  FieldId: number;
-                  FieldName: "Parent";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                  include: (
-                    selector: (
-                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
-                    ) => Selection[]
-                  ) => string[];
-                };
+                                FieldId: number,
+                                FieldName: "Order",
+                                FieldTitle: string,
+                                FieldDescription: string,
+                                FieldOrder: number,
+                                FieldType: "Numeric",
+                                IsRequired: false
+                              }
+                            }
+                          }
+                        },
+                        FieldId: number,
+                        FieldName: "Type",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Classifier",
+                        IsRequired: false,
+                        include: (selector: (contents: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['TariffsOnMarketingDevice']['Content']['Fields']['Parent']['Content']['Fields']['Type']['Contents']) => string[][]) => string[]
+                      }
+                    },
+                    include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['TariffsOnMarketingDevice']['Content']['Fields']['Parent']['Content']['Fields']) => Selection[]) => string[]
+                  },
+                  FieldId: number,
+                  FieldName: "Parent",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false,
+                  include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['TariffsOnMarketingDevice']['Content']['Fields']['Parent']['Content']['Fields']) => Selection[]) => string[]
+                },
                 MarketingDevice: {
-                  IsBackward: false;
-                  Content: MarketingProduct2Schema;
-                  FieldId: number;
-                  FieldName: "MarketingDevice";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: MarketingProduct2Schema,
+                  FieldId: number,
+                  FieldName: "MarketingDevice",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false
+                },
                 MarketingTariffs: {
-                  IsBackward: false;
-                  Content: MarketingProduct3Schema;
-                  FieldId: number;
-                  FieldName: "MarketingTariffs";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "M2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: MarketingProduct3Schema,
+                  FieldId: number,
+                  FieldName: "MarketingTariffs",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "M2MRelation",
+                  IsRequired: false
+                },
                 Cities: {
-                  IsBackward: false;
-                  Content: Region1Schema;
-                  FieldId: number;
-                  FieldName: "Cities";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "M2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: Region1Schema,
+                  FieldId: number,
+                  FieldName: "Cities",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "M2MRelation",
+                  IsRequired: false
+                },
                 Order: {
-                  FieldId: number;
-                  FieldName: "Order";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "Numeric";
-                  IsRequired: false;
-                };
-              };
-              include: (
-                selector: (
-                  fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]
-                ) => Selection[]
-              ) => string[];
-            };
-            FieldId: number;
-            FieldName: "TariffsOnMarketingDevice";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-            include: (
-              selector: (
-                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]
-              ) => Selection[]
-            ) => string[];
-          };
+                  FieldId: number,
+                  FieldName: "Order",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "Numeric",
+                  IsRequired: false
+                }
+              },
+              include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['TariffsOnMarketingDevice']['Content']['Fields']) => Selection[]) => string[]
+            },
+            FieldId: number,
+            FieldName: "TariffsOnMarketingDevice",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false,
+            include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['TariffsOnMarketingDevice']['Content']['Fields']) => Selection[]) => string[]
+          },
           DevicesOnMarketingTariff: {
-            IsBackward: true;
+            IsBackward: true,
             Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "DeviceOnTariffs";
-              ContentTitle: string;
-              ContentDescription: string;
-              IsExtension: false;
+              ContentId: number,
+              ContentPath: string,
+              ContentName: "DeviceOnTariffs",
+              ContentTitle: string,
+              ContentDescription: string,
+              IsExtension: false,
               Fields: {
                 Parent: {
-                  IsBackward: false;
+                  IsBackward: false,
                   Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "ProductRelation";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    IsExtension: false;
+                    ContentId: number,
+                    ContentPath: string,
+                    ContentName: "ProductRelation",
+                    ContentTitle: string,
+                    ContentDescription: string,
+                    IsExtension: false,
                     Fields: {
                       Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Title",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       Parameters: {
-                        IsBackward: false;
+                        IsBackward: false,
                         Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "LinkParameter";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          IsExtension: false;
+                          ContentId: number,
+                          ContentPath: string,
+                          ContentName: "LinkParameter",
+                          ContentTitle: string,
+                          ContentDescription: string,
+                          IsExtension: false,
                           Fields: {
                             Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "String";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "Title",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "String",
+                              IsRequired: false
+                            },
                             SortOrder: {
-                              FieldId: number;
-                              FieldName: "SortOrder";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "SortOrder",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            },
                             NumValue: {
-                              FieldId: number;
-                              FieldName: "NumValue";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "NumValue",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            },
                             Value: {
-                              FieldId: number;
-                              FieldName: "Value";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "VisualEdit";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "Value",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "VisualEdit",
+                              IsRequired: false
+                            },
                             Description: {
-                              FieldId: number;
-                              FieldName: "Description";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "VisualEdit";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "Description",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "VisualEdit",
+                              IsRequired: false
+                            },
                             Unit: {
-                              IsBackward: false;
-                              Content: UnitSchema;
-                              FieldId: number;
-                              FieldName: "Unit";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: UnitSchema,
+                              FieldId: number,
+                              FieldName: "Unit",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Modifiers: {
-                              IsBackward: false;
-                              Content: ParameterModifierSchema;
-                              FieldId: number;
-                              FieldName: "Modifiers";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "M2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: ParameterModifierSchema,
+                              FieldId: number,
+                              FieldName: "Modifiers",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "M2MRelation",
+                              IsRequired: false
+                            },
                             BaseParameterModifiers: {
-                              IsBackward: false;
-                              Content: BaseParameterModifierSchema;
-                              FieldId: number;
-                              FieldName: "BaseParameterModifiers";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "M2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: BaseParameterModifierSchema,
+                              FieldId: number,
+                              FieldName: "BaseParameterModifiers",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "M2MRelation",
+                              IsRequired: false
+                            },
                             Direction: {
-                              IsBackward: false;
-                              Content: DirectionSchema;
-                              FieldId: number;
-                              FieldName: "Direction";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: DirectionSchema,
+                              FieldId: number,
+                              FieldName: "Direction",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Zone: {
-                              IsBackward: false;
-                              Content: TariffZoneSchema;
-                              FieldId: number;
-                              FieldName: "Zone";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: TariffZoneSchema,
+                              FieldId: number,
+                              FieldName: "Zone",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             BaseParameter: {
-                              IsBackward: false;
-                              Content: BaseParameterSchema;
-                              FieldId: number;
-                              FieldName: "BaseParameter";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: BaseParameterSchema,
+                              FieldId: number,
+                              FieldName: "BaseParameter",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Group: {
-                              IsBackward: false;
-                              Content: ProductParameterGroupSchema;
-                              FieldId: number;
-                              FieldName: "Group";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: ProductParameterGroupSchema,
+                              FieldId: number,
+                              FieldName: "Group",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Choice: {
-                              IsBackward: false;
-                              Content: ParameterChoiceSchema;
-                              FieldId: number;
-                              FieldName: "Choice";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
-                          };
-                          include: (
-                            selector: (
-                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-                            ) => Selection[]
-                          ) => string[];
-                        };
-                        FieldId: number;
-                        FieldName: "Parameters";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "M2ORelation";
-                        IsRequired: false;
-                        include: (
-                          selector: (
-                            fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-                          ) => Selection[]
-                        ) => string[];
-                      };
+                              IsBackward: false,
+                              Content: ParameterChoiceSchema,
+                              FieldId: number,
+                              FieldName: "Choice",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            }
+                          },
+                          include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['DevicesOnMarketingTariff']['Content']['Fields']['Parent']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+                        },
+                        FieldId: number,
+                        FieldName: "Parameters",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "M2ORelation",
+                        IsRequired: false,
+                        include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['DevicesOnMarketingTariff']['Content']['Fields']['Parent']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+                      },
                       Modifiers: {
-                        IsBackward: false;
-                        Content: LinkModifierSchema;
-                        FieldId: number;
-                        FieldName: "Modifiers";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "M2MRelation";
-                        IsRequired: false;
-                      };
-                    };
-                    include: (
-                      selector: (
-                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
-                      ) => Selection[]
-                    ) => string[];
-                  };
-                  FieldId: number;
-                  FieldName: "Parent";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                  include: (
-                    selector: (
-                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
-                    ) => Selection[]
-                  ) => string[];
-                };
+                        IsBackward: false,
+                        Content: LinkModifierSchema,
+                        FieldId: number,
+                        FieldName: "Modifiers",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "M2MRelation",
+                        IsRequired: false
+                      }
+                    },
+                    include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['DevicesOnMarketingTariff']['Content']['Fields']['Parent']['Content']['Fields']) => Selection[]) => string[]
+                  },
+                  FieldId: number,
+                  FieldName: "Parent",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false,
+                  include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['DevicesOnMarketingTariff']['Content']['Fields']['Parent']['Content']['Fields']) => Selection[]) => string[]
+                },
                 MarketingDevice: {
-                  IsBackward: false;
-                  Content: MarketingProduct3Schema;
-                  FieldId: number;
-                  FieldName: "MarketingDevice";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: MarketingProduct3Schema,
+                  FieldId: number,
+                  FieldName: "MarketingDevice",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false
+                },
                 Cities: {
-                  IsBackward: false;
-                  Content: Region1Schema;
-                  FieldId: number;
-                  FieldName: "Cities";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "M2MRelation";
-                  IsRequired: false;
-                };
+                  IsBackward: false,
+                  Content: Region1Schema,
+                  FieldId: number,
+                  FieldName: "Cities",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "M2MRelation",
+                  IsRequired: false
+                },
                 Order: {
-                  FieldId: number;
-                  FieldName: "Order";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "Numeric";
-                  IsRequired: false;
-                };
-              };
-              include: (
-                selector: (
-                  fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]
-                ) => Selection[]
-              ) => string[];
-            };
-            FieldId: number;
-            FieldName: "DevicesOnMarketingTariff";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "M2MRelation";
-            IsRequired: false;
-            include: (
-              selector: (
-                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]
-              ) => Selection[]
-            ) => string[];
-          };
+                  FieldId: number,
+                  FieldName: "Order",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "Numeric",
+                  IsRequired: false
+                }
+              },
+              include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['DevicesOnMarketingTariff']['Content']['Fields']) => Selection[]) => string[]
+            },
+            FieldId: number,
+            FieldName: "DevicesOnMarketingTariff",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "M2MRelation",
+            IsRequired: false,
+            include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['DevicesOnMarketingTariff']['Content']['Fields']) => Selection[]) => string[]
+          },
           ActionsOnMarketingDevice: {
-            IsBackward: true;
+            IsBackward: true,
             Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "DevicesForFixConnectAction";
-              ContentTitle: string;
-              ContentDescription: string;
-              IsExtension: false;
+              ContentId: number,
+              ContentPath: string,
+              ContentName: "DevicesForFixConnectAction",
+              ContentTitle: string,
+              ContentDescription: string,
+              IsExtension: false,
               Fields: {
                 FixConnectAction: {
-                  IsBackward: false;
+                  IsBackward: false,
                   Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "Product";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    IsExtension: false;
+                    ContentId: number,
+                    ContentPath: string,
+                    ContentName: "Product",
+                    ContentTitle: string,
+                    ContentDescription: string,
+                    IsExtension: false,
                     Fields: {
                       MarketingProduct: {
-                        IsBackward: false;
+                        IsBackward: false,
                         Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "MarketingProduct";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          IsExtension: false;
+                          ContentId: number,
+                          ContentPath: string,
+                          ContentName: "MarketingProduct",
+                          ContentTitle: string,
+                          ContentDescription: string,
+                          IsExtension: false,
                           Fields: {
                             Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "String";
-                              IsRequired: false;
-                            };
-                          };
-                        };
-                        FieldId: number;
-                        FieldName: "MarketingProduct";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "O2MRelation";
-                        IsRequired: false;
-                      };
+                              FieldId: number,
+                              FieldName: "Title",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "String",
+                              IsRequired: false
+                            }
+                          }
+                        },
+                        FieldId: number,
+                        FieldName: "MarketingProduct",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "O2MRelation",
+                        IsRequired: false
+                      },
                       GlobalCode: {
-                        FieldId: number;
-                        FieldName: "GlobalCode";
-                        FieldTitle: "GlobalCode";
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "GlobalCode",
+                        FieldTitle: "GlobalCode",
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       Type: {
-                        FieldId: number;
-                        FieldName: "Type";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Classifier";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Type",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Classifier",
+                        IsRequired: false
+                      },
                       Description: {
-                        FieldId: number;
-                        FieldName: "Description";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Textbox";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Description",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Textbox",
+                        IsRequired: false
+                      },
                       FullDescription: {
-                        FieldId: number;
-                        FieldName: "FullDescription";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "VisualEdit";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "FullDescription",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "VisualEdit",
+                        IsRequired: false
+                      },
                       Notes: {
-                        FieldId: number;
-                        FieldName: "Notes";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Textbox";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Notes",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Textbox",
+                        IsRequired: false
+                      },
                       Link: {
-                        FieldId: number;
-                        FieldName: "Link";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Link",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       SortOrder: {
-                        FieldId: number;
-                        FieldName: "SortOrder";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Numeric";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "SortOrder",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Numeric",
+                        IsRequired: false
+                      },
                       ForisID: {
-                        FieldId: number;
-                        FieldName: "ForisID";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "ForisID",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       Icon: {
-                        FieldId: number;
-                        FieldName: "Icon";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Image";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Icon",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Image",
+                        IsRequired: false
+                      },
                       PDF: {
-                        FieldId: number;
-                        FieldName: "PDF";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "File";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "PDF",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "File",
+                        IsRequired: false
+                      },
                       PdfFixedAlias: {
-                        FieldId: number;
-                        FieldName: "PdfFixedAlias";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "PdfFixedAlias",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       PdfFixedLinks: {
-                        FieldId: number;
-                        FieldName: "PdfFixedLinks";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Textbox";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "PdfFixedLinks",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Textbox",
+                        IsRequired: false
+                      },
                       StartDate: {
-                        FieldId: number;
-                        FieldName: "StartDate";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Date";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "StartDate",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Date",
+                        IsRequired: false
+                      },
                       EndDate: {
-                        FieldId: number;
-                        FieldName: "EndDate";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Date";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "EndDate",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Date",
+                        IsRequired: false
+                      },
                       OldSiteId: {
-                        FieldId: number;
-                        FieldName: "OldSiteId";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Numeric";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "OldSiteId",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Numeric",
+                        IsRequired: false
+                      },
                       OldId: {
-                        FieldId: number;
-                        FieldName: "OldId";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Numeric";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "OldId",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Numeric",
+                        IsRequired: false
+                      },
                       OldSiteInvId: {
-                        FieldId: number;
-                        FieldName: "OldSiteInvId";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "OldSiteInvId",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       OldCorpSiteId: {
-                        FieldId: number;
-                        FieldName: "OldCorpSiteId";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Numeric";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "OldCorpSiteId",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Numeric",
+                        IsRequired: false
+                      },
                       OldAliasId: {
-                        FieldId: number;
-                        FieldName: "OldAliasId";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "OldAliasId",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       Priority: {
-                        FieldId: number;
-                        FieldName: "Priority";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Numeric";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Priority",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Numeric",
+                        IsRequired: false
+                      },
                       ListImage: {
-                        FieldId: number;
-                        FieldName: "ListImage";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Image";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "ListImage",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Image",
+                        IsRequired: false
+                      },
                       ArchiveDate: {
-                        FieldId: number;
-                        FieldName: "ArchiveDate";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Date";
-                        IsRequired: false;
-                      };
-                    };
-                    include: (
-                      selector: (
-                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["FixConnectAction"]["Content"]["Fields"]
-                      ) => Selection[]
-                    ) => string[];
-                  };
-                  FieldId: number;
-                  FieldName: "FixConnectAction";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                  include: (
-                    selector: (
-                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["FixConnectAction"]["Content"]["Fields"]
-                    ) => Selection[]
-                  ) => string[];
-                };
+                        FieldId: number,
+                        FieldName: "ArchiveDate",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Date",
+                        IsRequired: false
+                      }
+                    },
+                    include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['ActionsOnMarketingDevice']['Content']['Fields']['FixConnectAction']['Content']['Fields']) => Selection[]) => string[]
+                  },
+                  FieldId: number,
+                  FieldName: "FixConnectAction",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false,
+                  include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['ActionsOnMarketingDevice']['Content']['Fields']['FixConnectAction']['Content']['Fields']) => Selection[]) => string[]
+                },
                 Parent: {
-                  IsBackward: false;
+                  IsBackward: false,
                   Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "ProductRelation";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    IsExtension: false;
+                    ContentId: number,
+                    ContentPath: string,
+                    ContentName: "ProductRelation",
+                    ContentTitle: string,
+                    ContentDescription: string,
+                    IsExtension: false,
                     Fields: {
                       Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Title",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       Type: {
-                        FieldId: number;
-                        FieldName: "Type";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Classifier";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Type",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Classifier",
+                        IsRequired: false
+                      },
                       Parameters: {
-                        IsBackward: false;
+                        IsBackward: false,
                         Content: {
-                          ContentId: number;
-                          ContentPath: string;
-                          ContentName: "LinkParameter";
-                          ContentTitle: string;
-                          ContentDescription: string;
-                          IsExtension: false;
+                          ContentId: number,
+                          ContentPath: string,
+                          ContentName: "LinkParameter",
+                          ContentTitle: string,
+                          ContentDescription: string,
+                          IsExtension: false,
                           Fields: {
                             Unit: {
-                              IsBackward: false;
+                              IsBackward: false,
                               Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "Unit";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                IsExtension: false;
+                                ContentId: number,
+                                ContentPath: string,
+                                ContentName: "Unit",
+                                ContentTitle: string,
+                                ContentDescription: string,
+                                IsExtension: false,
                                 Fields: {
                                   Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "String";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "Alias",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "String",
+                                    IsRequired: false
+                                  },
                                   Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "String";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "Title",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "String",
+                                    IsRequired: false
+                                  },
                                   Display: {
-                                    FieldId: number;
-                                    FieldName: "Display";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "String";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "Display",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "String",
+                                    IsRequired: false
+                                  },
                                   QuotaUnit: {
                                     Items: [
                                       {
-                                        Value: "mb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "mb",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "gb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "gb",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "kb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "kb",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "tb";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "tb",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "min";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "min",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "message";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "message",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "rub";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "rub",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "sms";
-                                        Alias: "SMS";
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "sms",
+                                        Alias: "SMS",
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "mms";
-                                        Alias: "MMS";
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "mms",
+                                        Alias: "MMS",
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "mbit";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "mbit",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "step";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "step",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       }
-                                    ];
-                                    FieldId: number;
-                                    FieldName: "QuotaUnit";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "StringEnum";
-                                    IsRequired: false;
-                                  };
+                                    ],
+                                    FieldId: number,
+                                    FieldName: "QuotaUnit",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "StringEnum",
+                                    IsRequired: false
+                                  },
                                   QuotaPeriod: {
                                     Items: [
                                       {
-                                        Value: "daily";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "daily",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "weekly";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "weekly",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "monthly";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "monthly",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "hourly";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "hourly",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "minutely";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "minutely",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "every_second";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "every_second",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       },
                                       {
-                                        Value: "annually";
-                                        Alias: string;
-                                        IsDefault: false;
-                                        Invalid: false;
+                                        Value: "annually",
+                                        Alias: string,
+                                        IsDefault: false,
+                                        Invalid: false
                                       }
-                                    ];
-                                    FieldId: number;
-                                    FieldName: "QuotaPeriod";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "StringEnum";
-                                    IsRequired: false;
-                                  };
+                                    ],
+                                    FieldId: number,
+                                    FieldName: "QuotaPeriod",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "StringEnum",
+                                    IsRequired: false
+                                  },
                                   QuotaPeriodicity: {
-                                    FieldId: number;
-                                    FieldName: "QuotaPeriodicity";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "String";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "QuotaPeriodicity",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "String",
+                                    IsRequired: false
+                                  },
                                   PeriodMultiplier: {
-                                    FieldId: number;
-                                    FieldName: "PeriodMultiplier";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "Numeric";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "PeriodMultiplier",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "Numeric",
+                                    IsRequired: false
+                                  },
                                   Type: {
-                                    FieldId: number;
-                                    FieldName: "Type";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "String";
-                                    IsRequired: false;
-                                  };
-                                };
-                              };
-                              FieldId: number;
-                              FieldName: "Unit";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                                    FieldId: number,
+                                    FieldName: "Type",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "String",
+                                    IsRequired: false
+                                  }
+                                }
+                              },
+                              FieldId: number,
+                              FieldName: "Unit",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             BaseParameterModifiers: {
-                              IsBackward: false;
-                              Content: BaseParameterModifierSchema;
-                              FieldId: number;
-                              FieldName: "BaseParameterModifiers";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "M2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: BaseParameterModifierSchema,
+                              FieldId: number,
+                              FieldName: "BaseParameterModifiers",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "M2MRelation",
+                              IsRequired: false
+                            },
                             Modifiers: {
-                              IsBackward: false;
-                              Content: ParameterModifierSchema;
-                              FieldId: number;
-                              FieldName: "Modifiers";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "M2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: ParameterModifierSchema,
+                              FieldId: number,
+                              FieldName: "Modifiers",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "M2MRelation",
+                              IsRequired: false
+                            },
                             Direction: {
-                              IsBackward: false;
-                              Content: DirectionSchema;
-                              FieldId: number;
-                              FieldName: "Direction";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: DirectionSchema,
+                              FieldId: number,
+                              FieldName: "Direction",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Zone: {
-                              IsBackward: false;
-                              Content: TariffZoneSchema;
-                              FieldId: number;
-                              FieldName: "Zone";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: TariffZoneSchema,
+                              FieldId: number,
+                              FieldName: "Zone",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             BaseParameter: {
-                              IsBackward: false;
-                              Content: BaseParameterSchema;
-                              FieldId: number;
-                              FieldName: "BaseParameter";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: BaseParameterSchema,
+                              FieldId: number,
+                              FieldName: "BaseParameter",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Group: {
-                              IsBackward: false;
+                              IsBackward: false,
                               Content: {
-                                ContentId: number;
-                                ContentPath: string;
-                                ContentName: "ProductParameterGroup";
-                                ContentTitle: string;
-                                ContentDescription: string;
-                                IsExtension: false;
+                                ContentId: number,
+                                ContentPath: string,
+                                ContentName: "ProductParameterGroup",
+                                ContentTitle: string,
+                                ContentDescription: string,
+                                IsExtension: false,
                                 Fields: {
                                   Title: {
-                                    FieldId: number;
-                                    FieldName: "Title";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "String";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "Title",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "String",
+                                    IsRequired: false
+                                  },
                                   Alias: {
-                                    FieldId: number;
-                                    FieldName: "Alias";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "String";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "Alias",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "String",
+                                    IsRequired: false
+                                  },
                                   SortOrder: {
-                                    FieldId: number;
-                                    FieldName: "SortOrder";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "Numeric";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "SortOrder",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "Numeric",
+                                    IsRequired: false
+                                  },
                                   OldSiteId: {
-                                    FieldId: number;
-                                    FieldName: "OldSiteId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "Numeric";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "OldSiteId",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "Numeric",
+                                    IsRequired: false
+                                  },
                                   OldCorpSiteId: {
-                                    FieldId: number;
-                                    FieldName: "OldCorpSiteId";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "Numeric";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "OldCorpSiteId",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "Numeric",
+                                    IsRequired: false
+                                  },
                                   ImageSvg: {
-                                    FieldId: number;
-                                    FieldName: "ImageSvg";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "File";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "ImageSvg",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "File",
+                                    IsRequired: false
+                                  },
                                   Type: {
-                                    FieldId: number;
-                                    FieldName: "Type";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "String";
-                                    IsRequired: false;
-                                  };
+                                    FieldId: number,
+                                    FieldName: "Type",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "String",
+                                    IsRequired: false
+                                  },
                                   TitleForIcin: {
-                                    FieldId: number;
-                                    FieldName: "TitleForIcin";
-                                    FieldTitle: string;
-                                    FieldDescription: string;
-                                    FieldOrder: number;
-                                    FieldType: "String";
-                                    IsRequired: false;
-                                  };
-                                };
-                              };
-                              FieldId: number;
-                              FieldName: "Group";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                                    FieldId: number,
+                                    FieldName: "TitleForIcin",
+                                    FieldTitle: string,
+                                    FieldDescription: string,
+                                    FieldOrder: number,
+                                    FieldType: "String",
+                                    IsRequired: false
+                                  }
+                                }
+                              },
+                              FieldId: number,
+                              FieldName: "Group",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Choice: {
-                              IsBackward: false;
-                              Content: ParameterChoiceSchema;
-                              FieldId: number;
-                              FieldName: "Choice";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "O2MRelation";
-                              IsRequired: false;
-                            };
+                              IsBackward: false,
+                              Content: ParameterChoiceSchema,
+                              FieldId: number,
+                              FieldName: "Choice",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "O2MRelation",
+                              IsRequired: false
+                            },
                             Title: {
-                              FieldId: number;
-                              FieldName: "Title";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "String";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "Title",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "String",
+                              IsRequired: false
+                            },
                             SortOrder: {
-                              FieldId: number;
-                              FieldName: "SortOrder";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "SortOrder",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            },
                             NumValue: {
-                              FieldId: number;
-                              FieldName: "NumValue";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "NumValue",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            },
                             Value: {
-                              FieldId: number;
-                              FieldName: "Value";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "VisualEdit";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "Value",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "VisualEdit",
+                              IsRequired: false
+                            },
                             Description: {
-                              FieldId: number;
-                              FieldName: "Description";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "VisualEdit";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "Description",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "VisualEdit",
+                              IsRequired: false
+                            },
                             OldSiteId: {
-                              FieldId: number;
-                              FieldName: "OldSiteId";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "OldSiteId",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            },
                             OldCorpSiteId: {
-                              FieldId: number;
-                              FieldName: "OldCorpSiteId";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "OldCorpSiteId",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            },
                             OldPointId: {
-                              FieldId: number;
-                              FieldName: "OldPointId";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
+                              FieldId: number,
+                              FieldName: "OldPointId",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            },
                             OldCorpPointId: {
-                              FieldId: number;
-                              FieldName: "OldCorpPointId";
-                              FieldTitle: string;
-                              FieldDescription: string;
-                              FieldOrder: number;
-                              FieldType: "Numeric";
-                              IsRequired: false;
-                            };
-                          };
-                          include: (
-                            selector: (
-                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-                            ) => Selection[]
-                          ) => string[];
-                        };
-                        FieldId: number;
-                        FieldName: "Parameters";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "M2ORelation";
-                        IsRequired: false;
-                        include: (
-                          selector: (
-                            fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-                          ) => Selection[]
-                        ) => string[];
-                      };
+                              FieldId: number,
+                              FieldName: "OldCorpPointId",
+                              FieldTitle: string,
+                              FieldDescription: string,
+                              FieldOrder: number,
+                              FieldType: "Numeric",
+                              IsRequired: false
+                            }
+                          },
+                          include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['ActionsOnMarketingDevice']['Content']['Fields']['Parent']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+                        },
+                        FieldId: number,
+                        FieldName: "Parameters",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "M2ORelation",
+                        IsRequired: false,
+                        include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['ActionsOnMarketingDevice']['Content']['Fields']['Parent']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+                      },
                       Modifiers: {
-                        IsBackward: false;
-                        Content: LinkModifierSchema;
-                        FieldId: number;
-                        FieldName: "Modifiers";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "M2MRelation";
-                        IsRequired: false;
-                      };
-                    };
-                    include: (
-                      selector: (
-                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
-                      ) => Selection[]
-                    ) => string[];
-                  };
-                  FieldId: number;
-                  FieldName: "Parent";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "O2MRelation";
-                  IsRequired: false;
-                  include: (
-                    selector: (
-                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
-                    ) => Selection[]
-                  ) => string[];
-                };
+                        IsBackward: false,
+                        Content: LinkModifierSchema,
+                        FieldId: number,
+                        FieldName: "Modifiers",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "M2MRelation",
+                        IsRequired: false
+                      }
+                    },
+                    include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['ActionsOnMarketingDevice']['Content']['Fields']['Parent']['Content']['Fields']) => Selection[]) => string[]
+                  },
+                  FieldId: number,
+                  FieldName: "Parent",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "O2MRelation",
+                  IsRequired: false,
+                  include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['ActionsOnMarketingDevice']['Content']['Fields']['Parent']['Content']['Fields']) => Selection[]) => string[]
+                },
                 Order: {
-                  FieldId: number;
-                  FieldName: "Order";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "Numeric";
-                  IsRequired: false;
-                };
-              };
-              include: (
-                selector: (
-                  fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]
-                ) => Selection[]
-              ) => string[];
-            };
-            FieldId: number;
-            FieldName: "ActionsOnMarketingDevice";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-            include: (
-              selector: (
-                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]
-              ) => Selection[]
-            ) => string[];
-          };
-        };
-        include: (
-          selector: (
-            fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]
-          ) => Selection[]
-        ) => string[];
-      };
-      FieldId: number;
-      FieldName: "MarketingProduct";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "O2MRelation";
-      IsRequired: false;
-      include: (
-        selector: (
-          fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]
-        ) => Selection[]
-      ) => string[];
-    };
+                  FieldId: number,
+                  FieldName: "Order",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "Numeric",
+                  IsRequired: false
+                }
+              },
+              include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['ActionsOnMarketingDevice']['Content']['Fields']) => Selection[]) => string[]
+            },
+            FieldId: number,
+            FieldName: "ActionsOnMarketingDevice",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false,
+            include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']['ActionsOnMarketingDevice']['Content']['Fields']) => Selection[]) => string[]
+          }
+        },
+        include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']) => Selection[]) => string[]
+      },
+      FieldId: number,
+      FieldName: "MarketingProduct",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "O2MRelation",
+      IsRequired: false,
+      include: (selector: (fields: ProductSchema['Fields']['MarketingProduct']['Content']['Fields']) => Selection[]) => string[]
+    },
     GlobalCode: {
-      FieldId: number;
-      FieldName: "GlobalCode";
-      FieldTitle: "GlobalCode";
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "GlobalCode",
+      FieldTitle: "GlobalCode",
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Description: {
-      FieldId: number;
-      FieldName: "Description";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Textbox";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Description",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Textbox",
+      IsRequired: false
+    },
     FullDescription: {
-      FieldId: number;
-      FieldName: "FullDescription";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "VisualEdit";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "FullDescription",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "VisualEdit",
+      IsRequired: false
+    },
     Notes: {
-      FieldId: number;
-      FieldName: "Notes";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Textbox";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Notes",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Textbox",
+      IsRequired: false
+    },
     Link: {
-      FieldId: number;
-      FieldName: "Link";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Link",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     SortOrder: {
-      FieldId: number;
-      FieldName: "SortOrder";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "SortOrder",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     Icon: {
-      FieldId: number;
-      FieldName: "Icon";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Image";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Icon",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Image",
+      IsRequired: false
+    },
     PDF: {
-      FieldId: number;
-      FieldName: "PDF";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "File";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "PDF",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "File",
+      IsRequired: false
+    },
     StartDate: {
-      FieldId: number;
-      FieldName: "StartDate";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Date";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "StartDate",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Date",
+      IsRequired: false
+    },
     EndDate: {
-      FieldId: number;
-      FieldName: "EndDate";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Date";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "EndDate",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Date",
+      IsRequired: false
+    },
     Priority: {
-      FieldId: number;
-      FieldName: "Priority";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Priority",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     ListImage: {
-      FieldId: number;
-      FieldName: "ListImage";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Image";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "ListImage",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Image",
+      IsRequired: false
+    },
     ArchiveDate: {
-      FieldId: number;
-      FieldName: "ArchiveDate";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Date";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "ArchiveDate",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Date",
+      IsRequired: false
+    },
     Modifiers: {
-      IsBackward: false;
-      Content: ProductModiferSchema;
-      FieldId: number;
-      FieldName: "Modifiers";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "M2MRelation";
-      IsRequired: false;
-    };
+      IsBackward: false,
+      Content: ProductModiferSchema,
+      FieldId: number,
+      FieldName: "Modifiers",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "M2MRelation",
+      IsRequired: false
+    },
     Parameters: {
-      IsBackward: false;
+      IsBackward: false,
       Content: {
-        ContentId: number;
-        ContentPath: string;
-        ContentName: "ProductParameter";
-        ContentTitle: string;
-        ContentDescription: string;
-        IsExtension: false;
+        ContentId: number,
+        ContentPath: string,
+        ContentName: "ProductParameter",
+        ContentTitle: string,
+        ContentDescription: string,
+        IsExtension: false,
         Fields: {
           Group: {
-            IsBackward: false;
-            Content: ProductParameterGroup1Schema;
-            FieldId: number;
-            FieldName: "Group";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: ProductParameterGroup1Schema,
+            FieldId: number,
+            FieldName: "Group",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          },
           Parent: {
-            IsBackward: false;
+            IsBackward: false,
             Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "ProductParameter";
-              ContentTitle: string;
-              ContentDescription: string;
-              IsExtension: false;
+              ContentId: number,
+              ContentPath: string,
+              ContentName: "ProductParameter",
+              ContentTitle: string,
+              ContentDescription: string,
+              IsExtension: false,
               Fields: {
                 Title: {
-                  FieldId: number;
-                  FieldName: "Title";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "String";
-                  IsRequired: false;
-                };
-              };
-            };
-            FieldId: number;
-            FieldName: "Parent";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
+                  FieldId: number,
+                  FieldName: "Title",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "String",
+                  IsRequired: false
+                }
+              }
+            },
+            FieldId: number,
+            FieldName: "Parent",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          },
           BaseParameter: {
-            IsBackward: false;
-            Content: BaseParameterSchema;
-            FieldId: number;
-            FieldName: "BaseParameter";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: BaseParameterSchema,
+            FieldId: number,
+            FieldName: "BaseParameter",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          },
           Zone: {
-            IsBackward: false;
-            Content: TariffZoneSchema;
-            FieldId: number;
-            FieldName: "Zone";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: TariffZoneSchema,
+            FieldId: number,
+            FieldName: "Zone",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          },
           Direction: {
-            IsBackward: false;
-            Content: DirectionSchema;
-            FieldId: number;
-            FieldName: "Direction";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: DirectionSchema,
+            FieldId: number,
+            FieldName: "Direction",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          },
           BaseParameterModifiers: {
-            IsBackward: false;
-            Content: BaseParameterModifierSchema;
-            FieldId: number;
-            FieldName: "BaseParameterModifiers";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "M2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: BaseParameterModifierSchema,
+            FieldId: number,
+            FieldName: "BaseParameterModifiers",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "M2MRelation",
+            IsRequired: false
+          },
           Modifiers: {
-            IsBackward: false;
-            Content: ParameterModifierSchema;
-            FieldId: number;
-            FieldName: "Modifiers";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "M2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: ParameterModifierSchema,
+            FieldId: number,
+            FieldName: "Modifiers",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "M2MRelation",
+            IsRequired: false
+          },
           Unit: {
-            IsBackward: false;
-            Content: UnitSchema;
-            FieldId: number;
-            FieldName: "Unit";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: UnitSchema,
+            FieldId: number,
+            FieldName: "Unit",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          },
           Title: {
-            FieldId: number;
-            FieldName: "Title";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "String";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Title",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "String",
+            IsRequired: false
+          },
           SortOrder: {
-            FieldId: number;
-            FieldName: "SortOrder";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Numeric";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "SortOrder",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Numeric",
+            IsRequired: false
+          },
           NumValue: {
-            FieldId: number;
-            FieldName: "NumValue";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Numeric";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "NumValue",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Numeric",
+            IsRequired: false
+          },
           Value: {
-            FieldId: number;
-            FieldName: "Value";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "VisualEdit";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Value",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "VisualEdit",
+            IsRequired: false
+          },
           Description: {
-            FieldId: number;
-            FieldName: "Description";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "VisualEdit";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Description",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "VisualEdit",
+            IsRequired: false
+          },
           Image: {
-            FieldId: number;
-            FieldName: "Image";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Image";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Image",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Image",
+            IsRequired: false
+          },
           ProductGroup: {
-            IsBackward: false;
+            IsBackward: false,
             Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "Group";
-              ContentTitle: string;
-              ContentDescription: string;
-              IsExtension: false;
+              ContentId: number,
+              ContentPath: string,
+              ContentName: "Group",
+              ContentTitle: string,
+              ContentDescription: string,
+              IsExtension: false,
               Fields: {
                 Title: {
-                  FieldId: number;
-                  FieldName: "Title";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "String";
-                  IsRequired: false;
-                };
+                  FieldId: number,
+                  FieldName: "Title",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "String",
+                  IsRequired: false
+                },
                 Alias: {
-                  FieldId: number;
-                  FieldName: "Alias";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "String";
-                  IsRequired: false;
-                };
-              };
-            };
-            FieldId: number;
-            FieldName: "ProductGroup";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
+                  FieldId: number,
+                  FieldName: "Alias",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "String",
+                  IsRequired: false
+                }
+              }
+            },
+            FieldId: number,
+            FieldName: "ProductGroup",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          },
           Choice: {
-            IsBackward: false;
-            Content: ParameterChoiceSchema;
-            FieldId: number;
-            FieldName: "Choice";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
-        };
-        include: (
-          selector: (
-            fields: ProductSchema["Fields"]["Parameters"]["Content"]["Fields"]
-          ) => Selection[]
-        ) => string[];
-      };
-      FieldId: number;
-      FieldName: "Parameters";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "M2ORelation";
-      IsRequired: false;
-      include: (
-        selector: (
-          fields: ProductSchema["Fields"]["Parameters"]["Content"]["Fields"]
-        ) => Selection[]
-      ) => string[];
-    };
+            IsBackward: false,
+            Content: ParameterChoiceSchema,
+            FieldId: number,
+            FieldName: "Choice",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          }
+        },
+        include: (selector: (fields: ProductSchema['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+      },
+      FieldId: number,
+      FieldName: "Parameters",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "M2ORelation",
+      IsRequired: false,
+      include: (selector: (fields: ProductSchema['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+    },
     Regions: {
-      IsBackward: false;
+      IsBackward: false,
       Content: {
-        ContentId: number;
-        ContentPath: string;
-        ContentName: "Region";
-        ContentTitle: string;
-        ContentDescription: string;
-        IsExtension: false;
+        ContentId: number,
+        ContentPath: string,
+        ContentName: "Region",
+        ContentTitle: string,
+        ContentDescription: string,
+        IsExtension: false,
         Fields: {
           Title: {
-            FieldId: number;
-            FieldName: "Title";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "String";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Title",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "String",
+            IsRequired: false
+          },
           Alias: {
-            FieldId: number;
-            FieldName: "Alias";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "String";
-            IsRequired: false;
-          };
+            FieldId: number,
+            FieldName: "Alias",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "String",
+            IsRequired: false
+          },
           Parent: {
-            IsBackward: false;
-            Content: Region2Schema;
-            FieldId: number;
-            FieldName: "Parent";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: Region2Schema,
+            FieldId: number,
+            FieldName: "Parent",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          },
           IsMainCity: {
-            FieldId: number;
-            FieldName: "IsMainCity";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Boolean";
-            IsRequired: false;
-          };
-        };
-        include: (
-          selector: (fields: ProductSchema["Fields"]["Regions"]["Content"]["Fields"]) => Selection[]
-        ) => string[];
-      };
-      FieldId: number;
-      FieldName: "Regions";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "M2MRelation";
-      IsRequired: false;
-      include: (
-        selector: (fields: ProductSchema["Fields"]["Regions"]["Content"]["Fields"]) => Selection[]
-      ) => string[];
-    };
+            FieldId: number,
+            FieldName: "IsMainCity",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Boolean",
+            IsRequired: false
+          }
+        },
+        include: (selector: (fields: ProductSchema['Fields']['Regions']['Content']['Fields']) => Selection[]) => string[]
+      },
+      FieldId: number,
+      FieldName: "Regions",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "M2MRelation",
+      IsRequired: false,
+      include: (selector: (fields: ProductSchema['Fields']['Regions']['Content']['Fields']) => Selection[]) => string[]
+    },
     Type: {
       Contents: {
         Tariff: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "Tariff";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
-          Fields: {};
-        };
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "Tariff",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
+          Fields: {}
+        },
         Service: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "Service";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
-          Fields: {};
-        };
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "Service",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
+          Fields: {}
+        },
         Action: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "Action";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
-          Fields: {};
-        };
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "Action",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
+          Fields: {}
+        },
         RoamingScale: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "RoamingScale";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
-          Fields: {};
-        };
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "RoamingScale",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
+          Fields: {}
+        },
         Device: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "Device";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "Device",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
           Fields: {
             Downloads: {
-              IsBackward: false;
+              IsBackward: false,
               Content: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "EquipmentDownload";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: false;
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "EquipmentDownload",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: false,
                 Fields: {
                   Title: {
-                    FieldId: number;
-                    FieldName: "Title";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "String";
-                    IsRequired: false;
-                  };
+                    FieldId: number,
+                    FieldName: "Title",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "String",
+                    IsRequired: false
+                  },
                   File: {
-                    FieldId: number;
-                    FieldName: "File";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "File";
-                    IsRequired: false;
-                  };
-                };
-              };
-              FieldId: number;
-              FieldName: "Downloads";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "M2MRelation";
-              IsRequired: false;
-            };
+                    FieldId: number,
+                    FieldName: "File",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "File",
+                    IsRequired: false
+                  }
+                }
+              },
+              FieldId: number,
+              FieldName: "Downloads",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "M2MRelation",
+              IsRequired: false
+            },
             Inners: {
-              IsBackward: false;
+              IsBackward: false,
               Content: {
-                ContentId: number;
-                ContentPath: string;
-                ContentName: "Product";
-                ContentTitle: string;
-                ContentDescription: string;
-                IsExtension: false;
+                ContentId: number,
+                ContentPath: string,
+                ContentName: "Product",
+                ContentTitle: string,
+                ContentDescription: string,
+                IsExtension: false,
                 Fields: {
                   MarketingProduct: {
-                    IsBackward: false;
-                    Content: MarketingProduct3Schema;
-                    FieldId: number;
-                    FieldName: "MarketingProduct";
-                    FieldTitle: string;
-                    FieldDescription: string;
-                    FieldOrder: number;
-                    FieldType: "O2MRelation";
-                    IsRequired: false;
-                  };
-                };
-                include: (
-                  selector: (
-                    fields: ProductSchema["Fields"]["Type"]["Contents"]["Device"]["Fields"]["Inners"]["Content"]["Fields"]
-                  ) => Selection[]
-                ) => string[];
-              };
-              FieldId: number;
-              FieldName: "Inners";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "M2MRelation";
-              IsRequired: false;
-              include: (
-                selector: (
-                  fields: ProductSchema["Fields"]["Type"]["Contents"]["Device"]["Fields"]["Inners"]["Content"]["Fields"]
-                ) => Selection[]
-              ) => string[];
-            };
+                    IsBackward: false,
+                    Content: MarketingProduct3Schema,
+                    FieldId: number,
+                    FieldName: "MarketingProduct",
+                    FieldTitle: string,
+                    FieldDescription: string,
+                    FieldOrder: number,
+                    FieldType: "O2MRelation",
+                    IsRequired: false
+                  }
+                },
+                include: (selector: (fields: ProductSchema['Fields']['Type']['Contents']['Device']['Fields']['Inners']['Content']['Fields']) => Selection[]) => string[]
+              },
+              FieldId: number,
+              FieldName: "Inners",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "M2MRelation",
+              IsRequired: false,
+              include: (selector: (fields: ProductSchema['Fields']['Type']['Contents']['Device']['Fields']['Inners']['Content']['Fields']) => Selection[]) => string[]
+            },
             FreezeDate: {
-              FieldId: number;
-              FieldName: "FreezeDate";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "DateTime";
-              IsRequired: false;
-            };
+              FieldId: number,
+              FieldName: "FreezeDate",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "DateTime",
+              IsRequired: false
+            },
             FullUserGuide: {
-              FieldId: number;
-              FieldName: "FullUserGuide";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "File";
-              IsRequired: false;
-            };
+              FieldId: number,
+              FieldName: "FullUserGuide",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "File",
+              IsRequired: false
+            },
             QuickStartGuide: {
-              FieldId: number;
-              FieldName: "QuickStartGuide";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "File";
-              IsRequired: false;
-            };
-          };
-          include: (
-            selector: (
-              fields: ProductSchema["Fields"]["Type"]["Contents"]["Device"]["Fields"]
-            ) => Selection[]
-          ) => string[];
-        };
+              FieldId: number,
+              FieldName: "QuickStartGuide",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "File",
+              IsRequired: false
+            }
+          },
+          include: (selector: (fields: ProductSchema['Fields']['Type']['Contents']['Device']['Fields']) => Selection[]) => string[]
+        },
         FixConnectAction: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "FixConnectAction";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "FixConnectAction",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
           Fields: {
             MarketingOffers: {
-              IsBackward: false;
-              Content: MarketingProductSchema;
-              FieldId: number;
-              FieldName: "MarketingOffers";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "M2MRelation";
-              IsRequired: false;
-            };
+              IsBackward: false,
+              Content: MarketingProductSchema,
+              FieldId: number,
+              FieldName: "MarketingOffers",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "M2MRelation",
+              IsRequired: false
+            },
             PromoPeriod: {
-              FieldId: number;
-              FieldName: "PromoPeriod";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "String";
-              IsRequired: false;
-            };
+              FieldId: number,
+              FieldName: "PromoPeriod",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "String",
+              IsRequired: false
+            },
             AfterPromo: {
-              FieldId: number;
-              FieldName: "AfterPromo";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "String";
-              IsRequired: false;
-            };
-          };
-          include: (
-            selector: (
-              fields: ProductSchema["Fields"]["Type"]["Contents"]["FixConnectAction"]["Fields"]
-            ) => Selection[]
-          ) => string[];
-        };
+              FieldId: number,
+              FieldName: "AfterPromo",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "String",
+              IsRequired: false
+            }
+          },
+          include: (selector: (fields: ProductSchema['Fields']['Type']['Contents']['FixConnectAction']['Fields']) => Selection[]) => string[]
+        },
         TvPackage: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "TvPackage";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
-          Fields: {};
-        };
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "TvPackage",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
+          Fields: {}
+        },
         FixConnectTariff: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "FixConnectTariff";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "FixConnectTariff",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
           Fields: {
             TitleForSite: {
-              FieldId: number;
-              FieldName: "TitleForSite";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "String";
-              IsRequired: false;
-            };
-          };
-        };
+              FieldId: number,
+              FieldName: "TitleForSite",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "String",
+              IsRequired: false
+            }
+          }
+        },
         PhoneTariff: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "PhoneTariff";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "PhoneTariff",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
           Fields: {
             RostelecomLink: {
-              FieldId: number;
-              FieldName: "RostelecomLink";
-              FieldTitle: string;
-              FieldDescription: string;
-              FieldOrder: number;
-              FieldType: "String";
-              IsRequired: false;
-            };
-          };
-        };
+              FieldId: number,
+              FieldName: "RostelecomLink",
+              FieldTitle: string,
+              FieldDescription: string,
+              FieldOrder: number,
+              FieldType: "String",
+              IsRequired: false
+            }
+          }
+        },
         InternetTariff: {
-          ContentId: number;
-          ContentPath: string;
-          ContentName: "InternetTariff";
-          ContentTitle: string;
-          ContentDescription: string;
-          IsExtension: true;
-          Fields: {};
-        };
-      };
-      FieldId: number;
-      FieldName: "Type";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Classifier";
-      IsRequired: false;
-      include: (
-        selector: (contents: ProductSchema["Fields"]["Type"]["Contents"]) => string[][]
-      ) => string[];
-    };
+          ContentId: number,
+          ContentPath: string,
+          ContentName: "InternetTariff",
+          ContentTitle: string,
+          ContentDescription: string,
+          IsExtension: true,
+          Fields: {}
+        }
+      },
+      FieldId: number,
+      FieldName: "Type",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Classifier",
+      IsRequired: false,
+      include: (selector: (contents: ProductSchema['Fields']['Type']['Contents']) => string[][]) => string[]
+    },
     FixConnectAction: {
-      IsBackward: true;
+      IsBackward: true,
       Content: {
-        ContentId: number;
-        ContentPath: string;
-        ContentName: "DevicesForFixConnectAction";
-        ContentTitle: string;
-        ContentDescription: string;
-        IsExtension: false;
+        ContentId: number,
+        ContentPath: string,
+        ContentName: "DevicesForFixConnectAction",
+        ContentTitle: string,
+        ContentDescription: string,
+        IsExtension: false,
         Fields: {
           MarketingDevice: {
-            IsBackward: false;
-            Content: MarketingProductSchema;
-            FieldId: number;
-            FieldName: "MarketingDevice";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-          };
+            IsBackward: false,
+            Content: MarketingProductSchema,
+            FieldId: number,
+            FieldName: "MarketingDevice",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false
+          },
           Parent: {
-            IsBackward: false;
+            IsBackward: false,
             Content: {
-              ContentId: number;
-              ContentPath: string;
-              ContentName: "ProductRelation";
-              ContentTitle: string;
-              ContentDescription: string;
-              IsExtension: false;
+              ContentId: number,
+              ContentPath: string,
+              ContentName: "ProductRelation",
+              ContentTitle: string,
+              ContentDescription: string,
+              IsExtension: false,
               Fields: {
                 Title: {
-                  FieldId: number;
-                  FieldName: "Title";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "String";
-                  IsRequired: false;
-                };
+                  FieldId: number,
+                  FieldName: "Title",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "String",
+                  IsRequired: false
+                },
                 Parameters: {
-                  IsBackward: false;
+                  IsBackward: false,
                   Content: {
-                    ContentId: number;
-                    ContentPath: string;
-                    ContentName: "LinkParameter";
-                    ContentTitle: string;
-                    ContentDescription: string;
-                    IsExtension: false;
+                    ContentId: number,
+                    ContentPath: string,
+                    ContentName: "LinkParameter",
+                    ContentTitle: string,
+                    ContentDescription: string,
+                    IsExtension: false,
                     Fields: {
                       BaseParameter: {
-                        IsBackward: false;
-                        Content: BaseParameterSchema;
-                        FieldId: number;
-                        FieldName: "BaseParameter";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "O2MRelation";
-                        IsRequired: false;
-                      };
+                        IsBackward: false,
+                        Content: BaseParameterSchema,
+                        FieldId: number,
+                        FieldName: "BaseParameter",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "O2MRelation",
+                        IsRequired: false
+                      },
                       Zone: {
-                        IsBackward: false;
-                        Content: TariffZoneSchema;
-                        FieldId: number;
-                        FieldName: "Zone";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "O2MRelation";
-                        IsRequired: false;
-                      };
+                        IsBackward: false,
+                        Content: TariffZoneSchema,
+                        FieldId: number,
+                        FieldName: "Zone",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "O2MRelation",
+                        IsRequired: false
+                      },
                       Direction: {
-                        IsBackward: false;
-                        Content: DirectionSchema;
-                        FieldId: number;
-                        FieldName: "Direction";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "O2MRelation";
-                        IsRequired: false;
-                      };
+                        IsBackward: false,
+                        Content: DirectionSchema,
+                        FieldId: number,
+                        FieldName: "Direction",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "O2MRelation",
+                        IsRequired: false
+                      },
                       BaseParameterModifiers: {
-                        IsBackward: false;
-                        Content: BaseParameterModifierSchema;
-                        FieldId: number;
-                        FieldName: "BaseParameterModifiers";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "M2MRelation";
-                        IsRequired: false;
-                      };
+                        IsBackward: false,
+                        Content: BaseParameterModifierSchema,
+                        FieldId: number,
+                        FieldName: "BaseParameterModifiers",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "M2MRelation",
+                        IsRequired: false
+                      },
                       Modifiers: {
-                        IsBackward: false;
-                        Content: ParameterModifierSchema;
-                        FieldId: number;
-                        FieldName: "Modifiers";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "M2MRelation";
-                        IsRequired: false;
-                      };
+                        IsBackward: false,
+                        Content: ParameterModifierSchema,
+                        FieldId: number,
+                        FieldName: "Modifiers",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "M2MRelation",
+                        IsRequired: false
+                      },
                       Unit: {
-                        IsBackward: false;
-                        Content: UnitSchema;
-                        FieldId: number;
-                        FieldName: "Unit";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "O2MRelation";
-                        IsRequired: false;
-                      };
+                        IsBackward: false,
+                        Content: UnitSchema,
+                        FieldId: number,
+                        FieldName: "Unit",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "O2MRelation",
+                        IsRequired: false
+                      },
                       Title: {
-                        FieldId: number;
-                        FieldName: "Title";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "String";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Title",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "String",
+                        IsRequired: false
+                      },
                       SortOrder: {
-                        FieldId: number;
-                        FieldName: "SortOrder";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Numeric";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "SortOrder",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Numeric",
+                        IsRequired: false
+                      },
                       NumValue: {
-                        FieldId: number;
-                        FieldName: "NumValue";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "Numeric";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "NumValue",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "Numeric",
+                        IsRequired: false
+                      },
                       Value: {
-                        FieldId: number;
-                        FieldName: "Value";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "VisualEdit";
-                        IsRequired: false;
-                      };
+                        FieldId: number,
+                        FieldName: "Value",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "VisualEdit",
+                        IsRequired: false
+                      },
                       Description: {
-                        FieldId: number;
-                        FieldName: "Description";
-                        FieldTitle: string;
-                        FieldDescription: string;
-                        FieldOrder: number;
-                        FieldType: "VisualEdit";
-                        IsRequired: false;
-                      };
-                    };
-                    include: (
-                      selector: (
-                        fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-                      ) => Selection[]
-                    ) => string[];
-                  };
-                  FieldId: number;
-                  FieldName: "Parameters";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "M2ORelation";
-                  IsRequired: false;
-                  include: (
-                    selector: (
-                      fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
-                    ) => Selection[]
-                  ) => string[];
-                };
+                        FieldId: number,
+                        FieldName: "Description",
+                        FieldTitle: string,
+                        FieldDescription: string,
+                        FieldOrder: number,
+                        FieldType: "VisualEdit",
+                        IsRequired: false
+                      }
+                    },
+                    include: (selector: (fields: ProductSchema['Fields']['FixConnectAction']['Content']['Fields']['Parent']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+                  },
+                  FieldId: number,
+                  FieldName: "Parameters",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "M2ORelation",
+                  IsRequired: false,
+                  include: (selector: (fields: ProductSchema['Fields']['FixConnectAction']['Content']['Fields']['Parent']['Content']['Fields']['Parameters']['Content']['Fields']) => Selection[]) => string[]
+                },
                 Modifiers: {
-                  IsBackward: false;
-                  Content: LinkModifierSchema;
-                  FieldId: number;
-                  FieldName: "Modifiers";
-                  FieldTitle: string;
-                  FieldDescription: string;
-                  FieldOrder: number;
-                  FieldType: "M2MRelation";
-                  IsRequired: false;
-                };
-              };
-              include: (
-                selector: (
-                  fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
-                ) => Selection[]
-              ) => string[];
-            };
-            FieldId: number;
-            FieldName: "Parent";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "O2MRelation";
-            IsRequired: false;
-            include: (
-              selector: (
-                fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
-              ) => Selection[]
-            ) => string[];
-          };
+                  IsBackward: false,
+                  Content: LinkModifierSchema,
+                  FieldId: number,
+                  FieldName: "Modifiers",
+                  FieldTitle: string,
+                  FieldDescription: string,
+                  FieldOrder: number,
+                  FieldType: "M2MRelation",
+                  IsRequired: false
+                }
+              },
+              include: (selector: (fields: ProductSchema['Fields']['FixConnectAction']['Content']['Fields']['Parent']['Content']['Fields']) => Selection[]) => string[]
+            },
+            FieldId: number,
+            FieldName: "Parent",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "O2MRelation",
+            IsRequired: false,
+            include: (selector: (fields: ProductSchema['Fields']['FixConnectAction']['Content']['Fields']['Parent']['Content']['Fields']) => Selection[]) => string[]
+          },
           Order: {
-            FieldId: number;
-            FieldName: "Order";
-            FieldTitle: string;
-            FieldDescription: string;
-            FieldOrder: number;
-            FieldType: "Numeric";
-            IsRequired: false;
-          };
-        };
-        include: (
-          selector: (
-            fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]
-          ) => Selection[]
-        ) => string[];
-      };
-      FieldId: number;
-      FieldName: "FixConnectAction";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "O2MRelation";
-      IsRequired: false;
-      include: (
-        selector: (
-          fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]
-        ) => Selection[]
-      ) => string[];
-    };
+            FieldId: number,
+            FieldName: "Order",
+            FieldTitle: string,
+            FieldDescription: string,
+            FieldOrder: number,
+            FieldType: "Numeric",
+            IsRequired: false
+          }
+        },
+        include: (selector: (fields: ProductSchema['Fields']['FixConnectAction']['Content']['Fields']) => Selection[]) => string[]
+      },
+      FieldId: number,
+      FieldName: "FixConnectAction",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "O2MRelation",
+      IsRequired: false,
+      include: (selector: (fields: ProductSchema['Fields']['FixConnectAction']['Content']['Fields']) => Selection[]) => string[]
+    },
     Advantages: {
-      IsBackward: false;
-      Content: AdvantageSchema;
-      FieldId: number;
-      FieldName: "Advantages";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "M2MRelation";
-      IsRequired: false;
-    };
-  };
-  include: (selector: (fields: ProductSchema["Fields"]) => Selection[]) => string[];
+      IsBackward: false,
+      Content: AdvantageSchema,
+      FieldId: number,
+      FieldName: "Advantages",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "M2MRelation",
+      IsRequired: false
+    }
+  },
+  include: (selector: (fields: ProductSchema['Fields']) => Selection[]) => string[]
 }
 interface SegmentSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "Segment";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "Segment",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface ChannelCategorySchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "ChannelCategory";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "ChannelCategory",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Name: {
-      FieldId: number;
-      FieldName: "Name";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Name",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Segments: {
-      FieldId: number;
-      FieldName: "Segments";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Segments",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Icon: {
-      FieldId: number;
-      FieldName: "Icon";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Image";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Icon",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Image",
+      IsRequired: false
+    },
     Order: {
-      FieldId: number;
-      FieldName: "Order";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Order",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     OldSiteId: {
-      FieldId: number;
-      FieldName: "OldSiteId";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "OldSiteId",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    }
+  }
 }
 interface RegionSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "Region";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "Region",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Parent: {
-      IsBackward: false;
-      Content: Region2Schema;
-      FieldId: number;
-      FieldName: "Parent";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "O2MRelation";
-      IsRequired: false;
-    };
+      IsBackward: false,
+      Content: Region2Schema,
+      FieldId: number,
+      FieldName: "Parent",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "O2MRelation",
+      IsRequired: false
+    },
     IsMainCity: {
-      FieldId: number;
-      FieldName: "IsMainCity";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Boolean";
-      IsRequired: false;
-    };
-  };
-  include: (selector: (fields: RegionSchema["Fields"]) => Selection[]) => string[];
+      FieldId: number,
+      FieldName: "IsMainCity",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Boolean",
+      IsRequired: false
+    }
+  },
+  include: (selector: (fields: RegionSchema['Fields']) => Selection[]) => string[]
 }
 interface Region1Schema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "Region";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "Region",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface Region2Schema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "Region";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "Region",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface ChannelFormatSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "ChannelFormat";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "ChannelFormat",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Image: {
-      FieldId: number;
-      FieldName: "Image";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Image";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Image",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Image",
+      IsRequired: false
+    },
     Message: {
-      FieldId: number;
-      FieldName: "Message";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Message",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     OldSiteId: {
-      FieldId: number;
-      FieldName: "OldSiteId";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "OldSiteId",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    }
+  }
 }
 interface FixedTypeSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "FixedType";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "FixedType",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface MarketingProductSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "MarketingProduct";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "MarketingProduct",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Priority: {
-      FieldId: number;
-      FieldName: "Priority";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Priority",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    }
+  }
 }
 interface MarketingProduct1Schema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "MarketingProduct";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "MarketingProduct",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Link: {
-      FieldId: number;
-      FieldName: "Link";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Link",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Description: {
-      FieldId: number;
-      FieldName: "Description";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Textbox";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Description",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Textbox",
+      IsRequired: false
+    },
     DetailedDescription: {
-      FieldId: number;
-      FieldName: "DetailedDescription";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "VisualEdit";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "DetailedDescription",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "VisualEdit",
+      IsRequired: false
+    },
     FullDescription: {
-      FieldId: number;
-      FieldName: "FullDescription";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "VisualEdit";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "FullDescription",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "VisualEdit",
+      IsRequired: false
+    },
     SortOrder: {
-      FieldId: number;
-      FieldName: "SortOrder";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "SortOrder",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     Type: {
-      FieldId: number;
-      FieldName: "Type";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Classifier";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Type",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Classifier",
+      IsRequired: false
+    },
     OldSiteId: {
-      FieldId: number;
-      FieldName: "OldSiteId";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "OldSiteId",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     OldCorpSiteId: {
-      FieldId: number;
-      FieldName: "OldCorpSiteId";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "OldCorpSiteId",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     ListImage: {
-      FieldId: number;
-      FieldName: "ListImage";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Image";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "ListImage",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Image",
+      IsRequired: false
+    },
     DetailsImage: {
-      FieldId: number;
-      FieldName: "DetailsImage";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Image";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "DetailsImage",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Image",
+      IsRequired: false
+    },
     Priority: {
-      FieldId: number;
-      FieldName: "Priority";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Priority",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     ArchiveDate: {
-      FieldId: number;
-      FieldName: "ArchiveDate";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Date";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "ArchiveDate",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Date",
+      IsRequired: false
+    }
+  }
 }
 interface MarketingProduct2Schema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "MarketingProduct";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "MarketingProduct",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface MarketingProduct3Schema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "MarketingProduct";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "MarketingProduct",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface BaseParameterSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "BaseParameter";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "BaseParameter",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     AllowZone: {
-      FieldId: number;
-      FieldName: "AllowZone";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Boolean";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "AllowZone",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Boolean",
+      IsRequired: false
+    },
     AllowDirection: {
-      FieldId: number;
-      FieldName: "AllowDirection";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Boolean";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "AllowDirection",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Boolean",
+      IsRequired: false
+    }
+  }
 }
 interface TariffZoneSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "TariffZone";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "TariffZone",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface DirectionSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "Direction";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "Direction",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface BaseParameterModifierSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "BaseParameterModifier";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "BaseParameterModifier",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Type: {
       Items: [
         {
-          Value: "Step";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "Step",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "Package";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "Package",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "Zone";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "Zone",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "Direction";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "Direction",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "Refining";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "Refining",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         }
-      ];
-      FieldId: number;
-      FieldName: "Type";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "StringEnum";
-      IsRequired: false;
-    };
-  };
+      ],
+      FieldId: number,
+      FieldName: "Type",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "StringEnum",
+      IsRequired: false
+    }
+  }
 }
 interface ParameterModifierSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "ParameterModifier";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "ParameterModifier",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface UnitSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "Unit";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "Unit",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Display: {
-      FieldId: number;
-      FieldName: "Display";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Display",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     QuotaUnit: {
       Items: [
         {
-          Value: "mb";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "mb",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "gb";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "gb",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "kb";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "kb",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "tb";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "tb",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "min";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "min",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "message";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "message",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "rub";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "rub",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "sms";
-          Alias: "SMS";
-          IsDefault: false;
-          Invalid: false;
+          Value: "sms",
+          Alias: "SMS",
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "mms";
-          Alias: "MMS";
-          IsDefault: false;
-          Invalid: false;
+          Value: "mms",
+          Alias: "MMS",
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "mbit";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "mbit",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "step";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "step",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         }
-      ];
-      FieldId: number;
-      FieldName: "QuotaUnit";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "StringEnum";
-      IsRequired: false;
-    };
+      ],
+      FieldId: number,
+      FieldName: "QuotaUnit",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "StringEnum",
+      IsRequired: false
+    },
     QuotaPeriod: {
       Items: [
         {
-          Value: "daily";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "daily",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "weekly";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "weekly",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "monthly";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "monthly",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "hourly";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "hourly",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "minutely";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "minutely",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "every_second";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "every_second",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         },
         {
-          Value: "annually";
-          Alias: string;
-          IsDefault: false;
-          Invalid: false;
+          Value: "annually",
+          Alias: string,
+          IsDefault: false,
+          Invalid: false
         }
-      ];
-      FieldId: number;
-      FieldName: "QuotaPeriod";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "StringEnum";
-      IsRequired: false;
-    };
-  };
+      ],
+      FieldId: number,
+      FieldName: "QuotaPeriod",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "StringEnum",
+      IsRequired: false
+    }
+  }
 }
 interface ParameterChoiceSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "ParameterChoice";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "ParameterChoice",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     OldSiteId: {
-      FieldId: number;
-      FieldName: "OldSiteId";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "OldSiteId",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    }
+  }
 }
 interface ProductParameterGroupSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "ProductParameterGroup";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "ProductParameterGroup",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     SortOrder: {
-      FieldId: number;
-      FieldName: "SortOrder";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "SortOrder",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     ImageSvg: {
-      FieldId: number;
-      FieldName: "ImageSvg";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "File";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "ImageSvg",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "File",
+      IsRequired: false
+    },
     Type: {
-      FieldId: number;
-      FieldName: "Type";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Type",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface ProductParameterGroup1Schema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "ProductParameterGroup";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "ProductParameterGroup",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     SortOrder: {
-      FieldId: number;
-      FieldName: "SortOrder";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "SortOrder",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     ImageSvg: {
-      FieldId: number;
-      FieldName: "ImageSvg";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "File";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "ImageSvg",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "File",
+      IsRequired: false
+    }
+  }
 }
 interface LinkModifierSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "LinkModifier";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "LinkModifier",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface ProductModiferSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "ProductModifer";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "ProductModifer",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Alias: {
-      FieldId: number;
-      FieldName: "Alias";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "Alias",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    }
+  }
 }
 interface AdvantageSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: "Advantage";
-  ContentTitle: string;
-  ContentDescription: string;
-  IsExtension: false;
+  ContentId: number,
+  ContentPath: string,
+  ContentName: "Advantage",
+  ContentTitle: string,
+  ContentDescription: string,
+  IsExtension: false,
   Fields: {
     Title: {
-      FieldId: number;
-      FieldName: "Title";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Title",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Text: {
-      FieldId: number;
-      FieldName: "Text";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "String";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Text",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "String",
+      IsRequired: false
+    },
     Description: {
-      FieldId: number;
-      FieldName: "Description";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Textbox";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "Description",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Textbox",
+      IsRequired: false
+    },
     ImageSvg: {
-      FieldId: number;
-      FieldName: "ImageSvg";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "File";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "ImageSvg",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "File",
+      IsRequired: false
+    },
     SortOrder: {
-      FieldId: number;
-      FieldName: "SortOrder";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "SortOrder",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    },
     IsGift: {
-      FieldId: number;
-      FieldName: "IsGift";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Boolean";
-      IsRequired: false;
-    };
+      FieldId: number,
+      FieldName: "IsGift",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Boolean",
+      IsRequired: false
+    },
     OldSiteId: {
-      FieldId: number;
-      FieldName: "OldSiteId";
-      FieldTitle: string;
-      FieldDescription: string;
-      FieldOrder: number;
-      FieldType: "Numeric";
-      IsRequired: false;
-    };
-  };
+      FieldId: number,
+      FieldName: "OldSiteId",
+      FieldTitle: string,
+      FieldDescription: string,
+      FieldOrder: number,
+      FieldType: "Numeric",
+      IsRequired: false
+    }
+  }
 }
 
 /** Описание полей продукта */
@@ -5146,7 +4925,7 @@ export default linkJsonRefs<ProductSchema>({
             Modifiers: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/ProductModifer"
+                "$ref": "#/Definitions/ProductModifer"
               },
               FieldId: 1653,
               FieldName: "Modifiers",
@@ -5177,7 +4956,7 @@ export default linkJsonRefs<ProductSchema>({
             Advantages: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/Advantage"
+                "$ref": "#/Definitions/Advantage"
               },
               FieldId: 2028,
               FieldName: "Advantages",
@@ -5203,7 +4982,7 @@ export default linkJsonRefs<ProductSchema>({
                   ContentPath: "/339:1542/383:1540/402",
                   ContentName: "MarketingService",
                   ContentTitle: "Маркетинговые услуги",
-                  ContentDescription: 'Универсальная "опция". Голосовая, дата и что еще появится.',
+                  ContentDescription: "Универсальная \"опция\". Голосовая, дата и что еще появится.",
                   IsExtension: true,
                   Fields: {}
                 },
@@ -5246,7 +5025,7 @@ export default linkJsonRefs<ProductSchema>({
                           ConnectionType: {
                             IsBackward: false,
                             Content: {
-                              $ref: "#/Definitions/FixedType"
+                              "$ref": "#/Definitions/FixedType"
                             },
                             FieldId: 2402,
                             FieldName: "ConnectionType",
@@ -5296,7 +5075,7 @@ export default linkJsonRefs<ProductSchema>({
                     Segments: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/Segment"
+                        "$ref": "#/Definitions/Segment"
                       },
                       FieldId: 2404,
                       FieldName: "Segments",
@@ -5357,7 +5136,7 @@ export default linkJsonRefs<ProductSchema>({
                     Segment: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/Segment"
+                        "$ref": "#/Definitions/Segment"
                       },
                       FieldId: 2458,
                       FieldName: "Segment",
@@ -5370,7 +5149,7 @@ export default linkJsonRefs<ProductSchema>({
                     MarketingAction: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/MarketingProduct3"
+                        "$ref": "#/Definitions/MarketingProduct3"
                       },
                       FieldId: 2564,
                       FieldName: "MarketingAction",
@@ -5514,7 +5293,7 @@ export default linkJsonRefs<ProductSchema>({
                                 City: {
                                   IsBackward: false,
                                   Content: {
-                                    $ref: "#/Definitions/Region"
+                                    "$ref": "#/Definitions/Region"
                                   },
                                   FieldId: 2211,
                                   FieldName: "City",
@@ -5575,7 +5354,7 @@ export default linkJsonRefs<ProductSchema>({
                           Category: {
                             IsBackward: false,
                             Content: {
-                              $ref: "#/Definitions/ChannelCategory"
+                              "$ref": "#/Definitions/ChannelCategory"
                             },
                             FieldId: 2283,
                             FieldName: "Category",
@@ -5652,7 +5431,7 @@ export default linkJsonRefs<ProductSchema>({
                                 Category: {
                                   IsBackward: false,
                                   Content: {
-                                    $ref: "#/Definitions/ChannelCategory"
+                                    "$ref": "#/Definitions/ChannelCategory"
                                   },
                                   FieldId: 2283,
                                   FieldName: "Category",
@@ -5666,8 +5445,7 @@ export default linkJsonRefs<ProductSchema>({
                                   IsBackward: false,
                                   Content: {
                                     ContentId: 479,
-                                    ContentPath:
-                                      "/339:1542/383:1540/502:2497/482:2619/482:2285/479",
+                                    ContentPath: "/339:1542/383:1540/502:2497/482:2619/482:2285/479",
                                     ContentName: "ChannelType",
                                     ContentTitle: "Типы каналов",
                                     ContentDescription: "",
@@ -5714,8 +5492,7 @@ export default linkJsonRefs<ProductSchema>({
                                   IsBackward: false,
                                   Content: {
                                     ContentId: 472,
-                                    ContentPath:
-                                      "/339:1542/383:1540/502:2497/482:2619/482:2286/472",
+                                    ContentPath: "/339:1542/383:1540/502:2497/482:2619/482:2286/472",
                                     ContentName: "NetworkCity",
                                     ContentTitle: "Города сети",
                                     ContentDescription: "",
@@ -5724,7 +5501,7 @@ export default linkJsonRefs<ProductSchema>({
                                       City: {
                                         IsBackward: false,
                                         Content: {
-                                          $ref: "#/Definitions/Region"
+                                          "$ref": "#/Definitions/Region"
                                         },
                                         FieldId: 2211,
                                         FieldName: "City",
@@ -5810,7 +5587,7 @@ export default linkJsonRefs<ProductSchema>({
                                 Format: {
                                   IsBackward: false,
                                   Content: {
-                                    $ref: "#/Definitions/ChannelFormat"
+                                    "$ref": "#/Definitions/ChannelFormat"
                                   },
                                   FieldId: 2524,
                                   FieldName: "Format",
@@ -5833,7 +5610,7 @@ export default linkJsonRefs<ProductSchema>({
                           Format: {
                             IsBackward: false,
                             Content: {
-                              $ref: "#/Definitions/ChannelFormat"
+                              "$ref": "#/Definitions/ChannelFormat"
                             },
                             FieldId: 2524,
                             FieldName: "Format",
@@ -5972,7 +5749,7 @@ export default linkJsonRefs<ProductSchema>({
                     Segment: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/Segment"
+                        "$ref": "#/Definitions/Segment"
                       },
                       FieldId: 2492,
                       FieldName: "Segment",
@@ -5995,7 +5772,7 @@ export default linkJsonRefs<ProductSchema>({
                           ConnectionTypes: {
                             IsBackward: false,
                             Content: {
-                              $ref: "#/Definitions/FixedType"
+                              "$ref": "#/Definitions/FixedType"
                             },
                             FieldId: 2449,
                             FieldName: "ConnectionTypes",
@@ -6086,7 +5863,7 @@ export default linkJsonRefs<ProductSchema>({
                     MarketingDevices: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/MarketingProduct"
+                        "$ref": "#/Definitions/MarketingProduct"
                       },
                       FieldId: 2519,
                       FieldName: "MarketingDevices",
@@ -6099,7 +5876,7 @@ export default linkJsonRefs<ProductSchema>({
                     BonusTVPackages: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/MarketingProduct"
+                        "$ref": "#/Definitions/MarketingProduct"
                       },
                       FieldId: 2518,
                       FieldName: "BonusTVPackages",
@@ -6112,7 +5889,7 @@ export default linkJsonRefs<ProductSchema>({
                     MarketingPhoneTariff: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/MarketingProduct1"
+                        "$ref": "#/Definitions/MarketingProduct1"
                       },
                       FieldId: 2517,
                       FieldName: "MarketingPhoneTariff",
@@ -6125,7 +5902,7 @@ export default linkJsonRefs<ProductSchema>({
                     MarketingInternetTariff: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/MarketingProduct1"
+                        "$ref": "#/Definitions/MarketingProduct1"
                       },
                       FieldId: 2516,
                       FieldName: "MarketingInternetTariff",
@@ -6138,7 +5915,7 @@ export default linkJsonRefs<ProductSchema>({
                     MarketingTvPackage: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/MarketingProduct2"
+                        "$ref": "#/Definitions/MarketingProduct2"
                       },
                       FieldId: 2493,
                       FieldName: "MarketingTvPackage",
@@ -6208,7 +5985,7 @@ export default linkJsonRefs<ProductSchema>({
                   Group: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/ProductParameterGroup"
+                      "$ref": "#/Definitions/ProductParameterGroup"
                     },
                     FieldId: 1852,
                     FieldName: "Group",
@@ -6221,7 +5998,7 @@ export default linkJsonRefs<ProductSchema>({
                   BaseParameter: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/BaseParameter"
+                      "$ref": "#/Definitions/BaseParameter"
                     },
                     FieldId: 1854,
                     FieldName: "BaseParameter",
@@ -6234,7 +6011,7 @@ export default linkJsonRefs<ProductSchema>({
                   Zone: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/TariffZone"
+                      "$ref": "#/Definitions/TariffZone"
                     },
                     FieldId: 1855,
                     FieldName: "Zone",
@@ -6247,7 +6024,7 @@ export default linkJsonRefs<ProductSchema>({
                   Direction: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/Direction"
+                      "$ref": "#/Definitions/Direction"
                     },
                     FieldId: 1856,
                     FieldName: "Direction",
@@ -6260,7 +6037,7 @@ export default linkJsonRefs<ProductSchema>({
                   BaseParameterModifiers: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/BaseParameterModifier"
+                      "$ref": "#/Definitions/BaseParameterModifier"
                     },
                     FieldId: 1857,
                     FieldName: "BaseParameterModifiers",
@@ -6273,7 +6050,7 @@ export default linkJsonRefs<ProductSchema>({
                   Modifiers: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/ParameterModifier"
+                      "$ref": "#/Definitions/ParameterModifier"
                     },
                     FieldId: 1858,
                     FieldName: "Modifiers",
@@ -6286,7 +6063,7 @@ export default linkJsonRefs<ProductSchema>({
                   Unit: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/Unit"
+                      "$ref": "#/Definitions/Unit"
                     },
                     FieldId: 1862,
                     FieldName: "Unit",
@@ -6299,7 +6076,7 @@ export default linkJsonRefs<ProductSchema>({
                   Choice: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/ParameterChoice"
+                      "$ref": "#/Definitions/ParameterChoice"
                     },
                     FieldId: 2685,
                     FieldName: "Choice",
@@ -6396,7 +6173,7 @@ export default linkJsonRefs<ProductSchema>({
                         Modifiers: {
                           IsBackward: false,
                           Content: {
-                            $ref: "#/Definitions/LinkModifier"
+                            "$ref": "#/Definitions/LinkModifier"
                           },
                           FieldId: 1450,
                           FieldName: "Modifiers",
@@ -6428,7 +6205,7 @@ export default linkJsonRefs<ProductSchema>({
                               Group: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/ProductParameterGroup1"
+                                  "$ref": "#/Definitions/ProductParameterGroup1"
                                 },
                                 FieldId: 1678,
                                 FieldName: "Group",
@@ -6441,7 +6218,7 @@ export default linkJsonRefs<ProductSchema>({
                               BaseParameter: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/BaseParameter"
+                                  "$ref": "#/Definitions/BaseParameter"
                                 },
                                 FieldId: 1420,
                                 FieldName: "BaseParameter",
@@ -6454,7 +6231,7 @@ export default linkJsonRefs<ProductSchema>({
                               Zone: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/TariffZone"
+                                  "$ref": "#/Definitions/TariffZone"
                                 },
                                 FieldId: 1421,
                                 FieldName: "Zone",
@@ -6467,7 +6244,7 @@ export default linkJsonRefs<ProductSchema>({
                               Direction: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/Direction"
+                                  "$ref": "#/Definitions/Direction"
                                 },
                                 FieldId: 1422,
                                 FieldName: "Direction",
@@ -6480,7 +6257,7 @@ export default linkJsonRefs<ProductSchema>({
                               BaseParameterModifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/BaseParameterModifier"
+                                  "$ref": "#/Definitions/BaseParameterModifier"
                                 },
                                 FieldId: 1423,
                                 FieldName: "BaseParameterModifiers",
@@ -6493,7 +6270,7 @@ export default linkJsonRefs<ProductSchema>({
                               Modifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/ParameterModifier"
+                                  "$ref": "#/Definitions/ParameterModifier"
                                 },
                                 FieldId: 1424,
                                 FieldName: "Modifiers",
@@ -6542,7 +6319,7 @@ export default linkJsonRefs<ProductSchema>({
                               Unit: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/Unit"
+                                  "$ref": "#/Definitions/Unit"
                                 },
                                 FieldId: 1428,
                                 FieldName: "Unit",
@@ -6574,7 +6351,7 @@ export default linkJsonRefs<ProductSchema>({
                               Choice: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/ParameterChoice"
+                                  "$ref": "#/Definitions/ParameterChoice"
                                 },
                                 FieldId: 2687,
                                 FieldName: "Choice",
@@ -6823,7 +6600,7 @@ export default linkJsonRefs<ProductSchema>({
                   MarketingDevice: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/MarketingProduct2"
+                      "$ref": "#/Definitions/MarketingProduct2"
                     },
                     FieldId: 2531,
                     FieldName: "MarketingDevice",
@@ -6836,7 +6613,7 @@ export default linkJsonRefs<ProductSchema>({
                   MarketingTariffs: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/MarketingProduct3"
+                      "$ref": "#/Definitions/MarketingProduct3"
                     },
                     FieldId: 2532,
                     FieldName: "MarketingTariffs",
@@ -6849,7 +6626,7 @@ export default linkJsonRefs<ProductSchema>({
                   Cities: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/Region1"
+                      "$ref": "#/Definitions/Region1"
                     },
                     FieldId: 2533,
                     FieldName: "Cities",
@@ -6965,7 +6742,7 @@ export default linkJsonRefs<ProductSchema>({
                               Unit: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/Unit"
+                                  "$ref": "#/Definitions/Unit"
                                 },
                                 FieldId: 1428,
                                 FieldName: "Unit",
@@ -6978,7 +6755,7 @@ export default linkJsonRefs<ProductSchema>({
                               Modifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/ParameterModifier"
+                                  "$ref": "#/Definitions/ParameterModifier"
                                 },
                                 FieldId: 1424,
                                 FieldName: "Modifiers",
@@ -6991,7 +6768,7 @@ export default linkJsonRefs<ProductSchema>({
                               BaseParameterModifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/BaseParameterModifier"
+                                  "$ref": "#/Definitions/BaseParameterModifier"
                                 },
                                 FieldId: 1423,
                                 FieldName: "BaseParameterModifiers",
@@ -7004,7 +6781,7 @@ export default linkJsonRefs<ProductSchema>({
                               Direction: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/Direction"
+                                  "$ref": "#/Definitions/Direction"
                                 },
                                 FieldId: 1422,
                                 FieldName: "Direction",
@@ -7017,7 +6794,7 @@ export default linkJsonRefs<ProductSchema>({
                               Zone: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/TariffZone"
+                                  "$ref": "#/Definitions/TariffZone"
                                 },
                                 FieldId: 1421,
                                 FieldName: "Zone",
@@ -7030,7 +6807,7 @@ export default linkJsonRefs<ProductSchema>({
                               BaseParameter: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/BaseParameter"
+                                  "$ref": "#/Definitions/BaseParameter"
                                 },
                                 FieldId: 1420,
                                 FieldName: "BaseParameter",
@@ -7043,7 +6820,7 @@ export default linkJsonRefs<ProductSchema>({
                               Group: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/ProductParameterGroup"
+                                  "$ref": "#/Definitions/ProductParameterGroup"
                                 },
                                 FieldId: 1678,
                                 FieldName: "Group",
@@ -7056,7 +6833,7 @@ export default linkJsonRefs<ProductSchema>({
                               Choice: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/ParameterChoice"
+                                  "$ref": "#/Definitions/ParameterChoice"
                                 },
                                 FieldId: 2687,
                                 FieldName: "Choice",
@@ -7079,7 +6856,7 @@ export default linkJsonRefs<ProductSchema>({
                         Modifiers: {
                           IsBackward: false,
                           Content: {
-                            $ref: "#/Definitions/LinkModifier"
+                            "$ref": "#/Definitions/LinkModifier"
                           },
                           FieldId: 1450,
                           FieldName: "Modifiers",
@@ -7102,7 +6879,7 @@ export default linkJsonRefs<ProductSchema>({
                   MarketingDevice: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/MarketingProduct3"
+                      "$ref": "#/Definitions/MarketingProduct3"
                     },
                     FieldId: 2531,
                     FieldName: "MarketingDevice",
@@ -7115,7 +6892,7 @@ export default linkJsonRefs<ProductSchema>({
                   Cities: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/Region1"
+                      "$ref": "#/Definitions/Region1"
                     },
                     FieldId: 2533,
                     FieldName: "Cities",
@@ -7646,7 +7423,7 @@ export default linkJsonRefs<ProductSchema>({
                               BaseParameterModifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/BaseParameterModifier"
+                                  "$ref": "#/Definitions/BaseParameterModifier"
                                 },
                                 FieldId: 1423,
                                 FieldName: "BaseParameterModifiers",
@@ -7659,7 +7436,7 @@ export default linkJsonRefs<ProductSchema>({
                               Modifiers: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/ParameterModifier"
+                                  "$ref": "#/Definitions/ParameterModifier"
                                 },
                                 FieldId: 1424,
                                 FieldName: "Modifiers",
@@ -7672,7 +7449,7 @@ export default linkJsonRefs<ProductSchema>({
                               Direction: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/Direction"
+                                  "$ref": "#/Definitions/Direction"
                                 },
                                 FieldId: 1422,
                                 FieldName: "Direction",
@@ -7685,7 +7462,7 @@ export default linkJsonRefs<ProductSchema>({
                               Zone: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/TariffZone"
+                                  "$ref": "#/Definitions/TariffZone"
                                 },
                                 FieldId: 1421,
                                 FieldName: "Zone",
@@ -7698,7 +7475,7 @@ export default linkJsonRefs<ProductSchema>({
                               BaseParameter: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/BaseParameter"
+                                  "$ref": "#/Definitions/BaseParameter"
                                 },
                                 FieldId: 1420,
                                 FieldName: "BaseParameter",
@@ -7803,7 +7580,7 @@ export default linkJsonRefs<ProductSchema>({
                               Choice: {
                                 IsBackward: false,
                                 Content: {
-                                  $ref: "#/Definitions/ParameterChoice"
+                                  "$ref": "#/Definitions/ParameterChoice"
                                 },
                                 FieldId: 2687,
                                 FieldName: "Choice",
@@ -7907,7 +7684,7 @@ export default linkJsonRefs<ProductSchema>({
                         Modifiers: {
                           IsBackward: false,
                           Content: {
-                            $ref: "#/Definitions/LinkModifier"
+                            "$ref": "#/Definitions/LinkModifier"
                           },
                           FieldId: 1450,
                           FieldName: "Modifiers",
@@ -8076,7 +7853,7 @@ export default linkJsonRefs<ProductSchema>({
       Modifiers: {
         IsBackward: false,
         Content: {
-          $ref: "#/Definitions/ProductModifer"
+          "$ref": "#/Definitions/ProductModifer"
         },
         FieldId: 1523,
         FieldName: "Modifiers",
@@ -8099,7 +7876,7 @@ export default linkJsonRefs<ProductSchema>({
             Group: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/ProductParameterGroup1"
+                "$ref": "#/Definitions/ProductParameterGroup1"
               },
               FieldId: 1506,
               FieldName: "Group",
@@ -8141,7 +7918,7 @@ export default linkJsonRefs<ProductSchema>({
             BaseParameter: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/BaseParameter"
+                "$ref": "#/Definitions/BaseParameter"
               },
               FieldId: 1375,
               FieldName: "BaseParameter",
@@ -8154,7 +7931,7 @@ export default linkJsonRefs<ProductSchema>({
             Zone: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/TariffZone"
+                "$ref": "#/Definitions/TariffZone"
               },
               FieldId: 1377,
               FieldName: "Zone",
@@ -8167,7 +7944,7 @@ export default linkJsonRefs<ProductSchema>({
             Direction: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/Direction"
+                "$ref": "#/Definitions/Direction"
               },
               FieldId: 1378,
               FieldName: "Direction",
@@ -8180,7 +7957,7 @@ export default linkJsonRefs<ProductSchema>({
             BaseParameterModifiers: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/BaseParameterModifier"
+                "$ref": "#/Definitions/BaseParameterModifier"
               },
               FieldId: 1379,
               FieldName: "BaseParameterModifiers",
@@ -8193,7 +7970,7 @@ export default linkJsonRefs<ProductSchema>({
             Modifiers: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/ParameterModifier"
+                "$ref": "#/Definitions/ParameterModifier"
               },
               FieldId: 1380,
               FieldName: "Modifiers",
@@ -8206,7 +7983,7 @@ export default linkJsonRefs<ProductSchema>({
             Unit: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/Unit"
+                "$ref": "#/Definitions/Unit"
               },
               FieldId: 1386,
               FieldName: "Unit",
@@ -8311,7 +8088,7 @@ export default linkJsonRefs<ProductSchema>({
             Choice: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/ParameterChoice"
+                "$ref": "#/Definitions/ParameterChoice"
               },
               FieldId: 2445,
               FieldName: "Choice",
@@ -8362,7 +8139,7 @@ export default linkJsonRefs<ProductSchema>({
             Parent: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/Region2"
+                "$ref": "#/Definitions/Region2"
               },
               FieldId: 1115,
               FieldName: "Parent",
@@ -8488,7 +8265,7 @@ export default linkJsonRefs<ProductSchema>({
                     MarketingProduct: {
                       IsBackward: false,
                       Content: {
-                        $ref: "#/Definitions/MarketingProduct3"
+                        "$ref": "#/Definitions/MarketingProduct3"
                       },
                       FieldId: 1542,
                       FieldName: "MarketingProduct",
@@ -8512,8 +8289,7 @@ export default linkJsonRefs<ProductSchema>({
                 FieldId: 2390,
                 FieldName: "FreezeDate",
                 FieldTitle: "Отложенная публикация на",
-                FieldDescription:
-                  "Продукт будет опубликован в течение 2,5 часов после наступления даты публикации",
+                FieldDescription: "Продукт будет опубликован в течение 2,5 часов после наступления даты публикации",
                 FieldOrder: 3,
                 FieldType: "DateTime",
                 IsRequired: false
@@ -8549,7 +8325,7 @@ export default linkJsonRefs<ProductSchema>({
               MarketingOffers: {
                 IsBackward: false,
                 Content: {
-                  $ref: "#/Definitions/MarketingProduct"
+                  "$ref": "#/Definitions/MarketingProduct"
                 },
                 FieldId: 2528,
                 FieldName: "MarketingOffers",
@@ -8657,7 +8433,7 @@ export default linkJsonRefs<ProductSchema>({
             MarketingDevice: {
               IsBackward: false,
               Content: {
-                $ref: "#/Definitions/MarketingProduct"
+                "$ref": "#/Definitions/MarketingProduct"
               },
               FieldId: 2538,
               FieldName: "MarketingDevice",
@@ -8699,7 +8475,7 @@ export default linkJsonRefs<ProductSchema>({
                         BaseParameter: {
                           IsBackward: false,
                           Content: {
-                            $ref: "#/Definitions/BaseParameter"
+                            "$ref": "#/Definitions/BaseParameter"
                           },
                           FieldId: 1420,
                           FieldName: "BaseParameter",
@@ -8712,7 +8488,7 @@ export default linkJsonRefs<ProductSchema>({
                         Zone: {
                           IsBackward: false,
                           Content: {
-                            $ref: "#/Definitions/TariffZone"
+                            "$ref": "#/Definitions/TariffZone"
                           },
                           FieldId: 1421,
                           FieldName: "Zone",
@@ -8725,7 +8501,7 @@ export default linkJsonRefs<ProductSchema>({
                         Direction: {
                           IsBackward: false,
                           Content: {
-                            $ref: "#/Definitions/Direction"
+                            "$ref": "#/Definitions/Direction"
                           },
                           FieldId: 1422,
                           FieldName: "Direction",
@@ -8738,7 +8514,7 @@ export default linkJsonRefs<ProductSchema>({
                         BaseParameterModifiers: {
                           IsBackward: false,
                           Content: {
-                            $ref: "#/Definitions/BaseParameterModifier"
+                            "$ref": "#/Definitions/BaseParameterModifier"
                           },
                           FieldId: 1423,
                           FieldName: "BaseParameterModifiers",
@@ -8751,7 +8527,7 @@ export default linkJsonRefs<ProductSchema>({
                         Modifiers: {
                           IsBackward: false,
                           Content: {
-                            $ref: "#/Definitions/ParameterModifier"
+                            "$ref": "#/Definitions/ParameterModifier"
                           },
                           FieldId: 1424,
                           FieldName: "Modifiers",
@@ -8764,7 +8540,7 @@ export default linkJsonRefs<ProductSchema>({
                         Unit: {
                           IsBackward: false,
                           Content: {
-                            $ref: "#/Definitions/Unit"
+                            "$ref": "#/Definitions/Unit"
                           },
                           FieldId: 1428,
                           FieldName: "Unit",
@@ -8832,7 +8608,7 @@ export default linkJsonRefs<ProductSchema>({
                   Modifiers: {
                     IsBackward: false,
                     Content: {
-                      $ref: "#/Definitions/LinkModifier"
+                      "$ref": "#/Definitions/LinkModifier"
                     },
                     FieldId: 1450,
                     FieldName: "Modifiers",
@@ -8874,7 +8650,7 @@ export default linkJsonRefs<ProductSchema>({
       Advantages: {
         IsBackward: false,
         Content: {
-          $ref: "#/Definitions/Advantage"
+          "$ref": "#/Definitions/Advantage"
         },
         FieldId: 2133,
         FieldName: "Advantages",
@@ -8999,7 +8775,7 @@ export default linkJsonRefs<ProductSchema>({
         Parent: {
           IsBackward: false,
           Content: {
-            $ref: "#/Definitions/Region2"
+            "$ref": "#/Definitions/Region2"
           },
           FieldId: 1115,
           FieldName: "Parent",
@@ -10016,10 +9792,11 @@ function visitObject(object: any, definitions: object, visited: Set<object>): vo
         object.include = includeContent;
       } else if (object.FieldId) {
         if (
-          object.Content &&
-          (object.FieldType === "M2ORelation" ||
+          object.Content && (
+            object.FieldType === "M2ORelation" ||
             object.FieldType === "O2MRelation" ||
-            object.FieldType === "M2MRelation")
+            object.FieldType === "M2MRelation"
+          )
         ) {
           object.include = includeRelation;
         } else if (object.Contents && object.FieldType === "Classifier") {

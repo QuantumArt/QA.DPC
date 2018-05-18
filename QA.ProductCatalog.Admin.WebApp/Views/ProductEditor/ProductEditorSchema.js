@@ -294,30 +294,32 @@ function compileMobxModel(mobxSchema) {
     Object.values(field.Contents).every(isContentRef);
 
   const modelName = ({ ContentId }) => mobxSchema[ContentId].ContentName;
+  // @ts-ignore
   const modelTitle = ({ ContentId }) => mobxSchema[ContentId].ContentTitle;
 
   // prettier-ignore
   const fieldType = field => {
     if (isExtension(field)) {
-      return `t.model({
-    /** Значение поля-классификатора */
-    Value: t.string,
-    /** Контенты поля-классификатора */
-    Contents: t.model({${
-      Object.values(field.Contents).map(content => `
-      /** ${modelTitle(content)} */
-      ${modelName(content)}: t.late(() => ${modelName(content)}),`).join("")}
-    }),
-  })`;
+      // https://github.com/mobxjs/mobx-state-tree/issues/825
+      // TODO: t.optional(t.model({ [Name]: t.optional(..., {}) }), {})
+      return `t.maybe(t.enumeration("${field.FieldName}", [${Object.values(field.Contents).map(content => `
+    "${modelName(content)}",`).join("")}
+  ])),
+  /** Контенты поля-классификатора */
+  ${field.FieldName}_Contents: t.maybe(t.model({${
+    Object.values(field.Contents).map(content => `
+    /** ${modelTitle(content)} */
+    ${modelName(content)}: t.maybe(t.late(() => ${modelName(content)})),`).join("")}
+  }))`;
     } else if (isBackward(field)) {
-      return `t.array(t.late(() => ${modelName(field.Content)}))`;
+      return `t.optional(t.array(t.late(() => ${modelName(field.Content)})), [])`;
     } else if (isRelation(field)) {
       switch (field.FieldType) {
         case "M2MRelation":
         case "M2ORelation":
-          return `t.array(t.late(() => ${modelName(field.Content)}))`;
+          return `t.optional(t.array(t.late(() => ${modelName(field.Content)})), [])`;
         case "O2MRelation":
-          return `t.reference(t.late(() => ${modelName(field.Content)}))`;
+          return `t.maybe(t.reference(t.late(() => ${modelName(field.Content)})))`;
       }
     } else {
       switch (field.FieldType) {
@@ -326,23 +328,23 @@ function compileMobxModel(mobxSchema) {
         case "Textbox":
         case "VisualEdit":
         case "DynamicImage":
-          return `t.string`;
+          return `t.maybe(t.string)`;
         case "Numeric":
-          return `t.number`;
+          return `t.maybe(t.number)`;
         case "Boolean":
-          return `t.boolean`;
+          return `t.maybe(t.boolean)`;
         case "Date":
         case "Time":
         case "DateTime":
-          return `t.Date`;
+          return `t.maybe(t.Date)`;
         case "File":
           return `t.maybe(FileModel)`;
         case "Classifier":
-          return `t.string`; // TODO: `t.enumeration("${field.FieldName}", [])`;
+          return `t.maybe(t.string)`; // TODO: `t.enumeration("${field.FieldName}", [])`;
         case "StringEnum":
-          return `t.enumeration("${field.FieldName}", [${field.Items.map(item => `
+          return `t.maybe(t.enumeration("${field.FieldName}", [${field.Items.map(item => `
     "${item.Value}",`).join("")}
-  ])`;
+  ]))`;
       }
     }
     throw new Error(`Can not parse field ${JSON.stringify(field, null, 2)}`);
@@ -363,11 +365,11 @@ type _I${modelName(content)} = typeof ${modelName(content)}.Type;
 /** ${content.ContentTitle} */
 export interface I${modelName(content)} extends _I${modelName(content)} {}
 /** ${content.ContentTitle} */
-export const ${modelName(content)} = t.model("${content.ContentName}(${content.ContentId})", {
+export const ${modelName(content)} = t.model("${content.ContentName}_${content.ContentId}", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.Date,${
+  Timestamp: t.maybe(t.Date),${
 Object.values(content.Fields).map(field => `
   /** ${field.FieldTitle} */
   ${field.FieldName}: ${fieldType(field)},`).join("")}
@@ -378,7 +380,7 @@ type _I${modelName(content)} = typeof ${modelName(content)}.Type;
 /** ${content.ContentTitle} (Extension) */
 export interface I${modelName(content)} extends _I${modelName(content)} {}
 /** ${content.ContentTitle} (Extension) */
-export const ${modelName(content)} = t.model("${content.ContentName}(${content.ContentId})", {${
+export const ${modelName(content)} = t.model("${content.ContentName}_${content.ContentId}", {${
 Object.values(content.Fields).map(field => `
   /** ${field.FieldTitle} */
   ${field.FieldName}: ${fieldType(field)},`).join("")}
