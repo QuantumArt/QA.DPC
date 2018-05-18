@@ -26,13 +26,23 @@ namespace QA.Core.DPC.Loader.Editor
         public string ContentTitle { get; set; }
         public string ContentDescription { get; set; }
 
-        public object ObjectShape { get; set; }
+        public bool IsExtension { get; set; }
 
         public Dictionary<string, FieldSchema> Fields { get; set; }
             = new Dictionary<string, FieldSchema>();
+
+        internal ContentSchema ShallowCopy()
+        {
+            return (ContentSchema)MemberwiseClone();
+        }
     }
 
-    public class ContentSchemaRef : IContentSchema
+    public class ContentSchemaIdRef : IContentSchema
+    {
+        public int ContentId { get; set; }
+    }
+
+    public class ContentSchemaJsonRef : IContentSchema
     {
         [JsonIgnore]
         public int ContentId { get; set; }
@@ -40,7 +50,7 @@ namespace QA.Core.DPC.Loader.Editor
         [JsonProperty("$ref")]
         public string Ref { get; set; }
     }
-
+    
     public class FieldSchema
     {
         public int FieldId { get; set; }
@@ -48,8 +58,9 @@ namespace QA.Core.DPC.Loader.Editor
         public string FieldTitle { get; set; }
         public string FieldDescription { get; set; }
         public int FieldOrder { get; set; }
-        public bool IsRequired { get; set; }
         public FieldExactTypes FieldType { get; set; }
+
+        public bool IsRequired { get; set; }
     }
 
     public class EnumFieldSchema : FieldSchema
@@ -69,6 +80,11 @@ namespace QA.Core.DPC.Loader.Editor
         public bool IsBackward => false;
 
         public IContentSchema Content { get; set; }
+
+        internal RelationFieldSchema ShallowCopy()
+        {
+            return (RelationFieldSchema)MemberwiseClone();
+        }
     }
 
     public class BackwardFieldSchema : FieldSchema, IRelationFieldSchema
@@ -76,11 +92,21 @@ namespace QA.Core.DPC.Loader.Editor
         public bool IsBackward => true;
 
         public IContentSchema Content { get; set; }
+
+        internal BackwardFieldSchema ShallowCopy()
+        {
+            return (BackwardFieldSchema)MemberwiseClone();
+        }
     }
 
     public class ExtensionFieldSchema : FieldSchema
     {
         public Dictionary<string, IContentSchema> Contents { get; set; }
             = new Dictionary<string, IContentSchema>();
+
+        internal ExtensionFieldSchema ShallowCopy()
+        {
+            return (ExtensionFieldSchema)MemberwiseClone();
+        }
     }
 }

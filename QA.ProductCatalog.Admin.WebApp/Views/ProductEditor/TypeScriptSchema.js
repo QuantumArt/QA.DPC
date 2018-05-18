@@ -1,4 +1,5 @@
-﻿const jsonToTypeScript = require("json-schema-to-typescript/dist/bundle");
+﻿import { download } from "Utils/Downloading";
+const jsonToTypeScript = require("json-schema-to-typescript/dist/bundle");
 
 // @ts-ignore
 const jsonSchema = window.jsonSchema;
@@ -25,25 +26,4 @@ function fixJsonDeclarations(jsonDeclarations) {
       /^interface ProductDefinition {$/m,
       "export interface ProductDefinition {"
     );
-}
-
-/**
- * Скачать текст как UTF-8 файл
- * @param {string} filename
- * @param {string} text
- */
-function download(filename, text) {
-  const element = document.createElement("a");
-  element.setAttribute(
-    "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
-  );
-  element.setAttribute("download", filename);
-
-  element.style.display = "none";
-  document.body.appendChild(element);
-
-  element.click();
-
-  document.body.removeChild(element);
 }

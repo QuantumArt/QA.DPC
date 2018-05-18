@@ -57,7 +57,7 @@ namespace QA.Core.DPC.Loader.Editor
         /// </summary>
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
-        public ProductSchema GetSchema(Content content)
+        public ProductSchema GetProductSchema(Content content)
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
 
@@ -217,7 +217,9 @@ namespace QA.Core.DPC.Loader.Editor
                 if (!String.IsNullOrEmpty(qpContent.NetName)
                     && !contentSchemas.ContainsKey(qpContent.NetName))
                 {
-                    contentSchemas[qpContent.NetName] = GetContentSchema(content, context, path);
+                    var contentSchema = GetContentSchema(content, context, path);
+                    contentSchema.IsExtension = true;
+                    contentSchemas[qpContent.NetName] = contentSchema;
                 }
             }
 
@@ -295,11 +297,11 @@ namespace QA.Core.DPC.Loader.Editor
             return schema;
         }
 
-        private ContentSchemaRef GetSchemaRef(ContentSchema contentSchema, SchemaContext context)
+        private ContentSchemaJsonRef GetSchemaRef(ContentSchema contentSchema, SchemaContext context)
         {
             string name = context.DefinitionNamesBySchema[contentSchema];
 
-            return new ContentSchemaRef
+            return new ContentSchemaJsonRef
             {
                 ContentId = contentSchema.ContentId,
                 Ref = $"#/{nameof(ProductSchema.Definitions)}/{name}"
@@ -310,6 +312,160 @@ namespace QA.Core.DPC.Loader.Editor
         {
             return String.IsNullOrEmpty(str)
                 || String.IsNullOrWhiteSpace(WebUtility.HtmlDecode(str));
+        }
+
+        /// <summary>
+        /// Генерация словаря с объединенными схемами для каждого <see cref="ContentSchema.ContentId"/> из продукта
+        /// </summary>
+        public Dictionary<int, ContentSchema> GetMergedContentSchemas(ProductSchema productSchema)
+        {
+            var schemasByContentId = new Dictionary<int, ContentSchema>();
+
+            if (productSchema.Content is ContentSchema)
+            {
+                CreateEmptyContentSchemas((ContentSchema)productSchema.Content, schemasByContentId);
+            }
+            foreach (ContentSchema definitionSchema in productSchema.Definitions.Values)
+            {
+                CreateEmptyContentSchemas(definitionSchema, schemasByContentId);
+            }
+
+            if (productSchema.Content is ContentSchema)
+            {
+                FillMergedContentSchemas((ContentSchema)productSchema.Content, schemasByContentId);
+            }
+            foreach (ContentSchema definitionSchema in productSchema.Definitions.Values)
+            {
+                FillMergedContentSchemas(definitionSchema, schemasByContentId);
+            }
+
+            return schemasByContentId;
+        }
+
+        /// <summary>
+        /// Заполняем словарь пустыми схемами
+        /// </summary>
+        private void CreateEmptyContentSchemas(
+            ContentSchema contentSchema, Dictionary<int, ContentSchema> shapesByContentId)
+        {
+            if (!shapesByContentId.ContainsKey(contentSchema.ContentId))
+            {
+                var copy = contentSchema.ShallowCopy();
+                copy.Fields = new Dictionary<string, FieldSchema>();
+                shapesByContentId[contentSchema.ContentId] = copy;
+            }
+
+            VisitChildSchemas(contentSchema, shapesByContentId, CreateEmptyContentSchemas);
+        }
+
+        /// <summary>
+        /// Объединяем поля схем контентов
+        /// </summary>
+        private void FillMergedContentSchemas(
+            ContentSchema contentSchema, Dictionary<int, ContentSchema> schemasByContentId)
+        {
+            ContentSchema mergedContentSchema = schemasByContentId[contentSchema.ContentId];
+
+            foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
+            {
+                if (!mergedContentSchema.Fields.ContainsKey(fieldSchema.FieldName))
+                {
+                    if (fieldSchema is ExtensionFieldSchema extFieldSchema)
+                    {
+                        var copy = extFieldSchema.ShallowCopy();
+
+                        copy.Contents = extFieldSchema.Contents.ToDictionary(
+                            pair => pair.Key,
+                            pair => (IContentSchema)new ContentSchemaIdRef
+                            {
+                                ContentId = pair.Value.ContentId,
+                            });
+
+                        mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
+                    }
+                    else if (fieldSchema is RelationFieldSchema relationFieldSchema)
+                    {
+                        var copy = relationFieldSchema.ShallowCopy();
+                        copy.Content = new ContentSchemaIdRef
+                        {
+                            ContentId = relationFieldSchema.Content.ContentId,
+                        };
+                        mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
+                    }
+                    else if (fieldSchema is BackwardFieldSchema backwardFieldSchema)
+                    {
+                        var copy = backwardFieldSchema.ShallowCopy();
+                        copy.Content = new ContentSchemaIdRef
+                        {
+                            ContentId = backwardFieldSchema.Content.ContentId,
+                        };
+                        mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
+                    }
+                    else
+                    {
+                        mergedContentSchema.Fields[fieldSchema.FieldName] = fieldSchema;
+                    }
+                }
+                if (fieldSchema is ExtensionFieldSchema extensionFieldSchema)
+                {
+                    FieldSchema mergedFieldSchema = mergedContentSchema.Fields[fieldSchema.FieldName];
+
+                    // В разных Definition для одного и того-же контента, поле расширения
+                    // может быть как содержать ContentMapping так и быть просто Classifier-ом
+                    // (не содержать ContentMapping). Поэтому мы объединяем значения таких полей.
+                    if (mergedFieldSchema.FieldType != FieldExactTypes.Classifier)
+                    {
+                        throw new InvalidOperationException(
+                            $@"Content {contentSchema.ContentName}({contentSchema.ContentId
+                            }) contains same field {fieldSchema.FieldName}({fieldSchema.FieldId
+                            }) with different types: {mergedFieldSchema.FieldType
+                            }) and {fieldSchema.FieldType}");
+                    }
+                    if (!(mergedFieldSchema is ExtensionFieldSchema mergedExtensionFieldSchema))
+                    {
+                        mergedExtensionFieldSchema = extensionFieldSchema.ShallowCopy();
+                        mergedExtensionFieldSchema.Contents = new Dictionary<string, IContentSchema>();
+                        mergedContentSchema.Fields[fieldSchema.FieldName] = mergedExtensionFieldSchema;
+                    }
+
+                    foreach (var pair in extensionFieldSchema.Contents)
+                    {
+                        if (!mergedExtensionFieldSchema.Contents.ContainsKey(pair.Key))
+                        {
+                            mergedExtensionFieldSchema.Contents[pair.Key] = new ContentSchemaIdRef
+                            {
+                                ContentId = pair.Value.ContentId,
+                            };
+                        }
+                    }
+                }
+
+                VisitChildSchemas(contentSchema, schemasByContentId, FillMergedContentSchemas);
+            }
+        }
+
+        private void VisitChildSchemas(
+            ContentSchema contentSchema,
+            Dictionary<int, ContentSchema> schemasByContentId,
+            Action<ContentSchema, Dictionary<int, ContentSchema>> action)
+        {
+            foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
+            {
+                if (fieldSchema is IRelationFieldSchema relationFieldSchema)
+                {
+                    if (relationFieldSchema.Content is ContentSchema childContentSchema)
+                    {
+                        action.Invoke(childContentSchema, schemasByContentId);
+                    }
+                }
+                else if (fieldSchema is ExtensionFieldSchema extensionFieldSchema)
+                {
+                    foreach (var childContentSchema in extensionFieldSchema.Contents.Values.OfType<ContentSchema>())
+                    {
+                        action.Invoke(childContentSchema, schemasByContentId);
+                    }
+                }
+            }
         }
     }
 }

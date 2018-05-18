@@ -12,6 +12,7 @@ using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
@@ -82,30 +83,46 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </summary>
         /// <param name="productDefinitionId">Id описания продукта</param>
         [HttpGet]
-        public ActionResult ProductEditorSchema(int productDefinitionId, bool isLive = false)
+        public ViewResult ProductEditorSchema(int productDefinitionId, bool isLive = false)
         {
             Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
             
-            ProductSchema productSchema = _editorSchemaService.GetSchema(content);
+            ProductSchema productSchema = _editorSchemaService.GetProductSchema(content);
 
-            var objectShapes = _editorObjectShapeService.GetContentShapes(productSchema);
+            Dictionary<int, ContentSchema> mobxSchema = _editorSchemaService.GetMergedContentSchemas(productSchema);
 
             string editorSchemaJson = JsonConvert.SerializeObject(productSchema, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Include,
                 Converters = { new StringEnumConverter() }
             });
-
-            string objectShapesJson = JsonConvert.SerializeObject(objectShapes, new JsonSerializerSettings
+            
+            string mobxSchemaJson = JsonConvert.SerializeObject(mobxSchema, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Include,
+                Converters = { new StringEnumConverter() }
             });
 
             return View(new ProductEditorSchemaModel
             {
                 EditorSchema = editorSchemaJson,
-                ObjectShapes = objectShapesJson,
+                MobxSchema = mobxSchemaJson,
             });
+        }
+
+        private static readonly ConcurrentDictionary<int, ViewResult> _schemaCache
+            = new ConcurrentDictionary<int, ViewResult>();
+
+        [HttpGet]
+        public ViewResult ProductEditorSchema_Test(int productDefinitionId, bool refresh = false)
+        {
+            if (refresh)
+            {
+                _schemaCache.TryRemove(productDefinitionId, out var _);
+            }
+            var result = _schemaCache.GetOrAdd(productDefinitionId, _ => ProductEditorSchema(productDefinitionId));
+
+            return View(nameof(ProductEditorSchema), result.Model);
         }
 
         /// <summary>
@@ -120,7 +137,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </param>
         /// <returns>JSON-схема продукта</returns>
         [HttpPost]
-        public ActionResult PartialJsonSchema(
+        public ActionResult PartialJsonSchema_Test(
             int productDefinitionId,
             [ModelBinder(typeof(JsonModelBinder))] string[] contentPaths,
             bool isLive = false)
@@ -148,7 +165,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             Article article = _productService.GetProductById(articleId, isLive, productDefinition);
 
             // TODO: maybe cache
-            ProductSchema productSchema = _editorSchemaService.GetSchema(content);
+            ProductSchema productSchema = _editorSchemaService.GetProductSchema(content);
 
             var shapesByContentId = _editorObjectShapeService.GetContentShapes(productSchema);
 
@@ -161,17 +178,17 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Content(json, "application/json");
         }
 
-        private static System.Collections.Concurrent.ConcurrentDictionary<int, ContentResult> _cache
-            = new System.Collections.Concurrent.ConcurrentDictionary<int, ContentResult>();
+        private static readonly ConcurrentDictionary<int, ContentResult> _dataCache
+            = new ConcurrentDictionary<int, ContentResult>();
 
         [HttpGet]
-        public ActionResult GetProductTest(int articleId, bool refresh = false)
+        public ActionResult GetProduct_Test(int articleId, bool refresh = false)
         {
             if (refresh)
             {
-                _cache.TryRemove(articleId, out var _);
+                _dataCache.TryRemove(articleId, out var _);
             }
-            return _cache.GetOrAdd(articleId, _ => GetProduct(articleId));
+            return _dataCache.GetOrAdd(articleId, _ => GetProduct(articleId));
         }
         
         /// <summary>

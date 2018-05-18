@@ -1,36 +1,36 @@
-﻿// @ts-ignore
-const editorSchema = window.editorSchema;
-// @ts-ignore
-const objectShapes = window.objectShapes;
-
-const editorDeclarations = compileEritorSchemaDeclarations(editorSchema);
-
-const editorObject = compileEritorSchemaObject(editorSchema);
-
-const code = editorDeclarations + "\n" + editorObject + "\n";
+﻿import { download } from "Utils/Downloading";
+import { isObject, isInteger, isBoolean } from "Utils/TypeChecking";
 
 // @ts-ignore
-document.querySelector("#typeScriptCode").innerText = code;
+const editorSchemaTypes = compileEditorSchemaTypes(window.editorSchema);
+// @ts-ignore
+const editorSchemaObject = compileEditorSchemaObject(window.editorSchema);
+// @ts-ignore
+const editorMobxModel = compileMobxModel(window.mobxSchema);
 
-download("ProductEditorSchema.ts", code);
+// prettier-ignore
+download("ProductEditorSchema.ts", editorSchemaTypes + "\n" + editorSchemaObject);
+download("ProductEditorModel.ts", editorMobxModel);
+
+// @ts-ignore
+document.querySelector("#typeScriptCode").innerText =
+  editorMobxModel + "\n" + editorSchemaTypes + "\n" + editorSchemaObject;
 
 /**
  * Преобразовать JSON схемы в интерфейсы TypeScript (для объекта схемы)
  * @param {object} editorSchema
  * @returns {string} Код TypeScript
  */
-function compileEritorSchemaDeclarations(editorSchema) {
+function compileEditorSchemaTypes(editorSchema) {
   const productSchema = JSON.parse(JSON.stringify(editorSchema));
   const content = productSchema.Content;
   const definitions = productSchema.Definitions;
   delete productSchema.Definitions;
+  const rootName = getRootName(editorSchema);
 
   const procuctInterface = `
 /** Описание полей продукта */
-export interface ProductEditorSchema ${replaceRefs(
-    content,
-    "ProductEditorSchema"
-  )}`;
+export interface ${rootName} ${replaceRefs(content, rootName)}`;
 
   const result = [procuctInterface];
 
@@ -46,6 +46,13 @@ export interface ProductEditorSchema ${replaceRefs(
   return result.join("\n");
 }
 
+const refStringRegex = /\{\s*"?\$ref"?:\s*"#\/Definitions\/([A-Za-z0-9]+)"\s*}/gm;
+
+function getRootName(editorSchema) {
+  return `${editorSchema.Content.ContentName ||
+    refStringRegex.exec(JSON.stringify(editorSchema.Content))[1]}Schema`;
+}
+
 /**
  * Заменить ссылки вида { $ref: "#/Definitions/Type" } на имена интерфейсов вида Type
  * @param {object} schema
@@ -57,7 +64,6 @@ function replaceRefs(schema, interfaceName) {
   const identifierRegex = /^[-_$A-Za-z][-_$A-Za-z0-9]*$/;
   const typeRegex = new RegExp(`${MARKER}(.+)${MARKER}`);
   const typeStringRegex = new RegExp(`"${MARKER}(.+)${MARKER}"`, "g");
-  const refStringRegex = /\{\s*"?\$ref"?:\s*"#\/Definitions\/([A-Za-z0-9]+)"\s*}/gm;
 
   function visitObject(object, path) {
     if (typeof object === "object" && object !== null) {
@@ -163,23 +169,16 @@ function prettyPrint(object, replacer = (_k, v) => v) {
     .replace(keyStringRegex, "$1:");
 }
 
-function isObject(value) {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
 /**
  * Преобразовать JSON схемы в код объекта схемы
  * @param {object} editorSchema
  * @returns {string} Код TypeScript
  */
-function compileEritorSchemaObject(editorSchema) {
+function compileEditorSchemaObject(editorSchema) {
+  const rootName = getRootName(editorSchema);
   return `
-const objectShapes: any = ${prettyPrint(objectShapes)};
-
 /** Описание полей продукта */
-export const productEditorSchema = linkJsonRefs<ProductEditorSchema>(${prettyPrint(
-    editorSchema
-  )});
+export default linkJsonRefs<${rootName}>(${prettyPrint(editorSchema)});
 
 function linkJsonRefs<T>(schema: any): T {
   const definitions = schema.Definitions;
@@ -206,7 +205,6 @@ function visitObject(object: any, definitions: object, visited: Set<object>): vo
         visitObject(object[key], definitions, visited);
       });
       if (object.ContentId) {
-        object.ObjectShape = objectShapes[object.ContentId];
         object.include = includeContent;
       } else if (object.FieldId) {
         if (
@@ -267,23 +265,125 @@ function includeExtension(selector: (contents: object) => string[][]): string[] 
 }`;
 }
 
-/**
- * Скачать текст как UTF-8 файл
- * @param {string} filename
- * @param {string} text
- */
-function download(filename, text) {
-  const element = document.createElement("a");
-  element.setAttribute(
-    "href",
-    "data:text/plain;charset=utf-8," + encodeURIComponent(text)
-  );
-  element.setAttribute("download", filename);
+/*=================================== MobX ==================================*/
 
-  element.style.display = "none";
-  document.body.appendChild(element);
+function compileMobxModel(mobxSchema) {
+  const isContentRef = arg =>
+    isObject(arg) && Object.keys(arg).length === 1 && isInteger(arg.ContentId);
 
-  element.click();
+  const isRelation = field =>
+    isObject(field) &&
+    isBoolean(field.IsBackward) &&
+    isContentRef(field.Content) &&
+    field.FieldType.endsWith("Relation") &&
+    !field.IsBackward;
 
-  document.body.removeChild(element);
+  const isBackward = field =>
+    isObject(field) &&
+    isBoolean(field.IsBackward) &&
+    isContentRef(field.Content) &&
+    field.FieldType.endsWith("Relation") &&
+    field.IsBackward;
+
+  const isExtension = field =>
+    isObject(field) &&
+    isObject(field.Contents) &&
+    field.FieldType === "Classifier" &&
+    Object.values(field.Contents).every(isContentRef);
+
+  const modelName = ({ ContentId }) => mobxSchema[ContentId].ContentName;
+  const modelTitle = ({ ContentId }) => mobxSchema[ContentId].ContentTitle;
+
+  // prettier-ignore
+  const fieldType = field => {
+    if (isExtension(field)) {
+      return `t.model({
+    /** Значение поля-классификатора */
+    Value: t.string,
+    /** Контенты поля-классификатора */
+    Contents: t.model({${
+      Object.values(field.Contents).map(content => `
+      /** ${modelTitle(content)} */
+      ${modelName(content)}: t.late(() => ${modelName(content)}),`).join("")}
+    }),
+  })`;
+    } else if (isBackward(field)) {
+      return `t.array(t.late(() => ${modelName(field.Content)}))`;
+    } else if (isRelation(field)) {
+      switch (field.FieldType) {
+        case "M2MRelation":
+        case "M2ORelation":
+          return `t.array(t.late(() => ${modelName(field.Content)}))`;
+        case "O2MRelation":
+          return `t.reference(t.late(() => ${modelName(field.Content)}))`;
+      }
+    } else {
+      switch (field.FieldType) {
+        case "String":
+        case "Image":
+        case "Textbox":
+        case "VisualEdit":
+        case "DynamicImage":
+          return `t.string`;
+        case "Numeric":
+          return `t.number`;
+        case "Boolean":
+          return `t.boolean`;
+        case "Date":
+        case "Time":
+        case "DateTime":
+          return `t.Date`;
+        case "File":
+          return `t.maybe(FileModel)`;
+        case "Classifier":
+          return `t.string`; // TODO: `t.enumeration("${field.FieldName}", [])`;
+        case "StringEnum":
+          return `t.enumeration("${field.FieldName}", [${field.Items.map(item => `
+    "${item.Value}",`).join("")}
+  ])`;
+      }
+    }
+    throw new Error(`Can not parse field ${JSON.stringify(field, null, 2)}`);
+  };
+
+  // prettier-ignore
+  return `import { types as t } from "mobx-state-tree";
+
+/** Файл, загружаемый в QPublishing */
+export const FileModel = t.model("FileModel", {
+  /** Имя файла */
+  Name: t.string,
+  /** URL файла */
+  AbsoluteUrl: t.string,
+});
+${Object.values(mobxSchema).filter(content => !content.IsExtension).map(content => `
+type _I${modelName(content)} = typeof ${modelName(content)}.Type;
+/** ${content.ContentTitle} */
+export interface I${modelName(content)} extends _I${modelName(content)} {}
+/** ${content.ContentTitle} */
+export const ${modelName(content)} = t.model("${content.ContentName}(${content.ContentId})", {
+  /** Идентификатор статьи */
+  Id: t.identifier(t.number),
+  /** Время последней модификации статьи */
+  Timestamp: t.Date,${
+Object.values(content.Fields).map(field => `
+  /** ${field.FieldTitle} */
+  ${field.FieldName}: ${fieldType(field)},`).join("")}
+});
+`).join("")}
+${Object.values(mobxSchema).filter(content => content.IsExtension).map(content => `
+type _I${modelName(content)} = typeof ${modelName(content)}.Type;
+/** ${content.ContentTitle} (Extension) */
+export interface I${modelName(content)} extends _I${modelName(content)} {}
+/** ${content.ContentTitle} (Extension) */
+export const ${modelName(content)} = t.model("${content.ContentName}(${content.ContentId})", {${
+Object.values(content.Fields).map(field => `
+  /** ${field.FieldTitle} */
+  ${field.FieldName}: ${fieldType(field)},`).join("")}
+});
+`).join("")}
+export default {${Object.values(mobxSchema).map(content => `
+  ${content.ContentId}: ${modelName(content)},`).join("")}
+};
+`;
 }
