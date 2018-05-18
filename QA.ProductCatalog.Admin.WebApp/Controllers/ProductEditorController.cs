@@ -30,7 +30,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IReadOnlyArticleService _articleService;
         private readonly EditorSchemaService _editorSchemaService;
         private readonly EditorDataService _editorDataService;
-        private readonly EditorObjectShapeService _editorObjectShapeService;
         private readonly EditorPartialContentService _editorPartialContentService;
 
         public ProductEditorController(
@@ -41,7 +40,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IReadOnlyArticleService articleService,
             EditorSchemaService editorSchemaService,
             EditorDataService editorDataService,
-            EditorObjectShapeService editorObjectShapeService,
             EditorPartialContentService editorPartialContentService)
         {
             _contentDefinitionService = contentDefinitionService;
@@ -51,7 +49,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _articleService = articleService;
             _editorSchemaService = editorSchemaService;
             _editorDataService = editorDataService;
-            _editorObjectShapeService = editorObjectShapeService;
             _editorPartialContentService = editorPartialContentService;
         }
 
@@ -164,14 +161,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             Article article = _productService.GetProductById(articleId, isLive, productDefinition);
 
-            // TODO: maybe cache
-            ProductSchema productSchema = _editorSchemaService.GetProductSchema(content);
-
-            var shapesByContentId = _editorObjectShapeService.GetContentShapes(productSchema);
-
             IArticleFilter filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
-            ContentObject data = _editorDataService.ConvertArticle(article, filter, shapesByContentId);
+            ContentObject data = _editorDataService.ConvertArticle(article, filter);
 
             string json = JsonConvert.SerializeObject(data);
 

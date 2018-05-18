@@ -46,11 +46,13 @@ export interface ${rootName} ${replaceRefs(content, rootName)}`;
   return result.join("\n");
 }
 
-const refStringRegex = /\{\s*"?\$ref"?:\s*"#\/Definitions\/([A-Za-z0-9]+)"\s*}/gm;
+function getRefRegex() {
+  return /\{\s*"?\$ref"?:\s*"#\/Definitions\/([A-Za-z0-9]+)"\s*}/gm;
+}
 
 function getRootName(editorSchema) {
   return `${editorSchema.Content.ContentName ||
-    refStringRegex.exec(JSON.stringify(editorSchema.Content))[1]}Schema`;
+    getRefRegex().exec(JSON.stringify(editorSchema.Content))[1]}Schema`;
 }
 
 /**
@@ -130,7 +132,7 @@ function replaceRefs(schema, interfaceName) {
 
   return prettyPrint(schema, valueTypeReplacer)
     .replace(typeStringRegex, "$1")
-    .replace(refStringRegex, "$1Schema");
+    .replace(getRefRegex(), "$1Schema");
 }
 
 /**

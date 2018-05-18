@@ -28,8 +28,6 @@ namespace QA.Core.DPC.Loader.Editor
         {
             public IArticleFilter Filter;
 
-            public Dictionary<int, ContentObject> ShapesByContentId;
-
             public bool ShouldIncludeArticle(Article article)
             {
                 return article != null
@@ -49,28 +47,15 @@ namespace QA.Core.DPC.Loader.Editor
                         return true;
                 }
             }
-
-            public ContentObject MakeObjectForArticle(Article article)
-            {
-                if (!ShapesByContentId.TryGetValue(article.ContentId, out ContentObject contentShape))
-                {
-                    throw new InvalidOperationException(
-                        $"Product does not contain definition for content {article.ContentId} from article {article.Id}");
-                }
-
-                return (ContentObject)contentShape.Clone();
-            }
         }
 
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="NotSupportedException" />
-        public ContentObject ConvertArticle(
-            Article article, IArticleFilter filter, Dictionary<int, ContentObject> shapesByContentId)
+        public ContentObject ConvertArticle(Article article, IArticleFilter filter)
         {
             return ConvertArticle(article, new ArticleContext
             {
                 Filter = filter,
-                ShapesByContentId = shapesByContentId,
             });
         }
 
@@ -82,18 +67,12 @@ namespace QA.Core.DPC.Loader.Editor
             {
                 return null;
             }
-            if (!context.ShapesByContentId.TryGetValue(article.ContentId, out ContentObject contentShape))
-            {
-                throw new InvalidOperationException(
-                    $"Product does not contain definition for content ({article.ContentId}) from article {article.ContentName}({article.Id})");
-            }
 
-            var dict = (ContentObject)contentShape.Clone();
+            var dict = new ContentObject();
 
             if (!forExtension)
             {
                 dict[ContentObject.IdProp] = article.Id;
-                dict[ContentObject.ContentIdProp] = article.ContentId;
                 dict[ContentObject.TimestampProp] = article.Modified == default(DateTime)
                     ? article.Created : article.Modified;
             }
@@ -126,6 +105,7 @@ namespace QA.Core.DPC.Loader.Editor
                 dict[field.FieldName] = multiArticleField
                     .GetArticles(context.Filter)
                     .Select(f => ConvertArticle(f, context))
+                    .Where(a => a != null)
                     .ToArray();
             }
             else if (field is ExtensionArticleField extensionArticleField)
@@ -149,18 +129,11 @@ namespace QA.Core.DPC.Loader.Editor
 
             Article article = field.Item;
 
-            if (dict.TryGetValue(field.FieldName, out object fieldValue)
-                && fieldValue is ExtensionFieldObject extensionFieldObject)
+            dict[field.FieldName] = article.ContentName;
+            dict[ContentObject.ExtensionProp(field.FieldName)] = new ExtensionFieldObject
             {
-                extensionFieldObject.Value = article.ContentName;
-                extensionFieldObject.Contents[article.ContentName]
-                    = ConvertArticle(article, context, forExtension: true);
-            }
-            else
-            {
-                throw new InvalidOperationException(
-                    $"Product does not contain definition for extension field {field.FieldName}");
-            }
+                [article.ContentName] = ConvertArticle(article, context, forExtension: true)
+            };
         }
 
         private object ConvertPlainField(PlainArticleField plainArticleField)

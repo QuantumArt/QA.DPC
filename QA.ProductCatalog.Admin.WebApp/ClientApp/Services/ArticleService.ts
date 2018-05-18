@@ -1,4 +1,5 @@
-import { observable, extendObservable, isObservableArray, runInAction, toJS } from "mobx";
+import { observable, extendObservable, isObservableArray, runInAction } from "mobx";
+import { isObject, isInteger } from "Utils/TypeChecking";
 
 type Article = { Id: number; [x: string]: any };
 
@@ -34,11 +35,9 @@ export class ArticleService {
         const article = this.articlesById[arg.Id];
         Object.entries(arg).forEach(([key, value]: [string, any]) => {
           if (!(key in article)) {
-            extendObservable(article, {
-              [key]: Array.isArray(value) ? [] : null
-            });
+            extendObservable(article, { [key]: null });
           }
-          const articleField = article[key];
+          let articleField = article[key];
           if (isObject(value) && isInteger(value.Id)) {
             // M2ORelation
             if (articleField === null) {
@@ -46,25 +45,19 @@ export class ArticleService {
             }
           } else if (Array.isArray(value)) {
             // BackwardRelation, O2MRelation or M2MRelation
-            if (value.length > 0 && articleField.length === 0) {
+            if (articleField === null || (value.length > 0 && articleField.length === 0)) {
               article[key] = value.map(
                 el => (isObject(el) && isInteger(el.Id) ? this.articlesById[el.Id] : el)
               );
             }
-          } else if (isObject(value) && "Value" in value && "Contents" in value) {
-            // Extension
-            if (articleField === null || articleField.Value === null) {
-              const contents = {};
-              Object.entries(value.Contents).forEach(([name, extension]: [string, any]) => {
-                contents[name] = isInteger(extension.Id)
-                  ? this.articlesById[extension.Id]
-                  : extension;
-              });
-              article[key] = {
-                Value: value.Value,
-                Contents: contents
-              };
+          } else if (key.endsWith("_Contents") && isObject(value)) {
+            // Extension Contents
+            if (articleField === null) {
+              article[key] = articleField = {};
             }
+            Object.entries(value).forEach(([name, content]: [string, any]) => {
+              articleField[name] = content;
+            });
           } else if (articleField === null) {
             article[key] = value;
           }
@@ -97,28 +90,4 @@ export class ArticleService {
       editedArticle[fieldName] = null;
     }
   }
-
-  public serializeArticle(article: Article) {
-    const plainArticle = toJS(article);
-    const isArticleVisitedById = Object.create(null);
-
-    return JSON.stringify(plainArticle, (_key, value) => {
-      if (isObject(value) && isInteger(value.Id)) {
-        if (isArticleVisitedById[value.Id]) {
-          return { Id: value.Id };
-        }
-        isArticleVisitedById[value.Id] = true;
-        return value;
-      }
-      return value;
-    });
-  }
-}
-
-function isInteger(arg): arg is number {
-  return typeof arg === "number" && /^-?[0-9]+$/.test(String(arg));
-}
-
-function isObject(arg: any): arg is Object {
-  return typeof arg === "object" && arg !== null && !Array.isArray(arg);
 }

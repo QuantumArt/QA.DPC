@@ -1,9 +1,10 @@
 ﻿import "normalize.css/normalize.css";
 import React from "react";
 import ReactDOM from "react-dom";
-import { ArticleEditor } from "../../ClientApp/Components/ArticleEditor/ArticleEditor";
-import { productEditorSchema as schema } from "../../ClientApp/Editors/MtsFixTariff/ProductEditorSchema";
-import { ArticleService } from "../../ClientApp/Services/ArticleService";
+import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import { ArticleService } from "Services/ArticleService";
+import { SerializationService } from "Services/SerializationService";
+import schema from "../../ClientApp/Editors/MtsFixTariff/ProductEditorSchema";
 
 (async () => {
   const element = document.getElementById("editor");
@@ -12,12 +13,14 @@ import { ArticleService } from "../../ClientApp/Services/ArticleService";
   const query = document.location.search;
 
   const response = await fetch(
-    `${rootUrl}/ProductEditor/GetProductTest${query}&articleId=${articleId}`
+    `${rootUrl}/ProductEditor/GetProduct_Test${query}&articleId=${articleId}`
   );
   if (response.ok) {
-    const articleService = new ArticleService(await response.json());
+    const serializationService = new SerializationService();
+    const productSnapshot = serializationService.deserialize(await response.text());
+    const articleService = new ArticleService(productSnapshot);
 
-    console.log(articleService.serializeArticle(articleService.rootArticle));
+    console.log(serializationService.serialize(articleService.rootArticle));
 
     ReactDOM.render(
       <ArticleEditor

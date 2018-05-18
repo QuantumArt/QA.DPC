@@ -288,7 +288,6 @@
     <Compile Include="Editor\EditorDataService.cs" />
     <Compile Include="Editor\EditorSchemaModels.cs" />
     <Compile Include="Editor\EditorSchemaService.cs" />
-    <Compile Include="Editor\EditorObjectShapeService.cs" />
     <Compile Include="FakeProductLoader.cs" />
     <Compile Include="IJsonProductService.cs" />
     <Compile Include="JsonProductDataSource.cs" />

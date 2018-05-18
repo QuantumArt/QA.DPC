@@ -1,11 +1,11 @@
 /** Описание полей продукта */
-export interface ProductEditorSchema {
+export interface ProductSchema {
   ContentId: number;
   ContentPath: string;
   ContentName: "Product";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     MarketingProduct: {
       IsBackward: false;
@@ -15,7 +15,7 @@ export interface ProductEditorSchema {
         ContentName: "MarketingProduct";
         ContentTitle: string;
         ContentDescription: string;
-        ObjectShape: any;
+        IsExtension: false;
         Fields: {
           Title: {
             FieldId: number;
@@ -23,8 +23,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "String";
+            IsRequired: false;
           };
           Alias: {
             FieldId: number;
@@ -32,8 +32,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "String";
+            IsRequired: false;
           };
           Description: {
             FieldId: number;
@@ -41,8 +41,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Textbox";
+            IsRequired: false;
           };
           OldSiteId: {
             FieldId: number;
@@ -50,8 +50,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Numeric";
+            IsRequired: false;
           };
           OldCorpSiteId: {
             FieldId: number;
@@ -59,8 +59,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Numeric";
+            IsRequired: false;
           };
           ListImage: {
             FieldId: number;
@@ -68,8 +68,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Image";
+            IsRequired: false;
           };
           DetailsImage: {
             FieldId: number;
@@ -77,8 +77,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Image";
+            IsRequired: false;
           };
           ArchiveDate: {
             FieldId: number;
@@ -86,8 +86,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Date";
+            IsRequired: false;
           };
           Modifiers: {
             IsBackward: false;
@@ -97,8 +97,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "M2MRelation";
+            IsRequired: false;
           };
           SortOrder: {
             FieldId: number;
@@ -106,8 +106,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Numeric";
+            IsRequired: false;
           };
           Priority: {
             FieldId: number;
@@ -115,8 +115,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Numeric";
+            IsRequired: false;
           };
           Advantages: {
             IsBackward: false;
@@ -126,8 +126,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "M2MRelation";
+            IsRequired: false;
           };
           Type: {
             Contents: {
@@ -137,7 +137,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingTariff";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {};
               };
               MarketingService: {
@@ -146,7 +146,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingService";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {};
               };
               MarketingAction: {
@@ -155,7 +155,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingAction";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {};
               };
               MarketingRoamingScale: {
@@ -164,7 +164,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingRoamingScale";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {};
               };
               MarketingDevice: {
@@ -173,7 +173,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingDevice";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {
                   DeviceType: {
                     IsBackward: false;
@@ -183,7 +183,7 @@ export interface ProductEditorSchema {
                       ContentName: "EquipmentType";
                       ContentTitle: string;
                       ContentDescription: string;
-                      ObjectShape: any;
+                      IsExtension: false;
                       Fields: {
                         ConnectionType: {
                           IsBackward: false;
@@ -193,8 +193,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "O2MRelation";
+                          IsRequired: false;
                         };
                         Title: {
                           FieldId: number;
@@ -202,8 +202,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "String";
+                          IsRequired: false;
                         };
                         Alias: {
                           FieldId: number;
@@ -211,8 +211,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "String";
+                          IsRequired: false;
                         };
                         Order: {
                           FieldId: number;
@@ -220,13 +220,13 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Numeric";
+                          IsRequired: false;
                         };
                       };
                       include: (
                         selector: (
-                          fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingDevice"]["Fields"]["DeviceType"]["Content"]["Fields"]
+                          fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingDevice"]["Fields"]["DeviceType"]["Content"]["Fields"]
                         ) => Selection[]
                       ) => string[];
                     };
@@ -235,11 +235,11 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "O2MRelation";
+                    IsRequired: false;
                     include: (
                       selector: (
-                        fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingDevice"]["Fields"]["DeviceType"]["Content"]["Fields"]
+                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingDevice"]["Fields"]["DeviceType"]["Content"]["Fields"]
                       ) => Selection[]
                     ) => string[];
                   };
@@ -251,8 +251,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "M2MRelation";
+                    IsRequired: false;
                   };
                   CommunicationType: {
                     IsBackward: false;
@@ -262,7 +262,7 @@ export interface ProductEditorSchema {
                       ContentName: "CommunicationType";
                       ContentTitle: string;
                       ContentDescription: string;
-                      ObjectShape: any;
+                      IsExtension: false;
                       Fields: {
                         Title: {
                           FieldId: number;
@@ -270,8 +270,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "String";
+                          IsRequired: false;
                         };
                         Alias: {
                           FieldId: number;
@@ -279,8 +279,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "String";
+                          IsRequired: false;
                         };
                       };
                     };
@@ -289,13 +289,13 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "O2MRelation";
+                    IsRequired: false;
                   };
                 };
                 include: (
                   selector: (
-                    fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingDevice"]["Fields"]
+                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingDevice"]["Fields"]
                   ) => Selection[]
                 ) => string[];
               };
@@ -305,7 +305,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingFixConnectAction";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {
                   Segment: {
                     IsBackward: false;
@@ -315,8 +315,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "M2MRelation";
+                    IsRequired: false;
                   };
                   MarketingAction: {
                     IsBackward: false;
@@ -326,8 +326,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "O2MRelation";
+                    IsRequired: false;
                   };
                   StartDate: {
                     FieldId: number;
@@ -335,8 +335,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "Date";
+                    IsRequired: false;
                   };
                   EndDate: {
                     FieldId: number;
@@ -344,8 +344,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "Date";
+                    IsRequired: false;
                   };
                   PromoPeriod: {
                     FieldId: number;
@@ -353,8 +353,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "String";
+                    IsRequired: false;
                   };
                   AfterPromo: {
                     FieldId: number;
@@ -362,13 +362,13 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "String";
+                    IsRequired: false;
                   };
                 };
                 include: (
                   selector: (
-                    fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectAction"]["Fields"]
+                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectAction"]["Fields"]
                   ) => Selection[]
                 ) => string[];
               };
@@ -378,7 +378,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingTvPackage";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {
                   Channels: {
                     IsBackward: false;
@@ -388,7 +388,7 @@ export interface ProductEditorSchema {
                       ContentName: "TvChannel";
                       ContentTitle: string;
                       ContentDescription: string;
-                      ObjectShape: any;
+                      IsExtension: false;
                       Fields: {
                         Title: {
                           FieldId: number;
@@ -396,8 +396,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "title";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "String";
+                          IsRequired: false;
                         };
                         ShortDescription: {
                           FieldId: number;
@@ -405,8 +405,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "short_descr";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Textbox";
+                          IsRequired: false;
                         };
                         Logo150: {
                           FieldId: number;
@@ -414,8 +414,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "logo150";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Image";
+                          IsRequired: false;
                         };
                         IsRegional: {
                           FieldId: number;
@@ -423,8 +423,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "regional_tv";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Boolean";
+                          IsRequired: false;
                         };
                         Parent: {
                           IsBackward: false;
@@ -434,7 +434,7 @@ export interface ProductEditorSchema {
                             ContentName: "TvChannel";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: false;
                             Fields: {
                               Logo150: {
                                 FieldId: number;
@@ -442,8 +442,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "logo150";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Image";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -452,8 +452,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "ch_parent";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "O2MRelation";
+                          IsRequired: false;
                         };
                         Cities: {
                           IsBackward: false;
@@ -463,7 +463,7 @@ export interface ProductEditorSchema {
                             ContentName: "NetworkCity";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: false;
                             Fields: {
                               City: {
                                 IsBackward: false;
@@ -473,8 +473,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "O2MRelation";
+                                IsRequired: false;
                               };
                               HasIpTv: {
                                 FieldId: number;
@@ -482,13 +482,13 @@ export interface ProductEditorSchema {
                                 FieldTitle: "IPTV";
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Boolean";
+                                IsRequired: false;
                               };
                             };
                             include: (
                               selector: (
-                                fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
+                                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
                               ) => Selection[]
                             ) => string[];
                           };
@@ -497,11 +497,11 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "cities";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "M2MRelation";
+                          IsRequired: false;
                           include: (
                             selector: (
-                              fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
+                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
                             ) => Selection[]
                           ) => string[];
                         };
@@ -513,7 +513,7 @@ export interface ProductEditorSchema {
                             ContentName: "ChannelType";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: false;
                             Fields: {
                               Title: {
                                 FieldId: number;
@@ -521,8 +521,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "String";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -531,8 +531,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "ch_type";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "O2MRelation";
+                          IsRequired: false;
                         };
                         Category: {
                           IsBackward: false;
@@ -542,8 +542,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "ch_category";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "O2MRelation";
+                          IsRequired: false;
                         };
                         IsMtsMsk: {
                           FieldId: number;
@@ -551,8 +551,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "test_inMSK_mgts_XML";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Boolean";
+                          IsRequired: false;
                         };
                         LcnDvbC: {
                           FieldId: number;
@@ -560,8 +560,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "lcn_dvbc";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Numeric";
+                          IsRequired: false;
                         };
                         LcnIpTv: {
                           FieldId: number;
@@ -569,8 +569,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "lcn_iptv";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Numeric";
+                          IsRequired: false;
                         };
                         LcnDvbS: {
                           FieldId: number;
@@ -578,8 +578,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "lcn_dvbs";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Numeric";
+                          IsRequired: false;
                         };
                         Disabled: {
                           FieldId: number;
@@ -587,8 +587,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "offair";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Boolean";
+                          IsRequired: false;
                         };
                         Children: {
                           IsBackward: false;
@@ -598,7 +598,7 @@ export interface ProductEditorSchema {
                             ContentName: "TvChannel";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: false;
                             Fields: {
                               Title: {
                                 FieldId: number;
@@ -606,8 +606,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "title";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "String";
+                                IsRequired: false;
                               };
                               Category: {
                                 IsBackward: false;
@@ -617,8 +617,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "ch_category";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "O2MRelation";
+                                IsRequired: false;
                               };
                               ChannelType: {
                                 IsBackward: false;
@@ -628,7 +628,7 @@ export interface ProductEditorSchema {
                                   ContentName: "ChannelType";
                                   ContentTitle: string;
                                   ContentDescription: string;
-                                  ObjectShape: any;
+                                  IsExtension: false;
                                   Fields: {
                                     Title: {
                                       FieldId: number;
@@ -636,8 +636,8 @@ export interface ProductEditorSchema {
                                       FieldTitle: string;
                                       FieldDescription: string;
                                       FieldOrder: number;
-                                      IsRequired: false;
                                       FieldType: "String";
+                                      IsRequired: false;
                                     };
                                     OldSiteId: {
                                       FieldId: number;
@@ -645,8 +645,8 @@ export interface ProductEditorSchema {
                                       FieldTitle: string;
                                       FieldDescription: string;
                                       FieldOrder: number;
-                                      IsRequired: false;
                                       FieldType: "Numeric";
+                                      IsRequired: false;
                                     };
                                   };
                                 };
@@ -655,8 +655,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "ch_type";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "O2MRelation";
+                                IsRequired: false;
                               };
                               ShortDescription: {
                                 FieldId: number;
@@ -664,8 +664,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "short_descr";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Textbox";
+                                IsRequired: false;
                               };
                               Cities: {
                                 IsBackward: false;
@@ -675,7 +675,7 @@ export interface ProductEditorSchema {
                                   ContentName: "NetworkCity";
                                   ContentTitle: string;
                                   ContentDescription: string;
-                                  ObjectShape: any;
+                                  IsExtension: false;
                                   Fields: {
                                     City: {
                                       IsBackward: false;
@@ -685,13 +685,13 @@ export interface ProductEditorSchema {
                                       FieldTitle: string;
                                       FieldDescription: string;
                                       FieldOrder: number;
-                                      IsRequired: false;
                                       FieldType: "O2MRelation";
+                                      IsRequired: false;
                                     };
                                   };
                                   include: (
                                     selector: (
-                                      fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
+                                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
                                     ) => Selection[]
                                   ) => string[];
                                 };
@@ -700,11 +700,11 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "cities";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "M2MRelation";
+                                IsRequired: false;
                                 include: (
                                   selector: (
-                                    fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
+                                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]["Cities"]["Content"]["Fields"]
                                   ) => Selection[]
                                 ) => string[];
                               };
@@ -714,8 +714,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "offair";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Boolean";
+                                IsRequired: false;
                               };
                               IsMtsMsk: {
                                 FieldId: number;
@@ -723,8 +723,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "test_inMSK_mgts_XML";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Boolean";
+                                IsRequired: false;
                               };
                               IsRegional: {
                                 FieldId: number;
@@ -732,8 +732,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "regional_tv";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Boolean";
+                                IsRequired: false;
                               };
                               Logo150: {
                                 FieldId: number;
@@ -741,8 +741,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "logo150";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Image";
+                                IsRequired: false;
                               };
                               LcnDvbC: {
                                 FieldId: number;
@@ -750,8 +750,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "lcn_dvbc";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Numeric";
+                                IsRequired: false;
                               };
                               LcnIpTv: {
                                 FieldId: number;
@@ -759,8 +759,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "lcn_iptv";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Numeric";
+                                IsRequired: false;
                               };
                               LcnDvbS: {
                                 FieldId: number;
@@ -768,8 +768,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: "lcn_dvbs";
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Numeric";
+                                IsRequired: false;
                               };
                               Format: {
                                 IsBackward: false;
@@ -779,13 +779,13 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "O2MRelation";
+                                IsRequired: false;
                               };
                             };
                             include: (
                               selector: (
-                                fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]
+                                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]
                               ) => Selection[]
                             ) => string[];
                           };
@@ -794,11 +794,11 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "M2ORelation";
+                          IsRequired: false;
                           include: (
                             selector: (
-                              fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]
+                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]["Children"]["Content"]["Fields"]
                             ) => Selection[]
                           ) => string[];
                         };
@@ -810,8 +810,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "O2MRelation";
+                          IsRequired: false;
                         };
                         Logo40x30: {
                           FieldId: number;
@@ -819,8 +819,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: "logo40x30";
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Image";
+                          IsRequired: false;
                         };
                         TimeZone: {
                           IsBackward: false;
@@ -830,7 +830,7 @@ export interface ProductEditorSchema {
                             ContentName: "TimeZone";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: false;
                             Fields: {
                               Name: {
                                 FieldId: number;
@@ -838,8 +838,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "String";
+                                IsRequired: false;
                               };
                               Code: {
                                 FieldId: number;
@@ -847,8 +847,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "String";
+                                IsRequired: false;
                               };
                               UTC: {
                                 FieldId: number;
@@ -856,8 +856,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "String";
+                                IsRequired: false;
                               };
                               MSK: {
                                 FieldId: number;
@@ -865,8 +865,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "String";
+                                IsRequired: false;
                               };
                               OldSiteId: {
                                 FieldId: number;
@@ -874,8 +874,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Numeric";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -884,13 +884,13 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "O2MRelation";
+                          IsRequired: false;
                         };
                       };
                       include: (
                         selector: (
-                          fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]
+                          fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]
                         ) => Selection[]
                       ) => string[];
                     };
@@ -899,11 +899,11 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "M2MRelation";
+                    IsRequired: false;
                     include: (
                       selector: (
-                        fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]
+                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]["Channels"]["Content"]["Fields"]
                       ) => Selection[]
                     ) => string[];
                   };
@@ -913,8 +913,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "String";
+                    IsRequired: false;
                   };
                   PackageType: {
                     Items: [
@@ -936,13 +936,13 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "StringEnum";
+                    IsRequired: false;
                   };
                 };
                 include: (
                   selector: (
-                    fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]
+                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingTvPackage"]["Fields"]
                   ) => Selection[]
                 ) => string[];
               };
@@ -952,7 +952,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingFixConnectTariff";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {
                   Segment: {
                     IsBackward: false;
@@ -962,8 +962,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "O2MRelation";
+                    IsRequired: false;
                   };
                   Category: {
                     IsBackward: false;
@@ -973,7 +973,7 @@ export interface ProductEditorSchema {
                       ContentName: "TariffCategory";
                       ContentTitle: string;
                       ContentDescription: string;
-                      ObjectShape: any;
+                      IsExtension: false;
                       Fields: {
                         ConnectionTypes: {
                           IsBackward: false;
@@ -983,8 +983,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "M2MRelation";
+                          IsRequired: false;
                         };
                         Title: {
                           FieldId: number;
@@ -992,8 +992,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "String";
+                          IsRequired: false;
                         };
                         Alias: {
                           FieldId: number;
@@ -1001,8 +1001,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "String";
+                          IsRequired: false;
                         };
                         Image: {
                           FieldId: number;
@@ -1010,8 +1010,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Image";
+                          IsRequired: false;
                         };
                         Order: {
                           FieldId: number;
@@ -1019,8 +1019,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "Numeric";
+                          IsRequired: false;
                         };
                         ImageSvg: {
                           FieldId: number;
@@ -1028,8 +1028,8 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "File";
+                          IsRequired: false;
                         };
                         TemplateType: {
                           Items: [
@@ -1051,13 +1051,13 @@ export interface ProductEditorSchema {
                           FieldTitle: string;
                           FieldDescription: string;
                           FieldOrder: number;
-                          IsRequired: false;
                           FieldType: "StringEnum";
+                          IsRequired: false;
                         };
                       };
                       include: (
                         selector: (
-                          fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectTariff"]["Fields"]["Category"]["Content"]["Fields"]
+                          fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectTariff"]["Fields"]["Category"]["Content"]["Fields"]
                         ) => Selection[]
                       ) => string[];
                     };
@@ -1066,11 +1066,11 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "O2MRelation";
+                    IsRequired: false;
                     include: (
                       selector: (
-                        fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectTariff"]["Fields"]["Category"]["Content"]["Fields"]
+                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectTariff"]["Fields"]["Category"]["Content"]["Fields"]
                       ) => Selection[]
                     ) => string[];
                   };
@@ -1082,8 +1082,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "M2MRelation";
+                    IsRequired: false;
                   };
                   BonusTVPackages: {
                     IsBackward: false;
@@ -1093,8 +1093,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "M2MRelation";
+                    IsRequired: false;
                   };
                   MarketingPhoneTariff: {
                     IsBackward: false;
@@ -1104,8 +1104,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "O2MRelation";
+                    IsRequired: false;
                   };
                   MarketingInternetTariff: {
                     IsBackward: false;
@@ -1115,8 +1115,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "O2MRelation";
+                    IsRequired: false;
                   };
                   MarketingTvPackage: {
                     IsBackward: false;
@@ -1126,8 +1126,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "O2MRelation";
+                    IsRequired: false;
                   };
                   TitleForSite: {
                     FieldId: number;
@@ -1135,13 +1135,13 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "String";
+                    IsRequired: false;
                   };
                 };
                 include: (
                   selector: (
-                    fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectTariff"]["Fields"]
+                    fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]["MarketingFixConnectTariff"]["Fields"]
                   ) => Selection[]
                 ) => string[];
               };
@@ -1151,7 +1151,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingPhoneTariff";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {};
               };
               MarketingInternetTariff: {
@@ -1160,7 +1160,7 @@ export interface ProductEditorSchema {
                 ContentName: "MarketingInternetTariff";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: true;
                 Fields: {};
               };
             };
@@ -1169,11 +1169,11 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Classifier";
+            IsRequired: false;
             include: (
               selector: (
-                contents: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]
+                contents: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Type"]["Contents"]
               ) => string[][]
             ) => string[];
           };
@@ -1183,8 +1183,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "VisualEdit";
+            IsRequired: false;
           };
           Parameters: {
             IsBackward: false;
@@ -1194,7 +1194,7 @@ export interface ProductEditorSchema {
               ContentName: "MarketingProductParameter";
               ContentTitle: string;
               ContentDescription: string;
-              ObjectShape: any;
+              IsExtension: false;
               Fields: {
                 Group: {
                   IsBackward: false;
@@ -1204,8 +1204,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                 };
                 BaseParameter: {
                   IsBackward: false;
@@ -1215,8 +1215,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                 };
                 Zone: {
                   IsBackward: false;
@@ -1226,8 +1226,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                 };
                 Direction: {
                   IsBackward: false;
@@ -1237,8 +1237,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                 };
                 BaseParameterModifiers: {
                   IsBackward: false;
@@ -1248,8 +1248,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "M2MRelation";
+                  IsRequired: false;
                 };
                 Modifiers: {
                   IsBackward: false;
@@ -1259,8 +1259,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "M2MRelation";
+                  IsRequired: false;
                 };
                 Unit: {
                   IsBackward: false;
@@ -1270,8 +1270,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                 };
                 Choice: {
                   IsBackward: false;
@@ -1281,8 +1281,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                 };
                 Title: {
                   FieldId: number;
@@ -1290,8 +1290,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "String";
+                  IsRequired: false;
                 };
                 SortOrder: {
                   FieldId: number;
@@ -1299,8 +1299,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "Numeric";
+                  IsRequired: false;
                 };
                 NumValue: {
                   FieldId: number;
@@ -1308,8 +1308,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "Numeric";
+                  IsRequired: false;
                 };
                 Value: {
                   FieldId: number;
@@ -1317,8 +1317,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "VisualEdit";
+                  IsRequired: false;
                 };
                 Description: {
                   FieldId: number;
@@ -1326,13 +1326,13 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "VisualEdit";
+                  IsRequired: false;
                 };
               };
               include: (
                 selector: (
-                  fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                  fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
                 ) => Selection[]
               ) => string[];
             };
@@ -1341,11 +1341,11 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "M2ORelation";
+            IsRequired: false;
             include: (
               selector: (
-                fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
               ) => Selection[]
             ) => string[];
           };
@@ -1357,7 +1357,7 @@ export interface ProductEditorSchema {
               ContentName: "DeviceOnTariffs";
               ContentTitle: string;
               ContentDescription: string;
-              ObjectShape: any;
+              IsExtension: false;
               Fields: {
                 Parent: {
                   IsBackward: false;
@@ -1367,7 +1367,7 @@ export interface ProductEditorSchema {
                     ContentName: "ProductRelation";
                     ContentTitle: string;
                     ContentDescription: string;
-                    ObjectShape: any;
+                    IsExtension: false;
                     Fields: {
                       Title: {
                         FieldId: number;
@@ -1375,8 +1375,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       Modifiers: {
                         IsBackward: false;
@@ -1386,8 +1386,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "M2MRelation";
+                        IsRequired: false;
                       };
                       Parameters: {
                         IsBackward: false;
@@ -1397,7 +1397,7 @@ export interface ProductEditorSchema {
                           ContentName: "LinkParameter";
                           ContentTitle: string;
                           ContentDescription: string;
-                          ObjectShape: any;
+                          IsExtension: false;
                           Fields: {
                             Title: {
                               FieldId: number;
@@ -1405,8 +1405,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "String";
+                              IsRequired: false;
                             };
                             Group: {
                               IsBackward: false;
@@ -1416,8 +1416,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             BaseParameter: {
                               IsBackward: false;
@@ -1427,8 +1427,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Zone: {
                               IsBackward: false;
@@ -1438,8 +1438,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Direction: {
                               IsBackward: false;
@@ -1449,8 +1449,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             BaseParameterModifiers: {
                               IsBackward: false;
@@ -1460,8 +1460,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "M2MRelation";
+                              IsRequired: false;
                             };
                             Modifiers: {
                               IsBackward: false;
@@ -1471,8 +1471,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "M2MRelation";
+                              IsRequired: false;
                             };
                             SortOrder: {
                               FieldId: number;
@@ -1480,8 +1480,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                             NumValue: {
                               FieldId: number;
@@ -1489,8 +1489,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                             Value: {
                               FieldId: number;
@@ -1498,8 +1498,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "VisualEdit";
+                              IsRequired: false;
                             };
                             Description: {
                               FieldId: number;
@@ -1507,8 +1507,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "VisualEdit";
+                              IsRequired: false;
                             };
                             Unit: {
                               IsBackward: false;
@@ -1518,8 +1518,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             ProductGroup: {
                               IsBackward: false;
@@ -1529,7 +1529,7 @@ export interface ProductEditorSchema {
                                 ContentName: "Group";
                                 ContentTitle: string;
                                 ContentDescription: string;
-                                ObjectShape: any;
+                                IsExtension: false;
                                 Fields: {};
                               };
                               FieldId: number;
@@ -1537,8 +1537,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Choice: {
                               IsBackward: false;
@@ -1548,13 +1548,13 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                           };
                           include: (
                             selector: (
-                              fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
                             ) => Selection[]
                           ) => string[];
                         };
@@ -1563,11 +1563,11 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "M2ORelation";
+                        IsRequired: false;
                         include: (
                           selector: (
-                            fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                            fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
                           ) => Selection[]
                         ) => string[];
                       };
@@ -1579,7 +1579,7 @@ export interface ProductEditorSchema {
                             ContentName: "TariffTransfer";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {};
                           };
                           MutualGroup: {
@@ -1588,7 +1588,7 @@ export interface ProductEditorSchema {
                             ContentName: "MutualGroup";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {};
                           };
                           ServiceOnTariff: {
@@ -1597,7 +1597,7 @@ export interface ProductEditorSchema {
                             ContentName: "ServiceOnTariff";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {
                               Description: {
                                 FieldId: number;
@@ -1605,8 +1605,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Textbox";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -1616,7 +1616,7 @@ export interface ProductEditorSchema {
                             ContentName: "ServicesUpsale";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {
                               Order: {
                                 FieldId: number;
@@ -1624,8 +1624,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Numeric";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -1635,7 +1635,7 @@ export interface ProductEditorSchema {
                             ContentName: "TariffOptionPackage";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {
                               SubTitle: {
                                 FieldId: number;
@@ -1643,8 +1643,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Textbox";
+                                IsRequired: false;
                               };
                               Description: {
                                 FieldId: number;
@@ -1652,8 +1652,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "VisualEdit";
+                                IsRequired: false;
                               };
                               Alias: {
                                 FieldId: number;
@@ -1661,8 +1661,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "String";
+                                IsRequired: false;
                               };
                               Link: {
                                 FieldId: number;
@@ -1670,8 +1670,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "String";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -1681,7 +1681,7 @@ export interface ProductEditorSchema {
                             ContentName: "ServiceRelation";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {};
                           };
                           RoamingScaleOnTariff: {
@@ -1690,7 +1690,7 @@ export interface ProductEditorSchema {
                             ContentName: "RoamingScaleOnTariff";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {};
                           };
                           ServiceOnRoamingScale: {
@@ -1699,7 +1699,7 @@ export interface ProductEditorSchema {
                             ContentName: "ServiceOnRoamingScale";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {};
                           };
                           CrossSale: {
@@ -1708,7 +1708,7 @@ export interface ProductEditorSchema {
                             ContentName: "CrossSale";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {
                               Order: {
                                 FieldId: number;
@@ -1716,8 +1716,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Numeric";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -1727,7 +1727,7 @@ export interface ProductEditorSchema {
                             ContentName: "MarketingCrossSale";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {
                               Order: {
                                 FieldId: number;
@@ -1735,8 +1735,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Numeric";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -1746,7 +1746,7 @@ export interface ProductEditorSchema {
                             ContentName: "DeviceOnTariffs";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {
                               Order: {
                                 FieldId: number;
@@ -1754,8 +1754,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Numeric";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -1765,7 +1765,7 @@ export interface ProductEditorSchema {
                             ContentName: "DevicesForFixConnectAction";
                             ContentTitle: string;
                             ContentDescription: string;
-                            ObjectShape: any;
+                            IsExtension: true;
                             Fields: {
                               Order: {
                                 FieldId: number;
@@ -1773,8 +1773,8 @@ export interface ProductEditorSchema {
                                 FieldTitle: string;
                                 FieldDescription: string;
                                 FieldOrder: number;
-                                IsRequired: false;
                                 FieldType: "Numeric";
+                                IsRequired: false;
                               };
                             };
                           };
@@ -1784,18 +1784,18 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Classifier";
+                        IsRequired: false;
                         include: (
                           selector: (
-                            contents: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Type"]["Contents"]
+                            contents: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Type"]["Contents"]
                           ) => string[][]
                         ) => string[];
                       };
                     };
                     include: (
                       selector: (
-                        fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
+                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
                       ) => Selection[]
                     ) => string[];
                   };
@@ -1804,11 +1804,11 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                   include: (
                     selector: (
-                      fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
+                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
                     ) => Selection[]
                   ) => string[];
                 };
@@ -1820,8 +1820,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                 };
                 MarketingTariffs: {
                   IsBackward: false;
@@ -1831,8 +1831,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "M2MRelation";
+                  IsRequired: false;
                 };
                 Cities: {
                   IsBackward: false;
@@ -1842,8 +1842,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "M2MRelation";
+                  IsRequired: false;
                 };
                 Order: {
                   FieldId: number;
@@ -1851,13 +1851,13 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "Numeric";
+                  IsRequired: false;
                 };
               };
               include: (
                 selector: (
-                  fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]
+                  fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]
                 ) => Selection[]
               ) => string[];
             };
@@ -1866,11 +1866,11 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
             include: (
               selector: (
-                fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]
+                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["TariffsOnMarketingDevice"]["Content"]["Fields"]
               ) => Selection[]
             ) => string[];
           };
@@ -1882,7 +1882,7 @@ export interface ProductEditorSchema {
               ContentName: "DeviceOnTariffs";
               ContentTitle: string;
               ContentDescription: string;
-              ObjectShape: any;
+              IsExtension: false;
               Fields: {
                 Parent: {
                   IsBackward: false;
@@ -1892,7 +1892,7 @@ export interface ProductEditorSchema {
                     ContentName: "ProductRelation";
                     ContentTitle: string;
                     ContentDescription: string;
-                    ObjectShape: any;
+                    IsExtension: false;
                     Fields: {
                       Title: {
                         FieldId: number;
@@ -1900,8 +1900,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       Parameters: {
                         IsBackward: false;
@@ -1911,7 +1911,7 @@ export interface ProductEditorSchema {
                           ContentName: "LinkParameter";
                           ContentTitle: string;
                           ContentDescription: string;
-                          ObjectShape: any;
+                          IsExtension: false;
                           Fields: {
                             Title: {
                               FieldId: number;
@@ -1919,8 +1919,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "String";
+                              IsRequired: false;
                             };
                             SortOrder: {
                               FieldId: number;
@@ -1928,8 +1928,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                             NumValue: {
                               FieldId: number;
@@ -1937,8 +1937,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                             Value: {
                               FieldId: number;
@@ -1946,8 +1946,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "VisualEdit";
+                              IsRequired: false;
                             };
                             Description: {
                               FieldId: number;
@@ -1955,8 +1955,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "VisualEdit";
+                              IsRequired: false;
                             };
                             Unit: {
                               IsBackward: false;
@@ -1966,8 +1966,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Modifiers: {
                               IsBackward: false;
@@ -1977,8 +1977,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "M2MRelation";
+                              IsRequired: false;
                             };
                             BaseParameterModifiers: {
                               IsBackward: false;
@@ -1988,8 +1988,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "M2MRelation";
+                              IsRequired: false;
                             };
                             Direction: {
                               IsBackward: false;
@@ -1999,8 +1999,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Zone: {
                               IsBackward: false;
@@ -2010,8 +2010,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             BaseParameter: {
                               IsBackward: false;
@@ -2021,8 +2021,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Group: {
                               IsBackward: false;
@@ -2032,8 +2032,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Choice: {
                               IsBackward: false;
@@ -2043,13 +2043,13 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                           };
                           include: (
                             selector: (
-                              fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
                             ) => Selection[]
                           ) => string[];
                         };
@@ -2058,11 +2058,11 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "M2ORelation";
+                        IsRequired: false;
                         include: (
                           selector: (
-                            fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                            fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
                           ) => Selection[]
                         ) => string[];
                       };
@@ -2074,13 +2074,13 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "M2MRelation";
+                        IsRequired: false;
                       };
                     };
                     include: (
                       selector: (
-                        fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
+                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
                       ) => Selection[]
                     ) => string[];
                   };
@@ -2089,11 +2089,11 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                   include: (
                     selector: (
-                      fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
+                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
                     ) => Selection[]
                   ) => string[];
                 };
@@ -2105,8 +2105,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                 };
                 Cities: {
                   IsBackward: false;
@@ -2116,8 +2116,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "M2MRelation";
+                  IsRequired: false;
                 };
                 Order: {
                   FieldId: number;
@@ -2125,13 +2125,13 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "Numeric";
+                  IsRequired: false;
                 };
               };
               include: (
                 selector: (
-                  fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]
+                  fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]
                 ) => Selection[]
               ) => string[];
             };
@@ -2140,11 +2140,11 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "M2MRelation";
+            IsRequired: false;
             include: (
               selector: (
-                fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]
+                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["DevicesOnMarketingTariff"]["Content"]["Fields"]
               ) => Selection[]
             ) => string[];
           };
@@ -2156,7 +2156,7 @@ export interface ProductEditorSchema {
               ContentName: "DevicesForFixConnectAction";
               ContentTitle: string;
               ContentDescription: string;
-              ObjectShape: any;
+              IsExtension: false;
               Fields: {
                 FixConnectAction: {
                   IsBackward: false;
@@ -2166,7 +2166,7 @@ export interface ProductEditorSchema {
                     ContentName: "Product";
                     ContentTitle: string;
                     ContentDescription: string;
-                    ObjectShape: any;
+                    IsExtension: false;
                     Fields: {
                       MarketingProduct: {
                         IsBackward: false;
@@ -2176,7 +2176,7 @@ export interface ProductEditorSchema {
                           ContentName: "MarketingProduct";
                           ContentTitle: string;
                           ContentDescription: string;
-                          ObjectShape: any;
+                          IsExtension: false;
                           Fields: {
                             Title: {
                               FieldId: number;
@@ -2184,8 +2184,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "String";
+                              IsRequired: false;
                             };
                           };
                         };
@@ -2194,8 +2194,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "O2MRelation";
+                        IsRequired: false;
                       };
                       GlobalCode: {
                         FieldId: number;
@@ -2203,8 +2203,8 @@ export interface ProductEditorSchema {
                         FieldTitle: "GlobalCode";
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       Type: {
                         FieldId: number;
@@ -2212,8 +2212,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Classifier";
+                        IsRequired: false;
                       };
                       Description: {
                         FieldId: number;
@@ -2221,8 +2221,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Textbox";
+                        IsRequired: false;
                       };
                       FullDescription: {
                         FieldId: number;
@@ -2230,8 +2230,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "VisualEdit";
+                        IsRequired: false;
                       };
                       Notes: {
                         FieldId: number;
@@ -2239,8 +2239,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Textbox";
+                        IsRequired: false;
                       };
                       Link: {
                         FieldId: number;
@@ -2248,8 +2248,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       SortOrder: {
                         FieldId: number;
@@ -2257,8 +2257,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Numeric";
+                        IsRequired: false;
                       };
                       ForisID: {
                         FieldId: number;
@@ -2266,8 +2266,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       Icon: {
                         FieldId: number;
@@ -2275,8 +2275,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Image";
+                        IsRequired: false;
                       };
                       PDF: {
                         FieldId: number;
@@ -2284,8 +2284,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "File";
+                        IsRequired: false;
                       };
                       PdfFixedAlias: {
                         FieldId: number;
@@ -2293,8 +2293,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       PdfFixedLinks: {
                         FieldId: number;
@@ -2302,8 +2302,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Textbox";
+                        IsRequired: false;
                       };
                       StartDate: {
                         FieldId: number;
@@ -2311,8 +2311,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Date";
+                        IsRequired: false;
                       };
                       EndDate: {
                         FieldId: number;
@@ -2320,8 +2320,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Date";
+                        IsRequired: false;
                       };
                       OldSiteId: {
                         FieldId: number;
@@ -2329,8 +2329,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Numeric";
+                        IsRequired: false;
                       };
                       OldId: {
                         FieldId: number;
@@ -2338,8 +2338,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Numeric";
+                        IsRequired: false;
                       };
                       OldSiteInvId: {
                         FieldId: number;
@@ -2347,8 +2347,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       OldCorpSiteId: {
                         FieldId: number;
@@ -2356,8 +2356,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Numeric";
+                        IsRequired: false;
                       };
                       OldAliasId: {
                         FieldId: number;
@@ -2365,8 +2365,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       Priority: {
                         FieldId: number;
@@ -2374,8 +2374,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Numeric";
+                        IsRequired: false;
                       };
                       ListImage: {
                         FieldId: number;
@@ -2383,8 +2383,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Image";
+                        IsRequired: false;
                       };
                       ArchiveDate: {
                         FieldId: number;
@@ -2392,13 +2392,13 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Date";
+                        IsRequired: false;
                       };
                     };
                     include: (
                       selector: (
-                        fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["FixConnectAction"]["Content"]["Fields"]
+                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["FixConnectAction"]["Content"]["Fields"]
                       ) => Selection[]
                     ) => string[];
                   };
@@ -2407,11 +2407,11 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                   include: (
                     selector: (
-                      fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["FixConnectAction"]["Content"]["Fields"]
+                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["FixConnectAction"]["Content"]["Fields"]
                     ) => Selection[]
                   ) => string[];
                 };
@@ -2423,7 +2423,7 @@ export interface ProductEditorSchema {
                     ContentName: "ProductRelation";
                     ContentTitle: string;
                     ContentDescription: string;
-                    ObjectShape: any;
+                    IsExtension: false;
                     Fields: {
                       Title: {
                         FieldId: number;
@@ -2431,8 +2431,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       Type: {
                         FieldId: number;
@@ -2440,8 +2440,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Classifier";
+                        IsRequired: false;
                       };
                       Parameters: {
                         IsBackward: false;
@@ -2451,7 +2451,7 @@ export interface ProductEditorSchema {
                           ContentName: "LinkParameter";
                           ContentTitle: string;
                           ContentDescription: string;
-                          ObjectShape: any;
+                          IsExtension: false;
                           Fields: {
                             Unit: {
                               IsBackward: false;
@@ -2461,7 +2461,7 @@ export interface ProductEditorSchema {
                                 ContentName: "Unit";
                                 ContentTitle: string;
                                 ContentDescription: string;
-                                ObjectShape: any;
+                                IsExtension: false;
                                 Fields: {
                                   Alias: {
                                     FieldId: number;
@@ -2469,8 +2469,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "String";
+                                    IsRequired: false;
                                   };
                                   Title: {
                                     FieldId: number;
@@ -2478,8 +2478,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "String";
+                                    IsRequired: false;
                                   };
                                   Display: {
                                     FieldId: number;
@@ -2487,8 +2487,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "String";
+                                    IsRequired: false;
                                   };
                                   QuotaUnit: {
                                     Items: [
@@ -2564,8 +2564,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "StringEnum";
+                                    IsRequired: false;
                                   };
                                   QuotaPeriod: {
                                     Items: [
@@ -2617,8 +2617,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "StringEnum";
+                                    IsRequired: false;
                                   };
                                   QuotaPeriodicity: {
                                     FieldId: number;
@@ -2626,8 +2626,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "String";
+                                    IsRequired: false;
                                   };
                                   PeriodMultiplier: {
                                     FieldId: number;
@@ -2635,8 +2635,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "Numeric";
+                                    IsRequired: false;
                                   };
                                   Type: {
                                     FieldId: number;
@@ -2644,8 +2644,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "String";
+                                    IsRequired: false;
                                   };
                                 };
                               };
@@ -2654,8 +2654,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             BaseParameterModifiers: {
                               IsBackward: false;
@@ -2665,8 +2665,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "M2MRelation";
+                              IsRequired: false;
                             };
                             Modifiers: {
                               IsBackward: false;
@@ -2676,8 +2676,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "M2MRelation";
+                              IsRequired: false;
                             };
                             Direction: {
                               IsBackward: false;
@@ -2687,8 +2687,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Zone: {
                               IsBackward: false;
@@ -2698,8 +2698,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             BaseParameter: {
                               IsBackward: false;
@@ -2709,8 +2709,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Group: {
                               IsBackward: false;
@@ -2720,7 +2720,7 @@ export interface ProductEditorSchema {
                                 ContentName: "ProductParameterGroup";
                                 ContentTitle: string;
                                 ContentDescription: string;
-                                ObjectShape: any;
+                                IsExtension: false;
                                 Fields: {
                                   Title: {
                                     FieldId: number;
@@ -2728,8 +2728,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "String";
+                                    IsRequired: false;
                                   };
                                   Alias: {
                                     FieldId: number;
@@ -2737,8 +2737,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "String";
+                                    IsRequired: false;
                                   };
                                   SortOrder: {
                                     FieldId: number;
@@ -2746,8 +2746,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "Numeric";
+                                    IsRequired: false;
                                   };
                                   OldSiteId: {
                                     FieldId: number;
@@ -2755,8 +2755,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "Numeric";
+                                    IsRequired: false;
                                   };
                                   OldCorpSiteId: {
                                     FieldId: number;
@@ -2764,8 +2764,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "Numeric";
+                                    IsRequired: false;
                                   };
                                   ImageSvg: {
                                     FieldId: number;
@@ -2773,8 +2773,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "File";
+                                    IsRequired: false;
                                   };
                                   Type: {
                                     FieldId: number;
@@ -2782,8 +2782,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "String";
+                                    IsRequired: false;
                                   };
                                   TitleForIcin: {
                                     FieldId: number;
@@ -2791,8 +2791,8 @@ export interface ProductEditorSchema {
                                     FieldTitle: string;
                                     FieldDescription: string;
                                     FieldOrder: number;
-                                    IsRequired: false;
                                     FieldType: "String";
+                                    IsRequired: false;
                                   };
                                 };
                               };
@@ -2801,8 +2801,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Choice: {
                               IsBackward: false;
@@ -2812,8 +2812,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "O2MRelation";
+                              IsRequired: false;
                             };
                             Title: {
                               FieldId: number;
@@ -2821,8 +2821,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "String";
+                              IsRequired: false;
                             };
                             SortOrder: {
                               FieldId: number;
@@ -2830,8 +2830,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                             NumValue: {
                               FieldId: number;
@@ -2839,8 +2839,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                             Value: {
                               FieldId: number;
@@ -2848,8 +2848,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "VisualEdit";
+                              IsRequired: false;
                             };
                             Description: {
                               FieldId: number;
@@ -2857,8 +2857,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "VisualEdit";
+                              IsRequired: false;
                             };
                             OldSiteId: {
                               FieldId: number;
@@ -2866,8 +2866,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                             OldCorpSiteId: {
                               FieldId: number;
@@ -2875,8 +2875,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                             OldPointId: {
                               FieldId: number;
@@ -2884,8 +2884,8 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                             OldCorpPointId: {
                               FieldId: number;
@@ -2893,13 +2893,13 @@ export interface ProductEditorSchema {
                               FieldTitle: string;
                               FieldDescription: string;
                               FieldOrder: number;
-                              IsRequired: false;
                               FieldType: "Numeric";
+                              IsRequired: false;
                             };
                           };
                           include: (
                             selector: (
-                              fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                              fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
                             ) => Selection[]
                           ) => string[];
                         };
@@ -2908,11 +2908,11 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "M2ORelation";
+                        IsRequired: false;
                         include: (
                           selector: (
-                            fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                            fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
                           ) => Selection[]
                         ) => string[];
                       };
@@ -2924,13 +2924,13 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "M2MRelation";
+                        IsRequired: false;
                       };
                     };
                     include: (
                       selector: (
-                        fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
+                        fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
                       ) => Selection[]
                     ) => string[];
                   };
@@ -2939,11 +2939,11 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "O2MRelation";
+                  IsRequired: false;
                   include: (
                     selector: (
-                      fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
+                      fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
                     ) => Selection[]
                   ) => string[];
                 };
@@ -2953,13 +2953,13 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "Numeric";
+                  IsRequired: false;
                 };
               };
               include: (
                 selector: (
-                  fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]
+                  fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]
                 ) => Selection[]
               ) => string[];
             };
@@ -2968,18 +2968,18 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
             include: (
               selector: (
-                fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]
+                fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]["ActionsOnMarketingDevice"]["Content"]["Fields"]
               ) => Selection[]
             ) => string[];
           };
         };
         include: (
           selector: (
-            fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]
+            fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]
           ) => Selection[]
         ) => string[];
       };
@@ -2988,11 +2988,11 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "O2MRelation";
+      IsRequired: false;
       include: (
         selector: (
-          fields: ProductEditorSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]
+          fields: ProductSchema["Fields"]["MarketingProduct"]["Content"]["Fields"]
         ) => Selection[]
       ) => string[];
     };
@@ -3002,8 +3002,8 @@ export interface ProductEditorSchema {
       FieldTitle: "GlobalCode";
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Description: {
       FieldId: number;
@@ -3011,8 +3011,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Textbox";
+      IsRequired: false;
     };
     FullDescription: {
       FieldId: number;
@@ -3020,8 +3020,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "VisualEdit";
+      IsRequired: false;
     };
     Notes: {
       FieldId: number;
@@ -3029,8 +3029,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Textbox";
+      IsRequired: false;
     };
     Link: {
       FieldId: number;
@@ -3038,8 +3038,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     SortOrder: {
       FieldId: number;
@@ -3047,8 +3047,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     Icon: {
       FieldId: number;
@@ -3056,8 +3056,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Image";
+      IsRequired: false;
     };
     PDF: {
       FieldId: number;
@@ -3065,8 +3065,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "File";
+      IsRequired: false;
     };
     StartDate: {
       FieldId: number;
@@ -3074,8 +3074,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Date";
+      IsRequired: false;
     };
     EndDate: {
       FieldId: number;
@@ -3083,8 +3083,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Date";
+      IsRequired: false;
     };
     Priority: {
       FieldId: number;
@@ -3092,8 +3092,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     ListImage: {
       FieldId: number;
@@ -3101,8 +3101,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Image";
+      IsRequired: false;
     };
     ArchiveDate: {
       FieldId: number;
@@ -3110,8 +3110,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Date";
+      IsRequired: false;
     };
     Modifiers: {
       IsBackward: false;
@@ -3121,8 +3121,8 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "M2MRelation";
+      IsRequired: false;
     };
     Parameters: {
       IsBackward: false;
@@ -3132,7 +3132,7 @@ export interface ProductEditorSchema {
         ContentName: "ProductParameter";
         ContentTitle: string;
         ContentDescription: string;
-        ObjectShape: any;
+        IsExtension: false;
         Fields: {
           Group: {
             IsBackward: false;
@@ -3142,8 +3142,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
           Parent: {
             IsBackward: false;
@@ -3153,7 +3153,7 @@ export interface ProductEditorSchema {
               ContentName: "ProductParameter";
               ContentTitle: string;
               ContentDescription: string;
-              ObjectShape: any;
+              IsExtension: false;
               Fields: {
                 Title: {
                   FieldId: number;
@@ -3161,8 +3161,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "String";
+                  IsRequired: false;
                 };
               };
             };
@@ -3171,8 +3171,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
           BaseParameter: {
             IsBackward: false;
@@ -3182,8 +3182,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
           Zone: {
             IsBackward: false;
@@ -3193,8 +3193,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
           Direction: {
             IsBackward: false;
@@ -3204,8 +3204,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
           BaseParameterModifiers: {
             IsBackward: false;
@@ -3215,8 +3215,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "M2MRelation";
+            IsRequired: false;
           };
           Modifiers: {
             IsBackward: false;
@@ -3226,8 +3226,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "M2MRelation";
+            IsRequired: false;
           };
           Unit: {
             IsBackward: false;
@@ -3237,8 +3237,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
           Title: {
             FieldId: number;
@@ -3246,8 +3246,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "String";
+            IsRequired: false;
           };
           SortOrder: {
             FieldId: number;
@@ -3255,8 +3255,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Numeric";
+            IsRequired: false;
           };
           NumValue: {
             FieldId: number;
@@ -3264,8 +3264,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Numeric";
+            IsRequired: false;
           };
           Value: {
             FieldId: number;
@@ -3273,8 +3273,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "VisualEdit";
+            IsRequired: false;
           };
           Description: {
             FieldId: number;
@@ -3282,8 +3282,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "VisualEdit";
+            IsRequired: false;
           };
           Image: {
             FieldId: number;
@@ -3291,8 +3291,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Image";
+            IsRequired: false;
           };
           ProductGroup: {
             IsBackward: false;
@@ -3302,7 +3302,7 @@ export interface ProductEditorSchema {
               ContentName: "Group";
               ContentTitle: string;
               ContentDescription: string;
-              ObjectShape: any;
+              IsExtension: false;
               Fields: {
                 Title: {
                   FieldId: number;
@@ -3310,8 +3310,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "String";
+                  IsRequired: false;
                 };
                 Alias: {
                   FieldId: number;
@@ -3319,8 +3319,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "String";
+                  IsRequired: false;
                 };
               };
             };
@@ -3329,8 +3329,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
           Choice: {
             IsBackward: false;
@@ -3340,13 +3340,13 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
         };
         include: (
           selector: (
-            fields: ProductEditorSchema["Fields"]["Parameters"]["Content"]["Fields"]
+            fields: ProductSchema["Fields"]["Parameters"]["Content"]["Fields"]
           ) => Selection[]
         ) => string[];
       };
@@ -3355,11 +3355,11 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "M2ORelation";
+      IsRequired: false;
       include: (
         selector: (
-          fields: ProductEditorSchema["Fields"]["Parameters"]["Content"]["Fields"]
+          fields: ProductSchema["Fields"]["Parameters"]["Content"]["Fields"]
         ) => Selection[]
       ) => string[];
     };
@@ -3371,7 +3371,7 @@ export interface ProductEditorSchema {
         ContentName: "Region";
         ContentTitle: string;
         ContentDescription: string;
-        ObjectShape: any;
+        IsExtension: false;
         Fields: {
           Title: {
             FieldId: number;
@@ -3379,8 +3379,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "String";
+            IsRequired: false;
           };
           Alias: {
             FieldId: number;
@@ -3388,8 +3388,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "String";
+            IsRequired: false;
           };
           Parent: {
             IsBackward: false;
@@ -3399,8 +3399,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
           IsMainCity: {
             FieldId: number;
@@ -3408,14 +3408,12 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Boolean";
+            IsRequired: false;
           };
         };
         include: (
-          selector: (
-            fields: ProductEditorSchema["Fields"]["Regions"]["Content"]["Fields"]
-          ) => Selection[]
+          selector: (fields: ProductSchema["Fields"]["Regions"]["Content"]["Fields"]) => Selection[]
         ) => string[];
       };
       FieldId: number;
@@ -3423,12 +3421,10 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "M2MRelation";
+      IsRequired: false;
       include: (
-        selector: (
-          fields: ProductEditorSchema["Fields"]["Regions"]["Content"]["Fields"]
-        ) => Selection[]
+        selector: (fields: ProductSchema["Fields"]["Regions"]["Content"]["Fields"]) => Selection[]
       ) => string[];
     };
     Type: {
@@ -3439,7 +3435,7 @@ export interface ProductEditorSchema {
           ContentName: "Tariff";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {};
         };
         Service: {
@@ -3448,7 +3444,7 @@ export interface ProductEditorSchema {
           ContentName: "Service";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {};
         };
         Action: {
@@ -3457,7 +3453,7 @@ export interface ProductEditorSchema {
           ContentName: "Action";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {};
         };
         RoamingScale: {
@@ -3466,7 +3462,7 @@ export interface ProductEditorSchema {
           ContentName: "RoamingScale";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {};
         };
         Device: {
@@ -3475,7 +3471,7 @@ export interface ProductEditorSchema {
           ContentName: "Device";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {
             Downloads: {
               IsBackward: false;
@@ -3485,7 +3481,7 @@ export interface ProductEditorSchema {
                 ContentName: "EquipmentDownload";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: false;
                 Fields: {
                   Title: {
                     FieldId: number;
@@ -3493,8 +3489,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "String";
+                    IsRequired: false;
                   };
                   File: {
                     FieldId: number;
@@ -3502,8 +3498,8 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "File";
+                    IsRequired: false;
                   };
                 };
               };
@@ -3512,8 +3508,8 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "M2MRelation";
+              IsRequired: false;
             };
             Inners: {
               IsBackward: false;
@@ -3523,7 +3519,7 @@ export interface ProductEditorSchema {
                 ContentName: "Product";
                 ContentTitle: string;
                 ContentDescription: string;
-                ObjectShape: any;
+                IsExtension: false;
                 Fields: {
                   MarketingProduct: {
                     IsBackward: false;
@@ -3533,13 +3529,13 @@ export interface ProductEditorSchema {
                     FieldTitle: string;
                     FieldDescription: string;
                     FieldOrder: number;
-                    IsRequired: false;
                     FieldType: "O2MRelation";
+                    IsRequired: false;
                   };
                 };
                 include: (
                   selector: (
-                    fields: ProductEditorSchema["Fields"]["Type"]["Contents"]["Device"]["Fields"]["Inners"]["Content"]["Fields"]
+                    fields: ProductSchema["Fields"]["Type"]["Contents"]["Device"]["Fields"]["Inners"]["Content"]["Fields"]
                   ) => Selection[]
                 ) => string[];
               };
@@ -3548,11 +3544,11 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "M2MRelation";
+              IsRequired: false;
               include: (
                 selector: (
-                  fields: ProductEditorSchema["Fields"]["Type"]["Contents"]["Device"]["Fields"]["Inners"]["Content"]["Fields"]
+                  fields: ProductSchema["Fields"]["Type"]["Contents"]["Device"]["Fields"]["Inners"]["Content"]["Fields"]
                 ) => Selection[]
               ) => string[];
             };
@@ -3562,8 +3558,8 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "DateTime";
+              IsRequired: false;
             };
             FullUserGuide: {
               FieldId: number;
@@ -3571,8 +3567,8 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "File";
+              IsRequired: false;
             };
             QuickStartGuide: {
               FieldId: number;
@@ -3580,13 +3576,13 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "File";
+              IsRequired: false;
             };
           };
           include: (
             selector: (
-              fields: ProductEditorSchema["Fields"]["Type"]["Contents"]["Device"]["Fields"]
+              fields: ProductSchema["Fields"]["Type"]["Contents"]["Device"]["Fields"]
             ) => Selection[]
           ) => string[];
         };
@@ -3596,7 +3592,7 @@ export interface ProductEditorSchema {
           ContentName: "FixConnectAction";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {
             MarketingOffers: {
               IsBackward: false;
@@ -3606,8 +3602,8 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "M2MRelation";
+              IsRequired: false;
             };
             PromoPeriod: {
               FieldId: number;
@@ -3615,8 +3611,8 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "String";
+              IsRequired: false;
             };
             AfterPromo: {
               FieldId: number;
@@ -3624,13 +3620,13 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "String";
+              IsRequired: false;
             };
           };
           include: (
             selector: (
-              fields: ProductEditorSchema["Fields"]["Type"]["Contents"]["FixConnectAction"]["Fields"]
+              fields: ProductSchema["Fields"]["Type"]["Contents"]["FixConnectAction"]["Fields"]
             ) => Selection[]
           ) => string[];
         };
@@ -3640,7 +3636,7 @@ export interface ProductEditorSchema {
           ContentName: "TvPackage";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {};
         };
         FixConnectTariff: {
@@ -3649,7 +3645,7 @@ export interface ProductEditorSchema {
           ContentName: "FixConnectTariff";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {
             TitleForSite: {
               FieldId: number;
@@ -3657,8 +3653,8 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "String";
+              IsRequired: false;
             };
           };
         };
@@ -3668,7 +3664,7 @@ export interface ProductEditorSchema {
           ContentName: "PhoneTariff";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {
             RostelecomLink: {
               FieldId: number;
@@ -3676,8 +3672,8 @@ export interface ProductEditorSchema {
               FieldTitle: string;
               FieldDescription: string;
               FieldOrder: number;
-              IsRequired: false;
               FieldType: "String";
+              IsRequired: false;
             };
           };
         };
@@ -3687,7 +3683,7 @@ export interface ProductEditorSchema {
           ContentName: "InternetTariff";
           ContentTitle: string;
           ContentDescription: string;
-          ObjectShape: any;
+          IsExtension: true;
           Fields: {};
         };
       };
@@ -3696,10 +3692,10 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Classifier";
+      IsRequired: false;
       include: (
-        selector: (contents: ProductEditorSchema["Fields"]["Type"]["Contents"]) => string[][]
+        selector: (contents: ProductSchema["Fields"]["Type"]["Contents"]) => string[][]
       ) => string[];
     };
     FixConnectAction: {
@@ -3710,7 +3706,7 @@ export interface ProductEditorSchema {
         ContentName: "DevicesForFixConnectAction";
         ContentTitle: string;
         ContentDescription: string;
-        ObjectShape: any;
+        IsExtension: false;
         Fields: {
           MarketingDevice: {
             IsBackward: false;
@@ -3720,8 +3716,8 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
           };
           Parent: {
             IsBackward: false;
@@ -3731,7 +3727,7 @@ export interface ProductEditorSchema {
               ContentName: "ProductRelation";
               ContentTitle: string;
               ContentDescription: string;
-              ObjectShape: any;
+              IsExtension: false;
               Fields: {
                 Title: {
                   FieldId: number;
@@ -3739,8 +3735,8 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "String";
+                  IsRequired: false;
                 };
                 Parameters: {
                   IsBackward: false;
@@ -3750,7 +3746,7 @@ export interface ProductEditorSchema {
                     ContentName: "LinkParameter";
                     ContentTitle: string;
                     ContentDescription: string;
-                    ObjectShape: any;
+                    IsExtension: false;
                     Fields: {
                       BaseParameter: {
                         IsBackward: false;
@@ -3760,8 +3756,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "O2MRelation";
+                        IsRequired: false;
                       };
                       Zone: {
                         IsBackward: false;
@@ -3771,8 +3767,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "O2MRelation";
+                        IsRequired: false;
                       };
                       Direction: {
                         IsBackward: false;
@@ -3782,8 +3778,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "O2MRelation";
+                        IsRequired: false;
                       };
                       BaseParameterModifiers: {
                         IsBackward: false;
@@ -3793,8 +3789,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "M2MRelation";
+                        IsRequired: false;
                       };
                       Modifiers: {
                         IsBackward: false;
@@ -3804,8 +3800,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "M2MRelation";
+                        IsRequired: false;
                       };
                       Unit: {
                         IsBackward: false;
@@ -3815,8 +3811,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "O2MRelation";
+                        IsRequired: false;
                       };
                       Title: {
                         FieldId: number;
@@ -3824,8 +3820,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "String";
+                        IsRequired: false;
                       };
                       SortOrder: {
                         FieldId: number;
@@ -3833,8 +3829,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Numeric";
+                        IsRequired: false;
                       };
                       NumValue: {
                         FieldId: number;
@@ -3842,8 +3838,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "Numeric";
+                        IsRequired: false;
                       };
                       Value: {
                         FieldId: number;
@@ -3851,8 +3847,8 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "VisualEdit";
+                        IsRequired: false;
                       };
                       Description: {
                         FieldId: number;
@@ -3860,13 +3856,13 @@ export interface ProductEditorSchema {
                         FieldTitle: string;
                         FieldDescription: string;
                         FieldOrder: number;
-                        IsRequired: false;
                         FieldType: "VisualEdit";
+                        IsRequired: false;
                       };
                     };
                     include: (
                       selector: (
-                        fields: ProductEditorSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                        fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
                       ) => Selection[]
                     ) => string[];
                   };
@@ -3875,11 +3871,11 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "M2ORelation";
+                  IsRequired: false;
                   include: (
                     selector: (
-                      fields: ProductEditorSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
+                      fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]["Parameters"]["Content"]["Fields"]
                     ) => Selection[]
                   ) => string[];
                 };
@@ -3891,13 +3887,13 @@ export interface ProductEditorSchema {
                   FieldTitle: string;
                   FieldDescription: string;
                   FieldOrder: number;
-                  IsRequired: false;
                   FieldType: "M2MRelation";
+                  IsRequired: false;
                 };
               };
               include: (
                 selector: (
-                  fields: ProductEditorSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
+                  fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
                 ) => Selection[]
               ) => string[];
             };
@@ -3906,11 +3902,11 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "O2MRelation";
+            IsRequired: false;
             include: (
               selector: (
-                fields: ProductEditorSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
+                fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]["Parent"]["Content"]["Fields"]
               ) => Selection[]
             ) => string[];
           };
@@ -3920,13 +3916,13 @@ export interface ProductEditorSchema {
             FieldTitle: string;
             FieldDescription: string;
             FieldOrder: number;
-            IsRequired: false;
             FieldType: "Numeric";
+            IsRequired: false;
           };
         };
         include: (
           selector: (
-            fields: ProductEditorSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]
+            fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]
           ) => Selection[]
         ) => string[];
       };
@@ -3935,11 +3931,11 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "O2MRelation";
+      IsRequired: false;
       include: (
         selector: (
-          fields: ProductEditorSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]
+          fields: ProductSchema["Fields"]["FixConnectAction"]["Content"]["Fields"]
         ) => Selection[]
       ) => string[];
     };
@@ -3951,11 +3947,11 @@ export interface ProductEditorSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "M2MRelation";
+      IsRequired: false;
     };
   };
-  include: (selector: (fields: ProductEditorSchema["Fields"]) => Selection[]) => string[];
+  include: (selector: (fields: ProductSchema["Fields"]) => Selection[]) => string[];
 }
 interface SegmentSchema {
   ContentId: number;
@@ -3963,7 +3959,7 @@ interface SegmentSchema {
   ContentName: "Segment";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -3971,8 +3967,8 @@ interface SegmentSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -3980,8 +3976,8 @@ interface SegmentSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -3991,7 +3987,7 @@ interface ChannelCategorySchema {
   ContentName: "ChannelCategory";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Name: {
       FieldId: number;
@@ -3999,8 +3995,8 @@ interface ChannelCategorySchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4008,8 +4004,8 @@ interface ChannelCategorySchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Segments: {
       FieldId: number;
@@ -4017,8 +4013,8 @@ interface ChannelCategorySchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Icon: {
       FieldId: number;
@@ -4026,8 +4022,8 @@ interface ChannelCategorySchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Image";
+      IsRequired: false;
     };
     Order: {
       FieldId: number;
@@ -4035,8 +4031,8 @@ interface ChannelCategorySchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     OldSiteId: {
       FieldId: number;
@@ -4044,8 +4040,8 @@ interface ChannelCategorySchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
   };
 }
@@ -4055,7 +4051,7 @@ interface RegionSchema {
   ContentName: "Region";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Alias: {
       FieldId: number;
@@ -4063,8 +4059,8 @@ interface RegionSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Parent: {
       IsBackward: false;
@@ -4074,8 +4070,8 @@ interface RegionSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "O2MRelation";
+      IsRequired: false;
     };
     IsMainCity: {
       FieldId: number;
@@ -4083,8 +4079,8 @@ interface RegionSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Boolean";
+      IsRequired: false;
     };
   };
   include: (selector: (fields: RegionSchema["Fields"]) => Selection[]) => string[];
@@ -4095,7 +4091,7 @@ interface Region1Schema {
   ContentName: "Region";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Alias: {
       FieldId: number;
@@ -4103,8 +4099,8 @@ interface Region1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Title: {
       FieldId: number;
@@ -4112,8 +4108,8 @@ interface Region1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4123,7 +4119,7 @@ interface Region2Schema {
   ContentName: "Region";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Alias: {
       FieldId: number;
@@ -4131,8 +4127,8 @@ interface Region2Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4142,7 +4138,7 @@ interface ChannelFormatSchema {
   ContentName: "ChannelFormat";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4150,8 +4146,8 @@ interface ChannelFormatSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Image: {
       FieldId: number;
@@ -4159,8 +4155,8 @@ interface ChannelFormatSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Image";
+      IsRequired: false;
     };
     Message: {
       FieldId: number;
@@ -4168,8 +4164,8 @@ interface ChannelFormatSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     OldSiteId: {
       FieldId: number;
@@ -4177,8 +4173,8 @@ interface ChannelFormatSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
   };
 }
@@ -4188,7 +4184,7 @@ interface FixedTypeSchema {
   ContentName: "FixedType";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4196,8 +4192,8 @@ interface FixedTypeSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4207,7 +4203,7 @@ interface MarketingProductSchema {
   ContentName: "MarketingProduct";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4215,8 +4211,8 @@ interface MarketingProductSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4224,8 +4220,8 @@ interface MarketingProductSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Priority: {
       FieldId: number;
@@ -4233,8 +4229,8 @@ interface MarketingProductSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
   };
 }
@@ -4244,7 +4240,7 @@ interface MarketingProduct1Schema {
   ContentName: "MarketingProduct";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4252,8 +4248,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4261,8 +4257,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Link: {
       FieldId: number;
@@ -4270,8 +4266,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Description: {
       FieldId: number;
@@ -4279,8 +4275,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Textbox";
+      IsRequired: false;
     };
     DetailedDescription: {
       FieldId: number;
@@ -4288,8 +4284,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "VisualEdit";
+      IsRequired: false;
     };
     FullDescription: {
       FieldId: number;
@@ -4297,8 +4293,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "VisualEdit";
+      IsRequired: false;
     };
     SortOrder: {
       FieldId: number;
@@ -4306,8 +4302,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     Type: {
       FieldId: number;
@@ -4315,8 +4311,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Classifier";
+      IsRequired: false;
     };
     OldSiteId: {
       FieldId: number;
@@ -4324,8 +4320,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     OldCorpSiteId: {
       FieldId: number;
@@ -4333,8 +4329,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     ListImage: {
       FieldId: number;
@@ -4342,8 +4338,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Image";
+      IsRequired: false;
     };
     DetailsImage: {
       FieldId: number;
@@ -4351,8 +4347,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Image";
+      IsRequired: false;
     };
     Priority: {
       FieldId: number;
@@ -4360,8 +4356,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     ArchiveDate: {
       FieldId: number;
@@ -4369,8 +4365,8 @@ interface MarketingProduct1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Date";
+      IsRequired: false;
     };
   };
 }
@@ -4380,7 +4376,7 @@ interface MarketingProduct2Schema {
   ContentName: "MarketingProduct";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Alias: {
       FieldId: number;
@@ -4388,8 +4384,8 @@ interface MarketingProduct2Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4399,7 +4395,7 @@ interface MarketingProduct3Schema {
   ContentName: "MarketingProduct";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4407,8 +4403,8 @@ interface MarketingProduct3Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4416,8 +4412,8 @@ interface MarketingProduct3Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4427,7 +4423,7 @@ interface BaseParameterSchema {
   ContentName: "BaseParameter";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4435,8 +4431,8 @@ interface BaseParameterSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4444,8 +4440,8 @@ interface BaseParameterSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     AllowZone: {
       FieldId: number;
@@ -4453,8 +4449,8 @@ interface BaseParameterSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Boolean";
+      IsRequired: false;
     };
     AllowDirection: {
       FieldId: number;
@@ -4462,8 +4458,8 @@ interface BaseParameterSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Boolean";
+      IsRequired: false;
     };
   };
 }
@@ -4473,7 +4469,7 @@ interface TariffZoneSchema {
   ContentName: "TariffZone";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4481,8 +4477,8 @@ interface TariffZoneSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4490,8 +4486,8 @@ interface TariffZoneSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4501,7 +4497,7 @@ interface DirectionSchema {
   ContentName: "Direction";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4509,8 +4505,8 @@ interface DirectionSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4518,8 +4514,8 @@ interface DirectionSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4529,7 +4525,7 @@ interface BaseParameterModifierSchema {
   ContentName: "BaseParameterModifier";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4537,8 +4533,8 @@ interface BaseParameterModifierSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4546,8 +4542,8 @@ interface BaseParameterModifierSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Type: {
       Items: [
@@ -4587,8 +4583,8 @@ interface BaseParameterModifierSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "StringEnum";
+      IsRequired: false;
     };
   };
 }
@@ -4598,7 +4594,7 @@ interface ParameterModifierSchema {
   ContentName: "ParameterModifier";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4606,8 +4602,8 @@ interface ParameterModifierSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4615,8 +4611,8 @@ interface ParameterModifierSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4626,7 +4622,7 @@ interface UnitSchema {
   ContentName: "Unit";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Alias: {
       FieldId: number;
@@ -4634,8 +4630,8 @@ interface UnitSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Title: {
       FieldId: number;
@@ -4643,8 +4639,8 @@ interface UnitSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Display: {
       FieldId: number;
@@ -4652,8 +4648,8 @@ interface UnitSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     QuotaUnit: {
       Items: [
@@ -4729,8 +4725,8 @@ interface UnitSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "StringEnum";
+      IsRequired: false;
     };
     QuotaPeriod: {
       Items: [
@@ -4782,8 +4778,8 @@ interface UnitSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "StringEnum";
+      IsRequired: false;
     };
   };
 }
@@ -4793,7 +4789,7 @@ interface ParameterChoiceSchema {
   ContentName: "ParameterChoice";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4801,8 +4797,8 @@ interface ParameterChoiceSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4810,8 +4806,8 @@ interface ParameterChoiceSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     OldSiteId: {
       FieldId: number;
@@ -4819,8 +4815,8 @@ interface ParameterChoiceSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
   };
 }
@@ -4830,7 +4826,7 @@ interface ProductParameterGroupSchema {
   ContentName: "ProductParameterGroup";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     SortOrder: {
       FieldId: number;
@@ -4838,8 +4834,8 @@ interface ProductParameterGroupSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     Title: {
       FieldId: number;
@@ -4847,8 +4843,8 @@ interface ProductParameterGroupSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4856,8 +4852,8 @@ interface ProductParameterGroupSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     ImageSvg: {
       FieldId: number;
@@ -4865,8 +4861,8 @@ interface ProductParameterGroupSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "File";
+      IsRequired: false;
     };
     Type: {
       FieldId: number;
@@ -4874,8 +4870,8 @@ interface ProductParameterGroupSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4885,7 +4881,7 @@ interface ProductParameterGroup1Schema {
   ContentName: "ProductParameterGroup";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4893,8 +4889,8 @@ interface ProductParameterGroup1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4902,8 +4898,8 @@ interface ProductParameterGroup1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     SortOrder: {
       FieldId: number;
@@ -4911,8 +4907,8 @@ interface ProductParameterGroup1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     ImageSvg: {
       FieldId: number;
@@ -4920,8 +4916,8 @@ interface ProductParameterGroup1Schema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "File";
+      IsRequired: false;
     };
   };
 }
@@ -4931,7 +4927,7 @@ interface LinkModifierSchema {
   ContentName: "LinkModifier";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4939,8 +4935,8 @@ interface LinkModifierSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4948,8 +4944,8 @@ interface LinkModifierSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4959,7 +4955,7 @@ interface ProductModiferSchema {
   ContentName: "ProductModifer";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4967,8 +4963,8 @@ interface ProductModiferSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Alias: {
       FieldId: number;
@@ -4976,8 +4972,8 @@ interface ProductModiferSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
   };
 }
@@ -4987,7 +4983,7 @@ interface AdvantageSchema {
   ContentName: "Advantage";
   ContentTitle: string;
   ContentDescription: string;
-  ObjectShape: any;
+  IsExtension: false;
   Fields: {
     Title: {
       FieldId: number;
@@ -4995,8 +4991,8 @@ interface AdvantageSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Text: {
       FieldId: number;
@@ -5004,8 +5000,8 @@ interface AdvantageSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "String";
+      IsRequired: false;
     };
     Description: {
       FieldId: number;
@@ -5013,8 +5009,8 @@ interface AdvantageSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Textbox";
+      IsRequired: false;
     };
     ImageSvg: {
       FieldId: number;
@@ -5022,8 +5018,8 @@ interface AdvantageSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "File";
+      IsRequired: false;
     };
     SortOrder: {
       FieldId: number;
@@ -5031,8 +5027,8 @@ interface AdvantageSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
     IsGift: {
       FieldId: number;
@@ -5040,8 +5036,8 @@ interface AdvantageSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Boolean";
+      IsRequired: false;
     };
     OldSiteId: {
       FieldId: number;
@@ -5049,594 +5045,21 @@ interface AdvantageSchema {
       FieldTitle: string;
       FieldDescription: string;
       FieldOrder: number;
-      IsRequired: false;
       FieldType: "Numeric";
+      IsRequired: false;
     };
   };
 }
 
-const objectShapes: any = {
-  "290": {
-    Id: null,
-    Title: null,
-    Alias: null,
-    Parent: null,
-    IsMainCity: null
-  },
-  "339": {
-    Id: null,
-    MarketingProduct: null,
-    GlobalCode: null,
-    Type: null,
-    Description: null,
-    FullDescription: null,
-    Notes: null,
-    Link: null,
-    SortOrder: null,
-    ForisID: null,
-    Icon: null,
-    PDF: {
-      Name: null,
-      AbsoluteUrl: null
-    },
-    PdfFixedAlias: null,
-    PdfFixedLinks: null,
-    StartDate: null,
-    EndDate: null,
-    OldSiteId: null,
-    OldId: null,
-    OldSiteInvId: null,
-    OldCorpSiteId: null,
-    OldAliasId: null,
-    Priority: null,
-    ListImage: null,
-    ArchiveDate: null,
-    Modifiers: [],
-    Parameters: [],
-    Regions: [],
-    FixConnectAction: [],
-    Advantages: []
-  },
-  "340": {
-    Id: null,
-    Title: null,
-    Alias: null
-  },
-  "342": {
-    Id: null,
-    Title: null,
-    Alias: null
-  },
-  "343": {
-    Id: null
-  },
-  "346": {
-    Id: null,
-    Title: null,
-    Alias: null
-  },
-  "347": {
-    Id: null,
-    Title: null,
-    Alias: null
-  },
-  "350": {
-    Id: null,
-    Title: null,
-    Alias: null,
-    AllowZone: null,
-    AllowDirection: null
-  },
-  "351": {
-    Id: null,
-    Title: null,
-    Alias: null,
-    Type: null
-  },
-  "352": {
-    Id: null,
-    Title: null,
-    Alias: null
-  },
-  "354": {
-    Id: null,
-    Group: null,
-    Title: null,
-    Parent: null,
-    BaseParameter: null,
-    Zone: null,
-    Direction: null,
-    BaseParameterModifiers: [],
-    Modifiers: [],
-    Unit: null,
-    SortOrder: null,
-    NumValue: null,
-    Value: null,
-    Description: null,
-    Image: null,
-    ProductGroup: null,
-    Choice: null
-  },
-  "355": {
-    Id: null,
-    Alias: null,
-    Title: null,
-    Display: null,
-    QuotaUnit: null,
-    QuotaPeriod: null,
-    QuotaPeriodicity: null,
-    PeriodMultiplier: null,
-    Type: null
-  },
-  "360": {
-    Id: null,
-    Title: null,
-    Alias: null
-  },
-  "361": {
-    Id: null,
-    Title: null,
-    Modifiers: [],
-    Parameters: [],
-    Type: {
-      Value: null,
-      Contents: {
-        TariffTransfer: {
-          Id: null
-        },
-        MutualGroup: {
-          Id: null
-        },
-        ServiceOnTariff: {
-          Id: null,
-          Description: null
-        },
-        ServicesUpsale: {
-          Id: null,
-          Order: null
-        },
-        TariffOptionPackage: {
-          Id: null,
-          SubTitle: null,
-          Description: null,
-          Alias: null,
-          Link: null
-        },
-        ServiceRelation: {
-          Id: null
-        },
-        RoamingScaleOnTariff: {
-          Id: null
-        },
-        ServiceOnRoamingScale: {
-          Id: null
-        },
-        CrossSale: {
-          Id: null,
-          Order: null
-        },
-        MarketingCrossSale: {
-          Id: null,
-          Order: null
-        },
-        DeviceOnTariffs: {
-          Id: null,
-          Parent: null,
-          Order: null,
-          MarketingDevice: null,
-          MarketingTariffs: [],
-          Cities: []
-        },
-        DevicesForFixConnectAction: {
-          Id: null,
-          Order: null,
-          FixConnectAction: null,
-          Parent: null,
-          MarketingDevice: null
-        }
-      }
-    }
-  },
-  "362": {
-    Id: null,
-    Title: null,
-    Group: null,
-    BaseParameter: null,
-    Zone: null,
-    Direction: null,
-    BaseParameterModifiers: [],
-    Modifiers: [],
-    SortOrder: null,
-    NumValue: null,
-    Value: null,
-    Description: null,
-    Unit: null,
-    ProductGroup: null,
-    Choice: null,
-    OldSiteId: null,
-    OldCorpSiteId: null,
-    OldPointId: null,
-    OldCorpPointId: null
-  },
-  "364": {
-    Id: null
-  },
-  "365": {
-    Id: null
-  },
-  "378": {
-    Id: null,
-    Title: null,
-    Alias: null,
-    SortOrder: null,
-    OldSiteId: null,
-    OldCorpSiteId: null,
-    ImageSvg: {
-      Name: null,
-      AbsoluteUrl: null
-    },
-    Type: null,
-    TitleForIcin: null
-  },
-  "383": {
-    Id: null,
-    Title: null,
-    Alias: null,
-    Description: null,
-    OldSiteId: null,
-    OldCorpSiteId: null,
-    ListImage: null,
-    DetailsImage: null,
-    ArchiveDate: null,
-    Modifiers: [],
-    SortOrder: null,
-    Priority: null,
-    Advantages: [],
-    Type: {
-      Value: null,
-      Contents: {
-        MarketingTariff: {
-          Id: null
-        },
-        MarketingService: {
-          Id: null
-        },
-        MarketingAction: {
-          Id: null
-        },
-        MarketingRoamingScale: {
-          Id: null
-        },
-        MarketingDevice: {
-          Id: null,
-          DeviceType: null,
-          Segments: [],
-          CommunicationType: null
-        },
-        MarketingFixConnectAction: {
-          Id: null,
-          Segment: [],
-          MarketingAction: null,
-          StartDate: null,
-          EndDate: null,
-          PromoPeriod: null,
-          AfterPromo: null
-        },
-        MarketingTvPackage: {
-          Id: null,
-          Channels: [],
-          TitleForSite: null,
-          PackageType: null
-        },
-        MarketingFixConnectTariff: {
-          Id: null,
-          Segment: null,
-          Category: null,
-          MarketingDevices: [],
-          BonusTVPackages: [],
-          MarketingPhoneTariff: null,
-          MarketingInternetTariff: null,
-          MarketingTvPackage: null,
-          TitleForSite: null
-        },
-        MarketingPhoneTariff: {
-          Id: null
-        },
-        MarketingInternetTariff: {
-          Id: null
-        }
-      }
-    },
-    FullDescription: null,
-    Parameters: [],
-    TariffsOnMarketingDevice: [],
-    DevicesOnMarketingTariff: [],
-    ActionsOnMarketingDevice: [],
-    Link: null,
-    DetailedDescription: null
-  },
-  "385": {
-    Id: null
-  },
-  "402": {
-    Id: null
-  },
-  "403": {
-    Id: null
-  },
-  "404": {
-    Id: null,
-    Description: null
-  },
-  "406": {
-    Id: null,
-    Order: null
-  },
-  "407": {
-    Id: null,
-    SubTitle: null,
-    Description: null,
-    Alias: null,
-    Link: null
-  },
-  "413": {
-    Id: null
-  },
-  "415": {
-    Id: null,
-    Title: null,
-    Alias: null
-  },
-  "416": {
-    Id: null,
-    Title: null,
-    Alias: null
-  },
-  "419": {
-    Id: null
-  },
-  "420": {
-    Id: null
-  },
-  "424": {
-    Id: null,
-    Group: null,
-    BaseParameter: null,
-    Zone: null,
-    Direction: null,
-    BaseParameterModifiers: [],
-    Modifiers: [],
-    Unit: null,
-    Choice: null,
-    Title: null,
-    SortOrder: null,
-    NumValue: null,
-    Value: null,
-    Description: null
-  },
-  "434": {
-    Id: null
-  },
-  "435": {
-    Id: null
-  },
-  "438": {
-    Id: null
-  },
-  "441": {
-    Id: null,
-    ConnectionTypes: [],
-    Title: null,
-    Alias: null,
-    Image: null,
-    Order: null,
-    ImageSvg: {
-      Name: null,
-      AbsoluteUrl: null
-    },
-    TemplateType: null
-  },
-  "444": {
-    Id: null
-  },
-  "446": {
-    Id: null,
-    Title: null,
-    Text: null,
-    Description: null,
-    ImageSvg: {
-      Name: null,
-      AbsoluteUrl: null
-    },
-    SortOrder: null,
-    IsGift: null,
-    OldSiteId: null
-  },
-  "468": {
-    Id: null,
-    Order: null
-  },
-  "469": {
-    Id: null,
-    Order: null
-  },
-  "471": {
-    Id: null,
-    Name: null,
-    Code: null,
-    UTC: null,
-    MSK: null,
-    OldSiteId: null
-  },
-  "472": {
-    Id: null,
-    City: null,
-    HasIpTv: null
-  },
-  "478": {
-    Id: null,
-    Name: null,
-    Alias: null,
-    Segments: null,
-    Icon: null,
-    Order: null,
-    OldSiteId: null
-  },
-  "479": {
-    Id: null,
-    Title: null,
-    OldSiteId: null
-  },
-  "480": {
-    Id: null,
-    Title: null,
-    Image: null,
-    Message: null,
-    OldSiteId: null
-  },
-  "482": {
-    Id: null,
-    Title: null,
-    Logo150: null,
-    Category: null,
-    ChannelType: null,
-    ShortDescription: null,
-    Cities: [],
-    Disabled: null,
-    IsMtsMsk: null,
-    IsRegional: null,
-    LcnDvbC: null,
-    LcnIpTv: null,
-    LcnDvbS: null,
-    Format: null,
-    Parent: null,
-    Children: [],
-    Logo40x30: null,
-    TimeZone: null
-  },
-  "488": {
-    Id: null,
-    Title: null,
-    Alias: null,
-    OldSiteId: null
-  },
-  "489": {
-    Id: null,
-    DeviceType: null,
-    Segments: [],
-    CommunicationType: null
-  },
-  "490": {
-    Id: null,
-    Downloads: [],
-    Inners: [],
-    FreezeDate: null,
-    FullUserGuide: {
-      Name: null,
-      AbsoluteUrl: null
-    },
-    QuickStartGuide: {
-      Name: null,
-      AbsoluteUrl: null
-    }
-  },
-  "491": {
-    Id: null,
-    Title: null
-  },
-  "493": {
-    Id: null,
-    ConnectionType: null,
-    Title: null,
-    Alias: null,
-    Order: null
-  },
-  "494": {
-    Id: null,
-    Title: null,
-    File: {
-      Name: null,
-      AbsoluteUrl: null
-    }
-  },
-  "498": {
-    Id: null,
-    Segment: [],
-    MarketingAction: null,
-    StartDate: null,
-    EndDate: null,
-    PromoPeriod: null,
-    AfterPromo: null
-  },
-  "500": {
-    Id: null,
-    MarketingOffers: [],
-    PromoPeriod: null,
-    AfterPromo: null
-  },
-  "502": {
-    Id: null,
-    Channels: [],
-    TitleForSite: null,
-    PackageType: null
-  },
-  "503": {
-    Id: null
-  },
-  "504": {
-    Id: null,
-    Segment: null,
-    Category: null,
-    MarketingDevices: [],
-    BonusTVPackages: [],
-    MarketingPhoneTariff: null,
-    MarketingInternetTariff: null,
-    MarketingTvPackage: null,
-    TitleForSite: null
-  },
-  "505": {
-    Id: null,
-    TitleForSite: null
-  },
-  "506": {
-    Id: null
-  },
-  "507": {
-    Id: null,
-    RostelecomLink: null
-  },
-  "509": {
-    Id: null
-  },
-  "510": {
-    Id: null
-  },
-  "511": {
-    Id: null,
-    Parent: null,
-    Order: null,
-    MarketingDevice: null,
-    MarketingTariffs: [],
-    Cities: []
-  },
-  "512": {
-    Id: null,
-    Order: null,
-    FixConnectAction: null,
-    Parent: null,
-    MarketingDevice: null
-  }
-};
-
 /** Описание полей продукта */
-export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
+export default linkJsonRefs<ProductSchema>({
   Content: {
     ContentId: 339,
     ContentPath: "/339",
     ContentName: "Product",
     ContentTitle: "Продукты",
     ContentDescription: "",
-    ObjectShape: null,
+    IsExtension: false,
     Fields: {
       MarketingProduct: {
         IsBackward: false,
@@ -5646,7 +5069,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           ContentName: "MarketingProduct",
           ContentTitle: "Маркетинговые продукты",
           ContentDescription: "",
-          ObjectShape: null,
+          IsExtension: false,
           Fields: {
             Title: {
               FieldId: 1534,
@@ -5654,8 +5077,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Название",
               FieldDescription: "",
               FieldOrder: 1,
-              IsRequired: false,
-              FieldType: "String"
+              FieldType: "String",
+              IsRequired: false
             },
             Alias: {
               FieldId: 1753,
@@ -5663,8 +5086,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Псевдоним",
               FieldDescription: "",
               FieldOrder: 2,
-              IsRequired: false,
-              FieldType: "String"
+              FieldType: "String",
+              IsRequired: false
             },
             Description: {
               FieldId: 1558,
@@ -5672,8 +5095,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 4,
-              IsRequired: false,
-              FieldType: "Textbox"
+              FieldType: "Textbox",
+              IsRequired: false
             },
             OldSiteId: {
               FieldId: 1645,
@@ -5681,8 +5104,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 14,
-              IsRequired: false,
-              FieldType: "Numeric"
+              FieldType: "Numeric",
+              IsRequired: false
             },
             OldCorpSiteId: {
               FieldId: 1779,
@@ -5690,8 +5113,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 15,
-              IsRequired: false,
-              FieldType: "Numeric"
+              FieldType: "Numeric",
+              IsRequired: false
             },
             ListImage: {
               FieldId: 2030,
@@ -5699,8 +5122,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Изображение в списке",
               FieldDescription: "Изображение в общем списке",
               FieldOrder: 17,
-              IsRequired: false,
-              FieldType: "Image"
+              FieldType: "Image",
+              IsRequired: false
             },
             DetailsImage: {
               FieldId: 2031,
@@ -5708,8 +5131,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Изображение",
               FieldDescription: "Изображение в описании на странице",
               FieldOrder: 18,
-              IsRequired: false,
-              FieldType: "Image"
+              FieldType: "Image",
+              IsRequired: false
             },
             ArchiveDate: {
               FieldId: 2124,
@@ -5717,8 +5140,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Дата закрытия продукта (Архив)",
               FieldDescription: "",
               FieldOrder: 23,
-              IsRequired: false,
-              FieldType: "Date"
+              FieldType: "Date",
+              IsRequired: false
             },
             Modifiers: {
               IsBackward: false,
@@ -5730,8 +5153,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Модификаторы",
               FieldDescription: "",
               FieldOrder: 12,
-              IsRequired: false,
-              FieldType: "M2MRelation"
+              FieldType: "M2MRelation",
+              IsRequired: false
             },
             SortOrder: {
               FieldId: 1752,
@@ -5739,8 +5162,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Порядок",
               FieldDescription: "",
               FieldOrder: 7,
-              IsRequired: false,
-              FieldType: "Numeric"
+              FieldType: "Numeric",
+              IsRequired: false
             },
             Priority: {
               FieldId: 2032,
@@ -5748,8 +5171,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Приоритет (популярность)",
               FieldDescription: "Сортировка по возрастанию значения приоритета",
               FieldOrder: 19,
-              IsRequired: false,
-              FieldType: "Numeric"
+              FieldType: "Numeric",
+              IsRequired: false
             },
             Advantages: {
               IsBackward: false,
@@ -5761,8 +5184,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Преимущества",
               FieldDescription: "",
               FieldOrder: 16,
-              IsRequired: false,
-              FieldType: "M2MRelation"
+              FieldType: "M2MRelation",
+              IsRequired: false
             },
             Type: {
               Contents: {
@@ -5772,7 +5195,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingTariff",
                   ContentTitle: "Маркетинговые тарифы",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {}
                 },
                 MarketingService: {
@@ -5781,7 +5204,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingService",
                   ContentTitle: "Маркетинговые услуги",
                   ContentDescription: 'Универсальная "опция". Голосовая, дата и что еще появится.',
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {}
                 },
                 MarketingAction: {
@@ -5790,7 +5213,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingAction",
                   ContentTitle: "Маркетинговые акции",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {}
                 },
                 MarketingRoamingScale: {
@@ -5799,7 +5222,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingRoamingScale",
                   ContentTitle: "Маркетинговые роуминговые сетки",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {}
                 },
                 MarketingDevice: {
@@ -5808,7 +5231,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingDevice",
                   ContentTitle: "Маркетинговое оборудование",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {
                     DeviceType: {
                       IsBackward: false,
@@ -5818,7 +5241,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         ContentName: "EquipmentType",
                         ContentTitle: "Типы оборудования",
                         ContentDescription: "",
-                        ObjectShape: null,
+                        IsExtension: false,
                         Fields: {
                           ConnectionType: {
                             IsBackward: false,
@@ -5830,8 +5253,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Тип связи",
                             FieldDescription: "",
                             FieldOrder: 5,
-                            IsRequired: false,
-                            FieldType: "O2MRelation"
+                            FieldType: "O2MRelation",
+                            IsRequired: false
                           },
                           Title: {
                             FieldId: 2399,
@@ -5839,8 +5262,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "",
                             FieldDescription: "",
                             FieldOrder: 1,
-                            IsRequired: false,
-                            FieldType: "String"
+                            FieldType: "String",
+                            IsRequired: false
                           },
                           Alias: {
                             FieldId: 2400,
@@ -5848,8 +5271,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "",
                             FieldDescription: "",
                             FieldOrder: 2,
-                            IsRequired: false,
-                            FieldType: "String"
+                            FieldType: "String",
+                            IsRequired: false
                           },
                           Order: {
                             FieldId: 2648,
@@ -5857,8 +5280,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Порядок",
                             FieldDescription: "",
                             FieldOrder: 3,
-                            IsRequired: false,
-                            FieldType: "Numeric"
+                            FieldType: "Numeric",
+                            IsRequired: false
                           }
                         }
                       },
@@ -5867,8 +5290,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "Тип оборудования",
                       FieldDescription: "",
                       FieldOrder: 2,
-                      IsRequired: false,
-                      FieldType: "O2MRelation"
+                      FieldType: "O2MRelation",
+                      IsRequired: false
                     },
                     Segments: {
                       IsBackward: false,
@@ -5880,8 +5303,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "Сегменты",
                       FieldDescription: "",
                       FieldOrder: 3,
-                      IsRequired: false,
-                      FieldType: "M2MRelation"
+                      FieldType: "M2MRelation",
+                      IsRequired: false
                     },
                     CommunicationType: {
                       IsBackward: false,
@@ -5891,7 +5314,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         ContentName: "CommunicationType",
                         ContentTitle: "Виды связи",
                         ContentDescription: "",
-                        ObjectShape: null,
+                        IsExtension: false,
                         Fields: {
                           Title: {
                             FieldId: 1789,
@@ -5899,8 +5322,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "",
                             FieldDescription: "",
                             FieldOrder: 1,
-                            IsRequired: false,
-                            FieldType: "String"
+                            FieldType: "String",
+                            IsRequired: false
                           },
                           Alias: {
                             FieldId: 1791,
@@ -5908,8 +5331,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Псевдоним",
                             FieldDescription: "",
                             FieldOrder: 2,
-                            IsRequired: false,
-                            FieldType: "String"
+                            FieldType: "String",
+                            IsRequired: false
                           }
                         }
                       },
@@ -5918,8 +5341,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "Вид связи",
                       FieldDescription: "",
                       FieldOrder: 4,
-                      IsRequired: false,
-                      FieldType: "O2MRelation"
+                      FieldType: "O2MRelation",
+                      IsRequired: false
                     }
                   }
                 },
@@ -5929,7 +5352,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingFixConnectAction",
                   ContentTitle: "Маркетинговые акции фиксированной связи",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {
                     Segment: {
                       IsBackward: false,
@@ -5941,8 +5364,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "Сегмент",
                       FieldDescription: "",
                       FieldOrder: 2,
-                      IsRequired: false,
-                      FieldType: "M2MRelation"
+                      FieldType: "M2MRelation",
+                      IsRequired: false
                     },
                     MarketingAction: {
                       IsBackward: false,
@@ -5954,8 +5377,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "Акция в Каталоге акций",
                       FieldDescription: "",
                       FieldOrder: 7,
-                      IsRequired: false,
-                      FieldType: "O2MRelation"
+                      FieldType: "O2MRelation",
+                      IsRequired: false
                     },
                     StartDate: {
                       FieldId: 2459,
@@ -5963,8 +5386,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 3,
-                      IsRequired: false,
-                      FieldType: "Date"
+                      FieldType: "Date",
+                      IsRequired: false
                     },
                     EndDate: {
                       FieldId: 2460,
@@ -5972,8 +5395,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 4,
-                      IsRequired: false,
-                      FieldType: "Date"
+                      FieldType: "Date",
+                      IsRequired: false
                     },
                     PromoPeriod: {
                       FieldId: 2461,
@@ -5981,8 +5404,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "Описание промо-периода.",
                       FieldOrder: 5,
-                      IsRequired: false,
-                      FieldType: "String"
+                      FieldType: "String",
+                      IsRequired: false
                     },
                     AfterPromo: {
                       FieldId: 2462,
@@ -5990,8 +5413,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "Описание момента начала действия обычной цены.",
                       FieldOrder: 6,
-                      IsRequired: false,
-                      FieldType: "String"
+                      FieldType: "String",
+                      IsRequired: false
                     }
                   }
                 },
@@ -6001,7 +5424,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingTvPackage",
                   ContentTitle: "Маркетинговые ТВ-пакеты",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {
                     Channels: {
                       IsBackward: false,
@@ -6011,7 +5434,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         ContentName: "TvChannel",
                         ContentTitle: "ТВ-каналы",
                         ContentDescription: "",
-                        ObjectShape: null,
+                        IsExtension: false,
                         Fields: {
                           Title: {
                             FieldId: 2274,
@@ -6019,8 +5442,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Название телеканала",
                             FieldDescription: "title",
                             FieldOrder: 1,
-                            IsRequired: false,
-                            FieldType: "String"
+                            FieldType: "String",
+                            IsRequired: false
                           },
                           ShortDescription: {
                             FieldId: 2281,
@@ -6028,8 +5451,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Короткое описание",
                             FieldDescription: "short_descr",
                             FieldOrder: 7,
-                            IsRequired: false,
-                            FieldType: "Textbox"
+                            FieldType: "Textbox",
+                            IsRequired: false
                           },
                           Logo150: {
                             FieldId: 2306,
@@ -6037,8 +5460,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Лого 150x150",
                             FieldDescription: "logo150",
                             FieldOrder: 32,
-                            IsRequired: false,
-                            FieldType: "Image"
+                            FieldType: "Image",
+                            IsRequired: false
                           },
                           IsRegional: {
                             FieldId: 2298,
@@ -6046,8 +5469,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Регионал. канал",
                             FieldDescription: "regional_tv",
                             FieldOrder: 24,
-                            IsRequired: false,
-                            FieldType: "Boolean"
+                            FieldType: "Boolean",
+                            IsRequired: false
                           },
                           Parent: {
                             IsBackward: false,
@@ -6057,7 +5480,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "TvChannel",
                               ContentTitle: "ТВ-каналы",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: false,
                               Fields: {
                                 Logo150: {
                                   FieldId: 2306,
@@ -6065,8 +5488,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Лого 150x150",
                                   FieldDescription: "logo150",
                                   FieldOrder: 32,
-                                  IsRequired: false,
-                                  FieldType: "Image"
+                                  FieldType: "Image",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -6075,8 +5498,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Родительский канал",
                             FieldDescription: "ch_parent",
                             FieldOrder: 13,
-                            IsRequired: false,
-                            FieldType: "O2MRelation"
+                            FieldType: "O2MRelation",
+                            IsRequired: false
                           },
                           Cities: {
                             IsBackward: false,
@@ -6086,7 +5509,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "NetworkCity",
                               ContentTitle: "Города сети",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: false,
                               Fields: {
                                 City: {
                                   IsBackward: false,
@@ -6098,8 +5521,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Город",
                                   FieldDescription: "",
                                   FieldOrder: 1,
-                                  IsRequired: false,
-                                  FieldType: "O2MRelation"
+                                  FieldType: "O2MRelation",
+                                  IsRequired: false
                                 },
                                 HasIpTv: {
                                   FieldId: 2218,
@@ -6107,8 +5530,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "IPTV",
                                   FieldDescription: "Города где есть IPTV",
                                   FieldOrder: 9,
-                                  IsRequired: false,
-                                  FieldType: "Boolean"
+                                  FieldType: "Boolean",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -6117,8 +5540,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Города вещания",
                             FieldDescription: "cities",
                             FieldOrder: 12,
-                            IsRequired: false,
-                            FieldType: "M2MRelation"
+                            FieldType: "M2MRelation",
+                            IsRequired: false
                           },
                           ChannelType: {
                             IsBackward: false,
@@ -6128,7 +5551,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "ChannelType",
                               ContentTitle: "Типы каналов",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: false,
                               Fields: {
                                 Title: {
                                   FieldId: 2258,
@@ -6136,8 +5559,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "",
                                   FieldDescription: "",
                                   FieldOrder: 1,
-                                  IsRequired: false,
-                                  FieldType: "String"
+                                  FieldType: "String",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -6146,8 +5569,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Тип канала",
                             FieldDescription: "ch_type",
                             FieldOrder: 11,
-                            IsRequired: false,
-                            FieldType: "O2MRelation"
+                            FieldType: "O2MRelation",
+                            IsRequired: false
                           },
                           Category: {
                             IsBackward: false,
@@ -6159,8 +5582,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Основная категория телеканала",
                             FieldDescription: "ch_category",
                             FieldOrder: 9,
-                            IsRequired: false,
-                            FieldType: "O2MRelation"
+                            FieldType: "O2MRelation",
+                            IsRequired: false
                           },
                           IsMtsMsk: {
                             FieldId: 2297,
@@ -6168,8 +5591,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "МТС Москва",
                             FieldDescription: "test_inMSK_mgts_XML",
                             FieldOrder: 23,
-                            IsRequired: false,
-                            FieldType: "Boolean"
+                            FieldType: "Boolean",
+                            IsRequired: false
                           },
                           LcnDvbC: {
                             FieldId: 2312,
@@ -6177,8 +5600,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "LCN DVB-C",
                             FieldDescription: "lcn_dvbc",
                             FieldOrder: 36,
-                            IsRequired: false,
-                            FieldType: "Numeric"
+                            FieldType: "Numeric",
+                            IsRequired: false
                           },
                           LcnIpTv: {
                             FieldId: 2314,
@@ -6186,8 +5609,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "LCN IPTV",
                             FieldDescription: "lcn_iptv",
                             FieldOrder: 37,
-                            IsRequired: false,
-                            FieldType: "Numeric"
+                            FieldType: "Numeric",
+                            IsRequired: false
                           },
                           LcnDvbS: {
                             FieldId: 2313,
@@ -6195,8 +5618,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "LCN DVB-S",
                             FieldDescription: "lcn_dvbs",
                             FieldOrder: 38,
-                            IsRequired: false,
-                            FieldType: "Numeric"
+                            FieldType: "Numeric",
+                            IsRequired: false
                           },
                           Disabled: {
                             FieldId: 2289,
@@ -6204,8 +5627,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Приостановлено вещание",
                             FieldDescription: "offair",
                             FieldOrder: 17,
-                            IsRequired: false,
-                            FieldType: "Boolean"
+                            FieldType: "Boolean",
+                            IsRequired: false
                           },
                           Children: {
                             IsBackward: false,
@@ -6215,7 +5638,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "TvChannel",
                               ContentTitle: "ТВ-каналы",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: false,
                               Fields: {
                                 Title: {
                                   FieldId: 2274,
@@ -6223,8 +5646,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Название телеканала",
                                   FieldDescription: "title",
                                   FieldOrder: 1,
-                                  IsRequired: false,
-                                  FieldType: "String"
+                                  FieldType: "String",
+                                  IsRequired: false
                                 },
                                 Category: {
                                   IsBackward: false,
@@ -6236,8 +5659,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Основная категория телеканала",
                                   FieldDescription: "ch_category",
                                   FieldOrder: 9,
-                                  IsRequired: false,
-                                  FieldType: "O2MRelation"
+                                  FieldType: "O2MRelation",
+                                  IsRequired: false
                                 },
                                 ChannelType: {
                                   IsBackward: false,
@@ -6248,7 +5671,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                     ContentName: "ChannelType",
                                     ContentTitle: "Типы каналов",
                                     ContentDescription: "",
-                                    ObjectShape: null,
+                                    IsExtension: false,
                                     Fields: {
                                       Title: {
                                         FieldId: 2258,
@@ -6256,8 +5679,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                         FieldTitle: "",
                                         FieldDescription: "",
                                         FieldOrder: 1,
-                                        IsRequired: false,
-                                        FieldType: "String"
+                                        FieldType: "String",
+                                        IsRequired: false
                                       },
                                       OldSiteId: {
                                         FieldId: 2261,
@@ -6265,8 +5688,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                         FieldTitle: "",
                                         FieldDescription: "",
                                         FieldOrder: 2,
-                                        IsRequired: false,
-                                        FieldType: "Numeric"
+                                        FieldType: "Numeric",
+                                        IsRequired: false
                                       }
                                     }
                                   },
@@ -6275,8 +5698,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Тип канала",
                                   FieldDescription: "ch_type",
                                   FieldOrder: 11,
-                                  IsRequired: false,
-                                  FieldType: "O2MRelation"
+                                  FieldType: "O2MRelation",
+                                  IsRequired: false
                                 },
                                 ShortDescription: {
                                   FieldId: 2281,
@@ -6284,8 +5707,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Короткое описание",
                                   FieldDescription: "short_descr",
                                   FieldOrder: 7,
-                                  IsRequired: false,
-                                  FieldType: "Textbox"
+                                  FieldType: "Textbox",
+                                  IsRequired: false
                                 },
                                 Cities: {
                                   IsBackward: false,
@@ -6296,7 +5719,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                     ContentName: "NetworkCity",
                                     ContentTitle: "Города сети",
                                     ContentDescription: "",
-                                    ObjectShape: null,
+                                    IsExtension: false,
                                     Fields: {
                                       City: {
                                         IsBackward: false,
@@ -6308,8 +5731,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                         FieldTitle: "Город",
                                         FieldDescription: "",
                                         FieldOrder: 1,
-                                        IsRequired: false,
-                                        FieldType: "O2MRelation"
+                                        FieldType: "O2MRelation",
+                                        IsRequired: false
                                       }
                                     }
                                   },
@@ -6318,8 +5741,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Города вещания",
                                   FieldDescription: "cities",
                                   FieldOrder: 12,
-                                  IsRequired: false,
-                                  FieldType: "M2MRelation"
+                                  FieldType: "M2MRelation",
+                                  IsRequired: false
                                 },
                                 Disabled: {
                                   FieldId: 2289,
@@ -6327,8 +5750,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Приостановлено вещание",
                                   FieldDescription: "offair",
                                   FieldOrder: 17,
-                                  IsRequired: false,
-                                  FieldType: "Boolean"
+                                  FieldType: "Boolean",
+                                  IsRequired: false
                                 },
                                 IsMtsMsk: {
                                   FieldId: 2297,
@@ -6336,8 +5759,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "МТС Москва",
                                   FieldDescription: "test_inMSK_mgts_XML",
                                   FieldOrder: 23,
-                                  IsRequired: false,
-                                  FieldType: "Boolean"
+                                  FieldType: "Boolean",
+                                  IsRequired: false
                                 },
                                 IsRegional: {
                                   FieldId: 2298,
@@ -6345,8 +5768,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Регионал. канал",
                                   FieldDescription: "regional_tv",
                                   FieldOrder: 24,
-                                  IsRequired: false,
-                                  FieldType: "Boolean"
+                                  FieldType: "Boolean",
+                                  IsRequired: false
                                 },
                                 Logo150: {
                                   FieldId: 2306,
@@ -6354,8 +5777,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Лого 150x150",
                                   FieldDescription: "logo150",
                                   FieldOrder: 32,
-                                  IsRequired: false,
-                                  FieldType: "Image"
+                                  FieldType: "Image",
+                                  IsRequired: false
                                 },
                                 LcnDvbC: {
                                   FieldId: 2312,
@@ -6363,8 +5786,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "LCN DVB-C",
                                   FieldDescription: "lcn_dvbc",
                                   FieldOrder: 36,
-                                  IsRequired: false,
-                                  FieldType: "Numeric"
+                                  FieldType: "Numeric",
+                                  IsRequired: false
                                 },
                                 LcnIpTv: {
                                   FieldId: 2314,
@@ -6372,8 +5795,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "LCN IPTV",
                                   FieldDescription: "lcn_iptv",
                                   FieldOrder: 37,
-                                  IsRequired: false,
-                                  FieldType: "Numeric"
+                                  FieldType: "Numeric",
+                                  IsRequired: false
                                 },
                                 LcnDvbS: {
                                   FieldId: 2313,
@@ -6381,8 +5804,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "LCN DVB-S",
                                   FieldDescription: "lcn_dvbs",
                                   FieldOrder: 38,
-                                  IsRequired: false,
-                                  FieldType: "Numeric"
+                                  FieldType: "Numeric",
+                                  IsRequired: false
                                 },
                                 Format: {
                                   IsBackward: false,
@@ -6394,8 +5817,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Формат",
                                   FieldDescription: "",
                                   FieldOrder: 16,
-                                  IsRequired: false,
-                                  FieldType: "O2MRelation"
+                                  FieldType: "O2MRelation",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -6404,8 +5827,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Дочерние каналы",
                             FieldDescription: "",
                             FieldOrder: 14,
-                            IsRequired: false,
-                            FieldType: "M2ORelation"
+                            FieldType: "M2ORelation",
+                            IsRequired: false
                           },
                           Format: {
                             IsBackward: false,
@@ -6417,8 +5840,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Формат",
                             FieldDescription: "",
                             FieldOrder: 16,
-                            IsRequired: false,
-                            FieldType: "O2MRelation"
+                            FieldType: "O2MRelation",
+                            IsRequired: false
                           },
                           Logo40x30: {
                             FieldId: 2303,
@@ -6426,8 +5849,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Лого 40х30",
                             FieldDescription: "logo40x30",
                             FieldOrder: 29,
-                            IsRequired: false,
-                            FieldType: "Image"
+                            FieldType: "Image",
+                            IsRequired: false
                           },
                           TimeZone: {
                             IsBackward: false,
@@ -6437,7 +5860,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "TimeZone",
                               ContentTitle: "Часовые зоны",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: false,
                               Fields: {
                                 Name: {
                                   FieldId: 2203,
@@ -6445,8 +5868,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Название часовой зоны",
                                   FieldDescription: "",
                                   FieldOrder: 1,
-                                  IsRequired: false,
-                                  FieldType: "String"
+                                  FieldType: "String",
+                                  IsRequired: false
                                 },
                                 Code: {
                                   FieldId: 2204,
@@ -6454,8 +5877,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Код зоны",
                                   FieldDescription: "",
                                   FieldOrder: 2,
-                                  IsRequired: false,
-                                  FieldType: "String"
+                                  FieldType: "String",
+                                  IsRequired: false
                                 },
                                 UTC: {
                                   FieldId: 2205,
@@ -6463,8 +5886,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Значение по UTC",
                                   FieldDescription: "",
                                   FieldOrder: 3,
-                                  IsRequired: false,
-                                  FieldType: "String"
+                                  FieldType: "String",
+                                  IsRequired: false
                                 },
                                 MSK: {
                                   FieldId: 2206,
@@ -6472,8 +5895,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Значение от Московского времени",
                                   FieldDescription: "",
                                   FieldOrder: 4,
-                                  IsRequired: false,
-                                  FieldType: "String"
+                                  FieldType: "String",
+                                  IsRequired: false
                                 },
                                 OldSiteId: {
                                   FieldId: 2207,
@@ -6481,8 +5904,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "",
                                   FieldDescription: "",
                                   FieldOrder: 5,
-                                  IsRequired: false,
-                                  FieldType: "Numeric"
+                                  FieldType: "Numeric",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -6491,8 +5914,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Часовая зона (UTC)",
                             FieldDescription: "utc_tz\ndesc",
                             FieldOrder: 15,
-                            IsRequired: false,
-                            FieldType: "O2MRelation"
+                            FieldType: "O2MRelation",
+                            IsRequired: false
                           }
                         }
                       },
@@ -6501,8 +5924,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "Каналы",
                       FieldDescription: "",
                       FieldOrder: 4,
-                      IsRequired: false,
-                      FieldType: "M2MRelation"
+                      FieldType: "M2MRelation",
+                      IsRequired: false
                     },
                     TitleForSite: {
                       FieldId: 2482,
@@ -6510,8 +5933,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 2,
-                      IsRequired: false,
-                      FieldType: "String"
+                      FieldType: "String",
+                      IsRequired: false
                     },
                     PackageType: {
                       Items: [
@@ -6533,8 +5956,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "Тип пакета",
                       FieldDescription: "",
                       FieldOrder: 3,
-                      IsRequired: false,
-                      FieldType: "StringEnum"
+                      FieldType: "StringEnum",
+                      IsRequired: false
                     }
                   }
                 },
@@ -6544,7 +5967,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingFixConnectTariff",
                   ContentTitle: "Маркетинговые тарифы фиксированной связи",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {
                     Segment: {
                       IsBackward: false,
@@ -6556,8 +5979,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 2,
-                      IsRequired: false,
-                      FieldType: "O2MRelation"
+                      FieldType: "O2MRelation",
+                      IsRequired: false
                     },
                     Category: {
                       IsBackward: false,
@@ -6567,7 +5990,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                         ContentName: "TariffCategory",
                         ContentTitle: "Категории тарифов",
                         ContentDescription: "",
-                        ObjectShape: null,
+                        IsExtension: false,
                         Fields: {
                           ConnectionTypes: {
                             IsBackward: false,
@@ -6579,8 +6002,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Типы связи",
                             FieldDescription: "",
                             FieldOrder: 10,
-                            IsRequired: false,
-                            FieldType: "M2MRelation"
+                            FieldType: "M2MRelation",
+                            IsRequired: false
                           },
                           Title: {
                             FieldId: 1989,
@@ -6588,8 +6011,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Название",
                             FieldDescription: "",
                             FieldOrder: 1,
-                            IsRequired: false,
-                            FieldType: "String"
+                            FieldType: "String",
+                            IsRequired: false
                           },
                           Alias: {
                             FieldId: 1990,
@@ -6597,8 +6020,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Алиас",
                             FieldDescription: "",
                             FieldOrder: 2,
-                            IsRequired: false,
-                            FieldType: "String"
+                            FieldType: "String",
+                            IsRequired: false
                           },
                           Image: {
                             FieldId: 1991,
@@ -6606,8 +6029,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Картинка",
                             FieldDescription: "",
                             FieldOrder: 3,
-                            IsRequired: false,
-                            FieldType: "Image"
+                            FieldType: "Image",
+                            IsRequired: false
                           },
                           Order: {
                             FieldId: 2001,
@@ -6615,8 +6038,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Порядок",
                             FieldDescription: "",
                             FieldOrder: 7,
-                            IsRequired: false,
-                            FieldType: "Numeric"
+                            FieldType: "Numeric",
+                            IsRequired: false
                           },
                           ImageSvg: {
                             FieldId: 2020,
@@ -6624,8 +6047,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Векторное изображение",
                             FieldDescription: "",
                             FieldOrder: 9,
-                            IsRequired: false,
-                            FieldType: "File"
+                            FieldType: "File",
+                            IsRequired: false
                           },
                           TemplateType: {
                             Items: [
@@ -6647,8 +6070,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             FieldTitle: "Тип шаблона страницы",
                             FieldDescription: "",
                             FieldOrder: 11,
-                            IsRequired: false,
-                            FieldType: "StringEnum"
+                            FieldType: "StringEnum",
+                            IsRequired: false
                           }
                         }
                       },
@@ -6657,8 +6080,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "Тип предложения (Категория тарифа)",
                       FieldDescription: "",
                       FieldOrder: 3,
-                      IsRequired: false,
-                      FieldType: "O2MRelation"
+                      FieldType: "O2MRelation",
+                      IsRequired: false
                     },
                     MarketingDevices: {
                       IsBackward: false,
@@ -6670,8 +6093,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 8,
-                      IsRequired: false,
-                      FieldType: "M2MRelation"
+                      FieldType: "M2MRelation",
+                      IsRequired: false
                     },
                     BonusTVPackages: {
                       IsBackward: false,
@@ -6683,8 +6106,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 7,
-                      IsRequired: false,
-                      FieldType: "M2MRelation"
+                      FieldType: "M2MRelation",
+                      IsRequired: false
                     },
                     MarketingPhoneTariff: {
                       IsBackward: false,
@@ -6696,8 +6119,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 6,
-                      IsRequired: false,
-                      FieldType: "O2MRelation"
+                      FieldType: "O2MRelation",
+                      IsRequired: false
                     },
                     MarketingInternetTariff: {
                       IsBackward: false,
@@ -6709,8 +6132,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 5,
-                      IsRequired: false,
-                      FieldType: "O2MRelation"
+                      FieldType: "O2MRelation",
+                      IsRequired: false
                     },
                     MarketingTvPackage: {
                       IsBackward: false,
@@ -6722,8 +6145,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 4,
-                      IsRequired: false,
-                      FieldType: "O2MRelation"
+                      FieldType: "O2MRelation",
+                      IsRequired: false
                     },
                     TitleForSite: {
                       FieldId: 2491,
@@ -6731,8 +6154,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 1,
-                      IsRequired: false,
-                      FieldType: "String"
+                      FieldType: "String",
+                      IsRequired: false
                     }
                   }
                 },
@@ -6742,7 +6165,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingPhoneTariff",
                   ContentTitle: "Маркетинговые тарифы телефонии",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {}
                 },
                 MarketingInternetTariff: {
@@ -6751,7 +6174,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "MarketingInternetTariff",
                   ContentTitle: "Маркетинговые тарифы интернет",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: true,
                   Fields: {}
                 }
               },
@@ -6760,8 +6183,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Тип",
               FieldDescription: "",
               FieldOrder: 11,
-              IsRequired: false,
-              FieldType: "Classifier"
+              FieldType: "Classifier",
+              IsRequired: false
             },
             FullDescription: {
               FieldId: 1740,
@@ -6769,8 +6192,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 6,
-              IsRequired: false,
-              FieldType: "VisualEdit"
+              FieldType: "VisualEdit",
+              IsRequired: false
             },
             Parameters: {
               IsBackward: false,
@@ -6780,7 +6203,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 ContentName: "MarketingProductParameter",
                 ContentTitle: "Параметры маркетинговых продуктов",
                 ContentDescription: "",
-                ObjectShape: null,
+                IsExtension: false,
                 Fields: {
                   Group: {
                     IsBackward: false,
@@ -6792,8 +6215,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Группа параметров",
                     FieldDescription: "",
                     FieldOrder: 3,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   BaseParameter: {
                     IsBackward: false,
@@ -6805,8 +6228,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Базовый параметр",
                     FieldDescription: "",
                     FieldOrder: 5,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   Zone: {
                     IsBackward: false,
@@ -6818,8 +6241,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Зона действия базового параметра",
                     FieldDescription: "",
                     FieldOrder: 6,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   Direction: {
                     IsBackward: false,
@@ -6831,8 +6254,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Направление действия базового параметра",
                     FieldDescription: "",
                     FieldOrder: 7,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   BaseParameterModifiers: {
                     IsBackward: false,
@@ -6844,8 +6267,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Модификаторы базового параметра",
                     FieldDescription: "",
                     FieldOrder: 8,
-                    IsRequired: false,
-                    FieldType: "M2MRelation"
+                    FieldType: "M2MRelation",
+                    IsRequired: false
                   },
                   Modifiers: {
                     IsBackward: false,
@@ -6857,8 +6280,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Модификаторы",
                     FieldDescription: "",
                     FieldOrder: 9,
-                    IsRequired: false,
-                    FieldType: "M2MRelation"
+                    FieldType: "M2MRelation",
+                    IsRequired: false
                   },
                   Unit: {
                     IsBackward: false,
@@ -6870,8 +6293,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Единица измерения",
                     FieldDescription: "",
                     FieldOrder: 13,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   Choice: {
                     IsBackward: false,
@@ -6883,8 +6306,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Выбор",
                     FieldDescription: "",
                     FieldOrder: 15,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   Title: {
                     FieldId: 1849,
@@ -6892,8 +6315,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Название",
                     FieldDescription: "",
                     FieldOrder: 1,
-                    IsRequired: false,
-                    FieldType: "String"
+                    FieldType: "String",
+                    IsRequired: false
                   },
                   SortOrder: {
                     FieldId: 1859,
@@ -6901,8 +6324,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Порядок",
                     FieldDescription: "",
                     FieldOrder: 10,
-                    IsRequired: false,
-                    FieldType: "Numeric"
+                    FieldType: "Numeric",
+                    IsRequired: false
                   },
                   NumValue: {
                     FieldId: 1860,
@@ -6910,8 +6333,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Числовое значение",
                     FieldDescription: "",
                     FieldOrder: 11,
-                    IsRequired: false,
-                    FieldType: "Numeric"
+                    FieldType: "Numeric",
+                    IsRequired: false
                   },
                   Value: {
                     FieldId: 1861,
@@ -6919,8 +6342,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Текстовое значение",
                     FieldDescription: "",
                     FieldOrder: 12,
-                    IsRequired: false,
-                    FieldType: "VisualEdit"
+                    FieldType: "VisualEdit",
+                    IsRequired: false
                   },
                   Description: {
                     FieldId: 1863,
@@ -6928,8 +6351,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "",
                     FieldDescription: "",
                     FieldOrder: 14,
-                    IsRequired: false,
-                    FieldType: "VisualEdit"
+                    FieldType: "VisualEdit",
+                    IsRequired: false
                   }
                 }
               },
@@ -6938,8 +6361,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Параметры маркетингового продукта",
               FieldDescription: "",
               FieldOrder: 9,
-              IsRequired: false,
-              FieldType: "M2ORelation"
+              FieldType: "M2ORelation",
+              IsRequired: false
             },
             TariffsOnMarketingDevice: {
               IsBackward: true,
@@ -6949,7 +6372,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 ContentName: "DeviceOnTariffs",
                 ContentTitle: "Оборудование на тарифах",
                 ContentDescription: "",
-                ObjectShape: null,
+                IsExtension: false,
                 Fields: {
                   Parent: {
                     IsBackward: false,
@@ -6959,7 +6382,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       ContentName: "ProductRelation",
                       ContentTitle: "Матрица связей",
                       ContentDescription: "",
-                      ObjectShape: null,
+                      IsExtension: false,
                       Fields: {
                         Title: {
                           FieldId: 1416,
@@ -6967,8 +6390,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Название",
                           FieldDescription: "",
                           FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         Modifiers: {
                           IsBackward: false,
@@ -6980,8 +6403,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Модификаторы",
                           FieldDescription: "",
                           FieldOrder: 4,
-                          IsRequired: false,
-                          FieldType: "M2MRelation"
+                          FieldType: "M2MRelation",
+                          IsRequired: false
                         },
                         Parameters: {
                           IsBackward: false,
@@ -6991,7 +6414,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             ContentName: "LinkParameter",
                             ContentTitle: "Параметры связей",
                             ContentDescription: "",
-                            ObjectShape: null,
+                            IsExtension: false,
                             Fields: {
                               Title: {
                                 FieldId: 1418,
@@ -6999,8 +6422,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Название",
                                 FieldDescription: "",
                                 FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
+                                FieldType: "String",
+                                IsRequired: false
                               },
                               Group: {
                                 IsBackward: false,
@@ -7012,8 +6435,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Группа параметров",
                                 FieldDescription: "",
                                 FieldOrder: 3,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               BaseParameter: {
                                 IsBackward: false,
@@ -7025,8 +6448,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Базовый параметр",
                                 FieldDescription: "",
                                 FieldOrder: 7,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Zone: {
                                 IsBackward: false,
@@ -7038,8 +6461,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Зона действия базового параметра",
                                 FieldDescription: "",
                                 FieldOrder: 8,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Direction: {
                                 IsBackward: false,
@@ -7051,8 +6474,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Направление действия базового параметра",
                                 FieldDescription: "",
                                 FieldOrder: 9,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               BaseParameterModifiers: {
                                 IsBackward: false,
@@ -7064,8 +6487,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Модификаторы базового параметра",
                                 FieldDescription: "",
                                 FieldOrder: 10,
-                                IsRequired: false,
-                                FieldType: "M2MRelation"
+                                FieldType: "M2MRelation",
+                                IsRequired: false
                               },
                               Modifiers: {
                                 IsBackward: false,
@@ -7077,8 +6500,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Модификаторы",
                                 FieldDescription: "",
                                 FieldOrder: 11,
-                                IsRequired: false,
-                                FieldType: "M2MRelation"
+                                FieldType: "M2MRelation",
+                                IsRequired: false
                               },
                               SortOrder: {
                                 FieldId: 1425,
@@ -7086,8 +6509,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Порядок",
                                 FieldDescription: "",
                                 FieldOrder: 12,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               },
                               NumValue: {
                                 FieldId: 1426,
@@ -7095,8 +6518,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Числовое значение",
                                 FieldDescription: "",
                                 FieldOrder: 13,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               },
                               Value: {
                                 FieldId: 1427,
@@ -7104,8 +6527,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Текстовое значение",
                                 FieldDescription: "",
                                 FieldOrder: 14,
-                                IsRequired: false,
-                                FieldType: "VisualEdit"
+                                FieldType: "VisualEdit",
+                                IsRequired: false
                               },
                               Description: {
                                 FieldId: 1429,
@@ -7113,8 +6536,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "",
                                 FieldDescription: "",
                                 FieldOrder: 16,
-                                IsRequired: false,
-                                FieldType: "VisualEdit"
+                                FieldType: "VisualEdit",
+                                IsRequired: false
                               },
                               Unit: {
                                 IsBackward: false,
@@ -7126,8 +6549,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Единица измерения",
                                 FieldDescription: "",
                                 FieldOrder: 15,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               ProductGroup: {
                                 IsBackward: false,
@@ -7137,7 +6560,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   ContentName: "Group",
                                   ContentTitle: "Группы продуктов",
                                   ContentDescription: "",
-                                  ObjectShape: null,
+                                  IsExtension: false,
                                   Fields: {}
                                 },
                                 FieldId: 1657,
@@ -7145,8 +6568,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "",
                                 FieldDescription: "",
                                 FieldOrder: 19,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Choice: {
                                 IsBackward: false,
@@ -7158,8 +6581,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Выбор",
                                 FieldDescription: "",
                                 FieldOrder: 17,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               }
                             }
                           },
@@ -7168,8 +6591,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Параметры",
                           FieldDescription: "",
                           FieldOrder: 3,
-                          IsRequired: false,
-                          FieldType: "M2ORelation"
+                          FieldType: "M2ORelation",
+                          IsRequired: false
                         },
                         Type: {
                           Contents: {
@@ -7179,7 +6602,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "TariffTransfer",
                               ContentTitle: "Переходы с тарифа на тариф",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {}
                             },
                             MutualGroup: {
@@ -7188,7 +6611,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "MutualGroup",
                               ContentTitle: "Группы несовместимости услуг",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {}
                             },
                             ServiceOnTariff: {
@@ -7197,7 +6620,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "ServiceOnTariff",
                               ContentTitle: "Услуги на тарифе",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {
                                 Description: {
                                   FieldId: 2044,
@@ -7205,8 +6628,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "",
                                   FieldDescription: "",
                                   FieldOrder: 4,
-                                  IsRequired: false,
-                                  FieldType: "Textbox"
+                                  FieldType: "Textbox",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -7216,7 +6639,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "ServicesUpsale",
                               ContentTitle: "Матрица предложений услуг Upsale",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {
                                 Order: {
                                   FieldId: 1700,
@@ -7224,8 +6647,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "",
                                   FieldDescription: "",
                                   FieldOrder: 4,
-                                  IsRequired: false,
-                                  FieldType: "Numeric"
+                                  FieldType: "Numeric",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -7235,7 +6658,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "TariffOptionPackage",
                               ContentTitle: "Пакеты опций на тарифах",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {
                                 SubTitle: {
                                   FieldId: 1708,
@@ -7243,8 +6666,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Подзаголовок",
                                   FieldDescription: "",
                                   FieldOrder: 5,
-                                  IsRequired: false,
-                                  FieldType: "Textbox"
+                                  FieldType: "Textbox",
+                                  IsRequired: false
                                 },
                                 Description: {
                                   FieldId: 1707,
@@ -7252,8 +6675,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Описание",
                                   FieldDescription: "",
                                   FieldOrder: 6,
-                                  IsRequired: false,
-                                  FieldType: "VisualEdit"
+                                  FieldType: "VisualEdit",
+                                  IsRequired: false
                                 },
                                 Alias: {
                                   FieldId: 1709,
@@ -7261,8 +6684,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Псевдоним",
                                   FieldDescription: "",
                                   FieldOrder: 7,
-                                  IsRequired: false,
-                                  FieldType: "String"
+                                  FieldType: "String",
+                                  IsRequired: false
                                 },
                                 Link: {
                                   FieldId: 1727,
@@ -7270,8 +6693,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Ссылка",
                                   FieldDescription: "",
                                   FieldOrder: 8,
-                                  IsRequired: false,
-                                  FieldType: "String"
+                                  FieldType: "String",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -7281,7 +6704,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "ServiceRelation",
                               ContentTitle: "Связи между услугами",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {}
                             },
                             RoamingScaleOnTariff: {
@@ -7290,7 +6713,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "RoamingScaleOnTariff",
                               ContentTitle: "Роуминговые сетки для тарифа",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {}
                             },
                             ServiceOnRoamingScale: {
@@ -7299,7 +6722,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "ServiceOnRoamingScale",
                               ContentTitle: "Услуги на роуминговой сетке",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {}
                             },
                             CrossSale: {
@@ -7308,7 +6731,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "CrossSale",
                               ContentTitle: "Матрица предложений CrossSale",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {
                                 Order: {
                                   FieldId: 2197,
@@ -7316,8 +6739,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Порядок",
                                   FieldDescription: "",
                                   FieldOrder: 4,
-                                  IsRequired: false,
-                                  FieldType: "Numeric"
+                                  FieldType: "Numeric",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -7327,7 +6750,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "MarketingCrossSale",
                               ContentTitle: "Матрица маркетинговых предложений CrossSale",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {
                                 Order: {
                                   FieldId: 2201,
@@ -7335,8 +6758,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "Порядок",
                                   FieldDescription: "",
                                   FieldOrder: 4,
-                                  IsRequired: false,
-                                  FieldType: "Numeric"
+                                  FieldType: "Numeric",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -7346,7 +6769,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "DeviceOnTariffs",
                               ContentTitle: "Оборудование на тарифах",
                               ContentDescription: "",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {
                                 Order: {
                                   FieldId: 2534,
@@ -7354,8 +6777,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "",
                                   FieldDescription: "",
                                   FieldOrder: 5,
-                                  IsRequired: false,
-                                  FieldType: "Numeric"
+                                  FieldType: "Numeric",
+                                  IsRequired: false
                                 }
                               }
                             },
@@ -7365,7 +6788,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                               ContentName: "DevicesForFixConnectAction",
                               ContentTitle: "Акционное оборудование",
                               ContentDescription: "Оборудование для акций фиксированной связи",
-                              ObjectShape: null,
+                              IsExtension: true,
                               Fields: {
                                 Order: {
                                   FieldId: 2539,
@@ -7373,8 +6796,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   FieldTitle: "",
                                   FieldDescription: "",
                                   FieldOrder: 3,
-                                  IsRequired: false,
-                                  FieldType: "Numeric"
+                                  FieldType: "Numeric",
+                                  IsRequired: false
                                 }
                               }
                             }
@@ -7384,8 +6807,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Тип",
                           FieldDescription: "",
                           FieldOrder: 2,
-                          IsRequired: false,
-                          FieldType: "Classifier"
+                          FieldType: "Classifier",
+                          IsRequired: false
                         }
                       }
                     },
@@ -7394,8 +6817,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "",
                     FieldDescription: "",
                     FieldOrder: 1,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   MarketingDevice: {
                     IsBackward: false,
@@ -7407,8 +6830,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Маркетинговое устройство",
                     FieldDescription: "",
                     FieldOrder: 2,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   MarketingTariffs: {
                     IsBackward: false,
@@ -7420,8 +6843,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Маркетинговые тарифы",
                     FieldDescription: "",
                     FieldOrder: 3,
-                    IsRequired: false,
-                    FieldType: "M2MRelation"
+                    FieldType: "M2MRelation",
+                    IsRequired: false
                   },
                   Cities: {
                     IsBackward: false,
@@ -7433,8 +6856,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Города",
                     FieldDescription: "",
                     FieldOrder: 4,
-                    IsRequired: false,
-                    FieldType: "M2MRelation"
+                    FieldType: "M2MRelation",
+                    IsRequired: false
                   },
                   Order: {
                     FieldId: 2534,
@@ -7442,8 +6865,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "",
                     FieldDescription: "",
                     FieldOrder: 5,
-                    IsRequired: false,
-                    FieldType: "Numeric"
+                    FieldType: "Numeric",
+                    IsRequired: false
                   }
                 }
               },
@@ -7452,8 +6875,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Маркетинговое устройство",
               FieldDescription: "",
               FieldOrder: 2,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             DevicesOnMarketingTariff: {
               IsBackward: true,
@@ -7463,7 +6886,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 ContentName: "DeviceOnTariffs",
                 ContentTitle: "Оборудование на тарифах",
                 ContentDescription: "",
-                ObjectShape: null,
+                IsExtension: false,
                 Fields: {
                   Parent: {
                     IsBackward: false,
@@ -7473,7 +6896,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       ContentName: "ProductRelation",
                       ContentTitle: "Матрица связей",
                       ContentDescription: "",
-                      ObjectShape: null,
+                      IsExtension: false,
                       Fields: {
                         Title: {
                           FieldId: 1416,
@@ -7481,8 +6904,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Название",
                           FieldDescription: "",
                           FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         Parameters: {
                           IsBackward: false,
@@ -7492,7 +6915,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             ContentName: "LinkParameter",
                             ContentTitle: "Параметры связей",
                             ContentDescription: "",
-                            ObjectShape: null,
+                            IsExtension: false,
                             Fields: {
                               Title: {
                                 FieldId: 1418,
@@ -7500,8 +6923,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Название",
                                 FieldDescription: "",
                                 FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
+                                FieldType: "String",
+                                IsRequired: false
                               },
                               SortOrder: {
                                 FieldId: 1425,
@@ -7509,8 +6932,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Порядок",
                                 FieldDescription: "",
                                 FieldOrder: 12,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               },
                               NumValue: {
                                 FieldId: 1426,
@@ -7518,8 +6941,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Числовое значение",
                                 FieldDescription: "",
                                 FieldOrder: 13,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               },
                               Value: {
                                 FieldId: 1427,
@@ -7527,8 +6950,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Текстовое значение",
                                 FieldDescription: "",
                                 FieldOrder: 14,
-                                IsRequired: false,
-                                FieldType: "VisualEdit"
+                                FieldType: "VisualEdit",
+                                IsRequired: false
                               },
                               Description: {
                                 FieldId: 1429,
@@ -7536,8 +6959,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "",
                                 FieldDescription: "",
                                 FieldOrder: 16,
-                                IsRequired: false,
-                                FieldType: "VisualEdit"
+                                FieldType: "VisualEdit",
+                                IsRequired: false
                               },
                               Unit: {
                                 IsBackward: false,
@@ -7549,8 +6972,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Единица измерения",
                                 FieldDescription: "",
                                 FieldOrder: 15,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Modifiers: {
                                 IsBackward: false,
@@ -7562,8 +6985,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Модификаторы",
                                 FieldDescription: "",
                                 FieldOrder: 11,
-                                IsRequired: false,
-                                FieldType: "M2MRelation"
+                                FieldType: "M2MRelation",
+                                IsRequired: false
                               },
                               BaseParameterModifiers: {
                                 IsBackward: false,
@@ -7575,8 +6998,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Модификаторы базового параметра",
                                 FieldDescription: "",
                                 FieldOrder: 10,
-                                IsRequired: false,
-                                FieldType: "M2MRelation"
+                                FieldType: "M2MRelation",
+                                IsRequired: false
                               },
                               Direction: {
                                 IsBackward: false,
@@ -7588,8 +7011,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Направление действия базового параметра",
                                 FieldDescription: "",
                                 FieldOrder: 9,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Zone: {
                                 IsBackward: false,
@@ -7601,8 +7024,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Зона действия базового параметра",
                                 FieldDescription: "",
                                 FieldOrder: 8,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               BaseParameter: {
                                 IsBackward: false,
@@ -7614,8 +7037,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Базовый параметр",
                                 FieldDescription: "",
                                 FieldOrder: 7,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Group: {
                                 IsBackward: false,
@@ -7627,8 +7050,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Группа параметров",
                                 FieldDescription: "",
                                 FieldOrder: 3,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Choice: {
                                 IsBackward: false,
@@ -7640,8 +7063,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Выбор",
                                 FieldDescription: "",
                                 FieldOrder: 17,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               }
                             }
                           },
@@ -7650,8 +7073,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Параметры",
                           FieldDescription: "",
                           FieldOrder: 3,
-                          IsRequired: false,
-                          FieldType: "M2ORelation"
+                          FieldType: "M2ORelation",
+                          IsRequired: false
                         },
                         Modifiers: {
                           IsBackward: false,
@@ -7663,8 +7086,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Модификаторы",
                           FieldDescription: "",
                           FieldOrder: 4,
-                          IsRequired: false,
-                          FieldType: "M2MRelation"
+                          FieldType: "M2MRelation",
+                          IsRequired: false
                         }
                       }
                     },
@@ -7673,8 +7096,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "",
                     FieldDescription: "",
                     FieldOrder: 1,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   MarketingDevice: {
                     IsBackward: false,
@@ -7686,8 +7109,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Маркетинговое устройство",
                     FieldDescription: "",
                     FieldOrder: 2,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   Cities: {
                     IsBackward: false,
@@ -7699,8 +7122,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Города",
                     FieldDescription: "",
                     FieldOrder: 4,
-                    IsRequired: false,
-                    FieldType: "M2MRelation"
+                    FieldType: "M2MRelation",
+                    IsRequired: false
                   },
                   Order: {
                     FieldId: 2534,
@@ -7708,8 +7131,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "",
                     FieldDescription: "",
                     FieldOrder: 5,
-                    IsRequired: false,
-                    FieldType: "Numeric"
+                    FieldType: "Numeric",
+                    IsRequired: false
                   }
                 }
               },
@@ -7718,8 +7141,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Маркетинговые тарифы",
               FieldDescription: "",
               FieldOrder: 3,
-              IsRequired: false,
-              FieldType: "M2MRelation"
+              FieldType: "M2MRelation",
+              IsRequired: false
             },
             ActionsOnMarketingDevice: {
               IsBackward: true,
@@ -7729,7 +7152,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 ContentName: "DevicesForFixConnectAction",
                 ContentTitle: "Акционное оборудование",
                 ContentDescription: "Оборудование для акций фиксированной связи",
-                ObjectShape: null,
+                IsExtension: false,
                 Fields: {
                   FixConnectAction: {
                     IsBackward: false,
@@ -7739,7 +7162,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       ContentName: "Product",
                       ContentTitle: "Продукты",
                       ContentDescription: "",
-                      ObjectShape: null,
+                      IsExtension: false,
                       Fields: {
                         MarketingProduct: {
                           IsBackward: false,
@@ -7749,7 +7172,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             ContentName: "MarketingProduct",
                             ContentTitle: "Маркетинговые продукты",
                             ContentDescription: "",
-                            ObjectShape: null,
+                            IsExtension: false,
                             Fields: {
                               Title: {
                                 FieldId: 1534,
@@ -7757,8 +7180,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Название",
                                 FieldDescription: "",
                                 FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
+                                FieldType: "String",
+                                IsRequired: false
                               }
                             }
                           },
@@ -7767,8 +7190,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Маркетинговый продукт",
                           FieldDescription: "",
                           FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "O2MRelation"
+                          FieldType: "O2MRelation",
+                          IsRequired: false
                         },
                         GlobalCode: {
                           FieldId: 2033,
@@ -7776,8 +7199,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "GlobalCode",
                           FieldDescription: "",
                           FieldOrder: 3,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         Type: {
                           FieldId: 1341,
@@ -7785,8 +7208,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Тип",
                           FieldDescription: "",
                           FieldOrder: 5,
-                          IsRequired: false,
-                          FieldType: "Classifier"
+                          FieldType: "Classifier",
+                          IsRequired: false
                         },
                         Description: {
                           FieldId: 1551,
@@ -7794,8 +7217,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Описание",
                           FieldDescription: "",
                           FieldOrder: 6,
-                          IsRequired: false,
-                          FieldType: "Textbox"
+                          FieldType: "Textbox",
+                          IsRequired: false
                         },
                         FullDescription: {
                           FieldId: 1552,
@@ -7803,8 +7226,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Полное описание",
                           FieldDescription: "",
                           FieldOrder: 7,
-                          IsRequired: false,
-                          FieldType: "VisualEdit"
+                          FieldType: "VisualEdit",
+                          IsRequired: false
                         },
                         Notes: {
                           FieldId: 1640,
@@ -7812,8 +7235,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Примечания",
                           FieldDescription: "",
                           FieldOrder: 8,
-                          IsRequired: false,
-                          FieldType: "Textbox"
+                          FieldType: "Textbox",
+                          IsRequired: false
                         },
                         Link: {
                           FieldId: 1572,
@@ -7821,8 +7244,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Ссылка",
                           FieldDescription: "",
                           FieldOrder: 9,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         SortOrder: {
                           FieldId: 1476,
@@ -7830,8 +7253,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Порядок",
                           FieldDescription: "",
                           FieldOrder: 10,
-                          IsRequired: false,
-                          FieldType: "Numeric"
+                          FieldType: "Numeric",
+                          IsRequired: false
                         },
                         ForisID: {
                           FieldId: 1470,
@@ -7839,8 +7262,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "",
                           FieldDescription: "",
                           FieldOrder: 11,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         Icon: {
                           FieldId: 1581,
@@ -7848,8 +7271,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Иконка",
                           FieldDescription: "",
                           FieldOrder: 15,
-                          IsRequired: false,
-                          FieldType: "Image"
+                          FieldType: "Image",
+                          IsRequired: false
                         },
                         PDF: {
                           FieldId: 1582,
@@ -7857,8 +7280,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "",
                           FieldDescription: "",
                           FieldOrder: 18,
-                          IsRequired: false,
-                          FieldType: "File"
+                          FieldType: "File",
+                          IsRequired: false
                         },
                         PdfFixedAlias: {
                           FieldId: 2677,
@@ -7866,8 +7289,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Алиас фиксированной ссылки на Pdf",
                           FieldDescription: "",
                           FieldOrder: 19,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         PdfFixedLinks: {
                           FieldId: 2680,
@@ -7875,8 +7298,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Фиксированные ссылки на Pdf",
                           FieldDescription: "",
                           FieldOrder: 20,
-                          IsRequired: false,
-                          FieldType: "Textbox"
+                          FieldType: "Textbox",
+                          IsRequired: false
                         },
                         StartDate: {
                           FieldId: 1407,
@@ -7884,8 +7307,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Дата начала публикации",
                           FieldDescription: "",
                           FieldOrder: 21,
-                          IsRequired: false,
-                          FieldType: "Date"
+                          FieldType: "Date",
+                          IsRequired: false
                         },
                         EndDate: {
                           FieldId: 1410,
@@ -7893,8 +7316,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Дата снятия с публикации",
                           FieldDescription: "",
                           FieldOrder: 22,
-                          IsRequired: false,
-                          FieldType: "Date"
+                          FieldType: "Date",
+                          IsRequired: false
                         },
                         OldSiteId: {
                           FieldId: 1477,
@@ -7902,8 +7325,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "",
                           FieldDescription: "",
                           FieldOrder: 24,
-                          IsRequired: false,
-                          FieldType: "Numeric"
+                          FieldType: "Numeric",
+                          IsRequired: false
                         },
                         OldId: {
                           FieldId: 1655,
@@ -7911,8 +7334,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "",
                           FieldDescription: "",
                           FieldOrder: 25,
-                          IsRequired: false,
-                          FieldType: "Numeric"
+                          FieldType: "Numeric",
+                          IsRequired: false
                         },
                         OldSiteInvId: {
                           FieldId: 1763,
@@ -7920,8 +7343,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "",
                           FieldDescription: "",
                           FieldOrder: 26,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         OldCorpSiteId: {
                           FieldId: 1764,
@@ -7929,8 +7352,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "",
                           FieldDescription: "",
                           FieldOrder: 27,
-                          IsRequired: false,
-                          FieldType: "Numeric"
+                          FieldType: "Numeric",
+                          IsRequired: false
                         },
                         OldAliasId: {
                           FieldId: 1644,
@@ -7938,8 +7361,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "",
                           FieldDescription: "",
                           FieldOrder: 28,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         Priority: {
                           FieldId: 2132,
@@ -7947,8 +7370,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Приоритет (популярность)",
                           FieldDescription: "Сортировка по возрастанию значения приоритета",
                           FieldOrder: 31,
-                          IsRequired: false,
-                          FieldType: "Numeric"
+                          FieldType: "Numeric",
+                          IsRequired: false
                         },
                         ListImage: {
                           FieldId: 2498,
@@ -7956,8 +7379,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Изображение в списке",
                           FieldDescription: "Изображение в общем списке",
                           FieldOrder: 33,
-                          IsRequired: false,
-                          FieldType: "Image"
+                          FieldType: "Image",
+                          IsRequired: false
                         },
                         ArchiveDate: {
                           FieldId: 2526,
@@ -7965,8 +7388,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Дата перевода в архив",
                           FieldDescription: "",
                           FieldOrder: 34,
-                          IsRequired: false,
-                          FieldType: "Date"
+                          FieldType: "Date",
+                          IsRequired: false
                         }
                       }
                     },
@@ -7975,8 +7398,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Акция фиксированной связи",
                     FieldDescription: "",
                     FieldOrder: 1,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   Parent: {
                     IsBackward: false,
@@ -7986,7 +7409,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       ContentName: "ProductRelation",
                       ContentTitle: "Матрица связей",
                       ContentDescription: "",
-                      ObjectShape: null,
+                      IsExtension: false,
                       Fields: {
                         Title: {
                           FieldId: 1416,
@@ -7994,8 +7417,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Название",
                           FieldDescription: "",
                           FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         Type: {
                           FieldId: 1417,
@@ -8003,8 +7426,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Тип",
                           FieldDescription: "",
                           FieldOrder: 2,
-                          IsRequired: false,
-                          FieldType: "Classifier"
+                          FieldType: "Classifier",
+                          IsRequired: false
                         },
                         Parameters: {
                           IsBackward: false,
@@ -8014,7 +7437,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                             ContentName: "LinkParameter",
                             ContentTitle: "Параметры связей",
                             ContentDescription: "",
-                            ObjectShape: null,
+                            IsExtension: false,
                             Fields: {
                               Unit: {
                                 IsBackward: false,
@@ -8024,7 +7447,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   ContentName: "Unit",
                                   ContentTitle: "Единицы измерения",
                                   ContentDescription: "",
-                                  ObjectShape: null,
+                                  IsExtension: false,
                                   Fields: {
                                     Alias: {
                                       FieldId: 2062,
@@ -8032,8 +7455,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "",
                                       FieldDescription: "",
                                       FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
+                                      FieldType: "String",
+                                      IsRequired: false
                                     },
                                     Title: {
                                       FieldId: 1384,
@@ -8041,8 +7464,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "",
                                       FieldDescription: "",
                                       FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
+                                      FieldType: "String",
+                                      IsRequired: false
                                     },
                                     Display: {
                                       FieldId: 1385,
@@ -8050,8 +7473,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "",
                                       FieldDescription: "",
                                       FieldOrder: 3,
-                                      IsRequired: false,
-                                      FieldType: "String"
+                                      FieldType: "String",
+                                      IsRequired: false
                                     },
                                     QuotaUnit: {
                                       Items: [
@@ -8127,8 +7550,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "Размерность",
                                       FieldDescription: "",
                                       FieldOrder: 4,
-                                      IsRequired: false,
-                                      FieldType: "StringEnum"
+                                      FieldType: "StringEnum",
+                                      IsRequired: false
                                     },
                                     QuotaPeriod: {
                                       Items: [
@@ -8180,8 +7603,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "Период",
                                       FieldDescription: "",
                                       FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "StringEnum"
+                                      FieldType: "StringEnum",
+                                      IsRequired: false
                                     },
                                     QuotaPeriodicity: {
                                       FieldId: 2177,
@@ -8189,8 +7612,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "Название периодичности",
                                       FieldDescription: "",
                                       FieldOrder: 6,
-                                      IsRequired: false,
-                                      FieldType: "String"
+                                      FieldType: "String",
+                                      IsRequired: false
                                     },
                                     PeriodMultiplier: {
                                       FieldId: 2114,
@@ -8198,8 +7621,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "Множитель периода",
                                       FieldDescription: "",
                                       FieldOrder: 7,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
+                                      FieldType: "Numeric",
+                                      IsRequired: false
                                     },
                                     Type: {
                                       FieldId: 2568,
@@ -8207,8 +7630,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "",
                                       FieldDescription: "",
                                       FieldOrder: 8,
-                                      IsRequired: false,
-                                      FieldType: "String"
+                                      FieldType: "String",
+                                      IsRequired: false
                                     }
                                   }
                                 },
@@ -8217,8 +7640,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Единица измерения",
                                 FieldDescription: "",
                                 FieldOrder: 15,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               BaseParameterModifiers: {
                                 IsBackward: false,
@@ -8230,8 +7653,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Модификаторы базового параметра",
                                 FieldDescription: "",
                                 FieldOrder: 10,
-                                IsRequired: false,
-                                FieldType: "M2MRelation"
+                                FieldType: "M2MRelation",
+                                IsRequired: false
                               },
                               Modifiers: {
                                 IsBackward: false,
@@ -8243,8 +7666,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Модификаторы",
                                 FieldDescription: "",
                                 FieldOrder: 11,
-                                IsRequired: false,
-                                FieldType: "M2MRelation"
+                                FieldType: "M2MRelation",
+                                IsRequired: false
                               },
                               Direction: {
                                 IsBackward: false,
@@ -8256,8 +7679,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Направление действия базового параметра",
                                 FieldDescription: "",
                                 FieldOrder: 9,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Zone: {
                                 IsBackward: false,
@@ -8269,8 +7692,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Зона действия базового параметра",
                                 FieldDescription: "",
                                 FieldOrder: 8,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               BaseParameter: {
                                 IsBackward: false,
@@ -8282,8 +7705,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Базовый параметр",
                                 FieldDescription: "",
                                 FieldOrder: 7,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Group: {
                                 IsBackward: false,
@@ -8293,7 +7716,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                   ContentName: "ProductParameterGroup",
                                   ContentTitle: "Группы параметров продуктов",
                                   ContentDescription: "",
-                                  ObjectShape: null,
+                                  IsExtension: false,
                                   Fields: {
                                     Title: {
                                       FieldId: 1496,
@@ -8301,8 +7724,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "Название",
                                       FieldDescription: "",
                                       FieldOrder: 1,
-                                      IsRequired: false,
-                                      FieldType: "String"
+                                      FieldType: "String",
+                                      IsRequired: false
                                     },
                                     Alias: {
                                       FieldId: 2049,
@@ -8310,8 +7733,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "Псевдоним",
                                       FieldDescription: "",
                                       FieldOrder: 2,
-                                      IsRequired: false,
-                                      FieldType: "String"
+                                      FieldType: "String",
+                                      IsRequired: false
                                     },
                                     SortOrder: {
                                       FieldId: 1500,
@@ -8319,8 +7742,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "Порядок",
                                       FieldDescription: "",
                                       FieldOrder: 3,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
+                                      FieldType: "Numeric",
+                                      IsRequired: false
                                     },
                                     OldSiteId: {
                                       FieldId: 1588,
@@ -8328,8 +7751,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "",
                                       FieldDescription: "",
                                       FieldOrder: 5,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
+                                      FieldType: "Numeric",
+                                      IsRequired: false
                                     },
                                     OldCorpSiteId: {
                                       FieldId: 1771,
@@ -8337,8 +7760,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "",
                                       FieldDescription: "",
                                       FieldOrder: 6,
-                                      IsRequired: false,
-                                      FieldType: "Numeric"
+                                      FieldType: "Numeric",
+                                      IsRequired: false
                                     },
                                     ImageSvg: {
                                       FieldId: 2029,
@@ -8346,8 +7769,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "Изображение",
                                       FieldDescription: "",
                                       FieldOrder: 7,
-                                      IsRequired: false,
-                                      FieldType: "File"
+                                      FieldType: "File",
+                                      IsRequired: false
                                     },
                                     Type: {
                                       FieldId: 2061,
@@ -8355,8 +7778,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "",
                                       FieldDescription: "",
                                       FieldOrder: 8,
-                                      IsRequired: false,
-                                      FieldType: "String"
+                                      FieldType: "String",
+                                      IsRequired: false
                                     },
                                     TitleForIcin: {
                                       FieldId: 2116,
@@ -8364,8 +7787,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                       FieldTitle: "Название для МГМН",
                                       FieldDescription: "",
                                       FieldOrder: 9,
-                                      IsRequired: false,
-                                      FieldType: "String"
+                                      FieldType: "String",
+                                      IsRequired: false
                                     }
                                   }
                                 },
@@ -8374,8 +7797,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Группа параметров",
                                 FieldDescription: "",
                                 FieldOrder: 3,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Choice: {
                                 IsBackward: false,
@@ -8387,8 +7810,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Выбор",
                                 FieldDescription: "",
                                 FieldOrder: 17,
-                                IsRequired: false,
-                                FieldType: "O2MRelation"
+                                FieldType: "O2MRelation",
+                                IsRequired: false
                               },
                               Title: {
                                 FieldId: 1418,
@@ -8396,8 +7819,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Название",
                                 FieldDescription: "",
                                 FieldOrder: 1,
-                                IsRequired: false,
-                                FieldType: "String"
+                                FieldType: "String",
+                                IsRequired: false
                               },
                               SortOrder: {
                                 FieldId: 1425,
@@ -8405,8 +7828,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Порядок",
                                 FieldDescription: "",
                                 FieldOrder: 12,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               },
                               NumValue: {
                                 FieldId: 1426,
@@ -8414,8 +7837,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Числовое значение",
                                 FieldDescription: "",
                                 FieldOrder: 13,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               },
                               Value: {
                                 FieldId: 1427,
@@ -8423,8 +7846,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "Текстовое значение",
                                 FieldDescription: "",
                                 FieldOrder: 14,
-                                IsRequired: false,
-                                FieldType: "VisualEdit"
+                                FieldType: "VisualEdit",
+                                IsRequired: false
                               },
                               Description: {
                                 FieldId: 1429,
@@ -8432,8 +7855,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "",
                                 FieldDescription: "",
                                 FieldOrder: 16,
-                                IsRequired: false,
-                                FieldType: "VisualEdit"
+                                FieldType: "VisualEdit",
+                                IsRequired: false
                               },
                               OldSiteId: {
                                 FieldId: 1656,
@@ -8441,8 +7864,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "",
                                 FieldDescription: "",
                                 FieldOrder: 20,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               },
                               OldCorpSiteId: {
                                 FieldId: 1772,
@@ -8450,8 +7873,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "",
                                 FieldDescription: "",
                                 FieldOrder: 21,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               },
                               OldPointId: {
                                 FieldId: 1658,
@@ -8459,8 +7882,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "",
                                 FieldDescription: "",
                                 FieldOrder: 22,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               },
                               OldCorpPointId: {
                                 FieldId: 1774,
@@ -8468,8 +7891,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                                 FieldTitle: "",
                                 FieldDescription: "",
                                 FieldOrder: 23,
-                                IsRequired: false,
-                                FieldType: "Numeric"
+                                FieldType: "Numeric",
+                                IsRequired: false
                               }
                             }
                           },
@@ -8478,8 +7901,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Параметры",
                           FieldDescription: "",
                           FieldOrder: 3,
-                          IsRequired: false,
-                          FieldType: "M2ORelation"
+                          FieldType: "M2ORelation",
+                          IsRequired: false
                         },
                         Modifiers: {
                           IsBackward: false,
@@ -8491,8 +7914,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Модификаторы",
                           FieldDescription: "",
                           FieldOrder: 4,
-                          IsRequired: false,
-                          FieldType: "M2MRelation"
+                          FieldType: "M2MRelation",
+                          IsRequired: false
                         }
                       }
                     },
@@ -8501,8 +7924,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "",
                     FieldDescription: "",
                     FieldOrder: 0,
-                    IsRequired: false,
-                    FieldType: "O2MRelation"
+                    FieldType: "O2MRelation",
+                    IsRequired: false
                   },
                   Order: {
                     FieldId: 2539,
@@ -8510,8 +7933,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "",
                     FieldDescription: "",
                     FieldOrder: 3,
-                    IsRequired: false,
-                    FieldType: "Numeric"
+                    FieldType: "Numeric",
+                    IsRequired: false
                   }
                 }
               },
@@ -8520,8 +7943,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Маркетинговое оборудование",
               FieldDescription: "",
               FieldOrder: 2,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             }
           }
         },
@@ -8530,8 +7953,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Маркетинговый продукт",
         FieldDescription: "",
         FieldOrder: 1,
-        IsRequired: false,
-        FieldType: "O2MRelation"
+        FieldType: "O2MRelation",
+        IsRequired: false
       },
       GlobalCode: {
         FieldId: 2033,
@@ -8539,8 +7962,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "GlobalCode",
         FieldDescription: "",
         FieldOrder: 3,
-        IsRequired: false,
-        FieldType: "String"
+        FieldType: "String",
+        IsRequired: false
       },
       Description: {
         FieldId: 1551,
@@ -8548,8 +7971,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Описание",
         FieldDescription: "",
         FieldOrder: 6,
-        IsRequired: false,
-        FieldType: "Textbox"
+        FieldType: "Textbox",
+        IsRequired: false
       },
       FullDescription: {
         FieldId: 1552,
@@ -8557,8 +7980,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Полное описание",
         FieldDescription: "",
         FieldOrder: 7,
-        IsRequired: false,
-        FieldType: "VisualEdit"
+        FieldType: "VisualEdit",
+        IsRequired: false
       },
       Notes: {
         FieldId: 1640,
@@ -8566,8 +7989,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Примечания",
         FieldDescription: "",
         FieldOrder: 8,
-        IsRequired: false,
-        FieldType: "Textbox"
+        FieldType: "Textbox",
+        IsRequired: false
       },
       Link: {
         FieldId: 1572,
@@ -8575,8 +7998,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Ссылка",
         FieldDescription: "",
         FieldOrder: 9,
-        IsRequired: false,
-        FieldType: "String"
+        FieldType: "String",
+        IsRequired: false
       },
       SortOrder: {
         FieldId: 1476,
@@ -8584,8 +8007,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Порядок",
         FieldDescription: "",
         FieldOrder: 10,
-        IsRequired: false,
-        FieldType: "Numeric"
+        FieldType: "Numeric",
+        IsRequired: false
       },
       Icon: {
         FieldId: 1581,
@@ -8593,8 +8016,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Иконка",
         FieldDescription: "",
         FieldOrder: 15,
-        IsRequired: false,
-        FieldType: "Image"
+        FieldType: "Image",
+        IsRequired: false
       },
       PDF: {
         FieldId: 1582,
@@ -8602,8 +8025,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "",
         FieldDescription: "",
         FieldOrder: 18,
-        IsRequired: false,
-        FieldType: "File"
+        FieldType: "File",
+        IsRequired: false
       },
       StartDate: {
         FieldId: 1407,
@@ -8611,8 +8034,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Дата начала публикации",
         FieldDescription: "",
         FieldOrder: 21,
-        IsRequired: false,
-        FieldType: "Date"
+        FieldType: "Date",
+        IsRequired: false
       },
       EndDate: {
         FieldId: 1410,
@@ -8620,8 +8043,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Дата снятия с публикации",
         FieldDescription: "",
         FieldOrder: 22,
-        IsRequired: false,
-        FieldType: "Date"
+        FieldType: "Date",
+        IsRequired: false
       },
       Priority: {
         FieldId: 2132,
@@ -8629,8 +8052,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Приоритет (популярность)",
         FieldDescription: "Сортировка по возрастанию значения приоритета",
         FieldOrder: 31,
-        IsRequired: false,
-        FieldType: "Numeric"
+        FieldType: "Numeric",
+        IsRequired: false
       },
       ListImage: {
         FieldId: 2498,
@@ -8638,8 +8061,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Изображение в списке",
         FieldDescription: "Изображение в общем списке",
         FieldOrder: 33,
-        IsRequired: false,
-        FieldType: "Image"
+        FieldType: "Image",
+        IsRequired: false
       },
       ArchiveDate: {
         FieldId: 2526,
@@ -8647,8 +8070,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Дата перевода в архив",
         FieldDescription: "",
         FieldOrder: 34,
-        IsRequired: false,
-        FieldType: "Date"
+        FieldType: "Date",
+        IsRequired: false
       },
       Modifiers: {
         IsBackward: false,
@@ -8660,8 +8083,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Модификаторы",
         FieldDescription: "",
         FieldOrder: 4,
-        IsRequired: false,
-        FieldType: "M2MRelation"
+        FieldType: "M2MRelation",
+        IsRequired: false
       },
       Parameters: {
         IsBackward: false,
@@ -8671,7 +8094,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           ContentName: "ProductParameter",
           ContentTitle: "Параметры продуктов",
           ContentDescription: "",
-          ObjectShape: null,
+          IsExtension: false,
           Fields: {
             Group: {
               IsBackward: false,
@@ -8683,8 +8106,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Группа параметров",
               FieldDescription: "",
               FieldOrder: 4,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             Parent: {
               IsBackward: false,
@@ -8694,7 +8117,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 ContentName: "ProductParameter",
                 ContentTitle: "Параметры продуктов",
                 ContentDescription: "",
-                ObjectShape: null,
+                IsExtension: false,
                 Fields: {
                   Title: {
                     FieldId: 1373,
@@ -8702,8 +8125,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Название",
                     FieldDescription: "",
                     FieldOrder: 1,
-                    IsRequired: false,
-                    FieldType: "String"
+                    FieldType: "String",
+                    IsRequired: false
                   }
                 }
               },
@@ -8712,8 +8135,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Родительский параметр",
               FieldDescription: "",
               FieldOrder: 5,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             BaseParameter: {
               IsBackward: false,
@@ -8725,8 +8148,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Базовый параметр",
               FieldDescription: "",
               FieldOrder: 6,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             Zone: {
               IsBackward: false,
@@ -8738,8 +8161,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Зона действия базового параметра",
               FieldDescription: "",
               FieldOrder: 7,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             Direction: {
               IsBackward: false,
@@ -8751,8 +8174,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Направление действия базового параметра",
               FieldDescription: "",
               FieldOrder: 8,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             BaseParameterModifiers: {
               IsBackward: false,
@@ -8764,8 +8187,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Модификаторы базового параметра",
               FieldDescription: "",
               FieldOrder: 9,
-              IsRequired: false,
-              FieldType: "M2MRelation"
+              FieldType: "M2MRelation",
+              IsRequired: false
             },
             Modifiers: {
               IsBackward: false,
@@ -8777,8 +8200,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Модификаторы",
               FieldDescription: "",
               FieldOrder: 10,
-              IsRequired: false,
-              FieldType: "M2MRelation"
+              FieldType: "M2MRelation",
+              IsRequired: false
             },
             Unit: {
               IsBackward: false,
@@ -8790,8 +8213,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Единица измерения",
               FieldDescription: "",
               FieldOrder: 14,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             Title: {
               FieldId: 1373,
@@ -8799,8 +8222,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Название",
               FieldDescription: "",
               FieldOrder: 1,
-              IsRequired: false,
-              FieldType: "String"
+              FieldType: "String",
+              IsRequired: false
             },
             SortOrder: {
               FieldId: 1381,
@@ -8808,8 +8231,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Порядок",
               FieldDescription: "",
               FieldOrder: 11,
-              IsRequired: false,
-              FieldType: "Numeric"
+              FieldType: "Numeric",
+              IsRequired: false
             },
             NumValue: {
               FieldId: 1382,
@@ -8817,8 +8240,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Числовое значение",
               FieldDescription: "",
               FieldOrder: 12,
-              IsRequired: false,
-              FieldType: "Numeric"
+              FieldType: "Numeric",
+              IsRequired: false
             },
             Value: {
               FieldId: 1383,
@@ -8826,8 +8249,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Текстовое значение",
               FieldDescription: "",
               FieldOrder: 13,
-              IsRequired: false,
-              FieldType: "VisualEdit"
+              FieldType: "VisualEdit",
+              IsRequired: false
             },
             Description: {
               FieldId: 1387,
@@ -8835,8 +8258,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 15,
-              IsRequired: false,
-              FieldType: "VisualEdit"
+              FieldType: "VisualEdit",
+              IsRequired: false
             },
             Image: {
               FieldId: 2022,
@@ -8844,8 +8267,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Изображение параметра",
               FieldDescription: "",
               FieldOrder: 19,
-              IsRequired: false,
-              FieldType: "Image"
+              FieldType: "Image",
+              IsRequired: false
             },
             ProductGroup: {
               IsBackward: false,
@@ -8855,7 +8278,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 ContentName: "Group",
                 ContentTitle: "Группы продуктов",
                 ContentDescription: "",
-                ObjectShape: null,
+                IsExtension: false,
                 Fields: {
                   Title: {
                     FieldId: 1329,
@@ -8863,8 +8286,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Название",
                     FieldDescription: "",
                     FieldOrder: 1,
-                    IsRequired: false,
-                    FieldType: "String"
+                    FieldType: "String",
+                    IsRequired: false
                   },
                   Alias: {
                     FieldId: 1754,
@@ -8872,8 +8295,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Псевдоним",
                     FieldDescription: "",
                     FieldOrder: 2,
-                    IsRequired: false,
-                    FieldType: "String"
+                    FieldType: "String",
+                    IsRequired: false
                   }
                 }
               },
@@ -8882,8 +8305,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Группа продуктов",
               FieldDescription: "",
               FieldOrder: 16,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             Choice: {
               IsBackward: false,
@@ -8895,8 +8318,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Выбор",
               FieldDescription: "",
               FieldOrder: 17,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             }
           }
         },
@@ -8905,8 +8328,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Параметры продукта",
         FieldDescription: "",
         FieldOrder: 17,
-        IsRequired: false,
-        FieldType: "M2ORelation"
+        FieldType: "M2ORelation",
+        IsRequired: false
       },
       Regions: {
         IsBackward: false,
@@ -8916,7 +8339,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           ContentName: "Region",
           ContentTitle: "Регионы",
           ContentDescription: "",
-          ObjectShape: null,
+          IsExtension: false,
           Fields: {
             Title: {
               FieldId: 1114,
@@ -8924,8 +8347,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 1,
-              IsRequired: false,
-              FieldType: "String"
+              FieldType: "String",
+              IsRequired: false
             },
             Alias: {
               FieldId: 1532,
@@ -8933,8 +8356,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 2,
-              IsRequired: false,
-              FieldType: "String"
+              FieldType: "String",
+              IsRequired: false
             },
             Parent: {
               IsBackward: false,
@@ -8946,8 +8369,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 4,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             IsMainCity: {
               FieldId: 2239,
@@ -8955,8 +8378,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 12,
-              IsRequired: false,
-              FieldType: "Boolean"
+              FieldType: "Boolean",
+              IsRequired: false
             }
           }
         },
@@ -8965,8 +8388,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Регионы",
         FieldDescription: "",
         FieldOrder: 2,
-        IsRequired: false,
-        FieldType: "M2MRelation"
+        FieldType: "M2MRelation",
+        IsRequired: false
       },
       Type: {
         Contents: {
@@ -8976,7 +8399,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "Tariff",
             ContentTitle: "Тарифы",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {}
           },
           Service: {
@@ -8985,7 +8408,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "Service",
             ContentTitle: "Услуги",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {}
           },
           Action: {
@@ -8994,7 +8417,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "Action",
             ContentTitle: "Акции",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {}
           },
           RoamingScale: {
@@ -9003,7 +8426,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "RoamingScale",
             ContentTitle: "Роуминговые сетки",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {}
           },
           Device: {
@@ -9012,7 +8435,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "Device",
             ContentTitle: "Оборудование",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {
               Downloads: {
                 IsBackward: false,
@@ -9022,7 +8445,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "EquipmentDownload",
                   ContentTitle: "Загрузки для оборудования",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: false,
                   Fields: {
                     Title: {
                       FieldId: 2405,
@@ -9030,8 +8453,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 1,
-                      IsRequired: false,
-                      FieldType: "String"
+                      FieldType: "String",
+                      IsRequired: false
                     },
                     File: {
                       FieldId: 2406,
@@ -9039,8 +8462,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "",
                       FieldDescription: "",
                       FieldOrder: 2,
-                      IsRequired: false,
-                      FieldType: "File"
+                      FieldType: "File",
+                      IsRequired: false
                     }
                   }
                 },
@@ -9049,8 +8472,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldTitle: "Загрузки",
                 FieldDescription: "",
                 FieldOrder: 2,
-                IsRequired: false,
-                FieldType: "M2MRelation"
+                FieldType: "M2MRelation",
+                IsRequired: false
               },
               Inners: {
                 IsBackward: false,
@@ -9060,7 +8483,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                   ContentName: "Product",
                   ContentTitle: "Продукты",
                   ContentDescription: "",
-                  ObjectShape: null,
+                  IsExtension: false,
                   Fields: {
                     MarketingProduct: {
                       IsBackward: false,
@@ -9072,8 +8495,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       FieldTitle: "Маркетинговый продукт",
                       FieldDescription: "",
                       FieldOrder: 1,
-                      IsRequired: false,
-                      FieldType: "O2MRelation"
+                      FieldType: "O2MRelation",
+                      IsRequired: false
                     }
                   }
                 },
@@ -9082,8 +8505,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldTitle: "Состав комплекта",
                 FieldDescription: "",
                 FieldOrder: 6,
-                IsRequired: false,
-                FieldType: "M2MRelation"
+                FieldType: "M2MRelation",
+                IsRequired: false
               },
               FreezeDate: {
                 FieldId: 2390,
@@ -9092,8 +8515,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldDescription:
                   "Продукт будет опубликован в течение 2,5 часов после наступления даты публикации",
                 FieldOrder: 3,
-                IsRequired: false,
-                FieldType: "DateTime"
+                FieldType: "DateTime",
+                IsRequired: false
               },
               FullUserGuide: {
                 FieldId: 2409,
@@ -9101,8 +8524,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldTitle: "Полное руководство пользователя (User guide)",
                 FieldDescription: "",
                 FieldOrder: 4,
-                IsRequired: false,
-                FieldType: "File"
+                FieldType: "File",
+                IsRequired: false
               },
               QuickStartGuide: {
                 FieldId: 2410,
@@ -9110,8 +8533,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldTitle: "Краткое руководство пользователя (Quick start guide)",
                 FieldDescription: "",
                 FieldOrder: 5,
-                IsRequired: false,
-                FieldType: "File"
+                FieldType: "File",
+                IsRequired: false
               }
             }
           },
@@ -9121,7 +8544,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "FixConnectAction",
             ContentTitle: "Акции фиксированной связи",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {
               MarketingOffers: {
                 IsBackward: false,
@@ -9133,8 +8556,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldTitle: "",
                 FieldDescription: "",
                 FieldOrder: 1,
-                IsRequired: false,
-                FieldType: "M2MRelation"
+                FieldType: "M2MRelation",
+                IsRequired: false
               },
               PromoPeriod: {
                 FieldId: 2472,
@@ -9142,8 +8565,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldTitle: "",
                 FieldDescription: "Описание промо-периода.",
                 FieldOrder: 2,
-                IsRequired: false,
-                FieldType: "String"
+                FieldType: "String",
+                IsRequired: false
               },
               AfterPromo: {
                 FieldId: 2473,
@@ -9151,8 +8574,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldTitle: "",
                 FieldDescription: "Описание момента начала действия обычной цены.",
                 FieldOrder: 3,
-                IsRequired: false,
-                FieldType: "String"
+                FieldType: "String",
+                IsRequired: false
               }
             }
           },
@@ -9162,7 +8585,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "TvPackage",
             ContentTitle: "ТВ-пакеты",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {}
           },
           FixConnectTariff: {
@@ -9171,7 +8594,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "FixConnectTariff",
             ContentTitle: "Тарифы фиксированной связи",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {
               TitleForSite: {
                 FieldId: 2525,
@@ -9179,8 +8602,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldTitle: "",
                 FieldDescription: "",
                 FieldOrder: 2,
-                IsRequired: false,
-                FieldType: "String"
+                FieldType: "String",
+                IsRequired: false
               }
             }
           },
@@ -9190,7 +8613,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "PhoneTariff",
             ContentTitle: "Тарифы телефонии",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {
               RostelecomLink: {
                 FieldId: 2522,
@@ -9198,8 +8621,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 FieldTitle: "ВЗ вызовы (ссылка на Ростелеком)",
                 FieldDescription: "Тарифы Ростелеком распространяются только на ВЗ вызовы.",
                 FieldOrder: 1,
-                IsRequired: false,
-                FieldType: "String"
+                FieldType: "String",
+                IsRequired: false
               }
             }
           },
@@ -9209,7 +8632,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
             ContentName: "InternetTariff",
             ContentTitle: "Тарифы Интернет",
             ContentDescription: "",
-            ObjectShape: null,
+            IsExtension: true,
             Fields: {}
           }
         },
@@ -9218,8 +8641,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Тип",
         FieldDescription: "",
         FieldOrder: 5,
-        IsRequired: false,
-        FieldType: "Classifier"
+        FieldType: "Classifier",
+        IsRequired: false
       },
       FixConnectAction: {
         IsBackward: true,
@@ -9229,7 +8652,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           ContentName: "DevicesForFixConnectAction",
           ContentTitle: "Акционное оборудование",
           ContentDescription: "Оборудование для акций фиксированной связи",
-          ObjectShape: null,
+          IsExtension: false,
           Fields: {
             MarketingDevice: {
               IsBackward: false,
@@ -9241,8 +8664,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "Маркетинговое оборудование",
               FieldDescription: "",
               FieldOrder: 2,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             Parent: {
               IsBackward: false,
@@ -9252,7 +8675,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                 ContentName: "ProductRelation",
                 ContentTitle: "Матрица связей",
                 ContentDescription: "",
-                ObjectShape: null,
+                IsExtension: false,
                 Fields: {
                   Title: {
                     FieldId: 1416,
@@ -9260,8 +8683,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Название",
                     FieldDescription: "",
                     FieldOrder: 1,
-                    IsRequired: false,
-                    FieldType: "String"
+                    FieldType: "String",
+                    IsRequired: false
                   },
                   Parameters: {
                     IsBackward: false,
@@ -9271,7 +8694,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                       ContentName: "LinkParameter",
                       ContentTitle: "Параметры связей",
                       ContentDescription: "",
-                      ObjectShape: null,
+                      IsExtension: false,
                       Fields: {
                         BaseParameter: {
                           IsBackward: false,
@@ -9283,8 +8706,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Базовый параметр",
                           FieldDescription: "",
                           FieldOrder: 7,
-                          IsRequired: false,
-                          FieldType: "O2MRelation"
+                          FieldType: "O2MRelation",
+                          IsRequired: false
                         },
                         Zone: {
                           IsBackward: false,
@@ -9296,8 +8719,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Зона действия базового параметра",
                           FieldDescription: "",
                           FieldOrder: 8,
-                          IsRequired: false,
-                          FieldType: "O2MRelation"
+                          FieldType: "O2MRelation",
+                          IsRequired: false
                         },
                         Direction: {
                           IsBackward: false,
@@ -9309,8 +8732,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Направление действия базового параметра",
                           FieldDescription: "",
                           FieldOrder: 9,
-                          IsRequired: false,
-                          FieldType: "O2MRelation"
+                          FieldType: "O2MRelation",
+                          IsRequired: false
                         },
                         BaseParameterModifiers: {
                           IsBackward: false,
@@ -9322,8 +8745,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Модификаторы базового параметра",
                           FieldDescription: "",
                           FieldOrder: 10,
-                          IsRequired: false,
-                          FieldType: "M2MRelation"
+                          FieldType: "M2MRelation",
+                          IsRequired: false
                         },
                         Modifiers: {
                           IsBackward: false,
@@ -9335,8 +8758,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Модификаторы",
                           FieldDescription: "",
                           FieldOrder: 11,
-                          IsRequired: false,
-                          FieldType: "M2MRelation"
+                          FieldType: "M2MRelation",
+                          IsRequired: false
                         },
                         Unit: {
                           IsBackward: false,
@@ -9348,8 +8771,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Единица измерения",
                           FieldDescription: "",
                           FieldOrder: 15,
-                          IsRequired: false,
-                          FieldType: "O2MRelation"
+                          FieldType: "O2MRelation",
+                          IsRequired: false
                         },
                         Title: {
                           FieldId: 1418,
@@ -9357,8 +8780,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Название",
                           FieldDescription: "",
                           FieldOrder: 1,
-                          IsRequired: false,
-                          FieldType: "String"
+                          FieldType: "String",
+                          IsRequired: false
                         },
                         SortOrder: {
                           FieldId: 1425,
@@ -9366,8 +8789,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Порядок",
                           FieldDescription: "",
                           FieldOrder: 12,
-                          IsRequired: false,
-                          FieldType: "Numeric"
+                          FieldType: "Numeric",
+                          IsRequired: false
                         },
                         NumValue: {
                           FieldId: 1426,
@@ -9375,8 +8798,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Числовое значение",
                           FieldDescription: "",
                           FieldOrder: 13,
-                          IsRequired: false,
-                          FieldType: "Numeric"
+                          FieldType: "Numeric",
+                          IsRequired: false
                         },
                         Value: {
                           FieldId: 1427,
@@ -9384,8 +8807,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "Текстовое значение",
                           FieldDescription: "",
                           FieldOrder: 14,
-                          IsRequired: false,
-                          FieldType: "VisualEdit"
+                          FieldType: "VisualEdit",
+                          IsRequired: false
                         },
                         Description: {
                           FieldId: 1429,
@@ -9393,8 +8816,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                           FieldTitle: "",
                           FieldDescription: "",
                           FieldOrder: 16,
-                          IsRequired: false,
-                          FieldType: "VisualEdit"
+                          FieldType: "VisualEdit",
+                          IsRequired: false
                         }
                       }
                     },
@@ -9403,8 +8826,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Параметры",
                     FieldDescription: "",
                     FieldOrder: 3,
-                    IsRequired: false,
-                    FieldType: "M2ORelation"
+                    FieldType: "M2ORelation",
+                    IsRequired: false
                   },
                   Modifiers: {
                     IsBackward: false,
@@ -9416,8 +8839,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
                     FieldTitle: "Модификаторы",
                     FieldDescription: "",
                     FieldOrder: 4,
-                    IsRequired: false,
-                    FieldType: "M2MRelation"
+                    FieldType: "M2MRelation",
+                    IsRequired: false
                   }
                 }
               },
@@ -9426,8 +8849,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 0,
-              IsRequired: false,
-              FieldType: "O2MRelation"
+              FieldType: "O2MRelation",
+              IsRequired: false
             },
             Order: {
               FieldId: 2539,
@@ -9435,8 +8858,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
               FieldTitle: "",
               FieldDescription: "",
               FieldOrder: 3,
-              IsRequired: false,
-              FieldType: "Numeric"
+              FieldType: "Numeric",
+              IsRequired: false
             }
           }
         },
@@ -9445,8 +8868,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Акция фиксированной связи",
         FieldDescription: "",
         FieldOrder: 1,
-        IsRequired: false,
-        FieldType: "O2MRelation"
+        FieldType: "O2MRelation",
+        IsRequired: false
       },
       Advantages: {
         IsBackward: false,
@@ -9458,8 +8881,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
         FieldTitle: "Преимущества",
         FieldDescription: "",
         FieldOrder: 32,
-        IsRequired: false,
-        FieldType: "M2MRelation"
+        FieldType: "M2MRelation",
+        IsRequired: false
       }
     }
   },
@@ -9470,7 +8893,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "Segment",
       ContentTitle: "Сегменты",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1792,
@@ -9478,8 +8901,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1793,
@@ -9487,8 +8910,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -9498,7 +8921,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "ChannelCategory",
       ContentTitle: "Категории каналов",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Name: {
           FieldId: 2257,
@@ -9506,8 +8929,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название для сайта",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 2271,
@@ -9515,8 +8938,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Segments: {
           FieldId: 2267,
@@ -9524,8 +8947,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Сегменты",
           FieldDescription: "",
           FieldOrder: 3,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Icon: {
           FieldId: 2269,
@@ -9533,8 +8956,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Иконка",
           FieldDescription: "",
           FieldOrder: 5,
-          IsRequired: false,
-          FieldType: "Image"
+          FieldType: "Image",
+          IsRequired: false
         },
         Order: {
           FieldId: 2270,
@@ -9542,8 +8965,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 6,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         },
         OldSiteId: {
           FieldId: 2262,
@@ -9551,8 +8974,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 7,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         }
       }
     },
@@ -9562,7 +8985,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "Region",
       ContentTitle: "Регионы",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Alias: {
           FieldId: 1532,
@@ -9570,8 +8993,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Parent: {
           IsBackward: false,
@@ -9583,8 +9006,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 4,
-          IsRequired: false,
-          FieldType: "O2MRelation"
+          FieldType: "O2MRelation",
+          IsRequired: false
         },
         IsMainCity: {
           FieldId: 2239,
@@ -9592,8 +9015,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 12,
-          IsRequired: false,
-          FieldType: "Boolean"
+          FieldType: "Boolean",
+          IsRequired: false
         }
       }
     },
@@ -9603,7 +9026,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "Region",
       ContentTitle: "Регионы",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Alias: {
           FieldId: 1532,
@@ -9611,8 +9034,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Title: {
           FieldId: 1114,
@@ -9620,8 +9043,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -9631,7 +9054,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "Region",
       ContentTitle: "Регионы",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Alias: {
           FieldId: 1532,
@@ -9639,8 +9062,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -9650,7 +9073,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "ChannelFormat",
       ContentTitle: "Форматы каналов",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 2263,
@@ -9658,8 +9081,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Image: {
           FieldId: 2265,
@@ -9667,8 +9090,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "Image"
+          FieldType: "Image",
+          IsRequired: false
         },
         Message: {
           FieldId: 2266,
@@ -9676,8 +9099,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 3,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         OldSiteId: {
           FieldId: 2264,
@@ -9685,8 +9108,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 4,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         }
       }
     },
@@ -9696,7 +9119,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "FixedType",
       ContentTitle: "Типы фиксированной связи",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 2392,
@@ -9704,8 +9127,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -9715,7 +9138,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "MarketingProduct",
       ContentTitle: "Маркетинговые продукты",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1534,
@@ -9723,8 +9146,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1753,
@@ -9732,8 +9155,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Priority: {
           FieldId: 2032,
@@ -9741,8 +9164,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Приоритет (популярность)",
           FieldDescription: "Сортировка по возрастанию значения приоритета",
           FieldOrder: 19,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         }
       }
     },
@@ -9752,7 +9175,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "MarketingProduct",
       ContentTitle: "Маркетинговые продукты",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1534,
@@ -9760,8 +9183,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1753,
@@ -9769,8 +9192,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Link: {
           FieldId: 1755,
@@ -9778,8 +9201,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Ссылка",
           FieldDescription: "",
           FieldOrder: 3,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Description: {
           FieldId: 1558,
@@ -9787,8 +9210,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 4,
-          IsRequired: false,
-          FieldType: "Textbox"
+          FieldType: "Textbox",
+          IsRequired: false
         },
         DetailedDescription: {
           FieldId: 2023,
@@ -9796,8 +9219,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Подробное описание",
           FieldDescription: "",
           FieldOrder: 5,
-          IsRequired: false,
-          FieldType: "VisualEdit"
+          FieldType: "VisualEdit",
+          IsRequired: false
         },
         FullDescription: {
           FieldId: 1740,
@@ -9805,8 +9228,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 6,
-          IsRequired: false,
-          FieldType: "VisualEdit"
+          FieldType: "VisualEdit",
+          IsRequired: false
         },
         SortOrder: {
           FieldId: 1752,
@@ -9814,8 +9237,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Порядок",
           FieldDescription: "",
           FieldOrder: 7,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         },
         Type: {
           FieldId: 1540,
@@ -9823,8 +9246,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Тип",
           FieldDescription: "",
           FieldOrder: 11,
-          IsRequired: false,
-          FieldType: "Classifier"
+          FieldType: "Classifier",
+          IsRequired: false
         },
         OldSiteId: {
           FieldId: 1645,
@@ -9832,8 +9255,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 14,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         },
         OldCorpSiteId: {
           FieldId: 1779,
@@ -9841,8 +9264,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 15,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         },
         ListImage: {
           FieldId: 2030,
@@ -9850,8 +9273,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Изображение в списке",
           FieldDescription: "Изображение в общем списке",
           FieldOrder: 17,
-          IsRequired: false,
-          FieldType: "Image"
+          FieldType: "Image",
+          IsRequired: false
         },
         DetailsImage: {
           FieldId: 2031,
@@ -9859,8 +9282,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Изображение",
           FieldDescription: "Изображение в описании на странице",
           FieldOrder: 18,
-          IsRequired: false,
-          FieldType: "Image"
+          FieldType: "Image",
+          IsRequired: false
         },
         Priority: {
           FieldId: 2032,
@@ -9868,8 +9291,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Приоритет (популярность)",
           FieldDescription: "Сортировка по возрастанию значения приоритета",
           FieldOrder: 19,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         },
         ArchiveDate: {
           FieldId: 2124,
@@ -9877,8 +9300,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Дата закрытия продукта (Архив)",
           FieldDescription: "",
           FieldOrder: 23,
-          IsRequired: false,
-          FieldType: "Date"
+          FieldType: "Date",
+          IsRequired: false
         }
       }
     },
@@ -9888,7 +9311,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "MarketingProduct",
       ContentTitle: "Маркетинговые продукты",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Alias: {
           FieldId: 1753,
@@ -9896,8 +9319,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -9907,7 +9330,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "MarketingProduct",
       ContentTitle: "Маркетинговые продукты",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1534,
@@ -9915,8 +9338,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1753,
@@ -9924,8 +9347,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -9935,7 +9358,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "BaseParameter",
       ContentTitle: "Базовые параметры продуктов",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1358,
@@ -9943,8 +9366,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1359,
@@ -9952,8 +9375,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         AllowZone: {
           FieldId: 2683,
@@ -9961,8 +9384,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 5,
-          IsRequired: false,
-          FieldType: "Boolean"
+          FieldType: "Boolean",
+          IsRequired: false
         },
         AllowDirection: {
           FieldId: 2684,
@@ -9970,8 +9393,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 6,
-          IsRequired: false,
-          FieldType: "Boolean"
+          FieldType: "Boolean",
+          IsRequired: false
         }
       }
     },
@@ -9981,7 +9404,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "TariffZone",
       ContentTitle: "Тарифные зоны",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1346,
@@ -9989,8 +9412,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1347,
@@ -9998,8 +9421,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -10009,7 +9432,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "Direction",
       ContentTitle: "Направления соединения",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1349,
@@ -10017,8 +9440,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1350,
@@ -10026,8 +9449,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -10037,7 +9460,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "BaseParameterModifier",
       ContentTitle: "Модификаторы базовых параметров продуктов",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1361,
@@ -10045,8 +9468,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1362,
@@ -10054,8 +9477,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Type: {
           Items: [
@@ -10095,8 +9518,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 5,
-          IsRequired: false,
-          FieldType: "StringEnum"
+          FieldType: "StringEnum",
+          IsRequired: false
         }
       }
     },
@@ -10106,7 +9529,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "ParameterModifier",
       ContentTitle: "Модификаторы параметров продуктов",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1364,
@@ -10114,8 +9537,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1365,
@@ -10123,8 +9546,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -10134,7 +9557,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "Unit",
       ContentTitle: "Единицы измерения",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Alias: {
           FieldId: 2062,
@@ -10142,8 +9565,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Title: {
           FieldId: 1384,
@@ -10151,8 +9574,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Display: {
           FieldId: 1385,
@@ -10160,8 +9583,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 3,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         QuotaUnit: {
           Items: [
@@ -10237,8 +9660,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Размерность",
           FieldDescription: "",
           FieldOrder: 4,
-          IsRequired: false,
-          FieldType: "StringEnum"
+          FieldType: "StringEnum",
+          IsRequired: false
         },
         QuotaPeriod: {
           Items: [
@@ -10290,8 +9713,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Период",
           FieldDescription: "",
           FieldOrder: 5,
-          IsRequired: false,
-          FieldType: "StringEnum"
+          FieldType: "StringEnum",
+          IsRequired: false
         }
       }
     },
@@ -10301,7 +9724,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "ParameterChoice",
       ContentTitle: "Варианты выбора для параметров",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 2379,
@@ -10309,8 +9732,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 2380,
@@ -10318,8 +9741,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         OldSiteId: {
           FieldId: 2382,
@@ -10327,8 +9750,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 4,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         }
       }
     },
@@ -10338,7 +9761,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "ProductParameterGroup",
       ContentTitle: "Группы параметров продуктов",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         SortOrder: {
           FieldId: 1500,
@@ -10346,8 +9769,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Порядок",
           FieldDescription: "",
           FieldOrder: 3,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         },
         Title: {
           FieldId: 1496,
@@ -10355,8 +9778,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 2049,
@@ -10364,8 +9787,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         ImageSvg: {
           FieldId: 2029,
@@ -10373,8 +9796,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Изображение",
           FieldDescription: "",
           FieldOrder: 7,
-          IsRequired: false,
-          FieldType: "File"
+          FieldType: "File",
+          IsRequired: false
         },
         Type: {
           FieldId: 2061,
@@ -10382,8 +9805,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 8,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -10393,7 +9816,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "ProductParameterGroup",
       ContentTitle: "Группы параметров продуктов",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1496,
@@ -10401,8 +9824,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 2049,
@@ -10410,8 +9833,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         SortOrder: {
           FieldId: 1500,
@@ -10419,8 +9842,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Порядок",
           FieldDescription: "",
           FieldOrder: 3,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         },
         ImageSvg: {
           FieldId: 2029,
@@ -10428,8 +9851,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Изображение",
           FieldDescription: "",
           FieldOrder: 7,
-          IsRequired: false,
-          FieldType: "File"
+          FieldType: "File",
+          IsRequired: false
         }
       }
     },
@@ -10439,7 +9862,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "LinkModifier",
       ContentTitle: "Модификаторы связей",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1413,
@@ -10447,8 +9870,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1414,
@@ -10456,8 +9879,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -10467,7 +9890,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "ProductModifer",
       ContentTitle: "Модификаторы продуктов",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 1339,
@@ -10475,8 +9898,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Название",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Alias: {
           FieldId: 1340,
@@ -10484,8 +9907,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Псевдоним",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         }
       }
     },
@@ -10495,7 +9918,7 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
       ContentName: "Advantage",
       ContentTitle: "Преимущества маркетинговых продуктов",
       ContentDescription: "",
-      ObjectShape: null,
+      IsExtension: false,
       Fields: {
         Title: {
           FieldId: 2024,
@@ -10503,8 +9926,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 1,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Text: {
           FieldId: 2025,
@@ -10512,8 +9935,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Текстовые данные",
           FieldDescription: "",
           FieldOrder: 2,
-          IsRequired: false,
-          FieldType: "String"
+          FieldType: "String",
+          IsRequired: false
         },
         Description: {
           FieldId: 2362,
@@ -10521,8 +9944,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Описание",
           FieldDescription: "",
           FieldOrder: 3,
-          IsRequired: false,
-          FieldType: "Textbox"
+          FieldType: "Textbox",
+          IsRequired: false
         },
         ImageSvg: {
           FieldId: 2026,
@@ -10530,8 +9953,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Изображение",
           FieldDescription: "",
           FieldOrder: 4,
-          IsRequired: false,
-          FieldType: "File"
+          FieldType: "File",
+          IsRequired: false
         },
         SortOrder: {
           FieldId: 2027,
@@ -10539,8 +9962,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "Порядок",
           FieldDescription: "",
           FieldOrder: 5,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         },
         IsGift: {
           FieldId: 2514,
@@ -10548,8 +9971,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 6,
-          IsRequired: false,
-          FieldType: "Boolean"
+          FieldType: "Boolean",
+          IsRequired: false
         },
         OldSiteId: {
           FieldId: 2515,
@@ -10557,8 +9980,8 @@ export const productEditorSchema = linkJsonRefs<ProductEditorSchema>({
           FieldTitle: "",
           FieldDescription: "",
           FieldOrder: 7,
-          IsRequired: false,
-          FieldType: "Numeric"
+          FieldType: "Numeric",
+          IsRequired: false
         }
       }
     }
@@ -10590,7 +10013,6 @@ function visitObject(object: any, definitions: object, visited: Set<object>): vo
         visitObject(object[key], definitions, visited);
       });
       if (object.ContentId) {
-        object.ObjectShape = objectShapes[object.ContentId];
         object.include = includeContent;
       } else if (object.FieldId) {
         if (

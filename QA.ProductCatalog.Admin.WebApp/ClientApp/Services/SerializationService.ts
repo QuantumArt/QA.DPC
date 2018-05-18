@@ -1,3 +1,4 @@
+import { isObservable, toJS } from "mobx";
 import { isObject, isInteger } from "Utils/TypeChecking";
 
 type IdMapping = { [id: number]: number };
@@ -28,6 +29,10 @@ export class SerializationService {
    * Заменяет все отрицательные Id на соответствующие им серверные Id (если они уже определены)
    */
   public serialize(object: any): string {
+    if (isObservable(object)) {
+      object = toJS(object);
+    }
+
     const isArticleVisitedById = Object.create(null);
 
     return JSON.stringify(object, (key, value) => {
@@ -47,7 +52,7 @@ export class SerializationService {
   /**
    * Заменяет все серверные Id на соответствующие им отрицательные Id (если они определены)
    */
-  public deserialize<T>(json: string): T {
+  public deserialize<T = any>(json: string): T {
     return JSON.parse(json, (key, value) => {
       if (key === "Id" && isInteger(value)) {
         return this._idMapping[value] || value;

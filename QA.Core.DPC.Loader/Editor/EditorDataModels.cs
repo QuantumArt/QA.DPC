@@ -6,8 +6,8 @@ namespace QA.Core.DPC.Loader.Editor
     public class ContentObject : Dictionary<string, object>, ICloneable
     {
         internal const string IdProp = "Id";
-        internal const string ContentIdProp = "ContentId";
         internal const string TimestampProp = "Timestamp";
+        internal static string ExtensionProp(string prop) => $"{prop}_Contents";
 
         public object Clone()
         {
@@ -42,21 +42,14 @@ namespace QA.Core.DPC.Loader.Editor
         }
     }
 
-    public class ExtensionFieldObject : ICloneable
+    public class ExtensionFieldObject : Dictionary<string, ContentObject>, ICloneable
     {
-        public string Value { get; set; }
-        public Dictionary<string, ContentObject> Contents { get; set; }
-
         public object Clone()
         {
-            var copy = new ExtensionFieldObject
+            var copy = new ExtensionFieldObject();
+            foreach (KeyValuePair<string, ContentObject> content in this)
             {
-                Value = Value,
-                Contents = new Dictionary<string, ContentObject>()
-            };
-            foreach (KeyValuePair<string, ContentObject> content in Contents)
-            {
-                copy.Contents[content.Key] = (ContentObject)content.Value.Clone();
+                copy[content.Key] = (ContentObject)content.Value.Clone();
             }
             return copy;
         }
