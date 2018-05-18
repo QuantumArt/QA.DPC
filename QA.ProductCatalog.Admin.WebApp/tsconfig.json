@@ -22,7 +22,7 @@
     "types": ["node", "webpack-env"],
     "baseUrl": ".",
     "paths": {
-      "*": ["*"]
+      "*": ["*", "ClientApp/*"]
     }
   },
   "include": ["ClientApp", "Views"]
