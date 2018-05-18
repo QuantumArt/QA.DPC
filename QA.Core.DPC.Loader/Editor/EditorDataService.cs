@@ -92,13 +92,9 @@ namespace QA.Core.DPC.Loader.Editor
         /// <exception cref="NotSupportedException" />
         private void PopulateField(ContentObject dict, ArticleField field, ArticleContext context)
         {
-            if (field is PlainArticleField plainArticleField)
+            if (field is ExtensionArticleField extensionArticleField)
             {
-                dict[field.FieldName] = ConvertPlainField(plainArticleField);
-            }
-            else if (field is SingleArticleField singleArticleField)
-            {
-                dict[field.FieldName] = ConvertArticle(singleArticleField.GetItem(context.Filter), context);
+                PopulateExtensionFields(dict, extensionArticleField, context);
             }
             else if (field is MultiArticleField multiArticleField)
             {
@@ -108,9 +104,13 @@ namespace QA.Core.DPC.Loader.Editor
                     .Where(a => a != null)
                     .ToArray();
             }
-            else if (field is ExtensionArticleField extensionArticleField)
+            else if (field is SingleArticleField singleArticleField)
             {
-                PopulateExtensionField(dict, extensionArticleField, context);
+                dict[field.FieldName] = ConvertArticle(singleArticleField.GetItem(context.Filter), context);
+            }
+            else if (field is PlainArticleField plainArticleField)
+            {
+                dict[field.FieldName] = ConvertPlainField(plainArticleField);
             }
             else
             {
@@ -119,7 +119,7 @@ namespace QA.Core.DPC.Loader.Editor
         }
 
         /// <exception cref="InvalidOperationException" />
-        private void PopulateExtensionField(
+        private void PopulateExtensionFields(
             ContentObject dict, ExtensionArticleField field, ArticleContext context)
         {
             if (field.Item == null)
