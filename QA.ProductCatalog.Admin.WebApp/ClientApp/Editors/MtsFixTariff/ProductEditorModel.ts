@@ -8,6 +8,7 @@ export const FileModel = t.model("FileModel", {
   AbsoluteUrl: t.string,
 });
 
+
 type _IRegion = typeof Region.Type;
 /** Регионы */
 export interface IRegion extends _IRegion {}
@@ -16,7 +17,7 @@ export const Region = t.model("Region_290", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Title: t.maybe(t.string),
   /**  */
@@ -35,9 +36,9 @@ export const Product = t.model("Product_339", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Маркетинговый продукт */
-  // MarketingProduct: t.maybe(t.reference(t.late(() => MarketingProduct))),
+  MarketingProduct: t.maybe(t.reference(t.late(() => MarketingProduct))),
   /** GlobalCode */
   GlobalCode: t.maybe(t.string),
   /** Тип */
@@ -97,9 +98,9 @@ export const Product = t.model("Product_339", {
   /** Фиксированные ссылки на Pdf */
   PdfFixedLinks: t.maybe(t.string),
   /** Дата начала публикации */
-  StartDate: t.maybe(t.string),
+  StartDate: t.maybe(t.Date),
   /** Дата снятия с публикации */
-  EndDate: t.maybe(t.string),
+  EndDate: t.maybe(t.Date),
   /**  */
   OldSiteId: t.maybe(t.number),
   /**  */
@@ -115,7 +116,7 @@ export const Product = t.model("Product_339", {
   /** Изображение в списке */
   ListImage: t.maybe(t.string),
   /** Дата перевода в архив */
-  ArchiveDate: t.maybe(t.string),
+  ArchiveDate: t.maybe(t.Date),
   /** Модификаторы */
   Modifiers: t.optional(t.array(t.late(() => ProductModifer)), []),
   /** Параметры продукта */
@@ -136,7 +137,7 @@ export const Group = t.model("Group_340", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -151,7 +152,7 @@ export const ProductModifer = t.model("ProductModifer_342", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -166,7 +167,7 @@ export const TariffZone = t.model("TariffZone_346", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -181,7 +182,7 @@ export const Direction = t.model("Direction_347", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -196,7 +197,7 @@ export const BaseParameter = t.model("BaseParameter_350", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -215,7 +216,7 @@ export const BaseParameterModifier = t.model("BaseParameterModifier_351", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -238,7 +239,7 @@ export const ParameterModifier = t.model("ParameterModifier_352", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -253,7 +254,7 @@ export const ProductParameter = t.model("ProductParameter_354", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Группа параметров */
   Group: t.maybe(t.reference(t.late(() => ProductParameterGroup))),
   /** Название */
@@ -296,7 +297,7 @@ export const Unit = t.model("Unit_355", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Alias: t.maybe(t.string),
   /**  */
@@ -343,7 +344,7 @@ export const LinkModifier = t.model("LinkModifier_360", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -358,7 +359,7 @@ export const ProductRelation = t.model("ProductRelation_361", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Модификаторы */
@@ -417,7 +418,7 @@ export const LinkParameter = t.model("LinkParameter_362", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Группа параметров */
@@ -464,7 +465,7 @@ export const ProductParameterGroup = t.model("ProductParameterGroup_378", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -491,7 +492,7 @@ export const MarketingProduct = t.model("MarketingProduct_383", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -507,7 +508,7 @@ export const MarketingProduct = t.model("MarketingProduct_383", {
   /** Изображение */
   DetailsImage: t.maybe(t.string),
   /** Дата закрытия продукта (Архив) */
-  ArchiveDate: t.maybe(t.string),
+  ArchiveDate: t.maybe(t.Date),
   /** Модификаторы */
   Modifiers: t.optional(t.array(t.late(() => ProductModifer)), []),
   /** Порядок */
@@ -576,7 +577,7 @@ export const CommunicationType = t.model("CommunicationType_415", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -591,7 +592,7 @@ export const Segment = t.model("Segment_416", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Title: t.maybe(t.string),
   /** Псевдоним */
@@ -606,7 +607,7 @@ export const MarketingProductParameter = t.model("MarketingProductParameter_424"
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Группа параметров */
   Group: t.maybe(t.reference(t.late(() => ProductParameterGroup))),
   /** Базовый параметр */
@@ -643,7 +644,7 @@ export const TariffCategory = t.model("TariffCategory_441", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Типы связи */
   ConnectionTypes: t.optional(t.array(t.late(() => FixedType)), []),
   /** Название */
@@ -671,7 +672,7 @@ export const Advantage = t.model("Advantage_446", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Title: t.maybe(t.string),
   /** Текстовые данные */
@@ -696,7 +697,7 @@ export const TimeZone = t.model("TimeZone_471", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название часовой зоны */
   Name: t.maybe(t.string),
   /** Код зоны */
@@ -717,7 +718,7 @@ export const NetworkCity = t.model("NetworkCity_472", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Город */
   City: t.maybe(t.reference(t.late(() => Region))),
   /** IPTV */
@@ -732,7 +733,7 @@ export const ChannelCategory = t.model("ChannelCategory_478", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название для сайта */
   Name: t.maybe(t.string),
   /**  */
@@ -755,7 +756,7 @@ export const ChannelType = t.model("ChannelType_479", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Title: t.maybe(t.string),
   /**  */
@@ -770,7 +771,7 @@ export const ChannelFormat = t.model("ChannelFormat_480", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Title: t.maybe(t.string),
   /**  */
@@ -789,7 +790,7 @@ export const TvChannel = t.model("TvChannel_482", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Название телеканала */
   Title: t.maybe(t.string),
   /** Лого 150x150 */
@@ -834,7 +835,7 @@ export const ParameterChoice = t.model("ParameterChoice_488", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Title: t.maybe(t.string),
   /**  */
@@ -851,7 +852,7 @@ export const FixedType = t.model("FixedType_491", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Title: t.maybe(t.string),
 });
@@ -864,7 +865,7 @@ export const EquipmentType = t.model("EquipmentType_493", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /** Тип связи */
   ConnectionType: t.maybe(t.reference(t.late(() => FixedType))),
   /**  */
@@ -883,7 +884,7 @@ export const EquipmentDownload = t.model("EquipmentDownload_494", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Title: t.maybe(t.string),
   /**  */
@@ -898,7 +899,7 @@ export const DeviceOnTariffs = t.model("DeviceOnTariffs_511", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
-  Timestamp: t.maybe(t.string),
+  Timestamp: t.maybe(t.Date),
   /**  */
   Parent: t.maybe(t.reference(t.late(() => ProductRelation))),
   /**  */
@@ -910,6 +911,7 @@ export const DeviceOnTariffs = t.model("DeviceOnTariffs_511", {
   /** Города */
   Cities: t.optional(t.array(t.late(() => Region)), []),
 });
+
 
 
 type _ITariff = typeof Tariff.Type;
@@ -1077,7 +1079,7 @@ export const Device = t.model("Device_490", {
   /** Состав комплекта */
   Inners: t.optional(t.array(t.late(() => Product)), []),
   /** Отложенная публикация на */
-  FreezeDate: t.maybe(t.string),
+  FreezeDate: t.maybe(t.Date),
   /** Полное руководство пользователя (User guide) */
   FullUserGuide: t.maybe(FileModel),
   /** Краткое руководство пользователя (Quick start guide) */
@@ -1094,9 +1096,9 @@ export const MarketingFixConnectAction = t.model("MarketingFixConnectAction_498"
   /** Акция в Каталоге акций */
   MarketingAction: t.maybe(t.reference(t.late(() => MarketingProduct))),
   /**  */
-  StartDate: t.maybe(t.string),
+  StartDate: t.maybe(t.Date),
   /**  */
-  EndDate: t.maybe(t.string),
+  EndDate: t.maybe(t.Date),
   /**  */
   PromoPeriod: t.maybe(t.string),
   /**  */
@@ -1215,6 +1217,7 @@ export const DevicesForFixConnectAction = t.model("DevicesForFixConnectAction_51
   /** Маркетинговое оборудование */
   MarketingDevice: t.maybe(t.reference(t.late(() => MarketingProduct))),
 });
+
 
 export default {
   290: Region,

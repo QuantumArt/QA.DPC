@@ -1,6 +1,7 @@
 ﻿import "normalize.css/normalize.css";
 // import React from "react";
 // import ReactDOM from "react-dom";
+import { toJS } from "mobx";
 import { types, getSnapshot } from "mobx-state-tree";
 // import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 // import { ArticleService } from "Services/ArticleService";
@@ -10,6 +11,8 @@ import { Product } from "Editors/MtsFixTariff/ProductEditorModel";
 
 // @ts-ignore
 window.types = window.t = types;
+// @ts-ignore
+window.toJS = toJS;
 
 (async () => {
   const element = document.getElementById("editor");
