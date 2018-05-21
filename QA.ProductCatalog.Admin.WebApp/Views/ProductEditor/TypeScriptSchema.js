@@ -1,4 +1,4 @@
-﻿import { download } from "Utils/Downloading";
+﻿import { download } from "Utils/Download";
 const jsonToTypeScript = require("json-schema-to-typescript/dist/bundle");
 
 // @ts-ignore

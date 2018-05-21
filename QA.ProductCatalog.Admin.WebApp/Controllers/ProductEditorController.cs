@@ -86,7 +86,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             
             ProductSchema productSchema = _editorSchemaService.GetProductSchema(content);
 
-            Dictionary<int, ContentSchema> mobxSchema = _editorSchemaService.GetMergedContentSchemas(productSchema);
+            Dictionary<int, ContentSchema> mergedSchema = _editorSchemaService.GetMergedContentSchemas(productSchema);
 
             string editorSchemaJson = JsonConvert.SerializeObject(productSchema, new JsonSerializerSettings
             {
@@ -94,7 +94,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 Converters = { new StringEnumConverter() }
             });
             
-            string mobxSchemaJson = JsonConvert.SerializeObject(mobxSchema, new JsonSerializerSettings
+            string mergedSchemaJson = JsonConvert.SerializeObject(mergedSchema, new JsonSerializerSettings
             {
                 NullValueHandling = NullValueHandling.Include,
                 Converters = { new StringEnumConverter() }
@@ -103,7 +103,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return View(new ProductEditorSchemaModel
             {
                 EditorSchema = editorSchemaJson,
-                MobxSchema = mobxSchemaJson,
+                MergedSchema = mergedSchemaJson,
             });
         }
 

@@ -8,7 +8,6 @@ export const FileModel = t.model("FileModel", {
   AbsoluteUrl: t.string,
 });
 
-
 type _IRegion = typeof Region.Type;
 /** Регионы */
 export interface IRegion extends _IRegion {}
@@ -913,7 +912,6 @@ export const DeviceOnTariffs = t.model("DeviceOnTariffs_511", {
 });
 
 
-
 type _ITariff = typeof Tariff.Type;
 /** Тарифы (Extension) */
 export interface ITariff extends _ITariff {}
@@ -1219,68 +1217,37 @@ export const DevicesForFixConnectAction = t.model("DevicesForFixConnectAction_51
 });
 
 
-export default {
-  290: Region,
-  339: Product,
-  340: Group,
-  342: ProductModifer,
-  343: Tariff,
-  346: TariffZone,
-  347: Direction,
-  350: BaseParameter,
-  351: BaseParameterModifier,
-  352: ParameterModifier,
-  354: ProductParameter,
-  355: Unit,
-  360: LinkModifier,
-  361: ProductRelation,
-  362: LinkParameter,
-  364: TariffTransfer,
-  365: MutualGroup,
-  378: ProductParameterGroup,
-  383: MarketingProduct,
-  385: MarketingTariff,
-  402: MarketingService,
-  403: Service,
-  404: ServiceOnTariff,
-  406: ServicesUpsale,
-  407: TariffOptionPackage,
-  413: ServiceRelation,
-  415: CommunicationType,
-  416: Segment,
-  419: Action,
-  420: MarketingAction,
-  424: MarketingProductParameter,
-  434: RoamingScale,
-  435: MarketingRoamingScale,
-  438: RoamingScaleOnTariff,
-  441: TariffCategory,
-  444: ServiceOnRoamingScale,
-  446: Advantage,
-  468: CrossSale,
-  469: MarketingCrossSale,
-  471: TimeZone,
-  472: NetworkCity,
-  478: ChannelCategory,
-  479: ChannelType,
-  480: ChannelFormat,
-  482: TvChannel,
-  488: ParameterChoice,
-  489: MarketingDevice,
-  490: Device,
-  491: FixedType,
-  493: EquipmentType,
-  494: EquipmentDownload,
-  498: MarketingFixConnectAction,
-  500: FixConnectAction,
-  502: MarketingTvPackage,
-  503: TvPackage,
-  504: MarketingFixConnectTariff,
-  505: FixConnectTariff,
-  506: MarketingPhoneTariff,
-  507: PhoneTariff,
-  509: MarketingInternetTariff,
-  510: InternetTariff,
-  511: DeviceOnTariffs,
-  512: DevicesForFixConnectAction,
-};
+export default t.model({
+  Region: t.map(Region),
+  Product: t.map(Product),
+  Group: t.map(Group),
+  ProductModifer: t.map(ProductModifer),
+  TariffZone: t.map(TariffZone),
+  Direction: t.map(Direction),
+  BaseParameter: t.map(BaseParameter),
+  BaseParameterModifier: t.map(BaseParameterModifier),
+  ParameterModifier: t.map(ParameterModifier),
+  ProductParameter: t.map(ProductParameter),
+  Unit: t.map(Unit),
+  LinkModifier: t.map(LinkModifier),
+  ProductRelation: t.map(ProductRelation),
+  LinkParameter: t.map(LinkParameter),
+  ProductParameterGroup: t.map(ProductParameterGroup),
+  MarketingProduct: t.map(MarketingProduct),
+  CommunicationType: t.map(CommunicationType),
+  Segment: t.map(Segment),
+  MarketingProductParameter: t.map(MarketingProductParameter),
+  TariffCategory: t.map(TariffCategory),
+  Advantage: t.map(Advantage),
+  TimeZone: t.map(TimeZone),
+  NetworkCity: t.map(NetworkCity),
+  ChannelCategory: t.map(ChannelCategory),
+  ChannelType: t.map(ChannelType),
+  ChannelFormat: t.map(ChannelFormat),
+  TvChannel: t.map(TvChannel),
+  ParameterChoice: t.map(ParameterChoice),
+  FixedType: t.map(FixedType),
+  EquipmentType: t.map(EquipmentType),
+  EquipmentDownload: t.map(EquipmentDownload),
+  DeviceOnTariffs: t.map(DeviceOnTariffs),
+});

@@ -1,5 +1,5 @@
 import { observable, extendObservable, isObservableArray, runInAction } from "mobx";
-import { isObject, isInteger } from "Utils/TypeChecking";
+import { isObject, isInteger } from "Utils/TypeChecks";
 
 type Article = { Id: number; [x: string]: any };
 

@@ -1,56 +1,50 @@
-﻿import { download } from "Utils/Downloading";
-import { isObject, isInteger, isBoolean } from "Utils/TypeChecking";
+﻿import { download } from "Utils/Download";
+import { isObject, isInteger, isBoolean } from "Utils/TypeChecks";
 
 // @ts-ignore
-const editorSchemaTypes = compileEditorSchemaTypes(window.editorSchema);
+const editorSchema = compileEditorSchema(window.editorSchema);
 // @ts-ignore
-const editorSchemaObject = compileEditorSchemaObject(window.editorSchema);
+const editorMobxModel = compileMobxModel(window.mergedSchema);
 // @ts-ignore
-const editorMobxModel = compileMobxModel(window.mobxSchema);
-// @ts-ignore
-const editorNormalizrSchema = compileNormalizrSchema(window.mobxSchema);
+const editorNormalizrSchema = compileNormalizrSchema(window.mergedSchema);
 
 // prettier-ignore
-download("ProductEditorSchema.ts", editorSchemaTypes + "\n" + editorSchemaObject);
-download("ProductEditorModel.ts", editorMobxModel);
-download("ProductEditorNormalizr.ts", editorNormalizrSchema);
+download("ProductEditorSchema.ts", editorSchema);
+download("ProductEditorMobxModel.ts", editorMobxModel);
+download("ProductEditorNormalizrSchema.ts", editorNormalizrSchema);
 
 // @ts-ignore
 document.querySelector("#typeScriptCode").innerText = `
 ${editorNormalizrSchema}
 ${editorMobxModel}
-${editorSchemaTypes}
-${editorSchemaObject}
-`;
+${editorSchema}`;
 
 /**
  * Преобразовать JSON схемы в интерфейсы TypeScript (для объекта схемы)
  * @param {object} editorSchema
  * @returns {string} Код TypeScript
  */
-function compileEditorSchemaTypes(editorSchema) {
+function compileEditorSchema(editorSchema) {
   const productSchema = JSON.parse(JSON.stringify(editorSchema));
   const content = productSchema.Content;
   const definitions = productSchema.Definitions;
   delete productSchema.Definitions;
   const rootName = getRootName(editorSchema);
 
-  const procuctInterface = `
+  // prettier-ignore
+  return `import { linkJsonRefs } from "Utils/SchemaGeneration";
+
 /** Описание полей продукта */
-export interface ${rootName} ${replaceRefs(content, rootName)}`;
+export interface ${rootName} ${replaceRefs(content, rootName)}
+${Object.keys(definitions).map(name => `
+interface ${name}Schema ${replaceRefs(
+  definitions[name],
+  `${name}Schema`
+)}`).join("")}
 
-  const result = [procuctInterface];
-
-  Object.keys(definitions).forEach(name => {
-    result.push(
-      `interface ${name}Schema ${replaceRefs(
-        definitions[name],
-        `${name}Schema`
-      )}`
-    );
-  });
-
-  return result.join("\n");
+/** Описание полей продукта */
+export default linkJsonRefs<${rootName}>(${prettyPrint(editorSchema)});
+`;
 }
 
 function getRefRegex() {
@@ -178,102 +172,6 @@ function prettyPrint(object, replacer = (_k, v) => v) {
     .replace(keyStringRegex, "$1:");
 }
 
-/**
- * Преобразовать JSON схемы в код объекта схемы
- * @param {object} editorSchema
- * @returns {string} Код TypeScript
- */
-function compileEditorSchemaObject(editorSchema) {
-  const rootName = getRootName(editorSchema);
-  return `
-/** Описание полей продукта */
-export default linkJsonRefs<${rootName}>(${prettyPrint(editorSchema)});
-
-function linkJsonRefs<T>(schema: any): T {
-  const definitions = schema.Definitions;
-  delete schema.Definitions;
-  visitObject(schema, definitions, new Set());
-  return schema.Content;
-}
-
-function visitObject(object: any, definitions: object, visited: Set<object>): void {
-  if (typeof object === "object" && object !== null) {
-    if (visited.has(object)) {
-      return;
-    }
-    visited.add(object);
-
-    if (Array.isArray(object)) {
-      object.forEach((value, index) => {
-        object[index] = resolveRef(value, definitions);
-        visitObject(object[index], definitions, visited);
-      });
-    } else {
-      Object.keys(object).forEach(key => {
-        object[key] = resolveRef(object[key], definitions);
-        visitObject(object[key], definitions, visited);
-      });
-      if (object.ContentId) {
-        object.include = includeContent;
-      } else if (object.FieldId) {
-        if (
-          object.Content && (
-            object.FieldType === "M2ORelation" ||
-            object.FieldType === "O2MRelation" ||
-            object.FieldType === "M2MRelation"
-          )
-        ) {
-          object.include = includeRelation;
-        } else if (object.Contents && object.FieldType === "Classifier") {
-          object.include = includeExtension;
-        }
-      }
-    }
-  }
-}
-
-function resolveRef(object: any, definitions: object): any {
-  return typeof object === "object" && object !== null && "$ref" in object
-    ? definitions[object.$ref.slice(14)]
-    : object;
-}
-
-type Selection = { Content: object } | { Contents: object } | string[];
-
-function includeContent(selector: (fields: object) => Selection[]): string[] {
-  const paths = [this.ContentPath];
-  selector(this.Fields).forEach((field: any, i) => {
-    if (field.Content) {
-      paths.push(field.Content.ContentPath);
-    } else if (field.Contents) {
-      const contentsPaths = Object.keys(field.Contents).map(key => field.Contents[key].ContentPath);
-      paths.push(...contentsPaths);
-    } else if (Array.isArray(field) && typeof (field[0] === "string")) {
-      paths.push(...field);
-    } else {
-      throw new TypeError("Invalid field selection [" + i + "]: " + field);
-    }
-  });
-  return paths;
-}
-
-function includeRelation(selector: (fields: object) => Selection[]): string[] {
-  return includeContent.call(this.Content, selector);
-}
-
-function includeExtension(selector: (contents: object) => string[][]): string[] {
-  const paths = Object.keys(this.Contents).map(key => this.Contents[key].ContentPath);
-  selector(this.Contents).forEach((content: any, i) => {
-    if (Array.isArray(content) && typeof (content[0] === "string")) {
-      paths.push(...content);
-    } else {
-      throw new TypeError("Invalid content selection [" + i + "]: " + content);
-    }
-  });
-  return paths;
-}`;
-}
-
 /*=================================== MobX ==================================*/
 
 function isContentRef(arg) {
@@ -315,33 +213,38 @@ function isReferenceField(field) {
   return isExtension(field) || isBackward(field) || isRelation(field);
 }
 
-function compileMobxModel(mobxSchema) {
-  const modelName = ({ ContentId }) => mobxSchema[ContentId].ContentName;
-  const modelTitle = ({ ContentId }) => mobxSchema[ContentId].ContentTitle;
+function compileMobxModel(mergedSchemas) {
+  const contentName = ({ ContentId }) => mergedSchemas[ContentId].ContentName;
+  const contentTitle = ({ ContentId }) => mergedSchemas[ContentId].ContentTitle;
 
   // prettier-ignore
   const fieldType = field => {
     if (isExtension(field)) {
       // https://github.com/mobxjs/mobx-state-tree/issues/825
       // TODO: t.optional(t.model({ [Name]: t.optional(..., {}) }), {})
-      return `t.maybe(t.enumeration("${field.FieldName}", [${Object.values(field.Contents).map(content => `
-    "${modelName(content)}",`).join("")}
+      return `t.maybe(t.enumeration("${field.FieldName}", [${
+        Object.values(field.Contents)
+          .map(content => `
+    "${contentName(content)}",`)
+          .join("")}
   ])),
   /** Контенты поля-классификатора */
   ${field.FieldName}_Contents: t.maybe(t.model({${
-    Object.values(field.Contents).map(content => `
-    /** ${modelTitle(content)} */
-    ${modelName(content)}: t.maybe(t.late(() => ${modelName(content)})),`).join("")}
+        Object.values(field.Contents)
+          .map(content => `
+    /** ${contentTitle(content)} */
+    ${contentName(content)}: t.maybe(t.late(() => ${contentName(content)})),`)
+          .join("")}
   }))`;
     } else if (isBackward(field)) {
-      return `t.optional(t.array(t.late(() => ${modelName(field.Content)})), [])`;
+      return `t.optional(t.array(t.late(() => ${contentName(field.Content)})), [])`;
     } else if (isRelation(field)) {
       switch (field.FieldType) {
         case "M2MRelation":
         case "M2ORelation":
-          return `t.optional(t.array(t.late(() => ${modelName(field.Content)})), [])`;
+          return `t.optional(t.array(t.late(() => ${contentName(field.Content)})), [])`;
         case "O2MRelation":
-          return `t.maybe(t.reference(t.late(() => ${modelName(field.Content)})))`;
+          return `t.maybe(t.reference(t.late(() => ${contentName(field.Content)})))`;
       }
     } else {
       switch (field.FieldType) {
@@ -362,10 +265,13 @@ function compileMobxModel(mobxSchema) {
         case "File":
           return `t.maybe(FileModel)`;
         case "Classifier":
-          return `t.maybe(t.string)`; // TODO: `t.enumeration("${field.FieldName}", [])`;
+          return `t.maybe(t.string)`;
         case "StringEnum":
-          return `t.maybe(t.enumeration("${field.FieldName}", [${field.Items.map(item => `
-    "${item.Value}",`).join("")}
+          return `t.maybe(t.enumeration("${field.FieldName}", [${
+            field.Items
+              .map(item => `
+    "${item.Value}",`)
+              .join("")}
   ]))`;
       }
     }
@@ -382,104 +288,121 @@ export const FileModel = t.model("FileModel", {
   /** URL файла */
   AbsoluteUrl: t.string,
 });
-
-${Object.values(mobxSchema)
+${Object.values(mergedSchemas)
   .filter(content => !content.IsExtension)
   .map(content => `
-type _I${modelName(content)} = typeof ${modelName(content)}.Type;
-/** ${modelTitle(content)} */
-export interface I${modelName(content)} extends _I${modelName(content)} {}
-/** ${modelTitle(content)} */
-export const ${modelName(content)} = t.model("${modelName(content)}_${content.ContentId}", {
+type _I${contentName(content)} = typeof ${contentName(content)}.Type;
+/** ${contentTitle(content)} */
+export interface I${contentName(content)} extends _I${contentName(content)} {}
+/** ${contentTitle(content)} */
+export const ${contentName(content)} = t.model("${contentName(content)}_${content.ContentId}", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
   Timestamp: t.maybe(t.Date),${
-Object.values(content.Fields).map(field => `
+    Object.values(content.Fields)
+      .map(field => `
   /** ${field.FieldTitle} */
-  ${field.FieldName}: ${fieldType(field)},`).join("")}
+  ${field.FieldName}: ${fieldType(field)},`)
+      .join("")}
 });
 `).join("")}
-
-${Object.values(mobxSchema)
+${Object.values(mergedSchemas)
   .filter(content => content.IsExtension)
   .map(content => `
-type _I${modelName(content)} = typeof ${modelName(content)}.Type;
-/** ${modelTitle(content)} (Extension) */
-export interface I${modelName(content)} extends _I${modelName(content)} {}
-/** ${modelTitle(content)} (Extension) */
-export const ${modelName(content)} = t.model("${modelName(content)}_${content.ContentId}", {${
-Object.values(content.Fields).map(field => `
+type _I${contentName(content)} = typeof ${contentName(content)}.Type;
+/** ${contentTitle(content)} (Extension) */
+export interface I${contentName(content)} extends _I${contentName(content)} {}
+/** ${contentTitle(content)} (Extension) */
+export const ${contentName(content)} = t.model("${contentName(content)}_${content.ContentId}", {${
+  Object.values(content.Fields)
+    .map(field => `
   /** ${field.FieldTitle} */
-  ${field.FieldName}: ${fieldType(field)},`).join("")}
+  ${field.FieldName}: ${fieldType(field)},`)
+    .join("")}
 });
 `).join("")}
 
-export default {${Object.values(mobxSchema).map(content => `
-  ${content.ContentId}: ${modelName(content)},`).join("")}
-};
+export default t.model({${
+Object.values(mergedSchemas)
+  .filter(content => !content.IsExtension)
+  .map(content => `
+  ${contentName(content)}: t.map(${contentName(content)}),`)
+  .join("")}
+});
 `;
 }
 
 /*================================ Normalizr ================================*/
 
-function compileNormalizrSchema(normalizrSchema) {
-  const modelName = ({ ContentId }) => {
-    const name = normalizrSchema[ContentId].ContentName;
-    return name[0].toLowerCase() + name.slice(1);
-  };
-
-  const modelTitle = ({ ContentId }) => normalizrSchema[ContentId].ContentTitle;
+function compileNormalizrSchema(mergedSchemas) {
+  const contentName = ({ ContentId }) => mergedSchemas[ContentId].ContentName;
+  const contentTitle = ({ ContentId }) => mergedSchemas[ContentId].ContentTitle;
+  const variableName = ({ ContentId }) =>
+    mergedSchemas[ContentId].ContentName + "Shape";
 
   // prettier-ignore
   const fieldDefinition = field => {
     if (isExtension(field)) {
       return `${field.FieldName}_Contents: {${
-    Object.values(field.Contents).map(content => `
-    ${modelName(content)}: ${modelName(content)},`).join("")}
+        Object.values(field.Contents)
+          .map(content => `
+    ${contentName(content)}: ${variableName(content)},`)
+          .join("")}
   }`;
     } else if (isBackward(field)) {
-      return `${field.FieldName}: [${modelName(field.Content)}]`;
+      return `${field.FieldName}: [${variableName(field.Content)}]`;
     } else if (isRelation(field)) {
       switch (field.FieldType) {
         case "M2MRelation":
         case "M2ORelation":
-          return `${field.FieldName}: [${modelName(field.Content)}]`;
+          return `${field.FieldName}: [${variableName(field.Content)}]`;
         case "O2MRelation":
-          return `${field.FieldName}: ${modelName(field.Content)}`;
+          return `${field.FieldName}: ${variableName(field.Content)}`;
       }
     }
     throw new Error(`Can not parse field ${JSON.stringify(field, null, 2)}`);
   };
 
   // prettier-ignore
-  return `import { schema as s } from "normalizr";
-${Object.values(normalizrSchema)
+  return `import { schema } from "normalizr";
+import { deepMerge } from "Utils/DeepMerge";
+
+const options = { idAttribute: "Id", mergeStrategy: deepMerge };
+${Object.values(mergedSchemas)
   .filter(content => !content.IsExtension)
   .map(content => `
-/** ${modelTitle(content)} */
-export const ${modelName(content)} = new s.Entity("${modelName(content)}s", {}, { idAttribute: "Id" });`).join("")}
+/** ${contentTitle(content)} */
+export const ${variableName(content)} = new schema.Entity("${contentName(content)}", {}, options);`)
+  .join("")}
 
 // Extensions
-${Object.values(normalizrSchema)
+${Object.values(mergedSchemas)
   .filter(content => content.IsExtension)
   .map(content => `
-const ${modelName(content)} = new s.Object({}); // ${modelTitle(content)}`).join("")}
+const ${variableName(content)} = new schema.Object({}); // ${contentTitle(content)}`)
+  .join("")}
 
-${Object.values(normalizrSchema)
+${Object.values(mergedSchemas)
   .filter(content => Object.values(content.Fields).filter(isReferenceField).length > 0)
   .map(content => `
-// ${modelTitle(content)}
-${modelName(content)}.define({${
-Object.values(content.Fields).filter(isReferenceField).map(field => `
-  ${fieldDefinition(field)},`).join("")}
+// ${contentTitle(content)}
+${variableName(content)}.define({${
+  Object.values(content.Fields)
+    .filter(isReferenceField)
+    .map(field => `
+  ${fieldDefinition(field)},`)
+    .join("")}
 });
 `).join("")}
 
-export default {${Object.values(normalizrSchema)
+/** Shapes by ContentName */
+export default {${
+Object.values(mergedSchemas)
   .filter(content => !content.IsExtension)
   .map(content => `
-  ${content.ContentId}: ${modelName(content)},`).join("")}
+  ${contentName(content)}: ${variableName(content)},`)
+  .join("")}
 };
 `;
 }

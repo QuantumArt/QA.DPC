@@ -8,6 +8,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         public string EditorSchema { get; set; }
 
-        public string MobxSchema { get; set; }
+        public string MergedSchema { get; set; }
     }
 }
