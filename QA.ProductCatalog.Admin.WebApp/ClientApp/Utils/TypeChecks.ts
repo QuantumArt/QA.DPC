@@ -23,9 +23,17 @@ export function isArray(arg): arg is any[] {
 }
 
 export function isObject(arg: any): arg is Object {
-  return typeof arg === "object" && arg !== null && !isArray(arg);
+  return arg && typeof arg === "object" && !isArray(arg);
 }
 
 export function isFunction(arg): arg is Function {
   return typeof arg === "function";
+}
+
+export function isPlainObject(arg): arg is Object {
+  if (isObject(arg)) {
+    const prototype = Object.getPrototypeOf(arg);
+    return prototype === Object.prototype || prototype === null;
+  }
+  return false;
 }

@@ -1,4 +1,4 @@
-import { isObject } from "./TypeChecks";
+import { isPlainObject } from "./TypeChecks";
 
 /**
  * Deep merge two objects with structural sharing of unchanged parts.
@@ -7,8 +7,8 @@ export function deepMerge(left, right) {
   if (left === right) {
     return right;
   }
-  if (isObject(right)) {
-    if (!isObject(left)) {
+  if (isPlainObject(right)) {
+    if (!isPlainObject(left)) {
       return right;
     }
     const result = {};

@@ -54,28 +54,44 @@ export const Product = t.model("Product_339", {
     "InternetTariff",
   ])),
   /** Контенты поля-классификатора */
-  Type_Contents: t.maybe(t.model({
-    /** Тарифы */
-    Tariff: t.maybe(t.late(() => Tariff)),
-    /** Услуги */
-    Service: t.maybe(t.late(() => Service)),
-    /** Акции */
-    Action: t.maybe(t.late(() => Action)),
-    /** Роуминговые сетки */
-    RoamingScale: t.maybe(t.late(() => RoamingScale)),
+  Type_Contents: t.optional(t.model({
+    Tariff: t.optional(t.frozen, {}),
+    Service: t.optional(t.frozen, {}),
+    Action: t.optional(t.frozen, {}),
+    RoamingScale: t.optional(t.frozen, {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // Device: t.optional(t.late(() => Device), {})
     /** Оборудование */
-    Device: t.maybe(t.late(() => Device)),
+    Device: t.optional(t.model({
+      Downloads: t.optional(t.array(t.reference(t.late(() => EquipmentDownload))), []),
+      Inners: t.optional(t.array(t.reference(t.late(() => Product))), []),
+      FreezeDate: t.maybe(t.Date),
+      FullUserGuide: t.maybe(FileModel),
+      QuickStartGuide: t.maybe(FileModel),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // FixConnectAction: t.optional(t.late(() => FixConnectAction), {})
     /** Акции фиксированной связи */
-    FixConnectAction: t.maybe(t.late(() => FixConnectAction)),
-    /** ТВ-пакеты */
-    TvPackage: t.maybe(t.late(() => TvPackage)),
+    FixConnectAction: t.optional(t.model({
+      MarketingOffers: t.optional(t.array(t.reference(t.late(() => MarketingProduct))), []),
+      PromoPeriod: t.maybe(t.string),
+      AfterPromo: t.maybe(t.string),
+    }), {}),
+    TvPackage: t.optional(t.frozen, {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // FixConnectTariff: t.optional(t.late(() => FixConnectTariff), {})
     /** Тарифы фиксированной связи */
-    FixConnectTariff: t.maybe(t.late(() => FixConnectTariff)),
+    FixConnectTariff: t.optional(t.model({
+      TitleForSite: t.maybe(t.string),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // PhoneTariff: t.optional(t.late(() => PhoneTariff), {})
     /** Тарифы телефонии */
-    PhoneTariff: t.maybe(t.late(() => PhoneTariff)),
-    /** Тарифы Интернет */
-    InternetTariff: t.maybe(t.late(() => InternetTariff)),
-  })),
+    PhoneTariff: t.optional(t.model({
+      RostelecomLink: t.maybe(t.string),
+    }), {}),
+    InternetTariff: t.optional(t.frozen, {}),
+  }), {}),
   /** Описание */
   Description: t.maybe(t.string),
   /** Полное описание */
@@ -117,15 +133,15 @@ export const Product = t.model("Product_339", {
   /** Дата перевода в архив */
   ArchiveDate: t.maybe(t.Date),
   /** Модификаторы */
-  Modifiers: t.optional(t.array(t.late(() => ProductModifer)), []),
+  Modifiers: t.optional(t.array(t.reference(t.late(() => ProductModifer))), []),
   /** Параметры продукта */
-  Parameters: t.optional(t.array(t.late(() => ProductParameter)), []),
+  Parameters: t.optional(t.array(t.reference(t.late(() => ProductParameter))), []),
   /** Регионы */
-  Regions: t.optional(t.array(t.late(() => Region)), []),
+  Regions: t.optional(t.array(t.reference(t.late(() => Region))), []),
   /** Акция фиксированной связи */
-  FixConnectAction: t.optional(t.array(t.late(() => DevicesForFixConnectAction)), []),
+  FixConnectAction: t.optional(t.array(t.reference(t.late(() => DevicesForFixConnectAction))), []),
   /** Преимущества */
-  Advantages: t.optional(t.array(t.late(() => Advantage)), []),
+  Advantages: t.optional(t.array(t.reference(t.late(() => Advantage))), []),
 });
 
 type _IGroup = typeof Group.Type;
@@ -267,9 +283,9 @@ export const ProductParameter = t.model("ProductParameter_354", {
   /** Направление действия базового параметра */
   Direction: t.maybe(t.reference(t.late(() => Direction))),
   /** Модификаторы базового параметра */
-  BaseParameterModifiers: t.optional(t.array(t.late(() => BaseParameterModifier)), []),
+  BaseParameterModifiers: t.optional(t.array(t.reference(t.late(() => BaseParameterModifier))), []),
   /** Модификаторы */
-  Modifiers: t.optional(t.array(t.late(() => ParameterModifier)), []),
+  Modifiers: t.optional(t.array(t.reference(t.late(() => ParameterModifier))), []),
   /** Единица измерения */
   Unit: t.maybe(t.reference(t.late(() => Unit))),
   /** Порядок */
@@ -362,9 +378,9 @@ export const ProductRelation = t.model("ProductRelation_361", {
   /** Название */
   Title: t.maybe(t.string),
   /** Модификаторы */
-  Modifiers: t.optional(t.array(t.late(() => LinkModifier)), []),
+  Modifiers: t.optional(t.array(t.reference(t.late(() => LinkModifier))), []),
   /** Параметры */
-  Parameters: t.optional(t.array(t.late(() => LinkParameter)), []),
+  Parameters: t.optional(t.array(t.reference(t.late(() => LinkParameter))), []),
   /** Тип */
   Type: t.maybe(t.enumeration("Type", [
     "TariffTransfer",
@@ -381,32 +397,65 @@ export const ProductRelation = t.model("ProductRelation_361", {
     "DevicesForFixConnectAction",
   ])),
   /** Контенты поля-классификатора */
-  Type_Contents: t.maybe(t.model({
-    /** Переходы с тарифа на тариф */
-    TariffTransfer: t.maybe(t.late(() => TariffTransfer)),
-    /** Группы несовместимости услуг */
-    MutualGroup: t.maybe(t.late(() => MutualGroup)),
+  Type_Contents: t.optional(t.model({
+    TariffTransfer: t.optional(t.frozen, {}),
+    MutualGroup: t.optional(t.frozen, {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // ServiceOnTariff: t.optional(t.late(() => ServiceOnTariff), {})
     /** Услуги на тарифе */
-    ServiceOnTariff: t.maybe(t.late(() => ServiceOnTariff)),
+    ServiceOnTariff: t.optional(t.model({
+      Description: t.maybe(t.string),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // ServicesUpsale: t.optional(t.late(() => ServicesUpsale), {})
     /** Матрица предложений услуг Upsale */
-    ServicesUpsale: t.maybe(t.late(() => ServicesUpsale)),
+    ServicesUpsale: t.optional(t.model({
+      Order: t.maybe(t.number),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // TariffOptionPackage: t.optional(t.late(() => TariffOptionPackage), {})
     /** Пакеты опций на тарифах */
-    TariffOptionPackage: t.maybe(t.late(() => TariffOptionPackage)),
-    /** Связи между услугами */
-    ServiceRelation: t.maybe(t.late(() => ServiceRelation)),
-    /** Роуминговые сетки для тарифа */
-    RoamingScaleOnTariff: t.maybe(t.late(() => RoamingScaleOnTariff)),
-    /** Услуги на роуминговой сетке */
-    ServiceOnRoamingScale: t.maybe(t.late(() => ServiceOnRoamingScale)),
+    TariffOptionPackage: t.optional(t.model({
+      SubTitle: t.maybe(t.string),
+      Description: t.maybe(t.string),
+      Alias: t.maybe(t.string),
+      Link: t.maybe(t.string),
+    }), {}),
+    ServiceRelation: t.optional(t.frozen, {}),
+    RoamingScaleOnTariff: t.optional(t.frozen, {}),
+    ServiceOnRoamingScale: t.optional(t.frozen, {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // CrossSale: t.optional(t.late(() => CrossSale), {})
     /** Матрица предложений CrossSale */
-    CrossSale: t.maybe(t.late(() => CrossSale)),
+    CrossSale: t.optional(t.model({
+      Order: t.maybe(t.number),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // MarketingCrossSale: t.optional(t.late(() => MarketingCrossSale), {})
     /** Матрица маркетинговых предложений CrossSale */
-    MarketingCrossSale: t.maybe(t.late(() => MarketingCrossSale)),
+    MarketingCrossSale: t.optional(t.model({
+      Order: t.maybe(t.number),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // DeviceOnTariffs: t.optional(t.late(() => DeviceOnTariffs), {})
     /** Оборудование на тарифах */
-    DeviceOnTariffs: t.maybe(t.late(() => DeviceOnTariffs)),
+    DeviceOnTariffs: t.optional(t.model({
+      Parent: t.maybe(t.reference(t.late(() => ProductRelation))),
+      Order: t.maybe(t.number),
+      MarketingDevice: t.maybe(t.reference(t.late(() => MarketingProduct))),
+      MarketingTariffs: t.optional(t.array(t.reference(t.late(() => MarketingProduct))), []),
+      Cities: t.optional(t.array(t.reference(t.late(() => Region))), []),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // DevicesForFixConnectAction: t.optional(t.late(() => DevicesForFixConnectAction), {})
     /** Акционное оборудование */
-    DevicesForFixConnectAction: t.maybe(t.late(() => DevicesForFixConnectAction)),
-  })),
+    DevicesForFixConnectAction: t.optional(t.model({
+      Order: t.maybe(t.number),
+      FixConnectAction: t.maybe(t.reference(t.late(() => Product))),
+      Parent: t.maybe(t.reference(t.late(() => ProductRelation))),
+      MarketingDevice: t.maybe(t.reference(t.late(() => MarketingProduct))),
+    }), {}),
+  }), {}),
 });
 
 type _ILinkParameter = typeof LinkParameter.Type;
@@ -429,9 +478,9 @@ export const LinkParameter = t.model("LinkParameter_362", {
   /** Направление действия базового параметра */
   Direction: t.maybe(t.reference(t.late(() => Direction))),
   /** Модификаторы базового параметра */
-  BaseParameterModifiers: t.optional(t.array(t.late(() => BaseParameterModifier)), []),
+  BaseParameterModifiers: t.optional(t.array(t.reference(t.late(() => BaseParameterModifier))), []),
   /** Модификаторы */
-  Modifiers: t.optional(t.array(t.late(() => ParameterModifier)), []),
+  Modifiers: t.optional(t.array(t.reference(t.late(() => ParameterModifier))), []),
   /** Порядок */
   SortOrder: t.maybe(t.number),
   /** Числовое значение */
@@ -509,13 +558,13 @@ export const MarketingProduct = t.model("MarketingProduct_383", {
   /** Дата закрытия продукта (Архив) */
   ArchiveDate: t.maybe(t.Date),
   /** Модификаторы */
-  Modifiers: t.optional(t.array(t.late(() => ProductModifer)), []),
+  Modifiers: t.optional(t.array(t.reference(t.late(() => ProductModifer))), []),
   /** Порядок */
   SortOrder: t.maybe(t.number),
   /** Приоритет (популярность) */
   Priority: t.maybe(t.number),
   /** Преимущества */
-  Advantages: t.optional(t.array(t.late(() => Advantage)), []),
+  Advantages: t.optional(t.array(t.reference(t.late(() => Advantage))), []),
   /** Тип */
   Type: t.maybe(t.enumeration("Type", [
     "MarketingTariff",
@@ -530,38 +579,67 @@ export const MarketingProduct = t.model("MarketingProduct_383", {
     "MarketingInternetTariff",
   ])),
   /** Контенты поля-классификатора */
-  Type_Contents: t.maybe(t.model({
-    /** Маркетинговые тарифы */
-    MarketingTariff: t.maybe(t.late(() => MarketingTariff)),
-    /** Маркетинговые услуги */
-    MarketingService: t.maybe(t.late(() => MarketingService)),
-    /** Маркетинговые акции */
-    MarketingAction: t.maybe(t.late(() => MarketingAction)),
-    /** Маркетинговые роуминговые сетки */
-    MarketingRoamingScale: t.maybe(t.late(() => MarketingRoamingScale)),
+  Type_Contents: t.optional(t.model({
+    MarketingTariff: t.optional(t.frozen, {}),
+    MarketingService: t.optional(t.frozen, {}),
+    MarketingAction: t.optional(t.frozen, {}),
+    MarketingRoamingScale: t.optional(t.frozen, {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // MarketingDevice: t.optional(t.late(() => MarketingDevice), {})
     /** Маркетинговое оборудование */
-    MarketingDevice: t.maybe(t.late(() => MarketingDevice)),
+    MarketingDevice: t.optional(t.model({
+      DeviceType: t.maybe(t.reference(t.late(() => EquipmentType))),
+      Segments: t.optional(t.array(t.reference(t.late(() => Segment))), []),
+      CommunicationType: t.maybe(t.reference(t.late(() => CommunicationType))),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // MarketingFixConnectAction: t.optional(t.late(() => MarketingFixConnectAction), {})
     /** Маркетинговые акции фиксированной связи */
-    MarketingFixConnectAction: t.maybe(t.late(() => MarketingFixConnectAction)),
+    MarketingFixConnectAction: t.optional(t.model({
+      Segment: t.optional(t.array(t.reference(t.late(() => Segment))), []),
+      MarketingAction: t.maybe(t.reference(t.late(() => MarketingProduct))),
+      StartDate: t.maybe(t.Date),
+      EndDate: t.maybe(t.Date),
+      PromoPeriod: t.maybe(t.string),
+      AfterPromo: t.maybe(t.string),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // MarketingTvPackage: t.optional(t.late(() => MarketingTvPackage), {})
     /** Маркетинговые ТВ-пакеты */
-    MarketingTvPackage: t.maybe(t.late(() => MarketingTvPackage)),
+    MarketingTvPackage: t.optional(t.model({
+      Channels: t.optional(t.array(t.reference(t.late(() => TvChannel))), []),
+      TitleForSite: t.maybe(t.string),
+      PackageType: t.maybe(t.enumeration("PackageType", [
+    "Base",
+    "Additional",
+  ])),
+    }), {}),
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // MarketingFixConnectTariff: t.optional(t.late(() => MarketingFixConnectTariff), {})
     /** Маркетинговые тарифы фиксированной связи */
-    MarketingFixConnectTariff: t.maybe(t.late(() => MarketingFixConnectTariff)),
-    /** Маркетинговые тарифы телефонии */
-    MarketingPhoneTariff: t.maybe(t.late(() => MarketingPhoneTariff)),
-    /** Маркетинговые тарифы интернет */
-    MarketingInternetTariff: t.maybe(t.late(() => MarketingInternetTariff)),
-  })),
+    MarketingFixConnectTariff: t.optional(t.model({
+      Segment: t.maybe(t.reference(t.late(() => Segment))),
+      Category: t.maybe(t.reference(t.late(() => TariffCategory))),
+      MarketingDevices: t.optional(t.array(t.reference(t.late(() => MarketingProduct))), []),
+      BonusTVPackages: t.optional(t.array(t.reference(t.late(() => MarketingProduct))), []),
+      MarketingPhoneTariff: t.maybe(t.reference(t.late(() => MarketingProduct))),
+      MarketingInternetTariff: t.maybe(t.reference(t.late(() => MarketingProduct))),
+      MarketingTvPackage: t.maybe(t.reference(t.late(() => MarketingProduct))),
+      TitleForSite: t.maybe(t.string),
+    }), {}),
+    MarketingPhoneTariff: t.optional(t.frozen, {}),
+    MarketingInternetTariff: t.optional(t.frozen, {}),
+  }), {}),
   /**  */
   FullDescription: t.maybe(t.string),
   /** Параметры маркетингового продукта */
-  Parameters: t.optional(t.array(t.late(() => MarketingProductParameter)), []),
+  Parameters: t.optional(t.array(t.reference(t.late(() => MarketingProductParameter))), []),
   /** Маркетинговое устройство */
-  TariffsOnMarketingDevice: t.optional(t.array(t.late(() => DeviceOnTariffs)), []),
+  TariffsOnMarketingDevice: t.optional(t.array(t.reference(t.late(() => DeviceOnTariffs))), []),
   /** Маркетинговые тарифы */
-  DevicesOnMarketingTariff: t.optional(t.array(t.late(() => DeviceOnTariffs)), []),
+  DevicesOnMarketingTariff: t.optional(t.array(t.reference(t.late(() => DeviceOnTariffs))), []),
   /** Маркетинговое оборудование */
-  ActionsOnMarketingDevice: t.optional(t.array(t.late(() => DevicesForFixConnectAction)), []),
+  ActionsOnMarketingDevice: t.optional(t.array(t.reference(t.late(() => DevicesForFixConnectAction))), []),
   /** Ссылка */
   Link: t.maybe(t.string),
   /** Подробное описание */
@@ -616,9 +694,9 @@ export const MarketingProductParameter = t.model("MarketingProductParameter_424"
   /** Направление действия базового параметра */
   Direction: t.maybe(t.reference(t.late(() => Direction))),
   /** Модификаторы базового параметра */
-  BaseParameterModifiers: t.optional(t.array(t.late(() => BaseParameterModifier)), []),
+  BaseParameterModifiers: t.optional(t.array(t.reference(t.late(() => BaseParameterModifier))), []),
   /** Модификаторы */
-  Modifiers: t.optional(t.array(t.late(() => ParameterModifier)), []),
+  Modifiers: t.optional(t.array(t.reference(t.late(() => ParameterModifier))), []),
   /** Единица измерения */
   Unit: t.maybe(t.reference(t.late(() => Unit))),
   /** Выбор */
@@ -645,7 +723,7 @@ export const TariffCategory = t.model("TariffCategory_441", {
   /** Время последней модификации статьи */
   Timestamp: t.maybe(t.Date),
   /** Типы связи */
-  ConnectionTypes: t.optional(t.array(t.late(() => FixedType)), []),
+  ConnectionTypes: t.optional(t.array(t.reference(t.late(() => FixedType))), []),
   /** Название */
   Title: t.maybe(t.string),
   /** Алиас */
@@ -801,7 +879,7 @@ export const TvChannel = t.model("TvChannel_482", {
   /** Короткое описание */
   ShortDescription: t.maybe(t.string),
   /** Города вещания */
-  Cities: t.optional(t.array(t.late(() => NetworkCity)), []),
+  Cities: t.optional(t.array(t.reference(t.late(() => NetworkCity))), []),
   /** Приостановлено вещание */
   Disabled: t.maybe(t.boolean),
   /** МТС Москва */
@@ -819,7 +897,7 @@ export const TvChannel = t.model("TvChannel_482", {
   /** Родительский канал */
   Parent: t.maybe(t.reference(t.late(() => TvChannel))),
   /** Дочерние каналы */
-  Children: t.optional(t.array(t.late(() => TvChannel)), []),
+  Children: t.optional(t.array(t.reference(t.late(() => TvChannel))), []),
   /** Лого 40х30 */
   Logo40x30: t.maybe(t.string),
   /** Часовая зона (UTC) */
@@ -906,9 +984,9 @@ export const DeviceOnTariffs = t.model("DeviceOnTariffs_511", {
   /** Маркетинговое устройство */
   MarketingDevice: t.maybe(t.reference(t.late(() => MarketingProduct))),
   /** Маркетинговые тарифы */
-  MarketingTariffs: t.optional(t.array(t.late(() => MarketingProduct)), []),
+  MarketingTariffs: t.optional(t.array(t.reference(t.late(() => MarketingProduct))), []),
   /** Города */
-  Cities: t.optional(t.array(t.late(() => Region)), []),
+  Cities: t.optional(t.array(t.reference(t.late(() => Region))), []),
 });
 
 
@@ -917,6 +995,7 @@ type _ITariff = typeof Tariff.Type;
 export interface ITariff extends _ITariff {}
 /** Тарифы (Extension) */
 export const Tariff = t.model("Tariff_343", {
+  // no fields
 });
 
 type _ITariffTransfer = typeof TariffTransfer.Type;
@@ -924,6 +1003,7 @@ type _ITariffTransfer = typeof TariffTransfer.Type;
 export interface ITariffTransfer extends _ITariffTransfer {}
 /** Переходы с тарифа на тариф (Extension) */
 export const TariffTransfer = t.model("TariffTransfer_364", {
+  // no fields
 });
 
 type _IMutualGroup = typeof MutualGroup.Type;
@@ -931,6 +1011,7 @@ type _IMutualGroup = typeof MutualGroup.Type;
 export interface IMutualGroup extends _IMutualGroup {}
 /** Группы несовместимости услуг (Extension) */
 export const MutualGroup = t.model("MutualGroup_365", {
+  // no fields
 });
 
 type _IMarketingTariff = typeof MarketingTariff.Type;
@@ -938,6 +1019,7 @@ type _IMarketingTariff = typeof MarketingTariff.Type;
 export interface IMarketingTariff extends _IMarketingTariff {}
 /** Маркетинговые тарифы (Extension) */
 export const MarketingTariff = t.model("MarketingTariff_385", {
+  // no fields
 });
 
 type _IMarketingService = typeof MarketingService.Type;
@@ -945,6 +1027,7 @@ type _IMarketingService = typeof MarketingService.Type;
 export interface IMarketingService extends _IMarketingService {}
 /** Маркетинговые услуги (Extension) */
 export const MarketingService = t.model("MarketingService_402", {
+  // no fields
 });
 
 type _IService = typeof Service.Type;
@@ -952,6 +1035,7 @@ type _IService = typeof Service.Type;
 export interface IService extends _IService {}
 /** Услуги (Extension) */
 export const Service = t.model("Service_403", {
+  // no fields
 });
 
 type _IServiceOnTariff = typeof ServiceOnTariff.Type;
@@ -992,6 +1076,7 @@ type _IServiceRelation = typeof ServiceRelation.Type;
 export interface IServiceRelation extends _IServiceRelation {}
 /** Связи между услугами (Extension) */
 export const ServiceRelation = t.model("ServiceRelation_413", {
+  // no fields
 });
 
 type _IAction = typeof Action.Type;
@@ -999,6 +1084,7 @@ type _IAction = typeof Action.Type;
 export interface IAction extends _IAction {}
 /** Акции (Extension) */
 export const Action = t.model("Action_419", {
+  // no fields
 });
 
 type _IMarketingAction = typeof MarketingAction.Type;
@@ -1006,6 +1092,7 @@ type _IMarketingAction = typeof MarketingAction.Type;
 export interface IMarketingAction extends _IMarketingAction {}
 /** Маркетинговые акции (Extension) */
 export const MarketingAction = t.model("MarketingAction_420", {
+  // no fields
 });
 
 type _IRoamingScale = typeof RoamingScale.Type;
@@ -1013,6 +1100,7 @@ type _IRoamingScale = typeof RoamingScale.Type;
 export interface IRoamingScale extends _IRoamingScale {}
 /** Роуминговые сетки (Extension) */
 export const RoamingScale = t.model("RoamingScale_434", {
+  // no fields
 });
 
 type _IMarketingRoamingScale = typeof MarketingRoamingScale.Type;
@@ -1020,6 +1108,7 @@ type _IMarketingRoamingScale = typeof MarketingRoamingScale.Type;
 export interface IMarketingRoamingScale extends _IMarketingRoamingScale {}
 /** Маркетинговые роуминговые сетки (Extension) */
 export const MarketingRoamingScale = t.model("MarketingRoamingScale_435", {
+  // no fields
 });
 
 type _IRoamingScaleOnTariff = typeof RoamingScaleOnTariff.Type;
@@ -1027,6 +1116,7 @@ type _IRoamingScaleOnTariff = typeof RoamingScaleOnTariff.Type;
 export interface IRoamingScaleOnTariff extends _IRoamingScaleOnTariff {}
 /** Роуминговые сетки для тарифа (Extension) */
 export const RoamingScaleOnTariff = t.model("RoamingScaleOnTariff_438", {
+  // no fields
 });
 
 type _IServiceOnRoamingScale = typeof ServiceOnRoamingScale.Type;
@@ -1034,6 +1124,7 @@ type _IServiceOnRoamingScale = typeof ServiceOnRoamingScale.Type;
 export interface IServiceOnRoamingScale extends _IServiceOnRoamingScale {}
 /** Услуги на роуминговой сетке (Extension) */
 export const ServiceOnRoamingScale = t.model("ServiceOnRoamingScale_444", {
+  // no fields
 });
 
 type _ICrossSale = typeof CrossSale.Type;
@@ -1062,7 +1153,7 @@ export const MarketingDevice = t.model("MarketingDevice_489", {
   /** Тип оборудования */
   DeviceType: t.maybe(t.reference(t.late(() => EquipmentType))),
   /** Сегменты */
-  Segments: t.optional(t.array(t.late(() => Segment)), []),
+  Segments: t.optional(t.array(t.reference(t.late(() => Segment))), []),
   /** Вид связи */
   CommunicationType: t.maybe(t.reference(t.late(() => CommunicationType))),
 });
@@ -1073,9 +1164,9 @@ export interface IDevice extends _IDevice {}
 /** Оборудование (Extension) */
 export const Device = t.model("Device_490", {
   /** Загрузки */
-  Downloads: t.optional(t.array(t.late(() => EquipmentDownload)), []),
+  Downloads: t.optional(t.array(t.reference(t.late(() => EquipmentDownload))), []),
   /** Состав комплекта */
-  Inners: t.optional(t.array(t.late(() => Product)), []),
+  Inners: t.optional(t.array(t.reference(t.late(() => Product))), []),
   /** Отложенная публикация на */
   FreezeDate: t.maybe(t.Date),
   /** Полное руководство пользователя (User guide) */
@@ -1090,7 +1181,7 @@ export interface IMarketingFixConnectAction extends _IMarketingFixConnectAction 
 /** Маркетинговые акции фиксированной связи (Extension) */
 export const MarketingFixConnectAction = t.model("MarketingFixConnectAction_498", {
   /** Сегмент */
-  Segment: t.optional(t.array(t.late(() => Segment)), []),
+  Segment: t.optional(t.array(t.reference(t.late(() => Segment))), []),
   /** Акция в Каталоге акций */
   MarketingAction: t.maybe(t.reference(t.late(() => MarketingProduct))),
   /**  */
@@ -1109,7 +1200,7 @@ export interface IFixConnectAction extends _IFixConnectAction {}
 /** Акции фиксированной связи (Extension) */
 export const FixConnectAction = t.model("FixConnectAction_500", {
   /**  */
-  MarketingOffers: t.optional(t.array(t.late(() => MarketingProduct)), []),
+  MarketingOffers: t.optional(t.array(t.reference(t.late(() => MarketingProduct))), []),
   /**  */
   PromoPeriod: t.maybe(t.string),
   /**  */
@@ -1122,7 +1213,7 @@ export interface IMarketingTvPackage extends _IMarketingTvPackage {}
 /** Маркетинговые ТВ-пакеты (Extension) */
 export const MarketingTvPackage = t.model("MarketingTvPackage_502", {
   /** Каналы */
-  Channels: t.optional(t.array(t.late(() => TvChannel)), []),
+  Channels: t.optional(t.array(t.reference(t.late(() => TvChannel))), []),
   /**  */
   TitleForSite: t.maybe(t.string),
   /** Тип пакета */
@@ -1137,6 +1228,7 @@ type _ITvPackage = typeof TvPackage.Type;
 export interface ITvPackage extends _ITvPackage {}
 /** ТВ-пакеты (Extension) */
 export const TvPackage = t.model("TvPackage_503", {
+  // no fields
 });
 
 type _IMarketingFixConnectTariff = typeof MarketingFixConnectTariff.Type;
@@ -1149,9 +1241,9 @@ export const MarketingFixConnectTariff = t.model("MarketingFixConnectTariff_504"
   /** Тип предложения (Категория тарифа) */
   Category: t.maybe(t.reference(t.late(() => TariffCategory))),
   /**  */
-  MarketingDevices: t.optional(t.array(t.late(() => MarketingProduct)), []),
+  MarketingDevices: t.optional(t.array(t.reference(t.late(() => MarketingProduct))), []),
   /**  */
-  BonusTVPackages: t.optional(t.array(t.late(() => MarketingProduct)), []),
+  BonusTVPackages: t.optional(t.array(t.reference(t.late(() => MarketingProduct))), []),
   /**  */
   MarketingPhoneTariff: t.maybe(t.reference(t.late(() => MarketingProduct))),
   /**  */
@@ -1176,6 +1268,7 @@ type _IMarketingPhoneTariff = typeof MarketingPhoneTariff.Type;
 export interface IMarketingPhoneTariff extends _IMarketingPhoneTariff {}
 /** Маркетинговые тарифы телефонии (Extension) */
 export const MarketingPhoneTariff = t.model("MarketingPhoneTariff_506", {
+  // no fields
 });
 
 type _IPhoneTariff = typeof PhoneTariff.Type;
@@ -1192,6 +1285,7 @@ type _IMarketingInternetTariff = typeof MarketingInternetTariff.Type;
 export interface IMarketingInternetTariff extends _IMarketingInternetTariff {}
 /** Маркетинговые тарифы интернет (Extension) */
 export const MarketingInternetTariff = t.model("MarketingInternetTariff_509", {
+  // no fields
 });
 
 type _IInternetTariff = typeof InternetTariff.Type;
@@ -1199,6 +1293,7 @@ type _IInternetTariff = typeof InternetTariff.Type;
 export interface IInternetTariff extends _IInternetTariff {}
 /** Тарифы Интернет (Extension) */
 export const InternetTariff = t.model("InternetTariff_510", {
+  // no fields
 });
 
 type _IDevicesForFixConnectAction = typeof DevicesForFixConnectAction.Type;
@@ -1218,36 +1313,36 @@ export const DevicesForFixConnectAction = t.model("DevicesForFixConnectAction_51
 
 
 export default t.model({
-  Region: t.map(Region),
-  Product: t.map(Product),
-  Group: t.map(Group),
-  ProductModifer: t.map(ProductModifer),
-  TariffZone: t.map(TariffZone),
-  Direction: t.map(Direction),
-  BaseParameter: t.map(BaseParameter),
-  BaseParameterModifier: t.map(BaseParameterModifier),
-  ParameterModifier: t.map(ParameterModifier),
-  ProductParameter: t.map(ProductParameter),
-  Unit: t.map(Unit),
-  LinkModifier: t.map(LinkModifier),
-  ProductRelation: t.map(ProductRelation),
-  LinkParameter: t.map(LinkParameter),
-  ProductParameterGroup: t.map(ProductParameterGroup),
-  MarketingProduct: t.map(MarketingProduct),
-  CommunicationType: t.map(CommunicationType),
-  Segment: t.map(Segment),
-  MarketingProductParameter: t.map(MarketingProductParameter),
-  TariffCategory: t.map(TariffCategory),
-  Advantage: t.map(Advantage),
-  TimeZone: t.map(TimeZone),
-  NetworkCity: t.map(NetworkCity),
-  ChannelCategory: t.map(ChannelCategory),
-  ChannelType: t.map(ChannelType),
-  ChannelFormat: t.map(ChannelFormat),
-  TvChannel: t.map(TvChannel),
-  ParameterChoice: t.map(ParameterChoice),
-  FixedType: t.map(FixedType),
-  EquipmentType: t.map(EquipmentType),
-  EquipmentDownload: t.map(EquipmentDownload),
-  DeviceOnTariffs: t.map(DeviceOnTariffs),
+  Region: t.optional(t.map(Region), {}),
+  Product: t.optional(t.map(Product), {}),
+  Group: t.optional(t.map(Group), {}),
+  ProductModifer: t.optional(t.map(ProductModifer), {}),
+  TariffZone: t.optional(t.map(TariffZone), {}),
+  Direction: t.optional(t.map(Direction), {}),
+  BaseParameter: t.optional(t.map(BaseParameter), {}),
+  BaseParameterModifier: t.optional(t.map(BaseParameterModifier), {}),
+  ParameterModifier: t.optional(t.map(ParameterModifier), {}),
+  ProductParameter: t.optional(t.map(ProductParameter), {}),
+  Unit: t.optional(t.map(Unit), {}),
+  LinkModifier: t.optional(t.map(LinkModifier), {}),
+  ProductRelation: t.optional(t.map(ProductRelation), {}),
+  LinkParameter: t.optional(t.map(LinkParameter), {}),
+  ProductParameterGroup: t.optional(t.map(ProductParameterGroup), {}),
+  MarketingProduct: t.optional(t.map(MarketingProduct), {}),
+  CommunicationType: t.optional(t.map(CommunicationType), {}),
+  Segment: t.optional(t.map(Segment), {}),
+  MarketingProductParameter: t.optional(t.map(MarketingProductParameter), {}),
+  TariffCategory: t.optional(t.map(TariffCategory), {}),
+  Advantage: t.optional(t.map(Advantage), {}),
+  TimeZone: t.optional(t.map(TimeZone), {}),
+  NetworkCity: t.optional(t.map(NetworkCity), {}),
+  ChannelCategory: t.optional(t.map(ChannelCategory), {}),
+  ChannelType: t.optional(t.map(ChannelType), {}),
+  ChannelFormat: t.optional(t.map(ChannelFormat), {}),
+  TvChannel: t.optional(t.map(TvChannel), {}),
+  ParameterChoice: t.optional(t.map(ParameterChoice), {}),
+  FixedType: t.optional(t.map(FixedType), {}),
+  EquipmentType: t.optional(t.map(EquipmentType), {}),
+  EquipmentDownload: t.optional(t.map(EquipmentDownload), {}),
+  DeviceOnTariffs: t.optional(t.map(DeviceOnTariffs), {}),
 });

@@ -216,12 +216,11 @@ function isReferenceField(field) {
 function compileMobxModel(mergedSchemas) {
   const contentName = ({ ContentId }) => mergedSchemas[ContentId].ContentName;
   const contentTitle = ({ ContentId }) => mergedSchemas[ContentId].ContentTitle;
+  const contentFields = ({ ContentId }) => mergedSchemas[ContentId].Fields;
 
   // prettier-ignore
   const fieldType = field => {
     if (isExtension(field)) {
-      // https://github.com/mobxjs/mobx-state-tree/issues/825
-      // TODO: t.optional(t.model({ [Name]: t.optional(..., {}) }), {})
       return `t.maybe(t.enumeration("${field.FieldName}", [${
         Object.values(field.Contents)
           .map(content => `
@@ -229,20 +228,28 @@ function compileMobxModel(mergedSchemas) {
           .join("")}
   ])),
   /** Контенты поля-классификатора */
-  ${field.FieldName}_Contents: t.maybe(t.model({${
+  ${field.FieldName}_Contents: t.optional(t.model({${
         Object.values(field.Contents)
-          .map(content => `
+          .map(content => Object.keys(contentFields(content)).length > 0 ? `
+    // https://github.com/mobxjs/mobx-state-tree/issues/825
+    // ${contentName(content)}: t.optional(t.late(() => ${contentName(content)}), {})
     /** ${contentTitle(content)} */
-    ${contentName(content)}: t.maybe(t.late(() => ${contentName(content)})),`)
-          .join("")}
-  }))`;
+    ${contentName(content)}: t.optional(t.model({${
+          Object.values(contentFields(content))
+            .map(extField => `
+      ${extField.FieldName}: ${fieldType(extField)},`)
+            .join("")}
+    }), {}),` : `
+    ${contentName(content)}: t.optional(t.frozen, {}),`)
+            .join("")}
+  }), {})`;
     } else if (isBackward(field)) {
-      return `t.optional(t.array(t.late(() => ${contentName(field.Content)})), [])`;
+      return `t.optional(t.array(t.reference(t.late(() => ${contentName(field.Content)}))), [])`;
     } else if (isRelation(field)) {
       switch (field.FieldType) {
         case "M2MRelation":
         case "M2ORelation":
-          return `t.optional(t.array(t.late(() => ${contentName(field.Content)})), [])`;
+          return `t.optional(t.array(t.reference(t.late(() => ${contentName(field.Content)}))), [])`;
         case "O2MRelation":
           return `t.maybe(t.reference(t.late(() => ${contentName(field.Content)})))`;
       }
@@ -319,7 +326,8 @@ export const ${contentName(content)} = t.model("${contentName(content)}_${conten
     .map(field => `
   /** ${field.FieldTitle} */
   ${field.FieldName}: ${fieldType(field)},`)
-    .join("")}
+    .join("") || `
+  // no fields`}
 });
 `).join("")}
 
@@ -327,7 +335,7 @@ export default t.model({${
 Object.values(mergedSchemas)
   .filter(content => !content.IsExtension)
   .map(content => `
-  ${contentName(content)}: t.map(${contentName(content)}),`)
+  ${contentName(content)}: t.optional(t.map(${contentName(content)}), {}),`)
   .join("")}
 });
 `;
