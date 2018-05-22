@@ -61,6 +61,9 @@ namespace QA.Core.DPC.Loader.Editor
         {
             if (content == null) throw new ArgumentNullException(nameof(content));
 
+            _contentService.LoadStructureCache();
+            _fieldService.LoadStructureCache();
+
             VirtualFieldContext virtualFieldContext = _virtualFieldContextService.GetVirtualFieldContext(content);
 
             var context = new SchemaContext
@@ -368,76 +371,44 @@ namespace QA.Core.DPC.Loader.Editor
 
             foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
             {
-                if (!mergedContentSchema.Fields.ContainsKey(fieldSchema.FieldName))
+                // Перезаписываем все сложные поля, потому что для одного и того же контента,
+                // в одном месте ProductDefinition заданное поле может быть RelationField | ExtensionField,
+                // а в другом месте у контента стоит флаг LoadAllPlainFields,
+                // и поле является PlainField c типом FieldExactTyes.O2MRelation | FieldExactTyes.Classifier
+                if (fieldSchema is ExtensionFieldSchema extFieldSchema)
                 {
-                    if (fieldSchema is ExtensionFieldSchema extFieldSchema)
-                    {
-                        var copy = extFieldSchema.ShallowCopy();
+                    var copy = extFieldSchema.ShallowCopy();
 
-                        copy.Contents = extFieldSchema.Contents.ToDictionary(
-                            pair => pair.Key,
-                            pair => (IContentSchema)new ContentSchemaIdRef
-                            {
-                                ContentId = pair.Value.ContentId,
-                            });
+                    copy.Contents = extFieldSchema.Contents.ToDictionary(
+                        pair => pair.Key,
+                        pair => (IContentSchema)new ContentSchemaIdRef
+                        {
+                            ContentId = pair.Value.ContentId,
+                        });
 
-                        mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
-                    }
-                    else if (fieldSchema is RelationFieldSchema relationFieldSchema)
-                    {
-                        var copy = relationFieldSchema.ShallowCopy();
-                        copy.Content = new ContentSchemaIdRef
-                        {
-                            ContentId = relationFieldSchema.Content.ContentId,
-                        };
-                        mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
-                    }
-                    else if (fieldSchema is BackwardFieldSchema backwardFieldSchema)
-                    {
-                        var copy = backwardFieldSchema.ShallowCopy();
-                        copy.Content = new ContentSchemaIdRef
-                        {
-                            ContentId = backwardFieldSchema.Content.ContentId,
-                        };
-                        mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
-                    }
-                    else
-                    {
-                        mergedContentSchema.Fields[fieldSchema.FieldName] = fieldSchema;
-                    }
+                    mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
-                if (fieldSchema is ExtensionFieldSchema extensionFieldSchema)
+                else if (fieldSchema is RelationFieldSchema relFieldSchema)
                 {
-                    FieldSchema mergedFieldSchema = mergedContentSchema.Fields[fieldSchema.FieldName];
-
-                    // В разных Definition для одного и того-же контента, поле расширения
-                    // может быть как содержать ContentMapping так и быть просто Classifier-ом
-                    // (не содержать ContentMapping). Поэтому мы объединяем значения таких полей.
-                    if (mergedFieldSchema.FieldType != FieldExactTypes.Classifier)
+                    var copy = relFieldSchema.ShallowCopy();
+                    copy.Content = new ContentSchemaIdRef
                     {
-                        throw new InvalidOperationException(
-                            $@"Content {contentSchema.ContentName}({contentSchema.ContentId
-                            }) contains same field {fieldSchema.FieldName}({fieldSchema.FieldId
-                            }) with different types: {mergedFieldSchema.FieldType
-                            }) and {fieldSchema.FieldType}");
-                    }
-                    if (!(mergedFieldSchema is ExtensionFieldSchema mergedExtensionFieldSchema))
+                        ContentId = relFieldSchema.Content.ContentId,
+                    };
+                    mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
+                }
+                else if (fieldSchema is BackwardFieldSchema backFieldSchema)
+                {
+                    var copy = backFieldSchema.ShallowCopy();
+                    copy.Content = new ContentSchemaIdRef
                     {
-                        mergedExtensionFieldSchema = extensionFieldSchema.ShallowCopy();
-                        mergedExtensionFieldSchema.Contents = new Dictionary<string, IContentSchema>();
-                        mergedContentSchema.Fields[fieldSchema.FieldName] = mergedExtensionFieldSchema;
-                    }
-
-                    foreach (var pair in extensionFieldSchema.Contents)
-                    {
-                        if (!mergedExtensionFieldSchema.Contents.ContainsKey(pair.Key))
-                        {
-                            mergedExtensionFieldSchema.Contents[pair.Key] = new ContentSchemaIdRef
-                            {
-                                ContentId = pair.Value.ContentId,
-                            };
-                        }
-                    }
+                        ContentId = backFieldSchema.Content.ContentId,
+                    };
+                    mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
+                }
+                else if (!mergedContentSchema.Fields.ContainsKey(fieldSchema.FieldName))
+                {
+                    mergedContentSchema.Fields[fieldSchema.FieldName] = fieldSchema;
                 }
 
                 VisitChildSchemas(contentSchema, schemasByContentId, FillMergedContentSchemas);
