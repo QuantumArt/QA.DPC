@@ -3,7 +3,6 @@ using QA.Core.Models.Entities;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QPublishing.Database;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace QA.Core.DPC.Loader.Editor
@@ -12,7 +11,6 @@ namespace QA.Core.DPC.Loader.Editor
     {
         private readonly DBConnector _dbConnector;
         private readonly ContentService _contentService;
-        private readonly FieldService _fieldService;
 
         public EditorDataService(
             IConnectionProvider connectionProvider, 
@@ -21,7 +19,6 @@ namespace QA.Core.DPC.Loader.Editor
         {
             _dbConnector = new DBConnector(connectionProvider.GetConnection());
             _contentService = contentService;
-            _fieldService = fieldService;
         }
         
         private class ArticleContext
@@ -53,6 +50,8 @@ namespace QA.Core.DPC.Loader.Editor
         /// <exception cref="NotSupportedException" />
         public ContentObject ConvertArticle(Article article, IArticleFilter filter)
         {
+            _contentService.LoadStructureCache();
+
             return ConvertArticle(article, new ArticleContext
             {
                 Filter = filter,
@@ -70,9 +69,14 @@ namespace QA.Core.DPC.Loader.Editor
 
             var dict = new ContentObject();
 
-            if (!forExtension)
+            if (forExtension)
+            {
+                dict[ContentObject.ContentNameProp] = article.ContentName;
+            }
+            else
             {
                 dict[ContentObject.IdProp] = article.Id;
+                dict[ContentObject.ContentNameProp] = article.ContentName;
                 dict[ContentObject.TimestampProp] = article.Modified == default(DateTime)
                     ? article.Created : article.Modified;
             }
@@ -179,9 +183,15 @@ namespace QA.Core.DPC.Loader.Editor
                         _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
                         plainArticleField.Value);
                 }
-
+                
                 case PlainFieldType.Boolean:
                     return (decimal)plainArticleField.NativeValue == 1;
+
+                case PlainFieldType.O2MRelation:
+                    return (int)plainArticleField.NativeValue;
+
+                case PlainFieldType.Classifier:
+                    return _contentService.Read((int)(decimal)plainArticleField.NativeValue).NetName;
 
                 default:
                     return plainArticleField.NativeValue;

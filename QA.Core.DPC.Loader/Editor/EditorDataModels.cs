@@ -6,6 +6,7 @@ namespace QA.Core.DPC.Loader.Editor
     public class ContentObject : Dictionary<string, object>, ICloneable
     {
         internal const string IdProp = "Id";
+        internal const string ContentNameProp = "ContentName";
         internal const string TimestampProp = "Timestamp";
         internal static string ExtensionProp(string prop) => $"{prop}_Contents";
 
