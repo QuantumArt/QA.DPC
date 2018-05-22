@@ -222,9 +222,9 @@ function compileMobxModel(mergedSchemas) {
   const fieldType = field => {
     if (isExtension(field)) {
       return `t.maybe(t.enumeration("${field.FieldName}", [${
-        Object.values(field.Contents)
-          .map(content => `
-    "${contentName(content)}",`)
+        Object.keys(field.Contents)
+          .map(name => `
+    "${name}",`)
           .join("")}
   ])),
   /** Контенты поля-классификатора */

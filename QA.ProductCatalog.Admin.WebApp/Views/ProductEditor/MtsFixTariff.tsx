@@ -2,18 +2,12 @@
 // import React from "react";
 // import ReactDOM from "react-dom";
 import { toJS } from "mobx";
-import { getSnapshot, getType, unprotect, onPatch, resolvePath } from "mobx-state-tree";
+// import { getSnapshot } from "mobx-state-tree";
 // import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 // import { ArticleService } from "Services/ArticleService";
 import { SerializationService } from "Services/SerializationService";
 import { NormalizationService } from "Services/NormalizationService";
-import Store, { Region } from "Editors/MtsFixTariff/ProductEditorMobxModel";
-// import schema from "Editors/MtsFixTariff/ProductEditorSchema";
-
-// // @ts-ignore
-// window.types = window.t = types;
-// // @ts-ignore
-// window.toJS = toJS;
+import { DataContextService } from "Services/DataContextService";
 
 (async () => {
   const element = document.getElementById("editor");
@@ -24,13 +18,15 @@ import Store, { Region } from "Editors/MtsFixTariff/ProductEditorMobxModel";
 
   const serializationService = new SerializationService();
   const normalizationService = new NormalizationService();
+  const dataContextService = new DataContextService();
 
   const schemaInitializationPromise = fetch(
     `${rootUrl}/ProductEditor/GetProductSchema_Test${query}&productDefinitionId=${productDefinitionId}`
   ).then(async response => {
     if (response.ok) {
       const schema = await response.json();
-      normalizationService.initialize(schema.MergedSchemas);
+      normalizationService.initSchema(schema.MergedSchemas);
+      dataContextService.initSchema(schema.MergedSchemas);
     } else {
       element.innerHTML = await response.text();
     }
@@ -44,27 +40,19 @@ import Store, { Region } from "Editors/MtsFixTariff/ProductEditorMobxModel";
     await schemaInitializationPromise;
 
     const storeSnapshot = normalizationService.normalize(productObject, "Product");
+
+    dataContextService.initStore(storeSnapshot);
+
     console.dir(storeSnapshot);
 
-    if (0) {
-      const store = Store.create(storeSnapshot);
-      unprotect(store);
-      onPatch(store, ({ op, path }) => {
-        console.log({ op, path });
-        if (op === "add") {
-          const object = resolvePath(store, path);
-          const type: any = getType(object);
-          if (type.properties && type.properties.Id) {
-            store[type.name].put(object);
-          }
-        }
-      });
+    const product = dataContextService.store.Product.get(String(2254329));
 
-      const product: any = store.Product.get(String(2254329));
-      const region = Region.create({ Id: -12345 });
-      product.Regions.push(region);
-      console.dir(toJS(product));
-      console.dir(getSnapshot(store.Region));
+    console.dir(toJS(product));
+
+    if (1) {
+      // const region =  dataContextService.store.Region.create({ Id: -12345 });
+      // product.Regions.push(region);
+      // console.dir(getSnapshot(dataContextService.store.Region));
     }
 
     //     const articleService = new ArticleService(productSnapshot);
