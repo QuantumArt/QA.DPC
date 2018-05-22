@@ -12,7 +12,7 @@ type _IRegion = typeof Region.Type;
 /** Регионы */
 export interface IRegion extends _IRegion {}
 /** Регионы */
-export const Region = t.model("Region_290", {
+export const Region = t.model("Region", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -31,7 +31,7 @@ type _IProduct = typeof Product.Type;
 /** Продукты */
 export interface IProduct extends _IProduct {}
 /** Продукты */
-export const Product = t.model("Product_339", {
+export const Product = t.model("Product", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -148,7 +148,7 @@ type _IGroup = typeof Group.Type;
 /** Группы продуктов */
 export interface IGroup extends _IGroup {}
 /** Группы продуктов */
-export const Group = t.model("Group_340", {
+export const Group = t.model("Group", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -163,7 +163,7 @@ type _IProductModifer = typeof ProductModifer.Type;
 /** Модификаторы продуктов */
 export interface IProductModifer extends _IProductModifer {}
 /** Модификаторы продуктов */
-export const ProductModifer = t.model("ProductModifer_342", {
+export const ProductModifer = t.model("ProductModifer", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -178,7 +178,7 @@ type _ITariffZone = typeof TariffZone.Type;
 /** Тарифные зоны */
 export interface ITariffZone extends _ITariffZone {}
 /** Тарифные зоны */
-export const TariffZone = t.model("TariffZone_346", {
+export const TariffZone = t.model("TariffZone", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -193,7 +193,7 @@ type _IDirection = typeof Direction.Type;
 /** Направления соединения */
 export interface IDirection extends _IDirection {}
 /** Направления соединения */
-export const Direction = t.model("Direction_347", {
+export const Direction = t.model("Direction", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -208,7 +208,7 @@ type _IBaseParameter = typeof BaseParameter.Type;
 /** Базовые параметры продуктов */
 export interface IBaseParameter extends _IBaseParameter {}
 /** Базовые параметры продуктов */
-export const BaseParameter = t.model("BaseParameter_350", {
+export const BaseParameter = t.model("BaseParameter", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -227,7 +227,7 @@ type _IBaseParameterModifier = typeof BaseParameterModifier.Type;
 /** Модификаторы базовых параметров продуктов */
 export interface IBaseParameterModifier extends _IBaseParameterModifier {}
 /** Модификаторы базовых параметров продуктов */
-export const BaseParameterModifier = t.model("BaseParameterModifier_351", {
+export const BaseParameterModifier = t.model("BaseParameterModifier", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -250,7 +250,7 @@ type _IParameterModifier = typeof ParameterModifier.Type;
 /** Модификаторы параметров продуктов */
 export interface IParameterModifier extends _IParameterModifier {}
 /** Модификаторы параметров продуктов */
-export const ParameterModifier = t.model("ParameterModifier_352", {
+export const ParameterModifier = t.model("ParameterModifier", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -265,7 +265,7 @@ type _IProductParameter = typeof ProductParameter.Type;
 /** Параметры продуктов */
 export interface IProductParameter extends _IProductParameter {}
 /** Параметры продуктов */
-export const ProductParameter = t.model("ProductParameter_354", {
+export const ProductParameter = t.model("ProductParameter", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -308,7 +308,7 @@ type _IUnit = typeof Unit.Type;
 /** Единицы измерения */
 export interface IUnit extends _IUnit {}
 /** Единицы измерения */
-export const Unit = t.model("Unit_355", {
+export const Unit = t.model("Unit", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -355,7 +355,7 @@ type _ILinkModifier = typeof LinkModifier.Type;
 /** Модификаторы связей */
 export interface ILinkModifier extends _ILinkModifier {}
 /** Модификаторы связей */
-export const LinkModifier = t.model("LinkModifier_360", {
+export const LinkModifier = t.model("LinkModifier", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -370,7 +370,7 @@ type _IProductRelation = typeof ProductRelation.Type;
 /** Матрица связей */
 export interface IProductRelation extends _IProductRelation {}
 /** Матрица связей */
-export const ProductRelation = t.model("ProductRelation_361", {
+export const ProductRelation = t.model("ProductRelation", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -462,7 +462,7 @@ type _ILinkParameter = typeof LinkParameter.Type;
 /** Параметры связей */
 export interface ILinkParameter extends _ILinkParameter {}
 /** Параметры связей */
-export const LinkParameter = t.model("LinkParameter_362", {
+export const LinkParameter = t.model("LinkParameter", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -509,7 +509,7 @@ type _IProductParameterGroup = typeof ProductParameterGroup.Type;
 /** Группы параметров продуктов */
 export interface IProductParameterGroup extends _IProductParameterGroup {}
 /** Группы параметров продуктов */
-export const ProductParameterGroup = t.model("ProductParameterGroup_378", {
+export const ProductParameterGroup = t.model("ProductParameterGroup", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -536,7 +536,7 @@ type _IMarketingProduct = typeof MarketingProduct.Type;
 /** Маркетинговые продукты */
 export interface IMarketingProduct extends _IMarketingProduct {}
 /** Маркетинговые продукты */
-export const MarketingProduct = t.model("MarketingProduct_383", {
+export const MarketingProduct = t.model("MarketingProduct", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -650,7 +650,7 @@ type _ICommunicationType = typeof CommunicationType.Type;
 /** Виды связи */
 export interface ICommunicationType extends _ICommunicationType {}
 /** Виды связи */
-export const CommunicationType = t.model("CommunicationType_415", {
+export const CommunicationType = t.model("CommunicationType", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -665,7 +665,7 @@ type _ISegment = typeof Segment.Type;
 /** Сегменты */
 export interface ISegment extends _ISegment {}
 /** Сегменты */
-export const Segment = t.model("Segment_416", {
+export const Segment = t.model("Segment", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -680,7 +680,7 @@ type _IMarketingProductParameter = typeof MarketingProductParameter.Type;
 /** Параметры маркетинговых продуктов */
 export interface IMarketingProductParameter extends _IMarketingProductParameter {}
 /** Параметры маркетинговых продуктов */
-export const MarketingProductParameter = t.model("MarketingProductParameter_424", {
+export const MarketingProductParameter = t.model("MarketingProductParameter", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -717,7 +717,7 @@ type _ITariffCategory = typeof TariffCategory.Type;
 /** Категории тарифов */
 export interface ITariffCategory extends _ITariffCategory {}
 /** Категории тарифов */
-export const TariffCategory = t.model("TariffCategory_441", {
+export const TariffCategory = t.model("TariffCategory", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -745,7 +745,7 @@ type _IAdvantage = typeof Advantage.Type;
 /** Преимущества маркетинговых продуктов */
 export interface IAdvantage extends _IAdvantage {}
 /** Преимущества маркетинговых продуктов */
-export const Advantage = t.model("Advantage_446", {
+export const Advantage = t.model("Advantage", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -770,7 +770,7 @@ type _ITimeZone = typeof TimeZone.Type;
 /** Часовые зоны */
 export interface ITimeZone extends _ITimeZone {}
 /** Часовые зоны */
-export const TimeZone = t.model("TimeZone_471", {
+export const TimeZone = t.model("TimeZone", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -791,7 +791,7 @@ type _INetworkCity = typeof NetworkCity.Type;
 /** Города сети */
 export interface INetworkCity extends _INetworkCity {}
 /** Города сети */
-export const NetworkCity = t.model("NetworkCity_472", {
+export const NetworkCity = t.model("NetworkCity", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -806,7 +806,7 @@ type _IChannelCategory = typeof ChannelCategory.Type;
 /** Категории каналов */
 export interface IChannelCategory extends _IChannelCategory {}
 /** Категории каналов */
-export const ChannelCategory = t.model("ChannelCategory_478", {
+export const ChannelCategory = t.model("ChannelCategory", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -829,7 +829,7 @@ type _IChannelType = typeof ChannelType.Type;
 /** Типы каналов */
 export interface IChannelType extends _IChannelType {}
 /** Типы каналов */
-export const ChannelType = t.model("ChannelType_479", {
+export const ChannelType = t.model("ChannelType", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -844,7 +844,7 @@ type _IChannelFormat = typeof ChannelFormat.Type;
 /** Форматы каналов */
 export interface IChannelFormat extends _IChannelFormat {}
 /** Форматы каналов */
-export const ChannelFormat = t.model("ChannelFormat_480", {
+export const ChannelFormat = t.model("ChannelFormat", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -863,7 +863,7 @@ type _ITvChannel = typeof TvChannel.Type;
 /** ТВ-каналы */
 export interface ITvChannel extends _ITvChannel {}
 /** ТВ-каналы */
-export const TvChannel = t.model("TvChannel_482", {
+export const TvChannel = t.model("TvChannel", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -908,7 +908,7 @@ type _IParameterChoice = typeof ParameterChoice.Type;
 /** Варианты выбора для параметров */
 export interface IParameterChoice extends _IParameterChoice {}
 /** Варианты выбора для параметров */
-export const ParameterChoice = t.model("ParameterChoice_488", {
+export const ParameterChoice = t.model("ParameterChoice", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -925,7 +925,7 @@ type _IFixedType = typeof FixedType.Type;
 /** Типы фиксированной связи */
 export interface IFixedType extends _IFixedType {}
 /** Типы фиксированной связи */
-export const FixedType = t.model("FixedType_491", {
+export const FixedType = t.model("FixedType", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -938,7 +938,7 @@ type _IEquipmentType = typeof EquipmentType.Type;
 /** Типы оборудования */
 export interface IEquipmentType extends _IEquipmentType {}
 /** Типы оборудования */
-export const EquipmentType = t.model("EquipmentType_493", {
+export const EquipmentType = t.model("EquipmentType", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -957,7 +957,7 @@ type _IEquipmentDownload = typeof EquipmentDownload.Type;
 /** Загрузки для оборудования */
 export interface IEquipmentDownload extends _IEquipmentDownload {}
 /** Загрузки для оборудования */
-export const EquipmentDownload = t.model("EquipmentDownload_494", {
+export const EquipmentDownload = t.model("EquipmentDownload", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -972,7 +972,7 @@ type _IDeviceOnTariffs = typeof DeviceOnTariffs.Type;
 /** Оборудование на тарифах */
 export interface IDeviceOnTariffs extends _IDeviceOnTariffs {}
 /** Оборудование на тарифах */
-export const DeviceOnTariffs = t.model("DeviceOnTariffs_511", {
+export const DeviceOnTariffs = t.model("DeviceOnTariffs", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -994,7 +994,7 @@ type _ITariff = typeof Tariff.Type;
 /** Тарифы (Extension) */
 export interface ITariff extends _ITariff {}
 /** Тарифы (Extension) */
-export const Tariff = t.model("Tariff_343", {
+export const Tariff = t.model("Tariff", {
   // no fields
 });
 
@@ -1002,7 +1002,7 @@ type _ITariffTransfer = typeof TariffTransfer.Type;
 /** Переходы с тарифа на тариф (Extension) */
 export interface ITariffTransfer extends _ITariffTransfer {}
 /** Переходы с тарифа на тариф (Extension) */
-export const TariffTransfer = t.model("TariffTransfer_364", {
+export const TariffTransfer = t.model("TariffTransfer", {
   // no fields
 });
 
@@ -1010,7 +1010,7 @@ type _IMutualGroup = typeof MutualGroup.Type;
 /** Группы несовместимости услуг (Extension) */
 export interface IMutualGroup extends _IMutualGroup {}
 /** Группы несовместимости услуг (Extension) */
-export const MutualGroup = t.model("MutualGroup_365", {
+export const MutualGroup = t.model("MutualGroup", {
   // no fields
 });
 
@@ -1018,7 +1018,7 @@ type _IMarketingTariff = typeof MarketingTariff.Type;
 /** Маркетинговые тарифы (Extension) */
 export interface IMarketingTariff extends _IMarketingTariff {}
 /** Маркетинговые тарифы (Extension) */
-export const MarketingTariff = t.model("MarketingTariff_385", {
+export const MarketingTariff = t.model("MarketingTariff", {
   // no fields
 });
 
@@ -1026,7 +1026,7 @@ type _IMarketingService = typeof MarketingService.Type;
 /** Маркетинговые услуги (Extension) */
 export interface IMarketingService extends _IMarketingService {}
 /** Маркетинговые услуги (Extension) */
-export const MarketingService = t.model("MarketingService_402", {
+export const MarketingService = t.model("MarketingService", {
   // no fields
 });
 
@@ -1034,7 +1034,7 @@ type _IService = typeof Service.Type;
 /** Услуги (Extension) */
 export interface IService extends _IService {}
 /** Услуги (Extension) */
-export const Service = t.model("Service_403", {
+export const Service = t.model("Service", {
   // no fields
 });
 
@@ -1042,7 +1042,7 @@ type _IServiceOnTariff = typeof ServiceOnTariff.Type;
 /** Услуги на тарифе (Extension) */
 export interface IServiceOnTariff extends _IServiceOnTariff {}
 /** Услуги на тарифе (Extension) */
-export const ServiceOnTariff = t.model("ServiceOnTariff_404", {
+export const ServiceOnTariff = t.model("ServiceOnTariff", {
   /**  */
   Description: t.maybe(t.string),
 });
@@ -1051,7 +1051,7 @@ type _IServicesUpsale = typeof ServicesUpsale.Type;
 /** Матрица предложений услуг Upsale (Extension) */
 export interface IServicesUpsale extends _IServicesUpsale {}
 /** Матрица предложений услуг Upsale (Extension) */
-export const ServicesUpsale = t.model("ServicesUpsale_406", {
+export const ServicesUpsale = t.model("ServicesUpsale", {
   /**  */
   Order: t.maybe(t.number),
 });
@@ -1060,7 +1060,7 @@ type _ITariffOptionPackage = typeof TariffOptionPackage.Type;
 /** Пакеты опций на тарифах (Extension) */
 export interface ITariffOptionPackage extends _ITariffOptionPackage {}
 /** Пакеты опций на тарифах (Extension) */
-export const TariffOptionPackage = t.model("TariffOptionPackage_407", {
+export const TariffOptionPackage = t.model("TariffOptionPackage", {
   /** Подзаголовок */
   SubTitle: t.maybe(t.string),
   /** Описание */
@@ -1075,7 +1075,7 @@ type _IServiceRelation = typeof ServiceRelation.Type;
 /** Связи между услугами (Extension) */
 export interface IServiceRelation extends _IServiceRelation {}
 /** Связи между услугами (Extension) */
-export const ServiceRelation = t.model("ServiceRelation_413", {
+export const ServiceRelation = t.model("ServiceRelation", {
   // no fields
 });
 
@@ -1083,7 +1083,7 @@ type _IAction = typeof Action.Type;
 /** Акции (Extension) */
 export interface IAction extends _IAction {}
 /** Акции (Extension) */
-export const Action = t.model("Action_419", {
+export const Action = t.model("Action", {
   // no fields
 });
 
@@ -1091,7 +1091,7 @@ type _IMarketingAction = typeof MarketingAction.Type;
 /** Маркетинговые акции (Extension) */
 export interface IMarketingAction extends _IMarketingAction {}
 /** Маркетинговые акции (Extension) */
-export const MarketingAction = t.model("MarketingAction_420", {
+export const MarketingAction = t.model("MarketingAction", {
   // no fields
 });
 
@@ -1099,7 +1099,7 @@ type _IRoamingScale = typeof RoamingScale.Type;
 /** Роуминговые сетки (Extension) */
 export interface IRoamingScale extends _IRoamingScale {}
 /** Роуминговые сетки (Extension) */
-export const RoamingScale = t.model("RoamingScale_434", {
+export const RoamingScale = t.model("RoamingScale", {
   // no fields
 });
 
@@ -1107,7 +1107,7 @@ type _IMarketingRoamingScale = typeof MarketingRoamingScale.Type;
 /** Маркетинговые роуминговые сетки (Extension) */
 export interface IMarketingRoamingScale extends _IMarketingRoamingScale {}
 /** Маркетинговые роуминговые сетки (Extension) */
-export const MarketingRoamingScale = t.model("MarketingRoamingScale_435", {
+export const MarketingRoamingScale = t.model("MarketingRoamingScale", {
   // no fields
 });
 
@@ -1115,7 +1115,7 @@ type _IRoamingScaleOnTariff = typeof RoamingScaleOnTariff.Type;
 /** Роуминговые сетки для тарифа (Extension) */
 export interface IRoamingScaleOnTariff extends _IRoamingScaleOnTariff {}
 /** Роуминговые сетки для тарифа (Extension) */
-export const RoamingScaleOnTariff = t.model("RoamingScaleOnTariff_438", {
+export const RoamingScaleOnTariff = t.model("RoamingScaleOnTariff", {
   // no fields
 });
 
@@ -1123,7 +1123,7 @@ type _IServiceOnRoamingScale = typeof ServiceOnRoamingScale.Type;
 /** Услуги на роуминговой сетке (Extension) */
 export interface IServiceOnRoamingScale extends _IServiceOnRoamingScale {}
 /** Услуги на роуминговой сетке (Extension) */
-export const ServiceOnRoamingScale = t.model("ServiceOnRoamingScale_444", {
+export const ServiceOnRoamingScale = t.model("ServiceOnRoamingScale", {
   // no fields
 });
 
@@ -1131,7 +1131,7 @@ type _ICrossSale = typeof CrossSale.Type;
 /** Матрица предложений CrossSale (Extension) */
 export interface ICrossSale extends _ICrossSale {}
 /** Матрица предложений CrossSale (Extension) */
-export const CrossSale = t.model("CrossSale_468", {
+export const CrossSale = t.model("CrossSale", {
   /** Порядок */
   Order: t.maybe(t.number),
 });
@@ -1140,7 +1140,7 @@ type _IMarketingCrossSale = typeof MarketingCrossSale.Type;
 /** Матрица маркетинговых предложений CrossSale (Extension) */
 export interface IMarketingCrossSale extends _IMarketingCrossSale {}
 /** Матрица маркетинговых предложений CrossSale (Extension) */
-export const MarketingCrossSale = t.model("MarketingCrossSale_469", {
+export const MarketingCrossSale = t.model("MarketingCrossSale", {
   /** Порядок */
   Order: t.maybe(t.number),
 });
@@ -1149,7 +1149,7 @@ type _IMarketingDevice = typeof MarketingDevice.Type;
 /** Маркетинговое оборудование (Extension) */
 export interface IMarketingDevice extends _IMarketingDevice {}
 /** Маркетинговое оборудование (Extension) */
-export const MarketingDevice = t.model("MarketingDevice_489", {
+export const MarketingDevice = t.model("MarketingDevice", {
   /** Тип оборудования */
   DeviceType: t.maybe(t.reference(t.late(() => EquipmentType))),
   /** Сегменты */
@@ -1162,7 +1162,7 @@ type _IDevice = typeof Device.Type;
 /** Оборудование (Extension) */
 export interface IDevice extends _IDevice {}
 /** Оборудование (Extension) */
-export const Device = t.model("Device_490", {
+export const Device = t.model("Device", {
   /** Загрузки */
   Downloads: t.optional(t.array(t.reference(t.late(() => EquipmentDownload))), []),
   /** Состав комплекта */
@@ -1179,7 +1179,7 @@ type _IMarketingFixConnectAction = typeof MarketingFixConnectAction.Type;
 /** Маркетинговые акции фиксированной связи (Extension) */
 export interface IMarketingFixConnectAction extends _IMarketingFixConnectAction {}
 /** Маркетинговые акции фиксированной связи (Extension) */
-export const MarketingFixConnectAction = t.model("MarketingFixConnectAction_498", {
+export const MarketingFixConnectAction = t.model("MarketingFixConnectAction", {
   /** Сегмент */
   Segment: t.optional(t.array(t.reference(t.late(() => Segment))), []),
   /** Акция в Каталоге акций */
@@ -1198,7 +1198,7 @@ type _IFixConnectAction = typeof FixConnectAction.Type;
 /** Акции фиксированной связи (Extension) */
 export interface IFixConnectAction extends _IFixConnectAction {}
 /** Акции фиксированной связи (Extension) */
-export const FixConnectAction = t.model("FixConnectAction_500", {
+export const FixConnectAction = t.model("FixConnectAction", {
   /**  */
   MarketingOffers: t.optional(t.array(t.reference(t.late(() => MarketingProduct))), []),
   /**  */
@@ -1211,7 +1211,7 @@ type _IMarketingTvPackage = typeof MarketingTvPackage.Type;
 /** Маркетинговые ТВ-пакеты (Extension) */
 export interface IMarketingTvPackage extends _IMarketingTvPackage {}
 /** Маркетинговые ТВ-пакеты (Extension) */
-export const MarketingTvPackage = t.model("MarketingTvPackage_502", {
+export const MarketingTvPackage = t.model("MarketingTvPackage", {
   /** Каналы */
   Channels: t.optional(t.array(t.reference(t.late(() => TvChannel))), []),
   /**  */
@@ -1227,7 +1227,7 @@ type _ITvPackage = typeof TvPackage.Type;
 /** ТВ-пакеты (Extension) */
 export interface ITvPackage extends _ITvPackage {}
 /** ТВ-пакеты (Extension) */
-export const TvPackage = t.model("TvPackage_503", {
+export const TvPackage = t.model("TvPackage", {
   // no fields
 });
 
@@ -1235,7 +1235,7 @@ type _IMarketingFixConnectTariff = typeof MarketingFixConnectTariff.Type;
 /** Маркетинговые тарифы фиксированной связи (Extension) */
 export interface IMarketingFixConnectTariff extends _IMarketingFixConnectTariff {}
 /** Маркетинговые тарифы фиксированной связи (Extension) */
-export const MarketingFixConnectTariff = t.model("MarketingFixConnectTariff_504", {
+export const MarketingFixConnectTariff = t.model("MarketingFixConnectTariff", {
   /**  */
   Segment: t.maybe(t.reference(t.late(() => Segment))),
   /** Тип предложения (Категория тарифа) */
@@ -1258,7 +1258,7 @@ type _IFixConnectTariff = typeof FixConnectTariff.Type;
 /** Тарифы фиксированной связи (Extension) */
 export interface IFixConnectTariff extends _IFixConnectTariff {}
 /** Тарифы фиксированной связи (Extension) */
-export const FixConnectTariff = t.model("FixConnectTariff_505", {
+export const FixConnectTariff = t.model("FixConnectTariff", {
   /**  */
   TitleForSite: t.maybe(t.string),
 });
@@ -1267,7 +1267,7 @@ type _IMarketingPhoneTariff = typeof MarketingPhoneTariff.Type;
 /** Маркетинговые тарифы телефонии (Extension) */
 export interface IMarketingPhoneTariff extends _IMarketingPhoneTariff {}
 /** Маркетинговые тарифы телефонии (Extension) */
-export const MarketingPhoneTariff = t.model("MarketingPhoneTariff_506", {
+export const MarketingPhoneTariff = t.model("MarketingPhoneTariff", {
   // no fields
 });
 
@@ -1275,7 +1275,7 @@ type _IPhoneTariff = typeof PhoneTariff.Type;
 /** Тарифы телефонии (Extension) */
 export interface IPhoneTariff extends _IPhoneTariff {}
 /** Тарифы телефонии (Extension) */
-export const PhoneTariff = t.model("PhoneTariff_507", {
+export const PhoneTariff = t.model("PhoneTariff", {
   /** ВЗ вызовы (ссылка на Ростелеком) */
   RostelecomLink: t.maybe(t.string),
 });
@@ -1284,7 +1284,7 @@ type _IMarketingInternetTariff = typeof MarketingInternetTariff.Type;
 /** Маркетинговые тарифы интернет (Extension) */
 export interface IMarketingInternetTariff extends _IMarketingInternetTariff {}
 /** Маркетинговые тарифы интернет (Extension) */
-export const MarketingInternetTariff = t.model("MarketingInternetTariff_509", {
+export const MarketingInternetTariff = t.model("MarketingInternetTariff", {
   // no fields
 });
 
@@ -1292,7 +1292,7 @@ type _IInternetTariff = typeof InternetTariff.Type;
 /** Тарифы Интернет (Extension) */
 export interface IInternetTariff extends _IInternetTariff {}
 /** Тарифы Интернет (Extension) */
-export const InternetTariff = t.model("InternetTariff_510", {
+export const InternetTariff = t.model("InternetTariff", {
   // no fields
 });
 
@@ -1300,7 +1300,7 @@ type _IDevicesForFixConnectAction = typeof DevicesForFixConnectAction.Type;
 /** Акционное оборудование (Extension) */
 export interface IDevicesForFixConnectAction extends _IDevicesForFixConnectAction {}
 /** Акционное оборудование (Extension) */
-export const DevicesForFixConnectAction = t.model("DevicesForFixConnectAction_512", {
+export const DevicesForFixConnectAction = t.model("DevicesForFixConnectAction", {
   /**  */
   Order: t.maybe(t.number),
   /** Акция фиксированной связи */

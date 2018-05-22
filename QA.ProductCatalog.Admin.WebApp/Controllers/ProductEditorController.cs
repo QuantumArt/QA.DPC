@@ -52,8 +52,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorPartialContentService = editorPartialContentService;
         }
 
-        [Route("{editorName}/{articleId}")]
-        public ActionResult Index(string editorName, int articleId)
+        [Route("{productDefinitionId}/{editorName}/{articleId}")]   
+        public ActionResult Index(int productDefinitionId, string editorName, int articleId)
         {
             return View(editorName);
         }
@@ -76,7 +76,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         /// <summary>
-        /// Построить схему для редактора продукта.
+        /// Построить TypeScript-описание схемы для редактора продукта.
         /// </summary>
         /// <param name="productDefinitionId">Id описания продукта</param>
         [HttpGet]
@@ -106,22 +106,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 MergedSchema = mergedSchemaJson,
             });
         }
-
-        private static readonly ConcurrentDictionary<int, ViewResult> _schemaCache
-            = new ConcurrentDictionary<int, ViewResult>();
-
-        [HttpGet]
-        public ViewResult ProductEditorSchema_Test(int productDefinitionId, bool refresh = false)
-        {
-            if (refresh)
-            {
-                _schemaCache.TryRemove(productDefinitionId, out var _);
-            }
-            var result = _schemaCache.GetOrAdd(productDefinitionId, _ => ProductEditorSchema(productDefinitionId));
-
-            return View(nameof(ProductEditorSchema), result.Model);
-        }
-
+        
         /// <summary>
         /// Построить JSON-схему части продукта, начиная с корневого контента,
         /// описанного путём <paramref name="contentPaths"/>[0].
@@ -134,7 +119,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </param>
         /// <returns>JSON-схема продукта</returns>
         [HttpPost]
-        public ActionResult PartialJsonSchema_Test(
+        public ContentResult PartialJsonSchema_Test(
             int productDefinitionId,
             [ModelBinder(typeof(JsonModelBinder))] string[] contentPaths,
             bool isLive = false)
@@ -149,8 +134,51 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         /// <summary>
+        /// Получить JSON схему для редактора продукта.
+        /// </summary>
+        /// <param name="productDefinitionId">Id описания продукта</param>
+        /// <returns>JSON схемы редактора продукта</returns>
+        [HttpGet]
+        public ContentResult GetProductSchema(int productDefinitionId, bool isLive = false)
+        {
+            Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
+
+            ProductSchema productSchema = _editorSchemaService.GetProductSchema(content);
+
+            Dictionary<int, ContentSchema> mergedSchemas = _editorSchemaService.GetMergedContentSchemas(productSchema);
+
+            var schemaModel = new
+            {
+                EditorSchema = productSchema,
+                MergedSchemas = mergedSchemas,
+            };
+
+            string schemaJson = JsonConvert.SerializeObject(schemaModel, new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Include,
+                Converters = { new StringEnumConverter() }
+            });
+
+            return Content(schemaJson, "application/json");
+        }
+
+        private static readonly ConcurrentDictionary<int, ContentResult> _schemaCache
+            = new ConcurrentDictionary<int, ContentResult>();
+
+        [HttpGet]
+        public ContentResult GetProductSchema_Test(int productDefinitionId, bool refresh = false)
+        {
+            if (refresh)
+            {
+                _schemaCache.TryRemove(productDefinitionId, out var _);
+            }
+            return _schemaCache.GetOrAdd(productDefinitionId, _ => GetProductSchema(productDefinitionId));
+        }
+
+        /// <summary>
         /// Получить JSON продукта по его <see cref="Article.Id"/>.
         /// </summary>
+        /// <param name="articleId">Id корневой статьи</param>
         /// <returns>JSON продукта</returns>
         [HttpGet]
         public ContentResult GetProduct(int articleId, bool isLive = false)

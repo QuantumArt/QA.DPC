@@ -221,7 +221,7 @@ namespace QA.Core.DPC.Loader.Editor
                     && !contentSchemas.ContainsKey(qpContent.NetName))
                 {
                     var contentSchema = GetContentSchema(content, context, path);
-                    contentSchema.IsExtension = true;
+                    contentSchema.ForExtension = true;
                     contentSchemas[qpContent.NetName] = contentSchema;
                 }
             }

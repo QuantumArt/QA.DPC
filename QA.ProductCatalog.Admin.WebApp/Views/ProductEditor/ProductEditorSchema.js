@@ -296,13 +296,13 @@ export const FileModel = t.model("FileModel", {
   AbsoluteUrl: t.string,
 });
 ${Object.values(mergedSchemas)
-  .filter(content => !content.IsExtension)
+  .filter(content => !content.ForExtension)
   .map(content => `
 type _I${contentName(content)} = typeof ${contentName(content)}.Type;
 /** ${contentTitle(content)} */
 export interface I${contentName(content)} extends _I${contentName(content)} {}
 /** ${contentTitle(content)} */
-export const ${contentName(content)} = t.model("${contentName(content)}_${content.ContentId}", {
+export const ${contentName(content)} = t.model("${contentName(content)}", {
   /** Идентификатор статьи */
   Id: t.identifier(t.number),
   /** Время последней модификации статьи */
@@ -315,13 +315,13 @@ export const ${contentName(content)} = t.model("${contentName(content)}_${conten
 });
 `).join("")}
 ${Object.values(mergedSchemas)
-  .filter(content => content.IsExtension)
+  .filter(content => content.ForExtension)
   .map(content => `
 type _I${contentName(content)} = typeof ${contentName(content)}.Type;
 /** ${contentTitle(content)} (Extension) */
 export interface I${contentName(content)} extends _I${contentName(content)} {}
 /** ${contentTitle(content)} (Extension) */
-export const ${contentName(content)} = t.model("${contentName(content)}_${content.ContentId}", {${
+export const ${contentName(content)} = t.model("${contentName(content)}", {${
   Object.values(content.Fields)
     .map(field => `
   /** ${field.FieldTitle} */
@@ -333,7 +333,7 @@ export const ${contentName(content)} = t.model("${contentName(content)}_${conten
 
 export default t.model({${
 Object.values(mergedSchemas)
-  .filter(content => !content.IsExtension)
+  .filter(content => !content.ForExtension)
   .map(content => `
   ${contentName(content)}: t.optional(t.map(${contentName(content)}), {}),`)
   .join("")}
@@ -378,7 +378,7 @@ import { deepMerge } from "Utils/DeepMerge";
 
 const options = { idAttribute: "Id", mergeStrategy: deepMerge };
 ${Object.values(mergedSchemas)
-  .filter(content => !content.IsExtension)
+  .filter(content => !content.ForExtension)
   .map(content => `
 /** ${contentTitle(content)} */
 export const ${variableName(content)} = new schema.Entity("${contentName(content)}", {}, options);`)
@@ -386,7 +386,7 @@ export const ${variableName(content)} = new schema.Entity("${contentName(content
 
 // Extensions
 ${Object.values(mergedSchemas)
-  .filter(content => content.IsExtension)
+  .filter(content => content.ForExtension)
   .map(content => `
 const ${variableName(content)} = new schema.Object({}); // ${contentTitle(content)}`)
   .join("")}
@@ -407,7 +407,7 @@ ${variableName(content)}.define({${
 /** Shapes by ContentName */
 export default {${
 Object.values(mergedSchemas)
-  .filter(content => !content.IsExtension)
+  .filter(content => !content.ForExtension)
   .map(content => `
   ${contentName(content)}: ${variableName(content)},`)
   .join("")}

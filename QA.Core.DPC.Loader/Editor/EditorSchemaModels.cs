@@ -25,8 +25,7 @@ namespace QA.Core.DPC.Loader.Editor
         public string ContentName { get; set; }
         public string ContentTitle { get; set; }
         public string ContentDescription { get; set; }
-
-        public bool IsExtension { get; set; }
+        public bool ForExtension { get; set; }
 
         public Dictionary<string, FieldSchema> Fields { get; set; }
             = new Dictionary<string, FieldSchema>();
