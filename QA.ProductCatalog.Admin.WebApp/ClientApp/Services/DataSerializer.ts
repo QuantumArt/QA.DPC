@@ -1,18 +1,10 @@
 import { isObservable, toJS } from "mobx";
-import { isObject, isInteger, isString } from "Utils/TypeChecks";
+import { isObject, isInteger, isIsoDateString } from "Utils/TypeChecks";
 
 type IdMapping = { [id: number]: number };
 
-export class SerializationService {
-  private _nextId = -1;
+export class DataSerializer {
   private _idMapping: IdMapping = Object.create(null);
-
-  /**
-   * Получение следующего отрицательного Id
-   */
-  public nextId(): number {
-    return this._nextId--;
-  }
 
   /**
    * Обновление соответствия отрицательные Id => серверные Id
@@ -55,7 +47,7 @@ export class SerializationService {
     return JSON.parse(json, (key, value) => {
       if (key === "Id" && isInteger(value)) {
         return this._idMapping[value] || value;
-      } else if (isString(value) && dateRegex.test(value)) {
+      } else if (isIsoDateString(value)) {
         return new Date(value);
       }
       return value;
@@ -63,14 +55,4 @@ export class SerializationService {
   }
 }
 
-// Примеры для проверки
-// 2018-03-12T10:46:32
-// 2018-03-12T10:46:32Z
-// 2018-03-12T10:46:32+03:00
-// 2018-03-12T10:46:32.123
-// 2018-03-12T10:46:32.123Z
-// 2018-03-12T10:46:32.123+03:00
-// 2018-02-10T09:42:14.4575689
-// 2018-02-10T09:42:14.4575689Z
-// 2018-02-10T09:42:14.4575689+03:00
-const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|\+\d{2}:\d{2})?/;
+export default new DataSerializer();

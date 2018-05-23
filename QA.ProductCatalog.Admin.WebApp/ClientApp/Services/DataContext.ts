@@ -4,11 +4,12 @@ import {
   unprotect,
   onPatch,
   resolvePath,
-  IExtendedObservableMap
+  IExtendedObservableMap,
+  IModelType
 } from "mobx-state-tree";
 import { IDisposer } from "mobx-state-tree/dist/utils";
 import { isObject, isInteger } from "Utils/TypeChecks";
-import { StoreSnapshot, ArticleSnapshot } from "Models/EditorDataModels";
+import { StoreSnapshot, ArticleSnapshot, FileType } from "Models/EditorDataModels";
 import {
   ContentSchema,
   isRelationField,
@@ -17,15 +18,17 @@ import {
   FieldSchema,
   isEnumField
 } from "Models/EditorSchemaModels";
+import { OptionalValue, MapType } from "mobx-state-tree/dist/internal";
 
 interface Store {
   [name: string]: IExtendedObservableMap<ArticleSnapshot>;
 }
 
-export class DataContextService {
+export class DataContext {
+  private _nextId = -1;
   private _patchListener: IDisposer = null;
-  private _storeModel: any = null;
-  public store: Store = null;
+  private _storeModel: IModelType<any, any> = null;
+  public _store: Store = null;
 
   public initSchema(mergedSchemas: { [name: string]: ContentSchema }) {
     const contentModels = {};
@@ -104,7 +107,7 @@ export class DataContextService {
             fieldModels[field.FieldName] = t.maybe(t.Date);
             break;
           case "File":
-            fieldModels[field.FieldName] = t.maybe(FileModel);
+            fieldModels[field.FieldName] = t.maybe(FileType);
             break;
         }
       }
@@ -132,30 +135,33 @@ export class DataContextService {
     this._storeModel = t.model(collectionModels);
   }
 
-  public initStore(storeSnapshot: StoreSnapshot) {
-    this.store = this._storeModel.create(storeSnapshot);
+  public initData(storeSnapshot: StoreSnapshot) {
+    this._store = this._storeModel.create(storeSnapshot);
 
     // разрешаем изменения моделей из других сервисов и компонентов
-    unprotect(this.store);
+    unprotect(this._store);
 
     // подписываемся на добавление новых элементов в дерево
-    this._patchListener = onPatch(this.store, ({ op, path }) => {
+    this._patchListener = onPatch(this._store, ({ op, path }) => {
       // проверяем, что элемент пришел из глубины дерева
       if (op === "add" && path.match(/\//g).length > 2) {
-        const object = resolvePath(this.store, path);
+        const object = resolvePath(this._store, path);
         // проверяем, что элемент является сущностью с Id
         if (isObject(object) && isInteger(object.Id)) {
           // и добавляем его в соответствующую коллекцию
-          this.store[getType(object).name].put(object);
+          this._store[getType(object).name].put(object);
         }
       }
     });
   }
 
-  // @ts-ignore
-  public createArticle<T = ArticleSnapshot>(contentName: string, id: number) {
-    // TODO: get id from SerializationService
-    throw new Error("Not implemented");
+  public createArticle<T = ArticleSnapshot>(contentName: string): T {
+    const optionalType = this._storeModel.properties[contentName] as OptionalValue<any, any>;
+    if (!optionalType) {
+      throw new Error(`Content "${contentName}" is not defined in this Store schema`);
+    }
+    const mapType = optionalType.type as MapType<any, any>;
+    return mapType.subType.create({ Id: this._nextId-- });
   }
 
   public dispose() {
@@ -165,10 +171,4 @@ export class DataContextService {
   }
 }
 
-/** Файл, загружаемый в QPublishing */
-export const FileModel = t.model("FileModel", {
-  /** Имя файла */
-  Name: t.string,
-  /** URL файла */
-  AbsoluteUrl: t.string
-});
+export default new DataContext();

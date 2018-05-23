@@ -10,7 +10,7 @@ import {
 
 const options = { idAttribute: "Id", mergeStrategy: deepMerge };
 
-export class NormalizationService {
+export class DataNormalizer {
   private _normalizrSchemas: {
     [name: string]: schema.Entity | schema.Object;
   } = {};
@@ -61,3 +61,5 @@ export class NormalizationService {
     return normalize(articleObject, this._normalizrSchemas[contentName]).entities;
   }
 }
+
+export default new DataNormalizer();

@@ -37,3 +37,19 @@ export function isPlainObject(arg): arg is Object {
   }
   return false;
 }
+
+// Примеры для проверки
+// 2018-03-12T10:46:32
+// 2018-03-12T10:46:32Z
+// 2018-03-12T10:46:32+03:00
+// 2018-03-12T10:46:32.123
+// 2018-03-12T10:46:32.123Z
+// 2018-03-12T10:46:32.123+03:00
+// 2018-02-10T09:42:14.4575689
+// 2018-02-10T09:42:14.4575689Z
+// 2018-02-10T09:42:14.4575689+03:00
+const dateRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|\+\d{2}:\d{2})?/;
+
+export function isIsoDateString(arg): arg is string {
+  return isString(arg) && dateRegex.test(arg);
+}
