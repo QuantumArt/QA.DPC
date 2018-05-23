@@ -1,7 +1,7 @@
-// import { linkJsonRefs } from "Services/SchemaLinker";
 import dataSerializer from "Services/DataSerializer";
 import dataNormalizer from "Services/DataNormalizer";
 import dataContext from "Services/DataContext";
+import schemaContext from "Services/SchemaContext";
 
 export class EditorController {
   private _path = document.location.pathname;
@@ -46,6 +46,7 @@ export class EditorController {
     const schema = await response.json();
     dataNormalizer.initSchema(schema.MergedSchemas);
     dataContext.initSchema(schema.MergedSchemas);
+    schemaContext.initSchema(schema.EditorSchema);
   }
 }
 

@@ -4,6 +4,7 @@
 import { toJS } from "mobx";
 import editorController from "Services/EditorController";
 import dataContext from "Services/DataContext";
+import schemaContext from "Services/SchemaContext";
 
 (async () => {
   const element = document.getElementById("editor");
@@ -12,6 +13,8 @@ import dataContext from "Services/DataContext";
     await editorController.initialize();
 
     console.dir(toJS(dataContext.store["Product"]));
+    console.dir(schemaContext.rootSchema);
+
     element.innerHTML = `Loaded in ${Number(new Date()) - Number(start)} msec!`;
     // ReactDOM.render(
     //   <ArticleEditor
