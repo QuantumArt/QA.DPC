@@ -7,8 +7,8 @@ export class EditorController {
   private _path = document.location.pathname;
   private _query = document.location.search;
   private _rootUrl = this._path.slice(0, this._path.indexOf("/ProductEditor"));
-  private _productDefinitionId = Number(this._path.split("/").slice(-3)[0]);
-  private _articleId = Number(this._path.split("/").slice(-1)[0]);
+  private _productDefinitionId = Number(this._path.slice(this._rootUrl.length).split("/")[2]);
+  private _articleId = Number(this._path.slice(this._rootUrl.length).split("/")[4]);
 
   constructor(
     private _dataSerializer: DataSerializer,
@@ -19,19 +19,25 @@ export class EditorController {
   public async initialize() {
     const initSchemaTask = this.initSchema();
 
-    const response = await fetch(
-      `${this._rootUrl}/ProductEditor/GetProduct_Test${this._query}&articleId=${this._articleId}`
-    );
-    if (!response.ok) {
-      throw new Error(await response.text());
+    if (this._articleId > 0) {
+      const response = await fetch(
+        `${this._rootUrl}/ProductEditor/GetProduct_Test${this._query}&articleId=${this._articleId}`
+      );
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+      const dataTree = this._dataSerializer.deserialize(await response.text());
+
+      await initSchemaTask;
+
+      const dataSnapshot = this._dataNormalizer.normalize(dataTree, dataTree.ContentName);
+
+      this._dataContext.initStore(dataSnapshot);
+    } else {
+      await initSchemaTask;
+
+      this._dataContext.initStore({});
     }
-    const dataTree = this._dataSerializer.deserialize(await response.text());
-
-    await initSchemaTask;
-
-    const dataSnapshot = this._dataNormalizer.normalize(dataTree, dataTree.ContentName);
-
-    this._dataContext.initData(dataSnapshot);
   }
 
   private async initSchema() {

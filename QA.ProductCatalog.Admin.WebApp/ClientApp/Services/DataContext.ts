@@ -28,7 +28,7 @@ export class DataContext {
   private _nextId = -1;
   private _patchListener: IDisposer = null;
   private _storeModel: IModelType<any, any> = null;
-  public _store: Store = null;
+  public store: Store = null;
 
   public initSchema(mergedSchemas: { [name: string]: ContentSchema }) {
     const contentModels = {};
@@ -135,21 +135,21 @@ export class DataContext {
     this._storeModel = t.model(collectionModels);
   }
 
-  public initData(storeSnapshot: StoreSnapshot) {
-    this._store = this._storeModel.create(storeSnapshot);
+  public initStore(storeSnapshot: StoreSnapshot) {
+    this.store = this._storeModel.create(storeSnapshot);
 
     // разрешаем изменения моделей из других сервисов и компонентов
-    unprotect(this._store);
+    unprotect(this.store);
 
     // подписываемся на добавление новых элементов в дерево
-    this._patchListener = onPatch(this._store, ({ op, path }) => {
+    this._patchListener = onPatch(this.store, ({ op, path }) => {
       // проверяем, что элемент пришел из глубины дерева
       if (op === "add" && path.match(/\//g).length > 2) {
-        const object = resolvePath(this._store, path);
+        const object = resolvePath(this.store, path);
         // проверяем, что элемент является сущностью с Id
         if (isObject(object) && isInteger(object.Id)) {
           // и добавляем его в соответствующую коллекцию
-          this._store[getType(object).name].put(object);
+          this.store[getType(object).name].put(object);
         }
       }
     });

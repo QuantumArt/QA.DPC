@@ -10,7 +10,7 @@ import dataContext from "Services/DataContext";
   try {
     await editorController.initialize();
 
-    console.dir(toJS(dataContext._store["Product"]));
+    console.dir(toJS(dataContext.store["Product"]));
     // ReactDOM.render(
     //   <ArticleEditor
     //     article={rootArticle}
