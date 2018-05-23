@@ -8,9 +8,11 @@ import dataContext from "Services/DataContext";
 (async () => {
   const element = document.getElementById("editor");
   try {
+    const start = new Date();
     await editorController.initialize();
 
     console.dir(toJS(dataContext.store["Product"]));
+    element.innerHTML = `Loaded in ${Number(new Date()) - Number(start)} msec!`;
     // ReactDOM.render(
     //   <ArticleEditor
     //     article={rootArticle}
