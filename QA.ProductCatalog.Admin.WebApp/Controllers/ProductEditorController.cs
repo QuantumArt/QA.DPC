@@ -63,7 +63,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </summary>
         /// <param name="productDefinitionId">Id описания продукта</param>
         [HttpGet]
-        public ActionResult TypeScriptSchema(int productDefinitionId, bool isLive = false)
+        public ViewResult TypeScriptSchema(int productDefinitionId, bool isLive = false)
         {
             Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
 
@@ -202,7 +202,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             = new ConcurrentDictionary<int, ContentResult>();
 
         [HttpGet]
-        public ActionResult GetProduct_Test(int articleId, bool refresh = false)
+        public ContentResult GetProduct_Test(int articleId, bool refresh = false)
         {
             if (refresh)
             {
@@ -294,6 +294,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .DeepCopy();
 
             return content;
+        }
+
+        [HttpGet]
+        public ViewResult ComponentLibrary()
+        {
+            return View();
         }
     }
 }

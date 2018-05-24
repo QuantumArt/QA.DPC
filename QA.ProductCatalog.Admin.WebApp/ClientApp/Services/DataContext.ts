@@ -78,6 +78,22 @@ export default new DataContext();
 
 /**
  * Компилирует MobX-модели из нормализованных схем контентов
+ * @example
+ *
+ * interface Store {
+ *   Product: Map<string, Product>;
+ *   Region: Map<string, Region>;
+ * }
+ * interface Product {
+ *   Id: number;
+ *   Description: string;
+ *   Regions: Region[];
+ * }
+ * interface Region {
+ *   Id: number;
+ *   Title: string;
+ *   Parent: Region;
+ * }
  */
 function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
   const contentModels = {};
