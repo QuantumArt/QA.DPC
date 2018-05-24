@@ -231,13 +231,19 @@ namespace QA.Core.DPC.Loader.Editor
 
         private static FieldSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField)
         {
-            if (qpField.ExactType == FieldExactTypes.StringEnum)
+            switch (qpField.ExactType)
             {
-                return new EnumFieldSchema { Items = qpField.StringEnumItems.ToArray() };
-            }
+                case FieldExactTypes.Numeric:
+                    return new NumericFieldSchema { IsInteger = qpField.IsInteger };
 
-            // TODO: other field types
-            return new FieldSchema();
+                case FieldExactTypes.StringEnum:
+                    return new EnumFieldSchema { Items = qpField.StringEnumItems.ToArray() };
+
+                // TODO: other field types
+
+                default:
+                    return new FieldSchema();
+            }
         }
 
         private ProductSchema GetProductSchema(ContentSchema contentSchema, SchemaContext context)

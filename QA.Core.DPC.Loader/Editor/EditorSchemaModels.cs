@@ -61,12 +61,7 @@ namespace QA.Core.DPC.Loader.Editor
 
         public bool IsRequired { get; set; }
     }
-
-    public class EnumFieldSchema : FieldSchema
-    {
-        public StringEnumItem[] Items { get; set; } = new StringEnumItem[0];
-    }
-
+    
     public interface IRelationFieldSchema
     {
         bool IsBackward { get; }
@@ -107,5 +102,15 @@ namespace QA.Core.DPC.Loader.Editor
         {
             return (ExtensionFieldSchema)MemberwiseClone();
         }
+    }
+
+    public class NumericFieldSchema: FieldSchema
+    {
+        public bool IsInteger { get; set; }
+    }
+
+    public class EnumFieldSchema : FieldSchema
+    {
+        public StringEnumItem[] Items { get; set; } = new StringEnumItem[0];
     }
 }

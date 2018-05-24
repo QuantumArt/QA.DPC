@@ -83,6 +83,10 @@ export function includeExtension(
   return paths;
 }
 
+export interface NumericFieldSchema extends FieldSchema {
+  IsInteger: boolean;
+}
+
 export interface EnumFieldSchema extends FieldSchema {
   Items: StringEnumItem[];
 }
@@ -130,6 +134,10 @@ export function isExtensionField(field: any): field is ExtensionFieldSchema {
     isObject(field.Contents) &&
     Object.values(field.Contents).every(isContent)
   );
+}
+
+export function isNumericField(field: any): field is EnumFieldSchema {
+  return isObject(field) && isInteger(field.FieldId) && field.FieldType === "Numeric";
 }
 
 export function isEnumField(field: any): field is EnumFieldSchema {
