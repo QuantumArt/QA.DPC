@@ -9,28 +9,31 @@ import {
   isBackwardField,
   isExtensionField
 } from "Models/EditorSchemaModels";
+import { isObject } from "Utils/TypeChecks";
 
 export class SchemaContext {
   public rootSchema: ContentSchema;
 
-  /**
-   * Преобразует JSON Reference ссылки вида `{ "$ref": "#/definitions/MySchema" }`
-   * в циклическую структуру объектов. Присоединяет к схемам контентов `.include()`-методы.
-   * @param editorSchema Схема редактора
-   * @returns Схема корневого контента
-   */
   public initSchema(editorSchema: { Content: any; Definitions: { [name: string]: any } }) {
     // editorSchema = JSON.parse(JSON.stringify(editorSchema));
     const definitions = editorSchema.Definitions;
     delete editorSchema.Definitions;
-    visitObject(editorSchema, definitions, new Set());
+    visitSchema(editorSchema, definitions, new Set());
     this.rootSchema = editorSchema.Content;
   }
 }
 
 export default new SchemaContext();
 
-function visitObject(object: any, definitions: object, visited: Set<object>): void {
+/**
+ * Преобразует JSON Reference ссылки вида `{ "$ref": "#/definitions/MySchema" }`
+ * в циклическую структуру объектов. Присоединяет к схемам контентов `.include()`-методы.
+ */
+function visitSchema(
+  object: any,
+  definitions: { [name: string]: any },
+  visited: Set<object>
+): void {
   if (object && typeof object === "object") {
     if (visited.has(object)) {
       return;
@@ -40,12 +43,12 @@ function visitObject(object: any, definitions: object, visited: Set<object>): vo
     if (Array.isArray(object)) {
       object.forEach((value, index) => {
         object[index] = resolveRef(value, definitions);
-        visitObject(object[index], definitions, visited);
+        visitSchema(object[index], definitions, visited);
       });
     } else {
       Object.keys(object).forEach(key => {
         object[key] = resolveRef(object[key], definitions);
-        visitObject(object[key], definitions, visited);
+        visitSchema(object[key], definitions, visited);
       });
       if (isContent(object)) {
         object.include = includeContent;
@@ -62,8 +65,6 @@ function visitObject(object: any, definitions: object, visited: Set<object>): vo
   }
 }
 
-function resolveRef(object: any, definitions: object): any {
-  return typeof object === "object" && object !== null && "$ref" in object
-    ? definitions[object.$ref.slice(14)]
-    : object;
+function resolveRef(object: any, definitions: { [name: string]: any }): any {
+  return isObject(object) && "$ref" in object ? definitions[object.$ref.slice(14)] : object;
 }

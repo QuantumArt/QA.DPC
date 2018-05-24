@@ -12,8 +12,11 @@ import schemaContext from "Services/SchemaContext";
     const start = new Date();
     await editorController.initialize();
 
-    console.dir(toJS(dataContext.store["Product"]));
     console.dir(schemaContext.rootSchema);
+
+    const product = dataContext.store["Product"].get(String(2254329));
+    product.Regions[0] = dataContext.createArticle("Region");
+    console.dir(toJS(dataContext.store["Region"]));
 
     element.innerHTML = `Loaded in ${Number(new Date()) - Number(start)} msec!`;
     // ReactDOM.render(
