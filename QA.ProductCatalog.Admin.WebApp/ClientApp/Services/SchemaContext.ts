@@ -23,8 +23,6 @@ export class SchemaContext {
   }
 }
 
-export default new SchemaContext();
-
 /**
  * Преобразует JSON Reference ссылки вида `{ "$ref": "#/definitions/MySchema" }`
  * в циклическую структуру объектов. Присоединяет к схемам контентов `.include()`-методы.

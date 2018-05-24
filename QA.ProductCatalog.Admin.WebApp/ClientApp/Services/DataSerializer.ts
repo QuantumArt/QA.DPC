@@ -54,5 +54,3 @@ export class DataSerializer {
     });
   }
 }
-
-export default new DataSerializer();

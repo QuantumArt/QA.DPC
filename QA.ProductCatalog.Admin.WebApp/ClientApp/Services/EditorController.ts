@@ -1,9 +1,15 @@
-import dataSerializer from "Services/DataSerializer";
-import dataNormalizer from "Services/DataNormalizer";
-import dataContext from "Services/DataContext";
-import schemaContext from "Services/SchemaContext";
+import { inject } from "react-ioc";
+import { DataSerializer } from "Services/DataSerializer";
+import { DataNormalizer } from "Services/DataNormalizer";
+import { DataContext } from "Services/DataContext";
+import { SchemaContext } from "Services/SchemaContext";
 
 export class EditorController {
+  @inject private _dataSerializer: DataSerializer;
+  @inject private _dataNormalizer: DataNormalizer;
+  @inject private _dataContext: DataContext;
+  @inject private _schemaContext: SchemaContext;
+
   private _path = document.location.pathname;
   private _query = document.location.search;
   private _rootUrl = this._path.slice(0, this._path.indexOf("/ProductEditor"));
@@ -20,17 +26,17 @@ export class EditorController {
       if (!response.ok) {
         throw new Error(await response.text());
       }
-      const dataTree = dataSerializer.deserialize(await response.text());
+      const dataTree = this._dataSerializer.deserialize(await response.text());
 
       await initSchemaTask;
 
-      const dataSnapshot = dataNormalizer.normalize(dataTree, dataTree.ContentName);
+      const dataSnapshot = this._dataNormalizer.normalize(dataTree, dataTree.ContentName);
 
-      dataContext.initStore(dataSnapshot);
+      this._dataContext.initStore(dataSnapshot);
     } else {
       await initSchemaTask;
 
-      dataContext.initStore({});
+      this._dataContext.initStore({});
     }
   }
 
@@ -44,10 +50,8 @@ export class EditorController {
       throw new Error(await response.text());
     }
     const schema = await response.json();
-    dataNormalizer.initSchema(schema.MergedSchemas);
-    dataContext.initSchema(schema.MergedSchemas);
-    schemaContext.initSchema(schema.EditorSchema);
+    this._dataNormalizer.initSchema(schema.MergedSchemas);
+    this._dataContext.initSchema(schema.MergedSchemas);
+    this._schemaContext.initSchema(schema.EditorSchema);
   }
 }
-
-export default new EditorController();

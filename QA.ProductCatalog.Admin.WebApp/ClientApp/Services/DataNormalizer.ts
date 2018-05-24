@@ -61,5 +61,3 @@ export class DataNormalizer {
     return normalize(articleObject, this._normalizrSchemas[contentName]).entities;
   }
 }
-
-export default new DataNormalizer();

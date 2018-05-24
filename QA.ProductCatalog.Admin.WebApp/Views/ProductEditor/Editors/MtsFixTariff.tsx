@@ -1,22 +1,31 @@
 ﻿// import "normalize.css/normalize.css";
+import "reflect-metadata";
 // import React from "react";
 // import ReactDOM from "react-dom";
+import { inject } from "react-ioc";
 import { toJS } from "mobx";
-import editorController from "Services/EditorController";
-import dataContext from "Services/DataContext";
-import schemaContext from "Services/SchemaContext";
+import { EditorController } from "Services/EditorController";
+import { DataContext } from "Services/DataContext";
+import { SchemaContext } from "Services/SchemaContext";
+
+class Example {
+  @inject editorController: EditorController;
+  @inject dataContext: DataContext;
+  @inject schemaContext: SchemaContext;
+}
 
 (async () => {
   const element = document.getElementById("editor");
+  const example = new Example();
   try {
     const start = new Date();
-    await editorController.initialize();
+    await example.editorController.initialize();
 
-    console.dir(schemaContext.rootSchema);
+    console.dir(example.schemaContext.rootSchema);
 
-    const product = dataContext.store["Product"].get(String(2254329));
-    product.Regions[0] = dataContext.createArticle("Region");
-    console.dir(toJS(dataContext.store["Region"]));
+    const product = example.dataContext.store["Product"].get(String(2254329));
+    product.Regions[0] = example.dataContext.createArticle("Region");
+    console.dir(toJS(example.dataContext.store["Region"]));
 
     element.innerHTML = `Loaded in ${Number(new Date()) - Number(start)} msec!`;
     // ReactDOM.render(

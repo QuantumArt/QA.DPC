@@ -74,8 +74,6 @@ export class DataContext {
   }
 }
 
-export default new DataContext();
-
 /**
  * Компилирует MobX-модели из нормализованных схем контентов
  * @example

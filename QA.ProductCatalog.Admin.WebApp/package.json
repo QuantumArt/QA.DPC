@@ -61,7 +61,9 @@
     "react": "^16.3.1",
     "react-datetime": "^2.14.0",
     "react-dom": "^16.3.1",
+    "react-ioc": "0.0.1",
     "react-textarea-autosize": "^6.1.0",
+    "reflect-metadata": "^0.1.12",
     "tslib": "^1.9.0"
   }
 }
