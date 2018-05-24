@@ -1,13 +1,11 @@
-import React, { Component } from "react";
+import React from "react";
+import { Input } from "reactstrap";
 import { action } from "mobx";
 import { observer } from "mobx-react";
+import { AbstractControl } from "./AbstractControls";
 
 @observer
-export class Checkbox extends Component<{
-  model: any;
-  name: string;
-  [x: string]: any;
-}> {
+export class CheckBox extends AbstractControl {
   handleChange = action((e: any) => {
     const { model, name } = this.props;
     model[name] = !!e.target.checked;
@@ -15,14 +13,11 @@ export class Checkbox extends Component<{
 
   render() {
     const { model, name, ...props } = this.props;
+    // @ts-ignore
     return (
-      <input
-        type="checkbox"
-        className="editor-checkbox"
-        checked={!!model[name]}
-        onChange={this.handleChange}
-        {...props}
-      />
+      <div className="form-check">
+        <Input type="checkbox" checked={!!model[name]} onChange={this.handleChange} {...props} />
+      </div>
     );
   }
 }

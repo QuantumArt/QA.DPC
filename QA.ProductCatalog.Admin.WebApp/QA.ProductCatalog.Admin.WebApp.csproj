@@ -488,6 +488,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Scripts\Bundles\**\*.*" />
+    <Content Include="Views\ProductEditor\ComponentLibrary.jsx" />
     <Content Include="Views\ProductEditor\ProductEditorSchema.js" />
     <Content Include="webpack.config.js" />
     <Content Include="package.json" />
@@ -676,7 +677,6 @@
     <Folder Include="ClientApp\" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Views\ProductEditor\ComponentLibrary.tsx" />
     <TypeScriptCompile Include="Views\ProductEditor\Editors\MtsFixTariff.tsx" />
   </ItemGroup>
   <ItemGroup>
