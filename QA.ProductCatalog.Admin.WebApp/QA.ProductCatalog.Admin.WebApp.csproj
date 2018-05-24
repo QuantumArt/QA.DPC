@@ -547,7 +547,7 @@
     <Content Include="Views\ProductEditor\TypeScriptSchema.cshtml" />
     <Content Include="tsconfig.json" />
     <Content Include="Views\ProductEditor\ComponentLibrary.cshtml" />
-    <None Include="Views\ProductEditor\MtsFixTariff.cshtml" />
+    <None Include="Views\ProductEditor\Editors\MtsFixTariff.cshtml" />
     <Content Include="Views\ProductEditor\ProductEditorSchema.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -677,7 +677,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Views\ProductEditor\ComponentLibrary.tsx" />
-    <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff.tsx" />
+    <TypeScriptCompile Include="Views\ProductEditor\Editors\MtsFixTariff.tsx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

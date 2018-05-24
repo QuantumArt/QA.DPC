@@ -55,7 +55,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         [Route("{productDefinitionId}/{editorName}/{articleId}")]   
         public ActionResult Index(int productDefinitionId, string editorName, int articleId)
         {
-            return View(editorName);
+            return View($"Editors/{editorName}");
         }
         
         /// <summary>
