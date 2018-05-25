@@ -48,7 +48,7 @@ namespace QA.Core.DPC.Loader.Editor
 
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="NotSupportedException" />
-        public ContentObject ConvertArticle(Article article, IArticleFilter filter)
+        public ArticleObject ConvertArticle(Article article, IArticleFilter filter)
         {
             _contentService.LoadStructureCache();
 
@@ -60,24 +60,24 @@ namespace QA.Core.DPC.Loader.Editor
 
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="NotSupportedException" />
-        private ContentObject ConvertArticle(Article article, ArticleContext context, bool forExtension = false)
+        private ArticleObject ConvertArticle(Article article, ArticleContext context, bool forExtension = false)
         {
             if (!context.ShouldIncludeArticle(article))
             {
                 return null;
             }
 
-            var dict = new ContentObject();
+            var dict = new ArticleObject();
 
             if (forExtension)
             {
-                dict[ContentObject.ContentNameProp] = article.ContentName;
+                dict[ArticleObject.ContentName] = article.ContentName;
             }
             else
             {
-                dict[ContentObject.IdProp] = article.Id;
-                dict[ContentObject.ContentNameProp] = article.ContentName;
-                dict[ContentObject.TimestampProp] = article.Modified == default(DateTime)
+                dict[ArticleObject.Id] = article.Id;
+                dict[ArticleObject.ContentName] = article.ContentName;
+                dict[ArticleObject.Timestamp] = article.Modified == default(DateTime)
                     ? article.Created : article.Modified;
             }
 
@@ -94,7 +94,7 @@ namespace QA.Core.DPC.Loader.Editor
 
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="NotSupportedException" />
-        private void PopulateField(ContentObject dict, ArticleField field, ArticleContext context)
+        private void PopulateField(ArticleObject dict, ArticleField field, ArticleContext context)
         {
             if (field is ExtensionArticleField extensionArticleField)
             {
@@ -124,7 +124,7 @@ namespace QA.Core.DPC.Loader.Editor
 
         /// <exception cref="InvalidOperationException" />
         private void PopulateExtensionFields(
-            ContentObject dict, ExtensionArticleField field, ArticleContext context)
+            ArticleObject dict, ExtensionArticleField field, ArticleContext context)
         {
             if (field.Item == null)
             {
@@ -134,7 +134,7 @@ namespace QA.Core.DPC.Loader.Editor
             Article article = field.Item;
 
             dict[field.FieldName] = article.ContentName;
-            dict[ContentObject.ExtensionProp(field.FieldName)] = new ExtensionFieldObject
+            dict[ArticleObject.ExtensionContents(field.FieldName)] = new ExtensionFieldObject
             {
                 [article.ContentName] = ConvertArticle(article, context, forExtension: true)
             };

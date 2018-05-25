@@ -1,21 +1,29 @@
-import { types as t } from "mobx-state-tree";
+import { types as t, IExtendedObservableMap } from "mobx-state-tree";
 
-export interface StoreSnapshot {
-  [content: string]: {
-    [id: string]: CollectionSnapshot;
-  };
+export interface StoreObject {
+  readonly [name: string]: IExtendedObservableMap<ArticleObject>;
 }
 
-export interface CollectionSnapshot<T = ArticleSnapshot> {
-  [id: number]: T;
-}
-
-export interface ArticleSnapshot {
-  Id: number;
-  ContentName: string;
+export interface ArticleObject {
+  readonly Id: number;
+  readonly ContentName: string;
   Timestamp: Date;
 
   [field: string]: any;
+}
+
+export interface StoreSnapshot {
+  readonly [content: string]: {
+    readonly [id: string]: ArticleSnapshot;
+  };
+}
+
+export interface ArticleSnapshot {
+  readonly Id: number;
+  readonly ContentName?: string;
+  readonly Timestamp?: Date;
+
+  readonly [field: string]: any;
 }
 
 /** Файл, загружаемый в QPublishing */

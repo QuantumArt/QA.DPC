@@ -1,15 +1,13 @@
-import {
-  types as t,
-  getType,
-  unprotect,
-  onPatch,
-  resolvePath,
-  IExtendedObservableMap,
-  IModelType
-} from "mobx-state-tree";
+import { types as t, getType, unprotect, onPatch, resolvePath, IModelType } from "mobx-state-tree";
 import { IDisposer } from "mobx-state-tree/dist/utils";
 import { isObject, isInteger } from "Utils/TypeChecks";
-import { StoreSnapshot, ArticleSnapshot, FileType } from "Models/EditorDataModels";
+import {
+  StoreObject,
+  StoreSnapshot,
+  ArticleObject,
+  ArticleSnapshot,
+  FileType
+} from "Models/EditorDataModels";
 import {
   ContentSchema,
   isRelationField,
@@ -19,15 +17,11 @@ import {
   isEnumField
 } from "Models/EditorSchemaModels";
 
-interface Store {
-  [name: string]: IExtendedObservableMap<ArticleSnapshot>;
-}
-
 export class DataContext {
   private _nextId = -1;
   private _patchListener: IDisposer = null;
-  private _storeType: IModelType<any, any> = null;
-  public store: Store = null;
+  private _storeType: IModelType<StoreSnapshot, StoreObject> = null;
+  public store: StoreObject = null;
 
   public initSchema(mergedSchemas: { [name: string]: ContentSchema }) {
     this._storeType = compileStoreType(mergedSchemas);
@@ -54,14 +48,14 @@ export class DataContext {
   }
 
   // TODO: возможно стоит добавлять объекты в store при создании, а не по патчам ?
-  public createArticle<T = ArticleSnapshot>(contentName: string): T {
-    return this.getContentType(contentName).create({ Id: this._nextId-- });
+  public createArticle<T extends ArticleObject = ArticleObject>(contentName: string): T {
+    return this.getContentType(contentName).create({ Id: this._nextId-- }) as T;
   }
 
-  private getContentType(contentName: string): IModelType<any, any> {
+  private getContentType(contentName: string): IModelType<ArticleSnapshot, ArticleObject> {
     const optionalType = this._storeType.properties[contentName];
     if (!optionalType) {
-      throw new Error(`Content "${contentName}" is not defined in this Store schema`);
+      throw new TypeError(`Content "${contentName}" is not defined in this Store schema`);
     }
     // @ts-ignore
     return optionalType.type.subType;
