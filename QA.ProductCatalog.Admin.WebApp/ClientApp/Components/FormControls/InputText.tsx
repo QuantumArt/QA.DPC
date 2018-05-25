@@ -1,28 +1,28 @@
 import React from "react";
-import { Input } from "reactstrap";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { AbstractInput } from "./AbstractControls";
 
 @observer
 export class InputText extends AbstractInput {
-  handleChange = action((e: any) => {
-    this.editValue = e.target.value;
-  });
+  handleChange = e => {
+    this.setState({ editValue: e.target.value });
+  };
 
   handleBlur = action(() => {
     const { model, name } = this.props;
-    this.hasFocus = false;
-    model[name] = this.editValue;
+    model[name] = this.state.editValue;
+    this.setState({ hasFocus: false });
   });
 
   render() {
     const { model, name, ...props } = this.props;
-    const inputValue = this.hasFocus ? this.editValue : model[name] != null ? model[name] : "";
+    const { hasFocus, editValue } = this.state;
+    const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return (
-      <Input
+      <input
         type="text"
-        bsSize="sm"
+        className="form-control form-control-sm"
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}

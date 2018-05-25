@@ -5,11 +5,10 @@ export interface StoreObject {
 }
 
 export interface ArticleObject {
+  [field: string]: any;
   readonly Id: number;
   readonly ContentName: string;
   Timestamp: Date;
-
-  [field: string]: any;
 }
 
 export interface StoreSnapshot {
@@ -19,11 +18,10 @@ export interface StoreSnapshot {
 }
 
 export interface ArticleSnapshot {
+  readonly [field: string]: any;
   readonly Id: number;
   readonly ContentName?: string;
   readonly Timestamp?: Date;
-
-  readonly [field: string]: any;
 }
 
 /** Файл, загружаемый в QPublishing */

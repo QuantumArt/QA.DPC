@@ -1,5 +1,7 @@
 import { Component } from "react";
-import { observable, action } from "mobx";
+import PropTypes from "prop-types";
+import { untracked } from "mobx";
+import { isObject, isPlainObject } from "Utils/TypeChecks";
 
 interface ControlProps {
   [x: string]: any;
@@ -8,26 +10,33 @@ interface ControlProps {
 }
 
 export abstract class AbstractControl<P = {}> extends Component<ControlProps & P> {
-  componentDidMount() {
-    const { model, name } = this.props;
-    if (!(name in model)) {
-      throw new TypeError(
-        `The model ${Object.getPrototypeOf(model).name} does not have property ${name}`
+  static propTypes = {
+    model: PropTypes.object.isRequired,
+    name(props, _propName, componentName) {
+      const { model, name } = props;
+      if (!isObject(model) || name in model) {
+        return null;
+      }
+      const modelName = isPlainObject(model) ? "Object" : Object.getPrototypeOf(model).name;
+      return new Error(
+        `Invalid prop \`name\` supplied to ${componentName}. Passed \`model\` [${modelName}] does not have property "${name}"`
       );
     }
-  }
+  };
 }
 
 export abstract class AbstractInput<P = {}> extends AbstractControl<P> {
-  @observable hasFocus = false;
-  @observable editValue: any = "";
+  state = {
+    hasFocus: false,
+    editValue: ""
+  };
 
-  handleFocus = action(() => {
+  handleFocus = () => {
     const { model, name } = this.props;
-    this.hasFocus = true;
-    this.editValue = model[name];
-    if (this.editValue == null) {
-      this.editValue = "";
+    let editValue = untracked(() => model[name]);
+    if (editValue == null) {
+      editValue = "";
     }
-  });
+    this.setState({ hasFocus: true, editValue });
+  };
 }

@@ -1,5 +1,4 @@
 import React from "react";
-import { Input } from "reactstrap";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { AbstractControl } from "./AbstractControls";
@@ -13,10 +12,15 @@ export class CheckBox extends AbstractControl {
 
   render() {
     const { model, name, ...props } = this.props;
-    // @ts-ignore
     return (
       <div className="form-check">
-        <Input type="checkbox" checked={!!model[name]} onChange={this.handleChange} {...props} />
+        <input
+          type="checkbox"
+          className="form-check-input"
+          checked={!!model[name]}
+          onChange={this.handleChange}
+          {...props}
+        />
       </div>
     );
   }

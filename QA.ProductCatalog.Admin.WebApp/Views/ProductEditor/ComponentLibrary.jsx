@@ -12,15 +12,13 @@ import {
   DatePicker
 } from "Components/FormControls/FormControls";
 
-class TestArticle {
-  @observable StringField = "";
-  @observable NumericField = 0;
-  @observable BooleanField = null;
-  @observable TextField = null;
-  @observable DateField = null;
-}
-
-const testArticle = new TestArticle();
+const article = observable({
+  StringField: "",
+  NumericField: 0,
+  BooleanField: null,
+  TextField: null,
+  DateField: null
+});
 
 const FormControlsBlock = observer(() => (
   <div>
@@ -34,8 +32,16 @@ const FormControlsBlock = observer(() => (
       <Col sm={3}>
         <InputText
           name="StringField"
-          model={testArticle}
+          model={article}
           placeholder="StringField"
+        />
+      </Col>
+      <Col sm={3}>
+        <InputText
+          name="StringField"
+          model={article}
+          placeholder="StringField"
+          disabled
         />
       </Col>
     </FormGroup>
@@ -47,9 +53,17 @@ const FormControlsBlock = observer(() => (
       <Col sm={3}>
         <InputNumber
           name="NumericField"
-          model={testArticle}
+          model={article}
+          placeholder="NumericField"
+        />
+      </Col>
+      <Col sm={3}>
+        <InputNumber
+          name="NumericField"
+          model={article}
           placeholder="NumericField"
           isInteger
+          disabled
         />
       </Col>
     </FormGroup>
@@ -59,20 +73,14 @@ const FormControlsBlock = observer(() => (
         DatePicker
       </Label>
       <Col sm={3}>
-        <DatePicker
-          name="DateField"
-          model={testArticle}
-          placeholder="DateField"
-        />
+        <DatePicker name="DateField" model={article} placeholder="DateField" />
       </Col>
-      <Label sm={3} size="sm">
-        DatePicker
-      </Label>
       <Col sm={3}>
         <DatePicker
           name="DateField"
-          model={testArticle}
+          model={article}
           placeholder="DateField"
+          disabled
         />
       </Col>
     </FormGroup>
@@ -82,7 +90,10 @@ const FormControlsBlock = observer(() => (
         CheckBox
       </Label>
       <Col sm={3}>
-        <CheckBox name="BooleanField" model={testArticle} />
+        <CheckBox name="BooleanField" model={article} />
+      </Col>
+      <Col sm={3}>
+        <CheckBox name="BooleanField" model={article} disabled />
       </Col>
     </FormGroup>
 
@@ -91,17 +102,13 @@ const FormControlsBlock = observer(() => (
         TextArea
       </Label>
       <Col sm={6}>
-        <TextArea
-          name="TextField"
-          model={testArticle}
-          placeholder="TextField"
-        />
+        <TextArea name="TextField" model={article} placeholder="TextField" />
       </Col>
     </FormGroup>
 
     <hr />
     <code>
-      <pre>{JSON.stringify(testArticle, null, 2)}</pre>
+      <pre>{JSON.stringify(article, null, 2)}</pre>
     </code>
   </div>
 ));

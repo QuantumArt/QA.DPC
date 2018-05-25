@@ -1,40 +1,42 @@
 import React from "react";
-import { Input } from "reactstrap";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { AbstractInput } from "./AbstractControls";
 
 @observer
 export class InputNumber extends AbstractInput<{ isInteger?: boolean }> {
-  handleChange = action(e => {
-    // @ts-ignore
-    const value = e.target.value;
+  handleChange = e => {
+    const editValue = e.target.value;
     if (
-      value === "" ||
-      value === "-" ||
-      (this.props.isInteger ? Number.isSafeInteger(Number(value)) : Number.isFinite(Number(value)))
+      editValue === "" ||
+      editValue === "-" ||
+      (this.props.isInteger
+        ? Number.isSafeInteger(Number(editValue))
+        : Number.isFinite(Number(editValue)))
     ) {
-      this.editValue = value;
+      this.setState({ editValue });
     }
-  });
+  };
 
   handleBlur = action(() => {
     const { model, name } = this.props;
-    this.hasFocus = false;
-    if (this.editValue === "") {
+    const { editValue } = this.state;
+    if (editValue === "") {
       model[name] = null;
-    } else if (this.editValue !== "-") {
-      model[name] = Number(this.editValue);
+    } else if (editValue !== "-") {
+      model[name] = Number(editValue);
     }
+    this.setState({ hasFocus: false });
   });
 
   render() {
     const { model, name, isInteger, ...props } = this.props;
-    const inputValue = this.hasFocus ? this.editValue : model[name] != null ? model[name] : "";
+    const { hasFocus, editValue } = this.state;
+    const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return (
-      <Input
+      <input
         type="text"
-        bsSize="sm"
+        className="form-control form-control-sm"
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}
