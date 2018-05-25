@@ -102,13 +102,12 @@ content.ForExtension
     
     switch (field.FieldType) {
       case "String":
-      case "Image":
       case "Textbox":
       case "VisualEdit":
-      case "DynamicImage":
       case "Classifier":
         return `string`;
       case "Numeric":
+      case "O2MRelation":
         return `number`;
       case "Boolean":
         return `boolean`;
@@ -117,12 +116,17 @@ content.ForExtension
       case "DateTime":
         return `Date`;
       case "File":
+      case "Image":
         return `{
     Name: string;
     AbsoluteUrl: string;
   }`;
+      case "DynamicImage":
+      default:
+        throw new Error(
+          `Field "${field.FieldName}" has unsupported type FieldExactTypes.${field.FieldType}`
+        );
     }
-    throw new Error(`Field "${field.FieldName}" has unsupported type FieldExactTypes.${field.FieldType}`);
   })};`)}
 }
 `)}`;

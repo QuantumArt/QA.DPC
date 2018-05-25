@@ -40,6 +40,8 @@ namespace QA.Core.DPC.Loader.Editor
                     case VirtualArticleField _:
                     case VirtualMultiArticleField _:
                         return false;
+                    case PlainArticleField plainField:
+                        return plainField.PlainFieldType != PlainFieldType.DynamicImage;
                     default:
                         return true;
                 }
@@ -150,15 +152,13 @@ namespace QA.Core.DPC.Loader.Editor
             switch (plainArticleField.PlainFieldType)
             {
                 case PlainFieldType.File:
+                case PlainFieldType.Image:
                 {
                     if (String.IsNullOrWhiteSpace(plainArticleField.Value))
                     {
                         return null;
                     }
-
-                    string path = Common.GetFileFromQpFieldPath(
-                        _dbConnector, plainArticleField.FieldId.Value, plainArticleField.Value);
-
+                    
                     return new FileFieldObject
                     {
                         Name = plainArticleField.Value.Contains("/")
@@ -169,19 +169,6 @@ namespace QA.Core.DPC.Loader.Editor
                             _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
                             plainArticleField.Value)
                     };
-                }
-
-                case PlainFieldType.Image:
-                case PlainFieldType.DynamicImage:
-                {
-                    if (String.IsNullOrWhiteSpace(plainArticleField.Value))
-                    {
-                        return null;
-                    }
-
-                    return String.Format("{0}/{1}",
-                        _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
-                        plainArticleField.Value);
                 }
                 
                 case PlainFieldType.Boolean:

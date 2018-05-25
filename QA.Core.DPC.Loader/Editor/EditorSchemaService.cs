@@ -123,14 +123,17 @@ namespace QA.Core.DPC.Loader.Editor
                     throw new InvalidOperationException($@"В definition указано поле id={
                         field.FieldId} которого нет в контенте id={content.ContentId}");
                 }
-
-                contentSchema.Fields[field.FieldName] = GetFieldSchema(field, qpField, context, path);
+                if (qpField.ExactType != FieldExactTypes.DynamicImage)
+                {
+                    contentSchema.Fields[field.FieldName] = GetFieldSchema(field, qpField, context, path);
+                }
             }
 
             if (content.LoadAllPlainFields)
             {
                 var qpFieldsToAdd = qpFields
                     .Where(qpField => qpField.RelationType == Quantumart.QP8.BLL.RelationType.None
+                        && qpField.ExactType != FieldExactTypes.DynamicImage
                         && content.Fields.All(field => field.FieldId != qpField.Id)
                         && !context.IgnoredFields
                             .Any(tuple => tuple.Item1.Equals(content)

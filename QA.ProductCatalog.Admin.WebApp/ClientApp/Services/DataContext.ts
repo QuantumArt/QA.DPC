@@ -145,14 +145,13 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
     } else {
       switch (field.FieldType) {
         case "String":
-        case "Image":
         case "Textbox":
         case "VisualEdit":
-        case "DynamicImage":
         case "Classifier":
           fieldModels[field.FieldName] = t.maybe(t.string);
           break;
         case "Numeric":
+        case "O2MRelation":
           fieldModels[field.FieldName] = t.maybe(t.number);
           break;
         case "Boolean":
@@ -164,8 +163,14 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
           fieldModels[field.FieldName] = t.maybe(t.Date);
           break;
         case "File":
+        case "Image":
           fieldModels[field.FieldName] = t.maybe(FileType);
           break;
+        case "DynamicImage":
+        default:
+          throw new Error(
+            `Field "${field.FieldName}" has unsupported type FieldExactTypes.${field.FieldType}`
+          );
       }
     }
   };
