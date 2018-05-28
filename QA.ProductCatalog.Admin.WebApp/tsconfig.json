@@ -25,5 +25,5 @@
       "*": ["*", "ClientApp/*"]
     }
   },
-  "include": ["ClientApp", "Views"]
+  "include": ["ClientApp/**/*", "Views/**/*"]
 }

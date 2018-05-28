@@ -11,7 +11,8 @@ import {
   CheckBox,
   TextArea,
   DatePicker,
-  Select
+  Select,
+  RadioGroup
 } from "Components/FormControls/FormControls";
 
 const article = observable({
@@ -21,6 +22,8 @@ const article = observable({
   BooleanField: null,
   TextField: null,
   DateField: null,
+  TimeField: null,
+  DateTimeField: null,
   EnumField: null
 });
 
@@ -90,13 +93,59 @@ const FormControlsBlock = observer(() => (
     <FormGroup row>
       <Label md={3}>DatePicker</Label>
       <Col md={3}>
-        <DatePicker name="DateField" model={article} placeholder="DateField" />
+        <DatePicker
+          name="DateField"
+          model={article}
+          type="date"
+          placeholder="DateField"
+        />
       </Col>
       <Col md={3}>
         <DatePicker
           name="DateField"
           model={article}
+          type="date"
           placeholder="DateField"
+          disabled
+        />
+      </Col>
+    </FormGroup>
+
+    <FormGroup row>
+      <Label md={3}>DatePicker</Label>
+      <Col md={3}>
+        <DatePicker
+          name="TimeField"
+          model={article}
+          type="time"
+          placeholder="TimeField"
+        />
+      </Col>
+      <Col md={3}>
+        <DatePicker
+          name="TimeField"
+          model={article}
+          type="time"
+          placeholder="TimeField"
+          disabled
+        />
+      </Col>
+    </FormGroup>
+
+    <FormGroup row>
+      <Label md={3}>DatePicker</Label>
+      <Col md={3}>
+        <DatePicker
+          name="DateTimeField"
+          model={article}
+          placeholder="DateTimeField"
+        />
+      </Col>
+      <Col md={3}>
+        <DatePicker
+          name="DateTimeField"
+          model={article}
+          placeholder="DateTimeField"
           disabled
         />
       </Col>
@@ -109,13 +158,6 @@ const FormControlsBlock = observer(() => (
       </Col>
       <Col md={3}>
         <CheckBox name="BooleanField" model={article} disabled />
-      </Col>
-    </FormGroup>
-
-    <FormGroup row>
-      <Label md={3}>TextArea</Label>
-      <Col md={6}>
-        <TextArea name="TextField" model={article} placeholder="TextField" />
       </Col>
     </FormGroup>
 
@@ -143,6 +185,40 @@ const FormControlsBlock = observer(() => (
           ]}
           disabled
         />
+      </Col>
+    </FormGroup>
+
+    <FormGroup row>
+      <Label md={3}>RadioGroup</Label>
+      <Col md={3}>
+        <RadioGroup
+          name="EnumField"
+          model={article}
+          placeholder="EnumField"
+          options={[
+            { value: "first", label: "Первый" },
+            { value: "second", label: "Второй" }
+          ]}
+        />
+      </Col>
+      <Col md={6}>
+        <RadioGroup
+          name="EnumField"
+          model={article}
+          placeholder="EnumField"
+          options={[
+            { value: "first", label: "Первый" },
+            { value: "second", label: "Второй" }
+          ]}
+          disabled
+        />
+      </Col>
+    </FormGroup>
+
+    <FormGroup row>
+      <Label md={3}>TextArea</Label>
+      <Col md={6}>
+        <TextArea name="TextField" model={article} placeholder="TextField" />
       </Col>
     </FormGroup>
 

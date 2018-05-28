@@ -1,10 +1,10 @@
 input[type="checkbox"].form-check-input {
   display: block;
   position: relative;
-  width: 1.2rem;
-  height: 1.2rem;
+  width: 1rem;
+  height: 1rem;
   top: 0.2rem;
-  margin-right: 1.2rem;
+  margin-right: 1rem;
   background: #fff;
   border: 1px solid #ced4da;
   border-radius: 0.25rem;
@@ -16,13 +16,13 @@ input[type="checkbox"].form-check-input {
 
   &:checked {
     background: url(./Icons/CheckboxChecked.svg) no-repeat center center #fff;
-    background-size: 0.8rem;
+    background-size: 0.6rem;
   }
 
   &:indeterminate {
     background: url(./Icons/CheckboxIndeterminate.svg) no-repeat center center
       #fff;
-    background-size: 0.8rem;
+    background-size: 0.6rem;
   }
 
   &:disabled {
@@ -36,13 +36,13 @@ input[type="checkbox"].form-check-input {
   &:disabled:checked {
     background: url(./Icons/CheckboxCheckedDisabled.svg) no-repeat center center
       #e9ecef;
-    background-size: 0.8rem;
+    background-size: 0.6rem;
   }
 
   &:disabled:indeterminate {
     background: url(./Icons/CheckboxIndeterminateDisabled.svg) no-repeat center
       center #e9ecef;
-    background-size: 0.8rem;
+    background-size: 0.6rem;
   }
 
   &:focus {
@@ -52,15 +52,15 @@ input[type="checkbox"].form-check-input {
 }
 
 input[type="radio"].form-check-input {
-  display: block;
+  display: inline-block;
   position: relative;
-  width: 1.2em;
-  height: 1.2em;
-  top: 0.2em;
-  margin-right: 1.2em;
+  width: 1rem;
+  height: 1rem;
+  top: 0.2rem;
+  margin-right: 0.5rem;
   background: #fff;
-  border: 1px solid #888;
-  border-radius: 0.6em;
+  border: 1px solid #ced4da;
+  border-radius: 0.5rem;
   box-sizing: border-box;
   cursor: pointer;
   outline: none;
@@ -69,7 +69,7 @@ input[type="radio"].form-check-input {
 
   &:checked {
     background: url(./Icons/RadioChecked.svg) no-repeat center center #fff;
-    background-size: 0.6em;
+    background-size: 0.55rem;
   }
 
   &:disabled {
@@ -83,7 +83,7 @@ input[type="radio"].form-check-input {
   &:disabled:checked {
     background: url(./Icons/RadioCheckedDisabled.svg) no-repeat center center
       #e9ecef;
-    background-size: 0.6em;
+    background-size: 0.55rem;
   }
 
   &:focus {
@@ -92,21 +92,16 @@ input[type="radio"].form-check-input {
   }
 }
 
-.Select.is-focused:not(.is-open) > .Select-control {
-  border-color: #7ab7fe;
-  box-shadow: 0 0 1px 0.2rem rgba(0, 123, 255, 0.25);
+.editor-radio-group-option {
+  padding-left: 1.25rem;
+
+  &:not(:last-child) {
+    margin-right: 1rem;
+  }
 }
 
 .editor-textarea {
   resize: none;
-}
-
-.editor-radio-group {
-  display: inline-block;
-
-  &__option:not(:last-child) {
-    margin-right: 1rem;
-  }
 }
 
 .editor-datepicker {
@@ -120,4 +115,9 @@ input[type="radio"].form-check-input {
   .rdtActive {
     border-radius: 0.25rem;
   }
+}
+
+.Select.is-focused:not(.is-open) > .Select-control {
+  border-color: #7ab7fe;
+  box-shadow: 0 0 1px 0.2rem rgba(0, 123, 255, 0.25);
 }
