@@ -16,7 +16,7 @@ export class InputSearch extends AbstractControl {
     return (
       <input
         type="search"
-        className="form-control form-control-sm"
+        className="form-control"
         value={inputValue}
         onChange={this.handleChange}
         {...props}

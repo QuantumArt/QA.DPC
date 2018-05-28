@@ -36,7 +36,7 @@ export class InputNumber extends AbstractInput<{ isInteger?: boolean }> {
     return (
       <input
         type="text"
-        className="form-control form-control-sm"
+        className="form-control"
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}

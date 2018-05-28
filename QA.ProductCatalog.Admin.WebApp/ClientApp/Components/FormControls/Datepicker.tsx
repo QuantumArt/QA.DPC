@@ -36,7 +36,6 @@ export class DatePicker extends AbstractInput<{
       <DateTime
         className="editor-datepicker"
         inputProps={{
-          className: "form-control form-control-sm",
           placeholder,
           disabled
         }}

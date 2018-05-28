@@ -23,7 +23,7 @@ export class TextArea extends AbstractInput {
     return (
       <TextAreaAutosize
         useCacheForDOMMeasurements
-        className="editor-textarea form-control form-control-sm"
+        className="editor-textarea form-control"
         minRows={2}
         maxRows={6}
         value={inputValue}

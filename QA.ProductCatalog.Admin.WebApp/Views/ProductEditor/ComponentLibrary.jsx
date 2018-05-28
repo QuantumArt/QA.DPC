@@ -30,17 +30,15 @@ const FormControlsBlock = observer(() => (
     <hr />
 
     <FormGroup row>
-      <Label sm={3} size="sm">
-        InputText
-      </Label>
-      <Col sm={3}>
+      <Label md={3}>InputText</Label>
+      <Col md={3}>
         <InputText
           name="StringField"
           model={article}
           placeholder="StringField"
         />
       </Col>
-      <Col sm={3}>
+      <Col md={3}>
         <InputText
           name="StringField"
           model={article}
@@ -51,17 +49,15 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label sm={3} size="sm">
-        InputNumber
-      </Label>
-      <Col sm={3}>
+      <Label md={3}>InputNumber</Label>
+      <Col md={3}>
         <InputNumber
           name="NumericField"
           model={article}
           placeholder="NumericField"
         />
       </Col>
-      <Col sm={3}>
+      <Col md={3}>
         <InputNumber
           name="NumericField"
           model={article}
@@ -73,17 +69,15 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label sm={3} size="sm">
-        InputSearch
-      </Label>
-      <Col sm={3}>
+      <Label md={3}>InputSearch</Label>
+      <Col md={3}>
         <InputSearch
           name="SearchField"
           model={article}
           placeholder="SearchField"
         />
       </Col>
-      <Col sm={3}>
+      <Col md={3}>
         <InputSearch
           name="SearchField"
           model={article}
@@ -94,13 +88,11 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label sm={3} size="sm">
-        DatePicker
-      </Label>
-      <Col sm={3}>
+      <Label md={3}>DatePicker</Label>
+      <Col md={3}>
         <DatePicker name="DateField" model={article} placeholder="DateField" />
       </Col>
-      <Col sm={3}>
+      <Col md={3}>
         <DatePicker
           name="DateField"
           model={article}
@@ -111,31 +103,25 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label sm={3} size="sm">
-        CheckBox
-      </Label>
-      <Col sm={3}>
+      <Label md={3}>CheckBox</Label>
+      <Col md={3}>
         <CheckBox name="BooleanField" model={article} />
       </Col>
-      <Col sm={3}>
+      <Col md={3}>
         <CheckBox name="BooleanField" model={article} disabled />
       </Col>
     </FormGroup>
 
     <FormGroup row>
-      <Label sm={3} size="sm">
-        TextArea
-      </Label>
-      <Col sm={6}>
+      <Label md={3}>TextArea</Label>
+      <Col md={6}>
         <TextArea name="TextField" model={article} placeholder="TextField" />
       </Col>
     </FormGroup>
 
     <FormGroup row>
-      <Label sm={3} size="sm">
-        Select
-      </Label>
-      <Col sm={3}>
+      <Label md={3}>Select</Label>
+      <Col md={3}>
         <Select
           name="EnumField"
           model={article}
@@ -146,7 +132,7 @@ const FormControlsBlock = observer(() => (
           ]}
         />
       </Col>
-      <Col sm={3}>
+      <Col md={3}>
         <Select
           name="EnumField"
           model={article}
