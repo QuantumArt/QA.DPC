@@ -17,6 +17,8 @@ import {
 
 const article = observable({
   StringField: "",
+  EmailField: "",
+  PhoneField: "",
   NumericField: 0,
   SearchField: null,
   BooleanField: null,
@@ -24,8 +26,12 @@ const article = observable({
   DateField: null,
   TimeField: null,
   DateTimeField: null,
-  EnumField: null
+  EnumField: null,
+  ArrayField: []
 });
+
+// prettier-ignore
+const phoneMask = ["+", "7", "(", /\d/, /\d/, /\d/, ")", /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/];
 
 const FormControlsBlock = observer(() => (
   <div>
@@ -33,7 +39,7 @@ const FormControlsBlock = observer(() => (
     <hr />
 
     <FormGroup row>
-      <Label md={3}>InputText</Label>
+      <Label md={3}>InputText [normal | disabled]</Label>
       <Col md={3}>
         <InputText
           name="StringField"
@@ -52,7 +58,28 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>InputNumber</Label>
+      <Label md={3}>InputText [pattern | mask]</Label>
+      <Col md={3}>
+        <InputText
+          name="EmailField"
+          model={article}
+          placeholder="EmailField"
+          pattern="^[^@\s]+@([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}$"
+          required
+        />
+      </Col>
+      <Col md={3}>
+        <InputText
+          name="PhoneField"
+          model={article}
+          placeholder="PhoneField"
+          mask={phoneMask}
+        />
+      </Col>
+    </FormGroup>
+
+    <FormGroup row>
+      <Label md={3}>InputNumber [normal | disabled]</Label>
       <Col md={3}>
         <InputNumber
           name="NumericField"
@@ -72,7 +99,7 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>InputSearch</Label>
+      <Label md={3}>InputSearch [normal | disabled]</Label>
       <Col md={3}>
         <InputSearch
           name="SearchField"
@@ -91,7 +118,7 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>DatePicker</Label>
+      <Label md={3}>DatePicker [date | date disabled]</Label>
       <Col md={3}>
         <DatePicker
           name="DateField"
@@ -112,7 +139,7 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>DatePicker</Label>
+      <Label md={3}>DatePicker [time | time disabled]</Label>
       <Col md={3}>
         <DatePicker
           name="TimeField"
@@ -133,7 +160,7 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>DatePicker</Label>
+      <Label md={3}>DatePicker [required | disabled]</Label>
       <Col md={3}>
         <DatePicker
           name="DateTimeField"
@@ -152,7 +179,7 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>CheckBox</Label>
+      <Label md={3}>CheckBox [normal | disabled] </Label>
       <Col md={3}>
         <CheckBox name="BooleanField" model={article} />
       </Col>
@@ -162,7 +189,7 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>Select</Label>
+      <Label md={3}>Select [normal | disabled]</Label>
       <Col md={3}>
         <Select
           name="EnumField"
@@ -189,7 +216,35 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>RadioGroup</Label>
+      <Label md={3}>Select [required | multiple]</Label>
+      <Col md={3}>
+        <Select
+          name="EnumField"
+          model={article}
+          placeholder="EnumField"
+          options={[
+            { value: "first", label: "Первый" },
+            { value: "second", label: "Второй" }
+          ]}
+          required
+        />
+      </Col>
+      <Col md={3}>
+        <Select
+          name="ArrayField"
+          model={article}
+          placeholder="ArrayField"
+          options={[
+            { value: "first", label: "Первый" },
+            { value: "second", label: "Второй" }
+          ]}
+          multiple
+        />
+      </Col>
+    </FormGroup>
+
+    <FormGroup row>
+      <Label md={3}>RadioGroup [normal | disabled]</Label>
       <Col md={3}>
         <RadioGroup
           name="EnumField"
@@ -216,7 +271,7 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>TextArea</Label>
+      <Label md={3}>TextArea [normal]</Label>
       <Col md={6}>
         <TextArea name="TextField" model={article} placeholder="TextField" />
       </Col>

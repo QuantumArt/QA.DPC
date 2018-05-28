@@ -18,11 +18,11 @@ export class DatePicker extends AbstractInput<{
   });
 
   handleBlur = action(() => {
-    const { model, name } = this.props;
+    const { model, name, required } = this.props;
     const { editValue } = this.state;
     if (moment.isMoment(editValue)) {
       model[name] = editValue.toDate();
-    } else if (editValue === "") {
+    } else if (!required && editValue === "") {
       model[name] = null;
     }
     this.setState({ hasFocus: false });

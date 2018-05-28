@@ -19,9 +19,9 @@ export class InputNumber extends AbstractInput<{ isInteger?: boolean }> {
   };
 
   handleBlur = action(() => {
-    const { model, name } = this.props;
+    const { model, name, required } = this.props;
     const { editValue } = this.state;
-    if (editValue === "") {
+    if (!required && editValue === "") {
       model[name] = null;
     } else if (editValue !== "-") {
       model[name] = Number(editValue);

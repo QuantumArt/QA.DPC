@@ -11,8 +11,11 @@ export class TextArea extends AbstractInput {
   };
 
   handleBlur = action(() => {
-    const { model, name } = this.props;
-    model[name] = this.state.editValue;
+    const { model, name, required } = this.props;
+    const { editValue } = this.state;
+    if (!required || editValue !== "") {
+      model[name] = editValue;
+    }
     this.setState({ hasFocus: false });
   });
 

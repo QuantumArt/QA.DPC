@@ -18,7 +18,7 @@ export abstract class AbstractControl<P = {}> extends Component<ControlProps & P
   }
 }
 
-export abstract class AbstractInput<P = {}> extends AbstractControl<P> {
+export abstract class AbstractInput<P = {}> extends AbstractControl<{ required?: boolean } & P> {
   state = {
     hasFocus: false,
     editValue: ""
