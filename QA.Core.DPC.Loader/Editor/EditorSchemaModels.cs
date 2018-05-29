@@ -60,6 +60,7 @@ namespace QA.Core.DPC.Loader.Editor
         public FieldExactTypes FieldType { get; set; }
 
         public bool IsRequired { get; set; }
+        public object DefaultValue { get; set; }
     }
     
     public interface IRelationFieldSchema

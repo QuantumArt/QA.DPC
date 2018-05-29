@@ -205,7 +205,9 @@ namespace QA.Core.DPC.Loader.Editor
             fieldSchema.FieldTitle = IsHtmlWhiteSpace(qpField.FriendlyName) ? "" : qpField.FriendlyName;
             fieldSchema.FieldDescription = IsHtmlWhiteSpace(qpField.Description) ? "" : qpField.Description;
 
-            // TODO: fieldSchema.IsRequired
+            fieldSchema.IsRequired = qpField.Required;
+            fieldSchema.DefaultValue = GetDefaultValue(qpField);
+
             return fieldSchema;
         }
 
@@ -253,6 +255,38 @@ namespace QA.Core.DPC.Loader.Editor
 
                 default:
                     return new FieldSchema();
+            }
+        }
+
+        private object GetDefaultValue(Quantumart.QP8.BLL.Field qpField)
+        {
+            switch (qpField.ExactType)
+            {
+                case FieldExactTypes.String:
+                case FieldExactTypes.Textbox:
+                case FieldExactTypes.VisualEdit:
+                case FieldExactTypes.StringEnum:
+                    return qpField.DefaultValue;
+
+                case FieldExactTypes.Boolean:
+                    return qpField.DefaultValue == "1";
+
+                case FieldExactTypes.Numeric:
+                    return Double.TryParse(qpField.DefaultValue, out double number)
+                        ? qpField.IsInteger ? (int)number : number : (object)null;
+
+                case FieldExactTypes.Date:
+                case FieldExactTypes.Time:
+                case FieldExactTypes.DateTime:
+                    return DateTime.TryParse(qpField.DefaultValue, out DateTime dateTime)
+                        ? dateTime : (object)null;
+
+                case FieldExactTypes.Classifier:
+                    return Int32.TryParse(qpField.DefaultValue, out int contentId)
+                        ? _contentService.Read(contentId).NetName : null;
+
+                default:
+                    return null;
             }
         }
 

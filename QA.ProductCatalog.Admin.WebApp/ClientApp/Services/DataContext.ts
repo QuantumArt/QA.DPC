@@ -1,6 +1,13 @@
 import { types as t, getType, unprotect, onPatch, resolvePath, IModelType } from "mobx-state-tree";
 import { IDisposer } from "mobx-state-tree/dist/utils";
-import { isObject, isInteger } from "Utils/TypeChecks";
+import {
+  isObject,
+  isInteger,
+  isIsoDateString,
+  isString,
+  isNumber,
+  isBoolean
+} from "Utils/TypeChecks";
 import {
   StoreObject,
   StoreSnapshot,
@@ -20,11 +27,14 @@ import {
 export class DataContext {
   private _nextId = -1;
   private _patchListener: IDisposer = null;
+  private _defaultSnapshots: { [content: string]: Object } = null;
   private _storeType: IModelType<StoreSnapshot, StoreObject> = null;
   public store: StoreObject = null;
 
   public initSchema(mergedSchemas: { [name: string]: ContentSchema }) {
     this._storeType = compileStoreType(mergedSchemas);
+    this._defaultSnapshots = compileDefaultSnapshots(mergedSchemas);
+    console.log({ snapshots: this._defaultSnapshots }); // TODO: remove
   }
 
   public initStore(storeSnapshot: StoreSnapshot) {
@@ -49,7 +59,10 @@ export class DataContext {
 
   // TODO: возможно стоит добавлять объекты в store при создании, а не по патчам ?
   public createArticle<T extends ArticleObject = ArticleObject>(contentName: string): T {
-    return this.getContentType(contentName).create({ Id: this._nextId-- }) as T;
+    return this.getContentType(contentName).create({
+      ...this._defaultSnapshots[contentName],
+      Id: this._nextId--
+    }) as T;
   }
 
   private getContentType(contentName: string): IModelType<ArticleSnapshot, ArticleObject> {
@@ -88,19 +101,21 @@ export class DataContext {
  * }
  */
 function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
+  // создаем словарь с моделями основных контентов
   const contentModels = {};
+
   const getName = (content: ContentSchema) => mergedSchemas[content.ContentId].ContentName;
   const getFields = (content: ContentSchema) => mergedSchemas[content.ContentId].Fields;
   const getModel = (content: ContentSchema) => contentModels[getName(content)];
 
-  const visitField = (field: FieldSchema, fieldModels: any) => {
+  const visitField = (field: FieldSchema, fieldModels: Object) => {
     if (isExtensionField(field)) {
       // создаем nullable поле-классификатор в виде enum
       fieldModels[field.FieldName] = t.maybe(
         t.enumeration(field.FieldName, Object.keys(field.Contents))
       );
       // создаем словарь с моделями контентов-расширений
-      const extContentModels = {} as any;
+      const extContentModels: Object = {};
       // заполняем его, обходя field.Contents
       Object.entries(field.Contents).forEach(([extName, extContent]) => {
         // для каждого контента-расширения создаем словарь его полей
@@ -183,16 +198,107 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
         ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
         Timestamp: t.maybe(t.Date)
       };
-
+      // заполняем поля модели объекта
       Object.values(content.Fields).forEach(field => visitField(field, fieldModels));
-
+      // создаем именованную модель объекта на основе полей
       contentModels[content.ContentName] = t.model(content.ContentName, fieldModels);
     });
 
   const collectionModels = {};
+  // заполняем словарь с моделями коллекций
   Object.entries(contentModels).forEach(([name, model]: [string, any]) => {
     collectionModels[name] = t.optional(t.map(model), {});
   });
-
+  // создаем модель хранилища
   return t.model(collectionModels);
+}
+
+/**
+ * Создает словарь со снапшотами-по умолчанию для создания новых статей.
+ * Заполняет его на основе `FieldSchema.DefaultValue`.
+ * @example
+ *
+ * {
+ *   Product: {
+ *     Type: "InternetTariff",
+ *     Type_Contents: {
+ *       InternetTariff: {
+ *         Description: "Тариф интернет"
+ *       }
+ *     }
+ *   },
+ *   Region: {
+ *     Title: "Москва"
+ *   }
+ * }
+ */
+function compileDefaultSnapshots(mergedSchemas: { [name: string]: ContentSchema }) {
+  const getFields = (content: ContentSchema) => mergedSchemas[content.ContentId].Fields;
+
+  const visitField = (field: FieldSchema, fieldValues: Object) => {
+    if (isExtensionField(field)) {
+      // заполняем значение по-умолчанию для поля-классификатора
+      if (isString(field.DefaultValue)) {
+        fieldValues[field.FieldName] = field.DefaultValue;
+      }
+      // создаем словарь со снапшотами по-умолчанию контентов-расширений
+      const extContentSnapshots = {};
+      // заполняем его, обходя field.Contents
+      Object.entries(field.Contents).forEach(([extName, extContent]) => {
+        // для каждого контента-расширения создаем словарь значений его полей
+        const extFieldValues = {};
+        // заполняем словарь полей обходя все поля контента-расширения
+        Object.values(getFields(extContent)).forEach(field => visitField(field, extFieldValues));
+        // запоминаем объект с полями контента, если они определены
+        if (Object.keys(extFieldValues).length > 0) {
+          extContentSnapshots[extName] = extFieldValues;
+        }
+      });
+      // запоминаем объект со со снапшотами контентов-расширений, если они определены
+      if (Object.keys(extContentSnapshots).length > 0) {
+        fieldValues[`${field.FieldName}_Contents`] = extContentSnapshots;
+      }
+    } else if (!isBackwardField(field) && !isRelationField(field)) {
+      switch (field.FieldType) {
+        case "String":
+        case "Textbox":
+        case "VisualEdit":
+        case "Classifier":
+        case "StringEnum":
+          if (isString(field.DefaultValue)) {
+            fieldValues[field.FieldName] = field.DefaultValue;
+          }
+          break;
+        case "Numeric":
+          if (isNumber(field.DefaultValue)) {
+            fieldValues[field.FieldName] = field.DefaultValue;
+          }
+          break;
+        case "Boolean":
+          if (isBoolean(field.DefaultValue)) {
+            fieldValues[field.FieldName] = field.DefaultValue;
+          }
+          break;
+        case "Date":
+        case "Time":
+        case "DateTime":
+          if (isIsoDateString(field.DefaultValue)) {
+            fieldValues[field.FieldName] = new Date(field.DefaultValue);
+          }
+          break;
+      }
+    }
+  };
+
+  const contentSnapshots = {};
+  // заполняем словарь со снапшотами по-умолчанию для основных контентов
+  Object.values(mergedSchemas)
+    .filter(content => !content.ForExtension)
+    .forEach(content => {
+      const fieldValues = {};
+      Object.values(content.Fields).forEach(field => visitField(field, fieldValues));
+      contentSnapshots[content.ContentName] = fieldValues;
+    });
+
+  return contentSnapshots;
 }
