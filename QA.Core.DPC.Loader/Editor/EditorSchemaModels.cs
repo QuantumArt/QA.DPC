@@ -104,13 +104,20 @@ namespace QA.Core.DPC.Loader.Editor
         }
     }
 
-    public class NumericFieldSchema: FieldSchema
+    public class StringFieldSchema : FieldSchema
+    {
+        public string RegexPattern { get; set; }
+    }
+
+    public class NumericFieldSchema : FieldSchema
     {
         public bool IsInteger { get; set; }
     }
 
     public class EnumFieldSchema : FieldSchema
     {
+        public bool ShowAsRadioButtons { get; set; }
+
         public StringEnumItem[] Items { get; set; } = new StringEnumItem[0];
     }
 }

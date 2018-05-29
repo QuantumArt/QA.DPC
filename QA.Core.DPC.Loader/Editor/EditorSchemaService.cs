@@ -236,12 +236,19 @@ namespace QA.Core.DPC.Loader.Editor
         {
             switch (qpField.ExactType)
             {
+                case FieldExactTypes.String:
+                    return new StringFieldSchema { RegexPattern = qpField.InputMask };
+                
                 case FieldExactTypes.Numeric:
                     return new NumericFieldSchema { IsInteger = qpField.IsInteger };
-
+                
                 case FieldExactTypes.StringEnum:
-                    return new EnumFieldSchema { Items = qpField.StringEnumItems.ToArray() };
-
+                    return new EnumFieldSchema
+                    {
+                        ShowAsRadioButtons = qpField.ShowAsRadioButtons,
+                        Items = qpField.StringEnumItems.ToArray()
+                    };
+                
                 // TODO: other field types
 
                 default:

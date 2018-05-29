@@ -42,6 +42,7 @@ export interface FieldSchema {
   FieldDescription: string;
   FieldType: string;
   IsRequired: boolean;
+  DefaultValue: any;
   // TODO: review this
   include(selector: (fields: { [name: string]: FieldSchema }) => ProjectionSchema[]): string[];
   include(selector: (contents: { [name: string]: ContentSchema }) => string[][]): string[];
@@ -83,11 +84,16 @@ export function includeExtension(
   return paths;
 }
 
+export interface StringFieldSchema extends FieldSchema {
+  RegexPattern: string;
+}
+
 export interface NumericFieldSchema extends FieldSchema {
   IsInteger: boolean;
 }
 
 export interface EnumFieldSchema extends FieldSchema {
+  ShowAsRadioButtons: boolean;
   Items: StringEnumItem[];
 }
 
@@ -134,6 +140,10 @@ export function isExtensionField(field: any): field is ExtensionFieldSchema {
     isObject(field.Contents) &&
     Object.values(field.Contents).every(isContent)
   );
+}
+
+export function isStringField(field: any): field is StringFieldSchema {
+  return isObject(field) && isInteger(field.FieldId) && field.FieldType === "String";
 }
 
 export function isNumericField(field: any): field is EnumFieldSchema {
