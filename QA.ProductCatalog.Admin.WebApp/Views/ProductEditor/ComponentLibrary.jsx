@@ -26,12 +26,12 @@ const article = observable({
   DateField: null,
   TimeField: null,
   DateTimeField: null,
-  EnumField: null,
-  ArrayField: []
+  EnumField: "first",
+  ArrayField: ["second"]
 });
 
 // prettier-ignore
-const phoneMask = ["+", "7", "(", /\d/, /\d/, /\d/, ")", /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/];
+const phoneMask = ["+", "7", " ", "(", /\d/, /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/];
 
 const FormControlsBlock = observer(() => (
   <div>
