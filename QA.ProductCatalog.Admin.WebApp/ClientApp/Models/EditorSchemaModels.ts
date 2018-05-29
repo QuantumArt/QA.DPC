@@ -1,13 +1,15 @@
 import { isObject, isInteger } from "Utils/TypeChecks";
 
 export interface ContentSchema {
-  ContentId: number;
-  ContentPath: string;
-  ContentName: string;
-  ContentTitle: string;
-  ContentDescription: string;
-  ForExtension: boolean;
-  Fields: { [name: string]: FieldSchema };
+  readonly ContentId: number;
+  readonly ContentPath: string;
+  readonly ContentName: string;
+  readonly ContentTitle: string;
+  readonly ContentDescription: string;
+  readonly ForExtension: boolean;
+  readonly Fields: {
+    readonly [name: string]: FieldSchema;
+  };
   include(selector: (fields: { [name: string]: FieldSchema }) => ProjectionSchema[]): string[];
 }
 
@@ -36,27 +38,27 @@ export function includeContent(
 }
 
 export interface FieldSchema {
-  FieldId: number;
-  FieldName: string;
-  FieldTitle: string;
-  FieldDescription: string;
-  FieldType: string;
-  IsRequired: boolean;
-  IsReadOnly: boolean;
-  DefaultValue: any;
+  readonly FieldId: number;
+  readonly FieldName: string;
+  readonly FieldTitle: string;
+  readonly FieldDescription: string;
+  readonly FieldType: string;
+  readonly IsRequired: boolean;
+  readonly IsReadOnly: boolean;
+  readonly DefaultValue: any;
   // TODO: review this
   include(selector: (fields: { [name: string]: FieldSchema }) => ProjectionSchema[]): string[];
   include(selector: (contents: { [name: string]: ContentSchema }) => string[][]): string[];
 }
 
 export interface RelationFieldSchema extends FieldSchema {
-  IsBackward: false;
-  Content: ContentSchema;
+  readonly IsBackward: false;
+  readonly Content: ContentSchema;
 }
 
 export interface BackwardFieldSchema extends FieldSchema {
-  IsBackward: true;
-  Content: ContentSchema;
+  readonly IsBackward: true;
+  readonly Content: ContentSchema;
 }
 
 export function includeRelation(
@@ -67,11 +69,13 @@ export function includeRelation(
 }
 
 export interface ClassifierFieldSchema extends FieldSchema {
-  Changeable: boolean;
+  readonly Changeable: boolean;
 }
 
 export interface ExtensionFieldSchema extends ClassifierFieldSchema {
-  Contents: { [name: string]: ContentSchema };
+  readonly Contents: {
+    readonly [name: string]: ContentSchema;
+  };
 }
 
 export function includeExtension(
@@ -90,23 +94,23 @@ export function includeExtension(
 }
 
 export interface StringFieldSchema extends FieldSchema {
-  RegexPattern: string;
+  readonly RegexPattern: string;
 }
 
 export interface NumericFieldSchema extends FieldSchema {
-  IsInteger: boolean;
+  readonly IsInteger: boolean;
 }
 
 export interface EnumFieldSchema extends FieldSchema {
-  ShowAsRadioButtons: boolean;
-  Items: StringEnumItem[];
+  readonly ShowAsRadioButtons: boolean;
+  readonly Items: StringEnumItem[];
 }
 
 interface StringEnumItem {
-  Value: string;
-  Alias: string;
-  IsDefault: boolean;
-  Invalid: boolean;
+  readonly Value: string;
+  readonly Alias: string;
+  readonly IsDefault: boolean;
+  readonly Invalid: boolean;
 }
 
 export function isContent(content: any): content is ContentSchema {
