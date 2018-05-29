@@ -191,7 +191,7 @@ namespace QA.Core.DPC.Loader.Editor
             }
             else if (field is ExtensionField extensionField)
             {
-                fieldSchema = GetExtensionFieldSchema(extensionField, context, path);
+                fieldSchema = GetExtensionFieldSchema(extensionField, qpField, context, path);
             }
             else
             {
@@ -206,6 +206,7 @@ namespace QA.Core.DPC.Loader.Editor
             fieldSchema.FieldDescription = IsHtmlWhiteSpace(qpField.Description) ? "" : qpField.Description;
 
             fieldSchema.IsRequired = qpField.Required;
+            fieldSchema.IsReadOnly = qpField.ReadOnly;
             fieldSchema.DefaultValue = GetDefaultValue(qpField);
 
             return fieldSchema;
@@ -214,7 +215,7 @@ namespace QA.Core.DPC.Loader.Editor
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
         private FieldSchema GetExtensionFieldSchema(
-            ExtensionField extensionField, SchemaContext context, string path)
+            ExtensionField extensionField, Quantumart.QP8.BLL.Field qpField, SchemaContext context, string path)
         {
             var contentSchemas = new Dictionary<string, IContentSchema>();
 
@@ -231,7 +232,11 @@ namespace QA.Core.DPC.Loader.Editor
                 }
             }
 
-            return new ExtensionFieldSchema { Contents = contentSchemas };
+            return new ExtensionFieldSchema
+            {
+                Changeable = qpField.Changeable,
+                Contents = contentSchemas
+            };
         }
 
         private static FieldSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField)
@@ -243,7 +248,10 @@ namespace QA.Core.DPC.Loader.Editor
                 
                 case FieldExactTypes.Numeric:
                     return new NumericFieldSchema { IsInteger = qpField.IsInteger };
-                
+
+                case FieldExactTypes.Classifier:
+                    return new ClassifierFieldSchema { Changeable = qpField.Changeable };
+
                 case FieldExactTypes.StringEnum:
                     return new EnumFieldSchema
                     {
@@ -269,7 +277,7 @@ namespace QA.Core.DPC.Loader.Editor
                     return qpField.DefaultValue;
 
                 case FieldExactTypes.Boolean:
-                    return qpField.DefaultValue == "1";
+                    return qpField.DefaultValue == "1" ? true : (object)null;
 
                 case FieldExactTypes.Numeric:
                     return Double.TryParse(qpField.DefaultValue, out double number)

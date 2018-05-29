@@ -42,6 +42,7 @@ export interface FieldSchema {
   FieldDescription: string;
   FieldType: string;
   IsRequired: boolean;
+  IsReadOnly: boolean;
   DefaultValue: any;
   // TODO: review this
   include(selector: (fields: { [name: string]: FieldSchema }) => ProjectionSchema[]): string[];
@@ -65,7 +66,11 @@ export function includeRelation(
   return includeContent.call(this.Content, selector);
 }
 
-export interface ExtensionFieldSchema extends FieldSchema {
+export interface ClassifierFieldSchema extends FieldSchema {
+  Changeable: boolean;
+}
+
+export interface ExtensionFieldSchema extends ClassifierFieldSchema {
   Contents: { [name: string]: ContentSchema };
 }
 
@@ -130,6 +135,10 @@ export function isBackwardField(field: any): field is BackwardFieldSchema {
     isContent(field.Content) &&
     field.IsBackward
   );
+}
+
+export function isClassifierField(field: any): field is ClassifierFieldSchema {
+  return isObject(field) && isInteger(field.FieldId) && field.FieldType === "Classifier";
 }
 
 export function isExtensionField(field: any): field is ExtensionFieldSchema {

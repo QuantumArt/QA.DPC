@@ -34,7 +34,6 @@ export class DataContext {
   public initSchema(mergedSchemas: { [name: string]: ContentSchema }) {
     this._storeType = compileStoreType(mergedSchemas);
     this._defaultSnapshots = compileDefaultSnapshots(mergedSchemas);
-    console.log({ snapshots: this._defaultSnapshots }); // TODO: remove
   }
 
   public initStore(storeSnapshot: StoreSnapshot) {

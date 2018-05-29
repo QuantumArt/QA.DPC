@@ -60,6 +60,7 @@ namespace QA.Core.DPC.Loader.Editor
         public FieldExactTypes FieldType { get; set; }
 
         public bool IsRequired { get; set; }
+        public bool IsReadOnly { get; set; }
         public object DefaultValue { get; set; }
     }
     
@@ -94,7 +95,12 @@ namespace QA.Core.DPC.Loader.Editor
         }
     }
 
-    public class ExtensionFieldSchema : FieldSchema
+    public class ClassifierFieldSchema : FieldSchema
+    {
+        public bool Changeable { get; set; }
+    }
+
+    public class ExtensionFieldSchema : ClassifierFieldSchema
     {
         public Dictionary<string, IContentSchema> Contents { get; set; }
             = new Dictionary<string, IContentSchema>();
@@ -114,7 +120,7 @@ namespace QA.Core.DPC.Loader.Editor
     {
         public bool IsInteger { get; set; }
     }
-
+    
     public class EnumFieldSchema : FieldSchema
     {
         public bool ShowAsRadioButtons { get; set; }
