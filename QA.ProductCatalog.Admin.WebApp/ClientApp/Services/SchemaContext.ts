@@ -1,36 +1,26 @@
-import {
-  ContentSchema,
-  includeContent,
-  includeRelation,
-  includeExtension,
-  isContent,
-  isField,
-  isRelationField,
-  isBackwardField,
-  isExtensionField
-} from "Models/EditorSchemaModels";
+import { ContentSchema } from "Models/EditorSchemaModels";
 import { isObject } from "Utils/TypeChecks";
 
 export class SchemaContext {
-  public rootSchema: ContentSchema;
+  public contentSchema: ContentSchema;
 
   public initSchema(editorSchema: { Content: any; Definitions: { [name: string]: any } }) {
     // editorSchema = JSON.parse(JSON.stringify(editorSchema));
     const definitions = editorSchema.Definitions;
     delete editorSchema.Definitions;
     visitSchema(editorSchema, definitions, new Set());
-    this.rootSchema = editorSchema.Content;
+    this.contentSchema = editorSchema.Content;
   }
 }
 
 /**
  * Преобразует JSON Reference ссылки вида `{ "$ref": "#/definitions/MySchema" }`
- * в циклическую структуру объектов. Присоединяет к схемам контентов `.include()`-методы.
+ * в циклическую структуру объектов.
  */
 function visitSchema(
   object: any,
   definitions: { [name: string]: any },
-  visited: Set<object>
+  visited: Set<Object>
 ): void {
   if (object && typeof object === "object") {
     if (visited.has(object)) {
@@ -48,17 +38,6 @@ function visitSchema(
         object[key] = resolveRef(object[key], definitions);
         visitSchema(object[key], definitions, visited);
       });
-      if (isContent(object)) {
-        object.include = includeContent;
-      } else if (isField(object)) {
-        if (isRelationField(object) || isBackwardField(object)) {
-          // TODO: review this
-          object.include = includeRelation as any;
-        } else if (isExtensionField(object)) {
-          // TODO: review this
-          object.include = includeExtension as any;
-        }
-      }
     }
   }
 }

@@ -1,5 +1,4 @@
-﻿// import "normalize.css/normalize.css";
-import "reflect-metadata";
+﻿import "reflect-metadata";
 // import React from "react";
 // import ReactDOM from "react-dom";
 import { inject } from "react-ioc";
@@ -7,6 +6,7 @@ import { toJS } from "mobx";
 import { EditorController } from "Services/EditorController";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
+import { Product, Region } from "Editors/MtsFixTariff/ProductEditorSchema";
 
 class Example {
   @inject editorController: EditorController;
@@ -21,10 +21,10 @@ class Example {
     const start = new Date();
     await example.editorController.initialize();
 
-    console.dir(example.schemaContext.rootSchema);
+    console.dir(example.schemaContext.contentSchema);
 
-    const product = example.dataContext.store["Product"].get(String(2254329));
-    product.Regions[0] = example.dataContext.createArticle("Region");
+    const product = example.dataContext.store["Product"].get(String(2254329)) as Product;
+    product.Regions[0] = example.dataContext.createArticle<Region>("Region");
     console.dir(toJS(example.dataContext.store["Region"]));
 
     element.innerHTML = `Loaded in ${Number(new Date()) - Number(start)} msec!`;
@@ -32,10 +32,6 @@ class Example {
     //   <ArticleEditor
     //     article={rootArticle}
     //     contentSchema={schema}
-    //     contentPaths={schema.include(p => [
-    //       p.MarketingProduct.include(m => [m.Modifiers]),
-    //       p.Modifiers
-    //     ])}
     //   />,
     //   element
     // );

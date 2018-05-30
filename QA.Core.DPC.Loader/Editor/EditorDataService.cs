@@ -166,6 +166,7 @@ namespace QA.Core.DPC.Loader.Editor
                             : plainArticleField.Value,
 
                         AbsoluteUrl = String.Format("{0}/{1}",
+                            // TODO: reviev this
                             _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
                             plainArticleField.Value)
                     };

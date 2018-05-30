@@ -2,10 +2,10 @@ import { types as t, getType, unprotect, onPatch, resolvePath, IModelType } from
 import { IDisposer } from "mobx-state-tree/dist/utils";
 import {
   isObject,
-  isInteger,
-  isIsoDateString,
-  isString,
   isNumber,
+  isInteger,
+  isString,
+  isIsoDateString,
   isBoolean
 } from "Utils/TypeChecks";
 import {
@@ -17,10 +17,12 @@ import {
 } from "Models/EditorDataModels";
 import {
   ContentSchema,
-  isRelationField,
-  isBackwardField,
-  isExtensionField,
   FieldSchema,
+  FieldExactTypes,
+  isExtensionField,
+  isMultiRelationField,
+  isSingleRelationField,
+  isPlainField,
   isEnumField
 } from "Models/EditorSchemaModels";
 
@@ -128,64 +130,51 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
       });
       // создаем анонимную модель словаря контентов-расширений
       fieldModels[`${field.FieldName}_Contents`] = t.optional(t.model(extContentModels), {});
-    } else if (isBackwardField(field)) {
-      // для BackwardRelation создаем массив ссылок на сущности
+    } else if (isSingleRelationField(field)) {
+      // для O2MRelation создаем nullable ссылку на сущность
+      fieldModels[field.FieldName] = t.maybe(t.reference(t.late(() => getModel(field.Content))));
+    } else if (isMultiRelationField(field)) {
+      // для M2MRelation и M2ORelation создаем массив ссылок на сущности
       // prettier-ignore
       fieldModels[field.FieldName] = t.optional(
         t.array(t.reference(t.late(() => getModel(field.Content)))), []
       );
-    } else if (isRelationField(field)) {
-      switch (field.FieldType) {
-        case "M2MRelation":
-        case "M2ORelation":
-          // для M2MRelation и M2ORelation создаем массив ссылок на сущности
-          // prettier-ignore
-          fieldModels[field.FieldName] = t.optional(
-            t.array(t.reference(t.late(() => getModel(field.Content)))), []
-          );
-          break;
-        case "O2MRelation":
-          // для O2MRelation создаем nullable ссылку на сущность
-          fieldModels[field.FieldName] = t.maybe(
-            t.reference(t.late(() => getModel(field.Content)))
-          );
-          break;
-      }
     } else if (isEnumField(field)) {
       // создаем nullable строковое поле в виде enum
       fieldModels[field.FieldName] = t.maybe(
         t.enumeration(field.FieldName, field.Items.map(item => item.Value))
       );
-    } else {
+    } else if (isPlainField(field)) {
       switch (field.FieldType) {
-        case "String":
-        case "Textbox":
-        case "VisualEdit":
-        case "Classifier":
+        case FieldExactTypes.String:
+        case FieldExactTypes.Textbox:
+        case FieldExactTypes.VisualEdit:
+        case FieldExactTypes.Classifier:
           fieldModels[field.FieldName] = t.maybe(t.string);
           break;
-        case "Numeric":
-        case "O2MRelation":
+        case FieldExactTypes.Numeric:
           fieldModels[field.FieldName] = t.maybe(t.number);
           break;
-        case "Boolean":
+        case FieldExactTypes.Boolean:
           fieldModels[field.FieldName] = t.maybe(t.boolean);
           break;
-        case "Date":
-        case "Time":
-        case "DateTime":
+        case FieldExactTypes.Date:
+        case FieldExactTypes.Time:
+        case FieldExactTypes.DateTime:
           fieldModels[field.FieldName] = t.maybe(t.Date);
           break;
-        case "File":
-        case "Image":
+        case FieldExactTypes.File:
+        case FieldExactTypes.Image:
           fieldModels[field.FieldName] = t.maybe(FileType);
           break;
-        case "DynamicImage":
-        default:
-          throw new Error(
-            `Field "${field.FieldName}" has unsupported type FieldExactTypes.${field.FieldType}`
-          );
       }
+    }
+    if (!fieldModels[field.FieldName]) {
+      throw new Error(
+        `Field "${field.FieldName}" has unsupported ClassName ${
+          field.ClassNames.slice(-1)[0]
+        } or FieldType FieldExactTypes.${field.FieldType}`
+      );
     }
   };
 
@@ -257,30 +246,33 @@ function compileDefaultSnapshots(mergedSchemas: { [name: string]: ContentSchema 
       if (Object.keys(extContentSnapshots).length > 0) {
         fieldValues[`${field.FieldName}_Contents`] = extContentSnapshots;
       }
-    } else if (!isBackwardField(field) && !isRelationField(field)) {
+    } else if (isPlainField(field)) {
       switch (field.FieldType) {
-        case "String":
-        case "Textbox":
-        case "VisualEdit":
-        case "Classifier":
-        case "StringEnum":
+        case FieldExactTypes.String:
+        case FieldExactTypes.Textbox:
+        case FieldExactTypes.VisualEdit:
+        case FieldExactTypes.Classifier:
+        case FieldExactTypes.StringEnum:
+        // TODO: reviev this
+        case FieldExactTypes.File:
+        case FieldExactTypes.Image:
           if (isString(field.DefaultValue)) {
             fieldValues[field.FieldName] = field.DefaultValue;
           }
           break;
-        case "Numeric":
+        case FieldExactTypes.Numeric:
           if (isNumber(field.DefaultValue)) {
             fieldValues[field.FieldName] = field.DefaultValue;
           }
           break;
-        case "Boolean":
+        case FieldExactTypes.Boolean:
           if (isBoolean(field.DefaultValue)) {
             fieldValues[field.FieldName] = field.DefaultValue;
           }
           break;
-        case "Date":
-        case "Time":
-        case "DateTime":
+        case FieldExactTypes.Date:
+        case FieldExactTypes.Time:
+        case FieldExactTypes.DateTime:
           if (isIsoDateString(field.DefaultValue)) {
             fieldValues[field.FieldName] = new Date(field.DefaultValue);
           }

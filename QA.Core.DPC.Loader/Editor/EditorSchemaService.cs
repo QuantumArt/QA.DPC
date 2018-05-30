@@ -219,7 +219,8 @@ namespace QA.Core.DPC.Loader.Editor
                 .Select(f => f.FieldName)
                 .ToArray();
 
-            if (qpField.ExactType == FieldExactTypes.O2MRelation)
+            // TODO: review this
+            if (qpField.ExactType == FieldExactTypes.O2MRelation && !(entityField is BackwardRelationField))
             {
                 return new SingleRelationFieldSchema
                 {
@@ -227,8 +228,10 @@ namespace QA.Core.DPC.Loader.Editor
                     DisplayFieldNames = displayFieldNames
                 };
             }
+            // TODO: review this
             if (qpField.ExactType == FieldExactTypes.M2MRelation
-                || qpField.ExactType == FieldExactTypes.M2ORelation)
+                || qpField.ExactType == FieldExactTypes.M2ORelation
+                || qpField.ExactType == FieldExactTypes.O2MRelation && entityField is BackwardRelationField)
             {
                 int? orderFieldId = qpField.TreeOrderFieldId ?? qpField.ListOrderFieldId ?? qpField.OrderFieldId;
                 bool orderByTitle = qpField.TreeOrderByTitle || qpField.ListOrderByTitle || qpField.OrderByTitle;
@@ -321,6 +324,9 @@ namespace QA.Core.DPC.Loader.Editor
                 case FieldExactTypes.Textbox:
                 case FieldExactTypes.VisualEdit:
                 case FieldExactTypes.StringEnum:
+                // TODO: reviev this
+                case FieldExactTypes.File:
+                case FieldExactTypes.Image:
                     return qpField.DefaultValue;
 
                 case FieldExactTypes.Boolean:

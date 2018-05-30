@@ -3,8 +3,8 @@ import { deepMerge } from "Utils/DeepMerge";
 import { StoreSnapshot, ArticleSnapshot } from "Models/EditorDataModels";
 import {
   ContentSchema,
-  isRelationField,
-  isBackwardField,
+  isSingleRelationField,
+  isMultiRelationField,
   isExtensionField
 } from "Models/EditorSchemaModels";
 
@@ -39,18 +39,10 @@ export class DataNormalizer {
             extReferences[getName(extContent)] = this._normalizrSchemas[getName(extContent)];
           });
           references[`${field.FieldName}_Contents`] = extReferences;
-        } else if (isBackwardField(field)) {
+        } else if (isSingleRelationField(field)) {
+          references[field.FieldName] = this._normalizrSchemas[getName(field.Content)];
+        } else if (isMultiRelationField(field)) {
           references[field.FieldName] = [this._normalizrSchemas[getName(field.Content)]];
-        } else if (isRelationField(field)) {
-          switch (field.FieldType) {
-            case "M2MRelation":
-            case "M2ORelation":
-              references[field.FieldName] = [this._normalizrSchemas[getName(field.Content)]];
-              break;
-            case "O2MRelation":
-              references[field.FieldName] = this._normalizrSchemas[getName(field.Content)];
-              break;
-          }
         }
       });
       this._normalizrSchemas[content.ContentName].define(references);
