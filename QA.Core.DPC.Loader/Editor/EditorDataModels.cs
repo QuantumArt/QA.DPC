@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace QA.Core.DPC.Loader.Editor
 {
@@ -8,7 +7,7 @@ namespace QA.Core.DPC.Loader.Editor
         internal const string Id = "Id";
         internal const string ContentName = "ContentName";
         internal const string Timestamp = "Timestamp";
-        internal static string ExtensionContents(string prop) => $"{prop}_Contents";
+        internal static string Contents(string prop) => $"{prop}_Contents";
     }
 
     public class FileFieldObject

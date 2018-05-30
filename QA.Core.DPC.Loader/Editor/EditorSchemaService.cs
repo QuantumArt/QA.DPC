@@ -175,19 +175,9 @@ namespace QA.Core.DPC.Loader.Editor
             {
                 fieldSchema = GetPlainFieldSchema(qpField);
             }
-            else if (field is BackwardRelationField backwardField)
-            {
-                fieldSchema = new BackwardFieldSchema
-                {
-                    Content = GetContentSchema(backwardField.Content, context, path)
-                };
-            }
             else if (field is EntityField entityField)
             {
-                fieldSchema = new RelationFieldSchema
-                {
-                    Content = GetContentSchema(entityField.Content, context, path)
-                };
+                fieldSchema = GetRelationFieldSchema(entityField, qpField, context, path);
             }
             else if (field is ExtensionField extensionField)
             {
@@ -195,7 +185,7 @@ namespace QA.Core.DPC.Loader.Editor
             }
             else
             {
-                throw new NotSupportedException($"Поля типа {field.GetType()} не поддерживается");
+                throw new NotSupportedException($"Поле типа {field.GetType()} не поддерживается");
             }
 
             fieldSchema.FieldId = field?.FieldId ?? qpField.Id;
@@ -207,9 +197,66 @@ namespace QA.Core.DPC.Loader.Editor
 
             fieldSchema.IsRequired = qpField.Required;
             fieldSchema.IsReadOnly = qpField.ReadOnly;
+            fieldSchema.ViewInList = qpField.ViewInList;
             fieldSchema.DefaultValue = GetDefaultValue(qpField);
 
             return fieldSchema;
+        }
+
+        /// <exception cref="NotSupportedException" />
+        /// <exception cref="InvalidOperationException" />
+        private RelationFieldSchema GetRelationFieldSchema(
+            EntityField entityField, Quantumart.QP8.BLL.Field qpField, SchemaContext context, string path)
+        {
+            ContentSchema contentSchema = GetContentSchema(entityField.Content, context, path);
+
+            string[] displayFieldNames = contentSchema.Fields.Values
+                .OfType<PlainFieldSchema>()
+                .Where(f => f.FieldType != FieldExactTypes.Textbox && f.FieldType != FieldExactTypes.VisualEdit)
+                .OrderBy(f => f.ViewInList)
+                .ThenBy(f => f.FieldOrder)
+                .Take(Math.Max(qpField.ListFieldTitleCount, 1))
+                .Select(f => f.FieldName)
+                .ToArray();
+
+            if (qpField.ExactType == FieldExactTypes.O2MRelation)
+            {
+                return new SingleRelationFieldSchema
+                {
+                    Content = contentSchema,
+                    DisplayFieldNames = displayFieldNames
+                };
+            }
+            if (qpField.ExactType == FieldExactTypes.M2MRelation
+                || qpField.ExactType == FieldExactTypes.M2ORelation)
+            {
+                int? orderFieldId = qpField.TreeOrderFieldId ?? qpField.ListOrderFieldId ?? qpField.OrderFieldId;
+                bool orderByTitle = qpField.TreeOrderByTitle || qpField.ListOrderByTitle || qpField.OrderByTitle;
+
+                string orderByFieldName = contentSchema.Fields.Values
+                    .OfType<PlainFieldSchema>()
+                    .Where(f => f.FieldId == orderFieldId)
+                    .Select(f => f.FieldName)
+                    .FirstOrDefault();
+
+                if (orderByFieldName == null && orderByTitle)
+                {
+                    orderByFieldName = displayFieldNames.FirstOrDefault();
+                }
+
+                return new MultiRelationFieldSchema
+                {
+                    Content = contentSchema,
+                    DisplayFieldNames = displayFieldNames,
+                    IsBackward = entityField is BackwardRelationField,
+                    OrderByFieldName = orderByFieldName ?? ArticleObject.Id,
+                    // TODO: дождаться когда Quantumart.QP8.BLL обновится до v2.5
+                    //MaxDataListItemCount = qpField.MaxDataListItemCount > 0
+                    //    ? qpField.MaxDataListItemCount : (int?)null,
+                };
+            }
+
+            throw new NotSupportedException($"Связь типа {qpField.ExactType} не поддерживается");
         }
 
         /// <exception cref="NotSupportedException" />
@@ -239,7 +286,7 @@ namespace QA.Core.DPC.Loader.Editor
             };
         }
 
-        private static FieldSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField)
+        private static PlainFieldSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField)
         {
             switch (qpField.ExactType)
             {
@@ -259,10 +306,10 @@ namespace QA.Core.DPC.Loader.Editor
                         Items = qpField.StringEnumItems.ToArray()
                     };
                 
-                // TODO: other field types
+                // TODO: other plain field types
 
                 default:
-                    return new FieldSchema();
+                    return new PlainFieldSchema();
             }
         }
 
@@ -334,7 +381,7 @@ namespace QA.Core.DPC.Loader.Editor
 
                 foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
                 {
-                    if (fieldSchema is IRelationFieldSchema relationSchema)
+                    if (fieldSchema is RelationFieldSchema relationSchema)
                     {
                         relationSchema.Content = DeduplicateContentSchema(
                             relationSchema.Content, context, visitedSchemas);
@@ -446,21 +493,21 @@ namespace QA.Core.DPC.Loader.Editor
 
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
-                else if (fieldSchema is RelationFieldSchema relFieldSchema)
+                else if (fieldSchema is SingleRelationFieldSchema singleFieldSchema)
                 {
-                    var copy = relFieldSchema.ShallowCopy();
+                    var copy = singleFieldSchema.ShallowCopy();
                     copy.Content = new ContentSchemaIdRef
                     {
-                        ContentId = relFieldSchema.Content.ContentId,
+                        ContentId = singleFieldSchema.Content.ContentId,
                     };
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
-                else if (fieldSchema is BackwardFieldSchema backFieldSchema)
+                else if (fieldSchema is MultiRelationFieldSchema multiFieldSchema)
                 {
-                    var copy = backFieldSchema.ShallowCopy();
+                    var copy = multiFieldSchema.ShallowCopy();
                     copy.Content = new ContentSchemaIdRef
                     {
-                        ContentId = backFieldSchema.Content.ContentId,
+                        ContentId = multiFieldSchema.Content.ContentId,
                     };
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
@@ -480,7 +527,7 @@ namespace QA.Core.DPC.Loader.Editor
         {
             foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
             {
-                if (fieldSchema is IRelationFieldSchema relationFieldSchema)
+                if (fieldSchema is RelationFieldSchema relationFieldSchema)
                 {
                     if (relationFieldSchema.Content is ContentSchema childContentSchema)
                     {
