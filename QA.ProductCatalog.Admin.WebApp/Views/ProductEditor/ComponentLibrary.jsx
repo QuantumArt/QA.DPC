@@ -17,7 +17,6 @@ import {
 
 const article = observable({
   StringField: "",
-  EmailField: "",
   PhoneField: "",
   NumericField: 0,
   SearchField: null,
@@ -58,14 +57,13 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>InputText [pattern | mask]</Label>
+      <Label md={3}>InputText [mask | readonly]</Label>
       <Col md={3}>
         <InputText
-          name="EmailField"
+          name="PhoneField"
           model={article}
-          placeholder="EmailField"
-          pattern="^[^@\s]+@([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}$"
-          required
+          placeholder="PhoneField"
+          mask={phoneMask}
         />
       </Col>
       <Col md={3}>
@@ -73,7 +71,7 @@ const FormControlsBlock = observer(() => (
           name="PhoneField"
           model={article}
           placeholder="PhoneField"
-          mask={phoneMask}
+          readOnly
         />
       </Col>
     </FormGroup>
@@ -160,7 +158,7 @@ const FormControlsBlock = observer(() => (
     </FormGroup>
 
     <FormGroup row>
-      <Label md={3}>DatePicker [required | disabled]</Label>
+      <Label md={3}>DatePicker [normal | disabled]</Label>
       <Col md={3}>
         <DatePicker
           name="DateTimeField"
@@ -252,7 +250,8 @@ const FormControlsBlock = observer(() => (
           placeholder="EnumField"
           options={[
             { value: "first", label: "Первый" },
-            { value: "second", label: "Второй" }
+            { value: "second", label: "Второй" },
+            { value: "third", label: "Третий", disabled: true }
           ]}
         />
       </Col>

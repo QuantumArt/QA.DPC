@@ -1,42 +1,52 @@
-import React from "react";
+import React, { InputHTMLAttributes } from "react";
+import cn from "classnames";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { AbstractInput } from "./AbstractControls";
 
+interface InputNumberProps extends InputHTMLAttributes<HTMLInputElement> {
+  isInteger?: boolean;
+}
+
 @observer
-export class InputNumber extends AbstractInput<{ isInteger?: boolean }> {
+export class InputNumber extends AbstractInput<InputNumberProps> {
   handleChange = e => {
     const editValue = e.target.value;
+    const { onChange, isInteger } = this.props;
+    if (onChange) {
+      onChange(e);
+    }
     if (
       editValue === "" ||
       editValue === "-" ||
-      (this.props.isInteger
-        ? Number.isSafeInteger(Number(editValue))
-        : Number.isFinite(Number(editValue)))
+      (isInteger ? Number.isSafeInteger(Number(editValue)) : Number.isFinite(Number(editValue)))
     ) {
       this.setState({ editValue });
     }
   };
 
-  handleBlur = action(() => {
-    const { model, name, required } = this.props;
+  handleBlur = action((e: any) => {
+    const { model, name, onBlur } = this.props;
     const { editValue } = this.state;
-    if (!required && editValue === "") {
+    if (editValue === "") {
       model[name] = null;
     } else if (editValue !== "-") {
       model[name] = Number(editValue);
+    }
+    if (onBlur) {
+      onBlur(e);
     }
     this.setState({ hasFocus: false });
   });
 
   render() {
-    const { model, name, isInteger, ...props } = this.props;
+    const { model, name, className, onChange, onFocus, onBlur, isInteger, ...props } = this.props;
     const { hasFocus, editValue } = this.state;
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return (
       <input
         type="text"
-        className="form-control"
+        className={cn("form-control", className)}
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}

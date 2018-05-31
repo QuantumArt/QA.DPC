@@ -5,6 +5,8 @@ interface ControlProps {
   [x: string]: any;
   model: { [x: string]: any };
   name: string;
+  className?: string;
+  onChange?: (e: any) => void;
 }
 
 export abstract class AbstractControl<P = {}> extends Component<ControlProps & P> {
@@ -18,17 +20,25 @@ export abstract class AbstractControl<P = {}> extends Component<ControlProps & P
   }
 }
 
-export abstract class AbstractInput<P = {}> extends AbstractControl<{ required?: boolean } & P> {
+interface InputProps {
+  onFocus?: (e: any) => void;
+  onBlur?: (e: any) => void;
+}
+
+export abstract class AbstractInput<P = {}> extends AbstractControl<InputProps & P> {
   state = {
     hasFocus: false,
     editValue: ""
   };
 
-  handleFocus = () => {
-    const { model, name } = this.props;
+  handleFocus = e => {
+    const { model, name, onFocus } = this.props;
     let editValue = model[name];
     if (editValue == null) {
       editValue = "";
+    }
+    if (onFocus) {
+      onFocus(e);
     }
     this.setState({ hasFocus: true, editValue });
   };

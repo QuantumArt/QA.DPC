@@ -1,41 +1,38 @@
-import React from "react";
+import React, { InputHTMLAttributes } from "react";
+import cn from "classnames";
 import MaskedInput, { MaskedInputProps } from "react-text-mask";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { isString } from "Utils/TypeChecks";
 import { AbstractInput } from "./AbstractControls";
 
 @observer
-export class InputText extends AbstractInput<{ pattern?: string | RegExp } & MaskedInputProps> {
+export class InputText extends AbstractInput<
+  InputHTMLAttributes<HTMLInputElement> & MaskedInputProps
+> {
   handleChange = e => {
+    const { onChange } = this.props;
+    if (onChange) {
+      onChange(e);
+    }
     this.setState({ editValue: e.target.value });
   };
 
-  handleBlur = action(() => {
-    let { model, name, required, pattern } = this.props;
-    const { editValue } = this.state;
-    if (pattern) {
-      const regExp = isString(pattern) ? new RegExp(pattern) : pattern;
-      if (regExp.test(editValue) || (!required && editValue === "")) {
-        model[name] = editValue;
-      }
-    } else if (!required || editValue !== "") {
-      model[name] = editValue;
+  handleBlur = action((e: any) => {
+    const { model, name, onBlur } = this.props;
+    model[name] = this.state.editValue;
+    if (onBlur) {
+      onBlur(e);
     }
     this.setState({ hasFocus: false });
   });
 
   render() {
-    const { model, name, ...props } = this.props;
+    const { model, name, className, onChange, onFocus, onBlur, ...props } = this.props;
     const { hasFocus, editValue } = this.state;
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
-    if (props.pattern) {
-      // @ts-ignore
-      props.pattern = String(props.pattern);
-    }
     return props.mask ? (
       <MaskedInput
-        className="form-control"
+        className={cn("form-control", className)}
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}
@@ -45,7 +42,7 @@ export class InputText extends AbstractInput<{ pattern?: string | RegExp } & Mas
     ) : (
       <input
         type="text"
-        className="form-control"
+        className={cn("form-control", className)}
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}
