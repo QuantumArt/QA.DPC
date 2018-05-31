@@ -2,8 +2,10 @@ const path = require("path");
 const glob = require("glob");
 const webpack = require("webpack");
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const CleanWebpackPlugin = require("clean-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
+const outDir = path.resolve(__dirname, "./Scripts/Bundles");
 const viewsDir = path.resolve(__dirname, "./Views");
 
 const views = new Set(glob.sync(path.resolve(viewsDir, "**/*.cshtml")));
@@ -26,6 +28,7 @@ const entries = glob
   }, {});
 
 module.exports = (env, argv) => ({
+  devtool: argv.mode === "production" ? "source-map" : "eval-source-map",
   entry: entries,
   resolve: {
     extensions: [".js", ".ts", ".jsx", ".tsx"],
@@ -37,7 +40,7 @@ module.exports = (env, argv) => ({
   },
   output: {
     filename: "[name].js",
-    path: path.resolve(__dirname, "./Scripts/Bundles")
+    path: outDir
   },
   module: {
     rules: [
@@ -48,7 +51,7 @@ module.exports = (env, argv) => ({
           {
             loader: "ts-loader",
             options: {
-              // transpileOnly: argv.mode !== "production",
+              transpileOnly: argv.mode === "production",
               configFile: path.resolve(__dirname, "tsconfig.json")
             }
           }
@@ -75,6 +78,7 @@ module.exports = (env, argv) => ({
     ]
   },
   plugins: [
+    new CleanWebpackPlugin([outDir]),
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(argv.mode)
     })

@@ -37,6 +37,7 @@
     "@types/reactstrap": "^5.0.25",
     "@types/webpack-env": "^1.13.6",
     "autoprefixer": "^8.3.0",
+    "clean-webpack-plugin": "^0.1.19",
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
     "glob": "^7.1.2",
