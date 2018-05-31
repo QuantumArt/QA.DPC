@@ -1,6 +1,7 @@
 const path = require("path");
 const glob = require("glob");
 const webpack = require("webpack");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
 const viewsDir = path.resolve(__dirname, "./Views");
@@ -77,5 +78,21 @@ module.exports = (env, argv) => ({
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(argv.mode)
     })
-  ]
+  ],
+  optimization: {
+    minimizer: [
+      new UglifyJsPlugin({
+        cache: true,
+        parallel: true,
+        sourceMap: true,
+        uglifyOptions: {
+          compress: {
+            // inline is buggy as of uglify-es 3.3.9
+            // https://github.com/mishoo/UglifyJS2/issues/2842
+            inline: 1
+          }
+        }
+      })
+    ]
+  }
 });
