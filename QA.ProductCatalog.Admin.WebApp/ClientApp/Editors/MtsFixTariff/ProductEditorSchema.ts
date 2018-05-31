@@ -105,7 +105,7 @@ export interface Product {
   Modifiers: ProductModifer[];
   Parameters: ProductParameter[];
   Regions: Region[];
-  FixConnectAction: DevicesForFixConnectAction;
+  FixConnectAction: DevicesForFixConnectAction[];
   Advantages: Advantage[];
 }
 
@@ -374,9 +374,9 @@ export interface MarketingProduct {
   };
   FullDescription: string;
   Parameters: MarketingProductParameter[];
-  TariffsOnMarketingDevice: DeviceOnTariffs;
+  TariffsOnMarketingDevice: DeviceOnTariffs[];
   DevicesOnMarketingTariff: DeviceOnTariffs[];
-  ActionsOnMarketingDevice: DevicesForFixConnectAction;
+  ActionsOnMarketingDevice: DevicesForFixConnectAction[];
   Link: string;
   DetailedDescription: string;
 }

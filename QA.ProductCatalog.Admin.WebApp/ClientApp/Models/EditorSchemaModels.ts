@@ -102,6 +102,7 @@ interface StringEnumItem {
 
 export interface RelationFieldSchema extends FieldSchema {
   readonly Content: ContentSchema;
+  readonly IsDpcBackwardField: boolean;
   readonly DisplayFieldNames: string[];
 }
 
@@ -116,7 +117,6 @@ export function isSingleRelationField(field: any): field is SingleRelationFieldS
 }
 
 export interface MultiRelationFieldSchema extends RelationFieldSchema {
-  readonly IsBackward: boolean;
   readonly OrderByFieldName?: string;
   readonly MaxDataListItemCount?: number;
 }

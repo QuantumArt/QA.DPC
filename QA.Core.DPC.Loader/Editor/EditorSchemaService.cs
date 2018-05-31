@@ -192,8 +192,20 @@ namespace QA.Core.DPC.Loader.Editor
             fieldSchema.FieldName = field?.FieldName ?? qpField.Name ?? "";
             fieldSchema.FieldOrder = qpField.Order;
             fieldSchema.FieldType = qpField.ExactType;
-            fieldSchema.FieldTitle = IsHtmlWhiteSpace(qpField.FriendlyName) ? "" : qpField.FriendlyName;
             fieldSchema.FieldDescription = IsHtmlWhiteSpace(qpField.Description) ? "" : qpField.Description;
+
+            if (field is BackwardRelationField backwardField && !IsHtmlWhiteSpace(backwardField.DisplayName))
+            {
+                fieldSchema.FieldTitle = backwardField.DisplayName;
+            }
+            else if (!IsHtmlWhiteSpace(qpField.FriendlyName))
+            {
+                fieldSchema.FieldTitle = qpField.FriendlyName;
+            }
+            else
+            {
+                fieldSchema.FieldTitle = "";
+            }
 
             fieldSchema.IsRequired = qpField.Required;
             fieldSchema.IsReadOnly = qpField.ReadOnly;
@@ -219,19 +231,19 @@ namespace QA.Core.DPC.Loader.Editor
                 .Select(f => f.FieldName)
                 .ToArray();
 
-            // TODO: review this
-            if (qpField.ExactType == FieldExactTypes.O2MRelation && !(entityField is BackwardRelationField))
+            if (qpField.ExactType == FieldExactTypes.O2MRelation && !(entityField is BackwardRelationField)
+                || qpField.ExactType == FieldExactTypes.M2ORelation && entityField is BackwardRelationField)
             {
                 return new SingleRelationFieldSchema
                 {
                     Content = contentSchema,
+                    IsDpcBackwardField = entityField is BackwardRelationField,
                     DisplayFieldNames = displayFieldNames
                 };
             }
-            // TODO: review this
             if (qpField.ExactType == FieldExactTypes.M2MRelation
-                || qpField.ExactType == FieldExactTypes.M2ORelation
-                || qpField.ExactType == FieldExactTypes.O2MRelation && entityField is BackwardRelationField)
+                || qpField.ExactType == FieldExactTypes.O2MRelation && entityField is BackwardRelationField
+                || qpField.ExactType == FieldExactTypes.M2ORelation && !(entityField is BackwardRelationField))
             {
                 int? orderFieldId = qpField.TreeOrderFieldId ?? qpField.ListOrderFieldId ?? qpField.OrderFieldId;
                 bool orderByTitle = qpField.TreeOrderByTitle || qpField.ListOrderByTitle || qpField.OrderByTitle;
@@ -247,15 +259,29 @@ namespace QA.Core.DPC.Loader.Editor
                     orderByFieldName = displayFieldNames.FirstOrDefault();
                 }
 
+                int? maxDataListItemCount = null;
+                // TODO: дождаться когда Quantumart.QP8.BLL обновится до v2.5
+                //if (qpField.ExactType == FieldExactTypes.M2ORelation && qpField.BackRelationId != null)
+                //{
+                //    // MaxDataListItemCount лежит в соотв. поле O2MRelation
+                //    var reverseField = _fieldService.Read(qpField.BackRelationId.Value);
+                //    if (reverseField.MaxDataListItemCount > 0)
+                //    {
+                //        maxDataListItemCount = reverseField.MaxDataListItemCount;
+                //    }
+                //}
+                //else if (qpField.MaxDataListItemCount > 0)
+                //{
+                //    maxDataListItemCount = qpField.MaxDataListItemCount;
+                //}
+
                 return new MultiRelationFieldSchema
                 {
                     Content = contentSchema,
+                    IsDpcBackwardField = entityField is BackwardRelationField,
                     DisplayFieldNames = displayFieldNames,
-                    IsBackward = entityField is BackwardRelationField,
                     OrderByFieldName = orderByFieldName ?? ArticleObject.Id,
-                    // TODO: дождаться когда Quantumart.QP8.BLL обновится до v2.5
-                    //MaxDataListItemCount = qpField.MaxDataListItemCount > 0
-                    //    ? qpField.MaxDataListItemCount : (int?)null,
+                    MaxDataListItemCount = maxDataListItemCount
                 };
             }
 

@@ -114,6 +114,8 @@ namespace QA.Core.DPC.Loader.Editor
     {
         public IContentSchema Content { get; set; }
 
+        public bool IsDpcBackwardField { get; set; }
+
         public string[] DisplayFieldNames { get; set; } = new string[0];
     }
 
@@ -127,8 +129,6 @@ namespace QA.Core.DPC.Loader.Editor
 
     public sealed class MultiRelationFieldSchema : RelationFieldSchema
     {
-        public bool IsBackward { get; set; }
-
         public string OrderByFieldName { get; set; }
 
         public int? MaxDataListItemCount { get; set; }
