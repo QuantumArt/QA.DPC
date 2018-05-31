@@ -39,32 +39,32 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         private string GetJsonQuery(int[] productIds, bool onlyModified = false)
         {
             var ids = string.Join(", ", productIds.Select(n => $@"""{n.ToString()}""").ToArray());
-            var fieldsFilter = (onlyModified) ? @"_source: [""UpdateDate""]," : "";
+            var fieldsFilter = (onlyModified) ? @"""_source"": [""UpdateDate""]," : "";
             var query = $@"{{ {fieldsFilter} ""query"" : {{ ""ids"" : {{ ""values"" : [{ids}] }}}}}}";
             return query;
         }
 
         private string GetRegionFromRoamingQuery(string regionAlias)
         {
-            return $@"{{ _source: [""Region.Id""], ""query"" : {{ ""term"" : {{ ""Region.Alias"" : ""{regionAlias}"" }}}}}}";
+            return $@"{{ ""_source"": [""Region.Id""], ""query"" : {{ ""term"" : {{ ""Region.Alias"" : ""{regionAlias}"" }}}}}}";
         }
 
         private string GetRegionQuery(string regionAlias)
         {
-            return $@"{{ _source: [""Id""], ""query"" : {{ ""term"" : {{ ""Alias"" : ""{regionAlias}"" }}}}}}";
+            return $@"{{ ""_source"": [""Id""], ""query"" : {{ ""term"" : {{ ""Alias"" : ""{regionAlias}"" }}}}}}";
         }
 
         private string GetMrQuery(string[] regionAliases)
         {
             var regions = string.Join(", ", regionAliases.Select(n => $@"""{n.ToString()}""").ToArray());
-            return $@"{{ _source: [""Region.Parent.Alias""], ""query"" : {{ ""terms"" : {{ ""Region.Alias"" : [{regions}] }}}}}}";
+            return $@"{{ ""_source"": [""Region.Parent.Alias""], ""query"" : {{ ""terms"" : {{ ""Region.Alias"" : [{regions}] }}}}}}";
         }
 
         private string GetRoamingCountryQuery(string code)
         {
             return 
                 $@"{{ 
-                    _source: [""*""], 
+                    ""_source"": [""*""], 
                     query : {{ 
                         bool : {{ 
                             should : [
@@ -88,7 +88,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                 $@"{{ 
                     from: 0,
                     size: 1,
-                    _source: {{
+                    ""_source"": {{
                         include: [
                             ""ServicesOnRoamingScale.Service.MarketingProduct.Title"",
                             ""ServicesOnRoamingScale.Service.Id"",
