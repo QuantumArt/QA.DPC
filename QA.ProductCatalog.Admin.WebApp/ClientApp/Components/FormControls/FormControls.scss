@@ -1,102 +1,14 @@
-input[type="checkbox"].form-check-input {
-  display: block;
-  position: relative;
-  width: 1rem;
-  height: 1rem;
-  top: 0.2rem;
-  margin-right: 1rem;
-  background: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 0.25rem;
-  box-sizing: border-box;
-  cursor: pointer;
-  outline: none;
-  transform: translateZ(0);
-  appearance: none !important;
-
-  &:checked {
-    background: url(./Icons/CheckboxChecked.svg) no-repeat center center #fff;
-    background-size: 0.6rem;
-  }
-
-  &:indeterminate {
-    background: url(./Icons/CheckboxIndeterminate.svg) no-repeat center center
-      #fff;
-    background-size: 0.6rem;
-  }
-
-  &:disabled {
-    cursor: default;
-  }
-
-  &:disabled {
-    background: #e9ecef;
-  }
-
-  &:disabled:checked {
-    background: url(./Icons/CheckboxCheckedDisabled.svg) no-repeat center center
-      #e9ecef;
-    background-size: 0.6rem;
-  }
-
-  &:disabled:indeterminate {
-    background: url(./Icons/CheckboxIndeterminateDisabled.svg) no-repeat center
-      center #e9ecef;
-    background-size: 0.6rem;
-  }
-
-  &:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 1px 0.2rem rgba(0, 123, 255, 0.25);
-  }
-}
-
-input[type="radio"].form-check-input {
+.editor-radio,
+.editor-checkbox {
   display: inline-block;
-  position: relative;
-  width: 1rem;
-  height: 1rem;
-  top: 0.2rem;
-  margin-right: 0.5rem;
-  background: #fff;
-  border: 1px solid #ced4da;
-  border-radius: 0.5rem;
-  box-sizing: border-box;
-  cursor: pointer;
-  outline: none;
-  transform: translateZ(0);
-  appearance: none !important;
-
-  &:checked {
-    background: url(./Icons/RadioChecked.svg) no-repeat center center #fff;
-    background-size: 0.55rem;
-  }
-
-  &:disabled {
-    cursor: default;
-  }
-
-  &:disabled {
-    background: #e9ecef;
-  }
-
-  &:disabled:checked {
-    background: url(./Icons/RadioCheckedDisabled.svg) no-repeat center center
-      #e9ecef;
-    background-size: 0.55rem;
-  }
-
-  &:focus {
-    border-color: #80bdff;
-    box-shadow: 0 0 1px 0.2rem rgba(0, 123, 255, 0.25);
-  }
-}
-
-.editor-radio-group-option {
-  padding-left: 1.25rem;
 
   &:not(:last-child) {
     margin-right: 1rem;
+  }
+
+  .custom-control-input:not(:disabled):not([readonly])
+    ~ .custom-control-label::after {
+    cursor: pointer;
   }
 }
 

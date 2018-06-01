@@ -34,17 +34,17 @@ export class RadioGroup extends AbstractControl<RadioGroupProps> {
     const { model, name, className, onChange, options, ...props } = this.props;
     const modelValue = model[name];
     return options.map(option => (
-      <label key={option.value} className="editor-radio-group-option">
+      <label key={option.value} className="custom-control custom-radio editor-radio">
         <input
           type="radio"
-          className={cn("form-check-input", className)}
+          className={cn("custom-control-input", className)}
           value={option.value}
           checked={option.value === modelValue}
           onChange={this.handleChange}
           disabled={!!option.disabled}
           {...props}
         />
-        {option.label}
+        <span className="custom-control-label">{option.label}</span>
       </label>
     ));
   }

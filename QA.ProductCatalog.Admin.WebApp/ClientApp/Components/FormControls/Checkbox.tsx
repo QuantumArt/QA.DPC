@@ -17,15 +17,16 @@ export class CheckBox extends AbstractControl<InputHTMLAttributes<HTMLInputEleme
   render() {
     const { model, name, className, onChange, ...props } = this.props;
     return (
-      <div className="form-check">
+      <label className="custom-control custom-checkbox editor-checkbox">
         <input
           type="checkbox"
-          className={cn("form-check-input", className)}
+          className={cn("custom-control-input", className)}
           checked={!!model[name]}
           onChange={this.handleChange}
           {...props}
         />
-      </div>
+        <span className="custom-control-label" />
+      </label>
     );
   }
 }
