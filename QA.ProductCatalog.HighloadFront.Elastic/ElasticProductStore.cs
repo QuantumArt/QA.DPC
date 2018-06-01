@@ -604,8 +604,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             return new JProperty("match_phrase", new JObject(new JProperty(field,
                 new JObject(
-                    new JProperty("query", value),
-                    new JProperty("operator", "and")
+                    new JProperty("query", value)
                 )
             )));
         }
