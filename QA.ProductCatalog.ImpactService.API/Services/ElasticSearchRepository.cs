@@ -104,8 +104,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                                             {{
                                                 match_phrase: {{
                                                     ""MarketingProduct.Countries.Country.Code"": {{
-                                                        query: ""{code}"",
-                                                        operator: ""and""
+                                                        query: ""{code}""
                                                     }}
                                                 }}
                                             }},
