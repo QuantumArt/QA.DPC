@@ -103,6 +103,11 @@ namespace QA.Core.DPC.Loader.Editor
         public bool Changeable { get; set; }
     }
 
+    public sealed class FileFieldSchema : PlainFieldSchema
+    {
+        public string FolderUrl { get; set; }
+    }
+
     public sealed class EnumFieldSchema : PlainFieldSchema
     {
         public bool ShowAsRadioButtons { get; set; }

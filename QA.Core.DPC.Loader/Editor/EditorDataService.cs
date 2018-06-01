@@ -1,7 +1,5 @@
-﻿using QA.Core.DPC.QP.Services;
-using QA.Core.Models.Entities;
+﻿using QA.Core.Models.Entities;
 using Quantumart.QP8.BLL.Services.API;
-using Quantumart.QPublishing.Database;
 using System;
 using System.Linq;
 
@@ -9,15 +7,10 @@ namespace QA.Core.DPC.Loader.Editor
 {
     public class EditorDataService
     {
-        private readonly DBConnector _dbConnector;
         private readonly ContentService _contentService;
 
-        public EditorDataService(
-            IConnectionProvider connectionProvider, 
-            ContentService contentService,
-            FieldService fieldService)
+        public EditorDataService(ContentService contentService)
         {
-            _dbConnector = new DBConnector(connectionProvider.GetConnection());
             _contentService = contentService;
         }
         
@@ -151,27 +144,6 @@ namespace QA.Core.DPC.Loader.Editor
 
             switch (plainArticleField.PlainFieldType)
             {
-                case PlainFieldType.File:
-                case PlainFieldType.Image:
-                {
-                    if (String.IsNullOrWhiteSpace(plainArticleField.Value))
-                    {
-                        return null;
-                    }
-                    
-                    return new FileFieldObject
-                    {
-                        Name = plainArticleField.Value.Contains("/")
-                            ? plainArticleField.Value.Substring(plainArticleField.Value.LastIndexOf("/") + 1)
-                            : plainArticleField.Value,
-
-                        AbsoluteUrl = String.Format("{0}/{1}",
-                            // TODO: reviev this
-                            _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
-                            plainArticleField.Value)
-                    };
-                }
-                
                 case PlainFieldType.Boolean:
                     return (decimal)plainArticleField.NativeValue == 1;
 

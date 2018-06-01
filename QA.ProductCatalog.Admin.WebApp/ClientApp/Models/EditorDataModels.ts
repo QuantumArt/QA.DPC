@@ -1,4 +1,4 @@
-import { types as t, IExtendedObservableMap } from "mobx-state-tree";
+import { IExtendedObservableMap } from "mobx-state-tree";
 
 export interface StoreObject {
   readonly [name: string]: IExtendedObservableMap<ArticleObject>;
@@ -23,11 +23,3 @@ export interface ArticleSnapshot {
   readonly ContentName?: string;
   readonly Timestamp?: Date;
 }
-
-/** Файл, загружаемый в QPublishing */
-export const FileType = t.model("FileModel", {
-  /** Имя файла */
-  Name: t.string,
-  /** URL файла */
-  AbsoluteUrl: t.string
-});

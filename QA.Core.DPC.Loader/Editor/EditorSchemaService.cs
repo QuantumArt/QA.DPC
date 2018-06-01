@@ -1,6 +1,8 @@
-﻿using QA.Core.Models.Configuration;
+﻿using QA.Core.DPC.QP.Services;
+using QA.Core.Models.Configuration;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.Constants;
+using Quantumart.QPublishing.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,15 +15,18 @@ namespace QA.Core.DPC.Loader.Editor
     /// </summary>
     public class EditorSchemaService
     {
+        private readonly DBConnector _dbConnector;
         private readonly ContentService _contentService;
         private readonly FieldService _fieldService;
         private readonly VirtualFieldContextService _virtualFieldContextService;
 
         public EditorSchemaService(
+            IConnectionProvider connectionProvider,
             ContentService contentService,
             FieldService fieldService,
             VirtualFieldContextService virtualFieldContextService)
         {
+            _dbConnector = new DBConnector(connectionProvider.GetConnection());
             _contentService = contentService;
             _fieldService = fieldService;
             _virtualFieldContextService = virtualFieldContextService;
@@ -315,7 +320,7 @@ namespace QA.Core.DPC.Loader.Editor
             };
         }
 
-        private static PlainFieldSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField)
+        private PlainFieldSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField)
         {
             switch (qpField.ExactType)
             {
@@ -327,6 +332,13 @@ namespace QA.Core.DPC.Loader.Editor
 
                 case FieldExactTypes.Classifier:
                     return new ClassifierFieldSchema { Changeable = qpField.Changeable };
+
+                case FieldExactTypes.File:
+                case FieldExactTypes.Image:
+                    return new FileFieldSchema
+                    {
+                        FolderUrl = _dbConnector.GetUrlForFileAttribute(qpField.Id, true, true)
+                    };
 
                 case FieldExactTypes.StringEnum:
                     return new EnumFieldSchema
@@ -350,7 +362,6 @@ namespace QA.Core.DPC.Loader.Editor
                 case FieldExactTypes.Textbox:
                 case FieldExactTypes.VisualEdit:
                 case FieldExactTypes.StringEnum:
-                // TODO: reviev this
                 case FieldExactTypes.File:
                 case FieldExactTypes.Image:
                     return qpField.DefaultValue;

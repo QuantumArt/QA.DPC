@@ -84,6 +84,14 @@ export function isClassifierField(field: any): field is ClassifierFieldSchema {
   return isPlainField(field) && field.ClassNames.includes("ClassifierFieldSchema");
 }
 
+export interface FileFieldSchema extends PlainFieldSchema {
+  readonly FolderUrl: string;
+}
+
+export function isFileField(field: any): field is FileFieldSchema {
+  return isPlainField(field) && field.ClassNames.includes("FileFieldSchema");
+}
+
 export interface EnumFieldSchema extends PlainFieldSchema {
   readonly ShowAsRadioButtons: boolean;
   readonly Items: StringEnumItem[];

@@ -88,6 +88,8 @@ content.ForExtension
         case FieldExactTypes.String:
         case FieldExactTypes.Textbox:
         case FieldExactTypes.VisualEdit:
+        case FieldExactTypes.File:
+        case FieldExactTypes.Image:
         case FieldExactTypes.Classifier:
           return `string`;
         case FieldExactTypes.Numeric:
@@ -98,12 +100,6 @@ content.ForExtension
         case FieldExactTypes.Time:
         case FieldExactTypes.DateTime:
           return `Date`;
-        case FieldExactTypes.File:
-        case FieldExactTypes.Image:
-          return `{
-    Name: string;
-    AbsoluteUrl: string;
-  }`;
       }
     }
     

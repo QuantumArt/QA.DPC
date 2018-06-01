@@ -79,14 +79,8 @@ export interface Product {
   Link: string;
   SortOrder: number;
   ForisID: string;
-  Icon: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
-  PDF: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  Icon: string;
+  PDF: string;
   PdfFixedAlias: string;
   PdfFixedLinks: string;
   StartDate: Date;
@@ -97,10 +91,7 @@ export interface Product {
   OldCorpSiteId: number;
   OldAliasId: string;
   Priority: number;
-  ListImage: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  ListImage: string;
   ArchiveDate: Date;
   Modifiers: ProductModifer[];
   Parameters: ProductParameter[];
@@ -194,10 +185,7 @@ export interface ProductParameter {
   NumValue: number;
   Value: string;
   Description: string;
-  Image: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  Image: string;
   ProductGroup: Group;
   Choice: ParameterChoice;
 }
@@ -319,10 +307,7 @@ export interface ProductParameterGroup {
   SortOrder: number;
   OldSiteId: number;
   OldCorpSiteId: number;
-  ImageSvg: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  ImageSvg: string;
   Type: string;
   TitleForIcin: string;
 }
@@ -336,14 +321,8 @@ export interface MarketingProduct {
   Description: string;
   OldSiteId: number;
   OldCorpSiteId: number;
-  ListImage: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
-  DetailsImage: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  ListImage: string;
+  DetailsImage: string;
   ArchiveDate: Date;
   Modifiers: ProductModifer[];
   SortOrder: number;
@@ -477,15 +456,9 @@ export interface TariffCategory {
   ConnectionTypes: FixedType[];
   Title: string;
   Alias: string;
-  Image: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  Image: string;
   Order: number;
-  ImageSvg: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  ImageSvg: string;
   TemplateType: 
     | "Tv"
     | "Phone";
@@ -502,10 +475,7 @@ export interface Advantage {
   Title: string;
   Text: string;
   Description: string;
-  ImageSvg: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  ImageSvg: string;
   SortOrder: number;
   IsGift: boolean;
   OldSiteId: number;
@@ -547,10 +517,7 @@ export interface ChannelCategory {
   Name: string;
   Alias: string;
   Segments: string;
-  Icon: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  Icon: string;
   Order: number;
   OldSiteId: number;
 }
@@ -568,10 +535,7 @@ export interface ChannelFormat {
   ContentName: "ChannelFormat";
   Timestamp: Date;
   Title: string;
-  Image: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  Image: string;
   Message: string;
   OldSiteId: number;
 }
@@ -581,10 +545,7 @@ export interface TvChannel {
   ContentName: "TvChannel";
   Timestamp: Date;
   Title: string;
-  Logo150: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  Logo150: string;
   Category: ChannelCategory;
   ChannelType: ChannelType;
   ShortDescription: string;
@@ -598,10 +559,7 @@ export interface TvChannel {
   Format: ChannelFormat;
   Parent: TvChannel;
   Children: TvChannel[];
-  Logo40x30: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  Logo40x30: string;
   TimeZone: TimeZone;
 }
 
@@ -626,14 +584,8 @@ export interface Device {
   Downloads: EquipmentDownload[];
   Inners: Product[];
   FreezeDate: Date;
-  FullUserGuide: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
-  QuickStartGuide: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  FullUserGuide: string;
+  QuickStartGuide: string;
 }
 
 export interface FixedType {
@@ -658,10 +610,7 @@ export interface EquipmentDownload {
   ContentName: "EquipmentDownload";
   Timestamp: Date;
   Title: string;
-  File: {
-    Name: string;
-    AbsoluteUrl: string;
-  };
+  File: string;
 }
 
 export interface MarketingFixConnectAction {

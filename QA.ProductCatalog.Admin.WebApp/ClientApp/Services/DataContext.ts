@@ -12,8 +12,7 @@ import {
   StoreObject,
   StoreSnapshot,
   ArticleObject,
-  ArticleSnapshot,
-  FileType
+  ArticleSnapshot
 } from "Models/EditorDataModels";
 import {
   ContentSchema,
@@ -149,6 +148,8 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
         case FieldExactTypes.String:
         case FieldExactTypes.Textbox:
         case FieldExactTypes.VisualEdit:
+        case FieldExactTypes.File:
+        case FieldExactTypes.Image:
         case FieldExactTypes.Classifier:
           fieldModels[field.FieldName] = t.maybe(t.string);
           break;
@@ -162,10 +163,6 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
         case FieldExactTypes.Time:
         case FieldExactTypes.DateTime:
           fieldModels[field.FieldName] = t.maybe(t.Date);
-          break;
-        case FieldExactTypes.File:
-        case FieldExactTypes.Image:
-          fieldModels[field.FieldName] = t.maybe(FileType);
           break;
       }
     }
@@ -252,10 +249,9 @@ function compileDefaultSnapshots(mergedSchemas: { [name: string]: ContentSchema 
         case FieldExactTypes.Textbox:
         case FieldExactTypes.VisualEdit:
         case FieldExactTypes.Classifier:
-        case FieldExactTypes.StringEnum:
-        // TODO: reviev this
         case FieldExactTypes.File:
         case FieldExactTypes.Image:
+        case FieldExactTypes.StringEnum:
           if (isString(field.DefaultValue)) {
             fieldValues[field.FieldName] = field.DefaultValue;
           }
