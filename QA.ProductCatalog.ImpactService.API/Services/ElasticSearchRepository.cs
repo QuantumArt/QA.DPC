@@ -65,13 +65,13 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return 
                 $@"{{ 
                     ""_source"": [""*""], 
-                    query : {{ 
-                        bool : {{ 
-                            should : [
-                                {{ term : 
+                    ""query"" : {{ 
+                        ""bool"" : {{ 
+                           ""should"" : [
+                                {{ ""term"" : 
                                     {{ ""Country.Code"" : ""{code}"" }}
                                 }}, 
-                                {{ term : 
+                                {{ ""term"" : 
                                     {{ ""Alias"" : ""{code}"" }}
                                 }}
                             ] 
@@ -86,42 +86,42 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return
 
                 $@"{{ 
-                    from: 0,
-                    size: 1,
+                    ""from"": 0,
+                    ""size"": 1,
                     ""_source"": {{
-                        include: [
+                        ""include"": [
                             ""ServicesOnRoamingScale.Service.MarketingProduct.Title"",
                             ""ServicesOnRoamingScale.Service.Id"",
                             ""Id""
                         ]
                     }},
-                    query: {{
-                        bool: {{
-                            should: [ 
+                    ""query"": {{
+                        ""bool"": {{
+                            ""should"": [ 
                                 {{
-                                    bool: {{
-                                        must: [ 
+                                    ""bool"": {{
+                                        ""must"": [ 
                                             {{
-                                                match_phrase: {{
+                                                ""match_phrase"": {{
                                                     ""MarketingProduct.Countries.Country.Code"": {{
-                                                        query: ""{code}""
+                                                        ""query"": ""{code}""
                                                     }}
                                                 }}
                                             }},
                                             {{
-                                                term: {{ ""MarketingProduct.Modifiers.Alias"": ""{modifier}"" }}
+                                                ""term"": {{ ""MarketingProduct.Modifiers.Alias"": ""{modifier}"" }}
                                             }}
                                         ]
                                     }}
                                 }},
                                 {{
-                                    bool: {{
-                                        must: [
+                                    ""bool"": {{
+                                        ""must"": [
                                             {{
-                                                term: {{ ""MarketingProduct.Countries.Alias"": ""{code}"" }}
+                                                ""term"": {{ ""MarketingProduct.Countries.Alias"": ""{code}"" }}
                                             }},
                                             {{
-                                                term: {{ ""MarketingProduct.Modifiers.Alias"": ""{modifier}"" }}
+                                                ""term"": {{ ""MarketingProduct.Modifiers.Alias"": ""{modifier}"" }}
                                             }}
                                         ]
                                     }}
