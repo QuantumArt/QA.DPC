@@ -2,14 +2,14 @@
 @{ Layout = null; }
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <title>DPC Component Library</title>
-    <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,fetch,Array.prototype.includes,Object.values,Object.entries"></script>
+<head root-url="@Url.Content("~")">
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+  <title>DPC Component Library</title>
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,fetch,Array.prototype.includes,Object.values,Object.entries"></script>
 </head>
 <body>
-    <div id="library" class="container">Loading...</div>
-    <script src="~/Scripts/Bundles/ProductEditor/ComponentLibrary.js"></script>
+  <div id="library">Loading...</div>
+  <script src="~/Scripts/Bundles/ProductEditor/ComponentLibrary.js"></script>
 </body>
 </html>

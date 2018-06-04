@@ -5,24 +5,27 @@ const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
-const outDir = path.resolve(__dirname, "./Scripts/Bundles");
-const viewsDir = path.resolve(__dirname, "./Views");
+const outDir = "Scripts/Bundles";
 
-const views = new Set(glob.sync(path.resolve(viewsDir, "**/*.cshtml")));
+const outPath = path.resolve(__dirname, outDir);
+
+const viewsPath = path.resolve(__dirname, "Views");
+
+const views = new Set(glob.sync(path.resolve(viewsPath, "**/*.cshtml")));
 
 const entries = glob
   // all .js, .jsx, ts and .tsx files from ~/Views folder
-  .sync(path.resolve(viewsDir, "**/*.@(js|ts)"))
+  .sync(path.resolve(viewsPath, "**/*.@(js|ts)"))
   // that have .cshtml view with same name
   .filter(page => views.has(page.slice(0, -3) + ".cshtml"))
   .concat(
     glob
-      .sync(path.resolve(viewsDir, "**/*.@(jsx|tsx)"))
+      .sync(path.resolve(viewsPath, "**/*.@(jsx|tsx)"))
       .filter(page => views.has(page.slice(0, -4) + ".cshtml"))
   )
   // grouped to dictionary by path relative to ~/Views folder
   .reduce((entries, page) => {
-    const name = /(.*)\.(js|ts|jsx|tsx)$/.exec(page.slice(viewsDir.length))[1];
+    const name = /(.*)\.(js|ts|jsx|tsx)$/.exec(page.slice(viewsPath.length))[1];
     entries[name] = page;
     return entries;
   }, {});
@@ -40,7 +43,7 @@ module.exports = (env, argv) => ({
   },
   output: {
     filename: "[name].js",
-    path: outDir
+    path: outPath
   },
   module: {
     rules: [
@@ -74,13 +77,17 @@ module.exports = (env, argv) => ({
           "sass-loader"
         ]
       },
-      { test: /\.(png|jpg|jpeg|gif|svg)$/, use: "url-loader?limit=10000" }
+      {
+        test: /\.(png|jpg|jpeg|gif|svg|ttf|eot|woff|woff2)$/,
+        use: "url-loader?limit=10000"
+      }
     ]
   },
   plugins: [
-    new CleanWebpackPlugin([outDir]),
+    new CleanWebpackPlugin([outPath]),
     new webpack.DefinePlugin({
-      "process.env.NODE_ENV": JSON.stringify(argv.mode)
+      "process.env.NODE_ENV": JSON.stringify(argv.mode),
+      "process.env.OUT_DIR": JSON.stringify(outDir)
     })
   ],
   optimization: {
