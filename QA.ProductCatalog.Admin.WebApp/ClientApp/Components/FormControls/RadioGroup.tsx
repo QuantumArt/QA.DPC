@@ -1,51 +1,28 @@
-import React, { InputHTMLAttributes } from "react";
-import cn from "classnames";
+import React from "react";
+import { RadioGroup as PtRadioGroup, IOptionProps } from "@blueprintjs/core";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { AbstractControl } from "./AbstractControls";
 
-interface RadioGroupProps extends InputHTMLAttributes<HTMLInputElement> {
-  options: RadioOption[];
-}
-
-interface RadioOption {
-  value: string;
-  label: string;
+export interface RadioGroupProps {
   disabled?: boolean;
+  inline?: boolean;
+  label?: string;
+  options?: IOptionProps[];
 }
 
 @observer
 export class RadioGroup extends AbstractControl<RadioGroupProps> {
   handleChange = action((e: any) => {
-    const { model, name, onChange, options } = this.props;
-    const value = e.target.value;
-    const selectedOption = options.find(option => option.value === value);
-    if (selectedOption) {
-      model[name] = selectedOption.value;
-    } else {
-      model[name] = null;
-    }
+    const { model, name, onChange } = this.props;
+    model[name] = e.target.value;
     if (onChange) {
       onChange(e);
     }
   });
 
   render() {
-    const { model, name, className, onChange, options, ...props } = this.props;
-    const modelValue = model[name];
-    return options.map(option => (
-      <label key={option.value} className="custom-control custom-radio editor-radio">
-        <input
-          type="radio"
-          className={cn("custom-control-input", className)}
-          value={option.value}
-          checked={option.value === modelValue}
-          onChange={this.handleChange}
-          disabled={!!option.disabled}
-          {...props}
-        />
-        <span className="custom-control-label">{option.label}</span>
-      </label>
-    ));
+    const { model, name, onChange, ...props } = this.props;
+    return <PtRadioGroup onChange={this.handleChange} selectedValue={model[name]} {...props} />;
   }
 }

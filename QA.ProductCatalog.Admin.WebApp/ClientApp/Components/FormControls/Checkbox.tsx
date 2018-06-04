@@ -1,11 +1,11 @@
-import React, { InputHTMLAttributes } from "react";
-import cn from "classnames";
+import React from "react";
+import { Checkbox, ICheckboxProps } from "@blueprintjs/core";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { AbstractControl } from "./AbstractControls";
 
 @observer
-export class CheckBox extends AbstractControl<InputHTMLAttributes<HTMLInputElement>> {
+export class CheckBox extends AbstractControl<ICheckboxProps> {
   handleChange = action((e: any) => {
     const { model, name, onChange } = this.props;
     model[name] = !!e.target.checked;
@@ -15,18 +15,7 @@ export class CheckBox extends AbstractControl<InputHTMLAttributes<HTMLInputEleme
   });
 
   render() {
-    const { model, name, className, onChange, ...props } = this.props;
-    return (
-      <label className="custom-control custom-checkbox editor-checkbox">
-        <input
-          type="checkbox"
-          className={cn("custom-control-input", className)}
-          checked={!!model[name]}
-          onChange={this.handleChange}
-          {...props}
-        />
-        <span className="custom-control-label" />
-      </label>
-    );
+    const { model, name, onChange, ...props } = this.props;
+    return <Checkbox checked={!!model[name]} onChange={this.handleChange} {...props} />;
   }
 }

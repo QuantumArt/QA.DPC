@@ -1,16 +1,6 @@
-.editor-radio,
-.editor-checkbox {
-  display: inline-block;
-
-  &:not(:last-child) {
-    margin-right: 1rem;
-  }
-
-  .custom-control-input:not(:disabled):not([readonly])
-    ~ .custom-control-label::after {
-    cursor: pointer;
-  }
-}
+$pt-icon-color: #5c7080;
+$pt-box-shadow: 0 0 0 1px #137cbd, 0 0 0 3px rgba(19, 124, 189, 0.3),
+  inset 0 1px 1px rgba(16, 22, 26, 0.2);
 
 .editor-textarea {
   resize: none;
@@ -18,18 +8,105 @@
 
 .editor-datepicker {
   .rdtPicker {
-    margin-top: 0.75rem;
-    border: 1px solid #fff;
-    border-radius: 0.25rem;
-    box-shadow: 0 0 1px 0.2rem rgba(0, 123, 255, 0.25);
+    margin-top: 0.5rem;
+    border: none;
+    border-radius: 3px;
+    box-shadow: $pt-box-shadow;
   }
 
   .rdtActive {
-    border-radius: 0.25rem;
+    border-radius: 3px;
   }
 }
 
-.Select.is-focused:not(.is-open) > .Select-control {
-  border-color: #7ab7fe;
-  box-shadow: 0 0 1px 0.2rem rgba(0, 123, 255, 0.25);
+.Select-control {
+  height: 30px;
+  box-sizing: border-box;
+}
+
+.Select-placeholder {
+  line-height: 28px;
+}
+
+.Select-input {
+  height: 28px;
+
+  > input {
+    padding: 5px 0 7px;
+  }
+}
+
+.Select-option {
+  padding: 5px 7px;
+}
+
+.Select-clear,
+.Select-arrow {
+  color: $pt-icon-color;
+  font-size: 24px;
+  line-height: 18px;
+}
+
+.Select--single {
+  > .Select-control .Select-value {
+    line-height: 28px;
+  }
+}
+
+.Select--multi {
+  .Select-value {
+    margin-top: 4px;
+    margin-left: 4px;
+    line-height: 1.2;
+    color: $pt-icon-color;
+    border: 1px solid lighten($pt-icon-color, 30%);
+  }
+
+  .Select-value-icon {
+    padding: 0px 4px 2px;
+    border-right: 1px solid lighten($pt-icon-color, 30%);
+  }
+
+  .Select-value-label {
+    padding: 0px 4px 2px;
+  }
+}
+
+.Select.is-focused:not(.is-open) {
+  > .Select-control {
+    border-width: 0;
+    box-shadow: $pt-box-shadow;
+  }
+
+  .Select-placeholder {
+    line-height: 30px;
+  }
+
+  .Select-input {
+    height: 30px;
+
+    > input {
+      padding: 6px 0 8px;
+    }
+  }
+
+  &.Select--single {
+    > .Select-control .Select-value {
+      line-height: 30px;
+      padding-left: 11px;
+
+      & > *:last-child {
+        padding-right: 6px;
+      }
+    }
+  }
+
+  &.Select--multi {
+    .Select-value {
+      margin-top: 5px;
+      &:first-child {
+        margin-left: 5px;
+      }
+    }
+  }
 }

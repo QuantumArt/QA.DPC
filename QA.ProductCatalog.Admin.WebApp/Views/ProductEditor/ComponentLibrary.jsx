@@ -1,7 +1,8 @@
-﻿import "bootstrap/dist/css/bootstrap.css";
+﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
-import { Col, FormGroup, Label } from "reactstrap";
+import { Radio } from "@blueprintjs/core";
+import { Grid, Row, Col } from "react-flexbox-grid";
 import { observable } from "mobx";
 import { observer } from "mobx-react";
 import {
@@ -37,8 +38,8 @@ const FormControlsBlock = observer(() => (
     <h4>FormControls</h4>
     <hr />
 
-    <FormGroup row>
-      <Label md={3}>InputText [normal | disabled]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>InputText [normal | disabled]</Col>
       <Col md={3}>
         <InputText
           name="StringField"
@@ -54,10 +55,10 @@ const FormControlsBlock = observer(() => (
           disabled
         />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>InputText [mask | readonly]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>InputText [mask | readonly]</Col>
       <Col md={3}>
         <InputText
           name="PhoneField"
@@ -74,10 +75,10 @@ const FormControlsBlock = observer(() => (
           readOnly
         />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>InputNumber [normal | disabled]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>InputNumber [normal | disabled]</Col>
       <Col md={3}>
         <InputNumber
           name="NumericField"
@@ -94,10 +95,10 @@ const FormControlsBlock = observer(() => (
           disabled
         />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>InputSearch [normal | disabled]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>InputSearch [normal | disabled]</Col>
       <Col md={3}>
         <InputSearch
           name="SearchField"
@@ -113,10 +114,10 @@ const FormControlsBlock = observer(() => (
           disabled
         />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>DatePicker [date | date disabled]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>DatePicker [date | date disabled]</Col>
       <Col md={3}>
         <DatePicker
           name="DateField"
@@ -134,10 +135,10 @@ const FormControlsBlock = observer(() => (
           disabled
         />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>DatePicker [time | time disabled]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>DatePicker [time | time disabled]</Col>
       <Col md={3}>
         <DatePicker
           name="TimeField"
@@ -155,10 +156,10 @@ const FormControlsBlock = observer(() => (
           disabled
         />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>DatePicker [normal | disabled]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>DatePicker [normal | disabled]</Col>
       <Col md={3}>
         <DatePicker
           name="DateTimeField"
@@ -174,20 +175,20 @@ const FormControlsBlock = observer(() => (
           disabled
         />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>CheckBox [normal | disabled] </Label>
+    <Row className="pt-form-group">
+      <Col md={3}>CheckBox [normal | disabled] </Col>
       <Col md={3}>
-        <CheckBox name="BooleanField" model={article} />
+        <CheckBox name="BooleanField" model={article} inline />
       </Col>
       <Col md={3}>
-        <CheckBox name="BooleanField" model={article} disabled />
+        <CheckBox name="BooleanField" model={article} inline disabled />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>Select [normal | disabled]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>Select [normal | disabled]</Col>
       <Col md={3}>
         <Select
           name="EnumField"
@@ -211,10 +212,10 @@ const FormControlsBlock = observer(() => (
           disabled
         />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>Select [required | multiple]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>Select [required | multiple]</Col>
       <Col md={3}>
         <Select
           name="EnumField"
@@ -239,15 +240,16 @@ const FormControlsBlock = observer(() => (
           multiple
         />
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>RadioGroup [normal | disabled]</Label>
+    <Row className="pt-form-group">
+      <Col md={3}>RadioGroup [normal | disabled]</Col>
       <Col md={3}>
         <RadioGroup
           name="EnumField"
           model={article}
           placeholder="EnumField"
+          inline
           options={[
             { value: "first", label: "Первый" },
             { value: "second", label: "Второй" },
@@ -260,21 +262,21 @@ const FormControlsBlock = observer(() => (
           name="EnumField"
           model={article}
           placeholder="EnumField"
-          options={[
-            { value: "first", label: "Первый" },
-            { value: "second", label: "Второй" }
-          ]}
+          inline
           disabled
-        />
+        >
+          <Radio label="Первый" value="first" />
+          <Radio label="Второй" value="second" />
+        </RadioGroup>
       </Col>
-    </FormGroup>
+    </Row>
 
-    <FormGroup row>
-      <Label md={3}>TextArea [normal]</Label>
-      <Col md={6}>
+    <Row className="pt-form-group">
+      <Col md={3}>TextArea [normal]</Col>
+      <Col md>
         <TextArea name="TextField" model={article} placeholder="TextField" />
       </Col>
-    </FormGroup>
+    </Row>
 
     <hr />
     <code>
@@ -284,9 +286,9 @@ const FormControlsBlock = observer(() => (
 ));
 
 ReactDOM.render(
-  <div>
+  <Grid fluid>
     <FormControlsBlock />
-  </div>,
+  </Grid>,
   document.getElementById("library")
 );
 
@@ -364,13 +366,13 @@ ReactDOM.render(
 //       fields={{
 //         Title: props => (
 //           <div>
-//             <label>My custom label</label>
+//             <Col>My custom Col</Col>
 //             <FieldEditor {...props} />
 //           </div>
 //         ),
 //         Details: props => (
 //           <div>
-//             <label>My custom label</label>
+//             <Col>My custom Col</Col>
 //             <FieldEditor {...props} />
 //           </div>
 //         ),
@@ -378,7 +380,7 @@ ReactDOM.render(
 //           InternetTariff: {
 //             Description: props => (
 //               <div>
-//                 <label>My custom label</label>
+//                 <Col>My custom Col</Col>
 //                 <FieldEditor {...props} />
 //               </div>
 //             )
@@ -391,13 +393,13 @@ ReactDOM.render(
 //       {{
 //         Title: props => (
 //           <div>
-//             <label>My custom label</label>
+//             <Col>My custom Col</Col>
 //             <FieldEditor {...props} />
 //           </div>
 //         ),
 //         Details: props => (
 //           <div>
-//             <label>My custom label</label>
+//             <Col>My custom Col</Col>
 //             <FieldEditor {...props} />
 //           </div>
 //         ),
@@ -405,7 +407,7 @@ ReactDOM.render(
 //           InternetTariff: {
 //             Description: props => (
 //               <div>
-//                 <label>My custom label</label>
+//                 <Col>My custom Col</Col>
 //                 <FieldEditor {...props} />
 //               </div>
 //             )
@@ -419,7 +421,7 @@ ReactDOM.render(
 //       schema={productSchema}
 //       field-Type-InternetTariff-Description={props => (
 //         <div>
-//           <label>My custom label</label>
+//           <Col>My custom Col</Col>
 //           <FieldEditor {...props} />
 //         </div>
 //       )}
@@ -436,7 +438,7 @@ ReactDOM.render(
 //               {...props}
 //               field-Description={props => (
 //                 <div>
-//                   <label>My custom label</label>
+//                   <Col>My custom Col</Col>
 //                   <FieldEditor {...props} />
 //                 </div>
 //               )}
@@ -454,7 +456,7 @@ ReactDOM.render(
 //           s => `field-${s.FieldName}`,
 //           () => props => (
 //             <div>
-//               <label>My custom label</label>
+//               <Col>My custom Col</Col>
 //               <FieldEditor {...props} />
 //             </div>
 //           )
@@ -476,7 +478,7 @@ ReactDOM.render(
 //                   fields={[
 //                     field("Description", props => (
 //                       <div>
-//                         <label>My custom label</label>
+//                         <Col>My custom Col</Col>
 //                         <FieldEditor {...props} />
 //                       </div>
 //                     ))
@@ -499,7 +501,7 @@ ReactDOM.render(
 //                   <ArticleEditor.Fields
 //                     Description={props => (
 //                       <div>
-//                         <label>My custom label</label>
+//                         <Col>My custom Col</Col>
 //                         <FieldEditor {...props} />
 //                       </div>
 //                     )}
@@ -522,7 +524,7 @@ ReactDOM.render(
 //                   <ArticleEditor.Field name="Description">
 //                     {props => (
 //                       <div>
-//                         <label>My custom label</label>
+//                         <Col>My custom Col</Col>
 //                         <FieldEditor {...props} />
 //                       </div>
 //                     )}

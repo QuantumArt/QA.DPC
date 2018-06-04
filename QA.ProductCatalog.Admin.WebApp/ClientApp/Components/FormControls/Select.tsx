@@ -1,3 +1,4 @@
+import "react-select/dist/react-select.css";
 import React from "react";
 import ReactSelect, { ReactSelectProps, Option } from "react-select";
 import { action, isObservableArray } from "mobx";

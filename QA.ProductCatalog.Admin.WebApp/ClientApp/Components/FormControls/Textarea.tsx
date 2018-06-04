@@ -31,7 +31,7 @@ export class TextArea extends AbstractInput<TextareaHTMLAttributes<HTMLTextAreaE
     return (
       <TextAreaAutosize
         useCacheForDOMMeasurements
-        className={cn("editor-textarea form-control", className)}
+        className={cn("pt-input pt-fill editor-textarea", className)}
         minRows={2}
         maxRows={6}
         value={inputValue}

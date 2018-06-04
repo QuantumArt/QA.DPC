@@ -18,13 +18,16 @@ export class InputSearch extends AbstractControl<InputHTMLAttributes<HTMLInputEl
     const { model, name, className, onChange, ...props } = this.props;
     const inputValue = model[name] != null ? model[name] : "";
     return (
-      <input
-        type="search"
-        className={cn("form-control", className)}
-        value={inputValue}
-        onChange={this.handleChange}
-        {...props}
-      />
+      <div className={cn("pt-input-group", className)}>
+        <input
+          type="search"
+          className={cn("pt-input", className)}
+          value={inputValue}
+          onChange={this.handleChange}
+          {...props}
+        />
+        <span className="pt-icon pt-icon-search" />
+      </div>
     );
   }
 }

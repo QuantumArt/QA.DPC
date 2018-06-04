@@ -56,23 +56,26 @@ export class DatePicker extends AbstractInput<DatePickerProps> {
     const { hasFocus, editValue } = this.state;
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : null;
     return (
-      <DateTime
-        className="editor-datepicker"
-        inputProps={{
-          className: cn("form-control", className),
-          placeholder,
-          disabled,
-          readOnly
-        }}
-        locale="ru-ru"
-        dateFormat={type !== "time"}
-        timeFormat={type !== "date"}
-        value={inputValue}
-        onFocus={this.handleFocus}
-        onChange={this.handleChange}
-        onBlur={this.handleBlur}
-        {...props}
-      />
+      <div className={cn("pt-input-group", { "pt-fill": type !== "time" }, className)}>
+        <DateTime
+          className="editor-datepicker"
+          inputProps={{
+            className: "pt-input",
+            placeholder,
+            disabled,
+            readOnly
+          }}
+          locale="ru-ru"
+          dateFormat={type !== "time"}
+          timeFormat={type !== "date"}
+          value={inputValue}
+          onFocus={this.handleFocus}
+          onChange={this.handleChange}
+          onBlur={this.handleBlur}
+          {...props}
+        />
+        <span className={cn("pt-icon", type === "time" ? "pt-icon-time" : "pt-icon-calendar")} />
+      </div>
     );
   }
 }

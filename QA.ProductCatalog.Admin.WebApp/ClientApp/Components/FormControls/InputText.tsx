@@ -32,7 +32,7 @@ export class InputText extends AbstractInput<
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return props.mask ? (
       <MaskedInput
-        className={cn("form-control", className)}
+        className={cn("pt-input pt-fill", className)}
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}
@@ -42,7 +42,7 @@ export class InputText extends AbstractInput<
     ) : (
       <input
         type="text"
-        className={cn("form-control", className)}
+        className={cn("pt-input pt-fill", className)}
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}

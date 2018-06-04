@@ -1,26 +1,32 @@
-import React, { InputHTMLAttributes } from "react";
-import cn from "classnames";
+import React from "react";
+import { NumericInput, INumericInputProps } from "@blueprintjs/core";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { AbstractInput } from "./AbstractControls";
 
-interface InputNumberProps extends InputHTMLAttributes<HTMLInputElement> {
+interface InputNumberProps extends INumericInputProps {
   isInteger?: boolean;
 }
 
 @observer
 export class InputNumber extends AbstractInput<InputNumberProps> {
-  handleChange = e => {
-    const editValue = e.target.value;
-    const { onChange, isInteger } = this.props;
-    if (onChange) {
-      onChange(e);
-    }
+  handleValueChange = (valueAsNumber: number, valueAsString: string) => {
+    const { model, name, onChange, isInteger } = this.props;
+    const { hasFocus, editValue } = this.state;
     if (
-      editValue === "" ||
-      editValue === "-" ||
-      (isInteger ? Number.isSafeInteger(Number(editValue)) : Number.isFinite(Number(editValue)))
+      valueAsString === "" ||
+      valueAsString === "-" ||
+      (isInteger ? Number.isSafeInteger(valueAsNumber) : Number.isFinite(valueAsNumber))
     ) {
+      if (onChange) {
+        onChange(valueAsString);
+      }
+      if (hasFocus) {
+        this.setState({ editValue: valueAsString });
+      } else {
+        model[name] = valueAsNumber;
+      }
+    } else {
       this.setState({ editValue });
     }
   };
@@ -44,13 +50,12 @@ export class InputNumber extends AbstractInput<InputNumberProps> {
     const { hasFocus, editValue } = this.state;
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return (
-      <input
-        type="text"
-        className={cn("form-control", className)}
+      <NumericInput
         value={inputValue}
         onFocus={this.handleFocus}
-        onChange={this.handleChange}
         onBlur={this.handleBlur}
+        onValueChange={this.handleValueChange}
+        fill
         {...props}
       />
     );
