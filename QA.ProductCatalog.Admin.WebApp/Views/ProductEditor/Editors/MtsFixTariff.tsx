@@ -23,7 +23,7 @@ class Example {
 
     console.dir(example.schemaContext.contentSchema);
 
-    const product = example.dataContext.store["Product"].get(String(2254329)) as Product;
+    const product = example.dataContext.store["Product"].get(String(2460423)) as Product;
     product.Regions[0] = example.dataContext.createArticle<Region>("Region");
     console.dir(toJS(example.dataContext.store["Region"]));
 
