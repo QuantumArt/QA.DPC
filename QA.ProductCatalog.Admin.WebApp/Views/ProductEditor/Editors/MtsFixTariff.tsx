@@ -1,12 +1,14 @@
-﻿import "reflect-metadata";
-// import React from "react";
-// import ReactDOM from "react-dom";
+﻿import "Environment";
+import React from "react";
+import ReactDOM from "react-dom";
+import { Grid } from "react-flexbox-grid";
 import { inject } from "react-ioc";
 import { toJS } from "mobx";
 import { EditorController } from "Services/EditorController";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { Product, Region } from "Editors/MtsFixTariff/ProductEditorSchema";
+import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 
 class Example {
   @inject editorController: EditorController;
@@ -28,13 +30,13 @@ class Example {
     console.dir(toJS(example.dataContext.store["Region"]));
 
     element.innerHTML = `Loaded in ${Number(new Date()) - Number(start)} msec!`;
-    // ReactDOM.render(
-    //   <ArticleEditor
-    //     article={rootArticle}
-    //     contentSchema={schema}
-    //   />,
-    //   element
-    // );
+
+    ReactDOM.render(
+      <Grid fluid>
+        <ArticleEditor model={product} contentSchema={example.schemaContext.contentSchema} />
+      </Grid>,
+      element
+    );
   } catch (error) {
     element.innerHTML = error.message;
   }

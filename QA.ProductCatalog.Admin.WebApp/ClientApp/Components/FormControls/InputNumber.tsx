@@ -1,6 +1,6 @@
 import React from "react";
 import { NumericInput, INumericInputProps } from "@blueprintjs/core";
-import { action } from "mobx";
+import { action, runInAction } from "mobx";
 import { observer } from "mobx-react";
 import { AbstractInput } from "./AbstractControls";
 
@@ -24,7 +24,9 @@ export class InputNumber extends AbstractInput<InputNumberProps> {
       if (hasFocus) {
         this.setState({ editValue: valueAsString });
       } else {
-        model[name] = valueAsNumber;
+        runInAction(() => {
+          model[name] = valueAsNumber;
+        });
       }
     } else {
       this.setState({ editValue });

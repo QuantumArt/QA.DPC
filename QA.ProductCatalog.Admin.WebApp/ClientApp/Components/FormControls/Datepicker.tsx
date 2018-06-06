@@ -9,6 +9,7 @@ import "react-datetime/css/react-datetime.css";
 import { AbstractInput } from "./AbstractControls";
 
 interface DatePickerProps {
+  id?: string;
   type?: "date" | "time";
   placeholder?: string;
   disabled?: boolean;
@@ -47,6 +48,7 @@ export class DatePicker extends AbstractInput<DatePickerProps> {
       onChange,
       onFocus,
       onBlur,
+      id,
       type,
       placeholder,
       disabled,
@@ -61,6 +63,7 @@ export class DatePicker extends AbstractInput<DatePickerProps> {
           className="editor-datepicker"
           inputProps={{
             className: "pt-input",
+            id,
             placeholder,
             disabled,
             readOnly

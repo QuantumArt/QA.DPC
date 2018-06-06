@@ -26,7 +26,7 @@ interface InputProps {
 }
 
 export abstract class AbstractInput<P = {}> extends AbstractControl<InputProps & P> {
-  state = {
+  readonly state = {
     hasFocus: false,
     editValue: ""
   };

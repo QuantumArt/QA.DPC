@@ -279,15 +279,22 @@ const FormControlsBlock = observer(() => (
     </Row>
 
     <hr />
-    <code>
-      <pre>{JSON.stringify(article, null, 2)}</pre>
-    </code>
+    <pre>{JSON.stringify(article, null, 2)}</pre>
+  </div>
+));
+
+const ArticleEditorBlock = observer(() => (
+  <div>
+    <h4>ArticleEditor</h4>
+    <hr />
   </div>
 ));
 
 ReactDOM.render(
   <Grid fluid>
     <FormControlsBlock />
+    <br />
+    <ArticleEditorBlock />
   </Grid>,
   document.getElementById("library")
 );

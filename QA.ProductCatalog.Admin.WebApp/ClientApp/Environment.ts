@@ -4,3 +4,4 @@ __webpack_public_path__ = `${document.head.getAttribute("root-url") || ""}/${pro
 require("normalize.css");
 require("@blueprintjs/core/lib/css/blueprint.css");
 require("@blueprintjs/icons/lib/css/blueprint-icons.css");
+require("reflect-metadata");

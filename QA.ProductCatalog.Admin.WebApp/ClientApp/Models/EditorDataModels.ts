@@ -9,11 +9,20 @@ export interface ArticleObject {
   [field: string]: any;
   readonly Id: number;
   readonly ContentName: string;
-  Timestamp: Date;
+  Timestamp?: Date;
 }
 
 export function isArticleObject(object: any): object is ArticleObject {
-  return isObject(object) && isInteger(object.Id) && isString(object.ContentName);
+  return isObject(object) && isString(object.ContentName) && isInteger(object.Id);
+}
+
+export interface ExtensionObject {
+  [field: string]: any;
+  readonly ContentName: string;
+}
+
+export function isExtensionObject(object: any): object is ExtensionObject {
+  return isObject(object) && isString(object.ContentName) && !("Id" in object);
 }
 
 export interface StoreSnapshot {
