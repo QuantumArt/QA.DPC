@@ -1,4 +1,9 @@
 .field-editor-block {
   margin-top: 5px;
   margin-bottom: 5px;
+
+  &__label--required {
+    font-weight: bold;
+    color: #c23030;
+  }
 }

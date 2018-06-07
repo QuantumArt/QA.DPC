@@ -48,14 +48,18 @@ abstract class PlainFieldEditor<TSchema extends PlainFieldSchema> extends Compon
                 <Tooltip content={fieldSchema.FieldDescription} position={Position.TOP}>
                   <>
                     {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-                    {fieldSchema.IsRequired && <span className="pt-intent-danger"> *</span>}
+                    {fieldSchema.IsRequired && (
+                      <span className="field-editor-block__label--required"> *</span>
+                    )}
                   </>
                 </Tooltip>
               </label>
             ) : (
               <label htmlFor={this.id}>
                 {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-                {fieldSchema.IsRequired && <span className="pt-intent-danger"> *</span>}
+                {fieldSchema.IsRequired && (
+                  <span className="field-editor-block__label--required"> *</span>
+                )}
               </label>
             )}
           </Col>
@@ -203,14 +207,18 @@ export class TextFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
                 <Tooltip content={fieldSchema.FieldDescription} position={Position.TOP}>
                   <>
                     {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-                    {fieldSchema.IsRequired && <span className="pt-intent-danger"> *</span>}
+                    {fieldSchema.IsRequired && (
+                      <span className="field-editor-block__label--required"> *</span>
+                    )}
                   </>
                 </Tooltip>
               </label>
             ) : (
               <label htmlFor={this.id}>
                 {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-                {fieldSchema.IsRequired && <span className="pt-intent-danger"> *</span>}
+                {fieldSchema.IsRequired && (
+                  <span className="field-editor-block__label--required"> *</span>
+                )}
               </label>
             )}
           </Col>
