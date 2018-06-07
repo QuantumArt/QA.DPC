@@ -244,25 +244,25 @@ export class ClassifierFieldEditor extends PlainFieldEditor<ClassifierFieldSchem
 export class EnumFieldEditor extends PlainFieldEditor<EnumFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: EnumFieldSchema) {
     const options = fieldSchema.Items.map(item => ({ value: item.Value, label: item.Alias }));
-    return (
+    return fieldSchema.ShowAsRadioButtons ? (
+      <Col xl={8} md={9}>
+        <RadioGroup
+          model={model}
+          name={fieldSchema.FieldName}
+          options={options}
+          disabled={fieldSchema.IsReadOnly}
+        />
+      </Col>
+    ) : (
       <Col xl={8} md={6}>
-        {fieldSchema.ShowAsRadioButtons ? (
-          <RadioGroup
-            model={model}
-            name={fieldSchema.FieldName}
-            options={options}
-            disabled={fieldSchema.IsReadOnly}
-          />
-        ) : (
-          <Select
-            id={this.id}
-            model={model}
-            name={fieldSchema.FieldName}
-            options={options}
-            required={fieldSchema.IsRequired}
-            disabled={fieldSchema.IsReadOnly}
-          />
-        )}
+        <Select
+          id={this.id}
+          model={model}
+          name={fieldSchema.FieldName}
+          options={options}
+          required={fieldSchema.IsRequired}
+          disabled={fieldSchema.IsReadOnly}
+        />
       </Col>
     );
   }
