@@ -64,12 +64,14 @@ function isContentsConfig(field: any): field is ContentsConfig {
   return isObject(field) && !isArticleObject(field) && Object.values(field).every(isObject);
 }
 
+interface ObjectEditorBlock {
+  fieldSchema: FieldSchema;
+  FieldEditor?: FieldEditor;
+  contentsConfig?: ContentsConfig;
+}
+
 abstract class ObjectEditor<P> extends Component<ObjectEditorProps & P> {
-  _fieldSchemas: FieldSchema[] = [];
-  _fieldEditors: FieldEditor[] = [];
-  _contentsConfigs: {
-    [field: string]: ContentsConfig;
-  } = Object.create(null);
+  _editorBlocks: ObjectEditorBlock[] = [];
 
   constructor(props: ObjectEditorProps & P, context?: any) {
     super(props, context);
@@ -77,50 +79,50 @@ abstract class ObjectEditor<P> extends Component<ObjectEditorProps & P> {
     Object.values(contentSchema.Fields)
       .sort(asc(f => f.FieldOrder))
       .forEach(fieldSchema => {
+        this.prepareFieldBlock(fieldSchema);
+
         if (isExtensionField(fieldSchema)) {
-          this.prepareExtensionField(fieldSchema);
-        } else {
-          this.prepareRegularField(fieldSchema);
+          this.prepareContentsBlock(fieldSchema);
         }
       });
   }
 
-  private prepareExtensionField(fieldSchema: ExtensionFieldSchema) {
-    const { fields } = this.props;
-    const fieldName = fieldSchema.FieldName;
-    if (fields) {
-      const field = fields[fieldName];
-      if (isContentsConfig(field)) {
-        this._contentsConfigs[fieldName] = field;
-      } else {
-        this.prepareRegularField(fieldSchema);
-      }
-      const contents = fields[`${fieldName}_Contents`];
-      if (isContentsConfig(contents)) {
-        this._contentsConfigs[fieldName] = contents;
-      }
-    }
-  }
-
-  private prepareRegularField(fieldSchema: FieldSchema) {
+  private prepareFieldBlock(fieldSchema: FieldSchema) {
     const { model, fields } = this.props;
     const fieldName = fieldSchema.FieldName;
+
     if (fields && fieldName in fields) {
       const field = fields[fieldName];
+
       if (isFunction(field)) {
-        this._fieldEditors.push(field);
-        this._fieldSchemas.push(fieldSchema);
+        this._editorBlocks.push({
+          fieldSchema,
+          FieldEditor: field
+        });
       } else if (field !== IGNORE) {
         model[fieldName] = field;
       }
     } else {
       // TODO: убрать, когда будут реализованы редакторы связей
       try {
-        this._fieldEditors.push(this.getDefaultFieldEditor(fieldSchema));
-        this._fieldSchemas.push(fieldSchema);
+        this._editorBlocks.push({
+          fieldSchema,
+          FieldEditor: this.getDefaultFieldEditor(fieldSchema)
+        });
       } catch (e) {
         console.error(e.message);
       }
+    }
+  }
+
+  private prepareContentsBlock(fieldSchema: ExtensionFieldSchema) {
+    const { fields } = this.props;
+    const contentsConfig = fields && fields[`${fieldSchema.FieldName}_Contents`];
+
+    if (isContentsConfig(contentsConfig)) {
+      this._editorBlocks.push({ fieldSchema, contentsConfig });
+    } else if (contentsConfig !== IGNORE) {
+      this._editorBlocks.push({ fieldSchema });
     }
   }
 
@@ -157,26 +159,20 @@ abstract class ObjectEditor<P> extends Component<ObjectEditorProps & P> {
 
   render(): JSX.Element | JSX.Element[] {
     const { model } = this.props;
-    const fragments: JSX.Element[] = [];
-    this._fieldEditors.forEach((FieldEditor, i) => {
-      const fieldSchema = this._fieldSchemas[i];
-      const fieldName = fieldSchema.FieldName;
 
-      fragments.push(<FieldEditor key={fieldName} model={model} fieldSchema={fieldSchema} />);
+    return this._editorBlocks
+      .map(({ fieldSchema, FieldEditor, contentsConfig }) => {
+        const fieldName = fieldSchema.FieldName;
+        if (FieldEditor) {
+          return <FieldEditor key={fieldName} model={model} fieldSchema={fieldSchema} />;
+        }
 
-      if (isExtensionField(fieldSchema)) {
         const contentName: string = model[fieldName];
         if (contentName) {
           const extensionModel = model[`${fieldName}_Contents`][contentName];
-          const extensionSchema = fieldSchema.Contents[contentName];
-
-          let extensionFields: FieldsConfig;
-          const contentsConfig = this._contentsConfigs[fieldName];
-          if (contentsConfig) {
-            extensionFields = contentsConfig[contentName];
-          }
-
-          fragments.push(
+          const extensionSchema = (fieldSchema as ExtensionFieldSchema).Contents[contentName];
+          const extensionFields = contentsConfig && contentsConfig[contentName];
+          return (
             <ExtensionEditor
               key={fieldName + "_" + contentName}
               model={extensionModel}
@@ -185,9 +181,10 @@ abstract class ObjectEditor<P> extends Component<ObjectEditorProps & P> {
             />
           );
         }
-      }
-    });
-    return fragments;
+
+        return null;
+      })
+      .filter(Boolean);
   }
 }
 
