@@ -1,7 +1,7 @@
 import "./FieldEditors.scss";
 import React, { Component } from "react";
-import { Col } from "react-flexbox-grid";
-import { Tooltip } from "@blueprintjs/core";
+import { Col, Row } from "react-flexbox-grid";
+import { Tooltip, Position } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
 import {
@@ -31,44 +31,52 @@ interface FieldEditorProps<TSchema extends FieldSchema> {
 abstract class PlainFieldEditor<TSchema extends PlainFieldSchema> extends Component<
   FieldEditorProps<TSchema>
 > {
-  _id = `_${Math.random()
+  protected id = `_${Math.random()
     .toString(36)
     .slice(2)}`;
+
+  abstract renderField(model: ArticleObject | ExtensionObject, fieldSchema: TSchema);
 
   render() {
     const { model, fieldSchema } = this.props;
     return (
-      <>
-        <Col className="field-editor-col" xl={2} lg={3} md={4}>
-          <label htmlFor={this._id}>
-            {/* <Tooltip content={fieldSchema.FieldDescription}> */}
-            {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-            {fieldSchema.IsRequired && <span className="pt-intent-danger"> *</span>}
-            {/* </Tooltip> */}
-          </label>
-        </Col>
-        {this.renderField(model, fieldSchema)}
-      </>
+      <Col xl={6} md={12} className="field-editor-block">
+        <Row middle="xs">
+          <Col xl={4} md={3}>
+            {fieldSchema.FieldDescription ? (
+              <label htmlFor={this.id}>
+                <Tooltip content={fieldSchema.FieldDescription} position={Position.TOP}>
+                  <>
+                    {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+                    {fieldSchema.IsRequired && <span className="pt-intent-danger"> *</span>}
+                  </>
+                </Tooltip>
+              </label>
+            ) : (
+              <label htmlFor={this.id}>
+                {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+                {fieldSchema.IsRequired && <span className="pt-intent-danger"> *</span>}
+              </label>
+            )}
+          </Col>
+          {this.renderField(model, fieldSchema)}
+        </Row>
+      </Col>
     );
   }
-
-  abstract renderField(model: ArticleObject | ExtensionObject, fieldSchema: TSchema);
 }
 
 export class StringFieldEditor extends PlainFieldEditor<StringFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: StringFieldSchema) {
     return (
-      <>
-        <Col className="field-editor-col" xl={3} lg={5} md={7}>
-          <InputText
-            id={this._id}
-            model={model}
-            name={fieldSchema.FieldName}
-            disabled={fieldSchema.IsReadOnly}
-          />
-        </Col>
-        <Col className="field-editor-col" xl={1} lg={4} md={1} />
-      </>
+      <Col xl={8} md={6}>
+        <InputText
+          id={this.id}
+          model={model}
+          name={fieldSchema.FieldName}
+          disabled={fieldSchema.IsReadOnly}
+        />
+      </Col>
     );
   }
 }
@@ -76,9 +84,9 @@ export class StringFieldEditor extends PlainFieldEditor<StringFieldSchema> {
 export class NumericFieldEditor extends PlainFieldEditor<NumericFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: NumericFieldSchema) {
     return (
-      <Col className="field-editor-col" xl={2} xlOffset={2} lg={3} lgOffset={6} md={4} mdOffset={4}>
+      <Col xl={4} md={3}>
         <InputNumber
-          id={this._id}
+          id={this.id}
           model={model}
           name={fieldSchema.FieldName}
           isInteger={fieldSchema.IsInteger}
@@ -92,9 +100,9 @@ export class NumericFieldEditor extends PlainFieldEditor<NumericFieldSchema> {
 export class BooleanFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
-      <Col className="field-editor-col" xl={4} lg={6} lgOffset={3} md={8}>
+      <Col md>
         <CheckBox
-          id={this._id}
+          id={this.id}
           model={model}
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
@@ -107,9 +115,9 @@ export class BooleanFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
 export class DateFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
-      <Col className="field-editor-col" xl={4} lg={6} lgOffset={3} md={8}>
+      <Col xl={4} md={3}>
         <DatePicker
-          id={this._id}
+          id={this.id}
           model={model}
           name={fieldSchema.FieldName}
           type="date"
@@ -123,9 +131,9 @@ export class DateFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
 export class TimeFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
-      <Col className="field-editor-col" xl={2} xlOffset={2} lg={3} lgOffset={6} md={4} mdOffset={4}>
+      <Col xl={4} md={3}>
         <DatePicker
-          id={this._id}
+          id={this.id}
           model={model}
           name={fieldSchema.FieldName}
           type="time"
@@ -139,9 +147,9 @@ export class TimeFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
 export class DateTimeFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
-      <Col className="field-editor-col" xl={4} lg={6} lgOffset={3} md={8}>
+      <Col xl={4} md={3}>
         <DatePicker
-          id={this._id}
+          id={this.id}
           model={model}
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
@@ -154,10 +162,10 @@ export class DateTimeFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
 export class FileFieldEditor extends PlainFieldEditor<StringFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: StringFieldSchema) {
     return (
-      <Col className="field-editor-col" xl={4} lg={6} lgOffset={3} md={8}>
+      <Col xl={8} md={6}>
         <div className="pt-input-group pt-fill">
           <InputText
-            id={this._id}
+            id={this.id}
             model={model}
             name={fieldSchema.FieldName}
             disabled={fieldSchema.IsReadOnly}
@@ -173,13 +181,41 @@ export class FileFieldEditor extends PlainFieldEditor<StringFieldSchema> {
 export class TextFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
-      <Col className="field-editor-col" xl={10} lg={9} md={8}>
+      <Col xl={10} md={9}>
         <TextArea
-          id={this._id}
+          id={this.id}
           model={model}
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
         />
+      </Col>
+    );
+  }
+
+  render() {
+    const { model, fieldSchema } = this.props;
+    return (
+      <Col md={12} className="field-editor-block">
+        <Row middle="xs">
+          <Col xl={2} md={3}>
+            {fieldSchema.FieldDescription ? (
+              <label htmlFor={this.id}>
+                <Tooltip content={fieldSchema.FieldDescription} position={Position.TOP}>
+                  <>
+                    {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+                    {fieldSchema.IsRequired && <span className="pt-intent-danger"> *</span>}
+                  </>
+                </Tooltip>
+              </label>
+            ) : (
+              <label htmlFor={this.id}>
+                {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+                {fieldSchema.IsRequired && <span className="pt-intent-danger"> *</span>}
+              </label>
+            )}
+          </Col>
+          {this.renderField(model, fieldSchema)}
+        </Row>
       </Col>
     );
   }
@@ -191,9 +227,9 @@ export class ClassifierFieldEditor extends PlainFieldEditor<ClassifierFieldSchem
     const value = model[fieldSchema.FieldName];
     const options = value ? [{ value, label: value }] : [];
     return (
-      <Col className="field-editor-col" xl={4} lg={6} lgOffset={3} md={8}>
+      <Col xl={8} md={6}>
         <Select
-          id={this._id}
+          id={this.id}
           model={model}
           name={fieldSchema.FieldName}
           options={options}
@@ -209,7 +245,7 @@ export class EnumFieldEditor extends PlainFieldEditor<EnumFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: EnumFieldSchema) {
     const options = fieldSchema.Items.map(item => ({ value: item.Value, label: item.Alias }));
     return (
-      <Col className="field-editor-col" xl={4} lg={6} lgOffset={3} md={8}>
+      <Col xl={8} md={6}>
         {fieldSchema.ShowAsRadioButtons ? (
           <RadioGroup
             model={model}
@@ -219,7 +255,7 @@ export class EnumFieldEditor extends PlainFieldEditor<EnumFieldSchema> {
           />
         ) : (
           <Select
-            id={this._id}
+            id={this.id}
             model={model}
             name={fieldSchema.FieldName}
             options={options}
@@ -242,9 +278,9 @@ export class ExtensionFieldEditor extends PlainFieldEditor<ExtensionFieldSchema>
       fieldSchema.IsReadOnly ||
       (!fieldSchema.Changeable && isArticleObject(model) && model.Timestamp instanceof Date);
     return (
-      <Col className="field-editor-col" xl={4} xlOffset={6} lg={6} lgOffset={3} md={8}>
+      <Col xl={8} md={6}>
         <Select
-          id={this._id}
+          id={this.id}
           model={model}
           name={fieldSchema.FieldName}
           options={options}

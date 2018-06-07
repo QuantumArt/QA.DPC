@@ -194,7 +194,7 @@ abstract class ObjectEditor<P> extends Component<ObjectEditorProps & P> {
 @observer
 export class ArticleEditor extends ObjectEditor<{ model: ArticleObject }> {
   render() {
-    return <Row middle="xs">{super.render()}</Row>;
+    return <Row>{super.render()}</Row>;
   }
 }
 
