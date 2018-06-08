@@ -1,10 +1,10 @@
-.field-editor-block {
+.field-editor__block {
   min-width: 592px;
   margin-top: 5px;
   margin-bottom: 5px;
+}
 
-  &__label--required {
-    font-weight: bold;
-    color: #c23030;
-  }
+.field-editor__label--required {
+  font-weight: bold;
+  color: #c23030;
 }

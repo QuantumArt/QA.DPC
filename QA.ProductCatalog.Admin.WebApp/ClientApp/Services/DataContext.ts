@@ -16,6 +16,7 @@ import {
   isPlainField,
   isEnumField
 } from "Models/EditorSchemaModels";
+import { validatableMixin } from "Models/ValidatableMixin";
 
 export class DataContext {
   private _nextId = -1;
@@ -98,7 +99,10 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
         // заполняем словарь полей обходя все поля контента-расширения
         Object.values(getFields(extContent)).forEach(field => visitField(field, extFieldModels));
         // создаем анонимную модель контента-расширения
-        extContentModels[extName] = t.optional(t.model(extFieldModels), {});
+        // prettier-ignore
+        extContentModels[extName] = t.optional(
+          t.model(extFieldModels).extend(validatableMixin), {}
+        );
       });
       // создаем анонимную модель словаря контентов-расширений
       fieldModels[`${field.FieldName}_Contents`] = t.optional(t.model(extContentModels), {});
@@ -159,7 +163,9 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
       // заполняем поля модели объекта
       Object.values(content.Fields).forEach(field => visitField(field, fieldModels));
       // создаем именованную модель объекта на основе полей
-      contentModels[content.ContentName] = t.model(content.ContentName, fieldModels);
+      contentModels[content.ContentName] = t
+        .model(content.ContentName, fieldModels)
+        .extend(validatableMixin);
     });
 
   const collectionModels = {};

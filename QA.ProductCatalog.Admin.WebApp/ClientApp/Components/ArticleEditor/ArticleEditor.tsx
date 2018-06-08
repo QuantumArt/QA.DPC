@@ -1,6 +1,8 @@
+import "./ArticleEditor.scss";
 import React, { Component, StatelessComponent } from "react";
 import { Row } from "react-flexbox-grid";
 import { observer } from "mobx-react";
+import { Button, ButtonGroup } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
 import {
   ContentSchema,
@@ -188,10 +190,31 @@ abstract class ObjectEditor<P> extends Component<ObjectEditorProps & P> {
   }
 }
 
+interface ArticleEditorProps {
+  model: ArticleObject;
+  saveAndPublish?: boolean;
+}
+
 @observer
-export class ArticleEditor extends ObjectEditor<{ model: ArticleObject }> {
+export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
   render() {
-    return <Row>{super.render()}</Row>;
+    const { contentSchema, saveAndPublish = true } = this.props;
+    return (
+      <>
+        <div className="article-editor__header">
+          <div className="article-editor__title" title={contentSchema.ContentDescription}>
+            {contentSchema.ContentTitle || contentSchema.ContentName}
+          </div>
+          {saveAndPublish && (
+            <ButtonGroup>
+              <Button icon="floppy-disk">Сохранить</Button>
+              <Button icon="git-push">Опубликовать</Button>
+            </ButtonGroup>
+          )}
+        </div>
+        <Row>{super.render()}</Row>
+      </>
+    );
   }
 }
 

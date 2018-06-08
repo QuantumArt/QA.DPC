@@ -1,3 +1,5 @@
+import { ValidatableObject } from "Models/ValidatableMixin";
+
 /** Типизация хранилища данных */
 export interface ProductEntities {
   Region: Region;
@@ -34,7 +36,7 @@ export interface ProductEntities {
   DeviceOnTariffs: DeviceOnTariffs;
 }
 
-export interface Region {
+export interface Region extends ValidatableObject {
   Id: number;
   ContentName: "Region";
   Timestamp: Date;
@@ -44,12 +46,14 @@ export interface Region {
   IsMainCity: boolean;
 }
 
-export interface Product {
+export interface Product extends ValidatableObject {
   Id: number;
   ContentName: "Product";
   Timestamp: Date;
   MarketingProduct: MarketingProduct;
   GlobalCode: string;
+  GlobalCode_Value: string;
+  GlobalCode_Version: string;
   Type: 
     | "Tariff"
     | "Service"
@@ -100,7 +104,7 @@ export interface Product {
   Advantages: Advantage[];
 }
 
-export interface Group {
+export interface Group extends ValidatableObject {
   Id: number;
   ContentName: "Group";
   Timestamp: Date;
@@ -108,7 +112,7 @@ export interface Group {
   Alias: string;
 }
 
-export interface ProductModifer {
+export interface ProductModifer extends ValidatableObject {
   Id: number;
   ContentName: "ProductModifer";
   Timestamp: Date;
@@ -116,11 +120,11 @@ export interface ProductModifer {
   Alias: string;
 }
 
-export interface Tariff {
+export interface Tariff extends ValidatableObject {
   ContentName: "Tariff";
 }
 
-export interface TariffZone {
+export interface TariffZone extends ValidatableObject {
   Id: number;
   ContentName: "TariffZone";
   Timestamp: Date;
@@ -128,7 +132,7 @@ export interface TariffZone {
   Alias: string;
 }
 
-export interface Direction {
+export interface Direction extends ValidatableObject {
   Id: number;
   ContentName: "Direction";
   Timestamp: Date;
@@ -136,7 +140,7 @@ export interface Direction {
   Alias: string;
 }
 
-export interface BaseParameter {
+export interface BaseParameter extends ValidatableObject {
   Id: number;
   ContentName: "BaseParameter";
   Timestamp: Date;
@@ -146,7 +150,7 @@ export interface BaseParameter {
   AllowDirection: boolean;
 }
 
-export interface BaseParameterModifier {
+export interface BaseParameterModifier extends ValidatableObject {
   Id: number;
   ContentName: "BaseParameterModifier";
   Timestamp: Date;
@@ -160,7 +164,7 @@ export interface BaseParameterModifier {
     | "Refining";
 }
 
-export interface ParameterModifier {
+export interface ParameterModifier extends ValidatableObject {
   Id: number;
   ContentName: "ParameterModifier";
   Timestamp: Date;
@@ -168,7 +172,7 @@ export interface ParameterModifier {
   Alias: string;
 }
 
-export interface ProductParameter {
+export interface ProductParameter extends ValidatableObject {
   Id: number;
   ContentName: "ProductParameter";
   Timestamp: Date;
@@ -190,7 +194,7 @@ export interface ProductParameter {
   Choice: ParameterChoice;
 }
 
-export interface Unit {
+export interface Unit extends ValidatableObject {
   Id: number;
   ContentName: "Unit";
   Timestamp: Date;
@@ -222,7 +226,7 @@ export interface Unit {
   Type: string;
 }
 
-export interface LinkModifier {
+export interface LinkModifier extends ValidatableObject {
   Id: number;
   ContentName: "LinkModifier";
   Timestamp: Date;
@@ -230,7 +234,7 @@ export interface LinkModifier {
   Alias: string;
 }
 
-export interface ProductRelation {
+export interface ProductRelation extends ValidatableObject {
   Id: number;
   ContentName: "ProductRelation";
   Timestamp: Date;
@@ -266,7 +270,7 @@ export interface ProductRelation {
   };
 }
 
-export interface LinkParameter {
+export interface LinkParameter extends ValidatableObject {
   Id: number;
   ContentName: "LinkParameter";
   Timestamp: Date;
@@ -283,22 +287,22 @@ export interface LinkParameter {
   Description: string;
   Unit: Unit;
   ProductGroup: Group;
-  Choice: ParameterChoice;
+  Choice: ParameterChoice[];
   OldSiteId: number;
   OldCorpSiteId: number;
   OldPointId: number;
   OldCorpPointId: number;
 }
 
-export interface TariffTransfer {
+export interface TariffTransfer extends ValidatableObject {
   ContentName: "TariffTransfer";
 }
 
-export interface MutualGroup {
+export interface MutualGroup extends ValidatableObject {
   ContentName: "MutualGroup";
 }
 
-export interface ProductParameterGroup {
+export interface ProductParameterGroup extends ValidatableObject {
   Id: number;
   ContentName: "ProductParameterGroup";
   Timestamp: Date;
@@ -312,7 +316,7 @@ export interface ProductParameterGroup {
   TitleForIcin: string;
 }
 
-export interface MarketingProduct {
+export interface MarketingProduct extends ValidatableObject {
   Id: number;
   ContentName: "MarketingProduct";
   Timestamp: Date;
@@ -360,29 +364,29 @@ export interface MarketingProduct {
   DetailedDescription: string;
 }
 
-export interface MarketingTariff {
+export interface MarketingTariff extends ValidatableObject {
   ContentName: "MarketingTariff";
 }
 
-export interface MarketingService {
+export interface MarketingService extends ValidatableObject {
   ContentName: "MarketingService";
 }
 
-export interface Service {
+export interface Service extends ValidatableObject {
   ContentName: "Service";
 }
 
-export interface ServiceOnTariff {
+export interface ServiceOnTariff extends ValidatableObject {
   ContentName: "ServiceOnTariff";
   Description: string;
 }
 
-export interface ServicesUpsale {
+export interface ServicesUpsale extends ValidatableObject {
   ContentName: "ServicesUpsale";
   Order: number;
 }
 
-export interface TariffOptionPackage {
+export interface TariffOptionPackage extends ValidatableObject {
   ContentName: "TariffOptionPackage";
   SubTitle: string;
   Description: string;
@@ -390,11 +394,11 @@ export interface TariffOptionPackage {
   Link: string;
 }
 
-export interface ServiceRelation {
+export interface ServiceRelation extends ValidatableObject {
   ContentName: "ServiceRelation";
 }
 
-export interface CommunicationType {
+export interface CommunicationType extends ValidatableObject {
   Id: number;
   ContentName: "CommunicationType";
   Timestamp: Date;
@@ -402,7 +406,7 @@ export interface CommunicationType {
   Alias: string;
 }
 
-export interface Segment {
+export interface Segment extends ValidatableObject {
   Id: number;
   ContentName: "Segment";
   Timestamp: Date;
@@ -410,15 +414,15 @@ export interface Segment {
   Alias: string;
 }
 
-export interface Action {
+export interface Action extends ValidatableObject {
   ContentName: "Action";
 }
 
-export interface MarketingAction {
+export interface MarketingAction extends ValidatableObject {
   ContentName: "MarketingAction";
 }
 
-export interface MarketingProductParameter {
+export interface MarketingProductParameter extends ValidatableObject {
   Id: number;
   ContentName: "MarketingProductParameter";
   Timestamp: Date;
@@ -429,27 +433,28 @@ export interface MarketingProductParameter {
   BaseParameterModifiers: BaseParameterModifier[];
   Modifiers: ParameterModifier[];
   Unit: Unit;
-  Choice: ParameterChoice;
+  Choice: ParameterChoice[];
   Title: string;
   SortOrder: number;
   NumValue: number;
   Value: string;
   Description: string;
+  Image: string;
 }
 
-export interface RoamingScale {
+export interface RoamingScale extends ValidatableObject {
   ContentName: "RoamingScale";
 }
 
-export interface MarketingRoamingScale {
+export interface MarketingRoamingScale extends ValidatableObject {
   ContentName: "MarketingRoamingScale";
 }
 
-export interface RoamingScaleOnTariff {
+export interface RoamingScaleOnTariff extends ValidatableObject {
   ContentName: "RoamingScaleOnTariff";
 }
 
-export interface TariffCategory {
+export interface TariffCategory extends ValidatableObject {
   Id: number;
   ContentName: "TariffCategory";
   Timestamp: Date;
@@ -464,11 +469,11 @@ export interface TariffCategory {
     | "Phone";
 }
 
-export interface ServiceOnRoamingScale {
+export interface ServiceOnRoamingScale extends ValidatableObject {
   ContentName: "ServiceOnRoamingScale";
 }
 
-export interface Advantage {
+export interface Advantage extends ValidatableObject {
   Id: number;
   ContentName: "Advantage";
   Timestamp: Date;
@@ -481,17 +486,17 @@ export interface Advantage {
   OldSiteId: number;
 }
 
-export interface CrossSale {
+export interface CrossSale extends ValidatableObject {
   ContentName: "CrossSale";
   Order: number;
 }
 
-export interface MarketingCrossSale {
+export interface MarketingCrossSale extends ValidatableObject {
   ContentName: "MarketingCrossSale";
   Order: number;
 }
 
-export interface TimeZone {
+export interface TimeZone extends ValidatableObject {
   Id: number;
   ContentName: "TimeZone";
   Timestamp: Date;
@@ -502,7 +507,7 @@ export interface TimeZone {
   OldSiteId: number;
 }
 
-export interface NetworkCity {
+export interface NetworkCity extends ValidatableObject {
   Id: number;
   ContentName: "NetworkCity";
   Timestamp: Date;
@@ -510,7 +515,7 @@ export interface NetworkCity {
   HasIpTv: boolean;
 }
 
-export interface ChannelCategory {
+export interface ChannelCategory extends ValidatableObject {
   Id: number;
   ContentName: "ChannelCategory";
   Timestamp: Date;
@@ -522,7 +527,7 @@ export interface ChannelCategory {
   OldSiteId: number;
 }
 
-export interface ChannelType {
+export interface ChannelType extends ValidatableObject {
   Id: number;
   ContentName: "ChannelType";
   Timestamp: Date;
@@ -530,7 +535,7 @@ export interface ChannelType {
   OldSiteId: number;
 }
 
-export interface ChannelFormat {
+export interface ChannelFormat extends ValidatableObject {
   Id: number;
   ContentName: "ChannelFormat";
   Timestamp: Date;
@@ -540,7 +545,7 @@ export interface ChannelFormat {
   OldSiteId: number;
 }
 
-export interface TvChannel {
+export interface TvChannel extends ValidatableObject {
   Id: number;
   ContentName: "TvChannel";
   Timestamp: Date;
@@ -563,7 +568,7 @@ export interface TvChannel {
   TimeZone: TimeZone;
 }
 
-export interface ParameterChoice {
+export interface ParameterChoice extends ValidatableObject {
   Id: number;
   ContentName: "ParameterChoice";
   Timestamp: Date;
@@ -572,14 +577,14 @@ export interface ParameterChoice {
   OldSiteId: number;
 }
 
-export interface MarketingDevice {
+export interface MarketingDevice extends ValidatableObject {
   ContentName: "MarketingDevice";
   DeviceType: EquipmentType;
   Segments: Segment[];
   CommunicationType: CommunicationType;
 }
 
-export interface Device {
+export interface Device extends ValidatableObject {
   ContentName: "Device";
   Downloads: EquipmentDownload[];
   Inners: Product[];
@@ -588,14 +593,14 @@ export interface Device {
   QuickStartGuide: string;
 }
 
-export interface FixedType {
+export interface FixedType extends ValidatableObject {
   Id: number;
   ContentName: "FixedType";
   Timestamp: Date;
   Title: string;
 }
 
-export interface EquipmentType {
+export interface EquipmentType extends ValidatableObject {
   Id: number;
   ContentName: "EquipmentType";
   Timestamp: Date;
@@ -605,7 +610,7 @@ export interface EquipmentType {
   Order: number;
 }
 
-export interface EquipmentDownload {
+export interface EquipmentDownload extends ValidatableObject {
   Id: number;
   ContentName: "EquipmentDownload";
   Timestamp: Date;
@@ -613,7 +618,7 @@ export interface EquipmentDownload {
   File: string;
 }
 
-export interface MarketingFixConnectAction {
+export interface MarketingFixConnectAction extends ValidatableObject {
   ContentName: "MarketingFixConnectAction";
   Segment: Segment[];
   MarketingAction: MarketingProduct;
@@ -623,14 +628,14 @@ export interface MarketingFixConnectAction {
   AfterPromo: string;
 }
 
-export interface FixConnectAction {
+export interface FixConnectAction extends ValidatableObject {
   ContentName: "FixConnectAction";
   MarketingOffers: MarketingProduct[];
   PromoPeriod: string;
   AfterPromo: string;
 }
 
-export interface MarketingTvPackage {
+export interface MarketingTvPackage extends ValidatableObject {
   ContentName: "MarketingTvPackage";
   Channels: TvChannel[];
   TitleForSite: string;
@@ -639,11 +644,11 @@ export interface MarketingTvPackage {
     | "Additional";
 }
 
-export interface TvPackage {
+export interface TvPackage extends ValidatableObject {
   ContentName: "TvPackage";
 }
 
-export interface MarketingFixConnectTariff {
+export interface MarketingFixConnectTariff extends ValidatableObject {
   ContentName: "MarketingFixConnectTariff";
   Segment: Segment;
   Category: TariffCategory;
@@ -655,29 +660,29 @@ export interface MarketingFixConnectTariff {
   TitleForSite: string;
 }
 
-export interface FixConnectTariff {
+export interface FixConnectTariff extends ValidatableObject {
   ContentName: "FixConnectTariff";
   TitleForSite: string;
 }
 
-export interface MarketingPhoneTariff {
+export interface MarketingPhoneTariff extends ValidatableObject {
   ContentName: "MarketingPhoneTariff";
 }
 
-export interface PhoneTariff {
+export interface PhoneTariff extends ValidatableObject {
   ContentName: "PhoneTariff";
   RostelecomLink: string;
 }
 
-export interface MarketingInternetTariff {
+export interface MarketingInternetTariff extends ValidatableObject {
   ContentName: "MarketingInternetTariff";
 }
 
-export interface InternetTariff {
+export interface InternetTariff extends ValidatableObject {
   ContentName: "InternetTariff";
 }
 
-export interface DeviceOnTariffs {
+export interface DeviceOnTariffs extends ValidatableObject {
   Id: number;
   ContentName: "DeviceOnTariffs";
   Timestamp: Date;
@@ -688,7 +693,7 @@ export interface DeviceOnTariffs {
   Cities: Region[];
 }
 
-export interface DevicesForFixConnectAction {
+export interface DevicesForFixConnectAction extends ValidatableObject {
   ContentName: "DevicesForFixConnectAction";
   Order: number;
   FixConnectAction: Product;

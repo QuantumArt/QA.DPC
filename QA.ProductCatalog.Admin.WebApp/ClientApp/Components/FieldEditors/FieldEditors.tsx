@@ -27,7 +27,7 @@ interface FieldEditorProps<TSchema extends FieldSchema> {
   fieldSchema: TSchema;
 }
 
-abstract class PlainFieldEditor<TSchema extends PlainFieldSchema> extends Component<
+export abstract class AbstractFieldEditor<TSchema extends FieldSchema> extends Component<
   FieldEditorProps<TSchema>
 > {
   protected id = `_${Math.random()
@@ -39,14 +39,12 @@ abstract class PlainFieldEditor<TSchema extends PlainFieldSchema> extends Compon
   render() {
     const { model, fieldSchema } = this.props;
     return (
-      <Col xl={6} md={12} className="field-editor-block">
+      <Col xl={6} md={12} className="field-editor__block">
         <Row middle="xs">
           <Col xl={4} md={3}>
             <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
               {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-              {fieldSchema.IsRequired && (
-                <span className="field-editor-block__label--required"> *</span>
-              )}
+              {fieldSchema.IsRequired && <span className="field-editor__label--required"> *</span>}
             </label>
           </Col>
           {this.renderField(model, fieldSchema)}
@@ -56,7 +54,7 @@ abstract class PlainFieldEditor<TSchema extends PlainFieldSchema> extends Compon
   }
 }
 
-export class StringFieldEditor extends PlainFieldEditor<StringFieldSchema> {
+export class StringFieldEditor extends AbstractFieldEditor<StringFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: StringFieldSchema) {
     return (
       <Col xl={8} md={6}>
@@ -71,7 +69,7 @@ export class StringFieldEditor extends PlainFieldEditor<StringFieldSchema> {
   }
 }
 
-export class NumericFieldEditor extends PlainFieldEditor<NumericFieldSchema> {
+export class NumericFieldEditor extends AbstractFieldEditor<NumericFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: NumericFieldSchema) {
     return (
       <Col xl={4} md={3}>
@@ -87,7 +85,7 @@ export class NumericFieldEditor extends PlainFieldEditor<NumericFieldSchema> {
   }
 }
 
-export class BooleanFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
+export class BooleanFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col md>
@@ -102,7 +100,7 @@ export class BooleanFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   }
 }
 
-export class DateFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
+export class DateFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
@@ -118,7 +116,7 @@ export class DateFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   }
 }
 
-export class TimeFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
+export class TimeFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
@@ -134,7 +132,7 @@ export class TimeFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   }
 }
 
-export class DateTimeFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
+export class DateTimeFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
@@ -149,7 +147,7 @@ export class DateTimeFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   }
 }
 
-export class FileFieldEditor extends PlainFieldEditor<StringFieldSchema> {
+export class FileFieldEditor extends AbstractFieldEditor<StringFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: StringFieldSchema) {
     return (
       <Col xl={8} md={6}>
@@ -168,7 +166,7 @@ export class FileFieldEditor extends PlainFieldEditor<StringFieldSchema> {
   }
 }
 
-export class TextFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
+export class TextFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={10} md={9}>
@@ -185,14 +183,12 @@ export class TextFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
   render() {
     const { model, fieldSchema } = this.props;
     return (
-      <Col md={12} className="field-editor-block">
+      <Col md={12} className="field-editor__block">
         <Row middle="xs">
           <Col xl={2} md={3}>
             <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
               {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-              {fieldSchema.IsRequired && (
-                <span className="field-editor-block__label--required"> *</span>
-              )}
+              {fieldSchema.IsRequired && <span className="field-editor__label--required"> *</span>}
             </label>
           </Col>
           {this.renderField(model, fieldSchema)}
@@ -203,7 +199,7 @@ export class TextFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
 }
 
 @observer
-export class ClassifierFieldEditor extends PlainFieldEditor<ClassifierFieldSchema> {
+export class ClassifierFieldEditor extends AbstractFieldEditor<ClassifierFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: ClassifierFieldSchema) {
     const value = model[fieldSchema.FieldName];
     const options = value ? [{ value, label: value }] : [];
@@ -222,7 +218,7 @@ export class ClassifierFieldEditor extends PlainFieldEditor<ClassifierFieldSchem
   }
 }
 
-export class EnumFieldEditor extends PlainFieldEditor<EnumFieldSchema> {
+export class EnumFieldEditor extends AbstractFieldEditor<EnumFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: EnumFieldSchema) {
     const options = fieldSchema.Items.map(item => ({ value: item.Value, label: item.Alias }));
     return fieldSchema.ShowAsRadioButtons ? (
@@ -249,7 +245,7 @@ export class EnumFieldEditor extends PlainFieldEditor<EnumFieldSchema> {
   }
 }
 
-export class ExtensionFieldEditor extends PlainFieldEditor<ExtensionFieldSchema> {
+export class ExtensionFieldEditor extends AbstractFieldEditor<ExtensionFieldSchema> {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: ExtensionFieldSchema) {
     const options = Object.values(fieldSchema.Contents).map(contentSchema => ({
       value: contentSchema.ContentName,
