@@ -1,7 +1,6 @@
 import "./FieldEditors.scss";
 import React, { Component } from "react";
 import { Col, Row } from "react-flexbox-grid";
-import { Tooltip, Position } from "@blueprintjs/core";
 import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
 import {
@@ -43,25 +42,12 @@ abstract class PlainFieldEditor<TSchema extends PlainFieldSchema> extends Compon
       <Col xl={6} md={12} className="field-editor-block">
         <Row middle="xs">
           <Col xl={4} md={3}>
-            {fieldSchema.FieldDescription ? (
-              <label htmlFor={this.id}>
-                <Tooltip content={fieldSchema.FieldDescription} position={Position.TOP}>
-                  <>
-                    {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-                    {fieldSchema.IsRequired && (
-                      <span className="field-editor-block__label--required"> *</span>
-                    )}
-                  </>
-                </Tooltip>
-              </label>
-            ) : (
-              <label htmlFor={this.id}>
-                {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-                {fieldSchema.IsRequired && (
-                  <span className="field-editor-block__label--required"> *</span>
-                )}
-              </label>
-            )}
+            <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
+              {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+              {fieldSchema.IsRequired && (
+                <span className="field-editor-block__label--required"> *</span>
+              )}
+            </label>
           </Col>
           {this.renderField(model, fieldSchema)}
         </Row>
@@ -202,25 +188,12 @@ export class TextFieldEditor extends PlainFieldEditor<PlainFieldSchema> {
       <Col md={12} className="field-editor-block">
         <Row middle="xs">
           <Col xl={2} md={3}>
-            {fieldSchema.FieldDescription ? (
-              <label htmlFor={this.id}>
-                <Tooltip content={fieldSchema.FieldDescription} position={Position.TOP}>
-                  <>
-                    {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-                    {fieldSchema.IsRequired && (
-                      <span className="field-editor-block__label--required"> *</span>
-                    )}
-                  </>
-                </Tooltip>
-              </label>
-            ) : (
-              <label htmlFor={this.id}>
-                {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-                {fieldSchema.IsRequired && (
-                  <span className="field-editor-block__label--required"> *</span>
-                )}
-              </label>
-            )}
+            <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
+              {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+              {fieldSchema.IsRequired && (
+                <span className="field-editor-block__label--required"> *</span>
+              )}
+            </label>
           </Col>
           {this.renderField(model, fieldSchema)}
         </Row>
