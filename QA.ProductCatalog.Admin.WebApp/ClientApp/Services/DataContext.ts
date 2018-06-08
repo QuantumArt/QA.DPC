@@ -1,13 +1,5 @@
-import { types as t, getType, unprotect, onPatch, resolvePath, IModelType } from "mobx-state-tree";
-import { IDisposer } from "mobx-state-tree/dist/utils";
-import {
-  isObject,
-  isNumber,
-  isInteger,
-  isString,
-  isIsoDateString,
-  isBoolean
-} from "Utils/TypeChecks";
+import { types as t, unprotect, IModelType } from "mobx-state-tree";
+import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
 import {
   StoreObject,
   StoreSnapshot,
@@ -27,7 +19,6 @@ import {
 
 export class DataContext {
   private _nextId = -1;
-  private _patchListener: IDisposer = null;
   private _defaultSnapshots: { [content: string]: Object } = null;
   private _storeType: IModelType<StoreSnapshot, StoreObject> = null;
   public store: StoreObject = null;
@@ -41,28 +32,16 @@ export class DataContext {
     this.store = this._storeType.create(storeSnapshot);
     // разрешаем изменения моделей из других сервисов и компонентов
     unprotect(this.store);
-    // подписываемся на добавление новых элементов в дерево
-    this._patchListener = onPatch(this.store, patch => {
-      // console.log(patch);
-      const { op, path } = patch;
-      // проверяем, что элемент пришел из глубины дерева
-      if ((op === "add" || op === "replace") && path.match(/\//g).length > 2) {
-        const object = resolvePath(this.store, path);
-        // проверяем, что элемент является сущностью с Id
-        if (isObject(object) && isInteger(object.Id)) {
-          // и добавляем его в соответствующую коллекцию
-          this.store[getType(object).name].put(object);
-        }
-      }
-    });
   }
 
-  // TODO: возможно стоит добавлять объекты в store при создании, а не по патчам ?
   public createArticle<T extends ArticleObject = ArticleObject>(contentName: string): T {
-    return this.getContentType(contentName).create({
+    const article = this.getContentType(contentName).create({
       ...this._defaultSnapshots[contentName],
       Id: this._nextId--
     }) as T;
+
+    this.store[contentName].put(article);
+    return article;
   }
 
   private getContentType(contentName: string): IModelType<ArticleSnapshot, ArticleObject> {
@@ -72,12 +51,6 @@ export class DataContext {
     }
     // @ts-ignore
     return optionalType.type.subType;
-  }
-
-  public dispose() {
-    if (this._patchListener) {
-      this._patchListener();
-    }
   }
 }
 

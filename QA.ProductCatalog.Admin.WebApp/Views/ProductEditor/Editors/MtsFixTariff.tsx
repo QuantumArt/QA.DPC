@@ -26,8 +26,13 @@ class Example {
     console.dir(example.schemaContext.contentSchema);
 
     const product = example.dataContext.store["Product"].get(String(2460423)) as Product;
-    product.Regions[0] = example.dataContext.createArticle<Region>("Region");
+    const newRegion = example.dataContext.createArticle<Region>("Region");
+    newRegion.Parent = example.dataContext.createArticle<Region>("Region");
+    product.Regions[0] = newRegion;
+
     console.dir(toJS(example.dataContext.store["Region"]));
+    // @ts-ignore
+    window.store = example.dataContext.store;
 
     element.innerHTML = `Loaded in ${Number(new Date()) - Number(start)} msec!`;
 
