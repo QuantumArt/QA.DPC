@@ -2,7 +2,7 @@ import React from "react";
 import { RadioGroup as PtRadioGroup, IOptionProps } from "@blueprintjs/core";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { AbstractControl } from "./AbstractControls";
+import { ValidatableControl } from "./AbstractControls";
 
 export interface RadioGroupProps {
   disabled?: boolean;
@@ -12,17 +12,16 @@ export interface RadioGroupProps {
 }
 
 @observer
-export class RadioGroup extends AbstractControl<RadioGroupProps> {
-  handleChange = action((e: any) => {
-    const { model, name, onChange } = this.props;
+export class RadioGroup extends ValidatableControl<RadioGroupProps> {
+  @action
+  handleChange(e: any) {
+    super.handleChange(e);
+    const { model, name } = this.props;
     model[name] = e.target.value;
-    if (onChange) {
-      onChange(e);
-    }
-  });
+  }
 
   render() {
-    const { model, name, onChange, ...props } = this.props;
+    const { model, name, onFocus, onChange, onBlur, validate, ...props } = this.props;
     return <PtRadioGroup onChange={this.handleChange} selectedValue={model[name]} {...props} />;
   }
 }

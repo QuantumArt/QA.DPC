@@ -11,16 +11,14 @@ interface InputNumberProps extends INumericInputProps {
 @observer
 export class InputNumber extends AbstractInput<InputNumberProps> {
   handleValueChange = (valueAsNumber: number, valueAsString: string) => {
-    const { model, name, onChange, isInteger } = this.props;
+    super.handleChange(valueAsNumber, valueAsString);
+    const { model, name, isInteger } = this.props;
     const { hasFocus, editValue } = this.state;
     if (
       valueAsString === "" ||
       valueAsString === "-" ||
       (isInteger ? Number.isSafeInteger(valueAsNumber) : Number.isFinite(valueAsNumber))
     ) {
-      if (onChange) {
-        onChange(valueAsString);
-      }
       if (hasFocus) {
         this.setState({ editValue: valueAsString });
       } else {
@@ -33,30 +31,38 @@ export class InputNumber extends AbstractInput<InputNumberProps> {
     }
   };
 
-  handleBlur = action((e: any) => {
-    const { model, name, onBlur } = this.props;
+  @action
+  handleBlur(e: any) {
+    super.handleBlur(e);
+    const { model, name } = this.props;
     const { editValue } = this.state;
     if (editValue === "") {
       model[name] = null;
     } else if (editValue !== "-") {
       model[name] = Number(editValue);
     }
-    if (onBlur) {
-      onBlur(e);
-    }
-    this.setState({ hasFocus: false });
-  });
+  }
 
   render() {
-    const { model, name, className, onChange, onFocus, onBlur, isInteger, ...props } = this.props;
+    const {
+      model,
+      name,
+      className,
+      onFocus,
+      onChange,
+      onBlur,
+      validate,
+      isInteger,
+      ...props
+    } = this.props;
     const { hasFocus, editValue } = this.state;
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return (
       <NumericInput
         value={inputValue}
         onFocus={this.handleFocus}
-        onBlur={this.handleBlur}
         onValueChange={this.handleValueChange}
+        onBlur={this.handleBlur}
         fill
         {...props}
       />

@@ -3,7 +3,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Radio } from "@blueprintjs/core";
 import { Grid, Row, Col } from "react-flexbox-grid";
-import { observable } from "mobx";
+import { types as t, unprotect } from "mobx-state-tree";
+import { toJS } from "mobx";
 import { observer } from "mobx-react";
 import {
   InputText,
@@ -15,8 +16,26 @@ import {
   Select,
   RadioGroup
 } from "Components/FormControls/FormControls";
+import { required, maxCount } from "Utils/Validators";
+import { validatableMixin } from "Models/ValidatableMixin";
 
-const article = observable({
+const Article = t
+  .model({
+    StringField: t.maybe(t.string),
+    PhoneField: t.maybe(t.string),
+    NumericField: t.maybe(t.number),
+    SearchField: t.maybe(t.string),
+    BooleanField: t.maybe(t.boolean),
+    TextField: t.maybe(t.string),
+    DateField: t.maybe(t.Date),
+    TimeField: t.maybe(t.Date),
+    DateTimeField: t.maybe(t.Date),
+    EnumField: t.maybe(t.string),
+    ArrayField: t.array(t.string)
+  })
+  .extend(validatableMixin);
+
+const article = Article.create({
   StringField: "",
   PhoneField: "",
   NumericField: 0,
@@ -29,6 +48,8 @@ const article = observable({
   EnumField: "first",
   ArrayField: ["second"]
 });
+
+unprotect(article);
 
 // prettier-ignore
 const phoneMask = ["+", "7", " ", "(", /\d/, /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/];
@@ -44,6 +65,7 @@ const FormControlsBlock = observer(() => (
         <InputText
           name="StringField"
           model={article}
+          validate={[required]}
           placeholder="StringField"
         />
       </Col>
@@ -232,6 +254,7 @@ const FormControlsBlock = observer(() => (
         <Select
           name="ArrayField"
           model={article}
+          validate={[required, maxCount(1)]}
           placeholder="ArrayField"
           options={[
             { value: "first", label: "Первый" },
@@ -279,7 +302,20 @@ const FormControlsBlock = observer(() => (
     </Row>
 
     <hr />
-    <pre>{JSON.stringify(article, null, 2)}</pre>
+
+    <Row>
+      <Col md>
+        <pre>{JSON.stringify(toJS(article), null, 2)}</pre>
+      </Col>
+      <Col md>
+        <pre>{JSON.stringify(toJS(article.getAllErrors()), null, 2)}</pre>
+      </Col>
+      <Col md>
+        <pre>
+          {JSON.stringify(toJS(article.getAllVisibleErrors()), null, 2)}
+        </pre>
+      </Col>
+    </Row>
   </div>
 ));
 

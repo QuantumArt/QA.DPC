@@ -18,36 +18,32 @@ interface DatePickerProps {
 
 @observer
 export class DatePicker extends AbstractInput<DatePickerProps> {
-  handleChange = action((editValue: string | moment.Moment) => {
-    const { onChange } = this.props;
-    if (onChange) {
-      onChange(editValue);
-    }
+  handleChange(editValue: string | moment.Moment) {
+    super.handleChange(editValue);
     this.setState({ editValue });
-  });
+  }
 
-  handleBlur = action((e: any) => {
-    const { model, name, onBlur } = this.props;
+  @action
+  handleBlur(e: any) {
+    super.handleBlur(e);
+    const { model, name } = this.props;
     const { editValue } = this.state;
     if (moment.isMoment(editValue)) {
       model[name] = editValue.toDate();
     } else if (editValue === "") {
       model[name] = null;
     }
-    if (onBlur) {
-      onBlur(e);
-    }
-    this.setState({ hasFocus: false });
-  });
+  }
 
   render() {
     const {
       model,
       name,
       className,
-      onChange,
       onFocus,
+      onChange,
       onBlur,
+      validate,
       id,
       type,
       placeholder,

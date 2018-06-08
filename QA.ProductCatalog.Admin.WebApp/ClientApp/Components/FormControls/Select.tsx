@@ -3,7 +3,7 @@ import React from "react";
 import ReactSelect, { ReactSelectProps, Option } from "react-select";
 import { action, isObservableArray } from "mobx";
 import { observer } from "mobx-react";
-import { AbstractControl } from "./AbstractControls";
+import { ValidatableControl } from "./AbstractControls";
 
 interface SelectProps extends ReactSelectProps {
   required?: boolean;
@@ -11,9 +11,11 @@ interface SelectProps extends ReactSelectProps {
 }
 
 @observer
-export class Select extends AbstractControl<SelectProps> {
-  handleChange = action((selection: Option | Option[]) => {
-    const { model, name, onChange, required, clearable } = this.props;
+export class Select extends ValidatableControl<SelectProps> {
+  @action
+  handleChange(selection: Option | Option[]) {
+    super.handleChange(selection);
+    const { model, name, required, clearable } = this.props;
     if (Array.isArray(selection)) {
       if (!required || clearable || selection.length > 0) {
         model[name] = selection.map(option => option.value);
@@ -23,13 +25,20 @@ export class Select extends AbstractControl<SelectProps> {
     } else if (!required || clearable) {
       model[name] = null;
     }
-    if (onChange) {
-      onChange(selection);
-    }
-  });
+  }
 
   render() {
-    const { model, name, onChange, required, multiple, ...props } = this.props;
+    const {
+      model,
+      name,
+      onFocus,
+      onChange,
+      onBlur,
+      validate,
+      required,
+      multiple,
+      ...props
+    } = this.props;
     let value = model[name];
     if ((multiple || props.multi) && isObservableArray(value)) {
       value = value.slice();
@@ -37,7 +46,9 @@ export class Select extends AbstractControl<SelectProps> {
     return (
       <ReactSelect
         value={value}
+        onFocus={this.handleFocus}
         onChange={this.handleChange}
+        onBlur={this.handleBlur}
         clearable={!required}
         multi={multiple}
         {...props}

@@ -7,25 +7,20 @@ import { AbstractInput } from "./AbstractControls";
 
 @observer
 export class TextArea extends AbstractInput<TextareaHTMLAttributes<HTMLTextAreaElement>> {
-  handleChange = e => {
-    const { onChange } = this.props;
-    if (onChange) {
-      onChange(e);
-    }
+  handleChange(e: any) {
+    super.handleChange(e);
     this.setState({ editValue: e.target.value });
-  };
+  }
 
-  handleBlur = action((e: any) => {
-    const { model, name, onBlur } = this.props;
+  @action
+  handleBlur(e: any) {
+    super.handleBlur(e);
+    const { model, name } = this.props;
     model[name] = this.state.editValue;
-    if (onBlur) {
-      onBlur(e);
-    }
-    this.setState({ hasFocus: false });
-  });
+  }
 
   render() {
-    const { model, name, className, onChange, onFocus, onBlur, ...props } = this.props;
+    const { model, name, className, onFocus, onChange, onBlur, validate, ...props } = this.props;
     const { hasFocus, editValue } = this.state;
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return (
