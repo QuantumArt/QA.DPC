@@ -1,17 +1,26 @@
 $pt-icon-color: #5c7080;
-$pt-box-shadow: 0 0 0 1px #137cbd, 0 0 0 3px rgba(19, 124, 189, 0.3),
+$pt-danger-color: #db3737;
+$pt-focus-border: 1px solid #137cbd;
+$pt-danger-border: 1px solid #db3737;
+$pt-focus-backgorund: rgba(19, 124, 189, 0.3);
+$pt-danger-backgorund: rgba(219, 55, 55, 0.3);
+$pt-focus-box-shadow: 0 0 0 3px rgba(19, 124, 189, 0.3),
+  inset 0 1px 1px rgba(16, 22, 26, 0.2);
+$pt-danger-box-shadow: 0 0 0 3px rgba(219, 55, 55, 0.3),
   inset 0 1px 1px rgba(16, 22, 26, 0.2);
 
+/* ==== TextArea ==== */
 .editor-textarea {
   resize: none;
 }
 
+/* ==== DatePicker ==== */
 .editor-datepicker {
   .rdtPicker {
     margin-top: 0.5rem;
-    border: none;
     border-radius: 3px;
-    box-shadow: $pt-box-shadow;
+    border: $pt-focus-border;
+    box-shadow: $pt-focus-box-shadow;
   }
 
   .rdtActive {
@@ -19,9 +28,14 @@ $pt-box-shadow: 0 0 0 1px #137cbd, 0 0 0 3px rgba(19, 124, 189, 0.3),
   }
 }
 
+.pt-intent-danger .editor-datepicker .rdtPicker {
+  border: $pt-danger-border;
+  box-shadow: $pt-danger-box-shadow;
+}
+
+/* ==== Select ==== */
 .Select-control {
-  height: 30px;
-  box-sizing: border-box;
+  height: 28px;
 }
 
 .Select-placeholder {
@@ -38,13 +52,24 @@ $pt-box-shadow: 0 0 0 1px #137cbd, 0 0 0 3px rgba(19, 124, 189, 0.3),
 
 .Select-option {
   padding: 5px 7px;
+
+  &.is-focused {
+    background-color: #ebf5ff;
+  }
+
+  &.is-selected {
+    background-color: #f5faff;
+  }
 }
 
-.Select-clear,
-.Select-arrow {
+.Select-clear {
   color: $pt-icon-color;
   font-size: 24px;
   line-height: 18px;
+}
+
+.Select-arrow {
+  border-color: $pt-icon-color transparent transparent;
 }
 
 .Select--single {
@@ -72,41 +97,62 @@ $pt-box-shadow: 0 0 0 1px #137cbd, 0 0 0 3px rgba(19, 124, 189, 0.3),
   }
 }
 
+.Select.is-focused,
 .Select.is-focused:not(.is-open) {
-  > .Select-control {
-    border-width: 0;
-    box-shadow: $pt-box-shadow;
+  .Select-control {
+    border: $pt-focus-border;
+    box-shadow: $pt-focus-box-shadow;
   }
 
-  .Select-placeholder {
-    line-height: 30px;
-  }
+  .Select-menu-outer {
+    position: relative;
+    border-left: $pt-focus-border;
+    border-bottom: $pt-focus-border;
+    border-right: $pt-focus-border;
 
-  .Select-input {
-    height: 30px;
-
-    > input {
-      padding: 6px 0 8px;
+    &::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      top: 3px;
+      left: -4px;
+      width: calc(100% + 8px);
+      height: calc(100% + 1px);
+      border-bottom-left-radius: 7px;
+      border-bottom-right-radius: 7px;
+      background: $pt-focus-backgorund;
     }
   }
+}
 
-  &.Select--single {
-    > .Select-control .Select-value {
-      line-height: 30px;
-      padding-left: 11px;
-
-      & > *:last-child {
-        padding-right: 6px;
-      }
-    }
+.Select.pt-intent-danger {
+  .Select-control {
+    border: $pt-danger-border;
   }
 
-  &.Select--multi {
-    .Select-value {
-      margin-top: 5px;
-      &:first-child {
-        margin-left: 5px;
-      }
+  .Select-clear {
+    color: $pt-danger-color;
+  }
+
+  .Select-arrow {
+    border-color: $pt-danger-color transparent transparent;
+  }
+}
+
+.Select.pt-intent-danger.is-focused {
+  .Select-control {
+    border: $pt-danger-border;
+    box-shadow: $pt-danger-box-shadow;
+  }
+
+  .Select-menu-outer {
+    position: relative;
+    border-left: $pt-danger-border;
+    border-bottom: $pt-danger-border;
+    border-right: $pt-danger-border;
+
+    &::before {
+      background: $pt-danger-backgorund;
     }
   }
 }
