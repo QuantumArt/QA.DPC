@@ -6,7 +6,7 @@ import DateTime from "react-datetime";
 import moment from "moment";
 import "moment/locale/ru";
 import "react-datetime/css/react-datetime.css";
-import { AbstractInput } from "./AbstractControls";
+import { ValidatableInput } from "./AbstractControls";
 
 interface DatePickerProps {
   id?: string;
@@ -17,7 +17,7 @@ interface DatePickerProps {
 }
 
 @observer
-export class DatePicker extends AbstractInput<DatePickerProps> {
+export class DatePicker extends ValidatableInput<DatePickerProps> {
   handleChange(editValue: string | moment.Moment) {
     super.handleChange(editValue);
     this.setState({ editValue });

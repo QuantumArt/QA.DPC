@@ -1,6 +1,7 @@
 ﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
+import cn from "classnames";
 import { Radio } from "@blueprintjs/core";
 import { Grid, Row, Col } from "react-flexbox-grid";
 import { types as t, unprotect } from "mobx-state-tree";
@@ -16,11 +17,20 @@ import {
   Select,
   RadioGroup
 } from "Components/FormControls/FormControls";
-import { required, maxCount } from "Utils/Validators";
+import { required, pattern, maxCount } from "Utils/Validators";
 import { validatableMixin } from "Models/ValidatableMixin";
 
+const Category = t
+  .model("Category", {
+    Id: t.identifier(t.number),
+    StringField: t.maybe(t.string)
+  })
+  .extend(validatableMixin);
+
 const Article = t
-  .model({
+  .model("Article", {
+    Id: t.identifier(t.number),
+    Category: t.maybe(t.reference(Category)),
     StringField: t.maybe(t.string),
     PhoneField: t.maybe(t.string),
     NumericField: t.maybe(t.number),
@@ -36,20 +46,24 @@ const Article = t
   .extend(validatableMixin);
 
 const article = Article.create({
+  Id: 10,
   StringField: "",
   PhoneField: "",
   NumericField: 0,
-  SearchField: null,
-  BooleanField: null,
-  TextField: null,
-  DateField: null,
-  TimeField: null,
-  DateTimeField: null,
   EnumField: "first",
   ArrayField: ["second"]
 });
 
 unprotect(article);
+
+const category = Category.create({
+  Id: 1,
+  StringField: ""
+});
+
+unprotect(category);
+
+article.Category = category;
 
 // prettier-ignore
 const phoneMask = ["+", "7", " ", "(", /\d/, /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/];
@@ -59,13 +73,52 @@ const FormControlsBlock = observer(() => (
     <h4>FormControls</h4>
     <hr />
 
+    <Row
+      className={cn("pt-form-group", {
+        "pt-intent-danger": article.hasVisibleErrors("StringField")
+      })}
+    >
+      <Col md={3}>InputText [ pattern | required]</Col>
+      <Col md={3} className="pt-form-content">
+        <InputText
+          name="StringField"
+          model={article}
+          placeholder="StringField"
+          validate={[required, pattern(/^[A-Za-z0-9]+$/)]}
+          className={cn({
+            "pt-intent-danger": article.hasVisibleErrors("StringField")
+          })}
+        />
+        {article.hasVisibleErrors("StringField") && (
+          <div className="pt-form-helper-text">
+            {article.getVisibleErrors("StringField")}
+          </div>
+        )}
+      </Col>
+      <Col md={3} className="pt-form-content">
+        <InputText
+          name="StringField"
+          model={article}
+          placeholder="StringField"
+          validate={required}
+          className={cn({
+            "pt-intent-danger": article.hasVisibleErrors("StringField")
+          })}
+        />
+        {article.hasVisibleErrors("StringField") && (
+          <div className="pt-form-helper-text">
+            {article.getVisibleErrors("StringField")}
+          </div>
+        )}
+      </Col>
+    </Row>
+
     <Row className="pt-form-group">
       <Col md={3}>InputText [normal | disabled]</Col>
       <Col md={3}>
         <InputText
           name="StringField"
           model={article}
-          validate={[required]}
           placeholder="StringField"
         />
       </Col>
@@ -138,8 +191,12 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
-      <Col md={3}>DatePicker [date | date disabled]</Col>
+    <Row
+      className={cn("pt-form-group", {
+        "pt-intent-danger": article.hasVisibleErrors("DateField")
+      })}
+    >
+      <Col md={3}>DatePicker [date | date required]</Col>
       <Col md={3}>
         <DatePicker
           name="DateField"
@@ -148,14 +205,22 @@ const FormControlsBlock = observer(() => (
           placeholder="DateField"
         />
       </Col>
-      <Col md={3}>
+      <Col md={3} className="pt-form-content">
         <DatePicker
           name="DateField"
           model={article}
           type="date"
+          validate={required}
+          className={cn({
+            "pt-intent-danger": article.hasVisibleErrors("DateField")
+          })}
           placeholder="DateField"
-          disabled
         />
+        {article.hasVisibleErrors("DateField") && (
+          <div className="pt-form-helper-text">
+            {article.getVisibleErrors("DateField")}
+          </div>
+        )}
       </Col>
     </Row>
 
@@ -236,7 +301,11 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row
+      className={cn("pt-form-group", {
+        "pt-intent-danger": article.hasVisibleErrors("ArrayField")
+      })}
+    >
       <Col md={3}>Select [required | multiple]</Col>
       <Col md={3}>
         <Select
@@ -250,11 +319,14 @@ const FormControlsBlock = observer(() => (
           required
         />
       </Col>
-      <Col md={3}>
+      <Col md={3} className="pt-form-content">
         <Select
           name="ArrayField"
           model={article}
           validate={[required, maxCount(1)]}
+          className={cn({
+            "pt-intent-danger": article.hasVisibleErrors("ArrayField")
+          })}
           placeholder="ArrayField"
           options={[
             { value: "first", label: "Первый" },
@@ -262,6 +334,11 @@ const FormControlsBlock = observer(() => (
           ]}
           multiple
         />
+        {article.hasVisibleErrors("ArrayField") && (
+          <div className="pt-form-helper-text">
+            {article.getVisibleErrors("ArrayField")}
+          </div>
+        )}
       </Col>
     </Row>
 
@@ -305,12 +382,15 @@ const FormControlsBlock = observer(() => (
 
     <Row>
       <Col md>
+        <div>State:</div>
         <pre>{JSON.stringify(toJS(article), null, 2)}</pre>
       </Col>
       <Col md>
+        <div>All errors:</div>
         <pre>{JSON.stringify(toJS(article.getAllErrors()), null, 2)}</pre>
       </Col>
       <Col md>
+        <div>Visible errors:</div>
         <pre>
           {JSON.stringify(toJS(article.getAllVisibleErrors()), null, 2)}
         </pre>
@@ -334,325 +414,3 @@ ReactDOM.render(
   </Grid>,
   document.getElementById("library")
 );
-
-// const productSchema = null;
-
-// function ArticleEditor(props) {
-//   return <div>{props.children}</div>;
-// }
-
-// ArticleEditor.Field = function(props) {
-//   return <div>{props.children}</div>;
-// };
-
-// ArticleEditor.Fields = function(props) {
-//   return <div>{props.children}</div>;
-// };
-
-// function field(_name, _render) {
-//   return null;
-// }
-
-// function content(_name, _render) {
-//   return null;
-// }
-
-// function FieldEditor(props) {
-//   return <div>{props.children}</div>;
-// }
-
-// function ExtensionEditor(props) {
-//   return <div>{props.children}</div>;
-// }
-
-// ExtensionEditor.Content = function(props) {
-//   return <div>{props.children}</div>;
-// };
-
-// ExtensionEditor.Contents = function(props) {
-//   return <div>{props.children}</div>;
-// };
-
-// const product = {
-//   Id: 123,
-//   Title: "Test",
-//   Description: "Test test test...",
-//   Regions: [{ Id: 40, Name: "Kaluga" }],
-//   Devices: [{ Id: 5678, Region: { Id: 77, Name: "Moscow" } }]
-// };
-
-// const toDictionary = (keySelector, valueSelector = x => x) => (
-//   result,
-//   item
-// ) => {
-//   if (typeof result !== "object" || Array.isArray(result)) {
-//     throw new TypeError("initialValue should be an Object");
-//   }
-//   const key = keySelector(item);
-//   const value = valueSelector(item);
-
-//   result[key] = value;
-//   return result;
-// };
-
-// export default (
-//   <div>
-//     <ArticleEditor
-//       model={product}
-//       schema={productSchema}
-//       include={{
-//         Regions: true,
-//         Devices: {
-//           Region: true
-//         }
-//       }}
-//       fields={{
-//         Title: props => (
-//           <div>
-//             <Col>My custom Col</Col>
-//             <FieldEditor {...props} />
-//           </div>
-//         ),
-//         Details: props => (
-//           <div>
-//             <Col>My custom Col</Col>
-//             <FieldEditor {...props} />
-//           </div>
-//         ),
-//         Type_Contents: {
-//           InternetTariff: {
-//             Description: props => (
-//               <div>
-//                 <Col>My custom Col</Col>
-//                 <FieldEditor {...props} />
-//               </div>
-//             )
-//           }
-//         }
-//       }}
-//     />
-
-//     <ArticleEditor model={product} schema={productSchema}>
-//       {{
-//         Title: props => (
-//           <div>
-//             <Col>My custom Col</Col>
-//             <FieldEditor {...props} />
-//           </div>
-//         ),
-//         Details: props => (
-//           <div>
-//             <Col>My custom Col</Col>
-//             <FieldEditor {...props} />
-//           </div>
-//         ),
-//         Type_Contents: {
-//           InternetTariff: {
-//             Description: props => (
-//               <div>
-//                 <Col>My custom Col</Col>
-//                 <FieldEditor {...props} />
-//               </div>
-//             )
-//           }
-//         }
-//       }}
-//     </ArticleEditor>
-
-//     <ArticleEditor
-//       model={product}
-//       schema={productSchema}
-//       field-Type-InternetTariff-Description={props => (
-//         <div>
-//           <Col>My custom Col</Col>
-//           <FieldEditor {...props} />
-//         </div>
-//       )}
-//     />
-
-//     <ArticleEditor
-//       model={product}
-//       schema={productSchema}
-//       field-Type={props => (
-//         <ExtensionEditor
-//           {...props}
-//           content-InternetTariff={props => (
-//             <ArticleEditor
-//               {...props}
-//               field-Description={props => (
-//                 <div>
-//                   <Col>My custom Col</Col>
-//                   <FieldEditor {...props} />
-//                 </div>
-//               )}
-//             />
-//           )}
-//         />
-//       )}
-//     />
-
-//     <ArticleEditor
-//       model={product}
-//       schema={productSchema}
-//       {...Object.values(productSchema).reduce(
-//         toDictionary(
-//           s => `field-${s.FieldName}`,
-//           () => props => (
-//             <div>
-//               <Col>My custom Col</Col>
-//               <FieldEditor {...props} />
-//             </div>
-//           )
-//         )
-//       )}
-//     />
-
-//     <ArticleEditor
-//       model={product}
-//       schema={productSchema}
-//       fields={[
-//         field("Type", props => (
-//           <ExtensionEditor
-//             {...props}
-//             contents={[
-//               content("InternetTariff", props => (
-//                 <ArticleEditor
-//                   {...props}
-//                   fields={[
-//                     field("Description", props => (
-//                       <div>
-//                         <Col>My custom Col</Col>
-//                         <FieldEditor {...props} />
-//                       </div>
-//                     ))
-//                   ]}
-//                 />
-//               ))
-//             ]}
-//           />
-//         ))
-//       ]}
-//     />
-
-//     <ArticleEditor model={product} schema={productSchema}>
-//       <ArticleEditor.Fields
-//         Type={props => (
-//           <ExtensionEditor {...props}>
-//             <ExtensionEditor.Contents
-//               InternetTariff={props => (
-//                 <ArticleEditor {...props}>
-//                   <ArticleEditor.Fields
-//                     Description={props => (
-//                       <div>
-//                         <Col>My custom Col</Col>
-//                         <FieldEditor {...props} />
-//                       </div>
-//                     )}
-//                   />
-//                 </ArticleEditor>
-//               )}
-//             />
-//           </ExtensionEditor>
-//         )}
-//       />
-//     </ArticleEditor>
-
-//     <ArticleEditor model={product} schema={productSchema}>
-//       <ArticleEditor.Field name="Type">
-//         {props => (
-//           <ExtensionEditor {...props}>
-//             <ExtensionEditor.Content name="InternetTariff">
-//               {props => (
-//                 <ArticleEditor {...props}>
-//                   <ArticleEditor.Field name="Description">
-//                     {props => (
-//                       <div>
-//                         <Col>My custom Col</Col>
-//                         <FieldEditor {...props} />
-//                       </div>
-//                     )}
-//                   </ArticleEditor.Field>
-//                 </ArticleEditor>
-//               )}
-//             </ExtensionEditor.Content>
-//           </ExtensionEditor>
-//         )}
-//       </ArticleEditor.Field>
-//     </ArticleEditor>
-
-//     <ArticleEditor
-//       model={product}
-//       schema={productSchema}
-//       field-Title={(model, fieldSchema) => (
-//         <FieldEditor model={model} schema={fieldSchema} />
-//       )}
-//       field-Description={(model, fieldSchema) => (
-//         <FieldEditor model={model} schema={fieldSchema} />
-//       )}
-//     />
-
-//     <ArticleEditor
-//       model={product}
-//       schema={productSchema}
-//       fields={{
-//         Title: (model, fieldSchema) => (
-//           <FieldEditor model={model} schema={fieldSchema} />
-//         ),
-//         Description: (model, fieldSchema) => (
-//           <FieldEditor model={model} schema={fieldSchema} />
-//         )
-//       }}
-//     />
-
-//     <ArticleEditor
-//       model={product}
-//       schema={productSchema}
-//       fields={[
-//         field("Title", (model, fieldSchema) => (
-//           <FieldEditor model={model} schema={fieldSchema} />
-//         )),
-//         field("Description", (model, fieldSchema) => (
-//           <FieldEditor model={model} schema={fieldSchema} />
-//         ))
-//       ]}
-//     />
-
-//     <ArticleEditor
-//       model={product}
-//       schema={productSchema}
-//       fields={Object.values(productSchema.Fields).map(({ FieldName }) =>
-//         field(FieldName, (model, fieldSchema) => (
-//           <>
-//             <div>My custom text</div>
-//             <FieldEditor model={model} schema={fieldSchema} />
-//           </>
-//         ))
-//       )}
-//     />
-
-//     <ArticleEditor model={product} schema={productSchema}>
-//       <ArticleEditor.Fields
-//         Title={(model, fieldSchema) => (
-//           <FieldEditor model={model} schema={fieldSchema} />
-//         )}
-//         Description={(model, fieldSchema) => (
-//           <FieldEditor model={model} schema={fieldSchema} />
-//         )}
-//       />
-//     </ArticleEditor>
-
-//     <ArticleEditor model={product} schema={productSchema}>
-//       {Object.values(productSchema.Fields).map(fieldSchema => (
-//         <ArticleEditor.Field
-//           name={fieldSchema.FieldName}
-//           render={(model, fieldSchema) => (
-//             <div>
-//               {fieldSchema.FeildDescription}
-//               <FieldEditor model={model} schema={fieldSchema} />
-//             </div>
-//           )}
-//         />
-//       ))}
-//     </ArticleEditor>
-//   </div>
-// );

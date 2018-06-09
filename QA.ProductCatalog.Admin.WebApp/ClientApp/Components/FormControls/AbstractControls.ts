@@ -46,11 +46,11 @@ export abstract class AbstractControl<P = {}> extends Component<ControlProps & P
 }
 
 type Model = ValidatableObject & { [x: string]: any };
-type Validator = (value: any, model: Model) => string;
+type Validator = (value: any) => string;
 
 interface ValidatableProps {
   model: Model;
-  validate?: Validator[];
+  validate?: Validator | Validator[];
 }
 
 export abstract class ValidatableControl<P = {}> extends AbstractControl<ValidatableProps & P> {
@@ -70,9 +70,11 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
     }
 
     if (validate) {
+      const validators: Validator[] = isArray(validate) ? validate : [validate];
+
       this._validationDisposer = autorun(() => {
         const value = model[name];
-        const errors = validate.map(validator => validator(value, model)).filter(Boolean);
+        const errors = validators.map(validator => validator(value)).filter(Boolean);
         if (errors.length > 0) {
           model.addErrors(name, ...errors);
         }
@@ -80,26 +82,22 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
     }
   }
 
-  handleFocus(...args) {
+  protected handleFocus(...args) {
     super.handleFocus(...args);
     const { model, name } = this.props;
     transaction(() => {
       model.setFocus(name, true);
       model.setTouched(name, true);
-      model.clearErrors(name);
     });
   }
 
-  handleChange(...args) {
+  protected handleChange(...args) {
     super.handleChange(...args);
     const { model, name } = this.props;
-    transaction(() => {
-      model.setTouched(name, true);
-      model.clearErrors(name);
-    });
+    model.setTouched(name, true);
   }
 
-  handleBlur(...args) {
+  protected handleBlur(...args) {
     super.handleBlur(...args);
     const { model, name } = this.props;
     model.setFocus(name, false);
@@ -112,13 +110,13 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
   }
 }
 
-export abstract class AbstractInput<P = {}> extends ValidatableControl<P> {
+export abstract class ValidatableInput<P = {}> extends ValidatableControl<P> {
   readonly state = {
     hasFocus: false,
     editValue: ""
   };
 
-  handleFocus(...args) {
+  protected handleFocus(...args) {
     super.handleFocus(...args);
     const { model, name } = this.props;
     let editValue = model[name];
@@ -128,7 +126,7 @@ export abstract class AbstractInput<P = {}> extends ValidatableControl<P> {
     this.setState({ hasFocus: true, editValue });
   }
 
-  handleBlur(...args) {
+  protected handleBlur(...args) {
     super.handleBlur(...args);
     this.setState({ hasFocus: false });
   }

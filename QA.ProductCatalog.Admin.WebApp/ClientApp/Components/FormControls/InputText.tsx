@@ -3,10 +3,10 @@ import cn from "classnames";
 import MaskedInput, { MaskedInputProps } from "react-text-mask";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { AbstractInput } from "./AbstractControls";
+import { ValidatableInput } from "./AbstractControls";
 
 @observer
-export class InputText extends AbstractInput<
+export class InputText extends ValidatableInput<
   InputHTMLAttributes<HTMLInputElement> & MaskedInputProps
 > {
   handleChange(e: any) {

@@ -3,10 +3,10 @@ import cn from "classnames";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import TextAreaAutosize from "react-textarea-autosize";
-import { AbstractInput } from "./AbstractControls";
+import { ValidatableInput } from "./AbstractControls";
 
 @observer
-export class TextArea extends AbstractInput<TextareaHTMLAttributes<HTMLTextAreaElement>> {
+export class TextArea extends ValidatableInput<TextareaHTMLAttributes<HTMLTextAreaElement>> {
   handleChange(e: any) {
     super.handleChange(e);
     this.setState({ editValue: e.target.value });

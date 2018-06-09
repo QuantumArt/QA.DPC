@@ -2,14 +2,14 @@ import React from "react";
 import { NumericInput, INumericInputProps } from "@blueprintjs/core";
 import { action, runInAction } from "mobx";
 import { observer } from "mobx-react";
-import { AbstractInput } from "./AbstractControls";
+import { ValidatableInput } from "./AbstractControls";
 
 interface InputNumberProps extends INumericInputProps {
   isInteger?: boolean;
 }
 
 @observer
-export class InputNumber extends AbstractInput<InputNumberProps> {
+export class InputNumber extends ValidatableInput<InputNumberProps> {
   handleValueChange = (valueAsNumber: number, valueAsString: string) => {
     super.handleChange(valueAsNumber, valueAsString);
     const { model, name, isInteger } = this.props;

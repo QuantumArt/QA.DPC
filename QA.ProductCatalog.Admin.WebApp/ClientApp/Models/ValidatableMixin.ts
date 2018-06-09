@@ -1,28 +1,50 @@
-import { observable } from "mobx";
+import { observable, observe, computed } from "mobx";
 
 export interface ValidatableObject {
-  addErrors(name: string, ...errors: string[]): void;
-  clearErrors(name?: string): void;
+  isTouched(name?: string): boolean;
+  setTouched(name: string, isTouched: boolean): void;
+  hasFocus(name: string): boolean;
+  setFocus(name: string, hasFocus: boolean): void;
   hasErrors(name?: string): boolean;
   hasVisibleErrors(name?: string): boolean;
   getErrors(name: string): string[] | null;
   getVisibleErrors(name: string): string[] | null;
   getAllErrors(): { [field: string]: string[] } | null;
   getAllVisibleErrors(): { [field: string]: string[] } | null;
-  setTouched(name: string, isTouched: boolean): void;
-  isTouched(name?: string): boolean;
-  setFocus(name: string, hasFocus: boolean): void;
-  hasFocus(name: string): boolean;
+  addErrors(name: string, ...errors: string[]): void;
+  clearErrors(name?: string): void;
 }
 
 class FieldState {
-  @observable.ref public isTouched = false;
-  @observable.ref public hasFocus = false;
-  public errors = observable.array<string>(null, { deep: false });
+  @observable.ref isTouched = false;
+  @observable.ref hasFocus = false;
+  errors = observable.array<string>(null, { deep: false });
+
+  @computed
+  get hasErrors() {
+    return this.errors.length > 0;
+  }
+
+  @computed
+  get hasVisibleErrors() {
+    return this.isTouched && !this.hasFocus && this.hasErrors;
+  }
+
+  @computed
+  get visibleErrors() {
+    return this.hasVisibleErrors ? this.errors : null;
+  }
 }
 
-export const validatableMixin = () => {
+export const validatableMixin = (self: Object) => {
   const fields = observable.map<string, FieldState>(null, { deep: false });
+
+  observe(self, change => {
+    const fieldState = fields.get(change.name);
+    if (fieldState && fieldState.errors.length > 0) {
+      fieldState.errors.clear();
+    }
+  });
 
   const getOrAddFieldState = (name: string) => {
     let fieldState = fields.get(name);
@@ -61,70 +83,6 @@ export const validatableMixin = () => {
       }
     },
     views: {
-      hasErrors(name?: string) {
-        if (name) {
-          const fieldState = fields.get(name);
-          return !!(fieldState && fieldState.errors.length > 0);
-        }
-        for (const fieldState of fields.values()) {
-          if (fieldState.errors.length > 0) {
-            return true;
-          }
-        }
-        return false;
-      },
-      hasVisibleErrors(name?: string) {
-        if (name) {
-          const fieldState = fields.get(name);
-          return !!(
-            fieldState &&
-            fieldState.isTouched &&
-            !fieldState.hasFocus &&
-            fieldState.errors.length > 0
-          );
-        }
-        for (const fieldState of fields.values()) {
-          if (fieldState.isTouched && !fieldState.hasFocus && fieldState.errors.length > 0) {
-            return true;
-          }
-        }
-        return false;
-      },
-      getErrors(name: string) {
-        const fieldState = fields.get(name);
-        return fieldState && fieldState.errors.length > 0 ? fieldState.errors : null;
-      },
-      getVisibleErrors(name: string) {
-        const fieldState = fields.get(name);
-        const hasVisibleErrors =
-          fieldState &&
-          fieldState.isTouched &&
-          !fieldState.hasFocus &&
-          fieldState.errors.length > 0;
-        return hasVisibleErrors ? fieldState.errors : null;
-      },
-      getAllErrors() {
-        const errors = {};
-        let hasErrors = false;
-        for (const [fieldName, fieldState] of fields.entries()) {
-          if (fieldState.errors.length > 0) {
-            errors[fieldName] = fieldState.errors;
-            hasErrors = true;
-          }
-        }
-        return hasErrors ? errors : null;
-      },
-      getAllVisibleErrors() {
-        const errors = {};
-        let hasErrors = false;
-        for (const [fieldName, fieldState] of fields.entries()) {
-          if (fieldState.isTouched && !fieldState.hasFocus && fieldState.errors.length > 0) {
-            errors[fieldName] = fieldState.errors;
-            hasErrors = true;
-          }
-        }
-        return hasErrors ? errors : null;
-      },
       isTouched(name?: string) {
         if (name) {
           const fieldState = fields.get(name);
@@ -140,6 +98,60 @@ export const validatableMixin = () => {
       hasFocus(name: string) {
         const fieldState = fields.get(name);
         return fieldState ? fieldState.hasFocus : false;
+      },
+      hasErrors(name?: string) {
+        if (name) {
+          const fieldState = fields.get(name);
+          return fieldState ? fieldState.hasErrors : false;
+        }
+        for (const fieldState of fields.values()) {
+          if (fieldState.hasErrors) {
+            return true;
+          }
+        }
+        return false;
+      },
+      hasVisibleErrors(name?: string) {
+        if (name) {
+          const fieldState = fields.get(name);
+          return fieldState ? fieldState.hasVisibleErrors : false;
+        }
+        for (const fieldState of fields.values()) {
+          if (fieldState.hasVisibleErrors) {
+            return true;
+          }
+        }
+        return false;
+      },
+      getErrors(name: string) {
+        const fieldState = fields.get(name);
+        return fieldState ? fieldState.errors : null;
+      },
+      getVisibleErrors(name: string) {
+        const fieldState = fields.get(name);
+        return fieldState ? fieldState.visibleErrors : null;
+      },
+      getAllErrors() {
+        const errors = {};
+        let hasErrors = false;
+        for (const [fieldName, fieldState] of fields.entries()) {
+          if (fieldState.hasErrors) {
+            errors[fieldName] = fieldState.errors;
+            hasErrors = true;
+          }
+        }
+        return hasErrors ? errors : null;
+      },
+      getAllVisibleErrors() {
+        const errors = {};
+        let hasErrors = false;
+        for (const [fieldName, fieldState] of fields.entries()) {
+          if (fieldState.hasVisibleErrors) {
+            errors[fieldName] = fieldState.errors;
+            hasErrors = true;
+          }
+        }
+        return hasErrors ? errors : null;
       }
     }
   };
