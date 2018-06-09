@@ -41,7 +41,7 @@ const Article = t
     TimeField: t.maybe(t.Date),
     DateTimeField: t.maybe(t.Date),
     EnumField: t.maybe(t.string),
-    ArrayField: t.array(t.string)
+    ArrayField: t.maybe(t.array(t.string))
   })
   .extend(validatableMixin);
 
@@ -51,7 +51,7 @@ const article = Article.create({
   PhoneField: "",
   NumericField: 0,
   EnumField: "first",
-  ArrayField: ["second"]
+  ArrayField: ["first"]
 });
 
 unprotect(article);
@@ -64,6 +64,30 @@ const category = Category.create({
 unprotect(category);
 
 article.Category = category;
+
+setTimeout(() => {
+  console.log(new Date());
+  article.ArrayField.push("second");
+  // article.StringField = "123";
+}, 3000);
+
+setTimeout(() => {
+  console.log(new Date());
+  // @ts-ignore
+  article.ArrayField = [];
+  // article.StringField = null;
+}, 6000);
+
+setTimeout(() => {
+  console.log(new Date());
+  // @ts-ignore
+  article.ArrayField = ["first", "second"];
+}, 9000);
+
+setTimeout(() => {
+  console.log(new Date());
+  article.ArrayField.pop();
+}, 12000);
 
 // prettier-ignore
 const phoneMask = ["+", "7", " ", "(", /\d/, /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/];

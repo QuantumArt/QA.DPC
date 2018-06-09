@@ -41,7 +41,7 @@ export class Select extends ValidatableControl<SelectProps> {
     } = this.props;
     let value = model[name];
     if ((multiple || props.multi) && isObservableArray(value)) {
-      value = value.slice();
+      value = value.peek();
     }
     return (
       <ReactSelect

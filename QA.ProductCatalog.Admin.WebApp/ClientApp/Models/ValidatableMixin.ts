@@ -1,4 +1,12 @@
-import { observable, observe, computed } from "mobx";
+import {
+  observable,
+  computed,
+  intercept,
+  isObservableArray,
+  isObservableMap,
+  Lambda,
+  observe
+} from "mobx";
 
 export interface ValidatableObject {
   isTouched(name?: string): boolean;
@@ -39,13 +47,6 @@ class FieldState {
 export const validatableMixin = (self: Object) => {
   const fields = observable.map<string, FieldState>(null, { deep: false });
 
-  observe(self, change => {
-    const fieldState = fields.get(change.name);
-    if (fieldState && fieldState.errors.length > 0) {
-      fieldState.errors.clear();
-    }
-  });
-
   const getOrAddFieldState = (name: string) => {
     let fieldState = fields.get(name);
     if (fieldState) {
@@ -56,9 +57,57 @@ export const validatableMixin = (self: Object) => {
     return fieldState;
   };
 
+  const clearErrors = (name: string) => {
+    const fieldState = fields.get(name);
+    if (fieldState && fieldState.errors.length > 0) {
+      fieldState.errors.clear();
+    }
+  };
+
+  const fieldInterceptors: { [name: string]: Lambda } = {};
+
+  const addFieldInterceptor = (name: string, value: any) => {
+    if (isObservableArray(value) || isObservableMap(value)) {
+      console.log("addFieldInterceptor");
+      fieldInterceptors[name] = intercept(value, change => {
+        console.log("intercept field", name, change);
+        clearErrors(name);
+        return change;
+      });
+    }
+  };
+
+  const removeFieldInterceptor = (name: string) => {
+    const fieldInterceptor = fieldInterceptors[name];
+    if (fieldInterceptor) {
+      console.log("removeFieldInterceptor");
+      fieldInterceptor();
+      delete fieldInterceptors[name];
+    }
+  };
+
+  Object.entries(self).forEach(([name, value]) => {
+    addFieldInterceptor(name, value);
+  });
+
+  intercept(self, change => {
+    console.log("intercept model", change.name, change);
+    clearErrors(change.name);
+    return change;
+  });
+
+  observe(self, change => {
+    console.log("observe model", change.name, change);
+    removeFieldInterceptor(change.name);
+    if (change.type !== "remove") {
+      addFieldInterceptor(change.name, self[change.name]);
+    }
+  });
+
   return {
     actions: {
       addErrors(name: string, ...errors: string[]) {
+        console.log("addErrors", name, errors);
         const fieldErrors = getOrAddFieldState(name).errors;
         errors.forEach(error => {
           if (!fieldErrors.includes(error)) {
@@ -68,10 +117,12 @@ export const validatableMixin = (self: Object) => {
       },
       clearErrors(name?: string) {
         if (name) {
-          getOrAddFieldState(name).errors.clear();
+          clearErrors(name);
         } else {
           fields.forEach(fieldState => {
-            fieldState.errors.clear();
+            if (fieldState.errors.length > 0) {
+              fieldState.errors.clear();
+            }
           });
         }
       },
