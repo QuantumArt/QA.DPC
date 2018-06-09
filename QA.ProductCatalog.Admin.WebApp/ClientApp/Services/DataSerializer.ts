@@ -29,7 +29,7 @@ export class DataSerializer {
     });
   }
 
-  private getServerId(article: ArticleObject) {
+  public getServerId(article: ArticleObject) {
     if (article.Id < 0) {
       const idMapping = this._idMappings[article.ContentName];
       if (idMapping) {

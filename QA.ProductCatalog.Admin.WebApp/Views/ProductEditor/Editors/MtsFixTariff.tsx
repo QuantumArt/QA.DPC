@@ -38,7 +38,12 @@ class Example {
 
     ReactDOM.render(
       <Grid fluid>
-        <ArticleEditor model={product} contentSchema={example.schemaContext.contentSchema} />
+        <ArticleEditor
+          model={product}
+          contentSchema={example.schemaContext.contentSchema}
+          save
+          publish
+        />
       </Grid>,
       element
     );

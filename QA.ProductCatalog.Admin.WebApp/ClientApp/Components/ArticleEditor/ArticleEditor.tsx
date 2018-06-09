@@ -26,6 +26,8 @@ import {
 } from "Components/FieldEditors/FieldEditors";
 import { asc } from "Utils/Array/Sort";
 import { isFunction, isObject } from "Utils/TypeChecks";
+import { inject } from "react-ioc";
+import { DataSerializer } from "Services/DataSerializer";
 
 interface ObjectEditorProps {
   model: ArticleObject | ExtensionObject;
@@ -192,26 +194,31 @@ abstract class ObjectEditor<P> extends Component<ObjectEditorProps & P> {
 
 interface ArticleEditorProps {
   model: ArticleObject;
-  saveAndPublish?: boolean;
+  save?: boolean;
+  publish?: boolean;
 }
 
 @observer
 export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
+  @inject private _dataSerializer: DataSerializer;
+
   render() {
-    const { contentSchema, saveAndPublish = true } = this.props;
+    const { model, contentSchema, save, publish } = this.props;
+    const serverId = this._dataSerializer.getServerId(model);
     return (
       <>
-        <div className="article-editor__header">
-          <div className="article-editor__title" title={contentSchema.ContentDescription}>
-            {contentSchema.ContentTitle || contentSchema.ContentName}
-          </div>
-          {saveAndPublish && (
+        {(save || publish) && (
+          <div className="article-editor__header">
+            <div className="article-editor__title" title={contentSchema.ContentDescription}>
+              {contentSchema.ContentTitle || contentSchema.ContentName}
+              {serverId > 0 && `: ${serverId}`}
+            </div>
             <ButtonGroup>
-              <Button icon="floppy-disk">Сохранить</Button>
-              <Button icon="git-push">Опубликовать</Button>
+              {save && <Button icon="floppy-disk">Сохранить</Button>}
+              {publish && <Button icon="git-push">Опубликовать</Button>}
             </ButtonGroup>
-          )}
-        </div>
+          </div>
+        )}
         <Row>{super.render()}</Row>
       </>
     );
