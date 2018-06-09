@@ -68,7 +68,7 @@ export const validatableMixin = (self: Object) => {
 
   const addFieldInterceptor = (name: string, value: any) => {
     if (isObservableArray(value) || isObservableMap(value)) {
-      console.log("addFieldInterceptor");
+      console.log("addFieldInterceptor", name);
       fieldInterceptors[name] = intercept(value, change => {
         console.log("intercept field", name, change);
         clearErrors(name);
@@ -80,7 +80,7 @@ export const validatableMixin = (self: Object) => {
   const removeFieldInterceptor = (name: string) => {
     const fieldInterceptor = fieldInterceptors[name];
     if (fieldInterceptor) {
-      console.log("removeFieldInterceptor");
+      console.log("removeFieldInterceptor", name);
       fieldInterceptor();
       delete fieldInterceptors[name];
     }
@@ -127,9 +127,11 @@ export const validatableMixin = (self: Object) => {
         }
       },
       setTouched(name: string, isTouched: boolean) {
+        console.log("setTouched", name);
         getOrAddFieldState(name).isTouched = isTouched;
       },
       setFocus(name: string, hasFocus: boolean) {
+        console.log("setFocus", name);
         getOrAddFieldState(name).hasFocus = hasFocus;
       }
     },

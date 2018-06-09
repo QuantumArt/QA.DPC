@@ -68,14 +68,12 @@ article.Category = category;
 setTimeout(() => {
   console.log(new Date());
   article.ArrayField.push("second");
-  // article.StringField = "123";
 }, 3000);
 
 setTimeout(() => {
   console.log(new Date());
   // @ts-ignore
-  article.ArrayField = [];
-  // article.StringField = null;
+  article.ArrayField = null;
 }, 6000);
 
 setTimeout(() => {

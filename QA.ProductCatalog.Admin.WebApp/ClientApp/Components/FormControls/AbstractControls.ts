@@ -58,8 +58,10 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
 
   componentDidMount() {
     const { model, name, validate } = this.props;
+    console.log("componentDidMount", name, model[name]);
 
     const initialValue = untracked(() => model[name]);
+
     const hasEmptyInitialValue =
       initialValue == null ||
       initialValue === "" ||
@@ -73,6 +75,7 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
       const validators: Validator[] = isArray(validate) ? validate : [validate];
 
       this._validationDisposer = autorun(() => {
+        console.log("validate", name, model[name]);
         const value = model[name];
         const errors = validators.map(validator => validator(value)).filter(Boolean);
         if (errors.length > 0) {
