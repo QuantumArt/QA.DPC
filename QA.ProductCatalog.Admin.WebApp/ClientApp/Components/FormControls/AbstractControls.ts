@@ -1,5 +1,5 @@
 import { Component } from "react";
-import { autorun, untracked, transaction, IReactionDisposer } from "mobx";
+import { autorun, transaction, IReactionDisposer } from "mobx";
 import { isPlainObject, isArray } from "Utils/TypeChecks";
 import { ValidatableObject } from "Models/ValidatableMixin";
 
@@ -59,17 +59,6 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
   componentDidMount() {
     const { model, name, validate } = this.props;
     console.log("componentDidMount", name, model[name]);
-
-    const initialValue = untracked(() => model[name]);
-
-    const hasEmptyInitialValue =
-      initialValue == null ||
-      initialValue === "" ||
-      (isArray(initialValue) && initialValue.length === 0);
-
-    if (!hasEmptyInitialValue) {
-      model.setTouched(name, true);
-    }
 
     if (validate) {
       const validators: Validator[] = isArray(validate) ? validate : [validate];

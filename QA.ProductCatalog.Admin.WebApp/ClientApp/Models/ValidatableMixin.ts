@@ -70,6 +70,7 @@ export const validatableMixin = (self: Object) => {
     if (isObservableArray(value) || isObservableMap(value)) {
       console.log("addFieldInterceptor", name);
       fieldInterceptors[name] = intercept(value, change => {
+        // TODO: проверить что addedCount > 0 || removedCount > 0
         console.log("intercept field", name, change);
         clearErrors(name);
         return change;
@@ -92,7 +93,9 @@ export const validatableMixin = (self: Object) => {
 
   intercept(self, change => {
     console.log("intercept model", change.name, change);
-    clearErrors(change.name);
+    if (change.type === "remove" || change.newValue !== self[change.name]) {
+      clearErrors(change.name);
+    }
     return change;
   });
 

@@ -74,7 +74,7 @@ interface ObjectEditorBlock {
   contentsConfig?: ContentsConfig;
 }
 
-abstract class ObjectEditor<P> extends Component<ObjectEditorProps & P> {
+abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps & P> {
   _editorBlocks: ObjectEditorBlock[] = [];
 
   constructor(props: ObjectEditorProps & P, context?: any) {
