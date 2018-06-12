@@ -7,6 +7,7 @@ import {
   Lambda,
   observe
 } from "mobx";
+import { isArray } from "Utils/TypeChecks";
 
 export interface ValidatableObject {
   isTouched(name?: string): boolean;
@@ -58,6 +59,7 @@ export const validatableMixin = (self: Object) => {
   };
 
   const clearErrors = (name: string) => {
+    console.log("clearErrors", name);
     const fieldState = fields.get(name);
     if (fieldState && fieldState.errors.length > 0) {
       fieldState.errors.clear();
@@ -67,12 +69,36 @@ export const validatableMixin = (self: Object) => {
   const fieldInterceptors: { [name: string]: Lambda } = {};
 
   const addFieldInterceptor = (name: string, value: any) => {
-    if (isObservableArray(value) || isObservableMap(value)) {
+    if (isObservableArray(value)) {
       console.log("addFieldInterceptor", name);
       fieldInterceptors[name] = intercept(value, change => {
-        // TODO: проверить что addedCount > 0 || removedCount > 0
         console.log("intercept field", name, change);
-        clearErrors(name);
+        if (change.type === "splice") {
+          if (change.removedCount > 0 || change.added.length > 0) {
+            clearErrors(name);
+          }
+        } else if (change.type === "update") {
+          if (change.newValue !== value[change.index]) {
+            clearErrors(name);
+          }
+        }
+        return change;
+      });
+    } else if (isObservableMap(value)) {
+      console.log("addFieldInterceptor", name);
+      fieldInterceptors[name] = intercept(value, change => {
+        console.log("intercept field", name, change);
+        if (change.type === "add") {
+          clearErrors(name);
+        } else if (change.type === "update") {
+          if (change.newValue !== value.get(change.name)) {
+            clearErrors(name);
+          }
+        } else if (change.type === "delete") {
+          if (value.has(change.name)) {
+            clearErrors(name);
+          }
+        }
         return change;
       });
     }
@@ -93,7 +119,17 @@ export const validatableMixin = (self: Object) => {
 
   intercept(self, change => {
     console.log("intercept model", change.name, change);
-    if (change.type === "remove" || change.newValue !== self[change.name]) {
+    const value = self[change.name];
+    if (
+      change.type === "remove" ||
+      (change.newValue !== value &&
+        !(
+          isArray(value) &&
+          value.length === 0 &&
+          isArray(change.newValue) &&
+          change.newValue.length === 0
+        ))
+    ) {
       clearErrors(change.name);
     }
     return change;
