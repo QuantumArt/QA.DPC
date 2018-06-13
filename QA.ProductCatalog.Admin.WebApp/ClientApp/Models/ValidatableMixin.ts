@@ -129,15 +129,18 @@ export const validatableMixin = (self: Object) => {
     }
   };
 
-  Object.entries(self).forEach(([name, value]) => {
-    addFieldInterceptor(name, value);
-  });
-
   intercept(self, change => {
     if (change.type === "remove" || !sutructuralEquals(self[change.name], change.newValue)) {
       clearErrors(change.name);
     }
     return change;
+  });
+
+  // иначе не собирает начальную модель из снапшота
+  Promise.resolve().then(() => {
+    Object.entries(self).forEach(([name, value]) => {
+      addFieldInterceptor(name, value);
+    });
   });
 
   observe(self, change => {

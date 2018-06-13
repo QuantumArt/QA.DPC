@@ -342,20 +342,33 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
-      <Col md={3}>RadioGroup [normal | disabled]</Col>
+    <Row
+      className={cn("pt-form-group", {
+        "pt-intent-danger": article.hasVisibleErrors("EnumField")
+      })}
+    >
+      <Col md={3}>RadioGroup [validation | disabled]</Col>
       <Col md={3}>
         <RadioGroup
           name="EnumField"
           model={article}
           placeholder="EnumField"
           inline
+          validate={[required, pattern(/^[0-9]+$/)]}
+          className={cn({
+            "pt-intent-danger": article.hasVisibleErrors("EnumField")
+          })}
           options={[
             { value: "first", label: "Первый" },
             { value: "second", label: "Второй" },
             { value: "third", label: "Третий", disabled: true }
           ]}
         />
+        {article.hasVisibleErrors("EnumField") && (
+          <div className="pt-form-helper-text">
+            {article.getVisibleErrors("EnumField")}
+          </div>
+        )}
       </Col>
       <Col md={6}>
         <RadioGroup

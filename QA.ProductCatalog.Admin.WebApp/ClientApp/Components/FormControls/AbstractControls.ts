@@ -45,10 +45,8 @@ export abstract class AbstractControl<P = {}> extends Component<ControlProps & P
   }
 }
 
-type Model = ValidatableObject & { [x: string]: any };
-
 interface ValidatableProps {
-  model: Model;
+  model: ValidatableObject & { [x: string]: any };
   validate?: Validator | Validator[];
 }
 
@@ -58,7 +56,7 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
   componentDidMount() {
     const { model, name, validate } = this.props;
     if (validate) {
-      this._validators = isArray(validate) ? validate : [validate];
+      this._validators = (isArray(validate) ? validate : [validate]).filter(Boolean);
       model.addValidators(name, ...this._validators);
     }
   }

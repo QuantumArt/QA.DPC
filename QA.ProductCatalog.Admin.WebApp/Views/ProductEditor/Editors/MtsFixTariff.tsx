@@ -9,6 +9,7 @@ import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { Product, Region } from "Editors/MtsFixTariff/ProductEditorSchema";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import { onPatch } from "mobx-state-tree";
 
 class Example {
   @inject editorController: EditorController;
@@ -29,6 +30,11 @@ class Example {
     const newRegion = example.dataContext.createArticle<Region>("Region");
     newRegion.Parent = example.dataContext.createArticle<Region>("Region");
     product.Regions[0] = newRegion;
+
+    // @ts-ignore
+    onPatch(product, patch => {
+      console.log(patch);
+    });
 
     console.dir(toJS(example.dataContext.store["Region"]));
     // @ts-ignore
