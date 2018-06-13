@@ -6,7 +6,7 @@
     "build-dev": "webpack --mode development",
     "build-prod": "webpack --mode production",
     "webpack": "webpack --mode development --watch",
-    "test": "exit 0",
+    "test": "jest",
     "precommit": "lint-staged"
   },
   "lint-staged": {
@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.3",
+    "@types/jest": "^23.0.2",
     "@types/moment": "^2.13.0",
     "@types/node": "^9.6.5",
     "@types/react": "^16.3.10",
@@ -42,12 +43,14 @@
     "css-loader": "^0.28.11",
     "glob": "^7.1.2",
     "husky": "^0.14.3",
+    "jest": "^23.1.0",
     "lint-staged": "^7.0.4",
     "node-sass": "^4.8.3",
     "postcss-loader": "^2.1.4",
     "prettier": "^1.12.1",
     "sass-loader": "^7.0.1",
     "style-loader": "^0.20.3",
+    "ts-jest": "^22.4.6",
     "ts-loader": "^4.2.0",
     "tsconfig-paths-webpack-plugin": "^3.0.3",
     "typescript": "^2.8.1",
@@ -78,5 +81,23 @@
     "react-transition-group": "^2.3.1",
     "reflect-metadata": "^0.1.12",
     "tslib": "^1.9.0"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(jsx?|tsx?)$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.+|.+\\.(test|spec))\\.(jsx?|tsx?)$",
+    "moduleDirectories": [
+      "node_modules",
+      "ClientApp"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
   }
 }
