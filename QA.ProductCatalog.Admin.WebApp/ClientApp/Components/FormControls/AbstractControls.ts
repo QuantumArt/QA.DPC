@@ -1,7 +1,7 @@
 import { Component } from "react";
-import { autorun, transaction, IReactionDisposer } from "mobx";
+import { transaction } from "mobx";
 import { isPlainObject, isArray } from "Utils/TypeChecks";
-import { ValidatableObject } from "Models/ValidatableMixin";
+import { ValidatableObject, Validator } from "Models/ValidatableMixin";
 
 interface ControlProps {
   [x: string]: any;
@@ -46,7 +46,6 @@ export abstract class AbstractControl<P = {}> extends Component<ControlProps & P
 }
 
 type Model = ValidatableObject & { [x: string]: any };
-type Validator = (value: any) => string;
 
 interface ValidatableProps {
   model: Model;
@@ -54,23 +53,13 @@ interface ValidatableProps {
 }
 
 export abstract class ValidatableControl<P = {}> extends AbstractControl<ValidatableProps & P> {
-  private _validationDisposer: IReactionDisposer;
+  private _validators: Validator[];
 
   componentDidMount() {
     const { model, name, validate } = this.props;
-    console.log("componentDidMount", name, model[name]);
-
     if (validate) {
-      const validators: Validator[] = isArray(validate) ? validate : [validate];
-
-      this._validationDisposer = autorun(() => {
-        console.log("validate", name, model[name]);
-        const value = model[name];
-        const errors = validators.map(validator => validator(value)).filter(Boolean);
-        if (errors.length > 0) {
-          model.addErrors(name, ...errors);
-        }
-      });
+      this._validators = isArray(validate) ? validate : [validate];
+      model.addValidators(name, ...this._validators);
     }
   }
 
@@ -96,8 +85,9 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
   }
 
   componentWillUnmount() {
-    if (this._validationDisposer) {
-      this._validationDisposer();
+    const { model, name } = this.props;
+    if (this._validators) {
+      model.removeValidators(name, ...this._validators);
     }
   }
 }

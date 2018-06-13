@@ -65,48 +65,6 @@ unprotect(category);
 
 article.Category = category;
 
-setTimeout(() => {
-  console.log(new Date().toISOString());
-  // article.StringField = null;
-  article.ArrayField.push("second");
-}, 2000);
-
-setTimeout(() => {
-  console.log(new Date().toISOString());
-  // article.StringField = null;
-  article.ArrayField = null;
-}, 4000);
-
-setTimeout(() => {
-  console.log(new Date().toISOString());
-  // article.StringField = "";
-  article.ArrayField = null;
-}, 6000);
-
-setTimeout(() => {
-  console.log(new Date().toISOString());
-  // article.StringField = "";
-  // @ts-ignore
-  article.ArrayField = ["first", "second"];
-}, 8000);
-
-setTimeout(() => {
-  console.log(new Date().toISOString());
-  article.ArrayField.pop();
-}, 10000);
-
-setTimeout(() => {
-  console.log(new Date().toISOString());
-  // @ts-ignore
-  article.ArrayField = ["first", "second"];
-}, 12000);
-
-setTimeout(() => {
-  console.log(new Date().toISOString());
-  // @ts-ignore
-  article.ArrayField = ["first", "second"];
-}, 14000);
-
 // prettier-ignore
 const phoneMask = ["+", "7", " ", "(", /\d/, /\d/, /\d/, ")", " ", /\d/, /\d/, /\d/, "-", /\d/, /\d/, /\d/, /\d/];
 

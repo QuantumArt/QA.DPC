@@ -2,12 +2,15 @@ import {
   observable,
   computed,
   intercept,
+  observe,
+  comparer,
   isObservableArray,
   isObservableMap,
-  Lambda,
-  observe
+  Lambda
 } from "mobx";
-import { isArray } from "Utils/TypeChecks";
+import { getSnapshot, isStateTreeNode } from "mobx-state-tree";
+
+export type Validator = (value: any) => string;
 
 export interface ValidatableObject {
   isTouched(name?: string): boolean;
@@ -22,16 +25,35 @@ export interface ValidatableObject {
   getAllVisibleErrors(): { [field: string]: string[] } | null;
   addErrors(name: string, ...errors: string[]): void;
   clearErrors(name?: string): void;
+  addValidators(name: string, ...validators: Validator[]): void;
+  removeValidators(name: string, ...validators: Validator[]): void;
 }
 
 class FieldState {
   @observable.ref isTouched = false;
   @observable.ref hasFocus = false;
+  validators = observable.array<Validator>(null, { deep: false });
   errors = observable.array<string>(null, { deep: false });
+
+  constructor(private _model: Object, private _name: string) {}
+
+  @computed
+  get allErrors() {
+    const fieldErrors: string[] = [];
+    const value = this._model[this._name];
+    this.validators.forEach(validator => {
+      const error = validator(value);
+      if (error && !fieldErrors.includes(error)) {
+        fieldErrors.push(error);
+      }
+    });
+    fieldErrors.push(...this.errors);
+    return fieldErrors;
+  }
 
   @computed
   get hasErrors() {
-    return this.errors.length > 0;
+    return this.allErrors.length > 0;
   }
 
   @computed
@@ -41,7 +63,7 @@ class FieldState {
 
   @computed
   get visibleErrors() {
-    return this.hasVisibleErrors ? this.errors : null;
+    return this.hasVisibleErrors ? this.allErrors : null;
   }
 }
 
@@ -53,13 +75,12 @@ export const validatableMixin = (self: Object) => {
     if (fieldState) {
       return fieldState;
     }
-    fieldState = new FieldState();
+    fieldState = new FieldState(self, name);
     fields.set(name, fieldState);
     return fieldState;
   };
 
   const clearErrors = (name: string) => {
-    console.log("clearErrors", name);
     const fieldState = fields.get(name);
     if (fieldState && fieldState.errors.length > 0) {
       fieldState.errors.clear();
@@ -70,28 +91,24 @@ export const validatableMixin = (self: Object) => {
 
   const addFieldInterceptor = (name: string, value: any) => {
     if (isObservableArray(value)) {
-      console.log("addFieldInterceptor", name);
       fieldInterceptors[name] = intercept(value, change => {
-        console.log("intercept field", name, change);
         if (change.type === "splice") {
           if (change.removedCount > 0 || change.added.length > 0) {
             clearErrors(name);
           }
         } else if (change.type === "update") {
-          if (change.newValue !== value[change.index]) {
+          if (!sutructuralEquals(value[change.index], change.newValue.storedValue)) {
             clearErrors(name);
           }
         }
         return change;
       });
     } else if (isObservableMap(value)) {
-      console.log("addFieldInterceptor", name);
       fieldInterceptors[name] = intercept(value, change => {
-        console.log("intercept field", name, change);
         if (change.type === "add") {
           clearErrors(name);
         } else if (change.type === "update") {
-          if (change.newValue !== value.get(change.name)) {
+          if (!sutructuralEquals(value.get(change.name), change.newValue.storedValue)) {
             clearErrors(name);
           }
         } else if (change.type === "delete") {
@@ -107,7 +124,6 @@ export const validatableMixin = (self: Object) => {
   const removeFieldInterceptor = (name: string) => {
     const fieldInterceptor = fieldInterceptors[name];
     if (fieldInterceptor) {
-      console.log("removeFieldInterceptor", name);
       fieldInterceptor();
       delete fieldInterceptors[name];
     }
@@ -118,25 +134,13 @@ export const validatableMixin = (self: Object) => {
   });
 
   intercept(self, change => {
-    console.log("intercept model", change.name, change);
-    const value = self[change.name];
-    if (
-      change.type === "remove" ||
-      (change.newValue !== value &&
-        !(
-          isArray(value) &&
-          value.length === 0 &&
-          isArray(change.newValue) &&
-          change.newValue.length === 0
-        ))
-    ) {
+    if (change.type === "remove" || !sutructuralEquals(self[change.name], change.newValue)) {
       clearErrors(change.name);
     }
     return change;
   });
 
   observe(self, change => {
-    console.log("observe model", change.name, change);
     removeFieldInterceptor(change.name);
     if (change.type !== "remove") {
       addFieldInterceptor(change.name, self[change.name]);
@@ -146,7 +150,6 @@ export const validatableMixin = (self: Object) => {
   return {
     actions: {
       addErrors(name: string, ...errors: string[]) {
-        console.log("addErrors", name, errors);
         const fieldErrors = getOrAddFieldState(name).errors;
         errors.forEach(error => {
           if (!fieldErrors.includes(error)) {
@@ -165,12 +168,21 @@ export const validatableMixin = (self: Object) => {
           });
         }
       },
+      addValidators(name: string, ...validators: Validator[]) {
+        getOrAddFieldState(name).validators.push(...validators);
+      },
+      removeValidators(name: string, ...validators: Validator[]) {
+        const fieldState = fields.get(name);
+        if (fieldState) {
+          validators.forEach(validator => {
+            fieldState.validators.remove(validator);
+          });
+        }
+      },
       setTouched(name: string, isTouched: boolean) {
-        console.log("setTouched", name);
         getOrAddFieldState(name).isTouched = isTouched;
       },
       setFocus(name: string, hasFocus: boolean) {
-        console.log("setFocus", name);
         getOrAddFieldState(name).hasFocus = hasFocus;
       }
     },
@@ -217,34 +229,43 @@ export const validatableMixin = (self: Object) => {
       },
       getErrors(name: string) {
         const fieldState = fields.get(name);
-        return fieldState ? fieldState.errors : null;
+        return fieldState ? fieldState.allErrors : null;
       },
       getVisibleErrors(name: string) {
         const fieldState = fields.get(name);
         return fieldState ? fieldState.visibleErrors : null;
       },
       getAllErrors() {
-        const errors = {};
+        const modelErrors = {};
         let hasErrors = false;
         for (const [fieldName, fieldState] of fields.entries()) {
           if (fieldState.hasErrors) {
-            errors[fieldName] = fieldState.errors;
+            modelErrors[fieldName] = fieldState.allErrors;
             hasErrors = true;
           }
         }
-        return hasErrors ? errors : null;
+        return hasErrors ? modelErrors : null;
       },
       getAllVisibleErrors() {
-        const errors = {};
+        const modelErrors = {};
         let hasErrors = false;
         for (const [fieldName, fieldState] of fields.entries()) {
           if (fieldState.hasVisibleErrors) {
-            errors[fieldName] = fieldState.errors;
+            modelErrors[fieldName] = fieldState.allErrors;
             hasErrors = true;
           }
         }
-        return hasErrors ? errors : null;
+        return hasErrors ? modelErrors : null;
       }
     }
   };
 };
+
+function sutructuralEquals(first: any, second: any): boolean {
+  if (first === second) {
+    return true;
+  }
+  const firstSnapshot = isStateTreeNode(first) ? getSnapshot(first) : first;
+  const secondSnapshot = isStateTreeNode(second) ? getSnapshot(second) : second;
+  return comparer.structural(firstSnapshot, secondSnapshot);
+}
