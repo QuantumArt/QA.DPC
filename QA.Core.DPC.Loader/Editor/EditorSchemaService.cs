@@ -92,8 +92,6 @@ namespace QA.Core.DPC.Loader.Editor
         /// <exception cref="InvalidOperationException" />
         private ContentSchema GetContentSchema(Content content, SchemaContext context, string path)
         {
-            path += $"/{content.ContentId}";
-
             if (context.SchemasByContent.ContainsKey(content))
             {
                 ContentSchema repeatedSchema = context.SchemasByContent[content];
@@ -160,7 +158,7 @@ namespace QA.Core.DPC.Loader.Editor
             return new ContentSchema
             {
                 ContentId = qpContent.Id,
-                ContentPath = path,
+                ContentPath = path == "" ? "/" : path,
                 ContentName = String.IsNullOrWhiteSpace(qpContent.NetName) ? "" : qpContent.NetName,
                 ContentTitle = IsHtmlWhiteSpace(qpContent.Name) ? "" : qpContent.Name,
                 ContentDescription = IsHtmlWhiteSpace(qpContent.Description) ? "" : qpContent.Description,
@@ -172,7 +170,7 @@ namespace QA.Core.DPC.Loader.Editor
         private FieldSchema GetFieldSchema(
             Field field, Quantumart.QP8.BLL.Field qpField, SchemaContext context, string path)
         {
-            path += $":{field?.FieldId ?? qpField.Id}";
+            path += $"/{field?.FieldName ?? qpField.Name ?? ""}";
 
             FieldSchema fieldSchema;
 
@@ -307,7 +305,7 @@ namespace QA.Core.DPC.Loader.Editor
                 if (!String.IsNullOrEmpty(qpContent.NetName)
                     && !contentSchemas.ContainsKey(qpContent.NetName))
                 {
-                    var contentSchema = GetContentSchema(content, context, path);
+                    var contentSchema = GetContentSchema(content, context, $"{path}/{qpContent.NetName}");
                     contentSchema.ForExtension = true;
                     contentSchemas[qpContent.NetName] = contentSchema;
                 }

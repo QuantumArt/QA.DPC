@@ -106,31 +106,32 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 MergedSchema = mergedSchemaJson,
             });
         }
-        
+
         /// <summary>
         /// Построить JSON-схему части продукта, начиная с корневого контента,
-        /// описанного путём <paramref name="contentPaths"/>[0].
+        /// описанного путём <paramref name="contentPath"/>.
         /// </summary>
         /// <param name="productDefinitionId">Id описания продукта</param>
-        /// <param name="contentPaths">
-        /// Массив путей контентов в продукте в формате <c>"/contentId:fieldId/.../contentId"</c>.
-        /// Первый путь в массиве соответствует корневому контенту, остальные — его связям.
-        /// Пример: <c>[ "/339:1326/290", "/339:1326/290:1587/379" ]</c>.
-        /// </param>
+        /// <param name="contentPath">Путь к контенту в продукте</param>
+        /// <param name="contentSelection">Дерево выбора частичного продукта</param>
         /// <returns>JSON-схема продукта</returns>
         [HttpPost]
         public ContentResult PartialJsonSchema_Test(
             int productDefinitionId,
-            [ModelBinder(typeof(JsonModelBinder))] string[] contentPaths,
+            string contentPath,
+            [ModelBinder(typeof(JsonModelBinder))]
+            PartialContentSelection contentSelection,
             bool isLive = false)
         {
             Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
 
-            Content partialContent = _editorPartialContentService.GetPartialContent(content, contentPaths);
+            //Content partialContent = _editorPartialContentService
+            //  .GetPartialContent(content, request.ContentPath, request.ContentSelection);
 
-            string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(partialContent);
+            //string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(partialContent);
 
-            return Content(jsonSchema, "application/json");
+            //return Content(jsonSchema, "application/json");
+            return Content(JsonConvert.SerializeObject(contentSelection), "application/json");
         }
 
         /// <summary>
@@ -210,10 +211,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
             return _dataCache.GetOrAdd(articleId, _ => GetProduct(articleId));
         }
-        
+
         /// <summary>
         /// Сохранить часть продукта начиная с корневого контента,
-        /// описанного путём <see cref="PartialProductRequest.ContentPaths"/>[0].
+        /// описанного путём <see cref="PartialProductRequest.ContentPath"/>
+        /// и поддеревом <see cref="PartialProductRequest.ContentSelection"/>.
         /// </summary>
         [HttpPost]
         public ActionResult SavePartialProduct(
@@ -226,12 +228,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             Content content = GetContentByProductDefinitionId(request.ProductDefinitionId, request.IsLive);
 
-            Content partialContent = _editorPartialContentService.GetPartialContent(content, request.ContentPaths);
+            //Content partialContent = _editorPartialContentService
+            //  .GetPartialContent(content, request.ContentPath, request.ContentSelection);
 
             // TODO: deserialize by _editorProductService
-            Article partialProduct = _jsonProductService.DeserializeProduct(request.PartialProduct, partialContent);
+            //Article partialProduct = _jsonProductService.DeserializeProduct(request.PartialProduct, partialContent);
 
-            var partialDefinition = new ProductDefinition { StorageSchema = partialContent };
+            //var partialDefinition = new ProductDefinition { StorageSchema = partialContent };
 
             // TODO: what about validation ?
             // TODO: what about Id-s of new articles ?
@@ -246,14 +249,28 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             /// Id описания продукта
             /// </summary>
             public int ProductDefinitionId { get; set; }
-            
+
             /// <summary>
-            /// Массив путей контентов в продукте в формате <c>/contentId:fieldId/.../contentId</c>.
-            /// Первый путь в массиве соответствует корневому контенту, остальные — его связям.
-            /// Пример: <c>[ "/339:1326/290", "/339:1326/290:1587/379" ]</c>.
+            /// Путь к контенту в продукте в формате <c>"/FieldName/.../ExtensionContentName/.../FieldName"</c>
             /// </summary>
-            [Required]
-            public string[] ContentPaths { get; set; }
+            public string ContentPath { get; set; } = "/";
+
+            /// <summary>
+            /// Дерево выбора частичного продукта в формате:
+            /// <code>
+            /// {
+            ///   RelationFieldName: {
+            ///     RelationFieldName: true,
+            ///   },
+            ///   ExtensionFieldName: {
+            ///     ExtensionContentName: {
+            ///       RelationFieldName: true
+            ///     }
+            ///   }
+            /// }
+            /// </code>
+            /// </summary>
+            public PartialContentSelection ContentSelection { get; set; } = new PartialContentSelection();
 
             /// <summary>
             /// Фильтрация по IsLive
@@ -261,7 +278,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             public bool IsLive { get; set; }
 
             /// <summary>
-            /// JSON части продукта, начиная с корневого контента, описанного путём <see cref="ContentPaths"/>[0]
+            /// JSON части продукта, начиная с корневого контента, описанного путём <see cref="ContentPath"/>
             /// </summary>
             [Required]
             public JObject PartialProduct { get; set; }

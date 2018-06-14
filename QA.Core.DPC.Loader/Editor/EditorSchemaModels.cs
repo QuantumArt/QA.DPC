@@ -156,4 +156,12 @@ namespace QA.Core.DPC.Loader.Editor
             return (ExtensionFieldSchema)MemberwiseClone();
         }
     }
+
+    public sealed class PartialContentSelection : Dictionary<string, PartialContentSelection>
+    {
+        public static implicit operator PartialContentSelection(bool value)
+        {
+            return null;
+        }
+    }
 }

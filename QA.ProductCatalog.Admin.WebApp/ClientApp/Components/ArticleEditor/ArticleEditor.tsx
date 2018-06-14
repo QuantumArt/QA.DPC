@@ -1,6 +1,6 @@
 import React, { Component, StatelessComponent } from "react";
 import { Row } from "react-flexbox-grid";
-import { Button, ButtonGroup } from "@blueprintjs/core";
+import { Button } from "@blueprintjs/core";
 import { inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
@@ -11,6 +11,7 @@ import {
   ExtensionFieldSchema,
   FieldExactTypes
 } from "Models/EditorSchemaModels";
+import { PartialContentSelection, validateContentSelection } from "Models/PartialContentSelection";
 import {
   ExtensionFieldEditor,
   StringFieldEditor,
@@ -194,29 +195,34 @@ abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps & P> {
 
 interface ArticleEditorProps {
   model: ArticleObject;
+  includeOnSave?: PartialContentSelection;
   save?: boolean;
-  publish?: boolean;
 }
 
 @observer
 export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
   @inject private _dataSerializer: DataSerializer;
 
+  constructor(props: ObjectEditorProps & ArticleEditorProps, context?: any) {
+    super(props, context);
+    const { contentSchema, includeOnSave } = this.props;
+    if (includeOnSave) {
+      validateContentSelection(contentSchema, includeOnSave);
+    }
+  }
+
   render() {
-    const { model, contentSchema, save, publish } = this.props;
+    const { model, contentSchema, save } = this.props;
     const serverId = this._dataSerializer.getServerId(model);
     return (
       <>
-        {(save || publish) && (
+        {save && (
           <div className="article-editor__header">
             <div className="article-editor__title" title={contentSchema.ContentDescription}>
               {contentSchema.ContentTitle || contentSchema.ContentName}
               {serverId > 0 && `: ${serverId}`}
             </div>
-            <ButtonGroup>
-              {save && <Button icon="floppy-disk">Сохранить</Button>}
-              {publish && <Button icon="git-push">Опубликовать</Button>}
-            </ButtonGroup>
+            {save && <Button icon="floppy-disk">Сохранить</Button>}
           </div>
         )}
         <Row>{super.render()}</Row>

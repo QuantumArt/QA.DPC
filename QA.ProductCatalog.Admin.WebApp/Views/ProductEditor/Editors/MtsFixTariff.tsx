@@ -47,8 +47,17 @@ class Example {
         <ArticleEditor
           model={product}
           contentSchema={example.schemaContext.contentSchema}
+          includeOnSave={{
+            MarketingProduct: {
+              ActionsOnMarketingDevice: true
+            },
+            Type: {
+              FixConnectAction: {
+                MarketingOffers: true
+              }
+            }
+          }}
           save
-          publish
         />
       </Grid>,
       element
