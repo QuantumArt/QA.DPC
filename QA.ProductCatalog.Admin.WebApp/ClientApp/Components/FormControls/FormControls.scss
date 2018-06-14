@@ -1,13 +1,60 @@
 $pt-icon-color: #5c7080;
 $pt-danger-color: #db3737;
-$pt-focus-border: 1px solid #137cbd;
-$pt-danger-border: 1px solid #db3737;
+$pt-focus-color: #137cbd;
+$pt-focus-border: 1px solid $pt-focus-color;
+$pt-danger-border: 1px solid $pt-danger-color;
 $pt-focus-backgorund: rgba(19, 124, 189, 0.3);
 $pt-danger-backgorund: rgba(219, 55, 55, 0.3);
 $pt-focus-box-shadow: 0 0 0 3px rgba(19, 124, 189, 0.3),
   inset 0 1px 1px rgba(16, 22, 26, 0.2);
 $pt-danger-box-shadow: 0 0 0 3px rgba(219, 55, 55, 0.3),
   inset 0 1px 1px rgba(16, 22, 26, 0.2);
+
+/* ==== InputFile ==== */
+.pt-file-input.editor-input-file {
+  min-width: 0px;
+
+  .pt-file-upload-input {
+    padding-right: 30px;
+    z-index: 5;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  input[type="file"]:focus + .pt-file-upload-input {
+    box-shadow: 0 0 0 1px $pt-focus-color, $pt-focus-box-shadow;
+  }
+
+  &.pt-intent-danger {
+    .pt-file-upload-input {
+      box-shadow: 0 0 0 1px $pt-danger-color,
+        inset 0 1px 1px rgba(16, 22, 26, 0.2);
+    }
+
+    input[type="file"]:focus + .pt-file-upload-input {
+      box-shadow: 0 0 0 1px $pt-danger-color, $pt-danger-box-shadow;
+    }
+  }
+}
+
+.editor-input-file {
+  &__placeholder {
+    color: #a9b3ba;
+  }
+
+  &__clear {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    right: 0;
+    height: 30px;
+    width: 30px;
+  }
+}
 
 /* ==== TextArea ==== */
 .editor-textarea {

@@ -11,6 +11,7 @@ import {
   InputText,
   InputNumber,
   InputSearch,
+  InputFile,
   CheckBox,
   TextArea,
   DatePicker,
@@ -35,6 +36,7 @@ const Article = t
     PhoneField: t.maybe(t.string),
     NumericField: t.maybe(t.number),
     SearchField: t.maybe(t.string),
+    FileField: t.maybe(t.string),
     BooleanField: t.maybe(t.boolean),
     TextField: t.maybe(t.string),
     DateField: t.maybe(t.Date),
@@ -186,6 +188,38 @@ const FormControlsBlock = observer(() => (
           name="SearchField"
           model={article}
           placeholder="SearchField"
+          disabled
+        />
+      </Col>
+    </Row>
+
+    <Row
+      className={cn("pt-form-group", {
+        "pt-intent-danger": article.hasVisibleErrors("FileField")
+      })}
+    >
+      <Col md={3}>InputFile [required | disabled]</Col>
+      <Col md={3}>
+        <InputFile
+          name="FileField"
+          model={article}
+          placeholder="FileField"
+          validate={required}
+          className={cn({
+            "pt-intent-danger": article.hasVisibleErrors("FileField")
+          })}
+        />
+        {article.hasVisibleErrors("FileField") && (
+          <div className="pt-form-helper-text">
+            {article.getVisibleErrors("FileField")}
+          </div>
+        )}
+      </Col>
+      <Col md={3}>
+        <InputFile
+          name="FileField"
+          model={article}
+          placeholder="FileField"
           disabled
         />
       </Col>

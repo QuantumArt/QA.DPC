@@ -1,11 +1,10 @@
-import { CheckBox } from "./CheckBox";
-import { InputText } from "./InputText";
-import { InputNumber } from "./InputNumber";
-import { InputSearch } from "./InputSearch";
-import { TextArea } from "./TextArea";
-import { DatePicker } from "./DatePicker";
-import { Select } from "./Select";
-import { RadioGroup } from "./RadioGroup";
+export { CheckBox } from "./CheckBox";
+export { InputText } from "./InputText";
+export { InputNumber } from "./InputNumber";
+export { InputSearch } from "./InputSearch";
+export { InputFile } from "./InputFile";
+export { TextArea } from "./TextArea";
+export { DatePicker } from "./DatePicker";
+export { Select } from "./Select";
+export { RadioGroup } from "./RadioGroup";
 import "./FormControls.scss";
-
-export { CheckBox, InputText, InputNumber, InputSearch, TextArea, DatePicker, Select, RadioGroup };

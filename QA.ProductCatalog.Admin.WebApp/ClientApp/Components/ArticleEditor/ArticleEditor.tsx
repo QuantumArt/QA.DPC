@@ -1,8 +1,8 @@
-import "./ArticleEditor.scss";
 import React, { Component, StatelessComponent } from "react";
 import { Row } from "react-flexbox-grid";
-import { observer } from "mobx-react";
 import { Button, ButtonGroup } from "@blueprintjs/core";
+import { inject } from "react-ioc";
+import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
 import {
   ContentSchema,
@@ -24,10 +24,10 @@ import {
   ClassifierFieldEditor,
   EnumFieldEditor
 } from "Components/FieldEditors/FieldEditors";
+import { DataSerializer } from "Services/DataSerializer";
 import { asc } from "Utils/Array/Sort";
 import { isFunction, isObject } from "Utils/TypeChecks";
-import { inject } from "react-ioc";
-import { DataSerializer } from "Services/DataSerializer";
+import "./ArticleEditor.scss";
 
 interface ObjectEditorProps {
   model: ArticleObject | ExtensionObject;
