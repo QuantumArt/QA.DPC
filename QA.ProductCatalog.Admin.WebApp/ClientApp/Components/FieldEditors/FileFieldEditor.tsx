@@ -22,7 +22,7 @@ export class FileFieldEditor extends AbstractFieldEditor<FileFieldSchema> {
             name={fieldSchema.FieldName}
             disabled={fieldSchema.IsReadOnly}
             accept={fieldSchema.FieldType === FieldExactTypes.Image ? "image/*" : ""}
-            validate={required}
+            validate={fieldSchema.IsRequired && required}
             className={cn({
               "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
             })}

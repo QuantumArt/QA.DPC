@@ -282,7 +282,7 @@ export class ExtensionFieldEditor extends AbstractFieldEditor<ExtensionFieldSche
           options={options}
           required={fieldSchema.IsRequired}
           disabled={disabled}
-          validate={[required, pattern(/^[0-9]+$/)]}
+          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
