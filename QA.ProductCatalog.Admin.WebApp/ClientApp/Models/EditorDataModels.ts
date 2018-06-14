@@ -1,12 +1,12 @@
 import { IExtendedObservableMap } from "mobx-state-tree";
 import { isObject, isInteger, isString } from "Utils/TypeChecks";
-import { ValidatableObject } from "./ValidatableMixin";
+import { ValidatableMixin } from "./ValidatableMixin";
 
 export interface StoreObject {
   readonly [name: string]: IExtendedObservableMap<ArticleObject>;
 }
 
-export interface ArticleObject extends ValidatableObject {
+export interface ArticleObject extends ValidatableMixin {
   [field: string]: any;
   readonly Id: number;
   readonly ContentName: string;
@@ -17,7 +17,7 @@ export function isArticleObject(object: any): object is ArticleObject {
   return isObject(object) && isString(object.ContentName) && isInteger(object.Id);
 }
 
-export interface ExtensionObject extends ValidatableObject {
+export interface ExtensionObject extends ValidatableMixin {
   [field: string]: any;
   readonly ContentName: string;
 }

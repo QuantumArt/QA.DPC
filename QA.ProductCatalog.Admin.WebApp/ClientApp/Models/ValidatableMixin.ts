@@ -12,7 +12,7 @@ import { getSnapshot, isStateTreeNode } from "mobx-state-tree";
 
 export type Validator = (value: any) => string;
 
-export interface ValidatableObject {
+export interface ValidatableMixin {
   isTouched(name?: string): boolean;
   setTouched(name: string, isTouched: boolean): void;
   hasFocus(name: string): boolean;

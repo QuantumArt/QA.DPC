@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { transaction } from "mobx";
 import { isPlainObject, isArray } from "Utils/TypeChecks";
-import { ValidatableObject, Validator } from "Models/ValidatableMixin";
+import { ValidatableMixin, Validator } from "Models/ValidatableMixin";
 
 interface ControlProps {
   [x: string]: any;
@@ -46,7 +46,7 @@ export abstract class AbstractControl<P = {}> extends Component<ControlProps & P
 }
 
 interface ValidatableProps {
-  model: ValidatableObject & { [x: string]: any };
+  model: ValidatableMixin & { [x: string]: any };
   validate?: Validator | Validator[];
 }
 
@@ -56,8 +56,11 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
   componentDidMount() {
     const { model, name, validate } = this.props;
     if (validate) {
-      this._validators = (isArray(validate) ? validate : [validate]).filter(Boolean);
-      model.addValidators(name, ...this._validators);
+      const validators = (isArray(validate) ? validate : [validate]).filter(Boolean);
+      if (validators.length > 0) {
+        this._validators = validators;
+        model.addValidators(name, ...this._validators);
+      }
     }
   }
 
