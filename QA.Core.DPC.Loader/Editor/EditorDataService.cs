@@ -72,7 +72,7 @@ namespace QA.Core.DPC.Loader.Editor
             {
                 dict[ArticleObject.Id] = article.Id;
                 dict[ArticleObject.ContentName] = article.ContentName;
-                dict[ArticleObject.Timestamp] = article.Modified == default(DateTime)
+                dict[ArticleObject.Modified] = article.Modified == default(DateTime)
                     ? article.Created : article.Modified;
             }
 

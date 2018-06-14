@@ -10,7 +10,7 @@ export interface ArticleObject extends ValidatableMixin {
   [field: string]: any;
   readonly Id: number;
   readonly ContentName: string;
-  Timestamp?: Date;
+  Modified: Date;
 }
 
 export function isArticleObject(object: any): object is ArticleObject {
@@ -36,5 +36,5 @@ export interface ArticleSnapshot {
   readonly [field: string]: any;
   readonly Id: number;
   readonly ContentName?: string;
-  readonly Timestamp?: Date;
+  readonly Modified?: Date;
 }

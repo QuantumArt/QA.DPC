@@ -60,7 +60,7 @@ content.ForExtension
   : `
   Id: number;
   ContentName: "${getName(content)}";
-  Timestamp: Date;`
+  Modified: Date;`
 }${forEach(getFields(content), field => `
   ${field.FieldName}: ${print(() => {
 

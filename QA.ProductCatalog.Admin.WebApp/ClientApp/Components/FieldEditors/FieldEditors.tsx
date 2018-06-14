@@ -367,7 +367,7 @@ export class ExtensionFieldEditor extends AbstractFieldEditor<ExtensionFieldSche
     }));
     const disabled =
       fieldSchema.IsReadOnly ||
-      (!fieldSchema.Changeable && isArticleObject(model) && model.Timestamp instanceof Date);
+      (!fieldSchema.Changeable && isArticleObject(model) && model.Modified instanceof Date);
     return (
       <Col xl={8} md={6}>
         <Select

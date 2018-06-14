@@ -39,7 +39,7 @@ export interface ProductEntities {
 export interface Region extends ValidatableMixin {
   Id: number;
   ContentName: "Region";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
   Parent: Region;
@@ -49,7 +49,7 @@ export interface Region extends ValidatableMixin {
 export interface Product extends ValidatableMixin {
   Id: number;
   ContentName: "Product";
-  Timestamp: Date;
+  Modified: Date;
   MarketingProduct: MarketingProduct;
   GlobalCode: string;
   GlobalCode_Value: string;
@@ -107,7 +107,7 @@ export interface Product extends ValidatableMixin {
 export interface Group extends ValidatableMixin {
   Id: number;
   ContentName: "Group";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
 }
@@ -115,7 +115,7 @@ export interface Group extends ValidatableMixin {
 export interface ProductModifer extends ValidatableMixin {
   Id: number;
   ContentName: "ProductModifer";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
 }
@@ -127,7 +127,7 @@ export interface Tariff extends ValidatableMixin {
 export interface TariffZone extends ValidatableMixin {
   Id: number;
   ContentName: "TariffZone";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
 }
@@ -135,7 +135,7 @@ export interface TariffZone extends ValidatableMixin {
 export interface Direction extends ValidatableMixin {
   Id: number;
   ContentName: "Direction";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
 }
@@ -143,7 +143,7 @@ export interface Direction extends ValidatableMixin {
 export interface BaseParameter extends ValidatableMixin {
   Id: number;
   ContentName: "BaseParameter";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
   AllowZone: boolean;
@@ -153,7 +153,7 @@ export interface BaseParameter extends ValidatableMixin {
 export interface BaseParameterModifier extends ValidatableMixin {
   Id: number;
   ContentName: "BaseParameterModifier";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
   Type: 
@@ -167,7 +167,7 @@ export interface BaseParameterModifier extends ValidatableMixin {
 export interface ParameterModifier extends ValidatableMixin {
   Id: number;
   ContentName: "ParameterModifier";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
 }
@@ -175,7 +175,7 @@ export interface ParameterModifier extends ValidatableMixin {
 export interface ProductParameter extends ValidatableMixin {
   Id: number;
   ContentName: "ProductParameter";
-  Timestamp: Date;
+  Modified: Date;
   Group: ProductParameterGroup;
   Title: string;
   Parent: ProductParameter;
@@ -197,7 +197,7 @@ export interface ProductParameter extends ValidatableMixin {
 export interface Unit extends ValidatableMixin {
   Id: number;
   ContentName: "Unit";
-  Timestamp: Date;
+  Modified: Date;
   Alias: string;
   Title: string;
   Display: string;
@@ -229,7 +229,7 @@ export interface Unit extends ValidatableMixin {
 export interface LinkModifier extends ValidatableMixin {
   Id: number;
   ContentName: "LinkModifier";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
 }
@@ -237,7 +237,7 @@ export interface LinkModifier extends ValidatableMixin {
 export interface ProductRelation extends ValidatableMixin {
   Id: number;
   ContentName: "ProductRelation";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Modifiers: LinkModifier[];
   Parameters: LinkParameter[];
@@ -273,7 +273,7 @@ export interface ProductRelation extends ValidatableMixin {
 export interface LinkParameter extends ValidatableMixin {
   Id: number;
   ContentName: "LinkParameter";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Group: ProductParameterGroup;
   BaseParameter: BaseParameter;
@@ -305,7 +305,7 @@ export interface MutualGroup extends ValidatableMixin {
 export interface ProductParameterGroup extends ValidatableMixin {
   Id: number;
   ContentName: "ProductParameterGroup";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
   SortOrder: number;
@@ -319,7 +319,7 @@ export interface ProductParameterGroup extends ValidatableMixin {
 export interface MarketingProduct extends ValidatableMixin {
   Id: number;
   ContentName: "MarketingProduct";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
   Description: string;
@@ -401,7 +401,7 @@ export interface ServiceRelation extends ValidatableMixin {
 export interface CommunicationType extends ValidatableMixin {
   Id: number;
   ContentName: "CommunicationType";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
 }
@@ -409,7 +409,7 @@ export interface CommunicationType extends ValidatableMixin {
 export interface Segment extends ValidatableMixin {
   Id: number;
   ContentName: "Segment";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
 }
@@ -425,7 +425,7 @@ export interface MarketingAction extends ValidatableMixin {
 export interface MarketingProductParameter extends ValidatableMixin {
   Id: number;
   ContentName: "MarketingProductParameter";
-  Timestamp: Date;
+  Modified: Date;
   Group: ProductParameterGroup;
   BaseParameter: BaseParameter;
   Zone: TariffZone;
@@ -457,7 +457,7 @@ export interface RoamingScaleOnTariff extends ValidatableMixin {
 export interface TariffCategory extends ValidatableMixin {
   Id: number;
   ContentName: "TariffCategory";
-  Timestamp: Date;
+  Modified: Date;
   ConnectionTypes: FixedType[];
   Title: string;
   Alias: string;
@@ -476,7 +476,7 @@ export interface ServiceOnRoamingScale extends ValidatableMixin {
 export interface Advantage extends ValidatableMixin {
   Id: number;
   ContentName: "Advantage";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Text: string;
   Description: string;
@@ -499,7 +499,7 @@ export interface MarketingCrossSale extends ValidatableMixin {
 export interface TimeZone extends ValidatableMixin {
   Id: number;
   ContentName: "TimeZone";
-  Timestamp: Date;
+  Modified: Date;
   Name: string;
   Code: string;
   UTC: string;
@@ -510,7 +510,7 @@ export interface TimeZone extends ValidatableMixin {
 export interface NetworkCity extends ValidatableMixin {
   Id: number;
   ContentName: "NetworkCity";
-  Timestamp: Date;
+  Modified: Date;
   City: Region;
   HasIpTv: boolean;
 }
@@ -518,7 +518,7 @@ export interface NetworkCity extends ValidatableMixin {
 export interface ChannelCategory extends ValidatableMixin {
   Id: number;
   ContentName: "ChannelCategory";
-  Timestamp: Date;
+  Modified: Date;
   Name: string;
   Alias: string;
   Segments: string;
@@ -530,7 +530,7 @@ export interface ChannelCategory extends ValidatableMixin {
 export interface ChannelType extends ValidatableMixin {
   Id: number;
   ContentName: "ChannelType";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   OldSiteId: number;
 }
@@ -538,7 +538,7 @@ export interface ChannelType extends ValidatableMixin {
 export interface ChannelFormat extends ValidatableMixin {
   Id: number;
   ContentName: "ChannelFormat";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Image: string;
   Message: string;
@@ -548,7 +548,7 @@ export interface ChannelFormat extends ValidatableMixin {
 export interface TvChannel extends ValidatableMixin {
   Id: number;
   ContentName: "TvChannel";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Logo150: string;
   Category: ChannelCategory;
@@ -571,7 +571,7 @@ export interface TvChannel extends ValidatableMixin {
 export interface ParameterChoice extends ValidatableMixin {
   Id: number;
   ContentName: "ParameterChoice";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   Alias: string;
   OldSiteId: number;
@@ -596,14 +596,14 @@ export interface Device extends ValidatableMixin {
 export interface FixedType extends ValidatableMixin {
   Id: number;
   ContentName: "FixedType";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
 }
 
 export interface EquipmentType extends ValidatableMixin {
   Id: number;
   ContentName: "EquipmentType";
-  Timestamp: Date;
+  Modified: Date;
   ConnectionType: FixedType;
   Title: string;
   Alias: string;
@@ -613,7 +613,7 @@ export interface EquipmentType extends ValidatableMixin {
 export interface EquipmentDownload extends ValidatableMixin {
   Id: number;
   ContentName: "EquipmentDownload";
-  Timestamp: Date;
+  Modified: Date;
   Title: string;
   File: string;
 }
@@ -685,7 +685,7 @@ export interface InternetTariff extends ValidatableMixin {
 export interface DeviceOnTariffs extends ValidatableMixin {
   Id: number;
   ContentName: "DeviceOnTariffs";
-  Timestamp: Date;
+  Modified: Date;
   Parent: ProductRelation;
   Order: number;
   MarketingDevice: MarketingProduct;

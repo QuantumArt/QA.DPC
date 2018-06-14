@@ -6,7 +6,7 @@ namespace QA.Core.DPC.Loader.Editor
     {
         internal const string Id = "Id";
         internal const string ContentName = "ContentName";
-        internal const string Timestamp = "Timestamp";
+        internal const string Modified = "Modified";
         internal static string Contents(string prop) => $"{prop}_Contents";
     }
 

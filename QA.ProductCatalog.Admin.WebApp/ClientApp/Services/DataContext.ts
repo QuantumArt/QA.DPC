@@ -158,7 +158,7 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
       const fieldModels = {
         Id: t.identifier(t.number),
         ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
-        Timestamp: t.maybe(t.Date)
+        Modified: t.maybe(t.Date)
       };
       // заполняем поля модели объекта
       Object.values(content.Fields).forEach(field => visitField(field, fieldModels));
