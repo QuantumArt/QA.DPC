@@ -97,10 +97,43 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             try
             {
                 var response = await client.LowLevel.BulkAsync<VoidResponse>(string.Join(string.Empty, commands));
-                return response.Success
-                    ? SonicResult.Success
-                    : SonicResult.Failed(SonicErrorDescriber
-                        .StoreFailure(response.OriginalException.Message));
+
+                var responseText = System.Text.Encoding.UTF8.GetString(response.ResponseBodyInBytes);
+                var responseJson = JObject.Parse(responseText);
+
+                if (response.Success)
+                {
+
+                    if (responseJson.Value<bool>("errors"))
+                    {
+                        var errors = responseJson["items"]
+                            .Select(i => i["index"]?["error"])
+                            .Where(i => i != null)
+                            .Select(i => new
+                            {
+                                Code = i.Value<string>("type"),
+                                Description = i.Value<string>("reason")
+                            })
+                            .Distinct()
+                            .Select(i => new SonicError
+                            {
+                                Code = i.Code,
+                                Description = i.Description,
+                                Exception = new Exception($"{i.Code} : {i.Description}")
+                            })
+                            .ToArray();
+
+                        return SonicResult.Failed(errors);
+                    }
+                    else
+                    {
+                        return SonicResult.Success;
+                    }
+                }
+                else
+                {
+                    return SonicResult.Failed(SonicErrorDescriber.StoreFailure(response.OriginalException.Message));
+                }
             }
             catch (Exception e)
             {
@@ -235,12 +268,24 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 var client = Configuration.GetElasticClient(language, state);
 
-                await client.DeleteIndexAsync(client.ConnectionSettings.DefaultIndex);
+                var indexResult = await client.IndexExistsAsync(client.ConnectionSettings.DefaultIndex);
+
+                if(indexResult == null || !indexResult.IsValid)
+                {
+                    return SonicResult.Failed(SonicErrorDescriber.StoreFailure("index is not available"));
+                }
+                else if (indexResult.Exists)
+                {
+                    await client.DeleteIndexAsync(client.ConnectionSettings.DefaultIndex);
+                }
 
                 await client.CreateIndexAsync(
                     client.ConnectionSettings.DefaultIndex,
                     index => index
-                        .Settings(s => s.Setting("max_result_window", Options.MaxResultWindow))
+                        .Settings(s => s
+                            .Setting("max_result_window", Options.MaxResultWindow)
+                            .Setting("mapping.total_fields.limit", Options.TotalFieldsLimit)
+                        )
                         .Mappings(m => m.MapNotAnalyzed(Options.Types, Options.NotAnalyzedFields))
                 );
 

@@ -25,6 +25,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public int MaxResultWindow { get; set; }
 
+        public int TotalFieldsLimit { get; set; }
+
         public string[] Types { get; set; }
 
         public string[] NotAnalyzedFields { get; set; }
