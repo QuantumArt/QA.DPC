@@ -109,6 +109,21 @@ namespace QA.Core.DPC.Loader
             }
         }
 
+        public virtual Article GetProductById(
+            Content content, int articleId, Dictionary<string, int[]> ignoredIdsByContent, bool isLive = false)
+        {
+            // TODO: реализовать GetProductById
+            // если встретился Article c уже загруженным Id — создаем вместо него `new Article(id)`
+            throw new NotImplementedException();
+        }
+
+        public virtual Article[] GetProductsByIds(
+            Content content, int[] articleIds, Dictionary<string, int[]> ignoredIdsByContent, bool isLive = false)
+        {
+            // TODO: реализовать GetProductsByIds
+            // если встретился Article c уже загруженным Id — создаем вместо него `new Article(id)`
+            throw new NotImplementedException();
+        }
 
         /// <summary>
         /// Получение структурированного продукта на основе XML с маппингом данных
