@@ -32,6 +32,21 @@ namespace QA.Core.Models.Configuration
         [DefaultValue(null)]
         public NumberType? NumberType { get; set; }
 
+        public Field ShallowCopy()
+        {
+            var field = (Field)MemberwiseClone();
+
+            ShallowCopyMembers(field);
+
+            return field;
+        }
+
+        protected virtual void ShallowCopyMembers(Field field)
+        {
+            field.CustomProperties = CustomProperties?
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
         public Field DeepCopy()
         {
             return DeepCopy(new ReferenceDictionary<object, object>());
@@ -48,12 +63,12 @@ namespace QA.Core.Models.Configuration
 
             visited[this] = field;
 
-            CopyMembers(field, visited);
+            DeepCopyMembers(field, visited);
 
             return field;
         }
 
-        protected virtual void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        protected virtual void DeepCopyMembers(Field field, ReferenceDictionary<object, object> visited)
         {
             field.CustomProperties = CustomProperties?
                 .ToDictionary(pair => pair.Key, pair => pair.Value);
@@ -169,9 +184,9 @@ namespace QA.Core.Models.Configuration
 
 		public Content Content { get; set; }
 
-        protected override void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        protected override void DeepCopyMembers(Field field, ReferenceDictionary<object, object> visited)
         {
-            base.CopyMembers(field, visited);
+            base.DeepCopyMembers(field, visited);
             var entityField = (EntityField)field;
 
             entityField.CloneDefinition = CloneDefinition?.DeepCopy(visited);
@@ -234,9 +249,18 @@ namespace QA.Core.Models.Configuration
 			ContentMapping = new Dictionary<int, Content>();
 		}
 
-        protected override void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        protected override void ShallowCopyMembers(Field field)
         {
-            base.CopyMembers(field, visited);
+            base.ShallowCopyMembers(field);
+            var extensionField = (ExtensionField)field;
+
+            extensionField.ContentMapping = ContentMapping?
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
+        protected override void DeepCopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        {
+            base.DeepCopyMembers(field, visited);
             var extensionField = (ExtensionField)field;
 
             extensionField.ContentMapping = ContentMapping?
@@ -314,9 +338,18 @@ namespace QA.Core.Models.Configuration
 			DefaultCachePeriod = TimeSpan.FromMinutes(10);
 		}
 
-        protected override void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        protected override void ShallowCopyMembers(Field field)
         {
-            base.CopyMembers(field, visited);
+            base.ShallowCopyMembers(field);
+            var dictionaries = (Dictionaries)field;
+
+            dictionaries.ContentDictionaries = ContentDictionaries?
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
+        }
+
+        protected override void DeepCopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        {
+            base.DeepCopyMembers(field, visited);
             var dictionaries = (Dictionaries)field;
 
             dictionaries.ContentDictionaries = ContentDictionaries?

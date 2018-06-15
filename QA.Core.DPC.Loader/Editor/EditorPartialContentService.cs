@@ -1,9 +1,9 @@
 ﻿using QA.Core.Models.Configuration;
 using QA.Core.Models.Tools;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Quantumart.QP8.BLL.Services.API;
 
 namespace QA.Core.DPC.Loader.Editor
 {
@@ -12,198 +12,181 @@ namespace QA.Core.DPC.Loader.Editor
     /// </summary>
     public class EditorPartialContentService
     {
-        private class PartialContentContext
+        private readonly ContentService _contentService;
+
+        public EditorPartialContentService(ContentService contentService)
         {
-            public ReferenceDictionary<Content, Content> ContentPrototypesByReference;
-
-            public Dictionary<Content, Content> ContentPrototypesByValue;
-
-            public ReferenceHashSet<Content> VisitedContents;
-
-            public HashSet<string> SelectedFieldPaths;
+            _contentService = contentService;
         }
 
-        private static readonly Regex PathRegex
-            = new Regex("^(/[1-9][0-9]*:[1-9][0-9]*)*/[1-9][0-9]*$", RegexOptions.Compiled);
+        private static readonly Regex PathRegex = new Regex("^(/?|(/[A-Za-z]+)+)$", RegexOptions.Compiled);
 
         /// <summary>
-        /// Выделение частичного определения продукта для сохранения подграфа статей
-        /// по переданным путям контентов в формате <c>"/contentId:fieldId/.../contentId"</c>
+        /// Найти контент по его пути <paramref name="contentPath"/>
+        /// от корневого контента <paramref name="rootContent"/>
+        /// в формате <c>"/FieldName/.../ExtensionContentName/.../FieldName"</c>
         /// </summary>
         /// <exception cref="InvalidOperationException" />
-        public Content GetPartialContent(Content rootContent, string[] contentPaths)
+        public Content FindContentByPath(Content rootContent, string contentPath, bool withDictionaries = false)
         {
             if (rootContent == null) throw new ArgumentNullException(nameof(rootContent));
-            if (contentPaths == null) throw new ArgumentNullException(nameof(contentPaths));
-            if (contentPaths.Length == 0) throw new ArgumentException("Paths should not be empty", nameof(contentPaths));
-
-            for (int i = 0; i < contentPaths.Length; i++)
+            if (contentPath == null) throw new ArgumentNullException(nameof(contentPath));
+            if (!PathRegex.IsMatch(contentPath))
             {
-                if (!PathRegex.IsMatch(contentPaths[i]))
-                {
-                    throw new InvalidOperationException($"Path [{i}] \"{contentPaths[i]}\" is invalid");
-                }
+                throw new ArgumentException($"Content path \"{contentPath}\" is invalid", nameof(contentPath));
             }
 
-            var context = new PartialContentContext();
+            _contentService.LoadStructureCache();
 
-            // клонируем rootContent, потому что его описание будет изменено в RemoveNotSelectedFields
-            rootContent = rootContent.DeepCopy();
+            Content content = rootContent;
 
-            // находим дубликаты контентов и сохраняем в словаре
-            context.ContentPrototypesByReference = new ReferenceDictionary<Content, Content>();
-            context.ContentPrototypesByValue = new Dictionary<Content, Content>();
-            FillContentPrototypesDictionary(rootContent, context);
+            string[] pathSegments = contentPath.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
 
-            // заменяем дубликаты контентов на их прообразы
-            context.VisitedContents = new ReferenceHashSet<Content>();
-            DecuplicateContents(rootContent, context);
-
-            // находим контент по пути
-            Content foundContent = FindContentByPath(rootContent, contentPaths[0]);
-
-            // удаляем все связи между контентами, кроме описанных в contentPaths
-            context.VisitedContents = new ReferenceHashSet<Content>();
-            context.SelectedFieldPaths = new HashSet<string>(contentPaths.Skip(1).Select(GetFieldPath));
-            RemoveNotSelectedFields(rootContent, context, "");
-
-            return foundContent;
-        }
-
-        private static string GetFieldPath(string fieldContentPath)
-        {
-            return fieldContentPath.Substring(0, fieldContentPath.LastIndexOf('/'));
-        }
-
-        private void FillContentPrototypesDictionary(Content content, PartialContentContext context)
-        {
-            if (context.ContentPrototypesByReference.ContainsKey(content))
+            for (int i = 0; i < pathSegments.Length; i++)
             {
-                return;
-            }
-            if (context.ContentPrototypesByValue.ContainsKey(content))
-            {
-                context.ContentPrototypesByReference[content] = context.ContentPrototypesByValue[content];
-            }
-            else
-            {
-                context.ContentPrototypesByValue[content] = content;
-                context.ContentPrototypesByReference[content] = content;
-            }
-
-            foreach (Association field in content.Fields.OfType<Association>())
-            {
-                foreach (Content childContent in field.Contents)
-                {
-                    FillContentPrototypesDictionary(childContent, context);
-                }
-            }
-        }
-
-        private void DecuplicateContents(Content content, PartialContentContext context)
-        {
-            if (context.VisitedContents.Contains(content))
-            {
-                return;
-            }
-
-            context.VisitedContents.Add(content);
-
-            foreach (Field field in content.Fields)
-            {
-                if (field is EntityField entityField)
-                {
-                    entityField.Content = context.ContentPrototypesByReference[entityField.Content];
-
-                    DecuplicateContents(entityField.Content, context);
-                }
-                else if (field is ExtensionField extensionField)
-                {
-                    foreach (var pair in extensionField.ContentMapping.ToArray())
-                    {
-                        Content childContent = context.ContentPrototypesByReference[pair.Value];
-
-                        extensionField.ContentMapping[pair.Key] = childContent;
-
-                        DecuplicateContents(childContent, context);
-                    }
-                }
-            }
-        }
-
-        /// <exception cref="InvalidOperationException" />
-        private Content FindContentByPath(Content content, string contentPath)
-        {
-            var pathNotFound = new InvalidOperationException($"Content not found for path \"{contentPath}\"");
-
-            string[] pathSegments = contentPath.Split(':');
-
-            string[] rootContent = pathSegments[0].Split('/');
-            int rootContentId = Int32.Parse(rootContent[1]);
-            if (content.ContentId != rootContentId)
-            {
-                throw pathNotFound;
-            }
-
-            foreach (string pathSegment in pathSegments.Skip(1))
-            {
-                string[] fieldContent = pathSegment.Split('/');
-                int fieldId = Int32.Parse(fieldContent[0]);
-                int contentId = Int32.Parse(fieldContent[1]);
-
-                Field field = content.Fields.FirstOrDefault(f => f.FieldId == fieldId);
+                Field field = content.Fields.FirstOrDefault(f => f.FieldName == pathSegments[i]);
 
                 if (field is EntityField entityField)
                 {
                     content = entityField.Content;
-
-                    if (content.ContentId != contentId)
-                    {
-                        throw pathNotFound;
-                    }
+                    continue;
                 }
-                else if (field is ExtensionField extensionField)
+                if (field is ExtensionField extensionField && i + 1 < pathSegments.Length)
                 {
+                    // выбираем контент-расширение и пропускаем шаг
                     content = extensionField.ContentMapping.Values
-                        .FirstOrDefault(c => c.ContentId == contentId);
+                        .FirstOrDefault(c => _contentService.Read(c.ContentId).NetName == pathSegments[i + 1]);
 
-                    if (content == null)
+                    if (content != null)
                     {
-                        throw pathNotFound;
+                        i++;
+                        continue;
                     }
                 }
-                else
-                {
-                    throw pathNotFound;
-                }
+                throw new InvalidOperationException($"Content not found for path \"{contentPath}\""); ;
+            }
+
+            if (withDictionaries && content != rootContent)
+            {
+                content = content.ShallowCopy();
+                content.Fields.AddRange(rootContent.Fields.OfType<Dictionaries>());
             }
 
             return content;
         }
 
-        private void RemoveNotSelectedFields(Content content, PartialContentContext context, string fieldPath)
+        /// <summary>
+        /// Выделение частичного определения продукта для сохранения подграфа статей
+        /// начиная с корневого контента, описанного путём <paramref name="contentPath"/>
+        /// в формате <c>"/FieldName/.../ExtensionContentName/.../FieldName"</c>,
+        /// и поддеревом выбора частичного продукта <paramref name="relationSelection"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException" />
+        public Content GetPartialContent(
+            Content rootContent, string contentPath, RelationSelection relationSelection)
         {
-            if (context.VisitedContents.Contains(content))
+            if (rootContent == null) throw new ArgumentNullException(nameof(rootContent));
+            if (contentPath == null) throw new ArgumentNullException(nameof(contentPath));
+            if (relationSelection == null) throw new ArgumentNullException(nameof(relationSelection));
+
+            _contentService.LoadStructureCache();
+
+            // находим контент по пути contentPath
+            Content foundContent = FindContentByPath(rootContent, contentPath, withDictionaries: true);
+            
+            // выбираем отмеченные связи, удаляя при этом остальные
+            Content partialContent = WithSelectedRelations(foundContent, relationSelection);
+            
+            return partialContent;
+        }
+
+        /// <exception cref="InvalidOperationException" />
+        private Content WithSelectedRelations(Content content, RelationSelection contentSelection)
+        {
+            content = content.ShallowCopy();
+            
+            foreach (Association field in content.Fields.OfType<Association>().ToArray())
             {
-                return;
+                content.Fields.Remove(field);
+
+                var newField = (Association)field.ShallowCopy();
+                
+                if (contentSelection.TryGetValue(newField.FieldName, out RelationSelection fieldSelection))
+                {
+                    if (newField is EntityField entityField)
+                    {
+                        entityField.Content = fieldSelection == null
+                            ? WithoutAllRelations(entityField.Content)
+                            : WithSelectedRelations(entityField.Content, fieldSelection);
+                    }
+                    else if (newField is ExtensionField extField)
+                    {
+                        RemoveNotSelectedRelationsFromExtension(extField, fieldSelection);
+                    }
+                    content.Fields.Add(newField);
+                }
+                else if (newField is ExtensionField extField)
+                {
+                    foreach (Content extContent in extField.ContentMapping.Values.ToArray())
+                    {
+                        extField.ContentMapping[extContent.ContentId] = WithoutAllRelations(extContent);
+                    }
+                    content.Fields.Add(newField);
+                }
             }
 
-            context.VisitedContents.Add(content);
-
-            string contentPath = fieldPath + $"/{content.ContentId}";
+            return content;
+        }
+        
+        private Content WithoutAllRelations(Content content)
+        {
+            content = content.ShallowCopy();
 
             foreach (Association field in content.Fields.OfType<Association>().ToArray())
             {
-                fieldPath = contentPath + $":{field.FieldId}";
+                content.Fields.Remove(field);
 
-                if (!context.SelectedFieldPaths.Contains(fieldPath))
+                var newField = (Association)field.ShallowCopy();
+
+                if (newField is ExtensionField extField)
                 {
-                    content.Fields.Remove(field);
+                    foreach (Content extContent in extField.ContentMapping.Values.ToArray())
+                    {
+                        extField.ContentMapping[extContent.ContentId] = WithoutAllRelations(extContent);
+                    }
+                    content.Fields.Add(newField);
                 }
+            }
+            return content;
+        }
+        
+        private void RemoveNotSelectedRelationsFromExtension(
+            ExtensionField extField, RelationSelection fieldSelection)
+        {
+            if (fieldSelection == null)
+            {
+                throw new InvalidOperationException(
+                    $"Selection for ExtensionField '{extField.FieldName}' should not be empty");
+            }
+            foreach (Content extContent in extField.ContentMapping.Values.ToArray())
+            {
+                string contentName = _contentService.Read(extContent.ContentId).NetName;
 
-                foreach (Content childContent in field.Contents)
+                if (fieldSelection.TryGetValue(
+                    contentName, out RelationSelection extContentSelection))
                 {
-                    RemoveNotSelectedFields(childContent, context, fieldPath);
+                    if (extContentSelection == null)
+                    {
+                        throw new InvalidOperationException(
+                            $@"Selection for ExtensionField Content '{
+                                extField.FieldName}.{contentName}' should not be empty");
+                    }
+                    extField.ContentMapping[extContent.ContentId] =
+                        WithSelectedRelations(extContent, extContentSelection);
+                }
+                else
+                {
+                    extField.ContentMapping[extContent.ContentId] = WithoutAllRelations(extContent);
                 }
             }
         }

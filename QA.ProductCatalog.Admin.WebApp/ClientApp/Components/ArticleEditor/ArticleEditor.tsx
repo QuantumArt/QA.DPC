@@ -11,7 +11,7 @@ import {
   ExtensionFieldSchema,
   FieldExactTypes
 } from "Models/EditorSchemaModels";
-import { PartialContentSelection, validateContentSelection } from "Models/PartialContentSelection";
+import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import {
   ExtensionFieldEditor,
   StringFieldEditor,
@@ -195,8 +195,8 @@ abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps & P> {
 
 interface ArticleEditorProps {
   model: ArticleObject;
-  includeOnSave?: PartialContentSelection;
   save?: boolean;
+  saveRelations?: RelationSelection;
 }
 
 @observer
@@ -205,9 +205,9 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
 
   constructor(props: ObjectEditorProps & ArticleEditorProps, context?: any) {
     super(props, context);
-    const { contentSchema, includeOnSave } = this.props;
-    if (includeOnSave) {
-      validateContentSelection(contentSchema, includeOnSave);
+    const { contentSchema, saveRelations } = this.props;
+    if (saveRelations) {
+      validateRelationSelection(contentSchema, saveRelations);
     }
   }
 

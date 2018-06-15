@@ -49,6 +49,15 @@ namespace QA.Core.Models.Configuration
             LoadAllPlainFields = true;
         }
 
+        public Content ShallowCopy()
+        {
+            var content = (Content)MemberwiseClone();
+
+            content.Fields = Fields?.ToList();
+
+            return content;
+        }
+
         public Content DeepCopy()
         {
             return DeepCopy(new ReferenceDictionary<object, object>());

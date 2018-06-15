@@ -6,13 +6,13 @@ import {
 } from "Models/EditorSchemaModels";
 import { isPlainObject } from "Utils/TypeChecks";
 
-export interface PartialContentSelection {
-  [name: string]: PartialContentSelection | true;
+export interface RelationSelection {
+  [name: string]: RelationSelection | true | null;
 }
 
-export function validateContentSelection(
+export function validateRelationSelection(
   contentSchema: ContentSchema,
-  selection: PartialContentSelection,
+  selection: RelationSelection,
   path: string = ""
 ) {
   if (process.env.NODE_ENV.toLowerCase() === "production") return;
@@ -29,8 +29,8 @@ export function validateContentSelection(
     }
     const fieldSchema = contentSchema.Fields[fieldName];
     if (isRelationField(fieldSchema)) {
-      if (nestedSelection !== true) {
-        validateContentSelection(fieldSchema.Content, nestedSelection, fieldPath);
+      if (nestedSelection !== true && nestedSelection !== null) {
+        validateRelationSelection(fieldSchema.Content, nestedSelection, fieldPath);
       }
     } else if (isExtensionField(fieldSchema)) {
       validateExtensionSelection(fieldSchema, nestedSelection as any, fieldPath);
@@ -46,7 +46,7 @@ export function validateContentSelection(
 
 function validateExtensionSelection(
   fieldSchema: ExtensionFieldSchema,
-  selection: PartialContentSelection,
+  selection: RelationSelection,
   path: string
 ) {
   if (!isPlainObject(selection)) {
@@ -61,6 +61,6 @@ function validateExtensionSelection(
       throw new Error(`Extension selection content ${contentPath} was not found in FieldSchema.`);
     }
     const contentSchema = fieldSchema.Contents[contentName];
-    validateContentSelection(contentSchema, nestedSelection as any, contentPath);
+    validateRelationSelection(contentSchema, nestedSelection as any, contentPath);
   });
 }

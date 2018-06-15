@@ -15,9 +15,17 @@ namespace QA.Core.Models.Configuration
             set { _fields = value; }
         }
 
-        protected override void CopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        protected override void ShallowCopyMembers(Field field)
         {
-            base.CopyMembers(field, visited);
+            base.ShallowCopyMembers(field);
+            var virtualEntityField = (VirtualEntityField)field;
+
+            virtualEntityField._fields = _fields?.ToArray();
+        }
+
+        protected override void DeepCopyMembers(Field field, ReferenceDictionary<object, object> visited)
+        {
+            base.DeepCopyMembers(field, visited);
             var virtualEntityField = (VirtualEntityField)field;
 
             virtualEntityField._fields = _fields?

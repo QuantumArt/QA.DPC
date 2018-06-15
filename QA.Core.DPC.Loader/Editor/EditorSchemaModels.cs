@@ -157,9 +157,24 @@ namespace QA.Core.DPC.Loader.Editor
         }
     }
 
-    public sealed class PartialContentSelection : Dictionary<string, PartialContentSelection>
+    /// <summary>
+    /// Дерево выбора частичного продукта в формате:
+    /// <code>
+    /// {
+    ///   RelationFieldName: {
+    ///     RelationFieldName: true,
+    ///   },
+    ///   ExtensionFieldName: {
+    ///     ExtensionContentName: {
+    ///       RelationFieldName: true
+    ///     }
+    ///   }
+    /// }
+    /// </code>
+    /// </summary>
+    public sealed class RelationSelection : Dictionary<string, RelationSelection>
     {
-        public static implicit operator PartialContentSelection(bool value)
+        public static implicit operator RelationSelection(bool value)
         {
             return null;
         }

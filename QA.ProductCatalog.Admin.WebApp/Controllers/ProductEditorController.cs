@@ -109,29 +109,29 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         /// <summary>
         /// Построить JSON-схему части продукта, начиная с корневого контента,
-        /// описанного путём <paramref name="contentPath"/>.
+        /// описанного путём <paramref name="contentPath"/>
+        /// и поддеревом выбора частичного продукта <see cref="contentSelection"/>.
         /// </summary>
         /// <param name="productDefinitionId">Id описания продукта</param>
         /// <param name="contentPath">Путь к контенту в продукте</param>
-        /// <param name="contentSelection">Дерево выбора частичного продукта</param>
+        /// <param name="relationSelection">Дерево выбора частичного продукта</param>
         /// <returns>JSON-схема продукта</returns>
         [HttpPost]
         public ContentResult PartialJsonSchema_Test(
             int productDefinitionId,
             string contentPath,
             [ModelBinder(typeof(JsonModelBinder))]
-            PartialContentSelection contentSelection,
+            RelationSelection relationSelection,
             bool isLive = false)
         {
             Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
 
-            //Content partialContent = _editorPartialContentService
-            //  .GetPartialContent(content, request.ContentPath, request.ContentSelection);
+            Content partialContent = _editorPartialContentService
+              .GetPartialContent(content, contentPath, relationSelection);
 
-            //string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(partialContent);
+            string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(partialContent);
 
-            //return Content(jsonSchema, "application/json");
-            return Content(JsonConvert.SerializeObject(contentSelection), "application/json");
+            return Content(jsonSchema, "application/json");
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <summary>
         /// Сохранить часть продукта начиная с корневого контента,
         /// описанного путём <see cref="PartialProductRequest.ContentPath"/>
-        /// и поддеревом <see cref="PartialProductRequest.ContentSelection"/>.
+        /// и поддеревом выбора частичного продукта <see cref="PartialProductRequest.RelationSelection"/>.
         /// </summary>
         [HttpPost]
         public ActionResult SavePartialProduct(
@@ -228,13 +228,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             Content content = GetContentByProductDefinitionId(request.ProductDefinitionId, request.IsLive);
 
-            //Content partialContent = _editorPartialContentService
-            //  .GetPartialContent(content, request.ContentPath, request.ContentSelection);
+            Content partialContent = _editorPartialContentService
+              .GetPartialContent(content, request.ContentPath, request.RelationSelection);
 
             // TODO: deserialize by _editorProductService
-            //Article partialProduct = _jsonProductService.DeserializeProduct(request.PartialProduct, partialContent);
+            Article partialProduct = _jsonProductService.DeserializeProduct(request.PartialProduct, partialContent);
 
-            //var partialDefinition = new ProductDefinition { StorageSchema = partialContent };
+            var partialDefinition = new ProductDefinition { StorageSchema = partialContent };
 
             // TODO: what about validation ?
             // TODO: what about Id-s of new articles ?
@@ -256,21 +256,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             public string ContentPath { get; set; } = "/";
 
             /// <summary>
-            /// Дерево выбора частичного продукта в формате:
-            /// <code>
-            /// {
-            ///   RelationFieldName: {
-            ///     RelationFieldName: true,
-            ///   },
-            ///   ExtensionFieldName: {
-            ///     ExtensionContentName: {
-            ///       RelationFieldName: true
-            ///     }
-            ///   }
-            /// }
-            /// </code>
+            /// Дерево выбора частичного продукта
             /// </summary>
-            public PartialContentSelection ContentSelection { get; set; } = new PartialContentSelection();
+            public RelationSelection RelationSelection { get; set; } = new RelationSelection();
 
             /// <summary>
             /// Фильтрация по IsLive
@@ -307,7 +295,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             int productTypeId = Int32.Parse(productTypeField);
 
             Content content = _contentDefinitionService
-                .GetDefinitionForContent(productTypeId, qpArticle.ContentId)
+                .GetDefinitionForContent(productTypeId, qpArticle.ContentId, isLive)
                 .DeepCopy();
 
             return content;
