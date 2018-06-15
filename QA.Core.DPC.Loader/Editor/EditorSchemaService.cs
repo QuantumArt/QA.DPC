@@ -1,5 +1,6 @@
 ﻿using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Configuration;
+using QA.Core.Models.Entities;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
@@ -283,7 +284,7 @@ namespace QA.Core.DPC.Loader.Editor
                     Content = contentSchema,
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     DisplayFieldNames = displayFieldNames,
-                    OrderByFieldName = orderByFieldName ?? ArticleObject.Id,
+                    OrderByFieldName = orderByFieldName ?? nameof(Article.Id),
                     MaxDataListItemCount = maxDataListItemCount
                 };
             }

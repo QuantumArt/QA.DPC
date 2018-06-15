@@ -1,4 +1,6 @@
-﻿using QA.Core.Models.Entities;
+﻿using Newtonsoft.Json.Linq;
+using QA.Core.Models.Configuration;
+using QA.Core.Models.Entities;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Linq;
@@ -66,13 +68,13 @@ namespace QA.Core.DPC.Loader.Editor
 
             if (forExtension)
             {
-                dict[ArticleObject.ContentName] = article.ContentName;
+                dict[nameof(Article.ContentName)] = article.ContentName;
             }
             else
             {
-                dict[ArticleObject.Id] = article.Id;
-                dict[ArticleObject.ContentName] = article.ContentName;
-                dict[ArticleObject.Modified] = article.Modified == default(DateTime)
+                dict[nameof(Article.Id)] = article.Id;
+                dict[nameof(Article.ContentName)] = article.ContentName;
+                dict[nameof(Article.Modified)] = article.Modified == default(DateTime)
                     ? article.Created : article.Modified;
             }
 
@@ -156,6 +158,15 @@ namespace QA.Core.DPC.Loader.Editor
                 default:
                     return plainArticleField.NativeValue;
             }
+        }
+
+        public Article DeserializeProduct(JObject rootArticleDictionary, Content definition)
+        {
+            var productDeserializer = ObjectFactoryBase.Resolve<IProductDeserializer>();
+
+            var productDataSource = new EditorJsonProductDataSource(rootArticleDictionary);
+
+            return productDeserializer.Deserialize(productDataSource, definition);
         }
     }
 }

@@ -231,8 +231,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             Content partialContent = _editorPartialContentService
               .GetPartialContent(content, request.ContentPath, request.RelationSelection);
 
-            // TODO: deserialize by _editorProductService
-            Article partialProduct = _jsonProductService.DeserializeProduct(request.PartialProduct, partialContent);
+            Article partialProduct = _editorDataService.DeserializeProduct(request.PartialProduct, partialContent);
 
             var partialDefinition = new ProductDefinition { StorageSchema = partialContent };
 

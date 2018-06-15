@@ -13,6 +13,7 @@ using Quantumart.QP8.BLL.Services.API;
 using Article = QA.Core.Models.Entities.Article;
 using Field = QA.Core.Models.Configuration.Field;
 using Quantumart.QPublishing.Database;
+using QA.Core.DPC.Loader.Editor;
 
 namespace QA.Core.DPC.Loader
 {
@@ -68,11 +69,12 @@ namespace QA.Core.DPC.Loader
 
             Article article = new Article
             {
+                Id = id ?? default(int),
+                ContentName = qpContent.NetName,
+                Modified = productDataSource.GetDateTime(nameof(Article.Modified)) ?? default(DateTime),
                 ContentId = definition.ContentId,
                 ContentDisplayName = qpContent.Name,
                 PublishingMode = definition.PublishingMode,
-                ContentName = qpContent.NetName,
-                Id = id ?? default(int),
                 Visible = true
             };
 
@@ -208,7 +210,8 @@ namespace QA.Core.DPC.Loader
             return field;
         }
 
-        private ArticleField DeserializeExtensionField(ExtensionField fieldInDef, Quantumart.QP8.BLL.Field qpField, IProductDataSource productDataSource, DBConnector connector)
+        private ArticleField DeserializeExtensionField(
+            ExtensionField fieldInDef, Quantumart.QP8.BLL.Field qpField, IProductDataSource productDataSource, DBConnector connector)
         {
             var extensionArticleField = new ExtensionArticleField();
 
@@ -224,6 +227,14 @@ namespace QA.Core.DPC.Loader
                     throw new Exception(string.Format("Значение '{0}' не найдено в списке допустимых контентов ExtensionField id = {1}", contentName, fieldInDef.FieldId));
 
                 extensionArticleField.Value = valueDef.ContentId.ToString();
+
+                // при десериализации для редактора используем объект [$"{fieldName}_Contents"][contentName]
+                if (productDataSource is EditorJsonProductDataSource)
+                {
+                    productDataSource = productDataSource
+                        .GetContainer(ArticleObject.Contents(fieldName))
+                        .GetContainer(contentName);
+                }
 
                 extensionArticleField.Item = DeserializeArticle(productDataSource, valueDef, connector);
 
