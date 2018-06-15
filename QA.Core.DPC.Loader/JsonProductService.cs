@@ -502,26 +502,42 @@ namespace QA.Core.DPC.Loader
 
             contentSchema.Properties.Add(field.FieldName, extensionSchema);
 
-            var contentFieldGroups = field.ContentMapping.Values
-                .SelectMany(c => c.Fields
-                    .Select(f => new { Content = c, Field = f }))
-                .GroupBy(x => x.Field.FieldName);
+            var fieldGroups = field.ContentMapping.Values
+                .SelectMany(extContent =>
+                {
+                    var fields = extContent.Fields
+                        .Select(extField => new
+                        {
+                            extField.FieldName,
 
-            foreach (var contentFieldGroup in contentFieldGroups)
-            {
-                JSchema[] groupSchemas = contentFieldGroup
-                    .Select(contentField =>
+                            FieldSchema = GetFieldSchema(
+                                extField, _fieldService.Read(extField.FieldId), context, false)
+                        });
+
+                    if (extContent.LoadAllPlainFields)
                     {
-                        Content extContent = contentField.Content;
-                        Field extField = contentField.Field;
+                        var qpFields = _fieldService.List(extContent.ContentId).ToArray();
 
-                        var extQpField = _fieldService.Read(extField.FieldId);
+                        var fieldsToAdd = qpFields
+                            .Where(f => f.RelationType == Quantumart.QP8.BLL.RelationType.None
+                                && extContent.Fields.All(y => y.FieldId != f.Id))
+                            .Where(f => !context.IgnoredFields
+                                .Any(t => t.Item1.Equals(extContent) && t.Item2.FieldId == f.Id));
 
-                        JSchema extFieldSchema = GetFieldSchema(extField, extQpField, context, false);
-                        
-                        return extFieldSchema;
-                    })
-                    .ToArray();
+                        fields = fields.Concat(fieldsToAdd.Select(extQpField => new
+                        {
+                            FieldName = extQpField.Name,
+                            FieldSchema = GetPlainFieldSchema(extQpField)
+                        }));
+                    }
+
+                    return fields;
+                })
+                .GroupBy(x => x.FieldName);
+
+            foreach (var fieldGroup in fieldGroups)
+            {
+                JSchema[] groupSchemas = fieldGroup.Select(pair => pair.FieldSchema).ToArray();
 
                 JSchema sameNameExtensionFieldsSchema;
                 if (groupSchemas.Length > 1)
@@ -538,7 +554,7 @@ namespace QA.Core.DPC.Loader
                     sameNameExtensionFieldsSchema = groupSchemas[0];
                 }
 
-                contentSchema.Properties[contentFieldGroup.Key] = sameNameExtensionFieldsSchema;
+                contentSchema.Properties[fieldGroup.Key] = sameNameExtensionFieldsSchema;
             }
         }
 
