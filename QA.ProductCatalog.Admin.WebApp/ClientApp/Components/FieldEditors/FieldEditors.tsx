@@ -24,6 +24,8 @@ import { required, pattern } from "Utils/Validators";
 import { Intent } from "@blueprintjs/core";
 import { AbstractFieldEditor } from "./AbstractEditors";
 export { FileFieldEditor } from "./FileFieldEditor";
+export { MultiRelationEditor } from "./MultiRelationEditors";
+export { SingleRelationEditor } from "./SingleRelationEditors";
 import "./FieldEditors.scss";
 
 @observer

@@ -9,8 +9,8 @@ interface FieldEditorProps<TSchema extends FieldSchema> {
   fieldSchema: TSchema;
 }
 
-export abstract class AbstractFieldEditor<TSchema extends FieldSchema> extends Component<
-  FieldEditorProps<TSchema>
+export abstract class AbstractFieldEditor<TSchema extends FieldSchema, P = {}> extends Component<
+  FieldEditorProps<TSchema> & P
 > {
   protected id = `_${Math.random()
     .toString(36)
