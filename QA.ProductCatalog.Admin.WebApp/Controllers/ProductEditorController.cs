@@ -17,6 +17,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using Quantumart.QP8.BLL.Services.API.Models;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -237,7 +238,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             // TODO: what about validation ?
             // TODO: what about Id-s of new articles ?
-            // _productUpdateService.Update(partialProduct, partialDefinition, request.IsLive);
+            // TODO: concurrency checks based on `Modified` field
+            // InsertData[] idMapping = _productUpdateService.Update(partialProduct, partialDefinition, request.IsLive);
 
             return new HttpStatusCodeResult(HttpStatusCode.NoContent);
         }

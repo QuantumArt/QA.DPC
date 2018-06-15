@@ -102,8 +102,11 @@ namespace QA.Core.DPC.API.Update
         #endregion
 
         #region IProductUpdateService
-
-        public void Update(Article product, ProductDefinition definition, bool isLive = false)
+        
+        // TODO: проверка конфликтов обновления по полю Modified (если оно default(DateTime) - игнорируем)
+        /// <exception cref="ProductUpdateConcurrencyException" />
+        public InsertData[] Update(
+            Article product, ProductDefinition definition, bool isLive = false)
         {
             Article oldProduct = _productService.GetProductById(product.Id, isLive, definition);
 
@@ -115,10 +118,11 @@ namespace QA.Core.DPC.API.Update
             ProcessArticlesTree(product, oldProduct, definition.StorageSchema);
 
             _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
-            _articleService.BatchUpdate(_updateData);
+
+            InsertData[] idMapping = _articleService.BatchUpdate(_updateData);
+
             _logger.Debug(() => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
-
-
+            
             if (_articlesToDelete.Any())
             {
                 _logger.Debug(() => "Start Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
@@ -139,6 +143,8 @@ namespace QA.Core.DPC.API.Update
                 }
                 _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
             }
+
+            return idMapping;
         }
 
         #endregion
