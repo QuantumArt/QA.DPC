@@ -7,6 +7,8 @@ namespace QA.ProductCatalog.ImpactService
 {
     public abstract class BaseCallsImpactCalculator : BaseImpactCalculator
     {
+        protected string PreCalcLinkModifierName = "FilterByImpactOnDirections";
+        
         protected BaseCallsImpactCalculator(string parameterModifierName, string linkModifierName, string linkName, bool consolidateCallGroups) : base(parameterModifierName, linkModifierName, linkName)
         {
             ConsolidateCallGroups = consolidateCallGroups;
@@ -65,6 +67,34 @@ namespace QA.ProductCatalog.ImpactService
                 }
             }
 
+        }
+                
+        public bool HasImpactForDirections(JObject tariff)
+        {
+            var tariffRoot = tariff.SelectToken("Parameters");
+            var directionParameters = tariffRoot.SelectTokens("[?(@.Direction.Alias)]").ToArray();
+            return directionParameters.Any(n => n["Changed"] != null);
+        }
+
+        public IEnumerable<int> GetPreCalcServiceIds(JObject product)
+        {
+            var root = product.SelectToken(LinkName);
+            if (root == null) yield break;
+            foreach (var elem in (JArray)root)
+            {
+                var hasModifier =
+                    elem.SelectTokens("Parent.Modifiers.[?(@.Alias)].Alias")
+                        .Select(m => m.ToString())
+                        .Contains(PreCalcLinkModifierName);
+                var isArchive = elem.SelectTokens("Service.Modifiers.[?(@.Alias)].Alias")
+                    .Select(m => m.ToString())
+                    .Contains("Archive");
+
+                var serviceId = (int) elem.SelectToken("Service.Id");
+
+                if (hasModifier && !isArchive)
+                    yield return serviceId;
+            }
         }
     }
 }
