@@ -71,9 +71,9 @@ namespace QA.ProductCatalog.ImpactService
                 
         public bool HasImpactForDirections(JObject tariff)
         {
-            var tariffRoot = tariff.SelectToken("Parameters");
-            var directionParameters = tariffRoot.SelectTokens("[?(@.Direction.Alias)]").ToArray();
-            return directionParameters.Any(n => n["Changed"] != null);
+            var tariffRoot = tariff?.SelectToken("Parameters");
+            var directionParameters = tariffRoot?.SelectTokens("[?(@.Direction.Alias)]").ToArray();
+            return directionParameters?.Any(n => n["Changed"] != null) ?? false;
         }
 
         public IEnumerable<int> GetPreCalcServiceIds(JObject product)

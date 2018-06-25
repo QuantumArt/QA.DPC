@@ -29,7 +29,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         public List<int> NoImpactServiceIds { get; private set; }
 
 
-        public InternationalCallsController GetAlternateController()
+        private InternationalCallsController GetAlternateController()
         {
             return new InternationalCallsController(SearchRepo, _elasticIndexOptionsAccessor, _loggerFactory, Cache);
         }
@@ -50,7 +50,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return await InternalGet(id, serviceIds, countryCode, homeRegion, state, language, html);
         }
 
-        public async Task<ActionResult> InternalGet(int id, int[] serviceIds, string countryCode, string homeRegion, string state,
+        private async Task<ActionResult> InternalGet(int id, int[] serviceIds, string countryCode, string homeRegion, string state,
             string language, bool html, bool initial = true)
         {
             var searchOptions = new SearchOptions()
