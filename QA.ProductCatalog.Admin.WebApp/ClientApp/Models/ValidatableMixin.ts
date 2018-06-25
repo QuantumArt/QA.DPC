@@ -1,3 +1,4 @@
+import { Component } from "react";
 import {
   observable,
   computed,
@@ -9,6 +10,7 @@ import {
   Lambda
 } from "mobx";
 import { getSnapshot, isStateTreeNode } from "mobx-state-tree";
+import { isArray } from "Utils/TypeChecks";
 
 export type Validator = (value: any) => string;
 
@@ -271,4 +273,36 @@ function sutructuralEquals(first: any, second: any): boolean {
   const firstSnapshot = isStateTreeNode(first) ? getSnapshot(first) : first;
   const secondSnapshot = isStateTreeNode(second) ? getSnapshot(second) : second;
   return comparer.structural(firstSnapshot, secondSnapshot);
+}
+
+interface ValidateProps {
+  model: ValidatableMixin & { [x: string]: any };
+  name: string;
+  rules: Validator | Validator[];
+}
+
+export class Validate extends Component<ValidateProps> {
+  private _validators: Validator[];
+
+  componentDidMount() {
+    const { model, name, rules } = this.props;
+    if (rules) {
+      const validators = (isArray(rules) ? rules : [rules]).filter(Boolean);
+      if (validators.length > 0) {
+        this._validators = validators;
+        model.addValidators(name, ...this._validators);
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    if (this._validators) {
+      const { model, name } = this.props;
+      model.removeValidators(name, ...this._validators);
+    }
+  }
+
+  render() {
+    return this.props.children || null;
+  }
 }

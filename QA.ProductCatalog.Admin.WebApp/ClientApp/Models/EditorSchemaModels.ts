@@ -125,7 +125,7 @@ export function isSingleRelationField(field: any): field is SingleRelationFieldS
 }
 
 export interface MultiRelationFieldSchema extends RelationFieldSchema {
-  readonly OrderByFieldName?: string;
+  readonly OrderByFieldName: string;
   readonly MaxDataListItemCount?: number;
 }
 

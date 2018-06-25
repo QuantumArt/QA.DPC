@@ -86,8 +86,8 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
   }
 
   componentWillUnmount() {
-    const { model, name } = this.props;
     if (this._validators) {
+      const { model, name } = this.props;
       model.removeValidators(name, ...this._validators);
     }
   }
