@@ -9,6 +9,9 @@ import { SchemaContext } from "Services/SchemaContext";
 import { Product } from "Editors/MtsFixTariff/ProductEditorSchema";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { onPatch } from "mobx-state-tree";
+import { RelationFieldList } from "Components/FieldEditors/FieldEditors";
+import { toJS } from "mobx";
+import { maxCount } from "Utils/Validators";
 
 class Example {
   @inject editorController: EditorController;
@@ -47,7 +50,25 @@ class Example {
               Parent: true
             }
           }}
-        />
+          fields={{
+            Regions: props => (
+              <RelationFieldList
+                validate={maxCount(25)}
+                orderByField="Title"
+                onClick={(_e, a) => console.log(toJS(a))}
+                {...props}
+              />
+            )
+          }}
+        >
+          {fieldsNode => (
+            <>
+              <hr />
+              {fieldsNode}
+              <hr />
+            </>
+          )}
+        </ArticleEditor>
       </Grid>,
       element
     );

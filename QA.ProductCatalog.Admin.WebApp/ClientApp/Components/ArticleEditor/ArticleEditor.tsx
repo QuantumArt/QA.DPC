@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Row } from "react-flexbox-grid";
 import { Button } from "@blueprintjs/core";
 import { inject } from "react-ioc";
@@ -14,6 +14,7 @@ interface ArticleEditorProps {
   model: ArticleObject;
   save?: boolean;
   saveRelations?: RelationSelection;
+  children?: (fieldsNode: ReactNode) => any;
 }
 
 @observer
@@ -29,8 +30,9 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
   }
 
   render() {
-    const { model, contentSchema, save } = this.props;
+    const { model, contentSchema, save, children } = this.props;
     const serverId = this._dataSerializer.getServerId(model);
+    const fieldsNode = <Row>{super.render()}</Row>;
     return (
       <>
         {save && (
@@ -42,7 +44,7 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
             {save && <Button icon="floppy-disk">Сохранить</Button>}
           </div>
         )}
-        <Row>{super.render()}</Row>
+        {children ? children(fieldsNode) : fieldsNode}
       </>
     );
   }
