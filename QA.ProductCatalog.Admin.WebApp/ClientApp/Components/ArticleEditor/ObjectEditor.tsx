@@ -4,11 +4,10 @@ import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDa
 import {
   ContentSchema,
   FieldSchema,
-  isExtensionField,
   ExtensionFieldSchema,
   FieldExactTypes,
-  isSingleRelationField,
-  isMultiRelationField
+  isExtensionField,
+  isRelationField
 } from "Models/EditorSchemaModels";
 import {
   ExtensionFieldEditor,
@@ -22,8 +21,7 @@ import {
   TextFieldEditor,
   ClassifierFieldEditor,
   EnumFieldEditor,
-  SingleRelationEditor,
-  MultiRelationEditor
+  RelationFieldList
 } from "Components/FieldEditors/FieldEditors";
 import { asc } from "Utils/Array/Sort";
 import { isFunction, isObject } from "Utils/TypeChecks";
@@ -126,11 +124,8 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
   }
 
   private getDefaultFieldEditor(fieldSchema: FieldSchema): FieldEditor {
-    if (isSingleRelationField(fieldSchema)) {
-      return SingleRelationEditor;
-    }
-    if (isMultiRelationField(fieldSchema)) {
-      return MultiRelationEditor;
+    if (isRelationField(fieldSchema)) {
+      return RelationFieldList;
     }
     if (isExtensionField(fieldSchema)) {
       return ExtensionFieldEditor;
