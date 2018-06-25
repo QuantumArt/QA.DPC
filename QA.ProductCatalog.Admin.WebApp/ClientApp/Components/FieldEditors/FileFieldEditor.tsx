@@ -6,12 +6,12 @@ import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { InputFile } from "Components/FormControls/FormControls";
 import { required } from "Utils/Validators";
-import { AbstractFieldEditor } from "./AbstractEditors";
+import { AbstractFieldEditor } from "./AbstractFieldEditor";
 
 // TODO: Интеграция с библиотекой QP
 
 @observer
-export class FileFieldEditor extends AbstractFieldEditor<FileFieldSchema> {
+export class FileFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: FileFieldSchema) {
     return (
       <Col xl={8} md={6}>

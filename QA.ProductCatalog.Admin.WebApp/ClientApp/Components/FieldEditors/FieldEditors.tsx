@@ -11,6 +11,7 @@ import {
   StringFieldSchema,
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
+import { Validate } from "Models/ValidatableMixin";
 import {
   InputText,
   RadioGroup,
@@ -22,14 +23,13 @@ import {
 } from "Components/FormControls/FormControls";
 import { required, pattern } from "Utils/Validators";
 import { Intent } from "@blueprintjs/core";
-import { AbstractFieldEditor } from "./AbstractEditors";
+import { AbstractFieldEditor } from "./AbstractFieldEditor";
 export { FileFieldEditor } from "./FileFieldEditor";
-export { MultiRelationEditor } from "./MultiRelationEditors";
-export { SingleRelationEditor } from "./SingleRelationEditors";
+export { RelationFieldList } from "./RelationFieldList";
 import "./FieldEditors.scss";
 
 @observer
-export class StringFieldEditor extends AbstractFieldEditor<StringFieldSchema> {
+export class StringFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: StringFieldSchema) {
     return (
       <Col xl={8} md={6}>
@@ -53,7 +53,7 @@ export class StringFieldEditor extends AbstractFieldEditor<StringFieldSchema> {
 }
 
 @observer
-export class NumericFieldEditor extends AbstractFieldEditor<NumericFieldSchema> {
+export class NumericFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: NumericFieldSchema) {
     return (
       <Col xl={4} md={3}>
@@ -73,7 +73,7 @@ export class NumericFieldEditor extends AbstractFieldEditor<NumericFieldSchema> 
 }
 
 @observer
-export class BooleanFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
+export class BooleanFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col md>
@@ -94,7 +94,7 @@ export class BooleanFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
 }
 
 @observer
-export class DateFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
+export class DateFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
@@ -116,7 +116,7 @@ export class DateFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
 }
 
 @observer
-export class TimeFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
+export class TimeFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
@@ -138,7 +138,7 @@ export class TimeFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
 }
 
 @observer
-export class DateTimeFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
+export class DateTimeFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
@@ -159,7 +159,7 @@ export class DateTimeFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
 }
 
 @observer
-export class TextFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
+export class TextFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={10} md={9}>
@@ -179,7 +179,7 @@ export class TextFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
   }
 
   render() {
-    const { model, fieldSchema } = this.props;
+    const { model, fieldSchema, validate } = this.props;
     return (
       <Col
         md={12}
@@ -196,6 +196,7 @@ export class TextFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
             {this.renderErrorsStub(model, fieldSchema)}
           </Col>
           {this.renderField(model, fieldSchema)}
+          {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}
         </Row>
       </Col>
     );
@@ -203,7 +204,7 @@ export class TextFieldEditor extends AbstractFieldEditor<PlainFieldSchema> {
 }
 
 @observer
-export class ClassifierFieldEditor extends AbstractFieldEditor<ClassifierFieldSchema> {
+export class ClassifierFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: ClassifierFieldSchema) {
     const value = model[fieldSchema.FieldName];
     const options = value ? [{ value, label: value }] : [];
@@ -228,7 +229,7 @@ export class ClassifierFieldEditor extends AbstractFieldEditor<ClassifierFieldSc
 }
 
 @observer
-export class EnumFieldEditor extends AbstractFieldEditor<EnumFieldSchema> {
+export class EnumFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: EnumFieldSchema) {
     const options = fieldSchema.Items.map(item => ({ value: item.Value, label: item.Alias }));
     return fieldSchema.ShowAsRadioButtons ? (
@@ -266,7 +267,7 @@ export class EnumFieldEditor extends AbstractFieldEditor<EnumFieldSchema> {
 }
 
 @observer
-export class ExtensionFieldEditor extends AbstractFieldEditor<ExtensionFieldSchema> {
+export class ExtensionFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: ExtensionFieldSchema) {
     const options = Object.values(fieldSchema.Contents).map(contentSchema => ({
       value: contentSchema.ContentName,

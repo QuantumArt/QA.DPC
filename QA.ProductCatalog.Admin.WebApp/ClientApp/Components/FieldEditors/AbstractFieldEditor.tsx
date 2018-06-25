@@ -3,22 +3,24 @@ import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { FieldSchema } from "Models/EditorSchemaModels";
+import { Validator, Validate } from "Models/ValidatableMixin";
 
-interface FieldEditorProps<TSchema extends FieldSchema> {
+export interface FieldEditorProps {
   model: ArticleObject | ExtensionObject;
-  fieldSchema: TSchema;
+  fieldSchema: FieldSchema;
+  validate?: Validator | Validator[];
 }
 
-export abstract class AbstractFieldEditor<TSchema extends FieldSchema, P = {}> extends Component<
-  FieldEditorProps<TSchema> & P
-> {
+export abstract class AbstractFieldEditor<
+  P extends FieldEditorProps = FieldEditorProps
+> extends Component<P> {
   protected id = `_${Math.random()
     .toString(36)
     .slice(2)}`;
 
-  abstract renderField(model: ArticleObject | ExtensionObject, fieldSchema: TSchema);
+  abstract renderField(model: ArticleObject | ExtensionObject, fieldSchema: FieldSchema);
 
-  protected renderErrors(model: ArticleObject | ExtensionObject, fieldSchema: TSchema) {
+  protected renderErrors(model: ArticleObject | ExtensionObject, fieldSchema: FieldSchema) {
     return (
       model.hasVisibleErrors(fieldSchema.FieldName) && (
         <div className="pt-form-helper-text">
@@ -30,7 +32,7 @@ export abstract class AbstractFieldEditor<TSchema extends FieldSchema, P = {}> e
     );
   }
 
-  protected renderErrorsStub(model: ArticleObject | ExtensionObject, fieldSchema: TSchema) {
+  protected renderErrorsStub(model: ArticleObject | ExtensionObject, fieldSchema: FieldSchema) {
     return (
       model.hasVisibleErrors(fieldSchema.FieldName) && (
         <div className="pt-form-helper-text" style={{ visibility: "hidden" }}>
@@ -41,7 +43,7 @@ export abstract class AbstractFieldEditor<TSchema extends FieldSchema, P = {}> e
   }
 
   render() {
-    const { model, fieldSchema } = this.props;
+    const { model, fieldSchema, validate } = this.props;
     return (
       <Col
         xl={6}
@@ -59,6 +61,7 @@ export abstract class AbstractFieldEditor<TSchema extends FieldSchema, P = {}> e
             {this.renderErrorsStub(model, fieldSchema)}
           </Col>
           {this.renderField(model, fieldSchema)}
+          {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}
         </Row>
       </Col>
     );
