@@ -229,7 +229,7 @@ namespace QA.Core.DPC.Loader.Editor
             string[] displayFieldNames = contentSchema.Fields.Values
                 .OfType<PlainFieldSchema>()
                 .Where(f => f.FieldType != FieldExactTypes.Textbox && f.FieldType != FieldExactTypes.VisualEdit)
-                .OrderBy(f => f.ViewInList)
+                .OrderByDescending(f => f.ViewInList)
                 .ThenBy(f => f.FieldOrder)
                 .Take(Math.Max(qpField.ListFieldTitleCount, 1))
                 .Select(f => f.FieldName)
