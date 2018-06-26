@@ -1,10 +1,24 @@
 .field-editor__block {
   min-width: 592px;
+  min-height: 30px;
   margin-top: 5px;
   margin-bottom: 5px;
 }
 
-.field-editor__label--required {
+.field-editor__label {
+  line-height: 30px;
+
+  > label {
+    display: inline-block;
+    line-height: 18px;
+  }
+
+  &--small {
+    line-height: 24px;
+  }
+}
+
+.field-editor__label-required {
   font-weight: bold;
   color: #c23030;
 }
@@ -16,5 +30,23 @@
   .pt-button-group {
     font-size: 14px;
     vertical-align: middle;
+  }
+}
+
+.relation-field-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  tr:hover {
+    background-color: rgba(19, 124, 189, 0.15);
+  }
+
+  td {
+    white-space: nowrap;
+  }
+
+  &__controls {
+    width: 99%;
+    text-align: right;
   }
 }

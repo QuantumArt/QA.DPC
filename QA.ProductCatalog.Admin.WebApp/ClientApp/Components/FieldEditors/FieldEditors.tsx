@@ -26,6 +26,7 @@ import { Intent } from "@blueprintjs/core";
 import { AbstractFieldEditor } from "./AbstractFieldEditor";
 export { FileFieldEditor } from "./FileFieldEditor";
 export { RelationFieldList } from "./RelationFieldList";
+export { RelationFieldTable } from "./RelationFieldTable";
 import "./FieldEditors.scss";
 
 @observer
@@ -187,13 +188,12 @@ export class TextFieldEditor extends AbstractFieldEditor {
           "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
-        <Row middle="xs">
-          <Col xl={2} md={3}>
+        <Row>
+          <Col xl={2} md={3} className="field-editor__label">
             <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
               {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-              {fieldSchema.IsRequired && <span className="field-editor__label--required"> *</span>}
+              {fieldSchema.IsRequired && <span className="field-editor__label-required"> *</span>}
             </label>
-            {this.renderErrorsStub(model, fieldSchema)}
           </Col>
           {this.renderField(model, fieldSchema)}
           {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}

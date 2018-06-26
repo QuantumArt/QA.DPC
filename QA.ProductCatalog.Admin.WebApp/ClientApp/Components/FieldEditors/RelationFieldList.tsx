@@ -1,5 +1,5 @@
 import React, { Component, Fragment, MouseEvent } from "react";
-import { Col } from "react-flexbox-grid";
+import { Col, Row } from "react-flexbox-grid";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
@@ -20,9 +20,11 @@ import { AbstractFieldEditor, FieldEditorProps } from "./AbstractFieldEditor";
 // TODO: Интеграция с окном выбора статей QP
 // TODO: Загрузка части продукта, которая начинается с новой выбранной статьи
 
+type FieldSelector = (article: ArticleObject) => any;
+
 interface RelationFieldListProps extends FieldEditorProps {
-  displayField?: string | ((article: ArticleObject) => string);
-  orderByField?: string | ((article: ArticleObject) => string);
+  displayField?: string | FieldSelector;
+  orderByField?: string | FieldSelector;
   selectMultiple?: boolean;
   onClick?: (e: MouseEvent<HTMLElement>, article: ArticleObject) => void;
 }
@@ -38,7 +40,7 @@ export class RelationFieldList extends Component<RelationFieldListProps> {
 }
 
 abstract class AbstractRelationFieldList extends AbstractFieldEditor<RelationFieldListProps> {
-  _displayField: (model: ArticleObject) => string;
+  _displayField: FieldSelector;
 
   constructor(props: RelationFieldListProps, context?: any) {
     super(props, context);
@@ -51,6 +53,30 @@ abstract class AbstractRelationFieldList extends AbstractFieldEditor<RelationFie
         ? () => ""
         : article => article[displayField]
       : displayField;
+  }
+
+  render() {
+    const { model, fieldSchema, validate } = this.props;
+    return (
+      <Col
+        xl={6}
+        md={12}
+        className={cn("field-editor__block pt-form-group", {
+          "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+        })}
+      >
+        <Row>
+          <Col xl={4} md={3} className="field-editor__label field-editor__label--small">
+            <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
+              {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+              {fieldSchema.IsRequired && <span className="field-editor__label-required"> *</span>}
+            </label>
+          </Col>
+          {this.renderField(model, fieldSchema)}
+          {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}
+        </Row>
+      </Col>
+    );
   }
 }
 
@@ -121,7 +147,7 @@ interface MultiRelationFieldListState {
 
 @observer
 class MultiRelationFieldList extends AbstractRelationFieldList {
-  _orderByField: (article: ArticleObject) => string;
+  _orderByField: FieldSelector;
   state: MultiRelationFieldListState = {
     selectedArticles: {}
   };
