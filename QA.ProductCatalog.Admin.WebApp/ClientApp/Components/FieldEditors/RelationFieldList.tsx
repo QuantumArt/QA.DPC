@@ -40,7 +40,7 @@ export class RelationFieldList extends Component<RelationFieldListProps> {
 }
 
 abstract class AbstractRelationFieldList extends AbstractFieldEditor<RelationFieldListProps> {
-  _displayField: FieldSelector;
+  protected _displayField: FieldSelector;
 
   constructor(props: RelationFieldListProps, context?: any) {
     super(props, context);
@@ -147,7 +147,7 @@ interface MultiRelationFieldListState {
 
 @observer
 class MultiRelationFieldList extends AbstractRelationFieldList {
-  _orderByField: FieldSelector;
+  private _orderByField: FieldSelector;
   state: MultiRelationFieldListState = {
     selectedArticles: {}
   };

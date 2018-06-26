@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Col, Row } from "react-flexbox-grid";
+import { consumer, inject } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
@@ -12,6 +13,7 @@ import {
   RelationFieldSchema
 } from "Models/EditorSchemaModels";
 import { Validate } from "Models/ValidatableMixin";
+import { DataSerializer } from "Services/DataSerializer";
 import { isString } from "Utils/TypeChecks";
 import { required, maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
@@ -38,7 +40,7 @@ export class RelationFieldTable extends Component<RelationFieldTableProps> {
 }
 
 abstract class AbstractRelationFieldTable extends AbstractFieldEditor<RelationFieldTableProps> {
-  _displayFields: FieldSelector[];
+  protected _displayFields: FieldSelector[];
 
   constructor(props: RelationFieldTableProps, context?: any) {
     super(props, context);
@@ -75,8 +77,11 @@ abstract class AbstractRelationFieldTable extends AbstractFieldEditor<RelationFi
   }
 }
 
+@consumer
 @observer
 class SingleRelationFieldTable extends AbstractRelationFieldTable {
+  @inject private _dataSerializer: DataSerializer;
+
   @action
   removeRelation = (e: any) => {
     e.stopPropagation();
@@ -87,6 +92,7 @@ class SingleRelationFieldTable extends AbstractRelationFieldTable {
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const article: ArticleObject = model[fieldSchema.FieldName];
+    const serverId = this._dataSerializer.getServerId(article);
     return (
       <Col xl={10} md={9}>
         <ButtonGroup>
@@ -106,7 +112,7 @@ class SingleRelationFieldTable extends AbstractRelationFieldTable {
           <div className="relation-field-table">
             <div className="relation-field-table__row">
               <div className="relation-field-table__cell" key={-1}>
-                ({article.Id})
+                {serverId > 0 && `(${serverId})`}
               </div>
               {this._displayFields.map((displayField, i) => (
                 <div className="relation-field-table__cell" key={i}>
@@ -137,9 +143,11 @@ class SingleRelationFieldTable extends AbstractRelationFieldTable {
   }
 }
 
+@consumer
 @observer
 class MultiRelationFieldTable extends AbstractRelationFieldTable {
-  _orderByField: FieldSelector;
+  @inject private _dataSerializer: DataSerializer;
+  private _orderByField: FieldSelector;
 
   constructor(props: RelationFieldTableProps, context?: any) {
     super(props, context);
@@ -188,28 +196,31 @@ class MultiRelationFieldTable extends AbstractRelationFieldTable {
             {list
               .slice()
               .sort(asc(this._orderByField))
-              .map(article => (
-                <div className="relation-field-table__row" key={article.Id}>
-                  <div className="relation-field-table__cell" key={-1}>
-                    ({article.Id})
+              .map(article => {
+                const serverId = this._dataSerializer.getServerId(article);
+                return (
+                  <div className="relation-field-table__row" key={article.Id}>
+                    <div className="relation-field-table__cell" key={-1}>
+                      {serverId > 0 && `(${serverId})`}
+                    </div>
+                    {this._displayFields.map((displayField, i) => (
+                      <div className="relation-field-table__cell" key={i}>
+                        {displayField(article)}
+                      </div>
+                    ))}
+                    {!fieldSchema.IsReadOnly && (
+                      <div key={-2} className="relation-field-table__controls">
+                        <Button
+                          small
+                          icon={<Icon icon="small-cross" title={false} />}
+                          disabled={fieldSchema.IsReadOnly}
+                          onClick={e => this.removeRelation(e, article)}
+                        />
+                      </div>
+                    )}
                   </div>
-                  {this._displayFields.map((displayField, i) => (
-                    <div className="relation-field-table__cell" key={i}>
-                      {displayField(article)}
-                    </div>
-                  ))}
-                  {!fieldSchema.IsReadOnly && (
-                    <div key={-2} className="relation-field-table__controls">
-                      <Button
-                        small
-                        icon={<Icon icon="small-cross" title={false} />}
-                        disabled={fieldSchema.IsReadOnly}
-                        onClick={e => this.removeRelation(e, article)}
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
+                );
+              })}
           </div>
         )}
         {this.renderErrors(model, fieldSchema)}

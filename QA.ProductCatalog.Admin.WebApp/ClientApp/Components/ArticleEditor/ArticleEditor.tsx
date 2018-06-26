@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 import { Row } from "react-flexbox-grid";
 import { Button } from "@blueprintjs/core";
-import { inject } from "react-ioc";
+import { inject, consumer } from "react-ioc";
 import { observer } from "mobx-react";
 import { ArticleObject } from "Models/EditorDataModels";
 import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
@@ -19,6 +19,7 @@ interface ArticleEditorProps {
   children?: (headerNode: ReactNode, fieldsNode: ReactNode) => any;
 }
 
+@consumer
 @observer
 export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
   @inject private _dataSerializer: DataSerializer;
