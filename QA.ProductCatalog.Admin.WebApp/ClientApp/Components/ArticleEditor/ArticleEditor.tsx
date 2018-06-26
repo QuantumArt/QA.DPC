@@ -6,6 +6,7 @@ import { observer } from "mobx-react";
 import { ArticleObject } from "Models/EditorDataModels";
 import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { DataSerializer } from "Services/DataSerializer";
+import { isString } from "Utils/TypeChecks";
 import { ObjectEditor, ObjectEditorProps } from "./ObjectEditor";
 export { IGNORE, FieldsConfig } from "./ObjectEditor";
 import "./ArticleEditor.scss";
@@ -14,38 +15,45 @@ interface ArticleEditorProps {
   model: ArticleObject;
   save?: boolean;
   saveRelations?: RelationSelection;
-  children?: (fieldsNode: ReactNode) => any;
+  titleField?: string | ((article: ArticleObject) => string);
+  children?: (headerNode: ReactNode, fieldsNode: ReactNode) => any;
 }
 
 @observer
 export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
   @inject private _dataSerializer: DataSerializer;
+  private _titleField: (model: ArticleObject) => string;
 
   constructor(props: ObjectEditorProps & ArticleEditorProps, context?: any) {
     super(props, context);
-    const { contentSchema, saveRelations } = this.props;
+    const {
+      contentSchema,
+      saveRelations,
+      titleField = contentSchema.DisplayFieldName || "Id"
+    } = this.props;
     if (saveRelations) {
       validateRelationSelection(contentSchema, saveRelations);
     }
+    this._titleField = isString(titleField)
+      ? titleField === "Id"
+        ? () => ""
+        : article => article[titleField]
+      : titleField;
   }
 
   render() {
     const { model, contentSchema, save, children } = this.props;
     const serverId = this._dataSerializer.getServerId(model);
-    const fieldsNode = <Row>{super.render()}</Row>;
-    return (
-      <>
-        {save && (
-          <div className="article-editor__header">
-            <div className="article-editor__title" title={contentSchema.ContentDescription}>
-              {contentSchema.ContentTitle || contentSchema.ContentName}
-              {serverId > 0 && `: ${serverId}`}
-            </div>
-            {save && <Button icon="floppy-disk">Сохранить</Button>}
-          </div>
-        )}
-        {children ? children(fieldsNode) : fieldsNode}
-      </>
+    const headerNode = save && (
+      <div className="article-editor__header">
+        <div className="article-editor__title" title={contentSchema.ContentDescription}>
+          {contentSchema.ContentTitle || contentSchema.ContentName}
+          {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
+        </div>
+        <Button icon="floppy-disk">Сохранить</Button>
+      </div>
     );
+    const fieldsNode = <Row>{super.render()}</Row>;
+    return children ? children(headerNode, fieldsNode) : [headerNode, fieldsNode];
   }
 }

@@ -12,16 +12,17 @@ import {
   RelationFieldSchema
 } from "Models/EditorSchemaModels";
 import { Validate } from "Models/ValidatableMixin";
-import { AbstractFieldEditor, FieldEditorProps } from "./AbstractFieldEditor";
 import { asc } from "Utils/Array/Sort";
+import { isString } from "Utils/TypeChecks";
 import { required, maxCount } from "Utils/Validators";
+import { AbstractFieldEditor, FieldEditorProps } from "./AbstractFieldEditor";
 
 // TODO: Интеграция с окном выбора статей QP
 // TODO: Загрузка части продукта, которая начинается с новой выбранной статьи
 
 interface RelationFieldListProps extends FieldEditorProps {
-  displayField?: string;
-  orderByField?: string;
+  displayField?: string | ((article: ArticleObject) => string);
+  orderByField?: string | ((article: ArticleObject) => string);
   selectMultiple?: boolean;
   onClick?: (e: MouseEvent<HTMLElement>, article: ArticleObject) => void;
 }
@@ -37,16 +38,19 @@ export class RelationFieldList extends Component<RelationFieldListProps> {
 }
 
 abstract class AbstractRelationFieldList extends AbstractFieldEditor<RelationFieldListProps> {
-  _displayField: string;
+  _displayField: (model: ArticleObject) => string;
 
   constructor(props: RelationFieldListProps, context?: any) {
     super(props, context);
-    if (props.displayField) {
-      this._displayField = props.displayField;
-    } else {
-      const fieldSchema = props.fieldSchema as RelationFieldSchema;
-      this._displayField = fieldSchema.Content.DisplayFieldName || "Id";
-    }
+    const {
+      fieldSchema,
+      displayField = (fieldSchema as RelationFieldSchema).Content.DisplayFieldName || "Id"
+    } = this.props;
+    this._displayField = isString(displayField)
+      ? displayField === "Id"
+        ? () => ""
+        : article => article[displayField]
+      : displayField;
   }
 }
 
@@ -92,7 +96,7 @@ class SingleRelationFieldList extends AbstractRelationFieldList {
             })}
             onClick={e => this.toggleRelation(e, article)}
           >
-            {article[this._displayField]}
+            {this._displayField(article)}
             {!fieldSchema.IsReadOnly && (
               <button className="pt-tag-remove" onClick={this.removeRelation} />
             )}
@@ -117,19 +121,18 @@ interface MultiRelationFieldListState {
 
 @observer
 class MultiRelationFieldList extends AbstractRelationFieldList {
-  _orderByField: string;
+  _orderByField: (article: ArticleObject) => string;
   state: MultiRelationFieldListState = {
     selectedArticles: {}
   };
 
   constructor(props: RelationFieldListProps, context?: any) {
     super(props, context);
-    if (props.orderByField) {
-      this._orderByField = props.orderByField;
-    } else {
-      const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
-      this._orderByField = fieldSchema.OrderByFieldName || "Id";
-    }
+    const {
+      fieldSchema,
+      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "Id"
+    } = props;
+    this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
   }
 
   @action
@@ -191,7 +194,7 @@ class MultiRelationFieldList extends AbstractRelationFieldList {
         {list &&
           list
             .slice()
-            .sort(asc(article => article[this._orderByField]))
+            .sort(asc(this._orderByField))
             .map(article => (
               <Fragment key={article.Id}>
                 {" "}
@@ -202,7 +205,7 @@ class MultiRelationFieldList extends AbstractRelationFieldList {
                     "pt-intent-primary": selectedArticles[article.Id]
                   })}
                 >
-                  {article[this._displayField]}
+                  {this._displayField(article)}
                   {!fieldSchema.IsReadOnly && (
                     <button
                       className="pt-tag-remove"

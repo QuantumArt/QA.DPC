@@ -36,6 +36,7 @@ class Example {
         <ArticleEditor
           model={product}
           contentSchema={example.schemaContext.contentSchema}
+          titleField={model => model.MarketingProduct && model.MarketingProduct.Title}
           save
           saveRelations={{
             MarketingProduct: {
@@ -62,10 +63,11 @@ class Example {
             )
           }}
         >
-          {fieldsNode => (
+          {(header, fields) => (
             <>
+              {header}
               <hr />
-              {fieldsNode}
+              {fields}
               <hr />
             </>
           )}
