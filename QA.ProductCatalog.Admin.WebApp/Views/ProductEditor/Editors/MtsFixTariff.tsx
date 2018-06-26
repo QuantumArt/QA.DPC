@@ -9,7 +9,8 @@ import { SchemaContext } from "Services/SchemaContext";
 import { Product } from "Editors/MtsFixTariff/ProductEditorSchema";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { onPatch } from "mobx-state-tree";
-import { RelationFieldList } from "Components/FieldEditors/FieldEditors";
+// @ts-ignore
+import { RelationFieldList, RelationFieldTable } from "Components/FieldEditors/FieldEditors";
 import { toJS } from "mobx";
 import { maxCount } from "Utils/Validators";
 
@@ -52,7 +53,7 @@ class Example {
             }
           }}
           fields={{
-            Regions: props => (
+            _Regions: props => (
               <RelationFieldList
                 selectMultiple
                 validate={maxCount(25)}
@@ -60,7 +61,12 @@ class Example {
                 onClick={(_e, a) => console.log(toJS(a))}
                 {...props}
               />
-            )
+            ),
+            Regions: props => (
+              <RelationFieldTable validate={maxCount(25)} orderByField="Title" {...props} />
+            ),
+            MarketingProduct: RelationFieldTable,
+            Parameters: RelationFieldTable
           }}
         >
           {(header, fields) => (
