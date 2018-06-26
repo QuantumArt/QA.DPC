@@ -149,6 +149,14 @@ namespace QA.Core.DPC.Loader.Editor
                 }
             }
 
+            contentSchema.DisplayFieldName = contentSchema.Fields.Values
+                .OfType<PlainFieldSchema>()
+                .Where(f => f.FieldType == FieldExactTypes.String)
+                .OrderByDescending(f => f.ViewInList)
+                .ThenBy(f => f.FieldOrder)
+                .Select(f => f.FieldName)
+                .FirstOrDefault() ?? nameof(Article.Id);
+
             return contentSchema;
         }
 

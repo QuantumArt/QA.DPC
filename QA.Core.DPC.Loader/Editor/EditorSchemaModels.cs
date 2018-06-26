@@ -26,6 +26,7 @@ namespace QA.Core.DPC.Loader.Editor
         public string ContentName { get; set; }
         public string ContentTitle { get; set; }
         public string ContentDescription { get; set; }
+        public string DisplayFieldName { get; set; }
 
         public bool ForExtension { get; set; }
 

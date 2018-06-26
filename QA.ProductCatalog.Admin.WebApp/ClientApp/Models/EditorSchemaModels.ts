@@ -6,6 +6,7 @@ export interface ContentSchema {
   readonly ContentName: string;
   readonly ContentTitle?: string;
   readonly ContentDescription?: string;
+  readonly DisplayFieldName: string;
   readonly ForExtension: boolean;
   readonly Fields: {
     readonly [name: string]: FieldSchema;

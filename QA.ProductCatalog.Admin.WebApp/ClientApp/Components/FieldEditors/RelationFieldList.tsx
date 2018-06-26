@@ -9,12 +9,11 @@ import {
   MultiRelationFieldSchema,
   SingleRelationFieldSchema,
   isSingleRelationField,
-  RelationFieldSchema,
-  isStringField
+  RelationFieldSchema
 } from "Models/EditorSchemaModels";
 import { Validate } from "Models/ValidatableMixin";
 import { AbstractFieldEditor, FieldEditorProps } from "./AbstractFieldEditor";
-import { by, asc, desc } from "Utils/Array/Sort";
+import { asc } from "Utils/Array/Sort";
 import { required, maxCount } from "Utils/Validators";
 
 // TODO: Интеграция с окном выбора статей QP
@@ -23,6 +22,7 @@ import { required, maxCount } from "Utils/Validators";
 interface RelationFieldListProps extends FieldEditorProps {
   displayField?: string;
   orderByField?: string;
+  multiple?: boolean;
   onClick?: (e: MouseEvent<HTMLElement>, article: ArticleObject) => void;
 }
 
@@ -45,18 +45,17 @@ abstract class AbstractRelationFieldList extends AbstractFieldEditor<RelationFie
       this._displayField = props.displayField;
     } else {
       const fieldSchema = props.fieldSchema as RelationFieldSchema;
-
-      const stringField = Object.values(fieldSchema.Content.Fields)
-        .sort(by(desc(field => field.ViewInList), asc(field => field.FieldOrder)))
-        .find(isStringField);
-
-      this._displayField = stringField ? stringField.FieldName : "Id";
+      this._displayField = fieldSchema.Content.DisplayFieldName || "Id";
     }
   }
 }
 
 @observer
 class SingleRelationFieldList extends AbstractRelationFieldList {
+  state = {
+    isSelected: false
+  };
+
   @action
   removeRelation = (e: any) => {
     e.stopPropagation();
@@ -116,7 +115,8 @@ class MultiRelationFieldList extends AbstractRelationFieldList {
     if (props.orderByField) {
       this._orderByField = props.orderByField;
     } else {
-      this._orderByField = (props.fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "Id";
+      const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
+      this._orderByField = fieldSchema.OrderByFieldName || "Id";
     }
   }
 
