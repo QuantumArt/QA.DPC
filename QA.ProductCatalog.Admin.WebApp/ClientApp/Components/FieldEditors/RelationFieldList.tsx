@@ -1,6 +1,6 @@
 import React, { Component, Fragment, MouseEvent } from "react";
 import { Col } from "react-flexbox-grid";
-import { action, untracked, IObservableArray } from "mobx";
+import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup } from "@blueprintjs/core";
@@ -22,7 +22,7 @@ import { required, maxCount } from "Utils/Validators";
 interface RelationFieldListProps extends FieldEditorProps {
   displayField?: string;
   orderByField?: string;
-  multiple?: boolean;
+  selectMultiple?: boolean;
   onClick?: (e: MouseEvent<HTMLElement>, article: ArticleObject) => void;
 }
 
@@ -60,19 +60,22 @@ class SingleRelationFieldList extends AbstractRelationFieldList {
   removeRelation = (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
+    this.setState({ isSelected: false });
     model[fieldSchema.FieldName] = null;
     model.setTouched(fieldSchema.FieldName, true);
   };
 
-  handleClick = (e: any) => {
-    const { model, fieldSchema, onClick } = this.props;
+  toggleRelation(e: any, article: ArticleObject) {
+    const { onClick } = this.props;
+    const { isSelected } = this.state;
+    this.setState({ isSelected: !isSelected });
     if (onClick) {
-      untracked(() => onClick(e, model[fieldSchema.FieldName]));
+      onClick(e, article);
     }
-  };
+  }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
-    const { onClick } = this.props;
+    const { isSelected } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     return (
       <Col xl={8} md={6} className="relation-field-list__tags">
@@ -83,11 +86,11 @@ class SingleRelationFieldList extends AbstractRelationFieldList {
         </ButtonGroup>{" "}
         {article && (
           <span
-            className={cn("pt-tag pt-minimal", {
+            className={cn("pt-tag pt-minimal pt-interactive", {
               "pt-tag-removable": !fieldSchema.IsReadOnly,
-              "pt-interactive": !!onClick
+              "pt-intent-primary": isSelected
             })}
-            onClick={this.handleClick}
+            onClick={e => this.toggleRelation(e, article)}
           >
             {article[this._displayField]}
             {!fieldSchema.IsReadOnly && (
@@ -106,9 +109,18 @@ class SingleRelationFieldList extends AbstractRelationFieldList {
   }
 }
 
+interface MultiRelationFieldListState {
+  selectedArticles: {
+    [articleId: number]: boolean;
+  };
+}
+
 @observer
 class MultiRelationFieldList extends AbstractRelationFieldList {
   _orderByField: string;
+  state: MultiRelationFieldListState = {
+    selectedArticles: {}
+  };
 
   constructor(props: RelationFieldListProps, context?: any) {
     super(props, context);
@@ -123,6 +135,7 @@ class MultiRelationFieldList extends AbstractRelationFieldList {
   @action
   clearRelation = () => {
     const { model, fieldSchema } = this.props;
+    this.setState({ selectedArticles: {} });
     model[fieldSchema.FieldName] = [];
     model.setTouched(fieldSchema.FieldName, true);
   };
@@ -131,13 +144,34 @@ class MultiRelationFieldList extends AbstractRelationFieldList {
   removeRelation(e: any, article: ArticleObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
+    const { selectedArticles } = this.state;
+    delete selectedArticles[article.Id];
+    this.setState({ selectedArticles });
     const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
     array.remove(article);
     model.setTouched(fieldSchema.FieldName, true);
   }
 
+  toggleRelation(e: any, article: ArticleObject) {
+    const { selectMultiple, onClick } = this.props;
+    let { selectedArticles } = this.state;
+    if (selectedArticles[article.Id]) {
+      delete selectedArticles[article.Id];
+    } else {
+      if (selectMultiple) {
+        selectedArticles[article.Id] = true;
+      } else {
+        selectedArticles = { [article.Id]: true };
+      }
+    }
+    this.setState({ selectedArticles });
+    if (onClick) {
+      onClick(e, article);
+    }
+  }
+
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const { onClick } = this.props;
+    const { selectedArticles } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return (
       <Col xl={8} md={6} className="relation-field-list__tags">
@@ -162,10 +196,10 @@ class MultiRelationFieldList extends AbstractRelationFieldList {
               <Fragment key={article.Id}>
                 {" "}
                 <span
-                  onClick={e => onClick && untracked(() => onClick(e, article))}
-                  className={cn("pt-tag pt-minimal", {
+                  onClick={e => this.toggleRelation(e, article)}
+                  className={cn("pt-tag pt-minimal pt-interactive", {
                     "pt-tag-removable": !fieldSchema.IsReadOnly,
-                    "pt-interactive": !!onClick
+                    "pt-intent-primary": selectedArticles[article.Id]
                   })}
                 >
                   {article[this._displayField]}

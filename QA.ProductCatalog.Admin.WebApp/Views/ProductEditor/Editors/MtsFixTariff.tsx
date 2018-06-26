@@ -53,6 +53,7 @@ class Example {
           fields={{
             Regions: props => (
               <RelationFieldList
+                selectMultiple
                 validate={maxCount(25)}
                 orderByField="Title"
                 onClick={(_e, a) => console.log(toJS(a))}
