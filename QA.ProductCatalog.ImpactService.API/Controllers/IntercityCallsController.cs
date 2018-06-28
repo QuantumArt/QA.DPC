@@ -47,7 +47,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             result = result ?? FilterServiceParameters(region);
             result = result ?? CalculateImpact(homeRegion);
             result = result ?? FilterProductParameters(region);
-            result = result ?? FilterServicesOnProduct();
+            result = result ?? FilterServicesOnProduct(false);
             var product = (result == null) ? GetNewProduct(homeRegion) : null;
 
             LogEndImpact("MG", id, serviceIds);
