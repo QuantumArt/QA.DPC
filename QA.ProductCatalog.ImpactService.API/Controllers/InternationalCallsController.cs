@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -17,17 +20,39 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected override BaseCallsImpactCalculator CallsCalculator => _calc;
 
+        private IOptions<ConfigurationOptions> _elasticIndexOptionsAccessor;
+
+        private ILoggerFactory _loggerFactory;
+
+        public int[] PreCalcServiceIds { get; private set; }
+
+        public List<int> NoImpactServiceIds { get; private set; }
+
+
+        private InternationalCallsController GetAlternateController()
+        {
+            return new InternationalCallsController(SearchRepo, _elasticIndexOptionsAccessor, _loggerFactory, Cache);
+        }
 
         public InternationalCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
         {
+            _elasticIndexOptionsAccessor = elasticIndexOptionsAccessor;
+            _loggerFactory = loggerFactory;
             _calc = new InternationalCallsCalclulator(ConfigurationOptions.ConsolidateCallGroupsForIcin);
+            PreCalcServiceIds = new int[0];
+            NoImpactServiceIds = new List<int>();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode,
             string homeRegion, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
+            return await InternalGet(id, serviceIds, countryCode, homeRegion, state, language, html);
+        }
 
+        private async Task<ActionResult> InternalGet(int id, int[] serviceIds, string countryCode, string homeRegion, string state,
+            string language, bool html, bool initial = true)
+        {
             var searchOptions = new SearchOptions()
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
@@ -42,18 +67,39 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = await LoadProducts(id, serviceIds, searchOptions);
 
-            LogStartImpact("MN", id, serviceIds);
+            if (initial)
+            {
+                LogStartImpact("MN", id, serviceIds);
+            }
+
+            if (initial)
+            {
+                result = result ?? FindPreCalcServices();
+                result = result ?? await FindNoImpactServices(id, countryCode, homeRegion, state, language, html);
+            }
 
             result = result ?? FilterServiceParameters(countryCode);
             result = result ?? CalculateImpact(homeRegion);
             result = result ?? FilterProductParameters(countryCode);
-            result = result ?? FilterServicesOnProduct();
+            result = result ?? FilterServicesOnProduct(false, NoImpactServiceIds);
 
             var product = (result == null) ? GetNewProduct(homeRegion) : null;
 
-            LogEndImpact("MN", id, serviceIds);
+            if (initial)
+            {
+                LogEndImpact("MN", id, serviceIds);
+            }
 
-            result = result ?? (html ? TestLayout(product, serviceIds, state, language, homeRegion, country: countryCode) : Content(product.ToString()));
+            if (initial)
+            {
+                result = result ?? (html
+                             ? TestLayout(product, serviceIds, state, language, homeRegion, country: countryCode)
+                             : Content(product.ToString()));
+            }
+            else
+            {
+                result = result ?? Content(product.ToString());
+            }
 
             if (!disableCache)
             {
@@ -61,7 +107,55 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
 
             return result;
+        }
 
+        private async Task<ActionResult> FindNoImpactServices(int id, string countryCode, string homeRegion, string state, string language,
+            bool html)
+        {
+            try
+            {
+                var precalcIds = PreCalcServiceIds.Where(n => !ServiceIds.Contains(n)).ToArray();
+                foreach (var precalcId in precalcIds)
+                {
+                    var controller = GetAlternateController();
+                    await controller.InternalGet(
+                        id, new[] { precalcId }, countryCode, homeRegion, state, language, html,
+                        false);
+                    if (!controller.HasImpactForDirections() )
+                    {
+                        NoImpactServiceIds.Add(precalcId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Exception occurs while searching for no-impact services: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
+            }
+
+            return null;
+        }
+
+
+        private bool HasImpactForDirections()
+        {
+            return CallsCalculator.HasImpactForDirections(Product);
+        }
+
+        private ActionResult FindPreCalcServices()
+        {
+            try
+            {
+                PreCalcServiceIds = CallsCalculator.GetPreCalcServiceIds(Product).ToArray();
+            }
+            catch (Exception ex)
+            {
+                var message = $"Exception occurs while precalculating services: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                return BadRequest(message);
+            }
+            return null;
         }
 
     }

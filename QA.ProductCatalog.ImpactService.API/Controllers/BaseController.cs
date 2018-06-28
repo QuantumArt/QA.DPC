@@ -22,12 +22,14 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected ILogger Logger { get; }
 
-
         protected JObject Product;
 
         protected JObject[] Services;
 
+        protected int[] ServiceIds => Services.Select(n => (int) n.SelectToken("Id")).ToArray();
+
         protected JObject[] ParameterGroups;
+
         protected IEnumerable<JToken> ServicesOnProduct;
 
         protected BaseController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache)
@@ -243,11 +245,11 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             Logger.LogTrace($"Start calculating {code} impact for product {id} and services {services}");
         }
 
-        protected ActionResult FilterServicesOnProduct(bool saveInProduct = false)
+        protected ActionResult FilterServicesOnProduct(bool saveInProduct = false, IEnumerable<int> excludeIds = null)
         {
             try
             {
-                ServicesOnProduct = Calculator.FilterServicesOnProduct(Product).ToArray();
+                ServicesOnProduct = Calculator.FilterServicesOnProduct(Product, excludeIds).ToArray();
                 if (saveInProduct)
                 {
                     Calculator.SaveServicesOnProduct(Product, ServicesOnProduct);
@@ -261,5 +263,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             return null;
         }
+
     }
 }
