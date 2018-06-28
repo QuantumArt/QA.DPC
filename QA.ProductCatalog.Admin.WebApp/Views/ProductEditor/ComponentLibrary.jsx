@@ -20,6 +20,128 @@ import {
 } from "Components/FormControls/FormControls";
 import { required, pattern, maxCount } from "Utils/Validators";
 import { validatableMixin } from "Models/ValidatableMixin";
+import {
+  LocaleContext,
+  Localize,
+  Translate,
+  localize,
+  id,
+  fallback,
+  TranslateFunction
+} from "Utils/Localization";
+
+// const resources = {
+//   "Test...": "Тест...",
+//   "Hello, ${name}!": name => `Привет, ${name}!`,
+//   helloTemplate: name => `Здравствуй, ${name}!`,
+//   customComponent: ({ firstName, lastName, fullName }) => (
+//     <article key={1}>
+//       Карточка пользователя
+//       <div key={2}>Имя: {firstName}</div>
+//       <div key={3}>Фамилия: {lastName}</div>
+//       <div key={4}>Полное имя: {fullName}</div>
+//     </article>
+//   )
+// };
+
+class App extends React.Component {
+  state = { lang: "eng" };
+
+  render() {
+    const firstName = "John";
+    const lastName = "Doe";
+    const fullName = "John Doe";
+    const { lang } = this.state;
+    return (
+      <>
+        <label>
+          English{" "}
+          <input
+            type="radio"
+            value="eng"
+            checked={lang === "eng"}
+            onChange={() => this.setState({ lang: "eng" })}
+          />
+        </label>
+        <span />
+        <label>
+          Русский{" "}
+          <input
+            type="radio"
+            value="rus"
+            checked={lang === "rus"}
+            onChange={() => this.setState({ lang: "rus" })}
+          />
+        </label>
+        <hr />
+        <LocaleContext.Provider value={lang}>
+          <br />
+          <Localize
+            load={lang =>
+              import(/* webpackChunkName: "i18n-" */ `./Foo.${lang}.jsx`)
+            }
+          >
+            {tran => (
+              <Translate id="customComponent">
+                <article key={1} title={tran`Test...`}>
+                  User Card
+                  <div key={2} title={tran`Hello, ${firstName}!`}>
+                    First Name: {{ firstName }}
+                  </div>
+                  <div key={3} title={tran(`helloTemplate`, lastName)}>
+                    Last Name: {{ lastName }}
+                  </div>
+                  <div
+                    key={4}
+                    title={tran(id`missingKey`, fallback`Hello, ${fullName}!`)}
+                  >
+                    Full Name: {{ fullName }}
+                  </div>
+                </article>
+              </Translate>
+            )}
+          </Localize>
+          <hr />
+          <LocalizedComponent />
+          <br />
+        </LocaleContext.Provider>
+      </>
+    );
+  }
+}
+
+@localize(lang => import(/* webpackChunkName: "i18n-" */ `./Bar.${lang}.jsx`))
+class LocalizedComponent extends React.Component {
+  render() {
+    /** @type {TranslateFunction} */
+    const tran = this.props.translate;
+
+    const firstName = "Foo";
+    const lastName = "Bar";
+    const fullName = "Foo Bar";
+    return (
+      <Translate id="customComponent">
+        <article key={1} title={tran`Test...`}>
+          User Card
+          <div key={2} title={tran`Hello, ${firstName}!`}>
+            First Name: {{ firstName }}
+          </div>
+          <div key={3} title={tran(`helloTemplate`, lastName)}>
+            Last Name: {{ lastName }}
+          </div>
+          <div
+            key={4}
+            title={tran(id`missingKey`, fallback`Hello, ${fullName}!`)}
+          >
+            Full Name: {{ fullName }}
+          </div>
+        </article>
+      </Translate>
+    );
+  }
+}
+
+ReactDOM.render(<App />, document.getElementById("translate"));
 
 const Category = t
   .model("Category", {
