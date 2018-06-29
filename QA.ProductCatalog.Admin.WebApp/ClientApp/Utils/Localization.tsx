@@ -1,9 +1,9 @@
 import React, {
   Component,
   StatelessComponent,
+  ReactNode,
   cloneElement,
-  createContext,
-  ReactNode
+  createContext
 } from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
 import { isObject, isString, isFunction } from "Utils/TypeChecks";
@@ -55,19 +55,54 @@ export function makeTranslate(resources: Resources, shouldPrepareKeys = true): T
   };
 }
 
+class MapStub<K, V> {
+  private _pairs: { key: K; value: V }[] = [];
+
+  get(key: K): V | undefined {
+    for (let i = 0; i < this._pairs.length; i++) {
+      const pair = this._pairs[i];
+      if (pair.key === key) {
+        return pair.value;
+      }
+    }
+    return undefined;
+  }
+
+  set(key: K, value: V): this {
+    for (let i = 0; i < this._pairs.length; i++) {
+      const pair = this._pairs[i];
+      if (pair.key === key) {
+        pair.value = value;
+        return this;
+      }
+    }
+    this._pairs.push({ key, value });
+    return this;
+  }
+}
+
+const resourcesCache =
+  typeof WeakMap !== "undefined"
+    ? new WeakMap<Resources, Resources>()
+    : new MapStub<Resources, Resources>();
+
 function prepareKeys(resources: Resources): Resources {
   if (!resources) {
     return resources;
   }
-
-  const templates = {};
+  const cached = resourcesCache.get(resources);
+  if (cached) {
+    return cached;
+  }
+  const prepared: Resources = {};
 
   Object.keys(resources).forEach(resourceId => {
-    const templateId = resourceId.replace(/\$\{[A-Za-z0-9_]+\}/g, "{*}").replace(/\s+/g, " ");
-    templates[templateId] = resources[resourceId];
+    const templateId = resourceId.replace(/\$\{\s*[A-Za-z0-9_]+\s*\}/g, "{*}").replace(/\s+/g, " ");
+    prepared[templateId] = resources[resourceId];
   });
 
-  return templates;
+  resourcesCache.set(resources, prepared);
+  return prepared;
 }
 
 export function id(strings: TemplateStringsArray) {
@@ -170,11 +205,10 @@ export class Translate extends Component<{ id: string }> {
 
 export const LocaleContext = createContext<string>("");
 
-interface LocalizeProps {
+interface LocalizeConfig {
   load: (locale: string) => Resources | Promise<Resources> | Promise<{ default: Resources }>;
   defaultLocale?: string;
   defaultResources?: Resources;
-  children: (translate: TranslateFunction) => ReactNode;
 }
 
 interface LocalizeState {
@@ -182,55 +216,64 @@ interface LocalizeState {
   translate: TranslateFunction;
 }
 
-export class Localize extends Component<LocalizeProps, LocalizeState> {
-  private _locale = this.props.defaultLocale;
-  state = {
-    resources: this.props.defaultResources,
-    translate: makeTranslate(this.props.defaultResources, true)
-  };
+abstract class LocalizeComponent<T = {}> extends Component<T, LocalizeState> {
+  protected _locale: string;
 
-  private updateResources(resources: Resources) {
-    resources = prepareKeys(resources);
-    const translate = makeTranslate(resources, false);
-    this.setState({ resources, translate });
-  }
-
-  private loadResources(locale: string) {
-    let resources = this.props.load(locale);
+  protected updateResources(
+    locale: string,
+    resources: Resources | Promise<Resources> | Promise<{ default: Resources }>
+  ) {
     if (resources instanceof Promise) {
       resources.catch(() => null).then(resources => {
         if (this._locale === locale) {
           if (resources && isObject(resources.default)) {
             resources = resources.default;
           }
-          this.updateResources(resources);
+          this.setResources(resources);
         }
       });
     } else {
-      this.updateResources(resources);
+      this.setResources(resources);
     }
   }
 
+  private setResources(resources: Resources) {
+    resources = prepareKeys(resources);
+    const translate = makeTranslate(resources, false);
+    this.setState({ resources, translate });
+  }
+}
+
+interface LocalizeProps extends LocalizeConfig {
+  children: (translate: TranslateFunction) => ReactNode;
+}
+
+export class Localize extends LocalizeComponent<LocalizeProps> {
+  constructor(props: LocalizeProps, context?: any) {
+    super(props, context);
+    const { defaultLocale, defaultResources } = props;
+    this._locale = defaultLocale;
+    const resources = prepareKeys(defaultResources);
+    const translate = makeTranslate(resources, false);
+    // @ts-ignore
+    this.state = { resources, translate };
+  }
+
   private renderChildren = (locale: string) => {
-    const { children } = this.props;
+    const { load, children } = this.props;
     const { resources, translate } = this.state;
     if (this._locale !== locale) {
       this._locale = locale;
-      this.loadResources(locale);
+      this.updateResources(locale, load(locale));
     }
-    const nodes = children(translate);
-    return <ResourcesContext.Provider value={resources}>{nodes}</ResourcesContext.Provider>;
+    return (
+      <ResourcesContext.Provider value={resources}>{children(translate)}</ResourcesContext.Provider>
+    );
   };
 
   render() {
     return <LocaleContext.Consumer>{this.renderChildren}</LocaleContext.Consumer>;
   }
-}
-
-interface LocalizeConfig {
-  load: (locale: string) => Resources | Promise<Resources> | Promise<{ default: Resources }>;
-  defaultLocale?: string;
-  defaultResources?: Resources;
 }
 
 export function localize(
@@ -244,23 +287,39 @@ export function localize(argument: any) {
   } else {
     ({ load, defaultLocale, defaultResources } = argument);
   }
+  const resources = prepareKeys(defaultResources);
+  const translate = makeTranslate(resources, false);
+
   return Wrapped => {
-    class Localized extends Component {
+    class Localized extends LocalizeComponent {
       static displayName = `Localized(${getDisplayName(Wrapped)})`;
 
-      render() {
-        return (
-          <Localize load={load} defaultLocale={defaultLocale} defaultResources={defaultResources}>
-            {this.renderComponent}
-          </Localize>
-        );
+      constructor(props: {}, context?: any) {
+        super(props, context);
+        this._locale = defaultLocale;
+        // @ts-ignore
+        this.state = { resources, translate };
       }
-      // hoist Localized render callback
-      renderComponent = translate => <Wrapped translate={translate} {...this.props} />;
+
+      private renderComponent = (locale: string) => {
+        const { resources, translate } = this.state;
+        if (this._locale !== locale) {
+          this._locale = locale;
+          this.updateResources(locale, load(locale));
+        }
+        return (
+          <ResourcesContext.Provider value={resources}>
+            <Wrapped translate={translate} {...this.props} />
+          </ResourcesContext.Provider>
+        );
+      };
+
+      render() {
+        return <LocaleContext.Consumer>{this.renderComponent}</LocaleContext.Consumer>;
+      }
     }
     // static fields from component should be visible on the generated Component
     hoistNonReactStatics(Localized, Wrapped);
-
     return Localized;
   };
 }

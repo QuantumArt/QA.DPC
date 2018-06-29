@@ -62,8 +62,7 @@ class App extends React.Component {
             checked={lang === "eng"}
             onChange={() => this.setState({ lang: "eng" })}
           />
-        </label>
-        <span />
+        </label>{" "}
         <label>
           Русский{" "}
           <input
