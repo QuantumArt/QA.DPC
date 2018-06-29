@@ -100,20 +100,29 @@ abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor<
 @observer
 class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion {
   @inject private _dataSerializer: DataSerializer;
-  state = { isOpen: false };
+  state = {
+    isOpen: false,
+    isTouched: false
+  };
 
   @action
   removeRelation = (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
-    this.setState({ isOpen: false });
+    this.setState({
+      isOpen: false,
+      isTouched: false
+    });
     model[fieldSchema.FieldName] = null;
     model.setTouched(fieldSchema.FieldName, true);
   };
 
   toggleRelation = () => {
-    const { isOpen } = this.state;
-    this.setState({ isOpen: !isOpen });
+    const { isOpen, isTouched } = this.state;
+    this.setState({
+      isOpen: !isOpen,
+      isTouched: isTouched || !isOpen
+    });
   };
 
   renderControls(fieldSchema: SingleRelationFieldSchema) {
@@ -131,7 +140,7 @@ class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion {
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const { save, fields, children } = this.props;
-    const { isOpen } = this.state;
+    const { isOpen, isTouched } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     const serverId = article && this._dataSerializer.getServerId(article);
     return (
@@ -186,15 +195,17 @@ class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion {
                   colSpan={this._displayFields.length + 3}
                 >
                   <Collapse isOpen={isOpen} keepChildrenMounted>
-                    <Col md>
-                      <ArticleEditor
-                        model={article}
-                        contentSchema={fieldSchema.Content}
-                        fields={fields}
-                      >
-                        {children}
-                      </ArticleEditor>
-                    </Col>
+                    {isTouched && (
+                      <Col md>
+                        <ArticleEditor
+                          model={article}
+                          contentSchema={fieldSchema.Content}
+                          fields={fields}
+                        >
+                          {children}
+                        </ArticleEditor>
+                      </Col>
+                    )}
                   </Collapse>
                 </td>
               </tr>
@@ -217,7 +228,8 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
   @inject private _dataSerializer: DataSerializer;
   private _orderByField: FieldSelector;
   state = {
-    activeId: null
+    activeId: null,
+    touchedIds: {}
   };
 
   constructor(props: RelationFieldAccordionProps, context?: any) {
@@ -232,7 +244,10 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
   @action
   clearRelation = () => {
     const { model, fieldSchema } = this.props;
-    this.setState({ activeId: null });
+    this.setState({
+      activeId: null,
+      touchedIds: {}
+    });
     model[fieldSchema.FieldName] = [];
     model.setTouched(fieldSchema.FieldName, true);
   };
@@ -241,9 +256,12 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
   removeRelation(e: any, article: ArticleObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
-    const { activeId } = this.state;
+    const { activeId, touchedIds } = this.state;
+    delete touchedIds[article.Id];
     if (activeId === article.Id) {
-      this.setState({ activeId: null });
+      this.setState({ activeId: null, touchedIds });
+    } else {
+      this.setState({ touchedIds });
     }
     const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
     array.remove(article);
@@ -251,11 +269,12 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
   }
 
   toggleRelation(_e: any, article: ArticleObject) {
-    const { activeId } = this.state;
+    const { activeId, touchedIds } = this.state;
     if (activeId === article.Id) {
       this.setState({ activeId: null });
     } else {
-      this.setState({ activeId: article.Id });
+      touchedIds[article.Id] = true;
+      this.setState({ activeId: article.Id, touchedIds });
     }
   }
 
@@ -274,7 +293,7 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const { save, fields, children } = this.props;
-    const { activeId } = this.state;
+    const { activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return (
       <>
@@ -336,15 +355,17 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
                           colSpan={this._displayFields.length + 3}
                         >
                           <Collapse isOpen={isOpen} keepChildrenMounted>
-                            <Col md>
-                              <ArticleEditor
-                                model={article}
-                                contentSchema={fieldSchema.Content}
-                                fields={fields}
-                              >
-                                {children}
-                              </ArticleEditor>
-                            </Col>
+                            {touchedIds[article.Id] && (
+                              <Col md>
+                                <ArticleEditor
+                                  model={article}
+                                  contentSchema={fieldSchema.Content}
+                                  fields={fields}
+                                >
+                                  {children}
+                                </ArticleEditor>
+                              </Col>
+                            )}
                           </Collapse>
                         </td>
                       </tr>
