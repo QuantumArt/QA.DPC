@@ -49,19 +49,17 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
     const { model, contentSchema, save, children } = this.props;
     const serverId = this._dataSerializer.getServerId(model);
     const headerNode = save && (
-      <div key={1} className="article-editor__header">
-        <div className="article-editor__title" title={contentSchema.ContentDescription}>
-          {contentSchema.ContentTitle || contentSchema.ContentName}
-          {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
+      <Row key={1}>
+        <div className="article-editor__header">
+          <div className="article-editor__title" title={contentSchema.ContentDescription}>
+            {contentSchema.ContentTitle || contentSchema.ContentName}
+            {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
+          </div>
+          <Button icon="floppy-disk">Сохранить</Button>
         </div>
-        <Button icon="floppy-disk">Сохранить</Button>
-      </div>
+      </Row>
     );
-    const fieldsNode = (
-      <Col key={2} md>
-        <Row>{super.render()}</Row>
-      </Col>
-    );
+    const fieldsNode = <Row key={2}>{super.render()}</Row>;
     return isFunction(children) ? children(headerNode, fieldsNode) : [headerNode, fieldsNode];
   }
 }

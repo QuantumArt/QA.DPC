@@ -186,13 +186,15 @@ class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion {
                   colSpan={this._displayFields.length + 3}
                 >
                   <Collapse isOpen={isOpen} keepChildrenMounted>
-                    <ArticleEditor
-                      model={article}
-                      contentSchema={fieldSchema.Content}
-                      fields={fields}
-                    >
-                      {children}
-                    </ArticleEditor>
+                    <Col md>
+                      <ArticleEditor
+                        model={article}
+                        contentSchema={fieldSchema.Content}
+                        fields={fields}
+                      >
+                        {children}
+                      </ArticleEditor>
+                    </Col>
                   </Collapse>
                 </td>
               </tr>
@@ -334,13 +336,15 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
                           colSpan={this._displayFields.length + 3}
                         >
                           <Collapse isOpen={isOpen} keepChildrenMounted>
-                            <ArticleEditor
-                              model={article}
-                              contentSchema={fieldSchema.Content}
-                              fields={fields}
-                            >
-                              {children}
-                            </ArticleEditor>
+                            <Col md>
+                              <ArticleEditor
+                                model={article}
+                                contentSchema={fieldSchema.Content}
+                                fields={fields}
+                              >
+                                {children}
+                              </ArticleEditor>
+                            </Col>
                           </Collapse>
                         </td>
                       </tr>
