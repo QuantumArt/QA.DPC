@@ -50,13 +50,15 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
     const serverId = this._dataSerializer.getServerId(model);
     const headerNode = save && (
       <Row key={1}>
-        <div className="article-editor__header">
-          <div className="article-editor__title" title={contentSchema.ContentDescription}>
-            {contentSchema.ContentTitle || contentSchema.ContentName}
-            {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
+        <Col md>
+          <div key={1} className="article-editor__header">
+            <div className="article-editor__title" title={contentSchema.ContentDescription}>
+              {contentSchema.ContentTitle || contentSchema.ContentName}
+              {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
+            </div>
+            <Button icon="floppy-disk">Сохранить</Button>
           </div>
-          <Button icon="floppy-disk">Сохранить</Button>
-        </div>
+        </Col>
       </Row>
     );
     const fieldsNode = <Row key={2}>{super.render()}</Row>;
