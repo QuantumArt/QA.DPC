@@ -55,7 +55,7 @@ abstract class AbstractRelationFieldTable extends AbstractFieldEditor<RelationFi
   }
 
   render() {
-    const { model, fieldSchema, validate } = this.props;
+    const { model, fieldSchema } = this.props;
     return (
       <Col
         md={12}
@@ -71,7 +71,6 @@ abstract class AbstractRelationFieldTable extends AbstractFieldEditor<RelationFi
             </label>
           </Col>
           {this.renderField(model, fieldSchema)}
-          {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}
         </Row>
       </Col>
     );
@@ -93,7 +92,7 @@ class SingleRelationFieldTable extends AbstractRelationFieldTable {
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const article: ArticleObject = model[fieldSchema.FieldName];
-    const serverId = this._dataSerializer.getServerId(article);
+    const serverId = article && this._dataSerializer.getServerId(article);
     return (
       <Col xl={10} md={9}>
         <ButtonGroup>
@@ -109,14 +108,20 @@ class SingleRelationFieldTable extends AbstractRelationFieldTable {
             Очистить
           </Button>
         </ButtonGroup>
+        <Validate
+          model={model}
+          name={fieldSchema.FieldName}
+          rules={fieldSchema.IsRequired && required}
+        />
+        {this.renderValidation()}
         {article && (
           <div className="relation-field-table">
             <div className="relation-field-table__row">
-              <div className="relation-field-table__cell" key={-1}>
+              <div key={-1} className="relation-field-table__cell">
                 {serverId > 0 && `(${serverId})`}
               </div>
               {this._displayFields.map((displayField, i) => (
-                <div className="relation-field-table__cell" key={i}>
+                <div key={i} className="relation-field-table__cell">
                   {displayField(article)}
                 </div>
               ))}
@@ -133,12 +138,6 @@ class SingleRelationFieldTable extends AbstractRelationFieldTable {
             </div>
           </div>
         )}
-        {this.renderErrors(model, fieldSchema)}
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={fieldSchema.IsRequired && required}
-        />
       </Col>
     );
   }
@@ -192,6 +191,15 @@ class MultiRelationFieldTable extends AbstractRelationFieldTable {
             Очистить
           </Button>
         </ButtonGroup>
+        <Validate
+          model={model}
+          name={fieldSchema.FieldName}
+          rules={[
+            fieldSchema.IsRequired && required,
+            fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)
+          ]}
+        />
+        {this.renderValidation()}
         {list && (
           <div className="relation-field-table">
             {list
@@ -200,12 +208,12 @@ class MultiRelationFieldTable extends AbstractRelationFieldTable {
               .map(article => {
                 const serverId = this._dataSerializer.getServerId(article);
                 return (
-                  <div className="relation-field-table__row" key={article.Id}>
-                    <div className="relation-field-table__cell" key={-1}>
+                  <div key={article.Id} className="relation-field-table__row">
+                    <div key={-1} className="relation-field-table__cell">
                       {serverId > 0 && `(${serverId})`}
                     </div>
                     {this._displayFields.map((displayField, i) => (
-                      <div className="relation-field-table__cell" key={i}>
+                      <div key={i} className="relation-field-table__cell">
                         {displayField(article)}
                       </div>
                     ))}
@@ -224,15 +232,6 @@ class MultiRelationFieldTable extends AbstractRelationFieldTable {
               })}
           </div>
         )}
-        {this.renderErrors(model, fieldSchema)}
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={[
-            fieldSchema.IsRequired && required,
-            fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)
-          ]}
-        />
       </Col>
     );
   }
