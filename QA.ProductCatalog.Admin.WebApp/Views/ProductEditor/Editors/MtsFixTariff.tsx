@@ -3,16 +3,19 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Grid } from "react-flexbox-grid";
 import { inject } from "react-ioc";
+import { toJS } from "mobx";
+import { onPatch } from "mobx-state-tree";
+import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import {
+  RelationFieldAccordion,
+  RelationFieldList,
+  RelationFieldTable
+} from "Components/FieldEditors/FieldEditors";
 import { EditorController } from "Services/EditorController";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
-import { Product } from "Editors/MtsFixTariff/ProductEditorSchema";
-import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
-import { onPatch } from "mobx-state-tree";
-// @ts-ignore
-import { RelationFieldList, RelationFieldTable } from "Components/FieldEditors/FieldEditors";
-import { toJS } from "mobx";
 import { maxCount } from "Utils/Validators";
+import { Product } from "./MtsFixTariff/ProductEditorSchema";
 
 class Example {
   @inject editorController: EditorController;
@@ -65,8 +68,11 @@ class Example {
             Regions: props => (
               <RelationFieldTable validate={maxCount(25)} orderByField="Title" {...props} />
             ),
-            MarketingProduct: RelationFieldTable,
-            Parameters: RelationFieldTable
+            __Regions: props => (
+              <RelationFieldAccordion validate={maxCount(25)} orderByField="Title" {...props} />
+            ),
+            MarketingProduct: RelationFieldAccordion,
+            Parameters: RelationFieldAccordion
           }}
         >
           {(header, fields) => (
