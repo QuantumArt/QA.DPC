@@ -23,7 +23,7 @@
     "types": ["node", "webpack-env", "jest"],
     "baseUrl": ".",
     "paths": {
-      "*": ["*", "ClientApp/*"]
+      "*": ["*", "ClientApp/*", "ClientApp/Packages/*"]
     }
   },
   "include": ["ClientApp/**/*", "Views/**/*"]

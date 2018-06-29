@@ -11,7 +11,7 @@ import {
   isSingleRelationField,
   RelationFieldSchema
 } from "Models/EditorSchemaModels";
-import { Validate } from "Models/ValidatableMixin";
+import { Validate } from "mst-validation-mixin";
 import { asc } from "Utils/Array/Sort";
 import { isString } from "Utils/TypeChecks";
 import { required, maxCount } from "Utils/Validators";

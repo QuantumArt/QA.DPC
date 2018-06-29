@@ -11,7 +11,7 @@ import {
   StringFieldSchema,
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
-import { Validate } from "Models/ValidatableMixin";
+import { Validate } from "mst-validation-mixin";
 import {
   InputText,
   RadioGroup,

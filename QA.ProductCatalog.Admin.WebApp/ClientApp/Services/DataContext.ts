@@ -16,7 +16,7 @@ import {
   isPlainField,
   isEnumField
 } from "Models/EditorSchemaModels";
-import { validationMixin } from "Models/ValidatableMixin";
+import { validationMixin } from "mst-validation-mixin";
 
 export class DataContext {
   private _nextId = -1;

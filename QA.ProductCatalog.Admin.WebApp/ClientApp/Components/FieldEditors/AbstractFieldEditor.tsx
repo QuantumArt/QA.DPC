@@ -3,7 +3,7 @@ import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { FieldSchema } from "Models/EditorSchemaModels";
-import { Validator, Validate } from "Models/ValidatableMixin";
+import { Validator, Validate } from "mst-validation-mixin";
 
 export interface FieldEditorProps {
   model: ArticleObject | ExtensionObject;

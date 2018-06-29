@@ -1,4 +1,4 @@
-import { ValidatableObject } from "Models/ValidatableMixin";
+import { ValidatableObject } from "mst-validation-mixin";
 
 /** Типизация хранилища данных */
 export interface ProductEntities {

@@ -1,6 +1,6 @@
 import { IExtendedObservableMap } from "mobx-state-tree";
 import { isObject, isInteger, isString } from "Utils/TypeChecks";
-import { ValidatableObject } from "./ValidatableMixin";
+import { ValidatableObject } from "mst-validation-mixin";
 
 export interface StoreObject {
   readonly [name: string]: IExtendedObservableMap<ArticleObject>;

@@ -244,5 +244,5 @@ _Pvt_Extensions
 .idea/
 *.sln.iml
 
-
+!**/ClientApp/**/Packages/**
 QA.ProductCatalog.Admin.WebApp/Scripts/Bundles

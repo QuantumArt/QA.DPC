@@ -45,7 +45,7 @@ function compileEditorDataInterfaces(mergedSchemas, editorSchema) {
   const print = func => func();
 
   // prettier-ignore
-  return `import { ValidatableObject } from "Models/ValidatableObject";
+  return `import { ValidatableObject } from "mst-validation-mixin";
 
 /** Типизация хранилища данных */
 export interface ${getRootName(editorSchema)}Entities {${

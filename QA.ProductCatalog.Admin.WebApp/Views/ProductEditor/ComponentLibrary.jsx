@@ -19,7 +19,7 @@ import {
   RadioGroup
 } from "Components/FormControls/FormControls";
 import { required, pattern, maxCount } from "Utils/Validators";
-import { validationMixin } from "Models/ValidatableMixin";
+import { validationMixin } from "mst-validation-mixin";
 import {
   LocaleContext,
   Localize,
@@ -28,7 +28,7 @@ import {
   id,
   fallback,
   TranslateFunction
-} from "Utils/Localization";
+} from "react-lazy-i18n";
 
 // const resources = {
 //   "Test...": "Тест...",

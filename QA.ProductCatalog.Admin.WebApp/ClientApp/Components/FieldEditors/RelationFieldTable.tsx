@@ -12,7 +12,7 @@ import {
   isSingleRelationField,
   RelationFieldSchema
 } from "Models/EditorSchemaModels";
-import { Validate } from "Models/ValidatableMixin";
+import { Validate } from "mst-validation-mixin";
 import { DataSerializer } from "Services/DataSerializer";
 import { isString } from "Utils/TypeChecks";
 import { required, maxCount } from "Utils/Validators";

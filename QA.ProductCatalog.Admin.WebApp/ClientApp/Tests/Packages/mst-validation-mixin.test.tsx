@@ -4,7 +4,7 @@ import { render } from "react-dom";
 import { types as t, unprotect, IExtendedObservableMap } from "mobx-state-tree";
 import { IObservableArray } from "mobx";
 import { ValidatableControl } from "Components/FormControls/AbstractControls";
-import { validationMixin } from "Models/ValidatableMixin";
+import { validationMixin } from "mst-validation-mixin";
 import { required, pattern, maxCount } from "Utils/Validators";
 
 class TestControl extends ValidatableControl {
@@ -15,7 +15,7 @@ class TestControl extends ValidatableControl {
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-describe("ValidatableMixin", () => {
+describe("mst-validation-mixin", () => {
   it("should validate plain field", async () => {
     const Article = t
       .model("Article", {

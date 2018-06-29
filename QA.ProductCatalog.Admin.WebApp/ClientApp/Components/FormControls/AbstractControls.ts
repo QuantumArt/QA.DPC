@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { transaction } from "mobx";
 import { isPlainObject, isArray } from "Utils/TypeChecks";
-import { ValidatableObject, Validator } from "Models/ValidatableMixin";
+import { ValidatableObject, Validator } from "mst-validation-mixin";
 
 interface ControlProps {
   [x: string]: any;

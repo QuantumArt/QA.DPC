@@ -90,7 +90,8 @@
     "testRegex": "(/__tests__/.+|.+\\.(test|spec))\\.(jsx?|tsx?)$",
     "moduleDirectories": [
       "node_modules",
-      "ClientApp"
+      "ClientApp",
+      "ClientApp/Packages"
     ],
     "moduleFileExtensions": [
       "ts",
