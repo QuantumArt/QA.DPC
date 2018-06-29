@@ -45,7 +45,7 @@ function compileEditorDataInterfaces(mergedSchemas, editorSchema) {
   const print = func => func();
 
   // prettier-ignore
-  return `import { ValidatableMixin } from "Models/ValidatableMixin";
+  return `import { ValidatableObject } from "Models/ValidatableObject";
 
 /** Типизация хранилища данных */
 export interface ${getRootName(editorSchema)}Entities {${
@@ -53,7 +53,7 @@ export interface ${getRootName(editorSchema)}Entities {${
   ${getName(content)}: ${getName(content)};`)}
 }
 ${forEach(mergedSchemas, content => `
-export interface ${getName(content)} extends ValidatableMixin {${
+export interface ${getName(content)} extends ValidatableObject {${
 content.ForExtension
   ? `
   ContentName: "${getName(content)}";`

@@ -19,7 +19,7 @@ import {
   RadioGroup
 } from "Components/FormControls/FormControls";
 import { required, pattern, maxCount } from "Utils/Validators";
-import { validatableMixin } from "Models/ValidatableMixin";
+import { validationMixin } from "Models/ValidatableMixin";
 import {
   LocaleContext,
   Localize,
@@ -147,7 +147,7 @@ const Category = t
     Id: t.identifier(t.number),
     StringField: t.maybe(t.string)
   })
-  .extend(validatableMixin);
+  .extend(validationMixin);
 
 const Article = t
   .model("Article", {
@@ -166,7 +166,7 @@ const Article = t
     EnumField: t.maybe(t.string),
     ArrayField: t.maybe(t.array(t.string))
   })
-  .extend(validatableMixin);
+  .extend(validationMixin);
 
 const article = Article.create({
   Id: 10,

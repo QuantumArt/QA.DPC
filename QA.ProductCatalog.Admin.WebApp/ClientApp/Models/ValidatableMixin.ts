@@ -14,7 +14,7 @@ import { isArray } from "Utils/TypeChecks";
 
 export type Validator = (value: any) => string;
 
-export interface ValidatableMixin {
+export interface ValidatableObject {
   isTouched(name?: string): boolean;
   setTouched(name: string, isTouched: boolean): void;
   hasFocus(name: string): boolean;
@@ -69,7 +69,7 @@ class FieldState {
   }
 }
 
-export const validatableMixin = (self: Object) => {
+export const validationMixin = (self: Object) => {
   const fields = observable.map<string, FieldState>(null, { deep: false });
 
   const getOrAddFieldState = (name: string) => {
@@ -276,7 +276,7 @@ function sutructuralEquals(first: any, second: any): boolean {
 }
 
 interface ValidateProps {
-  model: ValidatableMixin & { [x: string]: any };
+  model: ValidatableObject & { [x: string]: any };
   name: string;
   rules: Validator | Validator[];
 }

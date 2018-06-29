@@ -4,7 +4,7 @@ import { render } from "react-dom";
 import { types as t, unprotect, IExtendedObservableMap } from "mobx-state-tree";
 import { IObservableArray } from "mobx";
 import { ValidatableControl } from "Components/FormControls/AbstractControls";
-import { validatableMixin } from "Models/ValidatableMixin";
+import { validationMixin } from "Models/ValidatableMixin";
 import { required, pattern, maxCount } from "Utils/Validators";
 
 class TestControl extends ValidatableControl {
@@ -22,7 +22,7 @@ describe("ValidatableMixin", () => {
         Id: t.identifier(t.number),
         Title: t.maybe(t.string)
       })
-      .extend(validatableMixin);
+      .extend(validationMixin);
 
     const article = Article.create({
       Id: 123,
@@ -69,7 +69,7 @@ describe("ValidatableMixin", () => {
           })
         )
       })
-      .extend(validatableMixin);
+      .extend(validationMixin);
 
     const article = Article.create({ Id: 123 });
 
@@ -101,14 +101,14 @@ describe("ValidatableMixin", () => {
         Id: t.identifier(t.number),
         Name: t.maybe(t.string)
       })
-      .extend(validatableMixin);
+      .extend(validationMixin);
 
     const Article = t
       .model("Article", {
         Id: t.identifier(t.number),
         Category: t.maybe(t.reference(Category))
       })
-      .extend(validatableMixin);
+      .extend(validationMixin);
 
     const category = Category.create({
       Id: 4567,
@@ -151,7 +151,7 @@ describe("ValidatableMixin", () => {
         Id: t.identifier(t.number),
         Tags: t.maybe(t.array(t.string))
       })
-      .extend(validatableMixin);
+      .extend(validationMixin);
 
     const article = Article.create({
       Id: 123,
@@ -211,7 +211,7 @@ describe("ValidatableMixin", () => {
         Comments: t.maybe(t.map(Comment)),
         Comments2: t.optional(t.array(t.reference(t.reference(Comment))), [])
       })
-      .extend(validatableMixin);
+      .extend(validationMixin);
 
     const article = Article.create({
       Id: 123,

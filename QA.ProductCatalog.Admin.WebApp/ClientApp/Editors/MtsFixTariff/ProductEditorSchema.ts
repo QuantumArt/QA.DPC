@@ -1,4 +1,4 @@
-import { ValidatableMixin } from "Models/ValidatableMixin";
+import { ValidatableObject } from "Models/ValidatableMixin";
 
 /** Типизация хранилища данных */
 export interface ProductEntities {
@@ -36,7 +36,7 @@ export interface ProductEntities {
   DeviceOnTariffs: DeviceOnTariffs;
 }
 
-export interface Region extends ValidatableMixin {
+export interface Region extends ValidatableObject {
   Id: number;
   ContentName: "Region";
   Modified: Date;
@@ -46,7 +46,7 @@ export interface Region extends ValidatableMixin {
   IsMainCity: boolean;
 }
 
-export interface Product extends ValidatableMixin {
+export interface Product extends ValidatableObject {
   Id: number;
   ContentName: "Product";
   Modified: Date;
@@ -104,7 +104,7 @@ export interface Product extends ValidatableMixin {
   Advantages: Advantage[];
 }
 
-export interface Group extends ValidatableMixin {
+export interface Group extends ValidatableObject {
   Id: number;
   ContentName: "Group";
   Modified: Date;
@@ -112,7 +112,7 @@ export interface Group extends ValidatableMixin {
   Alias: string;
 }
 
-export interface ProductModifer extends ValidatableMixin {
+export interface ProductModifer extends ValidatableObject {
   Id: number;
   ContentName: "ProductModifer";
   Modified: Date;
@@ -120,11 +120,11 @@ export interface ProductModifer extends ValidatableMixin {
   Alias: string;
 }
 
-export interface Tariff extends ValidatableMixin {
+export interface Tariff extends ValidatableObject {
   ContentName: "Tariff";
 }
 
-export interface TariffZone extends ValidatableMixin {
+export interface TariffZone extends ValidatableObject {
   Id: number;
   ContentName: "TariffZone";
   Modified: Date;
@@ -132,7 +132,7 @@ export interface TariffZone extends ValidatableMixin {
   Alias: string;
 }
 
-export interface Direction extends ValidatableMixin {
+export interface Direction extends ValidatableObject {
   Id: number;
   ContentName: "Direction";
   Modified: Date;
@@ -140,7 +140,7 @@ export interface Direction extends ValidatableMixin {
   Alias: string;
 }
 
-export interface BaseParameter extends ValidatableMixin {
+export interface BaseParameter extends ValidatableObject {
   Id: number;
   ContentName: "BaseParameter";
   Modified: Date;
@@ -150,7 +150,7 @@ export interface BaseParameter extends ValidatableMixin {
   AllowDirection: boolean;
 }
 
-export interface BaseParameterModifier extends ValidatableMixin {
+export interface BaseParameterModifier extends ValidatableObject {
   Id: number;
   ContentName: "BaseParameterModifier";
   Modified: Date;
@@ -164,7 +164,7 @@ export interface BaseParameterModifier extends ValidatableMixin {
     | "Refining";
 }
 
-export interface ParameterModifier extends ValidatableMixin {
+export interface ParameterModifier extends ValidatableObject {
   Id: number;
   ContentName: "ParameterModifier";
   Modified: Date;
@@ -172,7 +172,7 @@ export interface ParameterModifier extends ValidatableMixin {
   Alias: string;
 }
 
-export interface ProductParameter extends ValidatableMixin {
+export interface ProductParameter extends ValidatableObject {
   Id: number;
   ContentName: "ProductParameter";
   Modified: Date;
@@ -194,7 +194,7 @@ export interface ProductParameter extends ValidatableMixin {
   Choice: ParameterChoice;
 }
 
-export interface Unit extends ValidatableMixin {
+export interface Unit extends ValidatableObject {
   Id: number;
   ContentName: "Unit";
   Modified: Date;
@@ -226,7 +226,7 @@ export interface Unit extends ValidatableMixin {
   Type: string;
 }
 
-export interface LinkModifier extends ValidatableMixin {
+export interface LinkModifier extends ValidatableObject {
   Id: number;
   ContentName: "LinkModifier";
   Modified: Date;
@@ -234,7 +234,7 @@ export interface LinkModifier extends ValidatableMixin {
   Alias: string;
 }
 
-export interface ProductRelation extends ValidatableMixin {
+export interface ProductRelation extends ValidatableObject {
   Id: number;
   ContentName: "ProductRelation";
   Modified: Date;
@@ -270,7 +270,7 @@ export interface ProductRelation extends ValidatableMixin {
   };
 }
 
-export interface LinkParameter extends ValidatableMixin {
+export interface LinkParameter extends ValidatableObject {
   Id: number;
   ContentName: "LinkParameter";
   Modified: Date;
@@ -294,15 +294,15 @@ export interface LinkParameter extends ValidatableMixin {
   OldCorpPointId: number;
 }
 
-export interface TariffTransfer extends ValidatableMixin {
+export interface TariffTransfer extends ValidatableObject {
   ContentName: "TariffTransfer";
 }
 
-export interface MutualGroup extends ValidatableMixin {
+export interface MutualGroup extends ValidatableObject {
   ContentName: "MutualGroup";
 }
 
-export interface ProductParameterGroup extends ValidatableMixin {
+export interface ProductParameterGroup extends ValidatableObject {
   Id: number;
   ContentName: "ProductParameterGroup";
   Modified: Date;
@@ -316,7 +316,7 @@ export interface ProductParameterGroup extends ValidatableMixin {
   TitleForIcin: string;
 }
 
-export interface MarketingProduct extends ValidatableMixin {
+export interface MarketingProduct extends ValidatableObject {
   Id: number;
   ContentName: "MarketingProduct";
   Modified: Date;
@@ -364,29 +364,29 @@ export interface MarketingProduct extends ValidatableMixin {
   DetailedDescription: string;
 }
 
-export interface MarketingTariff extends ValidatableMixin {
+export interface MarketingTariff extends ValidatableObject {
   ContentName: "MarketingTariff";
 }
 
-export interface MarketingService extends ValidatableMixin {
+export interface MarketingService extends ValidatableObject {
   ContentName: "MarketingService";
 }
 
-export interface Service extends ValidatableMixin {
+export interface Service extends ValidatableObject {
   ContentName: "Service";
 }
 
-export interface ServiceOnTariff extends ValidatableMixin {
+export interface ServiceOnTariff extends ValidatableObject {
   ContentName: "ServiceOnTariff";
   Description: string;
 }
 
-export interface ServicesUpsale extends ValidatableMixin {
+export interface ServicesUpsale extends ValidatableObject {
   ContentName: "ServicesUpsale";
   Order: number;
 }
 
-export interface TariffOptionPackage extends ValidatableMixin {
+export interface TariffOptionPackage extends ValidatableObject {
   ContentName: "TariffOptionPackage";
   SubTitle: string;
   Description: string;
@@ -394,11 +394,11 @@ export interface TariffOptionPackage extends ValidatableMixin {
   Link: string;
 }
 
-export interface ServiceRelation extends ValidatableMixin {
+export interface ServiceRelation extends ValidatableObject {
   ContentName: "ServiceRelation";
 }
 
-export interface CommunicationType extends ValidatableMixin {
+export interface CommunicationType extends ValidatableObject {
   Id: number;
   ContentName: "CommunicationType";
   Modified: Date;
@@ -406,7 +406,7 @@ export interface CommunicationType extends ValidatableMixin {
   Alias: string;
 }
 
-export interface Segment extends ValidatableMixin {
+export interface Segment extends ValidatableObject {
   Id: number;
   ContentName: "Segment";
   Modified: Date;
@@ -414,15 +414,15 @@ export interface Segment extends ValidatableMixin {
   Alias: string;
 }
 
-export interface Action extends ValidatableMixin {
+export interface Action extends ValidatableObject {
   ContentName: "Action";
 }
 
-export interface MarketingAction extends ValidatableMixin {
+export interface MarketingAction extends ValidatableObject {
   ContentName: "MarketingAction";
 }
 
-export interface MarketingProductParameter extends ValidatableMixin {
+export interface MarketingProductParameter extends ValidatableObject {
   Id: number;
   ContentName: "MarketingProductParameter";
   Modified: Date;
@@ -442,19 +442,19 @@ export interface MarketingProductParameter extends ValidatableMixin {
   Image: string;
 }
 
-export interface RoamingScale extends ValidatableMixin {
+export interface RoamingScale extends ValidatableObject {
   ContentName: "RoamingScale";
 }
 
-export interface MarketingRoamingScale extends ValidatableMixin {
+export interface MarketingRoamingScale extends ValidatableObject {
   ContentName: "MarketingRoamingScale";
 }
 
-export interface RoamingScaleOnTariff extends ValidatableMixin {
+export interface RoamingScaleOnTariff extends ValidatableObject {
   ContentName: "RoamingScaleOnTariff";
 }
 
-export interface TariffCategory extends ValidatableMixin {
+export interface TariffCategory extends ValidatableObject {
   Id: number;
   ContentName: "TariffCategory";
   Modified: Date;
@@ -469,11 +469,11 @@ export interface TariffCategory extends ValidatableMixin {
     | "Phone";
 }
 
-export interface ServiceOnRoamingScale extends ValidatableMixin {
+export interface ServiceOnRoamingScale extends ValidatableObject {
   ContentName: "ServiceOnRoamingScale";
 }
 
-export interface Advantage extends ValidatableMixin {
+export interface Advantage extends ValidatableObject {
   Id: number;
   ContentName: "Advantage";
   Modified: Date;
@@ -486,17 +486,17 @@ export interface Advantage extends ValidatableMixin {
   OldSiteId: number;
 }
 
-export interface CrossSale extends ValidatableMixin {
+export interface CrossSale extends ValidatableObject {
   ContentName: "CrossSale";
   Order: number;
 }
 
-export interface MarketingCrossSale extends ValidatableMixin {
+export interface MarketingCrossSale extends ValidatableObject {
   ContentName: "MarketingCrossSale";
   Order: number;
 }
 
-export interface TimeZone extends ValidatableMixin {
+export interface TimeZone extends ValidatableObject {
   Id: number;
   ContentName: "TimeZone";
   Modified: Date;
@@ -507,7 +507,7 @@ export interface TimeZone extends ValidatableMixin {
   OldSiteId: number;
 }
 
-export interface NetworkCity extends ValidatableMixin {
+export interface NetworkCity extends ValidatableObject {
   Id: number;
   ContentName: "NetworkCity";
   Modified: Date;
@@ -515,7 +515,7 @@ export interface NetworkCity extends ValidatableMixin {
   HasIpTv: boolean;
 }
 
-export interface ChannelCategory extends ValidatableMixin {
+export interface ChannelCategory extends ValidatableObject {
   Id: number;
   ContentName: "ChannelCategory";
   Modified: Date;
@@ -527,7 +527,7 @@ export interface ChannelCategory extends ValidatableMixin {
   OldSiteId: number;
 }
 
-export interface ChannelType extends ValidatableMixin {
+export interface ChannelType extends ValidatableObject {
   Id: number;
   ContentName: "ChannelType";
   Modified: Date;
@@ -535,7 +535,7 @@ export interface ChannelType extends ValidatableMixin {
   OldSiteId: number;
 }
 
-export interface ChannelFormat extends ValidatableMixin {
+export interface ChannelFormat extends ValidatableObject {
   Id: number;
   ContentName: "ChannelFormat";
   Modified: Date;
@@ -545,7 +545,7 @@ export interface ChannelFormat extends ValidatableMixin {
   OldSiteId: number;
 }
 
-export interface TvChannel extends ValidatableMixin {
+export interface TvChannel extends ValidatableObject {
   Id: number;
   ContentName: "TvChannel";
   Modified: Date;
@@ -568,7 +568,7 @@ export interface TvChannel extends ValidatableMixin {
   TimeZone: TimeZone;
 }
 
-export interface ParameterChoice extends ValidatableMixin {
+export interface ParameterChoice extends ValidatableObject {
   Id: number;
   ContentName: "ParameterChoice";
   Modified: Date;
@@ -577,14 +577,14 @@ export interface ParameterChoice extends ValidatableMixin {
   OldSiteId: number;
 }
 
-export interface MarketingDevice extends ValidatableMixin {
+export interface MarketingDevice extends ValidatableObject {
   ContentName: "MarketingDevice";
   DeviceType: EquipmentType;
   Segments: Segment[];
   CommunicationType: CommunicationType;
 }
 
-export interface Device extends ValidatableMixin {
+export interface Device extends ValidatableObject {
   ContentName: "Device";
   Downloads: EquipmentDownload[];
   Inners: Product[];
@@ -593,14 +593,14 @@ export interface Device extends ValidatableMixin {
   QuickStartGuide: string;
 }
 
-export interface FixedType extends ValidatableMixin {
+export interface FixedType extends ValidatableObject {
   Id: number;
   ContentName: "FixedType";
   Modified: Date;
   Title: string;
 }
 
-export interface EquipmentType extends ValidatableMixin {
+export interface EquipmentType extends ValidatableObject {
   Id: number;
   ContentName: "EquipmentType";
   Modified: Date;
@@ -610,7 +610,7 @@ export interface EquipmentType extends ValidatableMixin {
   Order: number;
 }
 
-export interface EquipmentDownload extends ValidatableMixin {
+export interface EquipmentDownload extends ValidatableObject {
   Id: number;
   ContentName: "EquipmentDownload";
   Modified: Date;
@@ -618,7 +618,7 @@ export interface EquipmentDownload extends ValidatableMixin {
   File: string;
 }
 
-export interface MarketingFixConnectAction extends ValidatableMixin {
+export interface MarketingFixConnectAction extends ValidatableObject {
   ContentName: "MarketingFixConnectAction";
   Segment: Segment[];
   MarketingAction: MarketingProduct;
@@ -628,14 +628,14 @@ export interface MarketingFixConnectAction extends ValidatableMixin {
   AfterPromo: string;
 }
 
-export interface FixConnectAction extends ValidatableMixin {
+export interface FixConnectAction extends ValidatableObject {
   ContentName: "FixConnectAction";
   MarketingOffers: MarketingProduct[];
   PromoPeriod: string;
   AfterPromo: string;
 }
 
-export interface MarketingTvPackage extends ValidatableMixin {
+export interface MarketingTvPackage extends ValidatableObject {
   ContentName: "MarketingTvPackage";
   Channels: TvChannel[];
   TitleForSite: string;
@@ -644,11 +644,11 @@ export interface MarketingTvPackage extends ValidatableMixin {
     | "Additional";
 }
 
-export interface TvPackage extends ValidatableMixin {
+export interface TvPackage extends ValidatableObject {
   ContentName: "TvPackage";
 }
 
-export interface MarketingFixConnectTariff extends ValidatableMixin {
+export interface MarketingFixConnectTariff extends ValidatableObject {
   ContentName: "MarketingFixConnectTariff";
   Segment: Segment;
   Category: TariffCategory;
@@ -660,29 +660,29 @@ export interface MarketingFixConnectTariff extends ValidatableMixin {
   TitleForSite: string;
 }
 
-export interface FixConnectTariff extends ValidatableMixin {
+export interface FixConnectTariff extends ValidatableObject {
   ContentName: "FixConnectTariff";
   TitleForSite: string;
 }
 
-export interface MarketingPhoneTariff extends ValidatableMixin {
+export interface MarketingPhoneTariff extends ValidatableObject {
   ContentName: "MarketingPhoneTariff";
 }
 
-export interface PhoneTariff extends ValidatableMixin {
+export interface PhoneTariff extends ValidatableObject {
   ContentName: "PhoneTariff";
   RostelecomLink: string;
 }
 
-export interface MarketingInternetTariff extends ValidatableMixin {
+export interface MarketingInternetTariff extends ValidatableObject {
   ContentName: "MarketingInternetTariff";
 }
 
-export interface InternetTariff extends ValidatableMixin {
+export interface InternetTariff extends ValidatableObject {
   ContentName: "InternetTariff";
 }
 
-export interface DeviceOnTariffs extends ValidatableMixin {
+export interface DeviceOnTariffs extends ValidatableObject {
   Id: number;
   ContentName: "DeviceOnTariffs";
   Modified: Date;
@@ -693,7 +693,7 @@ export interface DeviceOnTariffs extends ValidatableMixin {
   Cities: Region[];
 }
 
-export interface DevicesForFixConnectAction extends ValidatableMixin {
+export interface DevicesForFixConnectAction extends ValidatableObject {
   ContentName: "DevicesForFixConnectAction";
   Order: number;
   FixConnectAction: Product;
