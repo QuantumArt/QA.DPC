@@ -16,6 +16,7 @@ import { asc } from "Utils/Array/Sort";
 import { isString } from "Utils/TypeChecks";
 import { required, maxCount } from "Utils/Validators";
 import { AbstractFieldEditor, FieldEditorProps } from "./AbstractFieldEditor";
+import "./RelationFieldList.scss";
 
 // TODO: Интеграция с окном выбора статей QP
 // TODO: Загрузка части продукта, которая начинается с новой выбранной статьи
