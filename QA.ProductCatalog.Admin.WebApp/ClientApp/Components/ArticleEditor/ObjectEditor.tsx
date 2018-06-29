@@ -157,7 +157,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
     throw new Error(`Unsupported field type FieldExactTypes.${fieldSchema.FieldType}`);
   }
 
-  render(): JSX.Element | JSX.Element[] {
+  render() {
     const { model } = this.props;
 
     return this._editorBlocks

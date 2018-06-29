@@ -6,17 +6,19 @@ import { observer } from "mobx-react";
 import { ArticleObject } from "Models/EditorDataModels";
 import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { DataSerializer } from "Services/DataSerializer";
-import { isString } from "Utils/TypeChecks";
+import { isString, isFunction } from "Utils/TypeChecks";
 import { ObjectEditor, ObjectEditorProps } from "./ObjectEditor";
 export { IGNORE, FieldsConfig } from "./ObjectEditor";
 import "./ArticleEditor.scss";
+
+export type RenderArticle = (headerNode: ReactNode, fieldsNode: ReactNode) => ReactNode;
 
 interface ArticleEditorProps {
   model: ArticleObject;
   save?: boolean;
   saveRelations?: RelationSelection;
   titleField?: string | ((article: ArticleObject) => string);
-  children?: (headerNode: ReactNode, fieldsNode: ReactNode) => any;
+  children?: RenderArticle | ReactNode;
 }
 
 @consumer
@@ -55,6 +57,6 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
       </div>
     );
     const fieldsNode = <Row>{super.render()}</Row>;
-    return children ? children(headerNode, fieldsNode) : [headerNode, fieldsNode];
+    return isFunction(children) ? children(headerNode, fieldsNode) : [headerNode, fieldsNode];
   }
 }

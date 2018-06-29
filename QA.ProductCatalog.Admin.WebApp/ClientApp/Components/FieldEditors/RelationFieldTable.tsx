@@ -125,16 +125,15 @@ class SingleRelationFieldTable extends AbstractRelationFieldTable {
                   {displayField(article)}
                 </div>
               ))}
-              {!fieldSchema.IsReadOnly && (
-                <div key={-2} className="relation-field-table__controls">
+              <div key={-2} className="relation-field-table__controls">
+                {!fieldSchema.IsReadOnly && (
                   <Button
                     small
                     icon={<Icon icon="small-cross" title={false} />}
-                    disabled={fieldSchema.IsReadOnly}
                     onClick={this.removeRelation}
                   />
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -217,16 +216,15 @@ class MultiRelationFieldTable extends AbstractRelationFieldTable {
                         {displayField(article)}
                       </div>
                     ))}
-                    {!fieldSchema.IsReadOnly && (
-                      <div key={-2} className="relation-field-table__controls">
+                    <div key={-2} className="relation-field-table__controls">
+                      {!fieldSchema.IsReadOnly && (
                         <Button
                           small
                           icon={<Icon icon="small-cross" title={false} />}
-                          disabled={fieldSchema.IsReadOnly}
                           onClick={e => this.removeRelation(e, article)}
                         />
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
                 );
               })}

@@ -69,7 +69,12 @@ class Example {
               <RelationFieldTable validate={maxCount(25)} orderByField="Title" {...props} />
             ),
             Regions: props => (
-              <RelationFieldAccordion validate={maxCount(25)} orderByField="Title" {...props} />
+              <RelationFieldAccordion
+                save
+                validate={maxCount(25)}
+                orderByField="Title"
+                {...props}
+              />
             ),
             MarketingProduct: RelationFieldAccordion,
             Parameters: RelationFieldAccordion
