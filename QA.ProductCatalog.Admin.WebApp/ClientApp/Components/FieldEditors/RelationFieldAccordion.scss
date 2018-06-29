@@ -3,6 +3,7 @@ $background: darken(#f5f8fa, 5%);
 
 .relation-field-accordion {
   display: table;
+  table-layout: fixed;
   width: 100%;
   margin-top: 5px;
 }
@@ -56,11 +57,11 @@ $background: darken(#f5f8fa, 5%);
 .relation-field-accordion__expander {
   display: table-cell;
   vertical-align: middle;
+  width: 30px;
   padding-left: 5px;
   padding-top: 5px;
   padding-bottom: 2px;
   padding-right: 5px;
-  white-space: nowrap;
   border-left: $border;
   border-bottom: $border;
 }
@@ -68,11 +69,15 @@ $background: darken(#f5f8fa, 5%);
 .relation-field-accordion__cell {
   display: table-cell;
   vertical-align: middle;
+  width: 15vw;
   padding-top: 2px;
   padding-bottom: 2px;
   padding-right: 5px;
-  white-space: nowrap;
   border-bottom: $border;
+
+  &:nth-child(2) {
+    width: 80px;
+  }
 }
 
 .relation-field-accordion__controls {
@@ -89,7 +94,6 @@ $background: darken(#f5f8fa, 5%);
 
 .relation-field-accordion__main {
   display: table-row;
-  position: relative;
 
   &:last-child > .relation-field-accordion__body {
     border-bottom-left-radius: 5px;
@@ -99,8 +103,6 @@ $background: darken(#f5f8fa, 5%);
 
 .relation-field-accordion__body {
   display: table-cell;
-  min-width: 100%;
-  width: 100%;
   border-left: $border;
   border-right: $border;
 

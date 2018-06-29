@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Row } from "react-flexbox-grid";
+import { Row, Col } from "react-flexbox-grid";
 import { Button } from "@blueprintjs/core";
 import { inject, consumer } from "react-ioc";
 import { observer } from "mobx-react";
@@ -29,6 +29,7 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
 
   constructor(props: ObjectEditorProps & ArticleEditorProps, context?: any) {
     super(props, context);
+    console.log("ArticleEditor");
     const {
       contentSchema,
       saveRelations,
@@ -48,7 +49,7 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
     const { model, contentSchema, save, children } = this.props;
     const serverId = this._dataSerializer.getServerId(model);
     const headerNode = save && (
-      <div className="article-editor__header">
+      <div key={1} className="article-editor__header">
         <div className="article-editor__title" title={contentSchema.ContentDescription}>
           {contentSchema.ContentTitle || contentSchema.ContentName}
           {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
@@ -56,7 +57,11 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
         <Button icon="floppy-disk">Сохранить</Button>
       </div>
     );
-    const fieldsNode = <Row>{super.render()}</Row>;
+    const fieldsNode = (
+      <Col key={2} md>
+        <Row>{super.render()}</Row>
+      </Col>
+    );
     return isFunction(children) ? children(headerNode, fieldsNode) : [headerNode, fieldsNode];
   }
 }

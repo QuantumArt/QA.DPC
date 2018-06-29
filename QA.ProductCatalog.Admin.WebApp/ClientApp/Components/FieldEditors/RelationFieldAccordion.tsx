@@ -19,7 +19,7 @@ import { DataSerializer } from "Services/DataSerializer";
 import { isString } from "Utils/TypeChecks";
 import { required, maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
-import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
+import { RenderArticle, FieldsConfig, ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { AbstractFieldEditor, FieldEditorProps } from "./AbstractFieldEditor";
 import "./RelationFieldAccordion.scss";
 
@@ -31,9 +31,9 @@ type FieldSelector = (article: ArticleObject) => any;
 interface RelationFieldAccordionProps extends FieldEditorProps {
   displayFields?: (string | FieldSelector)[];
   orderByField?: string | FieldSelector;
-  fields?: FieldsConfig;
   save?: boolean;
   saveRelations?: RelationSelection;
+  fields?: FieldsConfig;
   children?: RenderArticle | ReactNode;
 }
 
@@ -130,7 +130,7 @@ class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion {
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
-    const { save } = this.props;
+    const { save, fields, children } = this.props;
     const { isOpen } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     const serverId = article && this._dataSerializer.getServerId(article);
@@ -185,7 +185,15 @@ class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion {
                   })}
                   colSpan={this._displayFields.length + 3}
                 >
-                  <Collapse isOpen={isOpen}>Dummy text.</Collapse>
+                  <Collapse isOpen={isOpen} keepChildrenMounted>
+                    <ArticleEditor
+                      model={article}
+                      contentSchema={fieldSchema.Content}
+                      fields={fields}
+                    >
+                      {children}
+                    </ArticleEditor>
+                  </Collapse>
                 </td>
               </tr>
             </tbody>
@@ -263,7 +271,7 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const { save } = this.props;
+    const { save, fields, children } = this.props;
     const { activeId } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return (
@@ -325,7 +333,15 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
                           })}
                           colSpan={this._displayFields.length + 3}
                         >
-                          <Collapse isOpen={isOpen}>Dummy text.</Collapse>
+                          <Collapse isOpen={isOpen} keepChildrenMounted>
+                            <ArticleEditor
+                              model={article}
+                              contentSchema={fieldSchema.Content}
+                              fields={fields}
+                            >
+                              {children}
+                            </ArticleEditor>
+                          </Collapse>
                         </td>
                       </tr>
                     </Fragment>
