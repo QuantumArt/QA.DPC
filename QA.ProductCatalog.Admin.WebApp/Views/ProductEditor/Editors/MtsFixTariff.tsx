@@ -56,7 +56,7 @@ class Example {
             }
           }}
           fields={{
-            _Regions: props => (
+            Regions: props => (
               <RelationFieldList
                 selectMultiple
                 validate={maxCount(25)}
@@ -65,14 +65,14 @@ class Example {
                 {...props}
               />
             ),
-            Regions: props => (
+            Regions1: props => (
               <RelationFieldTable validate={maxCount(25)} orderByField="Title" {...props} />
             ),
-            __Regions: props => (
+            Regions2: props => (
               <RelationFieldAccordion validate={maxCount(25)} orderByField="Title" {...props} />
             ),
-            MarketingProduct: RelationFieldAccordion,
-            Parameters: RelationFieldAccordion
+            MarketingProduct: RelationFieldList,
+            Parameters: RelationFieldList
           }}
         >
           {(header, fields) => (

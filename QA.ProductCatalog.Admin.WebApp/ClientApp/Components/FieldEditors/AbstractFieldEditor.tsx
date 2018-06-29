@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
@@ -18,22 +18,29 @@ export abstract class AbstractFieldEditor<
     .toString(36)
     .slice(2)}`;
 
-  abstract renderField(model: ArticleObject | ExtensionObject, fieldSchema: FieldSchema);
+  protected abstract renderField(
+    model: ArticleObject | ExtensionObject,
+    fieldSchema: FieldSchema
+  ): ReactNode;
 
-  protected renderErrors(model: ArticleObject | ExtensionObject, fieldSchema: FieldSchema) {
+  protected renderValidation() {
+    const { model, fieldSchema, validate } = this.props;
     return (
-      model.hasVisibleErrors(fieldSchema.FieldName) && (
-        <div className="pt-form-helper-text">
-          {model
-            .getVisibleErrors(fieldSchema.FieldName)
-            .map((error, i) => <div key={i}>{error}</div>)}
-        </div>
-      )
+      <>
+        {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}
+        {model.hasVisibleErrors(fieldSchema.FieldName) && (
+          <div className="pt-form-helper-text">
+            {model
+              .getVisibleErrors(fieldSchema.FieldName)
+              .map((error, i) => <div key={i}>{error}</div>)}
+          </div>
+        )}
+      </>
     );
   }
 
   render() {
-    const { model, fieldSchema, validate } = this.props;
+    const { model, fieldSchema } = this.props;
     return (
       <Col
         xl={6}
@@ -50,7 +57,11 @@ export abstract class AbstractFieldEditor<
             </label>
           </Col>
           {this.renderField(model, fieldSchema)}
-          {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}
+        </Row>
+        <Row>
+          <Col md xlOffset={4} mdOffset={3}>
+            {this.renderValidation()}
+          </Col>
         </Row>
       </Col>
     );

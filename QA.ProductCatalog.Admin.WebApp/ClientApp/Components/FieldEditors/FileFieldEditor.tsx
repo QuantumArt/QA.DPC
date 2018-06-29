@@ -33,7 +33,6 @@ export class FileFieldEditor extends AbstractFieldEditor {
           <button className="pt-button pt-icon-cloud-download" title="Скачать" />
           <button className="pt-button pt-icon-folder-close" title="Библиотека" />
         </div>
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }

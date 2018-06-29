@@ -11,7 +11,6 @@ import {
   StringFieldSchema,
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
-import { Validate } from "mst-validation-mixin";
 import {
   InputText,
   RadioGroup,
@@ -25,6 +24,7 @@ import { required, pattern } from "Utils/Validators";
 import { Intent } from "@blueprintjs/core";
 import { AbstractFieldEditor } from "./AbstractFieldEditor";
 export { FileFieldEditor } from "./FileFieldEditor";
+export { RelationFieldAccordion } from "./RelationFieldAccordion";
 export { RelationFieldList } from "./RelationFieldList";
 export { RelationFieldTable } from "./RelationFieldTable";
 import "./FieldEditors.scss";
@@ -47,7 +47,6 @@ export class StringFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }
@@ -67,7 +66,6 @@ export class NumericFieldEditor extends AbstractFieldEditor {
           validate={fieldSchema.IsRequired && required}
           intent={model.hasVisibleErrors(fieldSchema.FieldName) ? Intent.DANGER : Intent.NONE}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }
@@ -88,7 +86,6 @@ export class BooleanFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }
@@ -110,7 +107,6 @@ export class DateFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }
@@ -132,7 +128,6 @@ export class TimeFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }
@@ -153,7 +148,6 @@ export class DateTimeFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }
@@ -174,13 +168,12 @@ export class TextFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }
 
   render() {
-    const { model, fieldSchema, validate } = this.props;
+    const { model, fieldSchema } = this.props;
     return (
       <Col
         md={12}
@@ -196,7 +189,11 @@ export class TextFieldEditor extends AbstractFieldEditor {
             </label>
           </Col>
           {this.renderField(model, fieldSchema)}
-          {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}
+        </Row>
+        <Row>
+          <Col md xlOffset={2} mdOffset={3}>
+            {this.renderValidation()}
+          </Col>
         </Row>
       </Col>
     );
@@ -222,7 +219,6 @@ export class ClassifierFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }
@@ -244,7 +240,6 @@ export class EnumFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     ) : (
       <Col xl={8} md={6}>
@@ -260,7 +255,6 @@ export class EnumFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }
@@ -290,7 +284,6 @@ export class ExtensionFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-        {this.renderErrors(model, fieldSchema)}
       </Col>
     );
   }

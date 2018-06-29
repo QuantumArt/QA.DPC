@@ -21,7 +21,7 @@ import {
   TextFieldEditor,
   ClassifierFieldEditor,
   EnumFieldEditor,
-  RelationFieldList
+  RelationFieldAccordion
 } from "Components/FieldEditors/FieldEditors";
 import { asc } from "Utils/Array/Sort";
 import { isFunction, isObject } from "Utils/TypeChecks";
@@ -125,7 +125,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
 
   private getDefaultFieldEditor(fieldSchema: FieldSchema): FieldEditor {
     if (isRelationField(fieldSchema)) {
-      return RelationFieldList;
+      return RelationFieldAccordion;
     }
     if (isExtensionField(fieldSchema)) {
       return ExtensionFieldEditor;

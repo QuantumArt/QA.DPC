@@ -57,7 +57,7 @@ abstract class AbstractRelationFieldList extends AbstractFieldEditor<RelationFie
   }
 
   render() {
-    const { model, fieldSchema, validate } = this.props;
+    const { model, fieldSchema } = this.props;
     return (
       <Col
         xl={6}
@@ -74,7 +74,11 @@ abstract class AbstractRelationFieldList extends AbstractFieldEditor<RelationFie
             </label>
           </Col>
           {this.renderField(model, fieldSchema)}
-          {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}
+        </Row>
+        <Row>
+          <Col md xlOffset={4} mdOffset={3}>
+            {this.renderValidation()}
+          </Col>
         </Row>
       </Col>
     );
@@ -129,7 +133,6 @@ class SingleRelationFieldList extends AbstractRelationFieldList {
             )}
           </span>
         )}
-        {this.renderErrors(model, fieldSchema)}
         <Validate
           model={model}
           name={fieldSchema.FieldName}
@@ -242,7 +245,6 @@ class MultiRelationFieldList extends AbstractRelationFieldList {
                 </span>
               </Fragment>
             ))}
-        {this.renderErrors(model, fieldSchema)}
         <Validate
           model={model}
           name={fieldSchema.FieldName}
