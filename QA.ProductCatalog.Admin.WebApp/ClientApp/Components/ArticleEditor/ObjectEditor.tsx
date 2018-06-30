@@ -1,4 +1,5 @@
 import React, { Component, StatelessComponent } from "react";
+import { consumer } from "react-ioc";
 import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
 import {
@@ -78,6 +79,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
   constructor(props: ObjectEditorProps & P, context?: any) {
     super(props, context);
     const { contentSchema } = this.props;
+    // TODO: cache by contentSchema and memoize by props.fields
     Object.values(contentSchema.Fields)
       .sort(asc(f => f.FieldOrder))
       .forEach(fieldSchema => {
@@ -188,5 +190,6 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
   }
 }
 
+@consumer
 @observer
 class ExtensionEditor extends ObjectEditor<{ model: ExtensionObject }> {}

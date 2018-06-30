@@ -102,11 +102,12 @@ $background: darken(#f5f8fa, 5%);
 }
 
 .relation-field-accordion__body {
-  display: table-cell;
+  display: none;
   border-left: $border;
   border-right: $border;
 
   &--open {
+    display: table-cell;
     border-bottom: $border;
   }
 }

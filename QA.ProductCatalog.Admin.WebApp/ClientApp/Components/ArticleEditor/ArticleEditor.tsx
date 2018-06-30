@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react";
-import { Row, Col } from "react-flexbox-grid";
+import { Row } from "react-flexbox-grid";
 import { Button } from "@blueprintjs/core";
 import { inject, consumer } from "react-ioc";
 import { observer } from "mobx-react";
@@ -49,16 +49,12 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
     const { model, contentSchema, save, children } = this.props;
     const serverId = this._dataSerializer.getServerId(model);
     const headerNode = save && (
-      <Row key={1}>
-        <Col md>
-          <div key={1} className="article-editor__header">
-            <div className="article-editor__title" title={contentSchema.ContentDescription}>
-              {contentSchema.ContentTitle || contentSchema.ContentName}
-              {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
-            </div>
-            <Button icon="floppy-disk">Сохранить</Button>
-          </div>
-        </Col>
+      <Row key={1} className="article-editor__header">
+        <div className="article-editor__title" title={contentSchema.ContentDescription}>
+          {contentSchema.ContentTitle || contentSchema.ContentName}
+          {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
+        </div>
+        <Button icon="floppy-disk">Сохранить</Button>
       </Row>
     );
     const fieldsNode = <Row key={2}>{super.render()}</Row>;

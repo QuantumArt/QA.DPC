@@ -4,7 +4,7 @@ import { consumer, inject } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
-import { Button, ButtonGroup, Icon, Collapse } from "@blueprintjs/core";
+import { Button, ButtonGroup, Icon } from "@blueprintjs/core";
 import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import {
@@ -194,19 +194,17 @@ class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion {
                   })}
                   colSpan={this._displayFields.length + 3}
                 >
-                  <Collapse isOpen={isOpen} keepChildrenMounted>
-                    {isTouched && (
-                      <Col md>
-                        <ArticleEditor
-                          model={article}
-                          contentSchema={fieldSchema.Content}
-                          fields={fields}
-                        >
-                          {children}
-                        </ArticleEditor>
-                      </Col>
-                    )}
-                  </Collapse>
+                  {isTouched && (
+                    <Col md>
+                      <ArticleEditor
+                        model={article}
+                        contentSchema={fieldSchema.Content}
+                        fields={fields}
+                      >
+                        {children}
+                      </ArticleEditor>
+                    </Col>
+                  )}
                 </td>
               </tr>
             </tbody>
@@ -354,19 +352,17 @@ class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
                           })}
                           colSpan={this._displayFields.length + 3}
                         >
-                          <Collapse isOpen={isOpen} keepChildrenMounted>
-                            {touchedIds[article.Id] && (
-                              <Col md>
-                                <ArticleEditor
-                                  model={article}
-                                  contentSchema={fieldSchema.Content}
-                                  fields={fields}
-                                >
-                                  {children}
-                                </ArticleEditor>
-                              </Col>
-                            )}
-                          </Collapse>
+                          {touchedIds[article.Id] && (
+                            <Col md>
+                              <ArticleEditor
+                                model={article}
+                                contentSchema={fieldSchema.Content}
+                                fields={fields}
+                              >
+                                {children}
+                              </ArticleEditor>
+                            </Col>
+                          )}
                         </td>
                       </tr>
                     </Fragment>
