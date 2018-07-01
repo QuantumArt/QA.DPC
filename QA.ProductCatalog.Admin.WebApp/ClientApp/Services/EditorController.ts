@@ -1,9 +1,9 @@
 import { inject } from "react-ioc";
-import { observable, computed } from "mobx";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
+import { command } from "Utils/Command";
 
 export class EditorController {
   @inject private _dataSerializer: DataSerializer;
@@ -17,14 +17,7 @@ export class EditorController {
   private _productDefinitionId = Number(this._path.slice(this._rootUrl.length).split("/")[2]);
   private _articleId = Number(this._path.slice(this._rootUrl.length).split("/")[4]);
 
-  @observable public _pendingRequestCount = 0;
-
-  @computed
-  public get hasPendingRequest() {
-    return this._pendingRequestCount > 0;
-  }
-
-  @request
+  @command
   public async initialize() {
     const initSchemaTask = this.initSchema();
 
@@ -49,7 +42,6 @@ export class EditorController {
     }
   }
 
-  @request
   private async initSchema() {
     const response = await fetch(
       `${this._rootUrl}/ProductEditor/GetProductSchema_Test${this._query}&productDefinitionId=${
@@ -64,18 +56,4 @@ export class EditorController {
     this._dataContext.initSchema(schema.MergedSchemas);
     this._schemaContext.initSchema(schema.EditorSchema);
   }
-}
-
-function request(_target: EditorController, _key: string, descriptor: PropertyDescriptor) {
-  return {
-    ...descriptor,
-    async value(this: EditorController, ...args: any[]) {
-      try {
-        this._pendingRequestCount++;
-        return await descriptor.value.apply(this, args);
-      } finally {
-        this._pendingRequestCount--;
-      }
-    }
-  };
 }
