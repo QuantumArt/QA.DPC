@@ -8,7 +8,8 @@ import {
   ExtensionFieldSchema,
   FieldExactTypes,
   isExtensionField,
-  isRelationField
+  isSingleRelationField,
+  isMultiRelationField
 } from "Models/EditorSchemaModels";
 import {
   ExtensionFieldEditor,
@@ -22,7 +23,8 @@ import {
   TextFieldEditor,
   ClassifierFieldEditor,
   EnumFieldEditor,
-  RelationFieldAccordion
+  SingleRelationFieldAccordion,
+  MultiRelationFieldAccordion
 } from "Components/FieldEditors/FieldEditors";
 import { asc } from "Utils/Array/Sort";
 import { isFunction, isObject } from "Utils/TypeChecks";
@@ -78,6 +80,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
 
   constructor(props: ObjectEditorProps & P, context?: any) {
     super(props, context);
+    console.time("ObjectEditor constructor");
     const { contentSchema } = this.props;
     // TODO: cache by contentSchema and memoize by props.fields
     Object.values(contentSchema.Fields)
@@ -89,6 +92,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
           this.prepareContentsBlock(fieldSchema);
         }
       });
+    console.timeEnd("ObjectEditor constructor");
   }
 
   private prepareFieldBlock(fieldSchema: FieldSchema) {
@@ -126,8 +130,11 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
   }
 
   private getDefaultFieldEditor(fieldSchema: FieldSchema): FieldEditor {
-    if (isRelationField(fieldSchema)) {
-      return RelationFieldAccordion;
+    if (isSingleRelationField(fieldSchema)) {
+      return SingleRelationFieldAccordion;
+    }
+    if (isMultiRelationField(fieldSchema)) {
+      return MultiRelationFieldAccordion;
     }
     if (isExtensionField(fieldSchema)) {
       return ExtensionFieldEditor;

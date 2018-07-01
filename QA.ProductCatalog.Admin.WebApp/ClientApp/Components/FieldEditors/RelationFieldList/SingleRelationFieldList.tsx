@@ -1,0 +1,69 @@
+import React from "react";
+import { Col } from "react-flexbox-grid";
+import { action } from "mobx";
+import { observer } from "mobx-react";
+import cn from "classnames";
+import { Button, ButtonGroup } from "@blueprintjs/core";
+import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
+import { Validate } from "mst-validation-mixin";
+import { required } from "Utils/Validators";
+import { AbstractRelationFieldList } from "./AbstractRelationFieldList";
+
+@observer
+export class SingleRelationFieldList extends AbstractRelationFieldList {
+  state = {
+    isSelected: false
+  };
+
+  @action
+  removeRelation = (e: any) => {
+    e.stopPropagation();
+    const { model, fieldSchema } = this.props;
+    this.setState({ isSelected: false });
+    model[fieldSchema.FieldName] = null;
+    model.setTouched(fieldSchema.FieldName, true);
+  };
+
+  toggleRelation(e: any, article: ArticleObject) {
+    const { onClick } = this.props;
+    const { isSelected } = this.state;
+    this.setState({ isSelected: !isSelected });
+    if (onClick) {
+      onClick(e, article);
+    }
+  }
+
+  renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+    const { isSelected } = this.state;
+    const article: ArticleObject = model[fieldSchema.FieldName];
+    return (
+      <Col xl={8} md={6} className="relation-field-list__tags">
+        <ButtonGroup>
+          <Button small icon="th-derived" disabled={fieldSchema.IsReadOnly}>
+            Выбрать
+          </Button>
+        </ButtonGroup>{" "}
+        {article && (
+          <span
+            className={cn("pt-tag pt-minimal pt-interactive", {
+              "pt-tag-removable": !fieldSchema.IsReadOnly,
+              "pt-intent-primary": isSelected
+            })}
+            onClick={e => this.toggleRelation(e, article)}
+          >
+            {this._displayField(article)}
+            {!fieldSchema.IsReadOnly && (
+              <button className="pt-tag-remove" onClick={this.removeRelation} />
+            )}
+          </span>
+        )}
+        <Validate
+          model={model}
+          name={fieldSchema.FieldName}
+          rules={fieldSchema.IsRequired && required}
+        />
+      </Col>
+    );
+  }
+}

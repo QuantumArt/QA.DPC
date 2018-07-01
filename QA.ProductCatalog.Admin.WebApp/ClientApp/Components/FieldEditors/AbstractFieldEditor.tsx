@@ -4,6 +4,9 @@ import cn from "classnames";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { FieldSchema } from "Models/EditorSchemaModels";
 import { Validator, Validate } from "mst-validation-mixin";
+import "./FieldEditors.scss";
+
+export type FieldSelector = (model: ArticleObject | ExtensionObject) => any;
 
 export interface FieldEditorProps {
   model: ArticleObject | ExtensionObject;

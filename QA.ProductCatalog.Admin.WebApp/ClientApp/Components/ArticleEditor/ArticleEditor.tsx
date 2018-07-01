@@ -29,7 +29,6 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
 
   constructor(props: ObjectEditorProps & ArticleEditorProps, context?: any) {
     super(props, context);
-    console.log("ArticleEditor");
     const {
       contentSchema,
       saveRelations,

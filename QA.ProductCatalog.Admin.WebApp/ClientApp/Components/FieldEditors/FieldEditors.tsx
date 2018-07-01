@@ -1,5 +1,5 @@
 import React from "react";
-import { Col, Row } from "react-flexbox-grid";
+import { Col } from "react-flexbox-grid";
 import cn from "classnames";
 import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
@@ -16,7 +16,6 @@ import {
   RadioGroup,
   Select,
   InputNumber,
-  TextArea,
   CheckBox,
   DatePicker
 } from "Components/FormControls/FormControls";
@@ -24,10 +23,22 @@ import { required, pattern } from "Utils/Validators";
 import { Intent } from "@blueprintjs/core";
 import { AbstractFieldEditor } from "./AbstractFieldEditor";
 export { FileFieldEditor } from "./FileFieldEditor";
-export { RelationFieldAccordion } from "./RelationFieldAccordion";
-export { RelationFieldList } from "./RelationFieldList";
-export { RelationFieldTable } from "./RelationFieldTable";
-import "./FieldEditors.scss";
+export { TextFieldEditor } from "./TextFieldEditor";
+export {
+  SingleRelationFieldAccordion,
+  MultiRelationFieldAccordion,
+  RelationFieldAccordion
+} from "./RelationFieldAccordion/RelationFieldAccordion";
+export {
+  SingleRelationFieldList,
+  MultiRelationFieldList,
+  RelationFieldList
+} from "./RelationFieldList/RelationFieldList";
+export {
+  SingleRelationFieldTable,
+  MultiRelationFieldTable,
+  RelationFieldTable
+} from "./RelationFieldTable/RelationFieldTable";
 
 @observer
 export class StringFieldEditor extends AbstractFieldEditor {
@@ -148,53 +159,6 @@ export class DateTimeFieldEditor extends AbstractFieldEditor {
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
-      </Col>
-    );
-  }
-}
-
-@observer
-export class TextFieldEditor extends AbstractFieldEditor {
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
-    return (
-      <Col xl={10} md={9}>
-        <TextArea
-          id={this.id}
-          model={model}
-          name={fieldSchema.FieldName}
-          disabled={fieldSchema.IsReadOnly}
-          validate={fieldSchema.IsRequired && required}
-          className={cn({
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
-          })}
-        />
-      </Col>
-    );
-  }
-
-  render() {
-    const { model, fieldSchema } = this.props;
-    return (
-      <Col
-        md={12}
-        className={cn("field-editor__block pt-form-group", {
-          "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
-        })}
-      >
-        <Row>
-          <Col xl={2} md={3} className="field-editor__label">
-            <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
-              {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-              {fieldSchema.IsRequired && <span className="field-editor__label-required"> *</span>}
-            </label>
-          </Col>
-          {this.renderField(model, fieldSchema)}
-        </Row>
-        <Row>
-          <Col md xlOffset={2} mdOffset={3}>
-            {this.renderValidation()}
-          </Col>
-        </Row>
       </Col>
     );
   }
