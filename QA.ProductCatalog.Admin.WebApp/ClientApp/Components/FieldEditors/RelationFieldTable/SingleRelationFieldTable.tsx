@@ -63,9 +63,11 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
                 {!fieldSchema.IsReadOnly && (
                   <Button
                     small
-                    icon={<Icon icon="small-cross" title={false} />}
+                    icon={<Icon icon="remove" title={false} />}
                     onClick={this.removeRelation}
-                  />
+                  >
+                    Удалить
+                  </Button>
                 )}
               </div>
             </div>

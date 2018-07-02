@@ -13,10 +13,24 @@ import { maxCount } from "Utils/Validators";
 import { Product } from "./MtsFixTariff/ProductEditorSchema";
 
 const App = () => (
-  <ProductEditor>
-    {(product: Product, contentSchema) => (
+  <ProductEditor
+    relationEditors={{
+      Region: props => (
+        <RelationFieldList
+          selectMultiple
+          validate={maxCount(25)}
+          orderByField="Title"
+          onClick={(_e, a) => console.log(toJS(a))}
+          {...props}
+        />
+      ),
+      BaseParameterModifier: RelationFieldTable,
+      Unit: RelationFieldList
+    }}
+  >
+    {(model: Product, contentSchema) => (
       <ArticleEditor
-        model={product}
+        model={model}
         contentSchema={contentSchema}
         titleField={model => model.MarketingProduct && model.MarketingProduct.Title}
         save
@@ -33,24 +47,8 @@ const App = () => (
             Parent: true
           }
         }}
-        fields={{
-          Regions1: props => (
-            <RelationFieldList
-              selectMultiple
-              validate={maxCount(25)}
-              orderByField="Title"
-              onClick={(_e, a) => console.log(toJS(a))}
-              {...props}
-            />
-          ),
-          Regions2: props => (
-            <RelationFieldTable validate={maxCount(25)} orderByField="Title" {...props} />
-          ),
-          Regions: props => (
-            <RelationFieldAccordion save validate={maxCount(25)} orderByField="Title" {...props} />
-          ),
-          MarketingProduct: RelationFieldAccordion,
-          Parameters: RelationFieldAccordion
+        fieldEdiors={{
+          MarketingProduct: props => <RelationFieldAccordion save {...props} />
         }}
       >
         {(header, fields) => (

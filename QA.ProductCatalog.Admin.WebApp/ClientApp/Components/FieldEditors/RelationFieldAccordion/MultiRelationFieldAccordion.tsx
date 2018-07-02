@@ -96,7 +96,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const { save, fields, children } = this.props;
+    const { save, fieldEdiors, children } = this.props;
     const { activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return (
@@ -143,10 +143,12 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                               )}
                               <Button
                                 small
-                                icon={<Icon icon="small-cross" title={false} />}
+                                icon={<Icon icon="remove" title={false} />}
                                 disabled={fieldSchema.IsReadOnly}
                                 onClick={e => this.removeRelation(e, article)}
-                              />
+                              >
+                                Удалить
+                              </Button>
                             </ButtonGroup>
                           )}
                         </td>
@@ -163,7 +165,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                               <ArticleEditor
                                 model={article}
                                 contentSchema={fieldSchema.Content}
-                                fields={fields}
+                                fieldEdiors={fieldEdiors}
                               >
                                 {children}
                               </ArticleEditor>

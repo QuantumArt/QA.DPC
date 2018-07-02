@@ -1,5 +1,5 @@
 import React, { Component, StatelessComponent } from "react";
-import { consumer } from "react-ioc";
+import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
 import {
@@ -9,7 +9,8 @@ import {
   FieldExactTypes,
   isExtensionField,
   isSingleRelationField,
-  isMultiRelationField
+  isMultiRelationField,
+  isRelationField
 } from "Models/EditorSchemaModels";
 import {
   ExtensionFieldEditor,
@@ -30,14 +31,20 @@ import { asc } from "Utils/Array/Sort";
 import { isFunction, isObject } from "Utils/TypeChecks";
 import "./ArticleEditor.scss";
 
-export interface ObjectEditorProps {
-  model: ArticleObject | ExtensionObject;
-  contentSchema: ContentSchema;
-  fields?: FieldsConfig;
+export class RelationsConfig {
+  [contentName: string]: typeof IGNORE | FieldEditor;
 }
 
 export interface FieldsConfig {
-  [field: string]: typeof IGNORE | FieldValue | FieldEditor | ContentsConfig;
+  [fieldName: string]: typeof IGNORE | FieldValue | FieldEditor | ContentsConfig;
+}
+
+export interface ContentsConfig {
+  [contentName: string]: FieldsConfig;
+}
+
+function isContentsConfig(field: any): field is ContentsConfig {
+  return isObject(field) && !isArticleObject(field) && Object.values(field).every(isObject);
 }
 
 export const IGNORE = Symbol("IGNORE");
@@ -61,12 +68,10 @@ interface FieldEditorProps {
 declare class FieldEditorComponent extends Component<FieldEditorProps> {}
 type FieldEditor = StatelessComponent<FieldEditorProps> | typeof FieldEditorComponent;
 
-export interface ContentsConfig {
-  [content: string]: FieldsConfig;
-}
-
-function isContentsConfig(field: any): field is ContentsConfig {
-  return isObject(field) && !isArticleObject(field) && Object.values(field).every(isObject);
+export interface ObjectEditorProps {
+  model: ArticleObject | ExtensionObject;
+  contentSchema: ContentSchema;
+  fieldEdiors?: FieldsConfig;
 }
 
 interface ObjectEditorBlock {
@@ -76,31 +81,34 @@ interface ObjectEditorBlock {
 }
 
 export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps & P> {
-  _editorBlocks: ObjectEditorBlock[] = [];
+  @inject private _relationsConfig: RelationsConfig;
+  private _editorBlocks: ObjectEditorBlock[] = [];
 
   constructor(props: ObjectEditorProps & P, context?: any) {
     super(props, context);
+    const { contentSchema, children } = this.props;
     console.time("ObjectEditor constructor");
-    const { contentSchema } = this.props;
-    // TODO: cache by contentSchema and memoize by props.fields
-    Object.values(contentSchema.Fields)
-      .sort(asc(f => f.FieldOrder))
-      .forEach(fieldSchema => {
-        this.prepareFieldBlock(fieldSchema);
+    // TODO: cache by contentSchema and memoize by props.fieldEdiors
+    if (!isFunction(children) || children.length > 0) {
+      Object.values(contentSchema.Fields)
+        .sort(asc(f => f.FieldOrder))
+        .forEach(fieldSchema => {
+          this.prepareFieldBlock(fieldSchema);
 
-        if (isExtensionField(fieldSchema)) {
-          this.prepareContentsBlock(fieldSchema);
-        }
-      });
+          if (isExtensionField(fieldSchema)) {
+            this.prepareContentsBlock(fieldSchema);
+          }
+        });
+    }
     console.timeEnd("ObjectEditor constructor");
   }
 
   private prepareFieldBlock(fieldSchema: FieldSchema) {
-    const { model, fields } = this.props;
+    const { model, fieldEdiors } = this.props;
     const fieldName = fieldSchema.FieldName;
 
-    if (fields && fieldName in fields) {
-      const field = fields[fieldName];
+    if (fieldEdiors && fieldEdiors.hasOwnProperty(fieldName)) {
+      const field = fieldEdiors[fieldName];
 
       if (isFunction(field)) {
         this._editorBlocks.push({
@@ -110,17 +118,33 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
       } else if (field !== IGNORE) {
         model[fieldName] = field;
       }
-    } else {
-      this._editorBlocks.push({
-        fieldSchema,
-        FieldEditor: this.getDefaultFieldEditor(fieldSchema)
-      });
+      return;
     }
+    if (isRelationField(fieldSchema)) {
+      const contentName = fieldSchema.Content.ContentName;
+      if (this._relationsConfig.hasOwnProperty(contentName)) {
+        const field = this._relationsConfig[contentName];
+
+        if (isFunction(field)) {
+          this._editorBlocks.push({
+            fieldSchema,
+            FieldEditor: field
+          });
+        } else if (field !== IGNORE) {
+          model[fieldName] = field;
+        }
+        return;
+      }
+    }
+    this._editorBlocks.push({
+      fieldSchema,
+      FieldEditor: this.getDefaultFieldEditor(fieldSchema)
+    });
   }
 
   private prepareContentsBlock(fieldSchema: ExtensionFieldSchema) {
-    const { fields } = this.props;
-    const contentsConfig = fields && fields[`${fieldSchema.FieldName}_Contents`];
+    const { fieldEdiors } = this.props;
+    const contentsConfig = fieldEdiors && fieldEdiors[`${fieldSchema.FieldName}_Contents`];
 
     if (isContentsConfig(contentsConfig)) {
       this._editorBlocks.push({ fieldSchema, contentsConfig });
@@ -186,7 +210,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
               key={fieldName + "_" + contentName}
               model={extensionModel}
               contentSchema={extensionSchema}
-              fields={extensionFields}
+              fieldEdiors={extensionFields}
             />
           );
         }

@@ -92,9 +92,11 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
                       {!fieldSchema.IsReadOnly && (
                         <Button
                           small
-                          icon={<Icon icon="small-cross" title={false} />}
+                          icon={<Icon icon="remove" title={false} />}
                           onClick={e => this.removeRelation(e, article)}
-                        />
+                        >
+                          Удалить
+                        </Button>
                       )}
                     </div>
                   </div>

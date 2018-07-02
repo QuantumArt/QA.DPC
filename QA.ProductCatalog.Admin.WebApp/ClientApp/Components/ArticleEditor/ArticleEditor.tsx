@@ -8,7 +8,7 @@ import { RelationSelection, validateRelationSelection } from "Models/RelationSel
 import { DataSerializer } from "Services/DataSerializer";
 import { isString, isFunction } from "Utils/TypeChecks";
 import { ObjectEditor, ObjectEditorProps } from "./ObjectEditor";
-export { IGNORE, FieldsConfig } from "./ObjectEditor";
+export { IGNORE, FieldsConfig, RelationsConfig } from "./ObjectEditor";
 import "./ArticleEditor.scss";
 
 export type RenderArticle = (headerNode: ReactNode, fieldsNode: ReactNode) => ReactNode;
@@ -46,6 +46,9 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
 
   render() {
     const { model, contentSchema, save, children } = this.props;
+    if (isFunction(children) && children.length === 0) {
+      return children(null, null);
+    }
     const serverId = this._dataSerializer.getServerId(model);
     const headerNode = save && (
       <Row key={1} className="article-editor__header">
