@@ -12,7 +12,7 @@ import { AbstractRelationFieldList } from "./AbstractRelationFieldList";
 
 @observer
 export class SingleRelationFieldList extends AbstractRelationFieldList {
-  state = {
+  readonly state = {
     isSelected: false
   };
 

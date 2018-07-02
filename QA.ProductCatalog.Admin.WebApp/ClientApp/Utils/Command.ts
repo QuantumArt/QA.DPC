@@ -43,16 +43,18 @@ function commandDecorator(target: Object, key: string, descriptor: PropertyDescr
   return {
     ...descriptor,
     value(...args: any[]) {
-      let result;
       startCommand();
+      let isPromise = false;
       try {
-        result = descriptor.value.apply(this, args);
+        const result = descriptor.value.apply(this, args);
+        isPromise = isObject(result) && isFunction(result.then);
+        if (isPromise) {
+          result.then(finishCommand, finishCommand);
+        }
+        return result;
       } finally {
-        if (isObject(result) && isFunction(result.then)) {
-          return result.then(finishCommand, finishCommand);
-        } else {
+        if (!isPromise) {
           finishCommand();
-          return result;
         }
       }
     }

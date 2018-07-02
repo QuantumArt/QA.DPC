@@ -17,7 +17,7 @@ import { AbstractRelationFieldAccordion } from "./AbstractRelationFieldAccordion
 @observer
 export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion {
   @inject private _dataSerializer: DataSerializer;
-  state = {
+  readonly state = {
     isOpen: false,
     isTouched: false
   };
