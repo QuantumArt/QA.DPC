@@ -1,6 +1,6 @@
 import React from "react";
 import { Col } from "react-flexbox-grid";
-import { consumer, inject } from "react-ioc";
+import { consumer } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
@@ -8,7 +8,6 @@ import { Button, ButtonGroup, Icon } from "@blueprintjs/core";
 import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { DataSerializer } from "Services/DataSerializer";
 import { required } from "Utils/Validators";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { AbstractRelationFieldAccordion } from "./AbstractRelationFieldAccordion";
@@ -16,14 +15,26 @@ import { AbstractRelationFieldAccordion } from "./AbstractRelationFieldAccordion
 @consumer
 @observer
 export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion {
-  @inject private _dataSerializer: DataSerializer;
   readonly state = {
     isOpen: false,
     isTouched: false
   };
 
   @action
-  removeRelation = (e: any) => {
+  private createRelation = () => {
+    const { model, fieldSchema } = this.props;
+    const contentName = (fieldSchema as SingleRelationFieldSchema).Content.ContentName;
+    const article = this._dataContext.createArticle(contentName);
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
+    model[fieldSchema.FieldName] = article;
+    model.setTouched(fieldSchema.FieldName, true);
+  };
+
+  @action
+  private removeRelation = (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     this.setState({
@@ -34,7 +45,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     model.setTouched(fieldSchema.FieldName, true);
   };
 
-  toggleRelation = () => {
+  private toggleRelation = () => {
     const { isOpen, isTouched } = this.state;
     this.setState({
       isOpen: !isOpen,
@@ -42,9 +53,12 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     });
   };
 
-  renderControls(fieldSchema: SingleRelationFieldSchema) {
+  renderControls(_model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     return (
       <ButtonGroup>
+        <Button small icon="add" disabled={fieldSchema.IsReadOnly} onClick={this.createRelation}>
+          Создать
+        </Button>
         <Button small icon="th-derived" disabled={fieldSchema.IsReadOnly}>
           Выбрать
         </Button>

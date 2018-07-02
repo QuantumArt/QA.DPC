@@ -1,7 +1,9 @@
 import React from "react";
+import { inject } from "react-ioc";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
+import { DataSerializer } from "Services/DataSerializer";
 import { isString } from "Utils/TypeChecks";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
 import "./RelationFieldTable.scss";
@@ -17,6 +19,7 @@ export interface RelationFieldTableProps extends FieldEditorProps {
 export abstract class AbstractRelationFieldTable extends AbstractFieldEditor<
   RelationFieldTableProps
 > {
+  @inject protected _dataSerializer: DataSerializer;
   protected _displayFields: FieldSelector[];
 
   constructor(props: RelationFieldTableProps, context?: any) {

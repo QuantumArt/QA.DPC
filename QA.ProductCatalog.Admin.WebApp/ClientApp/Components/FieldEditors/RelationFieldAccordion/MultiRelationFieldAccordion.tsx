@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import { Col } from "react-flexbox-grid";
-import { consumer, inject } from "react-ioc";
+import { consumer } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
@@ -8,7 +8,6 @@ import { Button, ButtonGroup, Icon } from "@blueprintjs/core";
 import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { DataSerializer } from "Services/DataSerializer";
 import { isString } from "Utils/TypeChecks";
 import { required, maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
@@ -29,7 +28,6 @@ interface MultiRelationFieldAccordionState {
 @consumer
 @observer
 export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
-  @inject private _dataSerializer: DataSerializer;
   private _orderByField: FieldSelector;
   state: MultiRelationFieldAccordionState = {
     activeId: null,
@@ -46,7 +44,17 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   }
 
   @action
-  clearRelation = () => {
+  private createRelation = () => {
+    const { model, fieldSchema } = this.props;
+    const contentName = (fieldSchema as MultiRelationFieldSchema).Content.ContentName;
+    const article = this._dataContext.createArticle(contentName);
+    this.toggleRelation(article);
+    model[fieldSchema.FieldName].push(article);
+    model.setTouched(fieldSchema.FieldName, true);
+  };
+
+  @action
+  private clearRelation = () => {
     const { model, fieldSchema } = this.props;
     this.setState({
       activeId: null,
@@ -57,7 +65,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   };
 
   @action
-  removeRelation(e: any, article: ArticleObject) {
+  private removeRelation(e: any, article: ArticleObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const { activeId, touchedIds } = this.state;
@@ -72,7 +80,11 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     model.setTouched(fieldSchema.FieldName, true);
   }
 
-  toggleRelation(_e: any, article: ArticleObject) {
+  private handleToggle(_e: any, article: ArticleObject) {
+    this.toggleRelation(article);
+  }
+
+  private toggleRelation(article: ArticleObject) {
     const { activeId, touchedIds } = this.state;
     if (activeId === article.Id) {
       this.setState({ activeId: null });
@@ -82,9 +94,12 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     }
   }
 
-  renderControls(fieldSchema: SingleRelationFieldSchema) {
+  renderControls(_model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     return (
       <ButtonGroup>
+        <Button small icon="add" disabled={fieldSchema.IsReadOnly} onClick={this.createRelation}>
+          Создать
+        </Button>
         <Button small icon="th-derived" disabled={fieldSchema.IsReadOnly}>
           Выбрать
         </Button>
@@ -116,7 +131,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                         className={cn("relation-field-accordion__header", {
                           "relation-field-accordion__header--open": isOpen
                         })}
-                        onClick={e => this.toggleRelation(e, article)}
+                        onClick={e => this.handleToggle(e, article)}
                       >
                         <td
                           key={-1}

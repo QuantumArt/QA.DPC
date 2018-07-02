@@ -1,8 +1,12 @@
 import React, { ReactNode } from "react";
+import { inject } from "react-ioc";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { RelationSelection } from "Models/RelationSelection";
+import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { DataSerializer } from "Services/DataSerializer";
+import { DataContext } from "Services/DataContext";
 import { isString } from "Utils/TypeChecks";
 import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
@@ -23,6 +27,8 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
 export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor<
   RelationFieldAccordionProps
 > {
+  @inject protected _dataSerializer: DataSerializer;
+  @inject protected _dataContext: DataContext;
   protected _displayFields: FieldSelector[];
 
   constructor(props: RelationFieldAccordionProps, context?: any) {
@@ -36,7 +42,10 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
     );
   }
 
-  abstract renderControls(fieldSchema: FieldSchema);
+  protected abstract renderControls(
+    model: ArticleObject | ExtensionObject,
+    fieldSchema: FieldSchema
+  ): ReactNode;
 
   render() {
     const { model, fieldSchema } = this.props;
@@ -54,7 +63,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
               {fieldSchema.IsRequired && <span className="field-editor__label-required"> *</span>}
             </label>
           </Col>
-          <Col md>{this.renderControls(fieldSchema)}</Col>
+          <Col md>{this.renderControls(model, fieldSchema)}</Col>
         </Row>
         <Row>
           <Col md xlOffset={2} mdOffset={3}>

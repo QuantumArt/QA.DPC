@@ -1,13 +1,12 @@
 import React from "react";
 import { Col } from "react-flexbox-grid";
-import { consumer, inject } from "react-ioc";
+import { consumer } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import { Button, ButtonGroup, Icon } from "@blueprintjs/core";
+import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
-import { Validate } from "mst-validation-mixin";
-import { DataSerializer } from "Services/DataSerializer";
 import { isString } from "Utils/TypeChecks";
 import { required, maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
@@ -17,7 +16,6 @@ import { AbstractRelationFieldTable, RelationFieldTableProps } from "./AbstractR
 @consumer
 @observer
 export class MultiRelationFieldTable extends AbstractRelationFieldTable {
-  @inject private _dataSerializer: DataSerializer;
   private _orderByField: FieldSelector;
 
   constructor(props: RelationFieldTableProps, context?: any) {
@@ -30,14 +28,14 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
   }
 
   @action
-  clearRelation = () => {
+  private clearRelation = () => {
     const { model, fieldSchema } = this.props;
     model[fieldSchema.FieldName] = [];
     model.setTouched(fieldSchema.FieldName, true);
   };
 
   @action
-  removeRelation(e: any, article: ArticleObject) {
+  private removeRelation(e: any, article: ArticleObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];

@@ -1,23 +1,20 @@
 import React from "react";
 import { Col } from "react-flexbox-grid";
-import { consumer, inject } from "react-ioc";
+import { consumer } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
+import { Validate } from "mst-validation-mixin";
 import { Button, ButtonGroup, Icon } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { Validate } from "mst-validation-mixin";
-import { DataSerializer } from "Services/DataSerializer";
 import { required } from "Utils/Validators";
 import { AbstractRelationFieldTable } from "./AbstractRelationFieldTable";
 
 @consumer
 @observer
 export class SingleRelationFieldTable extends AbstractRelationFieldTable {
-  @inject private _dataSerializer: DataSerializer;
-
   @action
-  removeRelation = (e: any) => {
+  private removeRelation = (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     model[fieldSchema.FieldName] = null;

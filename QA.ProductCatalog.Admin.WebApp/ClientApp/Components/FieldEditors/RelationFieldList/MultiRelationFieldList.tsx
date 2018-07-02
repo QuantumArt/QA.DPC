@@ -4,9 +4,9 @@ import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup } from "@blueprintjs/core";
+import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
-import { Validate } from "mst-validation-mixin";
 import { asc } from "Utils/Array/Sort";
 import { isString } from "Utils/TypeChecks";
 import { required, maxCount } from "Utils/Validators";
@@ -36,7 +36,7 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
   }
 
   @action
-  clearRelation = () => {
+  private clearRelation = () => {
     const { model, fieldSchema } = this.props;
     this.setState({ selectedIds: {} });
     model[fieldSchema.FieldName] = [];
@@ -44,7 +44,7 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
   };
 
   @action
-  removeRelation(e: any, article: ArticleObject) {
+  private removeRelation(e: any, article: ArticleObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const { selectedIds } = this.state;
@@ -55,7 +55,7 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
     model.setTouched(fieldSchema.FieldName, true);
   }
 
-  toggleRelation(e: any, article: ArticleObject) {
+  private toggleRelation(e: any, article: ArticleObject) {
     const { selectMultiple, onClick } = this.props;
     let { selectedIds } = this.state;
     if (selectedIds[article.Id]) {

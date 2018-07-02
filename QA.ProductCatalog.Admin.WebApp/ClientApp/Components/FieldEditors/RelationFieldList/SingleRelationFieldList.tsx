@@ -4,9 +4,9 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup } from "@blueprintjs/core";
+import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { Validate } from "mst-validation-mixin";
 import { required } from "Utils/Validators";
 import { AbstractRelationFieldList } from "./AbstractRelationFieldList";
 
@@ -17,7 +17,7 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
   };
 
   @action
-  removeRelation = (e: any) => {
+  private removeRelation = (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     this.setState({ isSelected: false });
@@ -25,7 +25,7 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
     model.setTouched(fieldSchema.FieldName, true);
   };
 
-  toggleRelation(e: any, article: ArticleObject) {
+  private toggleRelation(e: any, article: ArticleObject) {
     const { onClick } = this.props;
     const { isSelected } = this.state;
     this.setState({ isSelected: !isSelected });
