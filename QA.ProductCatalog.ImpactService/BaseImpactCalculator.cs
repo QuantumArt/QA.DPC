@@ -698,7 +698,7 @@ namespace QA.ProductCatalog.ImpactService
             return tariff;
         }
 
-        public IEnumerable<JToken> FilterServicesOnProduct(JObject product)
+        public virtual IEnumerable<JToken> FilterServicesOnProduct(JObject product, IEnumerable<int> excludeIds = null)
         {
             var root = product.SelectToken(LinkName);
             if (root == null) yield break;
@@ -712,7 +712,10 @@ namespace QA.ProductCatalog.ImpactService
                     .Select(m => m.ToString())
                     .Contains("Archive");
 
-                if (hasModifier && !isArchive)
+                var serviceId = (int) elem.SelectToken("Service.Id");
+                var toExclude = excludeIds?.Contains(serviceId) ?? false;
+
+                if (hasModifier && !isArchive && !toExclude)
                     yield return elem;
             }
         }

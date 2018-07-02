@@ -16,6 +16,7 @@ namespace QA.Core.DPC.QP.Services
         private Dictionary<Service, string> _defaultConnections;
         private readonly Service _defaultService;
         public bool QPMode { get; private set; }
+        public bool UseQPMonitoring { get; private set; }
 
         public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, Service defaultService)
         {
@@ -25,6 +26,7 @@ namespace QA.Core.DPC.QP.Services
             _defaultService = defaultService;
 
             QPMode = GetQPMode() || defaultService == Service.HighloadAPI;
+            UseQPMonitoring = GetUseQPMonitoring();
 
             if (!QPMode)
             {
@@ -38,6 +40,12 @@ namespace QA.Core.DPC.QP.Services
         {
             var qpMode = ConfigurationManager.AppSettings["QPMode"];
             return !string.IsNullOrEmpty(qpMode) && qpMode.ToLower() == "true";
+        }
+
+        public static bool GetUseQPMonitoring()
+        {
+            var useQpMonitoring = ConfigurationManager.AppSettings["UseQPMonitoring"];
+            return !string.IsNullOrEmpty(useQpMonitoring) && useQpMonitoring.ToLower() == "true";
         }
 
         private void AddConnection(Service service, string key)

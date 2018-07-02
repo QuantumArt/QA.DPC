@@ -36,9 +36,8 @@ namespace QA.Core.DPC.QP.Services
             throw new NotImplementedException();
         }
 
-        public bool QPMode
-        {
-            get { throw new NotImplementedException(); }
-        }
+        public bool QPMode => throw new NotImplementedException();
+
+        public bool UseQPMonitoring => throw new NotImplementedException();
     }
 }

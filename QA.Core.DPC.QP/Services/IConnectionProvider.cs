@@ -10,5 +10,6 @@ namespace QA.Core.DPC.QP.Services
         string GetEFConnection(Service service);
         bool HasConnection(Service service);
         bool QPMode { get; }
+        bool UseQPMonitoring { get; }
     }
 }

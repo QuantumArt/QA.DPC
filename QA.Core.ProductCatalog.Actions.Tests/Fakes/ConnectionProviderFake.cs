@@ -17,13 +17,9 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
             _connection = connection;
         }
 
-        public bool QPMode
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-        }
+        public bool QPMode => throw new NotImplementedException();
+
+        public bool UseQPMonitoring => throw new NotImplementedException();
 
         public string GetConnection()
         {
