@@ -28,6 +28,9 @@ namespace QA.Core.DPC.Loader.Editor
         public string ContentDescription { get; set; }
         public string DisplayFieldName { get; set; }
 
+        /// <summary>
+        /// Используется только в качестве расширения
+        /// </summary>
         public bool ForExtension { get; set; }
 
         public Dictionary<string, FieldSchema> Fields { get; set; }

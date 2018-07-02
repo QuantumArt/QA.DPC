@@ -524,6 +524,13 @@ namespace QA.Core.DPC.Loader.Editor
         {
             ContentSchema mergedContentSchema = schemasByContentId[contentSchema.ContentId];
 
+            if (!contentSchema.ForExtension)
+            {
+                // Один и тот же контент может использоваться как Extension и как Relation
+                // в разных частях схемы. В этом случае считаем, что контент не является Extension.
+                mergedContentSchema.ForExtension = false;
+            }
+
             foreach (FieldSchema fieldSchema in contentSchema.Fields.Values)
             {
                 // Перезаписываем все сложные поля, потому что для одного и того же контента,

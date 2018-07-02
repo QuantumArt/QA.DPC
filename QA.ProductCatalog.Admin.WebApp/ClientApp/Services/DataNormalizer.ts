@@ -11,23 +11,23 @@ import {
 const options = { idAttribute: "Id", mergeStrategy: deepMerge };
 
 export class DataNormalizer {
-  private _normalizrSchemas: {
-    [name: string]: schema.Entity | schema.Object;
+  private _entitySchemas: {
+    [contentName: string]: schema.Entity;
+  } = {};
+  private _objectSchemas: {
+    [contentName: string]: schema.Object;
   } = {};
 
   public initSchema(mergedSchemas: { [name: string]: ContentSchema }) {
     const getName = (content: ContentSchema) => mergedSchemas[content.ContentId].ContentName;
 
     Object.values(mergedSchemas).forEach(content => {
-      if (content.ForExtension) {
-        this._normalizrSchemas[content.ContentName] = new schema.Object({});
-      } else {
-        this._normalizrSchemas[content.ContentName] = new schema.Entity(
-          content.ContentName,
-          {},
-          options
-        );
-      }
+      this._entitySchemas[content.ContentName] = new schema.Entity(
+        content.ContentName,
+        {},
+        options
+      );
+      this._objectSchemas[content.ContentName] = new schema.Object({});
     });
 
     Object.values(mergedSchemas).forEach(content => {
@@ -36,20 +36,21 @@ export class DataNormalizer {
         if (isExtensionField(field)) {
           const extReferences = {};
           Object.values(field.Contents).forEach(extContent => {
-            extReferences[getName(extContent)] = this._normalizrSchemas[getName(extContent)];
+            extReferences[getName(extContent)] = this._objectSchemas[getName(extContent)];
           });
           references[`${field.FieldName}_Contents`] = extReferences;
         } else if (isSingleRelationField(field)) {
-          references[field.FieldName] = this._normalizrSchemas[getName(field.Content)];
+          references[field.FieldName] = this._entitySchemas[getName(field.Content)];
         } else if (isMultiRelationField(field)) {
-          references[field.FieldName] = [this._normalizrSchemas[getName(field.Content)]];
+          references[field.FieldName] = [this._entitySchemas[getName(field.Content)]];
         }
       });
-      this._normalizrSchemas[content.ContentName].define(references);
+      this._entitySchemas[content.ContentName].define(references);
+      this._objectSchemas[content.ContentName].define(references);
     });
   }
 
   public normalize(articleObject: ArticleSnapshot, contentName: string): StoreSnapshot {
-    return normalize(articleObject, this._normalizrSchemas[contentName]).entities;
+    return normalize(articleObject, this._entitySchemas[contentName]).entities;
   }
 }

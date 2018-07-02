@@ -34,6 +34,7 @@ export interface ProductEntities {
   EquipmentType: EquipmentType;
   EquipmentDownload: EquipmentDownload;
   DeviceOnTariffs: DeviceOnTariffs;
+  DevicesForFixConnectAction: DevicesForFixConnectAction;
 }
 
 export interface Region extends ArticleObject {
@@ -693,8 +694,10 @@ export interface DeviceOnTariffs extends ArticleObject {
   Cities: Region[];
 }
 
-export interface DevicesForFixConnectAction extends ExtensionObject {
+export interface DevicesForFixConnectAction extends ArticleObject {
+  Id: number;
   ContentName: "DevicesForFixConnectAction";
+  Modified: Date;
   Order: number;
   FixConnectAction: Product;
   Parent: ProductRelation;
