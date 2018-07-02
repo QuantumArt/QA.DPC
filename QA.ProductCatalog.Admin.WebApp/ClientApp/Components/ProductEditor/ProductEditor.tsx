@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from "react";
 import { provider, inject } from "react-ioc";
 import { Grid } from "react-flexbox-grid";
+import { onPatch } from "mobx-state-tree";
 import { ArticleEditor, RelationsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
@@ -10,6 +11,8 @@ import { EditorController } from "Services/EditorController";
 import { ArticleObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { isFunction } from "Utils/TypeChecks";
+
+const DEBUG = process.env.NODE_ENV.toLowerCase() !== "production";
 
 type RenderEditor = (article: ArticleObject, contentSchema: ContentSchema) => ReactNode;
 
@@ -43,6 +46,9 @@ export class ProductEditor extends Component<ProductEditorProps> {
 
   async componentDidMount() {
     const article = await this._editorController.initialize();
+    if (DEBUG) {
+      onPatch(article, patch => console.log(patch));
+    }
     this.setState({ article });
   }
 

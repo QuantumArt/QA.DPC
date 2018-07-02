@@ -1,4 +1,4 @@
-import { ValidatableObject } from "mst-validation-mixin";
+import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 
 /** Типизация хранилища данных */
 export interface ProductEntities {
@@ -36,7 +36,7 @@ export interface ProductEntities {
   DeviceOnTariffs: DeviceOnTariffs;
 }
 
-export interface Region extends ValidatableObject {
+export interface Region extends ArticleObject {
   Id: number;
   ContentName: "Region";
   Modified: Date;
@@ -46,7 +46,7 @@ export interface Region extends ValidatableObject {
   IsMainCity: boolean;
 }
 
-export interface Product extends ValidatableObject {
+export interface Product extends ArticleObject {
   Id: number;
   ContentName: "Product";
   Modified: Date;
@@ -104,7 +104,7 @@ export interface Product extends ValidatableObject {
   Advantages: Advantage[];
 }
 
-export interface Group extends ValidatableObject {
+export interface Group extends ArticleObject {
   Id: number;
   ContentName: "Group";
   Modified: Date;
@@ -112,7 +112,7 @@ export interface Group extends ValidatableObject {
   Alias: string;
 }
 
-export interface ProductModifer extends ValidatableObject {
+export interface ProductModifer extends ArticleObject {
   Id: number;
   ContentName: "ProductModifer";
   Modified: Date;
@@ -120,11 +120,11 @@ export interface ProductModifer extends ValidatableObject {
   Alias: string;
 }
 
-export interface Tariff extends ValidatableObject {
+export interface Tariff extends ExtensionObject {
   ContentName: "Tariff";
 }
 
-export interface TariffZone extends ValidatableObject {
+export interface TariffZone extends ArticleObject {
   Id: number;
   ContentName: "TariffZone";
   Modified: Date;
@@ -132,7 +132,7 @@ export interface TariffZone extends ValidatableObject {
   Alias: string;
 }
 
-export interface Direction extends ValidatableObject {
+export interface Direction extends ArticleObject {
   Id: number;
   ContentName: "Direction";
   Modified: Date;
@@ -140,7 +140,7 @@ export interface Direction extends ValidatableObject {
   Alias: string;
 }
 
-export interface BaseParameter extends ValidatableObject {
+export interface BaseParameter extends ArticleObject {
   Id: number;
   ContentName: "BaseParameter";
   Modified: Date;
@@ -150,7 +150,7 @@ export interface BaseParameter extends ValidatableObject {
   AllowDirection: boolean;
 }
 
-export interface BaseParameterModifier extends ValidatableObject {
+export interface BaseParameterModifier extends ArticleObject {
   Id: number;
   ContentName: "BaseParameterModifier";
   Modified: Date;
@@ -164,7 +164,7 @@ export interface BaseParameterModifier extends ValidatableObject {
     | "Refining";
 }
 
-export interface ParameterModifier extends ValidatableObject {
+export interface ParameterModifier extends ArticleObject {
   Id: number;
   ContentName: "ParameterModifier";
   Modified: Date;
@@ -172,7 +172,7 @@ export interface ParameterModifier extends ValidatableObject {
   Alias: string;
 }
 
-export interface ProductParameter extends ValidatableObject {
+export interface ProductParameter extends ArticleObject {
   Id: number;
   ContentName: "ProductParameter";
   Modified: Date;
@@ -194,7 +194,7 @@ export interface ProductParameter extends ValidatableObject {
   Choice: ParameterChoice;
 }
 
-export interface Unit extends ValidatableObject {
+export interface Unit extends ArticleObject {
   Id: number;
   ContentName: "Unit";
   Modified: Date;
@@ -226,7 +226,7 @@ export interface Unit extends ValidatableObject {
   Type: string;
 }
 
-export interface LinkModifier extends ValidatableObject {
+export interface LinkModifier extends ArticleObject {
   Id: number;
   ContentName: "LinkModifier";
   Modified: Date;
@@ -234,7 +234,7 @@ export interface LinkModifier extends ValidatableObject {
   Alias: string;
 }
 
-export interface ProductRelation extends ValidatableObject {
+export interface ProductRelation extends ArticleObject {
   Id: number;
   ContentName: "ProductRelation";
   Modified: Date;
@@ -270,7 +270,7 @@ export interface ProductRelation extends ValidatableObject {
   };
 }
 
-export interface LinkParameter extends ValidatableObject {
+export interface LinkParameter extends ArticleObject {
   Id: number;
   ContentName: "LinkParameter";
   Modified: Date;
@@ -294,15 +294,15 @@ export interface LinkParameter extends ValidatableObject {
   OldCorpPointId: number;
 }
 
-export interface TariffTransfer extends ValidatableObject {
+export interface TariffTransfer extends ExtensionObject {
   ContentName: "TariffTransfer";
 }
 
-export interface MutualGroup extends ValidatableObject {
+export interface MutualGroup extends ExtensionObject {
   ContentName: "MutualGroup";
 }
 
-export interface ProductParameterGroup extends ValidatableObject {
+export interface ProductParameterGroup extends ArticleObject {
   Id: number;
   ContentName: "ProductParameterGroup";
   Modified: Date;
@@ -316,7 +316,7 @@ export interface ProductParameterGroup extends ValidatableObject {
   TitleForIcin: string;
 }
 
-export interface MarketingProduct extends ValidatableObject {
+export interface MarketingProduct extends ArticleObject {
   Id: number;
   ContentName: "MarketingProduct";
   Modified: Date;
@@ -364,29 +364,29 @@ export interface MarketingProduct extends ValidatableObject {
   DetailedDescription: string;
 }
 
-export interface MarketingTariff extends ValidatableObject {
+export interface MarketingTariff extends ExtensionObject {
   ContentName: "MarketingTariff";
 }
 
-export interface MarketingService extends ValidatableObject {
+export interface MarketingService extends ExtensionObject {
   ContentName: "MarketingService";
 }
 
-export interface Service extends ValidatableObject {
+export interface Service extends ExtensionObject {
   ContentName: "Service";
 }
 
-export interface ServiceOnTariff extends ValidatableObject {
+export interface ServiceOnTariff extends ExtensionObject {
   ContentName: "ServiceOnTariff";
   Description: string;
 }
 
-export interface ServicesUpsale extends ValidatableObject {
+export interface ServicesUpsale extends ExtensionObject {
   ContentName: "ServicesUpsale";
   Order: number;
 }
 
-export interface TariffOptionPackage extends ValidatableObject {
+export interface TariffOptionPackage extends ExtensionObject {
   ContentName: "TariffOptionPackage";
   SubTitle: string;
   Description: string;
@@ -394,11 +394,11 @@ export interface TariffOptionPackage extends ValidatableObject {
   Link: string;
 }
 
-export interface ServiceRelation extends ValidatableObject {
+export interface ServiceRelation extends ExtensionObject {
   ContentName: "ServiceRelation";
 }
 
-export interface CommunicationType extends ValidatableObject {
+export interface CommunicationType extends ArticleObject {
   Id: number;
   ContentName: "CommunicationType";
   Modified: Date;
@@ -406,7 +406,7 @@ export interface CommunicationType extends ValidatableObject {
   Alias: string;
 }
 
-export interface Segment extends ValidatableObject {
+export interface Segment extends ArticleObject {
   Id: number;
   ContentName: "Segment";
   Modified: Date;
@@ -414,15 +414,15 @@ export interface Segment extends ValidatableObject {
   Alias: string;
 }
 
-export interface Action extends ValidatableObject {
+export interface Action extends ExtensionObject {
   ContentName: "Action";
 }
 
-export interface MarketingAction extends ValidatableObject {
+export interface MarketingAction extends ExtensionObject {
   ContentName: "MarketingAction";
 }
 
-export interface MarketingProductParameter extends ValidatableObject {
+export interface MarketingProductParameter extends ArticleObject {
   Id: number;
   ContentName: "MarketingProductParameter";
   Modified: Date;
@@ -442,19 +442,19 @@ export interface MarketingProductParameter extends ValidatableObject {
   Image: string;
 }
 
-export interface RoamingScale extends ValidatableObject {
+export interface RoamingScale extends ExtensionObject {
   ContentName: "RoamingScale";
 }
 
-export interface MarketingRoamingScale extends ValidatableObject {
+export interface MarketingRoamingScale extends ExtensionObject {
   ContentName: "MarketingRoamingScale";
 }
 
-export interface RoamingScaleOnTariff extends ValidatableObject {
+export interface RoamingScaleOnTariff extends ExtensionObject {
   ContentName: "RoamingScaleOnTariff";
 }
 
-export interface TariffCategory extends ValidatableObject {
+export interface TariffCategory extends ArticleObject {
   Id: number;
   ContentName: "TariffCategory";
   Modified: Date;
@@ -469,11 +469,11 @@ export interface TariffCategory extends ValidatableObject {
     | "Phone";
 }
 
-export interface ServiceOnRoamingScale extends ValidatableObject {
+export interface ServiceOnRoamingScale extends ExtensionObject {
   ContentName: "ServiceOnRoamingScale";
 }
 
-export interface Advantage extends ValidatableObject {
+export interface Advantage extends ArticleObject {
   Id: number;
   ContentName: "Advantage";
   Modified: Date;
@@ -486,17 +486,17 @@ export interface Advantage extends ValidatableObject {
   OldSiteId: number;
 }
 
-export interface CrossSale extends ValidatableObject {
+export interface CrossSale extends ExtensionObject {
   ContentName: "CrossSale";
   Order: number;
 }
 
-export interface MarketingCrossSale extends ValidatableObject {
+export interface MarketingCrossSale extends ExtensionObject {
   ContentName: "MarketingCrossSale";
   Order: number;
 }
 
-export interface TimeZone extends ValidatableObject {
+export interface TimeZone extends ArticleObject {
   Id: number;
   ContentName: "TimeZone";
   Modified: Date;
@@ -507,7 +507,7 @@ export interface TimeZone extends ValidatableObject {
   OldSiteId: number;
 }
 
-export interface NetworkCity extends ValidatableObject {
+export interface NetworkCity extends ArticleObject {
   Id: number;
   ContentName: "NetworkCity";
   Modified: Date;
@@ -515,7 +515,7 @@ export interface NetworkCity extends ValidatableObject {
   HasIpTv: boolean;
 }
 
-export interface ChannelCategory extends ValidatableObject {
+export interface ChannelCategory extends ArticleObject {
   Id: number;
   ContentName: "ChannelCategory";
   Modified: Date;
@@ -527,7 +527,7 @@ export interface ChannelCategory extends ValidatableObject {
   OldSiteId: number;
 }
 
-export interface ChannelType extends ValidatableObject {
+export interface ChannelType extends ArticleObject {
   Id: number;
   ContentName: "ChannelType";
   Modified: Date;
@@ -535,7 +535,7 @@ export interface ChannelType extends ValidatableObject {
   OldSiteId: number;
 }
 
-export interface ChannelFormat extends ValidatableObject {
+export interface ChannelFormat extends ArticleObject {
   Id: number;
   ContentName: "ChannelFormat";
   Modified: Date;
@@ -545,7 +545,7 @@ export interface ChannelFormat extends ValidatableObject {
   OldSiteId: number;
 }
 
-export interface TvChannel extends ValidatableObject {
+export interface TvChannel extends ArticleObject {
   Id: number;
   ContentName: "TvChannel";
   Modified: Date;
@@ -568,7 +568,7 @@ export interface TvChannel extends ValidatableObject {
   TimeZone: TimeZone;
 }
 
-export interface ParameterChoice extends ValidatableObject {
+export interface ParameterChoice extends ArticleObject {
   Id: number;
   ContentName: "ParameterChoice";
   Modified: Date;
@@ -577,14 +577,14 @@ export interface ParameterChoice extends ValidatableObject {
   OldSiteId: number;
 }
 
-export interface MarketingDevice extends ValidatableObject {
+export interface MarketingDevice extends ExtensionObject {
   ContentName: "MarketingDevice";
   DeviceType: EquipmentType;
   Segments: Segment[];
   CommunicationType: CommunicationType;
 }
 
-export interface Device extends ValidatableObject {
+export interface Device extends ExtensionObject {
   ContentName: "Device";
   Downloads: EquipmentDownload[];
   Inners: Product[];
@@ -593,14 +593,14 @@ export interface Device extends ValidatableObject {
   QuickStartGuide: string;
 }
 
-export interface FixedType extends ValidatableObject {
+export interface FixedType extends ArticleObject {
   Id: number;
   ContentName: "FixedType";
   Modified: Date;
   Title: string;
 }
 
-export interface EquipmentType extends ValidatableObject {
+export interface EquipmentType extends ArticleObject {
   Id: number;
   ContentName: "EquipmentType";
   Modified: Date;
@@ -610,7 +610,7 @@ export interface EquipmentType extends ValidatableObject {
   Order: number;
 }
 
-export interface EquipmentDownload extends ValidatableObject {
+export interface EquipmentDownload extends ArticleObject {
   Id: number;
   ContentName: "EquipmentDownload";
   Modified: Date;
@@ -618,7 +618,7 @@ export interface EquipmentDownload extends ValidatableObject {
   File: string;
 }
 
-export interface MarketingFixConnectAction extends ValidatableObject {
+export interface MarketingFixConnectAction extends ExtensionObject {
   ContentName: "MarketingFixConnectAction";
   Segment: Segment[];
   MarketingAction: MarketingProduct;
@@ -628,14 +628,14 @@ export interface MarketingFixConnectAction extends ValidatableObject {
   AfterPromo: string;
 }
 
-export interface FixConnectAction extends ValidatableObject {
+export interface FixConnectAction extends ExtensionObject {
   ContentName: "FixConnectAction";
   MarketingOffers: MarketingProduct[];
   PromoPeriod: string;
   AfterPromo: string;
 }
 
-export interface MarketingTvPackage extends ValidatableObject {
+export interface MarketingTvPackage extends ExtensionObject {
   ContentName: "MarketingTvPackage";
   Channels: TvChannel[];
   TitleForSite: string;
@@ -644,11 +644,11 @@ export interface MarketingTvPackage extends ValidatableObject {
     | "Additional";
 }
 
-export interface TvPackage extends ValidatableObject {
+export interface TvPackage extends ExtensionObject {
   ContentName: "TvPackage";
 }
 
-export interface MarketingFixConnectTariff extends ValidatableObject {
+export interface MarketingFixConnectTariff extends ExtensionObject {
   ContentName: "MarketingFixConnectTariff";
   Segment: Segment;
   Category: TariffCategory;
@@ -660,29 +660,29 @@ export interface MarketingFixConnectTariff extends ValidatableObject {
   TitleForSite: string;
 }
 
-export interface FixConnectTariff extends ValidatableObject {
+export interface FixConnectTariff extends ExtensionObject {
   ContentName: "FixConnectTariff";
   TitleForSite: string;
 }
 
-export interface MarketingPhoneTariff extends ValidatableObject {
+export interface MarketingPhoneTariff extends ExtensionObject {
   ContentName: "MarketingPhoneTariff";
 }
 
-export interface PhoneTariff extends ValidatableObject {
+export interface PhoneTariff extends ExtensionObject {
   ContentName: "PhoneTariff";
   RostelecomLink: string;
 }
 
-export interface MarketingInternetTariff extends ValidatableObject {
+export interface MarketingInternetTariff extends ExtensionObject {
   ContentName: "MarketingInternetTariff";
 }
 
-export interface InternetTariff extends ValidatableObject {
+export interface InternetTariff extends ExtensionObject {
   ContentName: "InternetTariff";
 }
 
-export interface DeviceOnTariffs extends ValidatableObject {
+export interface DeviceOnTariffs extends ArticleObject {
   Id: number;
   ContentName: "DeviceOnTariffs";
   Modified: Date;
@@ -693,7 +693,7 @@ export interface DeviceOnTariffs extends ValidatableObject {
   Cities: Region[];
 }
 
-export interface DevicesForFixConnectAction extends ValidatableObject {
+export interface DevicesForFixConnectAction extends ExtensionObject {
   ContentName: "DevicesForFixConnectAction";
   Order: number;
   FixConnectAction: Product;
