@@ -18,7 +18,6 @@ import "./RelationFieldAccordion.scss";
 export interface RelationFieldAccordionProps extends FieldEditorProps {
   displayFields?: (string | FieldSelector)[];
   orderByField?: string | FieldSelector;
-  save?: boolean;
   saveRelations?: RelationSelection;
   fieldEdiors?: FieldsConfig;
   children?: RenderArticle | ReactNode;

@@ -70,7 +70,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
-    const { save, fieldEdiors, children } = this.props;
+    const { fieldEdiors, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     const serverId = article && this._dataSerializer.getServerId(article);
@@ -103,11 +103,9 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                 <td key={-3} className="relation-field-accordion__controls">
                   {!fieldSchema.IsReadOnly && (
                     <ButtonGroup>
-                      {save && (
-                        <Button small icon="floppy-disk">
-                          Сохранить
-                        </Button>
-                      )}
+                      <Button small icon="floppy-disk">
+                        Сохранить
+                      </Button>
                       <Button
                         small
                         icon={<Icon icon="remove" title={false} />}

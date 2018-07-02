@@ -4,11 +4,7 @@ import ReactDOM from "react-dom";
 import { toJS } from "mobx";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import {
-  RelationFieldAccordion,
-  RelationFieldList,
-  RelationFieldTable
-} from "Components/FieldEditors/FieldEditors";
+import { RelationFieldList, RelationFieldTable } from "Components/FieldEditors/FieldEditors";
 import { maxCount } from "Utils/Validators";
 import { Product } from "./MtsFixTariff/ProductEditorSchema";
 
@@ -47,9 +43,7 @@ const App = () => (
             Parent: true
           }
         }}
-        fieldEdiors={{
-          MarketingProduct: props => <RelationFieldAccordion save {...props} />
-        }}
+        fieldEdiors={{}}
       >
         {(header, fields) => (
           <>

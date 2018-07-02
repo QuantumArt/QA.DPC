@@ -111,7 +111,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const { save, fieldEdiors, children } = this.props;
+    const { fieldEdiors, children } = this.props;
     const { activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return (
@@ -151,11 +151,9 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                         <td key={-3} className="relation-field-accordion__controls">
                           {!fieldSchema.IsReadOnly && (
                             <ButtonGroup>
-                              {save && (
-                                <Button small icon="floppy-disk">
-                                  Сохранить
-                                </Button>
-                              )}
+                              <Button small icon="floppy-disk">
+                                Сохранить
+                              </Button>
                               <Button
                                 small
                                 icon={<Icon icon="remove" title={false} />}
