@@ -138,10 +138,10 @@ export const validationMixin = (self: Object) => {
     return change;
   });
 
-  // иначе не собирает начальную модель из снапшота
+  // otherwise, model can not be created from snapshot
   Promise.resolve().then(() => {
-    Object.entries(self).forEach(([name, value]) => {
-      addFieldInterceptor(name, value);
+    Object.keys(self).forEach(name => {
+      addFieldInterceptor(name, self[name]);
     });
   });
 
