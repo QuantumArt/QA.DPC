@@ -1,4 +1,5 @@
 import { inject } from "react-ioc";
+import { ArticleSnapshot } from "Models/EditorDataModels";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataContext } from "Services/DataContext";
@@ -28,17 +29,21 @@ export class EditorController {
       if (!response.ok) {
         throw new Error(await response.text());
       }
-      const dataTree = this._dataSerializer.deserialize(await response.text());
+      const dataTree = this._dataSerializer.deserialize<ArticleSnapshot>(await response.text());
 
       await initSchemaTask;
+      const contentName = this._schemaContext.contentSchema.ContentName;
 
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, dataTree.ContentName);
 
       this._dataContext.initStore(dataSnapshot);
+      return this._dataContext.store[contentName].get(String(dataTree.Id));
     } else {
       await initSchemaTask;
+      const contentName = this._schemaContext.contentSchema.ContentName;
 
       this._dataContext.initStore({});
+      return this._dataContext.createArticle(contentName);
     }
   }
 
