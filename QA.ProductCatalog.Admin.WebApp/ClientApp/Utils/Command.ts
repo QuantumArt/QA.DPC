@@ -1,6 +1,9 @@
-import { observable, runInAction } from "mobx";
+import { observable, action } from "mobx";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
+import { isObject, isFunction } from "./TypeChecks";
+
+const DEBUG = process.env.NODE_ENV.toLowerCase() !== "production";
 
 const commandState = observable({
   runningCount: 0,
@@ -15,31 +18,42 @@ interface CommandDecorator {
 }
 
 function commandDecorator(target: Object, key: string, descriptor: PropertyDescriptor) {
+  const commandName = `${target.constructor.name || ""}.${key}`;
+  let commandNumber = 0;
+  const startCommand = action(`${commandName}: start`, () => {
+    if (DEBUG) {
+      const currentName = `${commandName} #${++commandNumber}`;
+      console.log(`${currentName}: start`);
+      console.time(currentName);
+    }
+    if (commandState.runningCount === 0) {
+      NProgress.start();
+    }
+    commandState.runningCount++;
+  });
+  const finishCommand = action(`${commandName}: finish`, () => {
+    if (DEBUG) {
+      console.timeEnd(`${commandName} #${commandNumber}`);
+    }
+    commandState.runningCount--;
+    if (commandState.runningCount === 0) {
+      NProgress.done();
+    }
+  });
   return {
     ...descriptor,
-    async value(...args: any[]) {
+    value(...args: any[]) {
+      let result;
+      startCommand();
       try {
-        if (process.env.NODE_ENV.toLowerCase() !== "production") {
-          console.log(`${target.constructor.name || ""}.${key}: started`);
-          console.time(`${target.constructor.name || ""}.${key}`);
-        }
-        runInAction(() => {
-          if (commandState.runningCount === 0) {
-            NProgress.start();
-          }
-          commandState.runningCount++;
-        });
-        return await descriptor.value.apply(this, args);
+        result = descriptor.value.apply(this, args);
       } finally {
-        if (process.env.NODE_ENV.toLowerCase() !== "production") {
-          console.timeEnd(`${target.constructor.name || ""}.${key}`);
+        if (isObject(result) && isFunction(result.then)) {
+          return result.then(finishCommand, finishCommand);
+        } else {
+          finishCommand();
+          return result;
         }
-        runInAction(() => {
-          commandState.runningCount--;
-          if (commandState.runningCount === 0) {
-            NProgress.done();
-          }
-        });
       }
     }
   };
