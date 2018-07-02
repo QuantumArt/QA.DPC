@@ -1,5 +1,6 @@
 import React, { Component, StatelessComponent } from "react";
 import { consumer, inject } from "react-ioc";
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
 import {
@@ -86,21 +87,25 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
 
   constructor(props: ObjectEditorProps & P, context?: any) {
     super(props, context);
-    const { contentSchema, children } = this.props;
-    console.time("ObjectEditor constructor");
-    // TODO: cache by contentSchema and memoize by props.fieldEdiors
-    if (!isFunction(children) || children.length > 0) {
-      Object.values(contentSchema.Fields)
-        .sort(asc(f => f.FieldOrder))
-        .forEach(fieldSchema => {
-          this.prepareFieldBlock(fieldSchema);
+    this.prepareFields();
+  }
 
-          if (isExtensionField(fieldSchema)) {
-            this.prepareContentsBlock(fieldSchema);
-          }
-        });
+  @action
+  private prepareFields() {
+    const { contentSchema, children } = this.props;
+    if (isFunction(children) && children.length === 0) {
+      return;
     }
-    console.timeEnd("ObjectEditor constructor");
+    // TODO: cache by contentSchema and memoize by props.fieldEdiors
+    Object.values(contentSchema.Fields)
+      .sort(asc(f => f.FieldOrder))
+      .forEach(fieldSchema => {
+        this.prepareFieldBlock(fieldSchema);
+
+        if (isExtensionField(fieldSchema)) {
+          this.prepareContentsBlock(fieldSchema);
+        }
+      });
   }
 
   private prepareFieldBlock(fieldSchema: FieldSchema) {
