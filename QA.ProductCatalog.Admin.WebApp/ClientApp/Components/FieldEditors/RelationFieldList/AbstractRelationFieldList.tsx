@@ -47,7 +47,7 @@ export abstract class AbstractRelationFieldList extends AbstractFieldEditor<
       >
         <Row>
           <Col xl={4} md={3} className="field-editor__label field-editor__label--small">
-            <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
+            <label htmlFor={this.id} title={fieldSchema.FieldDescription || fieldSchema.FieldName}>
               {fieldSchema.FieldTitle || fieldSchema.FieldName}:
               {fieldSchema.IsRequired && <span className="field-editor__label-required"> *</span>}
             </label>

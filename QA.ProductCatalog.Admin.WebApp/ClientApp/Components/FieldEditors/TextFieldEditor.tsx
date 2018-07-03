@@ -38,7 +38,7 @@ export class TextFieldEditor extends AbstractFieldEditor {
       >
         <Row>
           <Col xl={2} md={3} className="field-editor__label">
-            <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
+            <label htmlFor={this.id} title={fieldSchema.FieldDescription || fieldSchema.FieldName}>
               {fieldSchema.FieldTitle || fieldSchema.FieldName}:
               {fieldSchema.IsRequired && <span className="field-editor__label-required"> *</span>}
             </label>
