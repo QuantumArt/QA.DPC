@@ -39,8 +39,10 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
-    array.remove(article);
-    model.setTouched(fieldSchema.FieldName, true);
+    if (array) {
+      array.remove(article);
+      model.setTouched(fieldSchema.FieldName, true);
+    }
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {

@@ -25,7 +25,7 @@ import {
   TextFieldEditor,
   ClassifierFieldEditor,
   EnumFieldEditor,
-  SingleRelationFieldAccordion,
+  SingleRelationFieldTabs,
   MultiRelationFieldAccordion
 } from "Components/FieldEditors/FieldEditors";
 import { asc } from "Utils/Array/Sort";
@@ -72,7 +72,7 @@ type FieldEditor = StatelessComponent<FieldEditorProps> | typeof FieldEditorComp
 export interface ObjectEditorProps {
   model: ArticleObject | ExtensionObject;
   contentSchema: ContentSchema;
-  fieldEdiors?: FieldsConfig;
+  fieldEditors?: FieldsConfig;
 }
 
 interface ObjectEditorBlock {
@@ -96,7 +96,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
     if (isFunction(children) && children.length === 0) {
       return;
     }
-    // TODO: cache by contentSchema and memoize by props.fieldEdiors
+    // TODO: cache by contentSchema and memoize by props.fieldEditors
     Object.values(contentSchema.Fields)
       .sort(asc(f => f.FieldOrder))
       .forEach(fieldSchema => {
@@ -109,11 +109,11 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
   }
 
   private prepareFieldBlock(fieldSchema: FieldSchema) {
-    const { model, fieldEdiors } = this.props;
+    const { model, fieldEditors } = this.props;
     const fieldName = fieldSchema.FieldName;
 
-    if (fieldEdiors && fieldEdiors.hasOwnProperty(fieldName)) {
-      const field = fieldEdiors[fieldName];
+    if (fieldEditors && fieldEditors.hasOwnProperty(fieldName)) {
+      const field = fieldEditors[fieldName];
 
       if (isFunction(field)) {
         this._editorBlocks.push({
@@ -148,8 +148,8 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
   }
 
   private prepareContentsBlock(fieldSchema: ExtensionFieldSchema) {
-    const { fieldEdiors } = this.props;
-    const contentsConfig = fieldEdiors && fieldEdiors[`${fieldSchema.FieldName}_Contents`];
+    const { fieldEditors } = this.props;
+    const contentsConfig = fieldEditors && fieldEditors[`${fieldSchema.FieldName}_Contents`];
 
     if (isContentsConfig(contentsConfig)) {
       this._editorBlocks.push({ fieldSchema, contentsConfig });
@@ -160,7 +160,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
 
   private getDefaultFieldEditor(fieldSchema: FieldSchema): FieldEditor {
     if (isSingleRelationField(fieldSchema)) {
-      return SingleRelationFieldAccordion;
+      return SingleRelationFieldTabs;
     }
     if (isMultiRelationField(fieldSchema)) {
       return MultiRelationFieldAccordion;
@@ -215,7 +215,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
               key={fieldName + "_" + contentName}
               model={extensionModel}
               contentSchema={extensionSchema}
-              fieldEdiors={extensionFields}
+              fieldEditors={extensionFields}
             />
           );
         }

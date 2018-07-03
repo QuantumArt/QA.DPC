@@ -4,9 +4,13 @@ import ReactDOM from "react-dom";
 import { toJS } from "mobx";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import { RelationFieldList, RelationFieldTable } from "Components/FieldEditors/FieldEditors";
+import {
+  RelationFieldList,
+  RelationFieldTable,
+  RelationFieldTabs
+} from "Components/FieldEditors/FieldEditors";
 import { maxCount } from "Utils/Validators";
-import { Product } from "./MtsFixTariff/ProductEditorSchema";
+import { Product, DeviceOnTariffs } from "./MtsFixTariff/ProductEditorSchema";
 
 const App = () => (
   <ProductEditor
@@ -20,6 +24,12 @@ const App = () => (
           {...props}
         />
       ),
+      DeviceOnTariffs: props => (
+        <RelationFieldTabs
+          displayField={(d: DeviceOnTariffs) => d.MarketingDevice && d.MarketingDevice.Title}
+          {...props}
+        />
+      ),
       BaseParameterModifier: RelationFieldTable,
       Unit: RelationFieldList
     }}
@@ -28,8 +38,7 @@ const App = () => (
       <ArticleEditor
         model={model}
         contentSchema={contentSchema}
-        titleField={model => model.MarketingProduct && model.MarketingProduct.Title}
-        save
+        titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
         saveRelations={{
           MarketingProduct: {
             ActionsOnMarketingDevice: true
@@ -43,7 +52,8 @@ const App = () => (
             Parent: true
           }
         }}
-        fieldEdiors={{}}
+        header
+        buttons
       >
         {(header, fields) => (
           <>

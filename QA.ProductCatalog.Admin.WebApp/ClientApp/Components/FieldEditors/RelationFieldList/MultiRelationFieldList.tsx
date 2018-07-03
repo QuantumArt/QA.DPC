@@ -22,7 +22,7 @@ interface MultiRelationFieldListState {
 @observer
 export class MultiRelationFieldList extends AbstractRelationFieldList {
   private _orderByField: FieldSelector;
-  state: MultiRelationFieldListState = {
+  readonly state: MultiRelationFieldListState = {
     selectedIds: {}
   };
 
@@ -51,8 +51,10 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
     delete selectedIds[article.Id];
     this.setState({ selectedIds });
     const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
-    array.remove(article);
-    model.setTouched(fieldSchema.FieldName, true);
+    if (array) {
+      array.remove(article);
+      model.setTouched(fieldSchema.FieldName, true);
+    }
   }
 
   private toggleRelation(e: any, article: ArticleObject) {

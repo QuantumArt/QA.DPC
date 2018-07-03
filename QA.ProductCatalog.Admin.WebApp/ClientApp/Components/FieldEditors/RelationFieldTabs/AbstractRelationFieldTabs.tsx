@@ -5,45 +5,46 @@ import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
-import { DataSerializer } from "Services/DataSerializer";
 import { DataContext } from "Services/DataContext";
 import { isString } from "Utils/TypeChecks";
 import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
-import "./RelationFieldAccordion.scss";
+import "./RelationFieldTabs.scss";
 
 // TODO: Интеграция с окном выбора статей QP
 // TODO: Загрузка части продукта, которая начинается с новой выбранной статьи
 
-export interface RelationFieldAccordionProps extends FieldEditorProps {
-  displayFields?: (string | FieldSelector)[];
+export interface RelationFieldTabsProps extends FieldEditorProps {
+  displayField?: string | FieldSelector;
   orderByField?: string | FieldSelector;
   saveRelations?: RelationSelection;
   fieldEditors?: FieldsConfig;
+  open?: boolean;
   children?: RenderArticle | ReactNode;
 }
 
-export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor<
-  RelationFieldAccordionProps
+export abstract class AbstractRelationFieldTabs extends AbstractFieldEditor<
+  RelationFieldTabsProps
 > {
-  @inject protected _dataSerializer: DataSerializer;
   @inject protected _dataContext: DataContext;
-  protected _displayFields: FieldSelector[];
+  protected _displayField: FieldSelector;
 
-  constructor(props: RelationFieldAccordionProps, context?: any) {
+  constructor(props: RelationFieldTabsProps, context?: any) {
     super(props, context);
     const {
       fieldSchema,
       saveRelations,
-      displayFields = (fieldSchema as RelationFieldSchema).DisplayFieldNames || []
+      displayField = (fieldSchema as RelationFieldSchema).Content.DisplayFieldName || "Id"
     } = this.props;
     if (DEBUG && saveRelations) {
       const contentSchema = (fieldSchema as RelationFieldSchema).Content;
       validateRelationSelection(contentSchema, saveRelations);
     }
-    this._displayFields = displayFields.map(
-      field => (isString(field) ? article => article[field] : field)
-    );
+    this._displayField = isString(displayField)
+      ? displayField === "Id"
+        ? () => ""
+        : article => article[displayField]
+      : displayField;
   }
 
   protected abstract renderControls(

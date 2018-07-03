@@ -1,5 +1,4 @@
 import React from "react";
-import { Col } from "react-flexbox-grid";
 import { consumer } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
@@ -70,7 +69,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
-    const { fieldEdiors, children } = this.props;
+    const { fieldEditors, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     const serverId = article && this._dataSerializer.getServerId(article);
@@ -109,7 +108,6 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                       <Button
                         small
                         icon={<Icon icon="remove" title={false} />}
-                        disabled={fieldSchema.IsReadOnly}
                         onClick={this.removeRelation}
                       >
                         Удалить
@@ -126,15 +124,13 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                   colSpan={this._displayFields.length + 3}
                 >
                   {isTouched && (
-                    <Col md>
-                      <ArticleEditor
-                        model={article}
-                        contentSchema={fieldSchema.Content}
-                        fieldEdiors={fieldEdiors}
-                      >
-                        {children}
-                      </ArticleEditor>
-                    </Col>
+                    <ArticleEditor
+                      model={article}
+                      contentSchema={fieldSchema.Content}
+                      fieldEditors={fieldEditors}
+                    >
+                      {children}
+                    </ArticleEditor>
                   )}
                 </td>
               </tr>

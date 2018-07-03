@@ -1,5 +1,4 @@
 import React, { Fragment } from "react";
-import { Col } from "react-flexbox-grid";
 import { consumer } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
@@ -29,7 +28,7 @@ interface MultiRelationFieldAccordionState {
 @observer
 export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
   private _orderByField: FieldSelector;
-  state: MultiRelationFieldAccordionState = {
+  readonly state: MultiRelationFieldAccordionState = {
     activeId: null,
     touchedIds: {}
   };
@@ -76,8 +75,10 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
       this.setState({ touchedIds });
     }
     const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
-    array.remove(article);
-    model.setTouched(fieldSchema.FieldName, true);
+    if (array) {
+      array.remove(article);
+      model.setTouched(fieldSchema.FieldName, true);
+    }
   }
 
   private handleToggle(_e: any, article: ArticleObject) {
@@ -111,7 +112,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const { fieldEdiors, children } = this.props;
+    const { fieldEditors, children } = this.props;
     const { activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return (
@@ -157,7 +158,6 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                               <Button
                                 small
                                 icon={<Icon icon="remove" title={false} />}
-                                disabled={fieldSchema.IsReadOnly}
                                 onClick={e => this.removeRelation(e, article)}
                               >
                                 Удалить
@@ -174,15 +174,13 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                           colSpan={this._displayFields.length + 3}
                         >
                           {touchedIds[article.Id] && (
-                            <Col md>
-                              <ArticleEditor
-                                model={article}
-                                contentSchema={fieldSchema.Content}
-                                fieldEdiors={fieldEdiors}
-                              >
-                                {children}
-                              </ArticleEditor>
-                            </Col>
+                            <ArticleEditor
+                              model={article}
+                              contentSchema={fieldSchema.Content}
+                              fieldEditors={fieldEditors}
+                            >
+                              {children}
+                            </ArticleEditor>
                           )}
                         </td>
                       </tr>

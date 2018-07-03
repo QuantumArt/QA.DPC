@@ -39,6 +39,11 @@ export {
   MultiRelationFieldTable,
   RelationFieldTable
 } from "./RelationFieldTable/RelationFieldTable";
+export {
+  SingleRelationFieldTabs,
+  MultiRelationFieldTabs,
+  RelationFieldTabs
+} from "./RelationFieldTabs/RelationFieldTabs";
 
 @observer
 export class StringFieldEditor extends AbstractFieldEditor {

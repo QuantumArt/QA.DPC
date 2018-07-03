@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
-import { Row } from "react-flexbox-grid";
-import { Button } from "@blueprintjs/core";
+import { Col, Row } from "react-flexbox-grid";
+import { Button, ButtonGroup } from "@blueprintjs/core";
 import { inject, consumer } from "react-ioc";
 import { observer } from "mobx-react";
 import { ArticleObject } from "Models/EditorDataModels";
@@ -15,7 +15,9 @@ export type RenderArticle = (headerNode: ReactNode, fieldsNode: ReactNode) => Re
 
 interface ArticleEditorProps {
   model: ArticleObject;
-  save?: boolean;
+  header?: ReactNode | boolean;
+  buttons?: ReactNode | boolean;
+  onRemove?: (article: ArticleObject) => void;
   saveRelations?: RelationSelection;
   titleField?: string | ((article: ArticleObject) => string);
   children?: RenderArticle | ReactNode;
@@ -45,21 +47,37 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
   }
 
   render() {
-    const { model, contentSchema, save, children } = this.props;
+    const { model, contentSchema, header, buttons, onRemove, children } = this.props;
     if (isFunction(children) && children.length === 0) {
       return children(null, null);
     }
     const serverId = this._dataSerializer.getServerId(model);
-    const headerNode = save && (
-      <Row key={1} className="article-editor__header">
-        <div className="article-editor__title" title={contentSchema.ContentDescription}>
-          {contentSchema.ContentTitle || contentSchema.ContentName}
-          {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
-        </div>
-        <Button icon="floppy-disk">Сохранить</Button>
-      </Row>
+    const headerNode =
+      header === true ? (
+        <Col key={1} md className="article-editor__header">
+          <div className="article-editor__title" title={contentSchema.ContentDescription}>
+            {contentSchema.ContentTitle || contentSchema.ContentName}
+            {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
+          </div>
+          {buttons === true ? (
+            <ButtonGroup>
+              <Button icon="floppy-disk">Сохранить</Button>
+              <Button icon="remove" onClick={() => onRemove && onRemove(model)}>
+                Удалить
+              </Button>
+            </ButtonGroup>
+          ) : (
+            buttons || null
+          )}
+        </Col>
+      ) : (
+        header || null
+      );
+    const fieldsNode = (
+      <Col key={2} md>
+        <Row>{super.render()}</Row>
+      </Col>
     );
-    const fieldsNode = <Row key={2}>{super.render()}</Row>;
     return isFunction(children) ? children(headerNode, fieldsNode) : [headerNode, fieldsNode];
   }
 }
