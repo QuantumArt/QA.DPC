@@ -45,10 +45,10 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   };
 
   private toggleRelation = () => {
-    const { isOpen, isTouched } = this.state;
+    const { isOpen } = this.state;
     this.setState({
       isOpen: !isOpen,
-      isTouched: isTouched || !isOpen
+      isTouched: true
     });
   };
 

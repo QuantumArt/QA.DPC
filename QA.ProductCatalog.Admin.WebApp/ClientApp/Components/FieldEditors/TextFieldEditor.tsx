@@ -40,7 +40,9 @@ export class TextFieldEditor extends AbstractFieldEditor {
           <Col xl={2} md={3} className="field-editor__label">
             <label htmlFor={this.id} title={fieldSchema.FieldDescription || fieldSchema.FieldName}>
               {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-              {fieldSchema.IsRequired && <span className="field-editor__label-required"> *</span>}
+              {fieldSchema.IsRequired && (
+                <span className="field-editor__label-required">&nbsp;*</span>
+              )}
             </label>
           </Col>
           {this.renderField(model, fieldSchema)}

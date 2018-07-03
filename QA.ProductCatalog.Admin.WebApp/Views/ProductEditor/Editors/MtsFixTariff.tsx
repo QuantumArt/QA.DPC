@@ -26,7 +26,8 @@ const App = () => (
       ),
       DeviceOnTariffs: props => (
         <RelationFieldTabs
-          displayField={(d: DeviceOnTariffs) => d.MarketingDevice && d.MarketingDevice.Title}
+          displayField={(d: DeviceOnTariffs) => d.Parent && d.Parent.Title}
+          collapsed
           {...props}
         />
       ),

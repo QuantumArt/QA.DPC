@@ -28,8 +28,8 @@ interface MultiRelationFieldTabsState {
 export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   private _orderByField: FieldSelector;
   readonly state: MultiRelationFieldTabsState = {
-    isOpen: this.props.open,
-    isTouched: this.props.open,
+    isOpen: !this.props.collapsed,
+    isTouched: !this.props.collapsed,
     activeId: null,
     touchedIds: {}
   };
@@ -58,10 +58,15 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const { touchedIds } = this.state;
     const contentName = (fieldSchema as MultiRelationFieldSchema).Content.ContentName;
     const article = this._dataContext.createArticle(contentName);
+    touchedIds[article.Id] = true;
+    this.setState({
+      activeId: article.Id,
+      touchedIds,
+      isOpen: true,
+      isTouched: true
+    });
     model[fieldSchema.FieldName].push(article);
     model.setTouched(fieldSchema.FieldName, true);
-    touchedIds[article.Id] = true;
-    this.setState({ activeId: article.Id, touchedIds });
   };
 
   @action
@@ -144,11 +149,13 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const { saveRelations, fieldEditors, children } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
+    const isEmpty = !list || list.length === 0;
     return (
       <Tabs
         id={`${model.Id || ""}.${fieldSchema.FieldName}`}
         className={cn("relation-field-tabs", {
-          "relation-field-tabs--hidden": !isOpen
+          "relation-field-tabs--hidden": !isOpen,
+          "relation-field-tabs--empty": isEmpty
         })}
         selectedTabId={activeId}
         onChange={this.handleTabChange}

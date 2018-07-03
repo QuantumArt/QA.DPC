@@ -1,6 +1,7 @@
 .relation-field-tabs {
   margin-top: 10px;
 
+  &--empty,
   &--hidden {
     display: none;
   }
@@ -61,6 +62,10 @@
   margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
+
+  &--hidden {
+    display: none;
+  }
 
   &--multi {
     margin-top: -2px;
