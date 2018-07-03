@@ -15,7 +15,6 @@ export function validateRelationSelection(
   selection: RelationSelection,
   path: string = ""
 ) {
-  if (process.env.NODE_ENV.toLowerCase() === "production") return;
   if (!isPlainObject(selection)) {
     throw new Error(`Content selection ${path || "/"} should be an object.`);
   }

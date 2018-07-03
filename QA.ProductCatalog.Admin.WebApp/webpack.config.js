@@ -87,7 +87,8 @@ module.exports = (env, argv) => ({
     new CleanWebpackPlugin([outPath]),
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(argv.mode),
-      "process.env.OUT_DIR": JSON.stringify(outDir)
+      "process.env.OUT_DIR": JSON.stringify(outDir),
+      DEBUG: JSON.stringify(argv.mode !== "production")
     })
   ],
   optimization: {

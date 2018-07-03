@@ -3,8 +3,6 @@ import NProgress from "nprogress";
 import "nprogress/nprogress.css";
 import { isObject, isFunction } from "./TypeChecks";
 
-const DEBUG = process.env.NODE_ENV.toLowerCase() !== "production";
-
 const commandState = observable({
   runningCount: 0,
   get isRunning() {

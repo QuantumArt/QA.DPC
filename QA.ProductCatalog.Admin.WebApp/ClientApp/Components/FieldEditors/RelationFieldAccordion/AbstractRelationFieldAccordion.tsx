@@ -3,7 +3,7 @@ import { inject } from "react-ioc";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
-import { RelationSelection } from "Models/RelationSelection";
+import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataContext } from "Services/DataContext";
@@ -34,8 +34,13 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
     super(props, context);
     const {
       fieldSchema,
+      saveRelations,
       displayFields = (fieldSchema as RelationFieldSchema).DisplayFieldNames || []
     } = this.props;
+    if (DEBUG && saveRelations) {
+      const contentSchema = (fieldSchema as RelationFieldSchema).Content;
+      validateRelationSelection(contentSchema, saveRelations);
+    }
     this._displayFields = displayFields.map(
       field => (isString(field) ? article => article[field] : field)
     );
@@ -57,7 +62,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
       >
         <Row>
           <Col xl={2} md={3} className="field-editor__label field-editor__label--small">
-            <label htmlFor={this.id} title={fieldSchema.FieldDescription}>
+            <label htmlFor={this.id} title={fieldSchema.FieldDescription || fieldSchema.FieldName}>
               {fieldSchema.FieldTitle || fieldSchema.FieldName}:
               {fieldSchema.IsRequired && <span className="field-editor__label-required"> *</span>}
             </label>

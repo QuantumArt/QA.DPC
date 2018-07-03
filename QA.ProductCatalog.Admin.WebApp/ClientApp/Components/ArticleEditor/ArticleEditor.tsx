@@ -34,7 +34,7 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
       saveRelations,
       titleField = contentSchema.DisplayFieldName || "Id"
     } = this.props;
-    if (saveRelations) {
+    if (DEBUG && saveRelations) {
       validateRelationSelection(contentSchema, saveRelations);
     }
     this._titleField = isString(titleField)

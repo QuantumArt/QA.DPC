@@ -12,8 +12,6 @@ import { ArticleObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { isFunction } from "Utils/TypeChecks";
 
-const DEBUG = process.env.NODE_ENV.toLowerCase() !== "production";
-
 type RenderEditor = (article: ArticleObject, contentSchema: ContentSchema) => ReactNode;
 
 interface ProductEditorProps {
