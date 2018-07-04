@@ -1,3 +1,5 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
 .field-editor__block {
   min-width: 583px;
   min-height: 30px;
@@ -21,5 +23,19 @@
 
 .field-editor__label-required {
   font-weight: bold;
-  color: #c23030;
+  color: $red2;
+}
+
+.file-field-editor {
+  .pt-icon-eye-open::before {
+    color: $blue2;
+  }
+
+  .pt-icon-cloud-download::before {
+    color: $green2;
+  }
+
+  .pt-icon-folder-close::before {
+    color: $orange2;
+  }
 }
