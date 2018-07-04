@@ -7,6 +7,7 @@ import {
   ContentSchema,
   FieldSchema,
   ExtensionFieldSchema,
+  RelationFieldSchema,
   FieldExactTypes,
   isExtensionField,
   isSingleRelationField,
@@ -33,7 +34,7 @@ import { isFunction, isObject } from "Utils/TypeChecks";
 import "./ArticleEditor.scss";
 
 export class RelationsConfig {
-  [contentName: string]: typeof IGNORE | FieldEditor;
+  [contentName: string]: typeof IGNORE | RelationFieldEditor;
 }
 
 export interface FieldsConfig {
@@ -69,10 +70,20 @@ interface FieldEditorProps {
 declare class FieldEditorComponent extends Component<FieldEditorProps> {}
 type FieldEditor = StatelessComponent<FieldEditorProps> | typeof FieldEditorComponent;
 
+interface RelationFieldEditorProps extends FieldEditorProps {
+  fieldSchema: RelationFieldSchema;
+}
+
+declare class RelationFieldEditorComponent extends Component<FieldEditorProps> {}
+type RelationFieldEditor =
+  | StatelessComponent<RelationFieldEditorProps>
+  | typeof RelationFieldEditorComponent;
+
 export interface ObjectEditorProps {
   model: ArticleObject | ExtensionObject;
   contentSchema: ContentSchema;
   fieldEditors?: FieldsConfig;
+  skipOtherFields?: boolean;
 }
 
 interface ObjectEditorBlock {
@@ -100,12 +111,19 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
     Object.values(contentSchema.Fields)
       .sort(asc(f => f.FieldOrder))
       .forEach(fieldSchema => {
-        this.prepareFieldBlock(fieldSchema);
+        if (this.shouldIncludeField(fieldSchema)) {
+          this.prepareFieldBlock(fieldSchema);
 
-        if (isExtensionField(fieldSchema)) {
-          this.prepareContentsBlock(fieldSchema);
+          if (isExtensionField(fieldSchema)) {
+            this.prepareContentsBlock(fieldSchema);
+          }
         }
       });
+  }
+
+  private shouldIncludeField(fieldSchema: FieldSchema) {
+    const { skipOtherFields, fieldEditors } = this.props;
+    return !skipOtherFields || (fieldEditors && fieldEditors.hasOwnProperty(fieldSchema.FieldName));
   }
 
   private prepareFieldBlock(fieldSchema: FieldSchema) {
