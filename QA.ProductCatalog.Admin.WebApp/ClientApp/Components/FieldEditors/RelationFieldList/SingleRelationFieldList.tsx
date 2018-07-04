@@ -3,7 +3,7 @@ import { Col } from "react-flexbox-grid";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
-import { Button, ButtonGroup } from "@blueprintjs/core";
+import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
@@ -40,7 +40,13 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
     return (
       <Col xl={8} md={6} className="relation-field-list__tags">
         <ButtonGroup>
-          <Button small icon="th-derived" disabled={fieldSchema.IsReadOnly}>
+          <Button
+            minimal
+            small
+            icon="th-derived"
+            intent={Intent.PRIMARY}
+            disabled={fieldSchema.IsReadOnly}
+          >
             Выбрать
           </Button>
         </ButtonGroup>{" "}
@@ -54,7 +60,7 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
           >
             {this._displayField(article)}
             {!fieldSchema.IsReadOnly && (
-              <button className="pt-tag-remove" onClick={this.removeRelation} />
+              <button className="pt-tag-remove" title="Удалить" onClick={this.removeRelation} />
             )}
           </span>
         )}

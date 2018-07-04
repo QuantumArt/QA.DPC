@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
-import { Button, ButtonGroup } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import { inject, consumer } from "react-ioc";
 import { observer } from "mobx-react";
 import { ArticleObject } from "Models/EditorDataModels";
@@ -60,14 +60,21 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
             {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
           </div>
           {buttons === true ? (
-            <ButtonGroup className="article-editor__buttons">
-              <Button icon="floppy-disk">Сохранить</Button>
+            <div className="article-editor__buttons">
+              <Button minimal icon="floppy-disk" intent={Intent.PRIMARY}>
+                Сохранить
+              </Button>
               {onRemove && (
-                <Button icon="remove" onClick={() => onRemove(model)}>
+                <Button
+                  minimal
+                  icon="remove"
+                  intent={Intent.DANGER}
+                  onClick={() => onRemove(model)}
+                >
                   Удалить
                 </Button>
               )}
-            </ButtonGroup>
+            </div>
           ) : (
             buttons || null
           )}

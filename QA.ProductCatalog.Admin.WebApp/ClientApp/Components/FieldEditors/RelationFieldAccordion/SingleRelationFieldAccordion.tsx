@@ -3,7 +3,7 @@ import { consumer } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
-import { Button, ButtonGroup, Icon } from "@blueprintjs/core";
+import { Button, ButtonGroup, Icon, Intent } from "@blueprintjs/core";
 import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
@@ -55,13 +55,33 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   renderControls(_model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     return (
       <ButtonGroup>
-        <Button small icon="add" disabled={fieldSchema.IsReadOnly} onClick={this.createRelation}>
+        <Button
+          minimal
+          small
+          icon="add"
+          intent={Intent.SUCCESS}
+          disabled={fieldSchema.IsReadOnly}
+          onClick={this.createRelation}
+        >
           Создать
         </Button>
-        <Button small icon="th-derived" disabled={fieldSchema.IsReadOnly}>
+        <Button
+          minimal
+          small
+          icon="th-derived"
+          intent={Intent.PRIMARY}
+          disabled={fieldSchema.IsReadOnly}
+        >
           Выбрать
         </Button>
-        <Button small icon="eraser" disabled={fieldSchema.IsReadOnly} onClick={this.removeRelation}>
+        <Button
+          minimal
+          small
+          icon="eraser"
+          intent={Intent.DANGER}
+          disabled={fieldSchema.IsReadOnly}
+          onClick={this.removeRelation}
+        >
           Очистить
         </Button>
       </ButtonGroup>
@@ -102,12 +122,14 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                 <td key={-3} className="relation-field-accordion__controls">
                   {!fieldSchema.IsReadOnly && (
                     <ButtonGroup>
-                      <Button small icon="floppy-disk">
+                      <Button minimal small icon="floppy-disk" intent={Intent.PRIMARY}>
                         Сохранить
                       </Button>
                       <Button
+                        minimal
                         small
-                        icon={<Icon icon="remove" title={false} />}
+                        icon="remove"
+                        intent={Intent.DANGER}
                         onClick={this.removeRelation}
                       >
                         Удалить

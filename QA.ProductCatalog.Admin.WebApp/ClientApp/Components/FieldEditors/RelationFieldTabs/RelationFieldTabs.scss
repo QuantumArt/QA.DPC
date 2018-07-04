@@ -1,7 +1,7 @@
 .multi-relation-field-tabs {
   &--empty,
   &--hidden {
-    display: none;
+    display: none !important;
   }
 
   &:not(.pt-vertical) > .pt-tab-list {

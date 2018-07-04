@@ -60,7 +60,6 @@ const App = () => (
         {(header, fields) => (
           <>
             {header}
-            <hr />
             {fields}
             <hr />
           </>

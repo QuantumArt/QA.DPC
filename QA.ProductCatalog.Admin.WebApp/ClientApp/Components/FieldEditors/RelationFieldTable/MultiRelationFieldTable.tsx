@@ -3,7 +3,7 @@ import { Col } from "react-flexbox-grid";
 import { consumer } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
-import { Button, ButtonGroup, Icon } from "@blueprintjs/core";
+import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
@@ -50,12 +50,20 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     return (
       <Col xl={10} md={9}>
         <ButtonGroup>
-          <Button small icon="th-derived" disabled={fieldSchema.IsReadOnly}>
+          <Button
+            minimal
+            small
+            icon="th-derived"
+            intent={Intent.PRIMARY}
+            disabled={fieldSchema.IsReadOnly}
+          >
             Выбрать
           </Button>
           <Button
+            minimal
             small
             icon="eraser"
+            intent={Intent.DANGER}
             disabled={fieldSchema.IsReadOnly}
             onClick={this.clearRelation}
           >
@@ -91,8 +99,10 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
                     <div key={-2} className="relation-field-table__controls">
                       {!fieldSchema.IsReadOnly && (
                         <Button
+                          minimal
                           small
-                          icon={<Icon icon="remove" title={false} />}
+                          icon="remove"
+                          intent={Intent.DANGER}
                           onClick={e => this.removeRelation(e, article)}
                         >
                           Удалить

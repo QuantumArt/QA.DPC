@@ -4,7 +4,7 @@ import { consumer } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { Validate } from "mst-validation-mixin";
-import { Button, ButtonGroup, Icon } from "@blueprintjs/core";
+import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { required } from "Utils/Validators";
@@ -27,12 +27,20 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
     return (
       <Col xl={10} md={9}>
         <ButtonGroup>
-          <Button small icon="th-derived" disabled={fieldSchema.IsReadOnly}>
+          <Button
+            minimal
+            small
+            icon="th-derived"
+            intent={Intent.PRIMARY}
+            disabled={fieldSchema.IsReadOnly}
+          >
             Выбрать
           </Button>
           <Button
+            minimal
             small
             icon="eraser"
+            intent={Intent.DANGER}
             disabled={fieldSchema.IsReadOnly}
             onClick={this.removeRelation}
           >
@@ -59,8 +67,10 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
               <div key={-2} className="relation-field-table__controls">
                 {!fieldSchema.IsReadOnly && (
                   <Button
+                    minimal
                     small
-                    icon={<Icon icon="remove" title={false} />}
+                    icon="remove"
+                    intent={Intent.DANGER}
                     onClick={this.removeRelation}
                   >
                     Удалить
