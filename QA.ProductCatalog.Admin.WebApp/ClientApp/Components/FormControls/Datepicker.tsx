@@ -43,7 +43,6 @@ export class DatePicker extends ValidatableInput<DatePickerProps> {
       onFocus,
       onChange,
       onBlur,
-      validate,
       id,
       type,
       placeholder,

@@ -3,15 +3,8 @@ import React from "react";
 import { render } from "react-dom";
 import { types as t, unprotect, IExtendedObservableMap } from "mobx-state-tree";
 import { IObservableArray } from "mobx";
-import { ValidatableControl } from "Components/FormControls/AbstractControls";
-import { validationMixin } from "mst-validation-mixin";
+import { validationMixin, Validate } from "mst-validation-mixin";
 import { required, pattern, maxCount } from "Utils/Validators";
-
-class TestControl extends ValidatableControl {
-  render() {
-    return <div />;
-  }
-}
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -32,7 +25,7 @@ describe("mst-validation-mixin", () => {
     unprotect(article);
 
     render(
-      <TestControl name="Title" model={article} validate={[required, pattern(/^[A-Z]+$/i)]} />,
+      <Validate name="Title" model={article} rules={[required, pattern(/^[A-Z]+$/i)]} />,
       document.createElement("div")
     );
 
@@ -76,7 +69,7 @@ describe("mst-validation-mixin", () => {
     unprotect(article);
 
     render(
-      <TestControl name="Category" model={article} validate={required} />,
+      <Validate name="Category" model={article} rules={required} />,
       document.createElement("div")
     );
 
@@ -122,7 +115,7 @@ describe("mst-validation-mixin", () => {
     unprotect(article);
 
     render(
-      <TestControl name="Category" model={article} validate={required} />,
+      <Validate name="Category" model={article} rules={required} />,
       document.createElement("div")
     );
 
@@ -161,7 +154,7 @@ describe("mst-validation-mixin", () => {
     unprotect(article);
 
     render(
-      <TestControl name="Tags" model={article} validate={[required, maxCount(1)]} />,
+      <Validate name="Tags" model={article} rules={[required, maxCount(1)]} />,
       document.createElement("div")
     );
 
@@ -229,10 +222,10 @@ describe("mst-validation-mixin", () => {
         : undefined;
 
     render(
-      <TestControl
+      <Validate
         name="Comments"
         model={article}
-        validate={[required, shouldHaveComments, maxComments(1)]}
+        rules={[required, shouldHaveComments, maxComments(1)]}
       />,
       document.createElement("div")
     );

@@ -14,7 +14,7 @@ export class CheckBox extends ValidatableControl<ICheckboxProps> {
   }
 
   render() {
-    const { model, name, onFocus, onChange, onBlur, validate, ...props } = this.props;
+    const { model, name, onFocus, onChange, onBlur, ...props } = this.props;
     return (
       <Checkbox
         checked={!!model[name]}

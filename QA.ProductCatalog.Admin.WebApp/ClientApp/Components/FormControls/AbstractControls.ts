@@ -1,7 +1,7 @@
 import { Component } from "react";
 import { transaction } from "mobx";
 import { isPlainObject } from "Utils/TypeChecks";
-import { ValidatableObject, Validator } from "mst-validation-mixin";
+import { ValidatableObject } from "mst-validation-mixin";
 
 interface ControlProps {
   [x: string]: any;
@@ -47,7 +47,6 @@ export abstract class AbstractControl<P = {}> extends Component<ControlProps & P
 
 interface ValidatableProps {
   model: ValidatableObject & { [x: string]: any };
-  validate?: Validator | Validator[];
 }
 
 export abstract class ValidatableControl<P = {}> extends AbstractControl<ValidatableProps & P> {

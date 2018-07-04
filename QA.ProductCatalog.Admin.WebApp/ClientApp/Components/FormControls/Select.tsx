@@ -28,17 +28,7 @@ export class Select extends ValidatableControl<SelectProps> {
   }
 
   render() {
-    const {
-      model,
-      name,
-      onFocus,
-      onChange,
-      onBlur,
-      validate,
-      required,
-      multiple,
-      ...props
-    } = this.props;
+    const { model, name, onFocus, onChange, onBlur, required, multiple, ...props } = this.props;
     let value = model[name];
     if ((multiple || props.multi) && isObservableArray(value)) {
       value = value.peek();

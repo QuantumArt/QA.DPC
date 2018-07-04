@@ -21,7 +21,7 @@ export class RadioGroup extends ValidatableControl<RadioGroupProps> {
   }
 
   render() {
-    const { model, name, onFocus, onChange, onBlur, validate, ...props } = this.props;
+    const { model, name, onFocus, onChange, onBlur, ...props } = this.props;
     return <PtRadioGroup onChange={this.handleChange} selectedValue={model[name]} {...props} />;
   }
 }

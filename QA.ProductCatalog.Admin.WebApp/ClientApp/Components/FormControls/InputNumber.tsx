@@ -44,7 +44,7 @@ export class InputNumber extends ValidatableInput<InputNumberProps> {
   }
 
   render() {
-    const { model, name, onFocus, onChange, onBlur, validate, isInteger, ...props } = this.props;
+    const { model, name, onFocus, onChange, onBlur, isInteger, ...props } = this.props;
     const { hasFocus, editValue } = this.state;
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return (

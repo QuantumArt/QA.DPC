@@ -20,7 +20,7 @@ export class TextArea extends ValidatableInput<TextareaHTMLAttributes<HTMLTextAr
   }
 
   render() {
-    const { model, name, className, onFocus, onChange, onBlur, validate, ...props } = this.props;
+    const { model, name, className, onFocus, onChange, onBlur, ...props } = this.props;
     const { hasFocus, editValue } = this.state;
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return (
