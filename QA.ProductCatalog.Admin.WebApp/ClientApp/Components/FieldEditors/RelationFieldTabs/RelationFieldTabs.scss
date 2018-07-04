@@ -1,74 +1,33 @@
-.relation-field-tabs {
-  margin-top: 10px;
-
+.multi-relation-field-tabs {
   &--empty,
   &--hidden {
     display: none;
   }
 
-  > .pt-tab-list {
-    flex-wrap: wrap;
-
-    > .pt-tab-indicator-wrapper {
-      z-index: 1;
-
-      > .pt-tab-indicator {
-        bottom: -1px;
-        right: -2px;
-        background-color: #5c7080;
-      }
-    }
-
+  &:not(.pt-vertical) > .pt-tab-list {
     > .pt-tab {
-      display: flex;
-      align-items: center;
-      min-height: 30px;
-      min-width: 70px;
-      margin-bottom: 2px;
-      border-top-left-radius: 5px;
-      border-top-right-radius: 5px;
-      background-color: #e4ecf2;
-      border: 1px solid #ccc;
-      border-bottom: none;
-      outline: none;
-
-      &:not(:last-child) {
-        margin-right: 2px;
-      }
-
-      &:hover,
-      &[aria-selected="true"] {
-        background-color: inherit;
-        color: inherit;
-      }
-
-      > .pt-icon {
-        margin-right: 3px;
-        color: #5c7080;
-      }
+      max-width: 33%;
     }
   }
 
-  > .pt-tab-panel {
-    margin-top: 0;
+  &.pt-vertical > .pt-tab-list {
+    > .pt-tab {
+      max-width: 33vw;
+    }
   }
 }
 
-.relation-field-tabs__title {
-  margin: 0 10px;
+.multi-relation-field-tabs__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.relation-field-tabs__panel {
+.single-relation-field-tabs {
   margin-top: 10px;
   border: 1px solid #ccc;
   border-radius: 5px;
 
   &--hidden {
     display: none;
-  }
-
-  &--multi {
-    margin-top: -2px;
-    border-top-left-radius: 0;
   }
 }

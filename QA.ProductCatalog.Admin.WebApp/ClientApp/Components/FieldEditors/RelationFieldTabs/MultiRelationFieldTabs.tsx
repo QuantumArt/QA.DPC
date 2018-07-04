@@ -146,16 +146,17 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const { saveRelations, fieldEditors, children } = this.props;
+    const { saveRelations, fieldEditors, vertical, children } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
       <Tabs
+        vertical={vertical}
         id={`${model.Id || ""}.${fieldSchema.FieldName}`}
-        className={cn("relation-field-tabs", {
-          "relation-field-tabs--hidden": !isOpen,
-          "relation-field-tabs--empty": isEmpty
+        className={cn("multi-relation-field-tabs", {
+          "multi-relation-field-tabs--hidden": !isOpen,
+          "multi-relation-field-tabs--empty": isEmpty
         })}
         selectedTabId={activeId}
         onChange={this.handleTabChange}
@@ -166,29 +167,30 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
             .slice()
             .sort(asc(this._orderByField))
             .map(article => {
+              const title = this._displayField(article);
               return (
                 <Tab
                   key={article.Id}
                   id={article.Id}
                   panel={
                     touchedIds[article.Id] && (
-                      <div className="relation-field-tabs__panel relation-field-tabs__panel--multi">
-                        <ArticleEditor
-                          model={article}
-                          contentSchema={fieldSchema.Content}
-                          fieldEditors={fieldEditors}
-                          saveRelations={saveRelations}
-                          header
-                          buttons={!fieldSchema.IsReadOnly}
-                          onRemove={this.removeRelation}
-                        >
-                          {children}
-                        </ArticleEditor>
-                      </div>
+                      <ArticleEditor
+                        model={article}
+                        contentSchema={fieldSchema.Content}
+                        fieldEditors={fieldEditors}
+                        saveRelations={saveRelations}
+                        header
+                        buttons={!fieldSchema.IsReadOnly}
+                        onRemove={this.removeRelation}
+                      >
+                        {children}
+                      </ArticleEditor>
                     )
                   }
                 >
-                  <div className="relation-field-tabs__title">{this._displayField(article)}</div>
+                  <div className="multi-relation-field-tabs__title" title={title}>
+                    {title}
+                  </div>
                 </Tab>
               );
             })}

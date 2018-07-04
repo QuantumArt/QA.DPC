@@ -33,8 +33,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   @action
-  private removeRelation = (e: any) => {
-    e.stopPropagation();
+  private removeRelation = () => {
     const { model, fieldSchema } = this.props;
     this.setState({
       isOpen: false,
@@ -81,8 +80,8 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
         {isTouched &&
           article && (
             <div
-              className={cn("relation-field-tabs__panel", {
-                "relation-field-tabs__panel--hidden": !isOpen
+              className={cn("single-relation-field-tabs", {
+                "single-relation-field-tabs--hidden": !isOpen
               })}
             >
               <ArticleEditor
@@ -92,6 +91,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
                 saveRelations={saveRelations}
                 header
                 buttons={!fieldSchema.IsReadOnly}
+                onRemove={this.removeRelation}
               >
                 {children}
               </ArticleEditor>
