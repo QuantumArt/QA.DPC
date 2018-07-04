@@ -60,11 +60,13 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
             {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
           </div>
           {buttons === true ? (
-            <ButtonGroup>
+            <ButtonGroup className="article-editor__buttons">
               <Button icon="floppy-disk">Сохранить</Button>
-              <Button icon="remove" onClick={() => onRemove && onRemove(model)}>
-                Удалить
-              </Button>
+              {onRemove && (
+                <Button icon="remove" onClick={() => onRemove(model)}>
+                  Удалить
+                </Button>
+              )}
             </ButtonGroup>
           ) : (
             buttons || null

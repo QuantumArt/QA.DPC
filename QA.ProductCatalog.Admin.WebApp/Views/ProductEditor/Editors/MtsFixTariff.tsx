@@ -28,6 +28,7 @@ const App = () => (
         <RelationFieldTabs
           displayField={(d: DeviceOnTariffs) => d.Parent && d.Parent.Title}
           collapsed
+          vertical
           {...props}
         />
       ),
