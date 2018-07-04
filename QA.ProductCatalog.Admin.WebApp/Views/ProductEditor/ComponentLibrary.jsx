@@ -191,20 +191,21 @@ const FormControlsBlock = observer(() => (
     >
       <Col md={3}>InputText [ pattern | required]</Col>
       <Col md={3} className="pt-form-content">
-        <InputText
-          name="StringField"
-          model={article}
-          placeholder="StringField"
-          className={cn({
-            "pt-intent-danger": article.hasVisibleErrors("StringField")
-          })}
-        />
         <Validate
           model={article}
           name="StringField"
-          className="pt-form-helper-text"
+          errorClassName="pt-form-helper-text"
           rules={[required, pattern(/^[A-Za-z0-9]+$/)]}
-        />
+        >
+          <InputText
+            name="StringField"
+            model={article}
+            placeholder="StringField"
+            className={cn({
+              "pt-intent-danger": article.hasVisibleErrors("StringField")
+            })}
+          />
+        </Validate>
       </Col>
       <Col md={3} className="pt-form-content">
         <InputText
@@ -218,7 +219,7 @@ const FormControlsBlock = observer(() => (
         <Validate
           model={article}
           name="StringField"
-          className="pt-form-helper-text"
+          errorClassName="pt-form-helper-text"
           rules={required}
         />
       </Col>
@@ -320,7 +321,7 @@ const FormControlsBlock = observer(() => (
         <Validate
           model={article}
           name="FileField"
-          className="pt-form-helper-text"
+          errorClassName="pt-form-helper-text"
           rules={required}
         />
       </Col>
@@ -361,7 +362,7 @@ const FormControlsBlock = observer(() => (
         <Validate
           model={article}
           name="DateField"
-          className="pt-form-helper-text"
+          errorClassName="pt-form-helper-text"
           rules={required}
         />
       </Col>
@@ -479,7 +480,7 @@ const FormControlsBlock = observer(() => (
         <Validate
           model={article}
           name="ArrayField"
-          className="pt-form-helper-text"
+          errorClassName="pt-form-helper-text"
           rules={[required, maxCount(1)]}
         />
       </Col>
@@ -509,7 +510,7 @@ const FormControlsBlock = observer(() => (
         <Validate
           model={article}
           name="EnumField"
-          className="pt-form-helper-text"
+          errorClassName="pt-form-helper-text"
           rules={[required, pattern(/^[0-9]+$/)]}
         />
       </Col>

@@ -3,6 +3,7 @@ import {
   observable,
   computed,
   action,
+  transaction,
   intercept,
   observe,
   comparer,
@@ -12,7 +13,7 @@ import {
   Lambda
 } from "mobx";
 import { getSnapshot, isStateTreeNode } from "mobx-state-tree";
-import { isArray, isFunction } from "Utils/TypeChecks";
+import { isArray } from "Utils/TypeChecks";
 
 export type Validator = (value: any) => string;
 
@@ -309,13 +310,32 @@ interface ValidateProps {
   model: ValidatableObject & { [x: string]: any };
   name: string;
   className?: string;
+  errorClassName?: string;
   silent?: boolean;
   rules?: Validator | Validator[];
-  children?: ReactNode | ((...errors: string[]) => ReactNode);
+  renderErrors?: (...errors: string[]) => ReactNode;
 }
 
 export class Validate extends Component<ValidateProps> {
   private _validators: Validator[];
+
+  private handleFocus = () => {
+    const { model, name } = this.props;
+    transaction(() => {
+      model.setFocus(name, true);
+      model.setTouched(name, true);
+    });
+  };
+
+  private handleChange = () => {
+    const { model, name } = this.props;
+    model.setTouched(name, true);
+  };
+
+  private handleBlur = () => {
+    const { model, name } = this.props;
+    model.setFocus(name, false);
+  };
 
   componentDidMount() {
     const { model, name, rules } = this.props;
@@ -336,20 +356,41 @@ export class Validate extends Component<ValidateProps> {
   }
 
   render() {
-    const { model, name, className, silent, children } = this.props;
+    const { silent, children } = this.props;
     if (silent) {
-      return children || null;
+      return children ? this.renderWrapper(children) : null;
     }
-    if (isFunction(children)) {
-      return model.hasVisibleErrors(name) ? children(...model.getVisibleErrors(name)) : null;
+    if (children) {
+      return this.renderWrapper(children, this.renderErrors());
     }
-    if (children != null) {
-      return children;
-    }
-    return model.hasVisibleErrors(name) ? (
-      <div className={className}>
-        {model.getVisibleErrors(name).map((error, i) => <div key={i}>{error}</div>)}
+    return this.renderErrors();
+  }
+
+  renderWrapper(children: ReactNode, errors?: ReactNode) {
+    const { className } = this.props;
+    return (
+      <div
+        className={className}
+        onFocus={this.handleFocus}
+        onChange={this.handleChange}
+        onBlur={this.handleBlur}
+      >
+        {children}
+        {errors}
       </div>
-    ) : null;
+    );
+  }
+
+  renderErrors() {
+    const { model, name, errorClassName, renderErrors } = this.props;
+    if (model.hasVisibleErrors(name)) {
+      const errors = model.getVisibleErrors(name);
+      return renderErrors ? (
+        renderErrors(...errors)
+      ) : (
+        <div className={errorClassName}>{errors.map((error, i) => <div key={i}>{error}</div>)}</div>
+      );
+    }
+    return null;
   }
 }

@@ -48,7 +48,7 @@ export abstract class AbstractFieldEditor<
       <Validate
         model={model}
         name={fieldSchema.FieldName}
-        className="pt-form-helper-text"
+        errorClassName="pt-form-helper-text"
         rules={rules}
       />
     );
