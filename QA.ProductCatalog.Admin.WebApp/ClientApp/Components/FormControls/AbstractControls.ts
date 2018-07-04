@@ -1,6 +1,6 @@
 import { Component } from "react";
 import { transaction } from "mobx";
-import { isPlainObject, isArray } from "Utils/TypeChecks";
+import { isPlainObject } from "Utils/TypeChecks";
 import { ValidatableObject, Validator } from "mst-validation-mixin";
 
 interface ControlProps {
@@ -51,19 +51,6 @@ interface ValidatableProps {
 }
 
 export abstract class ValidatableControl<P = {}> extends AbstractControl<ValidatableProps & P> {
-  private _validators: Validator[];
-
-  componentDidMount() {
-    const { model, name, validate } = this.props;
-    if (validate) {
-      const validators = (isArray(validate) ? validate : [validate]).filter(Boolean);
-      if (validators.length > 0) {
-        this._validators = validators;
-        model.addValidators(name, ...this._validators);
-      }
-    }
-  }
-
   protected handleFocus(...args) {
     super.handleFocus(...args);
     const { model, name } = this.props;
@@ -83,13 +70,6 @@ export abstract class ValidatableControl<P = {}> extends AbstractControl<Validat
     super.handleBlur(...args);
     const { model, name } = this.props;
     model.setFocus(name, false);
-  }
-
-  componentWillUnmount() {
-    if (this._validators) {
-      const { model, name } = this.props;
-      model.removeValidators(name, ...this._validators);
-    }
   }
 }
 

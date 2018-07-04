@@ -8,7 +8,7 @@ import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
-import { required, maxCount } from "Utils/Validators";
+import { maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { FieldSelector } from "../AbstractFieldEditor";
@@ -131,96 +131,98 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     );
   }
 
+  renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
+    return (
+      <>
+        <Validate
+          model={model}
+          name={fieldSchema.FieldName}
+          silent
+          rules={fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)}
+        />
+        {super.renderValidation(model, fieldSchema)}
+      </>
+    );
+  }
+
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const { fieldEditors, children } = this.props;
     const { activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
-    return (
-      <>
-        {list && (
-          <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
-            <tbody>
-              {list
-                .slice()
-                .sort(asc(this._orderByField))
-                .map(article => {
-                  const serverId = this._dataSerializer.getServerId(article);
-                  const isOpen = article.Id === activeId;
-                  return (
-                    <Fragment key={article.Id}>
-                      <tr
-                        className={cn("relation-field-accordion__header", {
-                          "relation-field-accordion__header--open": isOpen
-                        })}
-                        onClick={e => this.handleToggle(e, article)}
-                      >
-                        <td
-                          key={-1}
-                          className="relation-field-accordion__expander"
-                          title={isOpen ? "Свернуть" : "Развернуть"}
+    return list ? (
+      <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
+        <tbody>
+          {list
+            .slice()
+            .sort(asc(this._orderByField))
+            .map(article => {
+              const serverId = this._dataSerializer.getServerId(article);
+              const isOpen = article.Id === activeId;
+              return (
+                <Fragment key={article.Id}>
+                  <tr
+                    className={cn("relation-field-accordion__header", {
+                      "relation-field-accordion__header--open": isOpen
+                    })}
+                    onClick={e => this.handleToggle(e, article)}
+                  >
+                    <td
+                      key={-1}
+                      className="relation-field-accordion__expander"
+                      title={isOpen ? "Свернуть" : "Развернуть"}
+                    >
+                      <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
+                    </td>
+                    <td key={-2} className="relation-field-accordion__cell">
+                      {serverId > 0 && `(${serverId})`}
+                    </td>
+                    {this._displayFields.map((displayField, i) => (
+                      <td key={i} className="relation-field-accordion__cell">
+                        {displayField(article)}
+                      </td>
+                    ))}
+                    <td key={-3} className="relation-field-accordion__controls">
+                      {!fieldSchema.IsReadOnly && (
+                        <ButtonGroup>
+                          <Button minimal small icon="floppy-disk" intent={Intent.PRIMARY}>
+                            Сохранить
+                          </Button>
+                          <Button
+                            minimal
+                            small
+                            icon="remove"
+                            intent={Intent.DANGER}
+                            onClick={e => this.removeRelation(e, article)}
+                          >
+                            Удалить
+                          </Button>
+                        </ButtonGroup>
+                      )}
+                    </td>
+                  </tr>
+                  <tr className="relation-field-accordion__main">
+                    <td
+                      className={cn("relation-field-accordion__body", {
+                        "relation-field-accordion__body--open": isOpen
+                      })}
+                      colSpan={this._displayFields.length + 3}
+                    >
+                      {touchedIds[article.Id] && (
+                        <ArticleEditor
+                          model={article}
+                          contentSchema={fieldSchema.Content}
+                          fieldEditors={fieldEditors}
                         >
-                          <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
-                        </td>
-                        <td key={-2} className="relation-field-accordion__cell">
-                          {serverId > 0 && `(${serverId})`}
-                        </td>
-                        {this._displayFields.map((displayField, i) => (
-                          <td key={i} className="relation-field-accordion__cell">
-                            {displayField(article)}
-                          </td>
-                        ))}
-                        <td key={-3} className="relation-field-accordion__controls">
-                          {!fieldSchema.IsReadOnly && (
-                            <ButtonGroup>
-                              <Button minimal small icon="floppy-disk" intent={Intent.PRIMARY}>
-                                Сохранить
-                              </Button>
-                              <Button
-                                minimal
-                                small
-                                icon="remove"
-                                intent={Intent.DANGER}
-                                onClick={e => this.removeRelation(e, article)}
-                              >
-                                Удалить
-                              </Button>
-                            </ButtonGroup>
-                          )}
-                        </td>
-                      </tr>
-                      <tr className="relation-field-accordion__main">
-                        <td
-                          className={cn("relation-field-accordion__body", {
-                            "relation-field-accordion__body--open": isOpen
-                          })}
-                          colSpan={this._displayFields.length + 3}
-                        >
-                          {touchedIds[article.Id] && (
-                            <ArticleEditor
-                              model={article}
-                              contentSchema={fieldSchema.Content}
-                              fieldEditors={fieldEditors}
-                            >
-                              {children}
-                            </ArticleEditor>
-                          )}
-                        </td>
-                      </tr>
-                    </Fragment>
-                  );
-                })}
-            </tbody>
-          </table>
-        )}
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={[
-            fieldSchema.IsRequired && required,
-            fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)
-          ]}
-        />
-      </>
-    );
+                          {children}
+                        </ArticleEditor>
+                      )}
+                    </td>
+                  </tr>
+                </Fragment>
+              );
+            })}
+        </tbody>
+      </table>
+    ) : null;
   }
 }

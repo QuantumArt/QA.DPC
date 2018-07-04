@@ -5,7 +5,7 @@ import cn from "classnames";
 import { Radio } from "@blueprintjs/core";
 import { Grid, Row, Col } from "react-flexbox-grid";
 import { types as t, unprotect } from "mobx-state-tree";
-import { toJS } from "mobx";
+import { toJS, configure } from "mobx";
 import { observer } from "mobx-react";
 import {
   InputText,
@@ -19,7 +19,7 @@ import {
   RadioGroup
 } from "Components/FormControls/FormControls";
 import { required, pattern, maxCount } from "Utils/Validators";
-import { validationMixin } from "mst-validation-mixin";
+import { validationMixin, Validate } from "mst-validation-mixin";
 import {
   LocaleContext,
   Localize,
@@ -29,20 +29,6 @@ import {
   fallback,
   TranslateFunction
 } from "react-lazy-i18n";
-
-// const resources = {
-//   "Test...": "Тест...",
-//   "Hello, ${name}!": name => `Привет, ${name}!`,
-//   helloTemplate: name => `Здравствуй, ${name}!`,
-//   customComponent: ({ firstName, lastName, fullName }) => (
-//     <article key={1}>
-//       Карточка пользователя
-//       <div key={2}>Имя: {firstName}</div>
-//       <div key={3}>Фамилия: {lastName}</div>
-//       <div key={4}>Полное имя: {fullName}</div>
-//     </article>
-//   )
-// };
 
 class App extends React.Component {
   state = { lang: "eng" };
@@ -186,6 +172,8 @@ const category = Category.create({
 
 unprotect(category);
 
+configure({ enforceActions: false });
+
 article.Category = category;
 
 // prettier-ignore
@@ -207,32 +195,32 @@ const FormControlsBlock = observer(() => (
           name="StringField"
           model={article}
           placeholder="StringField"
-          validate={[required, pattern(/^[A-Za-z0-9]+$/)]}
           className={cn({
             "pt-intent-danger": article.hasVisibleErrors("StringField")
           })}
         />
-        {article.hasVisibleErrors("StringField") && (
-          <div className="pt-form-helper-text">
-            {article.getVisibleErrors("StringField")}
-          </div>
-        )}
+        <Validate
+          model={article}
+          name="StringField"
+          className="pt-form-helper-text"
+          rules={[required, pattern(/^[A-Za-z0-9]+$/)]}
+        />
       </Col>
       <Col md={3} className="pt-form-content">
         <InputText
           name="StringField"
           model={article}
           placeholder="StringField"
-          validate={required}
           className={cn({
             "pt-intent-danger": article.hasVisibleErrors("StringField")
           })}
         />
-        {article.hasVisibleErrors("StringField") && (
-          <div className="pt-form-helper-text">
-            {article.getVisibleErrors("StringField")}
-          </div>
-        )}
+        <Validate
+          model={article}
+          name="StringField"
+          className="pt-form-helper-text"
+          rules={required}
+        />
       </Col>
     </Row>
 
@@ -325,16 +313,16 @@ const FormControlsBlock = observer(() => (
           name="FileField"
           model={article}
           placeholder="FileField"
-          validate={required}
           className={cn({
             "pt-intent-danger": article.hasVisibleErrors("FileField")
           })}
         />
-        {article.hasVisibleErrors("FileField") && (
-          <div className="pt-form-helper-text">
-            {article.getVisibleErrors("FileField")}
-          </div>
-        )}
+        <Validate
+          model={article}
+          name="FileField"
+          className="pt-form-helper-text"
+          rules={required}
+        />
       </Col>
       <Col md={3}>
         <InputFile
@@ -365,17 +353,17 @@ const FormControlsBlock = observer(() => (
           name="DateField"
           model={article}
           type="date"
-          validate={required}
           className={cn({
             "pt-intent-danger": article.hasVisibleErrors("DateField")
           })}
           placeholder="DateField"
         />
-        {article.hasVisibleErrors("DateField") && (
-          <div className="pt-form-helper-text">
-            {article.getVisibleErrors("DateField")}
-          </div>
-        )}
+        <Validate
+          model={article}
+          name="DateField"
+          className="pt-form-helper-text"
+          rules={required}
+        />
       </Col>
     </Row>
 
@@ -478,7 +466,6 @@ const FormControlsBlock = observer(() => (
         <Select
           name="ArrayField"
           model={article}
-          validate={[required, maxCount(1)]}
           className={cn({
             "pt-intent-danger": article.hasVisibleErrors("ArrayField")
           })}
@@ -489,11 +476,12 @@ const FormControlsBlock = observer(() => (
           ]}
           multiple
         />
-        {article.hasVisibleErrors("ArrayField") && (
-          <div className="pt-form-helper-text">
-            {article.getVisibleErrors("ArrayField")}
-          </div>
-        )}
+        <Validate
+          model={article}
+          name="ArrayField"
+          className="pt-form-helper-text"
+          rules={[required, maxCount(1)]}
+        />
       </Col>
     </Row>
 
@@ -509,7 +497,6 @@ const FormControlsBlock = observer(() => (
           model={article}
           placeholder="EnumField"
           inline
-          validate={[required, pattern(/^[0-9]+$/)]}
           className={cn({
             "pt-intent-danger": article.hasVisibleErrors("EnumField")
           })}
@@ -519,11 +506,12 @@ const FormControlsBlock = observer(() => (
             { value: "third", label: "Третий", disabled: true }
           ]}
         />
-        {article.hasVisibleErrors("EnumField") && (
-          <div className="pt-form-helper-text">
-            {article.getVisibleErrors("EnumField")}
-          </div>
-        )}
+        <Validate
+          model={article}
+          name="EnumField"
+          className="pt-form-helper-text"
+          rules={[required, pattern(/^[0-9]+$/)]}
+        />
       </Col>
       <Col md={6}>
         <RadioGroup

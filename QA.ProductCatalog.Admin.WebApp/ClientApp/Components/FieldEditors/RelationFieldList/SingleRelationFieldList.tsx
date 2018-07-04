@@ -4,10 +4,8 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
-import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { required } from "Utils/Validators";
 import { AbstractRelationFieldList } from "./AbstractRelationFieldList";
 
 @observer
@@ -64,11 +62,6 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
             )}
           </span>
         )}
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={fieldSchema.IsRequired && required}
-        />
       </Col>
     );
   }

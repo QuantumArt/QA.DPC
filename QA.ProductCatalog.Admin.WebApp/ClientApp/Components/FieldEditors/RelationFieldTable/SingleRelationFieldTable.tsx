@@ -3,11 +3,9 @@ import { Col } from "react-flexbox-grid";
 import { consumer } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { Validate } from "mst-validation-mixin";
 import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { required } from "Utils/Validators";
 import { AbstractRelationFieldTable } from "./AbstractRelationFieldTable";
 
 @consumer
@@ -47,12 +45,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
             Очистить
           </Button>
         </ButtonGroup>
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={fieldSchema.IsRequired && required}
-        />
-        {this.renderValidation()}
+        {this.renderValidation(model, fieldSchema)}
         {article && (
           <div className="relation-field-table">
             <div className="relation-field-table__row">

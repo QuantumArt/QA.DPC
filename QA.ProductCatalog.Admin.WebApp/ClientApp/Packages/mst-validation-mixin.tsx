@@ -1,16 +1,18 @@
-import { Component } from "react";
+import React, { Component, ReactNode } from "react";
 import {
   observable,
   computed,
+  action,
   intercept,
   observe,
   comparer,
+  extendObservable,
   isObservableArray,
   isObservableMap,
   Lambda
 } from "mobx";
 import { getSnapshot, isStateTreeNode } from "mobx-state-tree";
-import { isArray } from "Utils/TypeChecks";
+import { isArray, isFunction } from "Utils/TypeChecks";
 
 export type Validator = (value: any) => string;
 
@@ -31,11 +33,13 @@ export interface ValidatableObject {
   removeValidators(name: string, ...validators: Validator[]): void;
 }
 
+const SHALLOW = { deep: false };
+
 class FieldState {
   @observable.ref isTouched = false;
   @observable.ref hasFocus = false;
-  validators = observable.array<Validator>(null, { deep: false });
-  errors = observable.array<string>(null, { deep: false });
+  validators = observable.array<Validator>(null, SHALLOW);
+  errors = observable.array<string>(null, SHALLOW);
 
   constructor(private _model: Object, private _name: string) {}
 
@@ -70,7 +74,7 @@ class FieldState {
 }
 
 export const validationMixin = (self: Object) => {
-  const fields = observable.map<string, FieldState>(null, { deep: false });
+  const fields = observable.map<string, FieldState>(null, SHALLOW);
 
   const getOrAddFieldState = (name: string) => {
     let fieldState = fields.get(name);
@@ -275,10 +279,39 @@ function sutructuralEquals(first: any, second: any): boolean {
   return comparer.structural(firstSnapshot, secondSnapshot);
 }
 
+type Constructor<T = any> = { new (...args: any[]): T };
+
+export function Validatable<T extends Constructor = Constructor<Object>>(
+  constructor?: T
+): T & Constructor<ValidatableObject> {
+  if (!constructor) {
+    constructor = class {} as any;
+  }
+  return class extends constructor {
+    constructor(...args: any[]) {
+      super(...args);
+      const { actions, views } = validationMixin(this);
+      for (const name in views) {
+        this[name] = views[name];
+      }
+      extendObservable(this, actions, actionDecorators, SHALLOW);
+    }
+  };
+}
+
+const actionDecorators = {};
+
+Object.keys(validationMixin(observable({})).actions).forEach(key => {
+  actionDecorators[key] = action;
+});
+
 interface ValidateProps {
   model: ValidatableObject & { [x: string]: any };
   name: string;
-  rules: Validator | Validator[];
+  className?: string;
+  silent?: boolean;
+  rules?: Validator | Validator[];
+  children?: ReactNode | ((...errors: string[]) => ReactNode);
 }
 
 export class Validate extends Component<ValidateProps> {
@@ -303,6 +336,20 @@ export class Validate extends Component<ValidateProps> {
   }
 
   render() {
-    return this.props.children || null;
+    const { model, name, className, silent, children } = this.props;
+    if (silent) {
+      return children || null;
+    }
+    if (isFunction(children)) {
+      return model.hasVisibleErrors(name) ? children(...model.getVisibleErrors(name)) : null;
+    }
+    if (children != null) {
+      return children;
+    }
+    return model.hasVisibleErrors(name) ? (
+      <div className={className}>
+        {model.getVisibleErrors(name).map((error, i) => <div key={i}>{error}</div>)}
+      </div>
+    ) : null;
   }
 }

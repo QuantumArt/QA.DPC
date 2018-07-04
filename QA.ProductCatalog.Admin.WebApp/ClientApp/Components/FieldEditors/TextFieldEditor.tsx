@@ -5,7 +5,6 @@ import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { PlainFieldSchema } from "Models/EditorSchemaModels";
 import { TextArea } from "Components/FormControls/FormControls";
-import { required } from "Utils/Validators";
 import { AbstractFieldEditor } from "./AbstractFieldEditor";
 
 @observer
@@ -18,7 +17,6 @@ export class TextFieldEditor extends AbstractFieldEditor {
           model={model}
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
-          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
@@ -49,7 +47,7 @@ export class TextFieldEditor extends AbstractFieldEditor {
         </Row>
         <Row>
           <Col md xlOffset={2} mdOffset={3}>
-            {this.renderValidation()}
+            {this.renderValidation(model, fieldSchema)}
           </Col>
         </Row>
       </Col>

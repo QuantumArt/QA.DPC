@@ -75,7 +75,7 @@ export abstract class AbstractRelationFieldTabs extends AbstractFieldEditor<
         </Row>
         <Row>
           <Col md xlOffset={2} mdOffset={3}>
-            {this.renderValidation()}
+            {this.renderValidation(model, fieldSchema)}
           </Col>
         </Row>
         <Row>

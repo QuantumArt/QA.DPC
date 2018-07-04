@@ -8,7 +8,7 @@ import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
-import { required, maxCount } from "Utils/Validators";
+import { maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTable, RelationFieldTableProps } from "./AbstractRelationFieldTable";
@@ -45,6 +45,20 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     }
   }
 
+  renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
+    return (
+      <>
+        <Validate
+          model={model}
+          name={fieldSchema.FieldName}
+          silent
+          rules={fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)}
+        />
+        {super.renderValidation(model, fieldSchema)}
+      </>
+    );
+  }
+
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return (
@@ -70,15 +84,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
             Очистить
           </Button>
         </ButtonGroup>
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={[
-            fieldSchema.IsRequired && required,
-            fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)
-          ]}
-        />
-        {this.renderValidation()}
+        {this.renderValidation(model, fieldSchema)}
         {list && (
           <div className="relation-field-table">
             {list

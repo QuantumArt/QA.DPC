@@ -9,7 +9,7 @@ import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { asc } from "Utils/Array/Sort";
 import { isString } from "Utils/TypeChecks";
-import { required, maxCount } from "Utils/Validators";
+import { maxCount } from "Utils/Validators";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldList, RelationFieldListProps } from "./AbstractRelationFieldList";
 
@@ -75,6 +75,20 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
     }
   }
 
+  renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
+    return (
+      <>
+        <Validate
+          model={model}
+          name={fieldSchema.FieldName}
+          silent
+          rules={fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)}
+        />
+        {super.renderValidation(model, fieldSchema)}
+      </>
+    );
+  }
+
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const { selectedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
@@ -126,14 +140,6 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
                 </span>
               </Fragment>
             ))}
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={[
-            fieldSchema.IsRequired && required,
-            fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)
-          ]}
-        />
       </Col>
     );
   }

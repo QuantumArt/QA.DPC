@@ -19,9 +19,10 @@ import {
   CheckBox,
   DatePicker
 } from "Components/FormControls/FormControls";
-import { required, pattern } from "Utils/Validators";
+import { pattern } from "Utils/Validators";
 import { Intent } from "@blueprintjs/core";
 import { AbstractFieldEditor } from "./AbstractFieldEditor";
+import { Validate } from "mst-validation-mixin";
 export { FileFieldEditor } from "./FileFieldEditor";
 export { TextFieldEditor } from "./TextFieldEditor";
 export {
@@ -47,6 +48,20 @@ export {
 
 @observer
 export class StringFieldEditor extends AbstractFieldEditor {
+  renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: StringFieldSchema) {
+    return (
+      <>
+        <Validate
+          model={model}
+          name={fieldSchema.FieldName}
+          silent
+          rules={fieldSchema.RegexPattern && pattern(fieldSchema.RegexPattern)}
+        />
+        {super.renderValidation(model, fieldSchema)}
+      </>
+    );
+  }
+
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: StringFieldSchema) {
     return (
       <Col xl={8} md={6}>
@@ -55,10 +70,6 @@ export class StringFieldEditor extends AbstractFieldEditor {
           model={model}
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
-          validate={[
-            fieldSchema.IsRequired && required,
-            fieldSchema.RegexPattern && pattern(fieldSchema.RegexPattern)
-          ]}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
@@ -79,7 +90,6 @@ export class NumericFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           isInteger={fieldSchema.IsInteger}
           disabled={fieldSchema.IsReadOnly}
-          validate={fieldSchema.IsRequired && required}
           intent={model.hasVisibleErrors(fieldSchema.FieldName) ? Intent.DANGER : Intent.NONE}
         />
       </Col>
@@ -97,7 +107,6 @@ export class BooleanFieldEditor extends AbstractFieldEditor {
           model={model}
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
-          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
@@ -118,7 +127,6 @@ export class DateFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           type="date"
           disabled={fieldSchema.IsReadOnly}
-          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
@@ -139,7 +147,6 @@ export class TimeFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           type="time"
           disabled={fieldSchema.IsReadOnly}
-          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
@@ -159,7 +166,6 @@ export class DateTimeFieldEditor extends AbstractFieldEditor {
           model={model}
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
-          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
@@ -183,7 +189,6 @@ export class ClassifierFieldEditor extends AbstractFieldEditor {
           options={options}
           required
           disabled
-          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
@@ -204,7 +209,6 @@ export class EnumFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           options={options}
           disabled={fieldSchema.IsReadOnly}
-          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
@@ -219,7 +223,6 @@ export class EnumFieldEditor extends AbstractFieldEditor {
           options={options}
           required={fieldSchema.IsRequired}
           disabled={fieldSchema.IsReadOnly}
-          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
@@ -248,7 +251,6 @@ export class ExtensionFieldEditor extends AbstractFieldEditor {
           options={options}
           required={fieldSchema.IsRequired}
           disabled={disabled}
-          validate={fieldSchema.IsRequired && required}
           className={cn({
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}

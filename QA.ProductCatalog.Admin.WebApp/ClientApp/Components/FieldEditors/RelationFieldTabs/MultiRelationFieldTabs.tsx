@@ -8,7 +8,7 @@ import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
-import { required, maxCount } from "Utils/Validators";
+import { maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { FieldSelector } from "../AbstractFieldEditor";
@@ -166,6 +166,20 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     );
   }
 
+  renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
+    return (
+      <>
+        <Validate
+          model={model}
+          name={fieldSchema.FieldName}
+          silent
+          rules={fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)}
+        />
+        {super.renderValidation(model, fieldSchema)}
+      </>
+    );
+  }
+
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const { saveRelations, fieldEditors, vertical, children } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
@@ -215,14 +229,6 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                 </Tab>
               );
             })}
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={[
-            fieldSchema.IsRequired && required,
-            fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)
-          ]}
-        />
       </Tabs>
     );
   }

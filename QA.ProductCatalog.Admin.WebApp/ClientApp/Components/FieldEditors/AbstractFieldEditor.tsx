@@ -4,6 +4,8 @@ import cn from "classnames";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { FieldSchema } from "Models/EditorSchemaModels";
 import { Validator, Validate } from "mst-validation-mixin";
+import { isArray } from "Utils/TypeChecks";
+import { required } from "Utils/Validators";
 import "./FieldEditors.scss";
 
 export type FieldSelector = (model: ArticleObject | ExtensionObject) => any;
@@ -26,19 +28,29 @@ export abstract class AbstractFieldEditor<
     fieldSchema: FieldSchema
   ): ReactNode;
 
-  protected renderValidation() {
-    const { model, fieldSchema, validate } = this.props;
+  protected renderValidation(
+    model: ArticleObject | ExtensionObject,
+    fieldSchema: FieldSchema
+  ): ReactNode {
+    const { validate } = this.props;
+    const rules = [];
+    if (validate) {
+      if (isArray(validate)) {
+        rules.push(...validate);
+      } else {
+        rules.push(validate);
+      }
+    }
+    if (fieldSchema.IsRequired) {
+      rules.push(required);
+    }
     return (
-      <>
-        {validate && <Validate model={model} name={fieldSchema.FieldName} rules={validate} />}
-        {model.hasVisibleErrors(fieldSchema.FieldName) && (
-          <div className="pt-form-helper-text">
-            {model
-              .getVisibleErrors(fieldSchema.FieldName)
-              .map((error, i) => <div key={i}>{error}</div>)}
-          </div>
-        )}
-      </>
+      <Validate
+        model={model}
+        name={fieldSchema.FieldName}
+        className="pt-form-helper-text"
+        rules={rules}
+      />
     );
   }
 
@@ -65,7 +77,7 @@ export abstract class AbstractFieldEditor<
         </Row>
         <Row>
           <Col md xlOffset={4} mdOffset={3}>
-            {this.renderValidation()}
+            {this.renderValidation(model, fieldSchema)}
           </Col>
         </Row>
       </Col>

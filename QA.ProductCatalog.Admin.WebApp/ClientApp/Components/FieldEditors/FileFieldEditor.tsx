@@ -5,7 +5,6 @@ import { observer } from "mobx-react";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { InputFile } from "Components/FormControls/FormControls";
-import { required } from "Utils/Validators";
 import { AbstractFieldEditor } from "./AbstractFieldEditor";
 
 // TODO: Интеграция с библиотекой QP
@@ -22,7 +21,6 @@ export class FileFieldEditor extends AbstractFieldEditor {
             name={fieldSchema.FieldName}
             disabled={fieldSchema.IsReadOnly}
             accept={fieldSchema.FieldType === FieldExactTypes.Image ? "image/*" : ""}
-            validate={fieldSchema.IsRequired && required}
             className={cn({
               "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
             })}

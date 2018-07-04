@@ -4,10 +4,8 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup, Icon, Intent } from "@blueprintjs/core";
-import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { required } from "Utils/Validators";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { AbstractRelationFieldAccordion } from "./AbstractRelationFieldAccordion";
 
@@ -93,78 +91,69 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const { isOpen, isTouched } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     const serverId = article && this._dataSerializer.getServerId(article);
-    return (
-      <>
-        {article && (
-          <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
-            <tbody>
-              <tr
-                className={cn("relation-field-accordion__header", {
-                  "relation-field-accordion__header--open": isOpen
-                })}
-                onClick={this.toggleRelation}
-              >
-                <td
-                  key={-1}
-                  className="relation-field-accordion__expander"
-                  title={isOpen ? "Свернуть" : "Развернуть"}
+    return article ? (
+      <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
+        <tbody>
+          <tr
+            className={cn("relation-field-accordion__header", {
+              "relation-field-accordion__header--open": isOpen
+            })}
+            onClick={this.toggleRelation}
+          >
+            <td
+              key={-1}
+              className="relation-field-accordion__expander"
+              title={isOpen ? "Свернуть" : "Развернуть"}
+            >
+              <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
+            </td>
+            <td key={-2} className="relation-field-accordion__cell">
+              {serverId > 0 && `(${serverId})`}
+            </td>
+            {this._displayFields.map((displayField, i) => (
+              <td key={i} className="relation-field-accordion__cell">
+                {displayField(article)}
+              </td>
+            ))}
+            <td key={-3} className="relation-field-accordion__controls">
+              {!fieldSchema.IsReadOnly && (
+                <ButtonGroup>
+                  <Button minimal small icon="floppy-disk" intent={Intent.PRIMARY}>
+                    Сохранить
+                  </Button>
+                  <Button
+                    minimal
+                    small
+                    icon="remove"
+                    intent={Intent.DANGER}
+                    onClick={this.removeRelation}
+                  >
+                    Удалить
+                  </Button>
+                </ButtonGroup>
+              )}
+            </td>
+          </tr>
+          <tr className="relation-field-accordion__main">
+            <td
+              className={cn("relation-field-accordion__body", {
+                "relation-field-accordion__body--open": isOpen
+              })}
+              colSpan={this._displayFields.length + 3}
+            >
+              {isTouched && (
+                <ArticleEditor
+                  model={article}
+                  contentSchema={fieldSchema.Content}
+                  fieldEditors={fieldEditors}
                 >
-                  <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
-                </td>
-                <td key={-2} className="relation-field-accordion__cell">
-                  {serverId > 0 && `(${serverId})`}
-                </td>
-                {this._displayFields.map((displayField, i) => (
-                  <td key={i} className="relation-field-accordion__cell">
-                    {displayField(article)}
-                  </td>
-                ))}
-                <td key={-3} className="relation-field-accordion__controls">
-                  {!fieldSchema.IsReadOnly && (
-                    <ButtonGroup>
-                      <Button minimal small icon="floppy-disk" intent={Intent.PRIMARY}>
-                        Сохранить
-                      </Button>
-                      <Button
-                        minimal
-                        small
-                        icon="remove"
-                        intent={Intent.DANGER}
-                        onClick={this.removeRelation}
-                      >
-                        Удалить
-                      </Button>
-                    </ButtonGroup>
-                  )}
-                </td>
-              </tr>
-              <tr className="relation-field-accordion__main">
-                <td
-                  className={cn("relation-field-accordion__body", {
-                    "relation-field-accordion__body--open": isOpen
-                  })}
-                  colSpan={this._displayFields.length + 3}
-                >
-                  {isTouched && (
-                    <ArticleEditor
-                      model={article}
-                      contentSchema={fieldSchema.Content}
-                      fieldEditors={fieldEditors}
-                    >
-                      {children}
-                    </ArticleEditor>
-                  )}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        )}
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={fieldSchema.IsRequired && required}
-        />
-      </>
-    );
+                  {children}
+                </ArticleEditor>
+              )}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    ) : null;
   }
 }

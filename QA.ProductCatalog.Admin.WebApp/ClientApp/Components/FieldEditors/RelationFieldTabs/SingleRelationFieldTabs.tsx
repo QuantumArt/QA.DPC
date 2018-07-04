@@ -4,10 +4,8 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
-import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { required } from "Utils/Validators";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { AbstractRelationFieldTabs } from "./AbstractRelationFieldTabs";
 
@@ -100,34 +98,24 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     const { saveRelations, fieldEditors, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
-    return (
-      <>
-        {isTouched &&
-          article && (
-            <div
-              className={cn("single-relation-field-tabs", {
-                "single-relation-field-tabs--hidden": !isOpen
-              })}
-            >
-              <ArticleEditor
-                model={article}
-                contentSchema={fieldSchema.Content}
-                fieldEditors={fieldEditors}
-                saveRelations={saveRelations}
-                header
-                buttons={!fieldSchema.IsReadOnly}
-                onRemove={this.removeRelation}
-              >
-                {children}
-              </ArticleEditor>
-            </div>
-          )}
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          rules={fieldSchema.IsRequired && required}
-        />
-      </>
-    );
+    return isTouched && article ? (
+      <div
+        className={cn("single-relation-field-tabs", {
+          "single-relation-field-tabs--hidden": !isOpen
+        })}
+      >
+        <ArticleEditor
+          model={article}
+          contentSchema={fieldSchema.Content}
+          fieldEditors={fieldEditors}
+          saveRelations={saveRelations}
+          header
+          buttons={!fieldSchema.IsReadOnly}
+          onRemove={this.removeRelation}
+        >
+          {children}
+        </ArticleEditor>
+      </div>
+    ) : null;
   }
 }
