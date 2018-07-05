@@ -36,7 +36,7 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
     const { isSelected } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     return (
-      <Col xl={8} md={6} className="relation-field-list__tags">
+      <Col md className="relation-field-list__tags">
         <ButtonGroup>
           <Button
             minimal

@@ -62,7 +62,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return (
-      <Col xl={10} md={9}>
+      <Col md>
         <ButtonGroup>
           <Button
             minimal

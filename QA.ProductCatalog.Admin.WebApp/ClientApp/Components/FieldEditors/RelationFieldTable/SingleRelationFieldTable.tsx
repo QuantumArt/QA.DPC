@@ -23,7 +23,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
     const article: ArticleObject = model[fieldSchema.FieldName];
     const serverId = article && this._dataSerializer.getServerId(article);
     return (
-      <Col xl={10} md={9}>
+      <Col md>
         <ButtonGroup>
           <Button
             minimal

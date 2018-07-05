@@ -93,7 +93,7 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
     const { selectedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return (
-      <Col xl={8} md={6} className="relation-field-list__tags">
+      <Col md className="relation-field-list__tags">
         <ButtonGroup>
           <Button
             minimal

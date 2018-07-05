@@ -39,14 +39,13 @@ export abstract class AbstractRelationFieldList extends AbstractFieldEditor<
     const { model, fieldSchema } = this.props;
     return (
       <Col
-        xl={6}
         md={12}
         className={cn("field-editor__block pt-form-group", {
           "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
         <Row>
-          <Col xl={4} md={3} className="field-editor__label field-editor__label--small">
+          <Col xl={2} md={3} className="field-editor__label field-editor__label--small">
             <label htmlFor={this.id} title={fieldSchema.FieldDescription || fieldSchema.FieldName}>
               {fieldSchema.FieldTitle || fieldSchema.FieldName}:
               {fieldSchema.IsRequired && (
@@ -57,7 +56,7 @@ export abstract class AbstractRelationFieldList extends AbstractFieldEditor<
           {this.renderField(model, fieldSchema)}
         </Row>
         <Row>
-          <Col md xlOffset={4} mdOffset={3}>
+          <Col md xlOffset={2} mdOffset={3}>
             {this.renderValidation(model, fieldSchema)}
           </Col>
         </Row>
