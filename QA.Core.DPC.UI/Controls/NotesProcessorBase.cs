@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
-using QA.Core.Models.UI;
+﻿using QA.Core.Models.UI;
 
 namespace QA.Core.DPC.UI.Controls
 {
-	public abstract class NotesProcessorBase : UIElement
+    public abstract class NotesProcessorBase : UIElement
 	{
 		public abstract string ProcessTextWithNotes(string text);
 

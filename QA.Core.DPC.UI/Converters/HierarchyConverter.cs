@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using QA.Core.Models.Entities;
-using QA.Core.Models.UI;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.Models;
 
 namespace QA.Core.DPC.UI.Converters

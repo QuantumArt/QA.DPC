@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using QA.Core;
-using QA.Core.DPC.Loader.Container;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
@@ -12,7 +8,7 @@ using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.Admin.WebApp.Core
 {
-	public class RelevanceUpdaterOnProductChange : IProductChangeSubscriber
+    public class RelevanceUpdaterOnProductChange : IProductChangeSubscriber
 	{
 		public void NotifyProductsChanged(Dictionary<int, int[]> affectedProductIdsByContentId)
 		{

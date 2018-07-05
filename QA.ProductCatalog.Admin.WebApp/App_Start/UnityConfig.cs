@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Unity;
-using Microsoft.Practices.Unity.Configuration;
+﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader;
@@ -26,6 +25,9 @@ using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Linq;
 using System.Web.Mvc;
+using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
 using Task = System.Threading.Tasks.Task;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Start
@@ -98,7 +100,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             container.RegisterType<IProductChangeSubscriber, RelevanceUpdaterOnProductChange>("RelevanceUpdaterOnProductChange");
 
 
-            container.RegisterType<IProductChangeNotificator, ProductChangeNotificator>(
+            container.RegisterType<IProductChangeNotificator>(
 		        new ContainerControlledLifetimeManager(),
 		        new InjectionFactory(x =>
 		        {

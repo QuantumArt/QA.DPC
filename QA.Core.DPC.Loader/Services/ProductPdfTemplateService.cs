@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Loader.Services
 {
-	public class ProductPdfTemplateService : IProductPdfTemplateService
+    public class ProductPdfTemplateService : IProductPdfTemplateService
 	{
 		private readonly IArticleService _articleService;
 

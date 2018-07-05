@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QA.Core.ProductCatalog.Actions.Exceptions
 {
-	[Serializable]
+    [Serializable]
 	public class ProductException : Exception
 	{
 		private const string ProductIdKey = "ProductId";

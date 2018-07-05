@@ -1,15 +1,11 @@
 ﻿using Quantumart.QP8.BLL.Services.DTO;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QA.Core.ProductCatalog.Actions.Exceptions
 {
-	[Serializable]
+    [Serializable]
 	public class MessageResultException : ProductException
 	{
 		private const string MessageResultKey = "MessageResult";

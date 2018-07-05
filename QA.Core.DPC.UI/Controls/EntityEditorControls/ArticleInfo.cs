@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using QA.Core.Models.Entities;
 
 namespace QA.Core.DPC.UI.Controls.EntityEditorControls

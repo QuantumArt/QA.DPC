@@ -1,5 +1,5 @@
 ﻿using System.Web.Http;
-using Microsoft.Practices.Unity;
+using Unity;
 using QA.ProductCatalog.FileSyncWebHost.Filters;
 
 namespace QA.ProductCatalog.FileSyncWebHost

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
-using System.Xml.Linq;
 using QA.Validation.Xaml.Extensions.Rules;
 
 namespace QA.ProductCatalog.Admin.WebApp.Binders

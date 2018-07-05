@@ -1,10 +1,9 @@
-﻿using System;
-using QA.Configuration;
+﻿using QA.Configuration;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Notification.Services
 {
-	public class NotificationConfigurationProvider : INotificationProvider
+    public class NotificationConfigurationProvider : INotificationProvider
 	{
 		private readonly IConfigurationService _configurationService;
 

@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {
-	public class ProfilerToken
+    public class ProfilerToken
 	{
 		public Stopwatch Timer { get; private set; }
 		public string Service { get; set; }

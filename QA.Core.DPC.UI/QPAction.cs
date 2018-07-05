@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-
-namespace QA.Core.DPC.UI
+﻿namespace QA.Core.DPC.UI
 {
     public enum QPAction
     {

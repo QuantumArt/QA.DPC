@@ -1,6 +1,7 @@
-﻿using Microsoft.Practices.Unity;
-using QA.Core.DPC.QP.Autopublish.Services;
+﻿using QA.Core.DPC.QP.Autopublish.Services;
 using QA.ProductCatalog.Infrastructure;
+using Unity;
+using Unity.Extension;
 
 namespace QA.Core.DPC.QP.Autopublish.Configuration
 {

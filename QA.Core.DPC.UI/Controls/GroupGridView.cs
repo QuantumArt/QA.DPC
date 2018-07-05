@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QA.Core.Models.Entities;
-using QA.Core.Extensions;
 using QA.Core.Models.UI;
 using QA.Core.DPC.UI.Controls;
 using System.Windows.Markup;

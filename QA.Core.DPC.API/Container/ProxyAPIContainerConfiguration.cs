@@ -1,15 +1,17 @@
 ﻿using System;
-using Microsoft.Practices.Unity;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using System.Collections.Generic;
+using Unity;
+using Unity.Extension;
+using Unity.Lifetime;
 
 
 namespace QA.Core.DPC.API.Container
 {
-	public class ProxyAPIContainerConfiguration : UnityContainerExtension
+    public class ProxyAPIContainerConfiguration : UnityContainerExtension
 	{
 		private const string BinaryMediaType = "application/octet-stream";
 

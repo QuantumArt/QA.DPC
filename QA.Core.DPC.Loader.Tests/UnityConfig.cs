@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Configuration;
-using Microsoft.Practices.Unity;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Loader.Services;
@@ -9,6 +8,9 @@ using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
+using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
 
 namespace QA.Core.DPC.Loader.Tests
 {

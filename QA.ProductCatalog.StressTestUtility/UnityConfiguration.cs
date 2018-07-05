@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Unity;
-using QA.Core;
+﻿using QA.Core;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
@@ -11,10 +10,12 @@ using QA.Core.Web.Qp;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.StressTestUtility.Services;
+using Unity;
+using Unity.Extension;
 
 namespace QA.ProductCatalog.StressTestUtility
 {
-	internal class UnityConfiguration : UnityContainerExtension
+    internal class UnityConfiguration : UnityContainerExtension
 	{
 		protected override void Initialize()
 		{

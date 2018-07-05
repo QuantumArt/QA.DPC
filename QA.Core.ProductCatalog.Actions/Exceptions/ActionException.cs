@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
 
 namespace QA.Core.ProductCatalog.Actions.Exceptions
 {
-	[Serializable]
+    [Serializable]
 	public class ActionException : AggregateException
 	{
 		private const string ContextKey = "Context";

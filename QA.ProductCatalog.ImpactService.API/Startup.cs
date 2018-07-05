@@ -5,11 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog.Extensions.Logging;
 using NLog.Web;
-using QA.Core;
 using QA.Core.Logger;
 using QA.ProductCatalog.ImpactService.API.Services;
 using QA.DPC.Core.Helpers;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace QA.ProductCatalog.ImpactService.API
 {

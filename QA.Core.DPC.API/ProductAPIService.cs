@@ -5,11 +5,10 @@ using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
-using QA.ProductCatalog.Integration;
 
 namespace QA.Core.DPC.API
 {
-	public class ProductAPIService : IProductAPIService
+    public class ProductAPIService : IProductAPIService
 	{
 		private readonly IContentDefinitionService _contentDefinitionService;
 		private readonly IProductService _productService;

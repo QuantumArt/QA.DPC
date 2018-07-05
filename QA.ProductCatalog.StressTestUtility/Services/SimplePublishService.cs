@@ -1,5 +1,4 @@
-﻿using QA.Core;
-using QA.Core.ProductCatalog.Actions.Services;
+﻿using QA.Core.ProductCatalog.Actions.Services;
 using System;
 using System.Threading;
 using QA.Core.DPC.Loader.Services;
@@ -7,7 +6,7 @@ using QA.Core.Logger;
 
 namespace QA.ProductCatalog.StressTestUtility.Services
 {
-	public class SimplePublishService : ISimplePublishService
+    public class SimplePublishService : ISimplePublishService
 	{
 		private const string ErrorMessage = "Simple publish error for articles {0}";
 

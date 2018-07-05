@@ -1,13 +1,13 @@
-﻿using Microsoft.Practices.Unity;
-using QA.ProductCatalog.StressTestUtility.Services;
+﻿using QA.ProductCatalog.StressTestUtility.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using Unity;
 
 namespace QA.ProductCatalog.StressTestUtility
 {
-	class Program
+    class Program
 	{
 		static void Main(string[] args)
 		{

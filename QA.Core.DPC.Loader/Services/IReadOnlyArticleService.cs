@@ -1,10 +1,9 @@
 ﻿using System.Collections.Generic;
 using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Services.DTO;
 
 namespace QA.Core.DPC.Loader.Services
 {
-	public interface IReadOnlyArticleService : IQPService
+    public interface IReadOnlyArticleService : IQPService
 	{
 		void LoadStructureCache();
 		Article Read(int articleId);

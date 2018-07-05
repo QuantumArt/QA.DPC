@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.Practices.Unity;
+using Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Services;

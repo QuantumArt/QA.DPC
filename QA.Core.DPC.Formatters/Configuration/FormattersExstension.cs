@@ -2,15 +2,15 @@
 using System.IO;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
-using Microsoft.Practices.Unity;
 using QA.Core.DPC.Formatters.Formatting;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
-using System.Runtime.Serialization;
+using Unity;
+using Unity.Injection;
 
 namespace QA.Core.DPC.Formatters.Configuration
 {
-	public static class FormattersContainerExstensions
+    public static class FormattersContainerExstensions
 	{
 
 		public static ModelMediaTypeFormatter<TModel> AddModelMediaTypeFormatter<TFormatter, TModel>(this MediaTypeFormatterCollection formatters, IUnityContainer container, string name, string mediaType, params Action<MediaTypeFormatter, string, string>[] f)

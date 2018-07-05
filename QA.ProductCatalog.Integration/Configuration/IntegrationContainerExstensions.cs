@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Unity;
-using QA.Core.DPC.QP.Services;
+﻿using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.DAL;
 using System;
@@ -7,6 +6,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Linq;
+using Unity;
+using Unity.Injection;
 
 namespace QA.ProductCatalog.Integration.Configuration
 {

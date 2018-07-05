@@ -1,17 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Web.Util;
-using System.Xml.Linq;
-using QA.Core;
-using System.Web.Mvc;
-using QA.Core.DPC.Loader.Services;
+﻿using System.Web.Mvc;
 using QA.ProductCatalog.Admin.WebApp.Core;
 using QA.ProductCatalog.Admin.WebApp.Models;
 
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-	public class ProductDependencyController : Controller
+    public class ProductDependencyController : Controller
     {
 		private readonly IProductChangeNotificator _productChangeNotificator;
 

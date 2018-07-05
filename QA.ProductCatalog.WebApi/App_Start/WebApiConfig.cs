@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Http.Formatting;
 using System.Web.Http;
-using Microsoft.Practices.Unity;
+using Unity;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.Models.Entities;

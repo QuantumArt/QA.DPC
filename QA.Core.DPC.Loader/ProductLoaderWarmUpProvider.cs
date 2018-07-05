@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QA.Core.Logger;
+﻿using QA.Core.Logger;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Loader
 {
-	public class ProductLoaderWarmUpProvider : IWarmUpProvider
+    public class ProductLoaderWarmUpProvider : IWarmUpProvider
 	{
 		private readonly ProductLoader _productLoader;
 		private readonly int _productIdToLoad;

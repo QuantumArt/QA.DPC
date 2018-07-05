@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Unity;
-using Microsoft.Practices.Unity.Configuration;
+﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
@@ -16,6 +15,8 @@ using QA.ProductCatalog.Integration.Configuration;
 using Quartz;
 using System;
 using System.Configuration;
+using Unity;
+using Unity.Injection;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {

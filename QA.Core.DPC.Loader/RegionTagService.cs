@@ -5,8 +5,6 @@ using System.Text.RegularExpressions;
 using QA.Core.Cache;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Entities;
-using System.Configuration;
-using QA.Core.DPC.Loader.Resources;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;

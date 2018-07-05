@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Services;
 using Quantumart.QP8.BLL;
@@ -12,7 +10,7 @@ using Field = QA.Core.Models.Configuration.Field;
 
 namespace QA.Core.DPC.Loader.Services
 {
-	public class DefinitionEditorService
+    public class DefinitionEditorService
 	{
 		private readonly IFieldService _fieldService;
 

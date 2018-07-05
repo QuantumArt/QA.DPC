@@ -3,11 +3,11 @@ using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Description;
 using System.ServiceModel.Dispatcher;
-using Microsoft.Practices.Unity;
+using Unity;
 
 namespace QA.ProductCatalog.SiteSyncWebHost.Services
 {
-	public class UnityServiceBehavior : IServiceBehavior
+    public class UnityServiceBehavior : IServiceBehavior
 	{
 		public UnityInstanceProvider InstanceProvider  { get; set; }
 

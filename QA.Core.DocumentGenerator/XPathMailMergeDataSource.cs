@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.XPath;
 using GemBox.Document.MailMerging;
 
 namespace QA.Core.DocumentGenerator
 {
-	internal class XPathMailMergeDataSource : IMailMergeDataSource
+    internal class XPathMailMergeDataSource : IMailMergeDataSource
 	{
 		public XPathMailMergeDataSource(XPathNodeIterator nodeIterator, XPathNavigator navigator)
 		{

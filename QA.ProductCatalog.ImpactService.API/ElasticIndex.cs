@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace QA.ProductCatalog.ImpactService.API
+﻿namespace QA.ProductCatalog.ImpactService.API
 {
     public class ElasticIndex
     {

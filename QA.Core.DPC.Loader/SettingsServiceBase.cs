@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using QA.Core.DPC.Loader.Resources;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
@@ -12,7 +9,7 @@ using QA.Core.Web;
 
 namespace QA.Core.DPC.Loader
 {
-	public abstract class SettingsServiceBase : ISettingsService
+    public abstract class SettingsServiceBase : ISettingsService
 	{
 		private static readonly RequestLocal<Dictionary<string, string>> Actions =
 			new RequestLocal<Dictionary<string, string>>(() => new Dictionary<string, string>());

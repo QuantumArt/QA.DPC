@@ -1,12 +1,14 @@
-﻿using Microsoft.Practices.Unity;
-using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+﻿using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using QA.Core.Logger;
+using Unity;
+using Unity.Extension;
+using Unity.Injection;
 
 namespace QA.Core.ProductCatalog.Actions.Container
 {
-	public class ActionContainerConfiguration : UnityContainerExtension
+    public class ActionContainerConfiguration : UnityContainerExtension
 	{
 		protected override void Initialize()
 		{

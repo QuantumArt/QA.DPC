@@ -1,5 +1,4 @@
-﻿using QA.Core.ProductCatalog.Actions.Services;
-using Quantumart.QP8.BLL;
+﻿using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.DTO;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using Quantumart.QP8.BLL.Services.API.Models;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {
-	public class ArticleServiceProfiler : ProfilerBase, IArticleService
+    public class ArticleServiceProfiler : ProfilerBase, IArticleService
 	{
 		private readonly IArticleService _articleService;
 

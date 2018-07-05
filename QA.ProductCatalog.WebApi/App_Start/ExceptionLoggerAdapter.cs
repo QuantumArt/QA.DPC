@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Text;
-using System.Web;
 using System.Web.Http.ExceptionHandling;
 using QA.Core;
 using QA.Core.Logger;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
-	//из https://github.com/filipw/apress-recipes-webapi/blob/master/Chapter%2007/7-3/Apress.Recipes.WebApi/Apress.Recipes.WebApi/NLogExceptionLogger.cs
-	//с правками
-	public class ExceptionLoggerAdapter : ExceptionLogger
+    //из https://github.com/filipw/apress-recipes-webapi/blob/master/Chapter%2007/7-3/Apress.Recipes.WebApi/Apress.Recipes.WebApi/NLogExceptionLogger.cs
+    //с правками
+    public class ExceptionLoggerAdapter : ExceptionLogger
 	{
 		private static readonly Lazy<ILogger> LazyLogger = new Lazy<ILogger>(ObjectFactoryBase.Resolve<ILogger>);
 		

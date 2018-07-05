@@ -1,8 +1,5 @@
 ﻿using QA.Core.ProductCatalog.ActionsRunnerModel;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace QA.ProductCatalog.HighloadFront.Models
 {

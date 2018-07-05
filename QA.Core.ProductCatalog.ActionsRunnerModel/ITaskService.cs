@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
 using System.Linq.Expressions;
 using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
 

@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Notification.Services
 {
-	public class NotificationContentProvider : INotificationProvider
+    public class NotificationContentProvider : INotificationProvider
 	{
 		private readonly ISettingsService _settingsService;
 		private readonly IContentProvider<NotificationChannel> _notificationChannelProvider;

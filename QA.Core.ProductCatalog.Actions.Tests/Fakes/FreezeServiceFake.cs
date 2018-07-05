@@ -1,5 +1,4 @@
 ﻿using QA.ProductCatalog.Infrastructure;
-using System;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {

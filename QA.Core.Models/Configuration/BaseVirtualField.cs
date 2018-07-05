@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QA.Core.Models.Configuration
+﻿namespace QA.Core.Models.Configuration
 {
-	public abstract class BaseVirtualField : Field
+    public abstract class BaseVirtualField : Field
 	{
 		public override int FieldId
 		{

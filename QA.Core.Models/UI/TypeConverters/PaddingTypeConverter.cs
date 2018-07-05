@@ -1,11 +1,6 @@
-﻿using QA.Core.Models.UI;
-using QA.Core.Extensions;
+﻿using QA.Core.Extensions;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QA.Core.Models.UI.TypeConverters
 {

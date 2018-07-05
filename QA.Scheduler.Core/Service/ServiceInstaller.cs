@@ -1,13 +1,14 @@
 ﻿using System.Configuration.Install;
 using System.Linq;
 using System.ServiceProcess;
-using Microsoft.Practices.Unity;
 using QA.Scheduler.API.Models;
 using QA.Scheduler.Core.Configuration;
+using Unity;
+using Unity.Extension;
 
 namespace QA.Scheduler.Core.Service
 {
-	public class ServiceInstaller<T> : Installer
+    public class ServiceInstaller<T> : Installer
 		where T : UnityContainerExtension
 	{
 		public ServiceInstaller()
