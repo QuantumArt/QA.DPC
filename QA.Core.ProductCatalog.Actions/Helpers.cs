@@ -68,7 +68,7 @@ namespace QA.Core.ProductCatalog.Actions
 				null,
 				0,
 				int.MaxValue,
-				ref totalRecords,
+				out totalRecords,
 				0,
 				null,
 				1,

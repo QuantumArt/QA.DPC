@@ -12,7 +12,8 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="1.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="1.1.2" />
     <PackageReference Include="QA.Core" Version="3.2.1-beta1" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="2.2.7" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="2.6.0-beta3" />
+    <PackageReference Include="System.Net.Http" Version="4.3.3" />
 
   </ItemGroup>
 

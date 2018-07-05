@@ -49,17 +49,17 @@ namespace QA.Core.DPC.Loader
 
         public virtual IEnumerable<Article> List(int contentId, int[] ids)
 		{
-			return ArticleService.List(contentId, ids);
+			return ArticleService.List(contentId, ids, true);
 		}
 
 		public string GetLinkedItems(int linkId, int id)
 		{
-			return ArticleService.GetLinkedItems(linkId, id);
+			return ArticleService.GetLinkedItems(linkId, id, true);
 		}
 
 		public string GetRelatedItems(int fieldId, int? id)
 		{
-			return ArticleService.GetRelatedItems(fieldId, id);
+			return ArticleService.GetRelatedItems(fieldId, id, true);
 		}
 
 		public string[] GetFieldValues(int[] ids, int contentId, string fieldName)
