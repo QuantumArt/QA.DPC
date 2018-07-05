@@ -319,6 +319,7 @@
     <Compile Include="Models\DefinitionTreeNode.cs" />
     <Compile Include="Models\KendoGridFilter.cs" />
     <Compile Include="Models\KendoTreeNode.cs" />
+    <Compile Include="Models\ProductEditorSettingsModel.cs" />
     <Compile Include="Models\ProductEditorSchemaModel.cs" />
     <Compile Include="Models\ProductState.cs" />
     <Compile Include="Models\SendProductModel.cs" />

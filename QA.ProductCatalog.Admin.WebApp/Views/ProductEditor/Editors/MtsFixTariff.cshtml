@@ -1,4 +1,4 @@
-﻿@model QA.ProductCatalog.Admin.WebApp.Models.ProductEditorSchemaModel
+﻿@model QA.ProductCatalog.Admin.WebApp.Models.ProductEditorSettingsModel
 @{ Layout = null; }
 <!DOCTYPE html>
 <html>
@@ -12,6 +12,7 @@
     }
   </style>
   <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,fetch,Array.prototype.includes,Object.values,Object.entries"></script>
+  @Model.SerializeSettings()
 </head>
 <body>
   <div id="editor"></div>

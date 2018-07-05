@@ -12,19 +12,23 @@ export class EditorController {
   @inject private _dataContext: DataContext;
   @inject private _schemaContext: SchemaContext;
 
-  private _path = document.location.pathname;
   private _query = document.location.search;
-  private _rootUrl = this._path.slice(0, this._path.indexOf("/ProductEditor"));
-  private _productDefinitionId = Number(this._path.slice(this._rootUrl.length).split("/")[2]);
-  private _articleId = Number(this._path.slice(this._rootUrl.length).split("/")[4]);
+  private _rootUrl = document.head.getAttribute("root-url") || "";
+  private _productDefinitionId: number;
+  private _articleId: number | null;
 
   @command
-  public async initialize() {
+  public async initialize(productDefinitionId: number, articleId: number | null) {
+    this._productDefinitionId = productDefinitionId;
+    this._articleId = articleId;
+
     const initSchemaTask = this.initSchema();
 
     if (this._articleId > 0) {
       const response = await fetch(
-        `${this._rootUrl}/ProductEditor/GetProduct_Test${this._query}&articleId=${this._articleId}`
+        `${this._rootUrl}/ProductEditor/GetEditorData_Test${this._query}&articleId=${
+          this._articleId
+        }`
       );
       if (!response.ok) {
         throw new Error(await response.text());
@@ -49,7 +53,7 @@ export class EditorController {
 
   private async initSchema() {
     const response = await fetch(
-      `${this._rootUrl}/ProductEditor/GetProductSchema_Test${this._query}&productDefinitionId=${
+      `${this._rootUrl}/ProductEditor/GetEditorSchema_Test${this._query}&productDefinitionId=${
         this._productDefinitionId
       }`
     );

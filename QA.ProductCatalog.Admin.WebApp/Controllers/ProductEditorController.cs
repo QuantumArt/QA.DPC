@@ -17,13 +17,14 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using Quantumart.QP8.BLL.Services.API.Models;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
     [RoutePrefix("ProductEditor")]
     public class ProductEditorController : Controller
     {
+        private const string FIELD_NAME_EDITOR_PATH = "EditorPath";
+        private const string FIELD_NAME_PRODUCT_DEFINITION_ID = "Id";
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IProductService _productService;
         private readonly IProductUpdateService _productUpdateService;
@@ -53,20 +54,62 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorPartialContentService = editorPartialContentService;
         }
 
-        [Route("{productDefinitionId}/{editorName}/{articleId}")]   
-        public ActionResult Index(int productDefinitionId, string editorName, int articleId)
+        /// <summary>
+        /// CustomAction для создания нового продукта
+        /// </summary>
+        /// <param name="content_item_id">Id описания продукта</param>
+        [HttpGet]
+        public ActionResult Create(int content_item_id, bool isLive = false)
         {
-            return View($"Editors/{editorName}");
+            var fieldsByName = _contentDefinitionService.GetDefinitionFields(content_item_id, isLive);
+
+            if (fieldsByName == null)
+            {
+                throw new InvalidOperationException($"ProductDefinition {content_item_id} was not found");
+            }
+
+            fieldsByName.TryGetValue(FIELD_NAME_EDITOR_PATH, out string editorPath);
+
+            // TODO: View для редактора продукта по-умолчанию
+            return View($"Editors/{editorPath ?? "MtsFixTariff"}", new ProductEditorSettingsModel
+            {
+                ProductDefinitionId = content_item_id,
+            });
         }
-        
+
+        /// <summary>
+        /// CustomAction для редактирования существующего продукта
+        /// </summary>
+        /// <param name="content_item_id">Id корневой статьи</param>
+        [HttpGet]
+        public ActionResult Edit(int content_item_id, bool isLive = false)
+        {
+            var fieldsByName = GetDefinitionFieldsByArticleId(content_item_id, isLive);
+
+            if (fieldsByName == null
+                || !fieldsByName.TryGetValue(FIELD_NAME_PRODUCT_DEFINITION_ID, out string productDefinitionsId))
+            {
+                throw new InvalidOperationException($"ProductDefinition for article {content_item_id} was not found");
+            }
+
+            fieldsByName.TryGetValue(FIELD_NAME_EDITOR_PATH, out string editorPath);
+
+            // TODO: View для редактора продукта по-умолчанию
+            return View($"Editors/{editorPath ?? "MtsFixTariff"}", new ProductEditorSettingsModel
+            {
+                ArticleId = content_item_id,
+                ProductDefinitionId = Int32.Parse(productDefinitionsId),
+            });
+        }
+
         /// <summary>
         /// Построить TypeScript-описание продукта.
         /// </summary>
-        /// <param name="productDefinitionId">Id описания продукта</param>
+        /// <param name="content_item_id">Id описания продукта</param>
         [HttpGet]
-        public ViewResult TypeScriptSchema(int productDefinitionId, bool isLive = false)
+        public ViewResult TypeScriptSchema(int content_item_id, bool isLive = false)
         {
-            Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
+            Content content = _contentDefinitionService.GetDefinitionById(content_item_id, isLive);
 
             string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(content);
 
@@ -79,12 +122,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <summary>
         /// Построить TypeScript-описание схемы для редактора продукта.
         /// </summary>
-        /// <param name="productDefinitionId">Id описания продукта</param>
+        /// <param name="content_item_id">Id описания продукта</param>
         [HttpGet]
-        public ViewResult ProductEditorSchema(int productDefinitionId, bool isLive = false)
+        public ViewResult ProductEditorSchema(int content_item_id, bool isLive = false)
         {
-            Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
-            
+            Content content = _contentDefinitionService.GetDefinitionById(content_item_id, isLive);
+
             ProductSchema productSchema = _editorSchemaService.GetProductSchema(content);
 
             Dictionary<int, ContentSchema> mergedSchema = _editorSchemaService.GetMergedContentSchemas(productSchema);
@@ -125,7 +168,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             RelationSelection relationSelection,
             bool isLive = false)
         {
-            Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
+            Content content = _contentDefinitionService.GetDefinitionById(productDefinitionId, isLive);
 
             Content partialContent = _editorPartialContentService
               .GetPartialContent(content, contentPath, relationSelection);
@@ -141,9 +184,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <param name="productDefinitionId">Id описания продукта</param>
         /// <returns>JSON схемы редактора продукта</returns>
         [HttpGet]
-        public ContentResult GetProductSchema(int productDefinitionId, bool isLive = false)
+        public ContentResult GetEditorSchema(int productDefinitionId, bool isLive = false)
         {
-            Content content = GetContentByProductDefinitionId(productDefinitionId, isLive);
+            Content content = _contentDefinitionService.GetDefinitionById(productDefinitionId, isLive);
 
             ProductSchema productSchema = _editorSchemaService.GetProductSchema(content);
 
@@ -168,13 +211,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             = new ConcurrentDictionary<int, ContentResult>();
 
         [HttpGet]
-        public ContentResult GetProductSchema_Test(int productDefinitionId, bool refresh = false)
+        public ContentResult GetEditorSchema_Test(int productDefinitionId, bool refresh = false)
         {
             if (refresh)
             {
                 _schemaCache.TryRemove(productDefinitionId, out var _);
             }
-            return _schemaCache.GetOrAdd(productDefinitionId, _ => GetProductSchema(productDefinitionId));
+            return _schemaCache.GetOrAdd(productDefinitionId, _ => GetEditorSchema(productDefinitionId));
         }
 
         /// <summary>
@@ -183,7 +226,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <param name="articleId">Id корневой статьи</param>
         /// <returns>JSON продукта</returns>
         [HttpGet]
-        public ContentResult GetProduct(int articleId, bool isLive = false)
+        public ContentResult GetEditorData(int articleId, bool isLive = false)
         {
             Content content = GetContentByArticleId(articleId, isLive);
 
@@ -204,13 +247,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             = new ConcurrentDictionary<int, ContentResult>();
 
         [HttpGet]
-        public ContentResult GetProduct_Test(int articleId, bool refresh = false)
+        public ContentResult GetEditorData_Test(int articleId, bool refresh = false)
         {
             if (refresh)
             {
                 _dataCache.TryRemove(articleId, out var _);
             }
-            return _dataCache.GetOrAdd(articleId, _ => GetProduct(articleId));
+            return _dataCache.GetOrAdd(articleId, _ => GetEditorData(articleId));
         }
 
         /// <summary>
@@ -227,12 +270,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            Content content = GetContentByProductDefinitionId(request.ProductDefinitionId, request.IsLive);
+            Content content = _contentDefinitionService
+                .GetDefinitionById(request.ProductDefinitionId, request.IsLive);
 
             Content partialContent = _editorPartialContentService
               .GetPartialContent(content, request.ContentPath, request.RelationSelection);
 
-            Article partialProduct = _editorDataService.DeserializeProduct(request.PartialProduct, partialContent);
+            Article partialProduct = _editorDataService
+                .DeserializeProduct(request.PartialProduct, partialContent);
 
             var partialDefinition = new ProductDefinition { StorageSchema = partialContent };
 
@@ -272,16 +317,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             [Required]
             public JObject PartialProduct { get; set; }
         }
-
-        private Content GetContentByProductDefinitionId(int productDefinitionId, bool isLive)
-        {
-            Content content = _contentDefinitionService
-                .GetDefinitionById(productDefinitionId, isLive)
-                .DeepCopy();
-
-            return content;
-        }
-
+        
         private Content GetContentByArticleId(int articleId, bool isLive)
         {
             _articleService.IsLive = isLive;
@@ -295,11 +331,25 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             int productTypeId = Int32.Parse(productTypeField);
 
-            Content content = _contentDefinitionService
-                .GetDefinitionForContent(productTypeId, qpArticle.ContentId, isLive)
-                .DeepCopy();
+            return _contentDefinitionService
+                .GetDefinitionForContent(productTypeId, qpArticle.ContentId, isLive);
+        }
+        
+        private IReadOnlyDictionary<string, string> GetDefinitionFieldsByArticleId(int articleId, bool isLive)
+        {
+            _articleService.IsLive = isLive;
 
-            return content;
+            var qpArticle = _articleService.Read(articleId);
+
+            string productTypeField = qpArticle.FieldValues
+                .Where(x => x.Field.IsClassifier)
+                .Select(x => x.Value)
+                .FirstOrDefault();
+
+            int productTypeId = Int32.Parse(productTypeField);
+
+            return _contentDefinitionService
+                .GetDefinitionFields(productTypeId, qpArticle.ContentId, isLive);
         }
 
         [HttpGet]

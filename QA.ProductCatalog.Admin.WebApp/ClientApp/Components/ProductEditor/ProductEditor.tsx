@@ -15,6 +15,8 @@ import { isFunction } from "Utils/TypeChecks";
 type RenderEditor = (article: ArticleObject, contentSchema: ContentSchema) => ReactNode;
 
 interface ProductEditorProps {
+  productDefinitionId: number;
+  articleId?: number;
   relationEditors?: RelationsConfig;
   children?: RenderEditor | ReactNode;
 }
@@ -43,7 +45,8 @@ export class ProductEditor extends Component<ProductEditorProps> {
   }
 
   async componentDidMount() {
-    const article = await this._editorController.initialize();
+    const { productDefinitionId, articleId } = this.props;
+    const article = await this._editorController.initialize(productDefinitionId, articleId);
     if (DEBUG) {
       onPatch(article, patch => console.log(patch));
     }

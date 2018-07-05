@@ -1,4 +1,5 @@
 ﻿using QA.Core.Models.Configuration;
+using System.Collections.Generic;
 
 namespace QA.ProductCatalog.Infrastructure
 {
@@ -14,9 +15,13 @@ namespace QA.ProductCatalog.Infrastructure
 
 		ServiceDefinition GetServiceDefinition(string slug, string version, bool clearExtensions = false);
 
-	    string GetDefinitionXml(int productTypeId, int contentId, bool isLive = false);
+        string GetDefinitionXml(int productTypeId, int contentId, bool isLive = false);
 
-		string GetDefinitionXml(int articleId, bool isLive = false);
+        string GetDefinitionXml(int articleId, bool isLive = false);
+
+        IReadOnlyDictionary<string, string> GetDefinitionFields(int productTypeId, int contentId, bool isLive = false);
+
+        IReadOnlyDictionary<string, string> GetDefinitionFields(int articleId, bool isLive = false);
 
 		void SaveDefinition(int content_item_id, string xml);
 	}

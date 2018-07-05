@@ -567,6 +567,7 @@ export interface TvChannel extends ArticleObject {
   Children: TvChannel[];
   Logo40x30: string;
   TimeZone: TimeZone;
+  LcnIpTvR: number;
 }
 
 export interface ParameterChoice extends ArticleObject {

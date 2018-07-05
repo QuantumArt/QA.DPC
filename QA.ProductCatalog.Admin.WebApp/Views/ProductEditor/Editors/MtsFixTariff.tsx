@@ -12,8 +12,12 @@ import {
 import { maxCount } from "Utils/Validators";
 import { Product, DeviceOnTariffs } from "./MtsFixTariff/ProductEditorSchema";
 
+const settings = window["ProductEditorSettings"];
+
 const App = () => (
   <ProductEditor
+    productDefinitionId={settings.ProductDefinitionId}
+    articleId={settings.ArticleId}
     relationEditors={{
       Region: props => (
         <RelationFieldList
