@@ -280,6 +280,21 @@ function sutructuralEquals(first: any, second: any): boolean {
   return comparer.structural(firstSnapshot, secondSnapshot);
 }
 
+const actionDecorators = {};
+
+Object.keys(validationMixin(observable({})).actions).forEach(key => {
+  actionDecorators[key] = action;
+});
+
+export function validatable<T extends Object>(target: T): T & ValidatableObject {
+  const { actions, views } = validationMixin(target);
+  for (const name in views) {
+    target[name] = views[name];
+  }
+  extendObservable(target, actions, actionDecorators, SHALLOW);
+  return target as any;
+}
+
 type Constructor<T = any> = { new (...args: any[]): T };
 
 export function Validatable<T extends Constructor = Constructor<Object>>(
@@ -291,20 +306,10 @@ export function Validatable<T extends Constructor = Constructor<Object>>(
   return class extends constructor {
     constructor(...args: any[]) {
       super(...args);
-      const { actions, views } = validationMixin(this);
-      for (const name in views) {
-        this[name] = views[name];
-      }
-      extendObservable(this, actions, actionDecorators, SHALLOW);
+      validatable(this);
     }
   };
 }
-
-const actionDecorators = {};
-
-Object.keys(validationMixin(observable({})).actions).forEach(key => {
-  actionDecorators[key] = action;
-});
 
 interface ValidateProps {
   model: ValidatableObject & { [x: string]: any };
