@@ -6,4 +6,5 @@ require("@blueprintjs/core/lib/css/blueprint.css");
 require("@blueprintjs/icons/lib/css/blueprint-icons.css");
 require("reflect-metadata");
 require("mobx").configure({ enforceActions: true });
+require("Styles/NProgress.scss");
 require("Styles/Tabs.scss");
