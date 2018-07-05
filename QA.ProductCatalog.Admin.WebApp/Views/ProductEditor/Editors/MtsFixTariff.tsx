@@ -1,7 +1,7 @@
 ﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
-// import { toJS } from "mobx";
+import { toJS } from "mobx";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
 import {
@@ -20,11 +20,11 @@ const App = () => (
     articleId={settings.ArticleId}
     relationEditors={{
       Region: props => (
-        <RelationFieldTable
-          // selectMultiple
+        <RelationFieldList
+          selectMultiple
           validate={maxCount(25)}
           orderByField="Title"
-          // onClick={(_e, a) => console.log(toJS(a))}
+          onClick={(_e, a) => console.log(toJS(a))}
           {...props}
         />
       ),
