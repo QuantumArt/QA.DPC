@@ -101,7 +101,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
         <Button
           minimal
           small
-          icon="add"
+          rightIcon="add"
           intent={Intent.SUCCESS}
           disabled={fieldSchema.IsReadOnly}
           onClick={this.createRelation}
@@ -111,7 +111,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
         <Button
           minimal
           small
-          icon="th-derived"
+          rightIcon="th-derived"
           intent={Intent.PRIMARY}
           disabled={fieldSchema.IsReadOnly}
         >
@@ -120,7 +120,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
         <Button
           minimal
           small
-          icon="eraser"
+          rightIcon="eraser"
           intent={Intent.DANGER}
           disabled={fieldSchema.IsReadOnly}
           onClick={this.clearRelation}
@@ -184,13 +184,13 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                     <td key={-3} className="relation-field-accordion__controls">
                       {!fieldSchema.IsReadOnly && (
                         <ButtonGroup>
-                          <Button minimal small icon="floppy-disk" intent={Intent.PRIMARY}>
+                          <Button minimal small rightIcon="floppy-disk" intent={Intent.PRIMARY}>
                             Сохранить
                           </Button>
                           <Button
                             minimal
                             small
-                            icon="remove"
+                            rightIcon="remove"
                             intent={Intent.DANGER}
                             onClick={e => this.removeRelation(e, article)}
                           >

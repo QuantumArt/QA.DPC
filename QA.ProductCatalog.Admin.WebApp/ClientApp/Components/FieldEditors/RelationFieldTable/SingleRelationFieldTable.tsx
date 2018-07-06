@@ -28,7 +28,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
           <Button
             minimal
             small
-            icon="th-derived"
+            rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
           >
@@ -37,7 +37,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
           <Button
             minimal
             small
-            icon="eraser"
+            rightIcon="eraser"
             intent={Intent.DANGER}
             disabled={fieldSchema.IsReadOnly}
             onClick={this.removeRelation}
@@ -62,7 +62,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
                   <Button
                     minimal
                     small
-                    icon="remove"
+                    rightIcon="remove"
                     intent={Intent.DANGER}
                     onClick={this.removeRelation}
                   >

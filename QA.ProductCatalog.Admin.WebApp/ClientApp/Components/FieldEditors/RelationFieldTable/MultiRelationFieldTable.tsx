@@ -67,7 +67,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
           <Button
             minimal
             small
-            icon="th-derived"
+            rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
           >
@@ -76,7 +76,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
           <Button
             minimal
             small
-            icon="eraser"
+            rightIcon="eraser"
             intent={Intent.DANGER}
             disabled={fieldSchema.IsReadOnly}
             onClick={this.clearRelation}
@@ -107,7 +107,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
                         <Button
                           minimal
                           small
-                          icon="remove"
+                          rightIcon="remove"
                           intent={Intent.DANGER}
                           onClick={e => this.removeRelation(e, article)}
                         >

@@ -45,7 +45,7 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
           <Button
             minimal
             small
-            icon="th-derived"
+            rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
           >

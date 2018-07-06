@@ -61,13 +61,13 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
           </div>
           {buttons === true ? (
             <div className="article-editor__buttons">
-              <Button minimal icon="floppy-disk" intent={Intent.PRIMARY}>
+              <Button minimal rightIcon="floppy-disk" intent={Intent.PRIMARY}>
                 Сохранить
               </Button>
               {onRemove && (
                 <Button
                   minimal
-                  icon="remove"
+                  rightIcon="remove"
                   intent={Intent.DANGER}
                   onClick={() => onRemove(model)}
                 >

@@ -41,10 +41,9 @@ export abstract class AbstractFieldEditor<
         rules.push(validate);
       }
     }
-    // TODO: uncomment
-    // if (fieldSchema.IsRequired) {
-    rules.push(required);
-    // }
+    if (fieldSchema.IsRequired) {
+      rules.push(required);
+    }
     return (
       <Validate
         model={model}
