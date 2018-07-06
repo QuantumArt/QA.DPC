@@ -1,7 +1,6 @@
 @import "~@blueprintjs/core/lib/scss/variables";
 
 .field-editor__block {
-  // min-width: 583px;
   min-height: 30px;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -9,7 +8,7 @@
 
 .field-editor__label {
   line-height: 30px;
-  min-width: 150px;
+  min-width: 196px;
 
   > label {
     display: inline-block;
@@ -26,7 +25,7 @@
   color: $red2;
 }
 
-.file-field-editor {
+.field-editor__control--file {
   .pt-icon-eye-open::before {
     color: $blue2;
   }

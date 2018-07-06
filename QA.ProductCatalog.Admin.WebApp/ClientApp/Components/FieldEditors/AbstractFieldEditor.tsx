@@ -41,9 +41,10 @@ export abstract class AbstractFieldEditor<
         rules.push(validate);
       }
     }
-    if (fieldSchema.IsRequired) {
-      rules.push(required);
-    }
+    // TODO: uncomment
+    // if (fieldSchema.IsRequired) {
+    rules.push(required);
+    // }
     return (
       <Validate
         model={model}
@@ -76,9 +77,8 @@ export abstract class AbstractFieldEditor<
           {this.renderField(model, fieldSchema)}
         </Row>
         <Row>
-          <Col md xlOffset={4} mdOffset={3}>
-            {this.renderValidation(model, fieldSchema)}
-          </Col>
+          <Col xl={4} md={3} className="field-editor__label" />
+          <Col md>{this.renderValidation(model, fieldSchema)}</Col>
         </Row>
       </Col>
     );

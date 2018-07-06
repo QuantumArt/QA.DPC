@@ -56,9 +56,8 @@ export abstract class AbstractRelationFieldList extends AbstractFieldEditor<
           {this.renderField(model, fieldSchema)}
         </Row>
         <Row>
-          <Col md xlOffset={2} mdOffset={3}>
-            {this.renderValidation(model, fieldSchema)}
-          </Col>
+          <Col xl={4} md={3} className="field-editor__label" />
+          <Col md>{this.renderValidation(model, fieldSchema)}</Col>
         </Row>
       </Col>
     );

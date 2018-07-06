@@ -121,8 +121,10 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     });
   };
 
-  renderControls(_model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+  renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const { isOpen } = this.state;
+    const list: ArticleObject[] = model[fieldSchema.FieldName];
+    const isEmpty = !list || list.length === 0;
     return (
       <ButtonGroup>
         <Button
@@ -158,6 +160,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
           minimal
           small
           icon={isOpen ? "collapse-all" : "expand-all"}
+          disabled={isEmpty}
           onClick={this.toggleFieldEditor}
         >
           {isOpen ? "Свернуть" : "Развернуть"}
@@ -191,7 +194,8 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
         id={`${model.Id || ""}.${fieldSchema.FieldName}`}
         className={cn("multi-relation-field-tabs", {
           "multi-relation-field-tabs--hidden": !isOpen,
-          "multi-relation-field-tabs--empty": isEmpty
+          "multi-relation-field-tabs--empty": isEmpty,
+          "container-md": vertical
         })}
         selectedTabId={activeId}
         onChange={this.handleTabChange}
@@ -202,7 +206,10 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
             .slice()
             .sort(asc(this._orderByField))
             .map(article => {
-              const title = this._displayField(article);
+              let title = this._displayField(article);
+              if (title == null) {
+                title = "...";
+              }
               return (
                 <Tab
                   key={article.Id}

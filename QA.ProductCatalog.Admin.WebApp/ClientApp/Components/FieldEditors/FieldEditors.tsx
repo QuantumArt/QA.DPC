@@ -64,7 +64,7 @@ export class StringFieldEditor extends AbstractFieldEditor {
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: StringFieldSchema) {
     return (
-      <Col xl={8} md={6}>
+      <Col xl md={6}>
         <InputText
           id={this.id}
           model={model}
@@ -181,7 +181,7 @@ export class ClassifierFieldEditor extends AbstractFieldEditor {
     const value = model[fieldSchema.FieldName];
     const options = value ? [{ value, label: value }] : [];
     return (
-      <Col xl={8} md={6}>
+      <Col xl md={6}>
         <Select
           id={this.id}
           model={model}
@@ -203,7 +203,7 @@ export class EnumFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: EnumFieldSchema) {
     const options = fieldSchema.Items.map(item => ({ value: item.Value, label: item.Alias }));
     return fieldSchema.ShowAsRadioButtons ? (
-      <Col xl={8} md={9}>
+      <Col md>
         <RadioGroup
           model={model}
           name={fieldSchema.FieldName}
@@ -215,7 +215,7 @@ export class EnumFieldEditor extends AbstractFieldEditor {
         />
       </Col>
     ) : (
-      <Col xl={8} md={6}>
+      <Col xl md={6}>
         <Select
           id={this.id}
           model={model}
@@ -243,7 +243,7 @@ export class ExtensionFieldEditor extends AbstractFieldEditor {
       fieldSchema.IsReadOnly ||
       (!fieldSchema.Changeable && isArticleObject(model) && model.Modified instanceof Date);
     return (
-      <Col xl={8} md={6}>
+      <Col xl md={6}>
         <Select
           id={this.id}
           model={model}

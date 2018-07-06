@@ -11,7 +11,7 @@ import { AbstractFieldEditor } from "./AbstractFieldEditor";
 export class TextFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
     return (
-      <Col xl={10} md={9}>
+      <Col md>
         <TextArea
           id={this.id}
           model={model}
@@ -46,9 +46,8 @@ export class TextFieldEditor extends AbstractFieldEditor {
           {this.renderField(model, fieldSchema)}
         </Row>
         <Row>
-          <Col md xlOffset={2} mdOffset={3}>
-            {this.renderValidation(model, fieldSchema)}
-          </Col>
+          <Col xl={2} md={3} className="field-editor__label" />
+          <Col md>{this.renderValidation(model, fieldSchema)}</Col>
         </Row>
       </Col>
     );
