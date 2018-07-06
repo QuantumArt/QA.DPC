@@ -53,7 +53,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     const { isOpen } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     return (
-      <>
+      <div className="relation-field-tabs__controls">
         <ButtonGroup>
           <Button
             minimal
@@ -89,13 +89,12 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           minimal
           small
           disabled={!article}
-          style={{ float: "right" }}
           rightIcon={isOpen ? "collapse-all" : "expand-all"}
           onClick={this.toggleRelation}
         >
           {isOpen ? "Свернуть" : "Развернуть"}
         </Button>
-      </>
+      </div>
     );
   }
 

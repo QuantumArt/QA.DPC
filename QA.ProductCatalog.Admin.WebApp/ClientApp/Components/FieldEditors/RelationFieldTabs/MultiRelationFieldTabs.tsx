@@ -126,7 +126,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
-      <>
+      <div className="relation-field-tabs__controls">
         <ButtonGroup>
           <Button
             minimal
@@ -162,13 +162,12 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
           minimal
           small
           disabled={isEmpty}
-          style={{ float: "right" }}
           rightIcon={isOpen ? "collapse-all" : "expand-all"}
           onClick={this.toggleFieldEditor}
         >
           {isOpen ? "Свернуть" : "Развернуть"}
         </Button>
-      </>
+      </div>
     );
   }
 

@@ -1,3 +1,14 @@
+.relation-field-tabs__controls {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  > .pt-button,
+  > .pt-button-group {
+    flex: none;
+  }
+}
+
 .multi-relation-field-tabs {
   &--empty,
   &--hidden {
