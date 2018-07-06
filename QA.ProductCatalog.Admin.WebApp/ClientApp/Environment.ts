@@ -5,7 +5,9 @@ require("normalize.css");
 require("@blueprintjs/core/lib/css/blueprint.css");
 require("@blueprintjs/icons/lib/css/blueprint-icons.css");
 require("reflect-metadata");
-require("mobx").configure({ enforceActions: true });
 require("Styles/FlexboxGrid.scss");
 require("Styles/NProgress.scss");
 require("Styles/Tabs.scss");
+if (DEBUG) {
+  require("mobx").configure({ enforceActions: true });
+}

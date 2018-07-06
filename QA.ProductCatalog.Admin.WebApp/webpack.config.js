@@ -85,6 +85,7 @@ module.exports = (env, argv) => ({
   },
   plugins: [
     new CleanWebpackPlugin([outPath]),
+    new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru|kk/),
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(argv.mode),
       "process.env.OUT_DIR": JSON.stringify(outDir),

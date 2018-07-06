@@ -2,9 +2,9 @@ import React from "react";
 import cn from "classnames";
 import { action } from "mobx";
 import { observer } from "mobx-react";
+import { LocaleContext } from "react-lazy-i18n";
 import DateTime from "react-datetime";
 import moment from "moment";
-import "moment/locale/ru";
 import "react-datetime/css/react-datetime.css";
 import { ValidatableInput } from "./AbstractControls";
 
@@ -54,24 +54,28 @@ export class DatePicker extends ValidatableInput<DatePickerProps> {
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : null;
     return (
       <div className={cn("pt-input-group", { "pt-fill": type !== "time" }, className)}>
-        <DateTime
-          className="editor-datepicker"
-          inputProps={{
-            className: "pt-input",
-            id,
-            placeholder,
-            disabled,
-            readOnly
-          }}
-          locale="ru-ru"
-          dateFormat={type !== "time"}
-          timeFormat={type !== "date"}
-          value={inputValue}
-          onFocus={this.handleFocus}
-          onChange={this.handleChange}
-          onBlur={this.handleBlur}
-          {...props}
-        />
+        <LocaleContext.Consumer>
+          {locale => (
+            <DateTime
+              className="editor-datepicker"
+              inputProps={{
+                className: "pt-input",
+                id,
+                placeholder,
+                disabled,
+                readOnly
+              }}
+              locale={locale}
+              dateFormat={type !== "time"}
+              timeFormat={type !== "date"}
+              value={inputValue}
+              onFocus={this.handleFocus}
+              onChange={this.handleChange}
+              onBlur={this.handleBlur}
+              {...props}
+            />
+          )}
+        </LocaleContext.Consumer>
         <span className={cn("pt-icon", type === "time" ? "pt-icon-time" : "pt-icon-calendar")} />
       </div>
     );
