@@ -1,16 +1,10 @@
 ﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
-import { toJS } from "mobx";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import {
-  RelationFieldList,
-  RelationFieldTable,
-  RelationFieldTabs
-} from "Components/FieldEditors/FieldEditors";
-import { maxCount } from "Utils/Validators";
-import { Product, DeviceOnTariffs } from "./MtsFixTariff/ProductEditorSchema";
+import { RelationFieldList, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
+import { Product, DeviceOnTariffs } from "./ProductEditorSchema";
 
 const settings = window["ProductEditorSettings"];
 
@@ -19,15 +13,7 @@ const App = () => (
     productDefinitionId={settings.ProductDefinitionId}
     articleId={settings.ArticleId}
     relationEditors={{
-      Region: props => (
-        <RelationFieldList
-          selectMultiple
-          validate={maxCount(25)}
-          orderByField="Title"
-          onClick={(_e, a) => console.log(toJS(a))}
-          {...props}
-        />
-      ),
+      Region: props => <RelationFieldList selectMultiple orderByField="Title" {...props} />,
       DeviceOnTariffs: props => (
         <RelationFieldTabs
           displayField={(d: DeviceOnTariffs) => d.Parent && d.Parent.Title}
@@ -36,7 +22,6 @@ const App = () => (
           {...props}
         />
       ),
-      BaseParameterModifier: RelationFieldTable,
       Unit: RelationFieldList
     }}
   >
@@ -60,15 +45,7 @@ const App = () => (
         }}
         header
         buttons
-      >
-        {(header, fields) => (
-          <>
-            {header}
-            {fields}
-            <hr />
-          </>
-        )}
-      </ArticleEditor>
+      />
     )}
   </ProductEditor>
 );

@@ -23,7 +23,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
     [RoutePrefix("ProductEditor")]
     public class ProductEditorController : Controller
     {
-        private const string FIELD_NAME_EDITOR_PATH = "EditorPath";
+        private const string FIELD_NAME_EDITOR_VIEW_PATH = "EditorViewPath";
         private const string FIELD_NAME_PRODUCT_DEFINITION_ID = "Id";
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IProductService _productService;
@@ -68,10 +68,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 throw new InvalidOperationException($"ProductDefinition {content_item_id} was not found");
             }
 
-            fieldsByName.TryGetValue(FIELD_NAME_EDITOR_PATH, out string editorPath);
+            fieldsByName.TryGetValue(FIELD_NAME_EDITOR_VIEW_PATH, out string editorViewPath);
 
-            // TODO: View для редактора продукта по-умолчанию
-            return View($"Editors/{editorPath ?? "MtsFixTariff"}", new ProductEditorSettingsModel
+            if (String.IsNullOrWhiteSpace(editorViewPath))
+            {
+                editorViewPath = "DefaultEditor";
+            }
+
+            return View(editorViewPath, new ProductEditorSettingsModel
             {
                 ProductDefinitionId = content_item_id,
             });
@@ -92,10 +96,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 throw new InvalidOperationException($"ProductDefinition for article {content_item_id} was not found");
             }
 
-            fieldsByName.TryGetValue(FIELD_NAME_EDITOR_PATH, out string editorPath);
+            fieldsByName.TryGetValue(FIELD_NAME_EDITOR_VIEW_PATH, out string editorViewPath);
 
-            // TODO: View для редактора продукта по-умолчанию
-            return View($"Editors/{editorPath ?? "MtsFixTariff"}", new ProductEditorSettingsModel
+            if (String.IsNullOrWhiteSpace(editorViewPath))
+            {
+                editorViewPath = "DefaultEditor";
+            }
+
+            return View(editorViewPath, new ProductEditorSettingsModel
             {
                 ArticleId = content_item_id,
                 ProductDefinitionId = Int32.Parse(productDefinitionsId),

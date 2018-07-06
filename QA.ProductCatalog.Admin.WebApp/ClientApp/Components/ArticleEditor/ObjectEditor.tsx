@@ -178,7 +178,7 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
 
   private getDefaultFieldEditor(fieldSchema: FieldSchema): FieldEditor {
     if (isSingleRelationField(fieldSchema)) {
-      return SingleRelationFieldTabs;
+      return fieldSchema.IsRequired ? SingleRelationFieldTabs : SingleRelationFieldTabsCollapsed;
     }
     if (isMultiRelationField(fieldSchema)) {
       return MultiRelationFieldAccordion;
@@ -243,6 +243,10 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
       .filter(Boolean);
   }
 }
+
+const SingleRelationFieldTabsCollapsed = ({ model, fieldSchema }) => (
+  <SingleRelationFieldTabs model={model} fieldSchema={fieldSchema} collapsed />
+);
 
 @consumer
 @observer
