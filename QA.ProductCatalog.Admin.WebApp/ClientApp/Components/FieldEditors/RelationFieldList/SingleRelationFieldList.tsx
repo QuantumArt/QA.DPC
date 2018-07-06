@@ -35,6 +35,10 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const { isSelected } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
+    let title = this._displayField(article);
+    if (title == null) {
+      title = "...";
+    }
     return (
       <Col md className="relation-field-list__tags">
         <ButtonGroup>
@@ -56,7 +60,7 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
             })}
             onClick={e => this.toggleRelation(e, article)}
           >
-            {this._displayField(article)}
+            {title}
             {!fieldSchema.IsReadOnly && (
               <button className="pt-tag-remove" title="Удалить" onClick={this.removeRelation} />
             )}

@@ -49,8 +49,9 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     });
   };
 
-  renderControls(_model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+  renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const { isOpen } = this.state;
+    const article: ArticleObject = model[fieldSchema.FieldName];
     return (
       <ButtonGroup>
         <Button
@@ -85,6 +86,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
         <Button
           minimal
           small
+          disabled={!article}
           icon={isOpen ? "collapse-all" : "expand-all"}
           onClick={this.toggleRelation}
         >

@@ -119,27 +119,33 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
           list
             .slice()
             .sort(asc(this._orderByField))
-            .map(article => (
-              <Fragment key={article.Id}>
-                {" "}
-                <span
-                  onClick={e => this.toggleRelation(e, article)}
-                  className={cn("pt-tag pt-minimal pt-interactive", {
-                    "pt-tag-removable": !fieldSchema.IsReadOnly,
-                    "pt-intent-primary": selectedIds[article.Id]
-                  })}
-                >
-                  {this._displayField(article)}
-                  {!fieldSchema.IsReadOnly && (
-                    <button
-                      className="pt-tag-remove"
-                      title="Удалить"
-                      onClick={e => this.removeRelation(e, article)}
-                    />
-                  )}
-                </span>
-              </Fragment>
-            ))}
+            .map(article => {
+              let title = this._displayField(article);
+              if (title == null) {
+                title = "...";
+              }
+              return (
+                <Fragment key={article.Id}>
+                  {" "}
+                  <span
+                    onClick={e => this.toggleRelation(e, article)}
+                    className={cn("pt-tag pt-minimal pt-interactive", {
+                      "pt-tag-removable": !fieldSchema.IsReadOnly,
+                      "pt-intent-primary": selectedIds[article.Id]
+                    })}
+                  >
+                    {title}
+                    {!fieldSchema.IsReadOnly && (
+                      <button
+                        className="pt-tag-remove"
+                        title="Удалить"
+                        onClick={e => this.removeRelation(e, article)}
+                      />
+                    )}
+                  </span>
+                </Fragment>
+              );
+            })}
       </Col>
     );
   }
