@@ -126,46 +126,49 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
-      <ButtonGroup>
+      <>
+        <ButtonGroup>
+          <Button
+            minimal
+            small
+            icon="add"
+            intent={Intent.SUCCESS}
+            disabled={fieldSchema.IsReadOnly}
+            onClick={this.createRelation}
+          >
+            Создать
+          </Button>
+          <Button
+            minimal
+            small
+            icon="th-derived"
+            intent={Intent.PRIMARY}
+            disabled={fieldSchema.IsReadOnly}
+          >
+            Выбрать
+          </Button>
+          <Button
+            minimal
+            small
+            icon="eraser"
+            intent={Intent.DANGER}
+            disabled={fieldSchema.IsReadOnly}
+            onClick={this.clearRelation}
+          >
+            Очистить
+          </Button>
+        </ButtonGroup>
         <Button
           minimal
           small
-          icon="add"
-          intent={Intent.SUCCESS}
-          disabled={fieldSchema.IsReadOnly}
-          onClick={this.createRelation}
-        >
-          Создать
-        </Button>
-        <Button
-          minimal
-          small
-          icon="th-derived"
-          intent={Intent.PRIMARY}
-          disabled={fieldSchema.IsReadOnly}
-        >
-          Выбрать
-        </Button>
-        <Button
-          minimal
-          small
-          icon="eraser"
-          intent={Intent.DANGER}
-          disabled={fieldSchema.IsReadOnly}
-          onClick={this.clearRelation}
-        >
-          Очистить
-        </Button>
-        <Button
-          minimal
-          small
-          icon={isOpen ? "collapse-all" : "expand-all"}
           disabled={isEmpty}
+          style={{ float: "right" }}
+          rightIcon={isOpen ? "collapse-all" : "expand-all"}
           onClick={this.toggleFieldEditor}
         >
           {isOpen ? "Свернуть" : "Развернуть"}
         </Button>
-      </ButtonGroup>
+      </>
     );
   }
 

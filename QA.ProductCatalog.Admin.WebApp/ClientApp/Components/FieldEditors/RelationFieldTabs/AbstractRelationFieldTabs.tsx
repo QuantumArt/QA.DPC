@@ -71,11 +71,10 @@ export abstract class AbstractRelationFieldTabs extends AbstractFieldEditor<
               )}
             </label>
           </Col>
-          <Col md>{this.renderControls(model, fieldSchema)}</Col>
-        </Row>
-        <Row>
-          <Col xl={4} md={3} className="field-editor__label" />
-          <Col md>{this.renderValidation(model, fieldSchema)}</Col>
+          <Col md>
+            {this.renderControls(model, fieldSchema)}
+            {this.renderValidation(model, fieldSchema)}
+          </Col>
         </Row>
         <Row>
           <Col md>{this.renderField(model, fieldSchema)}</Col>

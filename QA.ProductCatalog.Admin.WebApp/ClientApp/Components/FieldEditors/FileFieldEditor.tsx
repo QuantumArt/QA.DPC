@@ -13,7 +13,7 @@ import { AbstractFieldEditor } from "./AbstractFieldEditor";
 export class FileFieldEditor extends AbstractFieldEditor {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: FileFieldSchema) {
     return (
-      <Col xl md={6} className="field-editor__control field-editor__control--file">
+      <Col xl md={6} className="file-field-editor">
         <div className="pt-control-group pt-fill">
           <InputFile
             id={this.id}
