@@ -86,10 +86,9 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           </Button>
         </ButtonGroup>
         <Button
-          minimal
           small
           disabled={!article}
-          rightIcon={isOpen ? "collapse-all" : "expand-all"}
+          rightIcon={isOpen ? "chevron-up" : "chevron-down"}
           onClick={this.toggleRelation}
         >
           {isOpen ? "Свернуть" : "Развернуть"}

@@ -7,6 +7,11 @@
   > .pt-button-group {
     flex: none;
   }
+
+  > .pt-button {
+    min-width: 110px;
+    justify-content: space-between;
+  }
 }
 
 .multi-relation-field-tabs {

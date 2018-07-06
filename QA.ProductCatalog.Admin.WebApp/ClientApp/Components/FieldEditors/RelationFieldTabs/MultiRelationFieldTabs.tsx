@@ -159,10 +159,9 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
           </Button>
         </ButtonGroup>
         <Button
-          minimal
           small
           disabled={isEmpty}
-          rightIcon={isOpen ? "collapse-all" : "expand-all"}
+          rightIcon={isOpen ? "chevron-up" : "chevron-down"}
           onClick={this.toggleFieldEditor}
         >
           {isOpen ? "Свернуть" : "Развернуть"}
