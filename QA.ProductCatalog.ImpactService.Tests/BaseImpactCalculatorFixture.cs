@@ -581,13 +581,11 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var cnt = tariff.SelectTokens(feeQuery).Count();
 
-            var specialCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'UA')]").Count();
-            var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
+            var changedCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true)]").Count();
 
             cnt.Should().BeLessThan(cntOption);
             cnt.Should().Be(2);
-            specialCnt.Should().Be(2);
-            generalCnt.Should().Be(1);
+            changedCnt.Should().Be(3);
 
         }
 
@@ -613,14 +611,11 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var cnt = tariff.SelectTokens(feeQuery).Count();
 
-            var specialCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'UA')]").Count();
-            var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
+            var changedCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true)]").Count();
 
             cnt.Should().BeLessThan(cntOption);
             cnt.Should().Be(2);
-            specialCnt.Should().Be(2);
-            generalCnt.Should().Be(1);
-
+            changedCnt.Should().Be(3);
         }
 
         [Fact]
@@ -635,16 +630,16 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
 
             var cnt = tariff.SelectTokens(feeQuery).Count();
-            var specials = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'HU')]").ToArray();
-            var specialCnt = specials.Count();
-            var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
-
+            var changed = tariff.SelectTokens("Parameters.[?(@.Changed == true)]");
+            var changedCnt = changed.Count();
 
             cnt.Should().BeLessThan(cntOption);
             cnt.Should().Be(2);
-            specialCnt.Should().Be(1);
-            generalCnt.Should().Be(2);
-            ((string) specials.First()["Value"]).Should().Be("безлимитный");
+            changedCnt.Should().Be(3);
+            var parameter = changed.Single(n =>
+                n.SelectTokens("BaseParameterModifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).ToArray()
+                    .Contains("Unlimited"));
+            ((string) parameter["Value"]).Should().Be("безлимитный");
         }
 
         [Fact]
@@ -659,15 +654,12 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
 
             var cnt = tariff.SelectTokens(feeQuery).Count();
-            var specials = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'LT')]").ToArray();
-            var specialCnt = specials.Count();
-            var generalCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true && @.Zone.Alias == 'WorldExceptRussia')]").Count();
+            var changedCnt = tariff.SelectTokens("Parameters.[?(@.Changed == true)]").Count();
 
 
             cnt.Should().BeLessThan(cntOption);
             cnt.Should().Be(2);
-            specialCnt.Should().Be(0);
-            generalCnt.Should().Be(3);
+            changedCnt.Should().Be(3);
         }
 
 

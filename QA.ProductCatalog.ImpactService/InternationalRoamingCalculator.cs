@@ -20,6 +20,7 @@ namespace QA.ProductCatalog.ImpactService
 
         public JObject Calculate(JObject roamingScale, JObject[] options, string countryCode, string homeRegion)
         {
+            FilterByCountryCode(roamingScale, countryCode);
             foreach (var option in options)
             {
                 FilterByCountryCode(option, countryCode);
@@ -58,8 +59,9 @@ namespace QA.ProductCatalog.ImpactService
             {
                 foreach (var zp in zoneParameters)
                 {
-                    var aliases = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@.Alias)].Alias").Select(n => n.ToString()));
-                    if (aliases.Contains(countryCode))
+                    var codes = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@.Country)].Country.Code").Select(n => n.ToString()));
+                    var aliases = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@Alias)].Alias").Select(n => n.ToString()));
+                    if (codes.Contains(countryCode) || aliases.Contains(countryCode))
                     {
                         countryParams.Add((int)zp["Id"], zp);
                     }
@@ -68,7 +70,7 @@ namespace QA.ProductCatalog.ImpactService
 
             var preservedParams = new Dictionary<int, JToken>(countryParams);
 
-            var exclusion = new DirectionExclusion(new[] {"Unlimited"}) { Zone = true };
+            var exclusion = new DirectionExclusion(new[] {"Unlimited", "FirstStep", "SecondStep", "ThirdStep", "FourthStep", "FifthStep"}) { Zone = true };
 
             foreach (var p in worldExceptRussiaParams)
             {
@@ -85,6 +87,10 @@ namespace QA.ProductCatalog.ImpactService
                 if (!preservedParams.ContainsKey((int) zp["Id"]))
                 {
                     zp.Remove();
+                }
+                else
+                {
+                    zp["Zone"] = null;
                 }
             }
         }
