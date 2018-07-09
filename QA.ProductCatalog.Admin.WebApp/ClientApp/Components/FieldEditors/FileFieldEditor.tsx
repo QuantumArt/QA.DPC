@@ -26,7 +26,7 @@ export class FileFieldEditor extends AbstractFieldEditor {
             })}
           />
           {fieldSchema.FieldType === FieldExactTypes.Image && (
-            <button className="pt-button pt-icon-eye-open" title="Просмотр" />
+            <button className="pt-button pt-icon-media" title="Просмотр" />
           )}
           <button className="pt-button pt-icon-cloud-download" title="Скачать" />
           <button className="pt-button pt-icon-folder-close" title="Библиотека" />
