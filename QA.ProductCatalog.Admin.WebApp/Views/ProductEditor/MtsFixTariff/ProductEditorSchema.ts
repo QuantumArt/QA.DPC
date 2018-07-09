@@ -51,10 +51,13 @@ export interface Product extends ArticleObject {
   Id: number;
   ContentName: "Product";
   Modified: Date;
+  /** Маркетинговый продукт */
   MarketingProduct: MarketingProduct;
+  /** GlobalCode */
   GlobalCode: string;
   GlobalCode_Value: string;
   GlobalCode_Version: string;
+  /** Тип */
   Type: 
     | "Tariff"
     | "Service"
@@ -78,30 +81,48 @@ export interface Product extends ArticleObject {
     PhoneTariff: PhoneTariff;
     InternetTariff: InternetTariff;
   };
+  /** Описание */
   Description: string;
+  /** Полное описание */
   FullDescription: string;
+  /** Примечания */
   Notes: string;
+  /** Ссылка */
   Link: string;
+  /** Порядок */
   SortOrder: number;
   ForisID: string;
+  /** Иконка */
   Icon: string;
   PDF: string;
+  /** Алиас фиксированной ссылки на Pdf */
   PdfFixedAlias: string;
+  /** Фиксированные ссылки на Pdf */
   PdfFixedLinks: string;
+  /** Дата начала публикации */
   StartDate: Date;
+  /** Дата снятия с публикации */
   EndDate: Date;
   OldSiteId: number;
   OldId: number;
   OldSiteInvId: string;
   OldCorpSiteId: number;
   OldAliasId: string;
+  /** Приоритет (популярность) */
   Priority: number;
+  /** Изображение в списке */
   ListImage: string;
+  /** Дата перевода в архив */
   ArchiveDate: Date;
+  /** Модификаторы */
   Modifiers: ProductModifer[];
+  /** Параметры продукта */
   Parameters: ProductParameter[];
+  /** Регионы */
   Regions: Region[];
+  /** Акционное оборудование */
   FixConnectAction: DevicesForFixConnectAction[];
+  /** Преимущества */
   Advantages: Advantage[];
 }
 
@@ -109,7 +130,9 @@ export interface Group extends ArticleObject {
   Id: number;
   ContentName: "Group";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
 }
 
@@ -117,7 +140,9 @@ export interface ProductModifer extends ArticleObject {
   Id: number;
   ContentName: "ProductModifer";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
 }
 
@@ -129,7 +154,9 @@ export interface TariffZone extends ArticleObject {
   Id: number;
   ContentName: "TariffZone";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
 }
 
@@ -137,7 +164,9 @@ export interface Direction extends ArticleObject {
   Id: number;
   ContentName: "Direction";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
 }
 
@@ -145,7 +174,9 @@ export interface BaseParameter extends ArticleObject {
   Id: number;
   ContentName: "BaseParameter";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
   AllowZone: boolean;
   AllowDirection: boolean;
@@ -155,7 +186,9 @@ export interface BaseParameterModifier extends ArticleObject {
   Id: number;
   ContentName: "BaseParameterModifier";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
   Type: 
     | "Step"
@@ -169,7 +202,9 @@ export interface ParameterModifier extends ArticleObject {
   Id: number;
   ContentName: "ParameterModifier";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
 }
 
@@ -177,21 +212,36 @@ export interface ProductParameter extends ArticleObject {
   Id: number;
   ContentName: "ProductParameter";
   Modified: Date;
+  /** Группа параметров */
   Group: ProductParameterGroup;
+  /** Название */
   Title: string;
+  /** Родительский параметр */
   Parent: ProductParameter;
+  /** Базовый параметр */
   BaseParameter: BaseParameter;
+  /** Зона действия базового параметра */
   Zone: TariffZone;
+  /** Направление действия базового параметра */
   Direction: Direction;
+  /** Модификаторы базового параметра */
   BaseParameterModifiers: BaseParameterModifier[];
+  /** Модификаторы */
   Modifiers: ParameterModifier[];
+  /** Единица измерения */
   Unit: Unit;
+  /** Порядок */
   SortOrder: number;
+  /** Числовое значение */
   NumValue: number;
+  /** Текстовое значение */
   Value: string;
   Description: string;
+  /** Изображение параметра */
   Image: string;
+  /** Группа продуктов */
   ProductGroup: Group;
+  /** Выбор */
   Choice: ParameterChoice;
 }
 
@@ -202,6 +252,7 @@ export interface Unit extends ArticleObject {
   Alias: string;
   Title: string;
   Display: string;
+  /** Размерность */
   QuotaUnit: 
     | "mb"
     | "gb"
@@ -214,6 +265,7 @@ export interface Unit extends ArticleObject {
     | "mms"
     | "mbit"
     | "step";
+  /** Период */
   QuotaPeriod: 
     | "daily"
     | "weekly"
@@ -222,7 +274,9 @@ export interface Unit extends ArticleObject {
     | "minutely"
     | "every_second"
     | "annually";
+  /** Название периодичности */
   QuotaPeriodicity: string;
+  /** Множитель периода */
   PeriodMultiplier: number;
   Type: string;
 }
@@ -231,7 +285,9 @@ export interface LinkModifier extends ArticleObject {
   Id: number;
   ContentName: "LinkModifier";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
 }
 
@@ -239,9 +295,13 @@ export interface ProductRelation extends ArticleObject {
   Id: number;
   ContentName: "ProductRelation";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Модификаторы */
   Modifiers: LinkModifier[];
+  /** Параметры */
   Parameters: LinkParameter[];
+  /** Тип */
   Type: 
     | "TariffTransfer"
     | "MutualGroup"
@@ -275,19 +335,31 @@ export interface LinkParameter extends ArticleObject {
   Id: number;
   ContentName: "LinkParameter";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Группа параметров */
   Group: ProductParameterGroup;
+  /** Базовый параметр */
   BaseParameter: BaseParameter;
+  /** Зона действия базового параметра */
   Zone: TariffZone;
+  /** Направление действия базового параметра */
   Direction: Direction;
+  /** Модификаторы базового параметра */
   BaseParameterModifiers: BaseParameterModifier[];
+  /** Модификаторы */
   Modifiers: ParameterModifier[];
+  /** Порядок */
   SortOrder: number;
+  /** Числовое значение */
   NumValue: number;
+  /** Текстовое значение */
   Value: string;
   Description: string;
+  /** Единица измерения */
   Unit: Unit;
   ProductGroup: Group;
+  /** Множественный выбор */
   Choice: ParameterChoice[];
   OldSiteId: number;
   OldCorpSiteId: number;
@@ -307,13 +379,18 @@ export interface ProductParameterGroup extends ArticleObject {
   Id: number;
   ContentName: "ProductParameterGroup";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
+  /** Порядок */
   SortOrder: number;
   OldSiteId: number;
   OldCorpSiteId: number;
+  /** Изображение */
   ImageSvg: string;
   Type: string;
+  /** Название для МГМН */
   TitleForIcin: string;
 }
 
@@ -321,18 +398,28 @@ export interface MarketingProduct extends ArticleObject {
   Id: number;
   ContentName: "MarketingProduct";
   Modified: Date;
+  /** Название */
   Title: string;
+  /** Псевдоним */
   Alias: string;
   Description: string;
   OldSiteId: number;
   OldCorpSiteId: number;
+  /** Изображение в списке */
   ListImage: string;
+  /** Изображение */
   DetailsImage: string;
+  /** Дата закрытия продукта (Архив) */
   ArchiveDate: Date;
+  /** Модификаторы */
   Modifiers: ProductModifer[];
+  /** Порядок */
   SortOrder: number;
+  /** Приоритет (популярность) */
   Priority: number;
+  /** Преимущества */
   Advantages: Advantage[];
+  /** Тип */
   Type: 
     | "MarketingTariff"
     | "MarketingService"
@@ -357,11 +444,17 @@ export interface MarketingProduct extends ArticleObject {
     MarketingInternetTariff: MarketingInternetTariff;
   };
   FullDescription: string;
+  /** Параметры маркетингового продукта */
   Parameters: MarketingProductParameter[];
+  /** Тарифы для оборудования */
   TariffsOnMarketingDevice: DeviceOnTariffs[];
+  /** Оборудование на тарифе */
   DevicesOnMarketingTariff: DeviceOnTariffs[];
+  /** Акции для оборудования */
   ActionsOnMarketingDevice: DevicesForFixConnectAction[];
+  /** Ссылка */
   Link: string;
+  /** Подробное описание */
   DetailedDescription: string;
 }
 
@@ -389,9 +482,13 @@ export interface ServicesUpsale extends ExtensionObject {
 
 export interface TariffOptionPackage extends ExtensionObject {
   ContentName: "TariffOptionPackage";
+  /** Подзаголовок */
   SubTitle: string;
+  /** Описание */
   Description: string;
+  /** Псевдоним */
   Alias: string;
+  /** Ссылка */
   Link: string;
 }
 
@@ -404,6 +501,7 @@ export interface CommunicationType extends ArticleObject {
   ContentName: "CommunicationType";
   Modified: Date;
   Title: string;
+  /** Псевдоним */
   Alias: string;
 }
 
@@ -412,6 +510,7 @@ export interface Segment extends ArticleObject {
   ContentName: "Segment";
   Modified: Date;
   Title: string;
+  /** Псевдоним */
   Alias: string;
 }
 
@@ -427,19 +526,32 @@ export interface MarketingProductParameter extends ArticleObject {
   Id: number;
   ContentName: "MarketingProductParameter";
   Modified: Date;
+  /** Группа параметров */
   Group: ProductParameterGroup;
+  /** Базовый параметр */
   BaseParameter: BaseParameter;
+  /** Зона действия базового параметра */
   Zone: TariffZone;
+  /** Направление действия базового параметра */
   Direction: Direction;
+  /** Модификаторы базового параметра */
   BaseParameterModifiers: BaseParameterModifier[];
+  /** Модификаторы */
   Modifiers: ParameterModifier[];
+  /** Единица измерения */
   Unit: Unit;
+  /** Множественный выбор */
   Choice: ParameterChoice[];
+  /** Название */
   Title: string;
+  /** Порядок */
   SortOrder: number;
+  /** Числовое значение */
   NumValue: number;
+  /** Текстовое значение */
   Value: string;
   Description: string;
+  /** Изображение параметра */
   Image: string;
 }
 
@@ -459,12 +571,19 @@ export interface TariffCategory extends ArticleObject {
   Id: number;
   ContentName: "TariffCategory";
   Modified: Date;
+  /** Типы связи */
   ConnectionTypes: FixedType[];
+  /** Название */
   Title: string;
+  /** Алиас */
   Alias: string;
+  /** Картинка */
   Image: string;
+  /** Порядок */
   Order: number;
+  /** Векторное изображение */
   ImageSvg: string;
+  /** Тип шаблона страницы */
   TemplateType: 
     | "Tv"
     | "Phone";
@@ -479,9 +598,13 @@ export interface Advantage extends ArticleObject {
   ContentName: "Advantage";
   Modified: Date;
   Title: string;
+  /** Текстовые данные */
   Text: string;
+  /** Описание */
   Description: string;
+  /** Изображение */
   ImageSvg: string;
+  /** Порядок */
   SortOrder: number;
   IsGift: boolean;
   OldSiteId: number;
@@ -489,11 +612,13 @@ export interface Advantage extends ArticleObject {
 
 export interface CrossSale extends ExtensionObject {
   ContentName: "CrossSale";
+  /** Порядок */
   Order: number;
 }
 
 export interface MarketingCrossSale extends ExtensionObject {
   ContentName: "MarketingCrossSale";
+  /** Порядок */
   Order: number;
 }
 
@@ -501,9 +626,13 @@ export interface TimeZone extends ArticleObject {
   Id: number;
   ContentName: "TimeZone";
   Modified: Date;
+  /** Название часовой зоны */
   Name: string;
+  /** Код зоны */
   Code: string;
+  /** Значение по UTC */
   UTC: string;
+  /** Значение от Московского времени */
   MSK: string;
   OldSiteId: number;
 }
@@ -512,7 +641,9 @@ export interface NetworkCity extends ArticleObject {
   Id: number;
   ContentName: "NetworkCity";
   Modified: Date;
+  /** Город */
   City: Region;
+  /** IPTV */
   HasIpTv: boolean;
 }
 
@@ -520,9 +651,12 @@ export interface ChannelCategory extends ArticleObject {
   Id: number;
   ContentName: "ChannelCategory";
   Modified: Date;
+  /** Название для сайта */
   Name: string;
   Alias: string;
+  /** Сегменты */
   Segments: string;
+  /** Иконка */
   Icon: string;
   Order: number;
   OldSiteId: number;
@@ -550,23 +684,41 @@ export interface TvChannel extends ArticleObject {
   Id: number;
   ContentName: "TvChannel";
   Modified: Date;
+  /** Название телеканала */
   Title: string;
+  /** Лого 150x150 */
   Logo150: string;
+  /** Основная категория телеканала */
   Category: ChannelCategory;
+  /** Тип канала */
   ChannelType: ChannelType;
+  /** Короткое описание */
   ShortDescription: string;
+  /** Города вещания */
   Cities: NetworkCity[];
+  /** Приостановлено вещание */
   Disabled: boolean;
+  /** МТС Москва */
   IsMtsMsk: boolean;
+  /** Регионал. канал */
   IsRegional: boolean;
+  /** LCN DVB-C */
   LcnDvbC: number;
+  /** LCN IPTV */
   LcnIpTv: number;
+  /** LCN DVB-S */
   LcnDvbS: number;
+  /** Формат */
   Format: ChannelFormat;
+  /** Родительский канал */
   Parent: TvChannel;
+  /** Дочерние каналы */
   Children: TvChannel[];
+  /** Лого 40х30 */
   Logo40x30: string;
+  /** Часовая зона (UTC) */
   TimeZone: TimeZone;
+  /** LCN_IPTV_R */
   LcnIpTvR: number;
 }
 
@@ -581,17 +733,25 @@ export interface ParameterChoice extends ArticleObject {
 
 export interface MarketingDevice extends ExtensionObject {
   ContentName: "MarketingDevice";
+  /** Тип оборудования */
   DeviceType: EquipmentType;
+  /** Сегменты */
   Segments: Segment[];
+  /** Вид связи */
   CommunicationType: CommunicationType;
 }
 
 export interface Device extends ExtensionObject {
   ContentName: "Device";
+  /** Загрузки */
   Downloads: EquipmentDownload[];
+  /** Состав комплекта */
   Inners: Product[];
+  /** Отложенная публикация на */
   FreezeDate: Date;
+  /** Полное руководство пользователя (User guide) */
   FullUserGuide: string;
+  /** Краткое руководство пользователя (Quick start guide) */
   QuickStartGuide: string;
 }
 
@@ -606,9 +766,11 @@ export interface EquipmentType extends ArticleObject {
   Id: number;
   ContentName: "EquipmentType";
   Modified: Date;
+  /** Тип связи */
   ConnectionType: FixedType;
   Title: string;
   Alias: string;
+  /** Порядок */
   Order: number;
 }
 
@@ -622,25 +784,34 @@ export interface EquipmentDownload extends ArticleObject {
 
 export interface MarketingFixConnectAction extends ExtensionObject {
   ContentName: "MarketingFixConnectAction";
+  /** Сегмент */
   Segment: Segment[];
+  /** Акция в Каталоге акций */
   MarketingAction: MarketingProduct;
   StartDate: Date;
   EndDate: Date;
+  /** Описание промо-периода. */
   PromoPeriod: string;
+  /** Описание момента начала действия обычной цены. */
   AfterPromo: string;
 }
 
 export interface FixConnectAction extends ExtensionObject {
   ContentName: "FixConnectAction";
+  /** Маркетинговые предложения */
   MarketingOffers: MarketingProduct[];
+  /** Описание промо-периода. */
   PromoPeriod: string;
+  /** Описание момента начала действия обычной цены. */
   AfterPromo: string;
 }
 
 export interface MarketingTvPackage extends ExtensionObject {
   ContentName: "MarketingTvPackage";
+  /** Каналы */
   Channels: TvChannel[];
   TitleForSite: string;
+  /** Тип пакета */
   PackageType: 
     | "Base"
     | "Additional";
@@ -653,6 +824,7 @@ export interface TvPackage extends ExtensionObject {
 export interface MarketingFixConnectTariff extends ExtensionObject {
   ContentName: "MarketingFixConnectTariff";
   Segment: Segment;
+  /** Тип предложения (Категория тарифа) */
   Category: TariffCategory;
   MarketingDevices: MarketingProduct[];
   BonusTVPackages: MarketingProduct[];
@@ -673,6 +845,7 @@ export interface MarketingPhoneTariff extends ExtensionObject {
 
 export interface PhoneTariff extends ExtensionObject {
   ContentName: "PhoneTariff";
+  /** ВЗ вызовы (ссылка на Ростелеком) */
   RostelecomLink: string;
 }
 
@@ -690,8 +863,11 @@ export interface DeviceOnTariffs extends ArticleObject {
   Modified: Date;
   Parent: ProductRelation;
   Order: number;
+  /** Маркетинговое устройство */
   MarketingDevice: MarketingProduct;
+  /** Маркетинговые тарифы */
   MarketingTariffs: MarketingProduct[];
+  /** Города */
   Cities: Region[];
 }
 
@@ -700,7 +876,9 @@ export interface DevicesForFixConnectAction extends ArticleObject {
   ContentName: "DevicesForFixConnectAction";
   Modified: Date;
   Order: number;
+  /** Акция фиксированной связи */
   FixConnectAction: Product;
   Parent: ProductRelation;
+  /** Маркетинговое оборудование */
   MarketingDevice: MarketingProduct;
 }

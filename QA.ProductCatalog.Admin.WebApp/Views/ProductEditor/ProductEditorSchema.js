@@ -63,7 +63,8 @@ content.ForExtension
   Id: number;
   ContentName: "${getName(content)}";
   Modified: Date;`
-}${forEach(getFields(content), field => `
+}${forEach(getFields(content), field => `${field.FieldTitle || field.FieldDescription ? `
+  /** ${field.FieldTitle || field.FieldDescription} */`: ""}
   ${field.FieldName}: ${print(() => {
 
     if (isExtensionField(field)) {
