@@ -70,7 +70,7 @@ namespace QA.ProductCatalog.ImpactService
 
             var preservedParams = new Dictionary<int, JToken>(countryParams);
 
-            var exclusion = new DirectionExclusion(new[] {"Unlimited"}) { Zone = true };
+            var exclusion = new DirectionExclusion(new[] {"Unlimited", "FirstStep", "SecondStep", "ThirdStep", "FourthStep", "FifthStep"}) { Zone = true };
 
             foreach (var p in worldExceptRussiaParams)
             {
