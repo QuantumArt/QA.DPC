@@ -4,6 +4,9 @@
     <TargetFramework>net471</TargetFramework>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="netstandard" />
+  </ItemGroup>  
   
   <ItemGroup>
     <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
