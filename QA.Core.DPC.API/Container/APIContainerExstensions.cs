@@ -22,7 +22,7 @@ namespace QA.Core.DPC.API.Container
 			where TCondition : class
 			where TMapper : IConditionMapper<TCondition>
 		{
-            container.RegisterType<IArticleMatchService<TCondition>, ArticleMatchService<TCondition>>(new InjectionFactory(c => new ArticleMatchService<TCondition>(factoryFunc(c), c.Resolve<IConditionMapper<TCondition>>())));
+            container.RegisterType<IArticleMatchService<TCondition>>(new InjectionFactory(c => new ArticleMatchService<TCondition>(factoryFunc(c), c.Resolve<IConditionMapper<TCondition>>())));
             container.RegisterType<IConditionMapper<TCondition>, TMapper>();
             return container;
 		}
