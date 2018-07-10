@@ -20,6 +20,7 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   saveRelations?: RelationSelection;
   fieldEditors?: FieldsConfig;
   skipOtherFields?: boolean;
+  filterItems?: (item: ArticleObject) => boolean;
   collapsed?: boolean;
   vertical?: boolean;
   borderless?: boolean;

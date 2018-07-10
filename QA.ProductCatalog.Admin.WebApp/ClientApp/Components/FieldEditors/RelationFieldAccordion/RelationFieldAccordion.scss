@@ -52,6 +52,10 @@ $background: darken(#f5f8fa, 5%);
       border-bottom-right-radius: 0 !important;
     }
   }
+
+  &--hidden {
+    display: none;
+  }
 }
 
 .relation-field-accordion__expander {
@@ -109,5 +113,9 @@ $background: darken(#f5f8fa, 5%);
   &--open {
     display: table-cell;
     border-bottom: $border;
+  }
+
+  &--hidden {
+    display: none;
   }
 }

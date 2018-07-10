@@ -9,7 +9,7 @@ import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
 import { maxCount } from "Utils/Validators";
-import { asc } from "Utils/Array/Sort";
+import { by, asc, desc } from "Utils/Array/Sort";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { FieldSelector } from "../AbstractFieldEditor";
 import {
@@ -146,7 +146,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const { fieldEditors, children } = this.props;
+    const { fieldEditors, children, filterItems = () => true } = this.props;
     const { activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return list ? (
@@ -154,15 +154,17 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
         <tbody>
           {list
             .slice()
-            .sort(asc(this._orderByField))
+            .sort(by(desc(filterItems), asc(this._orderByField)))
             .map(article => {
               const serverId = this._dataSerializer.getServerId(article);
               const isOpen = article.Id === activeId;
+              const isHidden = !filterItems(article);
               return (
                 <Fragment key={article.Id}>
                   <tr
                     className={cn("relation-field-accordion__header", {
-                      "relation-field-accordion__header--open": isOpen
+                      "relation-field-accordion__header--open": isOpen,
+                      "relation-field-accordion__header--hidden": isHidden
                     })}
                     onClick={e => this.handleToggle(e, article)}
                   >
@@ -203,7 +205,8 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                   <tr className="relation-field-accordion__main">
                     <td
                       className={cn("relation-field-accordion__body", {
-                        "relation-field-accordion__body--open": isOpen
+                        "relation-field-accordion__body--open": isOpen,
+                        "relation-field-accordion__body--hidden": isHidden
                       })}
                       colSpan={this._displayFields.length + 3}
                     >

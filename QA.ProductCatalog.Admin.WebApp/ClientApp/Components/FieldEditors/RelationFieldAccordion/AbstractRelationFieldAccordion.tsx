@@ -20,6 +20,7 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   orderByField?: string | FieldSelector;
   saveRelations?: RelationSelection;
   fieldEditors?: FieldsConfig;
+  filterItems?: (item: ArticleObject) => boolean;
   children?: RenderArticle | ReactNode;
 }
 

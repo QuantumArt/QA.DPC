@@ -185,7 +185,14 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const { saveRelations, skipOtherFields, fieldEditors, vertical, children } = this.props;
+    const {
+      saveRelations,
+      skipOtherFields,
+      fieldEditors,
+      vertical,
+      children,
+      filterItems = () => true
+    } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
@@ -215,6 +222,9 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                 <Tab
                   key={article.Id}
                   id={article.Id}
+                  className={cn({
+                    "multi-relation-field-tabs__tab--hidden": !filterItems(article)
+                  })}
                   panel={
                     touchedIds[article.Id] && (
                       <ArticleEditor

@@ -56,7 +56,7 @@ export abstract class AbstractRelationFieldList extends AbstractFieldEditor<
           {this.renderField(model, fieldSchema)}
         </Row>
         <Row>
-          <Col xl={4} md={3} className="field-editor__label" />
+          <Col xl={2} md={3} className="field-editor__label" />
           <Col md>{this.renderValidation(model, fieldSchema)}</Col>
         </Row>
       </Col>
