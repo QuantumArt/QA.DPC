@@ -98,18 +98,20 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
-    const { saveRelations, fieldEditors, children } = this.props;
+    const { saveRelations, skipOtherFields, fieldEditors, borderless, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     return isTouched && article ? (
       <div
         className={cn("single-relation-field-tabs", {
-          "single-relation-field-tabs--hidden": !isOpen
+          "single-relation-field-tabs--hidden": !isOpen,
+          "single-relation-field-tabs--borderless": borderless
         })}
       >
         <ArticleEditor
           model={article}
           contentSchema={fieldSchema.Content}
+          skipOtherFields={skipOtherFields}
           fieldEditors={fieldEditors}
           saveRelations={saveRelations}
           header

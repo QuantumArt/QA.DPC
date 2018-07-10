@@ -41,8 +41,21 @@
       }
 
       > .pt-icon {
-        margin-right: 3px;
         color: #5c7080;
+
+        &:first-child {
+          margin-right: 0.5em;
+        }
+
+        &:last-child {
+          margin-left: 0.5em;
+        }
+      }
+    }
+
+    &.pt-large {
+      > .pt-tab {
+        min-height: 40px;
       }
     }
   }

@@ -25,9 +25,9 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
 
   private toggleRelation(e: any, article: ArticleObject) {
     const { onClick } = this.props;
-    const { isSelected } = this.state;
-    this.setState({ isSelected: !isSelected });
     if (onClick) {
+      const { isSelected } = this.state;
+      this.setState({ isSelected: !isSelected });
       onClick(e, article);
     }
   }
@@ -35,7 +35,7 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const { isSelected } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
-    let title = this._displayField(article);
+    let title = article ? this._displayField(article) : null;
     if (title == null) {
       title = "...";
     }

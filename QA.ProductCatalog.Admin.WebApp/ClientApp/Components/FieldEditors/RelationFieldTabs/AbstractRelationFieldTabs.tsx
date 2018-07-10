@@ -19,8 +19,10 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   orderByField?: string | FieldSelector;
   saveRelations?: RelationSelection;
   fieldEditors?: FieldsConfig;
+  skipOtherFields?: boolean;
   collapsed?: boolean;
   vertical?: boolean;
+  borderless?: boolean;
   children?: RenderArticle | ReactNode;
 }
 

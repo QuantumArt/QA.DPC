@@ -59,18 +59,18 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
 
   private toggleRelation(e: any, article: ArticleObject) {
     const { selectMultiple, onClick } = this.props;
-    let { selectedIds } = this.state;
-    if (selectedIds[article.Id]) {
-      delete selectedIds[article.Id];
-    } else {
-      if (selectMultiple) {
-        selectedIds[article.Id] = true;
-      } else {
-        selectedIds = { [article.Id]: true };
-      }
-    }
-    this.setState({ selectedIds });
     if (onClick) {
+      let { selectedIds } = this.state;
+      if (selectedIds[article.Id]) {
+        delete selectedIds[article.Id];
+      } else {
+        if (selectMultiple) {
+          selectedIds[article.Id] = true;
+        } else {
+          selectedIds = { [article.Id]: true };
+        }
+      }
+      this.setState({ selectedIds });
       onClick(e, article);
     }
   }
