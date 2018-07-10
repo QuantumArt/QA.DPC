@@ -9,7 +9,7 @@ import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
 import { maxCount } from "Utils/Validators";
-import { by, asc, desc } from "Utils/Array/Sort";
+import { asc } from "Utils/Array/Sort";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { FieldSelector } from "../AbstractFieldEditor";
 import {
@@ -27,6 +27,10 @@ interface MultiRelationFieldAccordionState {
 @consumer
 @observer
 export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
+  static defaultProps = {
+    filterItems: () => true
+  };
+
   private _orderByField: FieldSelector;
   readonly state: MultiRelationFieldAccordionState = {
     activeId: null,
@@ -146,25 +150,23 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const { fieldEditors, children, filterItems = () => true } = this.props;
+    const { fieldEditors, filterItems, children } = this.props;
     const { activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     return list ? (
       <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
         <tbody>
           {list
-            .slice()
-            .sort(by(desc(filterItems), asc(this._orderByField)))
+            .filter(filterItems)
+            .sort(asc(this._orderByField))
             .map(article => {
               const serverId = this._dataSerializer.getServerId(article);
               const isOpen = article.Id === activeId;
-              const isHidden = !filterItems(article);
               return (
                 <Fragment key={article.Id}>
                   <tr
                     className={cn("relation-field-accordion__header", {
-                      "relation-field-accordion__header--open": isOpen,
-                      "relation-field-accordion__header--hidden": isHidden
+                      "relation-field-accordion__header--open": isOpen
                     })}
                     onClick={e => this.handleToggle(e, article)}
                   >
@@ -205,8 +207,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                   <tr className="relation-field-accordion__main">
                     <td
                       className={cn("relation-field-accordion__body", {
-                        "relation-field-accordion__body--open": isOpen,
-                        "relation-field-accordion__body--hidden": isHidden
+                        "relation-field-accordion__body--open": isOpen
                       })}
                       colSpan={this._displayFields.length + 3}
                     >

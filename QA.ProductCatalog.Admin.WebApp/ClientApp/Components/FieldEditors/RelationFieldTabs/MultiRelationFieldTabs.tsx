@@ -26,6 +26,10 @@ interface MultiRelationFieldTabsState {
 @consumer
 @observer
 export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
+  static defaultProps = {
+    filterItems: () => true
+  };
+
   private _orderByField: FieldSelector;
   readonly state: MultiRelationFieldTabsState = {
     isOpen: !this.props.collapsed,
@@ -190,8 +194,8 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       skipOtherFields,
       fieldEditors,
       vertical,
-      children,
-      filterItems = () => true
+      filterItems,
+      children
     } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
@@ -211,7 +215,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
         {isTouched &&
           list &&
           list
-            .slice()
+            .filter(filterItems)
             .sort(asc(this._orderByField))
             .map(article => {
               let title = this._displayField(article);
@@ -222,9 +226,6 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                 <Tab
                   key={article.Id}
                   id={article.Id}
-                  className={cn({
-                    "multi-relation-field-tabs__tab--hidden": !filterItems(article)
-                  })}
                   panel={
                     touchedIds[article.Id] && (
                       <ArticleEditor
