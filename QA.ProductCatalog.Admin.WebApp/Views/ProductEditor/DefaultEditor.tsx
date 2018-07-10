@@ -14,7 +14,16 @@ const App = () => (
       productDefinitionId={settings.ProductDefinitionId}
       articleId={settings.ArticleId}
       relationEditors={{
-        Region: props => <RelationFieldList selectMultiple orderByField="Title" {...props} />
+        Region: RelationFieldListDefault,
+        Group: RelationFieldListDefault,
+        ProductModifer: RelationFieldListDefault,
+        TariffZone: RelationFieldListDefault,
+        Direction: RelationFieldListDefault,
+        ParameterModifier: RelationFieldListDefault,
+        LinkModifier: RelationFieldListDefault,
+        CommunicationType: RelationFieldListDefault,
+        Segment: RelationFieldListDefault,
+        FixedType: RelationFieldListDefault
       }}
     >
       {(model, contentSchema) => (
@@ -28,6 +37,10 @@ const App = () => (
       )}
     </ProductEditor>
   </LocaleContext.Provider>
+);
+
+const RelationFieldListDefault = props => (
+  <RelationFieldList displayField="Title" orderByField="Title" {...props} />
 );
 
 ReactDOM.render(<App />, document.getElementById("editor"));

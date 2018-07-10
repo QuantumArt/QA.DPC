@@ -680,6 +680,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff\MtsFixTariff.tsx" />
+    <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff\MtsFixTariffTabs.tsx" />
     <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff\ProductEditorSchema.ts" />
     <TypeScriptCompile Include="Views\ProductEditor\DefaultEditor.tsx" />
   </ItemGroup>

@@ -2,10 +2,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { LocaleContext } from "react-lazy-i18n";
-import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import { RelationFieldList, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
-import { Product, DeviceOnTariffs } from "./ProductEditorSchema";
+import { RelationFieldList } from "Components/FieldEditors/FieldEditors";
+import { MtsFixTariffEditor } from "./MtsFixTariffEditor";
 
 const settings = window["ProductEditorSettings"];
 
@@ -16,41 +15,24 @@ const App = () => (
       articleId={settings.ArticleId}
       relationEditors={{
         Region: props => <RelationFieldList selectMultiple orderByField="Title" {...props} />,
-        DeviceOnTariffs: props => (
-          <RelationFieldTabs
-            displayField={(d: DeviceOnTariffs) => d.Parent && d.Parent.Title}
-            collapsed
-            vertical
-            {...props}
-          />
-        ),
-        Unit: RelationFieldList
+        Group: RelationFieldListDefault,
+        ProductModifer: RelationFieldListDefault,
+        TariffZone: RelationFieldListDefault,
+        Direction: RelationFieldListDefault,
+        ParameterModifier: RelationFieldListDefault,
+        LinkModifier: RelationFieldListDefault,
+        CommunicationType: RelationFieldListDefault,
+        Segment: RelationFieldListDefault,
+        FixedType: RelationFieldListDefault
       }}
     >
-      {(model: Product, contentSchema) => (
-        <ArticleEditor
-          model={model}
-          contentSchema={contentSchema}
-          titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
-          saveRelations={{
-            MarketingProduct: {
-              ActionsOnMarketingDevice: true
-            },
-            Type: {
-              FixConnectAction: {
-                MarketingOffers: true
-              }
-            },
-            Regions: {
-              Parent: true
-            }
-          }}
-          header
-          buttons
-        />
-      )}
+      {(model, contentSchema) => <MtsFixTariffEditor model={model} contentSchema={contentSchema} />}
     </ProductEditor>
   </LocaleContext.Provider>
+);
+
+const RelationFieldListDefault = props => (
+  <RelationFieldList displayField="Title" orderByField="Title" {...props} />
 );
 
 ReactDOM.render(<App />, document.getElementById("editor"));
