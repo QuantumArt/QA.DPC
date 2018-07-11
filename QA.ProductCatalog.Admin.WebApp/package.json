@@ -1,0 +1,14 @@
+{
+  "name": "qa.productcatalog.admin.webapp",
+  "version": "1.0.0",
+  "description": "DPC Admin Web App",
+  "scripts": {
+    "build-prod": "exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://tfs01:8080/tfs/QuantumartCollection/_git/QA.DPC"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
