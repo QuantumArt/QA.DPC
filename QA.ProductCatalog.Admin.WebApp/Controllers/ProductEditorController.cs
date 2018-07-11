@@ -17,6 +17,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using QA.Core.Web;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -26,7 +27,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private const string FIELD_NAME_EDITOR_VIEW_PATH = "EditorViewPath";
         private const string FIELD_NAME_PRODUCT_DEFINITION_ID = "Id";
         private readonly IContentDefinitionService _contentDefinitionService;
-        private readonly IProductService _productService;
+        // TODO: IProductService
+        private readonly ProductLoader _productService;
         private readonly IProductUpdateService _productUpdateService;
         private readonly JsonProductService _jsonProductService;
         private readonly IReadOnlyArticleService _articleService;
@@ -36,7 +38,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         public ProductEditorController(
             IContentDefinitionService contentDefinitionService,
-            IProductService productService,
+            // TODO: IProductService
+            ProductLoader productService,
             IProductUpdateService productUpdateService,
             JsonProductService jsonProductService,
             IReadOnlyArticleService articleService,
@@ -54,12 +57,18 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorPartialContentService = editorPartialContentService;
         }
 
+        [HttpGet]
+        public ViewResult ComponentLibrary()
+        {
+            return View();
+        }
+
         /// <summary>
         /// CustomAction для создания нового продукта
         /// </summary>
         /// <param name="content_item_id">Id описания продукта</param>
-        [HttpGet]
-        public ActionResult Create(int content_item_id, bool isLive = false)
+        [HttpGet, RequireCustomAction]
+        public ViewResult Create(int content_item_id, bool isLive = false)
         {
             var fieldsByName = _contentDefinitionService.GetDefinitionFields(content_item_id, isLive);
 
@@ -85,8 +94,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// CustomAction для редактирования существующего продукта
         /// </summary>
         /// <param name="content_item_id">Id корневой статьи</param>
-        [HttpGet]
-        public ActionResult Edit(int content_item_id, bool isLive = false)
+        [HttpGet, RequireCustomAction]
+        public ViewResult Edit(int content_item_id, bool isLive = false)
         {
             var fieldsByName = GetDefinitionFieldsByArticleId(content_item_id, isLive);
 
@@ -114,7 +123,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// Построить TypeScript-описание продукта.
         /// </summary>
         /// <param name="content_item_id">Id описания продукта</param>
-        [HttpGet]
+        [HttpGet, RequireCustomAction]
         public ViewResult TypeScriptSchema(int content_item_id, bool isLive = false)
         {
             Content content = _contentDefinitionService.GetDefinitionById(content_item_id, isLive);
@@ -131,7 +140,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// Построить TypeScript-описание схемы для редактора продукта.
         /// </summary>
         /// <param name="content_item_id">Id описания продукта</param>
-        [HttpGet]
+        [HttpGet, RequireCustomAction]
         public ViewResult ProductEditorSchema(int content_item_id, bool isLive = false)
         {
             Content content = _contentDefinitionService.GetDefinitionById(content_item_id, isLive);
@@ -265,13 +274,77 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         /// <summary>
+        /// Загрузить часть продукта начиная с корневого контента,
+        /// описанного путём <see cref="LoadPartialProductRequest.ContentPath"/>
+        /// игнорируя уже загруженные статьи <see cref="LoadPartialProductRequest.IgnoredArticleIdsByContent"/>
+        /// </summary>
+        /// <returns>JSON части продукта</returns>
+        [HttpPost]
+        public ActionResult LoadPartialProduct(
+             [ModelBinder(typeof(JsonModelBinder))] LoadPartialProductRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Content rootContent = _contentDefinitionService
+                .GetDefinitionById(request.ProductDefinitionId, request.IsLive);
+
+            Content nestedContent = _editorPartialContentService
+              .FindContentByPath(rootContent, request.ContentPath, withDictionaries: true);
+
+            Article[] articles = _productService.GetProductsByIds(
+                nestedContent, request.ArticleIds, request.IgnoredArticleIdsByContent, request.IsLive);
+
+            IArticleFilter filter = request.IsLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+
+            ArticleObject[] articleObjects = articles
+                .Select(article => _editorDataService.ConvertArticle(article, filter))
+                .ToArray();
+
+            string json = JsonConvert.SerializeObject(articleObjects);
+
+            return Content(json, "application/json");
+        }
+
+        public class LoadPartialProductRequest
+        {
+            /// <summary>
+            /// Id описания продукта
+            /// </summary>
+            public int ProductDefinitionId { get; set; }
+
+            /// <summary>
+            /// Путь к контенту в продукте в формате <c>"/FieldName/.../ExtensionContentName/.../FieldName"</c>
+            /// </summary>
+            public string ContentPath { get; set; } = "/";
+
+            /// <summary>
+            /// Список Id статей, которые необходимо загрузить
+            /// </summary>
+            [Required]
+            public int[] ArticleIds { get; set; }
+
+            /// <summary>
+            /// Списки Id уже загруженных статей, сгруппированные по имени контента
+            /// </summary>
+            public Dictionary<string, int[]> IgnoredArticleIdsByContent { get; set; } = new Dictionary<string, int[]>();
+
+            /// <summary>
+            /// Фильтрация по IsLive
+            /// </summary>
+            public bool IsLive { get; set; }
+        }
+
+        /// <summary>
         /// Сохранить часть продукта начиная с корневого контента,
-        /// описанного путём <see cref="PartialProductRequest.ContentPath"/>
-        /// и поддеревом выбора частичного продукта <see cref="PartialProductRequest.RelationSelection"/>.
+        /// описанного путём <see cref="SavePartialProductRequest.ContentPath"/>
+        /// и поддеревом выбора частичного продукта <see cref="SavePartialProductRequest.RelationSelection"/>.
         /// </summary>
         [HttpPost]
         public ActionResult SavePartialProduct(
-            [ModelBinder(typeof(JsonModelBinder))] PartialProductRequest request)
+            [ModelBinder(typeof(JsonModelBinder))] SavePartialProductRequest request)
         {
             if (!ModelState.IsValid)
             {
@@ -297,7 +370,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.NoContent);
         }
         
-        public class PartialProductRequest
+        public class SavePartialProductRequest
         {
             /// <summary>
             /// Id описания продукта
@@ -358,12 +431,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             return _contentDefinitionService
                 .GetDefinitionFields(productTypeId, qpArticle.ContentId, isLive);
-        }
-
-        [HttpGet]
-        public ViewResult ComponentLibrary()
-        {
-            return View();
         }
     }
 }

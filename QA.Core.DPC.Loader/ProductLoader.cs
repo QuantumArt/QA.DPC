@@ -109,16 +109,16 @@ namespace QA.Core.DPC.Loader
             }
         }
 
-        public virtual Article GetProductById(
-            Content content, int articleId, Dictionary<string, int[]> ignoredIdsByContent, bool isLive = false)
-        {
-            // TODO: реализовать GetProductById
-            // если встретился Article c уже загруженным Id — создаем вместо него `new Article(id)`
-            throw new NotImplementedException();
-        }
-
+        /// <summary>
+        /// Загрузить список статей <paramref name="articleIds"/>
+        /// игнорируя уже загруженные статьи <paramref name="ignoredArticleIdsByContent"/>
+        /// </summary>
+        /// <param name="ignoredArticleIdsByContent">
+        /// Списки Id уже загруженных статей, сгруппированные по имени контента
+        /// </param>
         public virtual Article[] GetProductsByIds(
-            Content content, int[] articleIds, Dictionary<string, int[]> ignoredIdsByContent, bool isLive = false)
+            Content content, int[] articleIds,
+            Dictionary<string, int[]> ignoredArticleIdsByContent, bool isLive = false)
         {
             // TODO: реализовать GetProductsByIds
             // если встретился Article c уже загруженным Id — создаем вместо него `new Article(id)`
