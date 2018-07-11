@@ -14,7 +14,7 @@ namespace QA.Core.DPC.QP.Services
     {
         private Customer[] _customers;
         private readonly ICustomerProvider _customerProvider;
-        private readonly IX[] _ix;
+        private readonly IX[] _ix = {};
         public ConnectionWatcher(ICustomerProvider customerProvider)
         {
             _customerProvider = customerProvider;

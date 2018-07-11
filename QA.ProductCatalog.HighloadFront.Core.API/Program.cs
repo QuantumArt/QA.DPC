@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using NLog.Web;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API
 {
@@ -18,6 +19,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
                 .CaptureStartupErrors(true)
                 .UseSetting("detailedErrors", "true")
                 .UseStartup<Startup>()
+                .UseNLog()
                 .UseApplicationInsights()
                 .Build();
 

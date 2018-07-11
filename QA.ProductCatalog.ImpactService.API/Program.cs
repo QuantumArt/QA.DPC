@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Builder;
+using NLog.Web;
 
 namespace QA.ProductCatalog.ImpactService.API
 {
@@ -14,6 +15,7 @@ namespace QA.ProductCatalog.ImpactService.API
                 .UseIISIntegration()
                 .CaptureStartupErrors(true)
                 .UseSetting("detailedErrors", "true")
+                .UseNLog()
                 .UseStartup<Startup>()
                 .Build();
 

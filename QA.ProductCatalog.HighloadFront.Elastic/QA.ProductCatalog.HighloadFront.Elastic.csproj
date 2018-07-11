@@ -15,10 +15,11 @@
     <Reference Include="netstandard" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Options" Version="1.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="2.1.1" />
     <PackageReference Include="NEST" Version="2.5.5" />
     <PackageReference Include="QA.Core" Version="3.2.1-beta1" />
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />    
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />

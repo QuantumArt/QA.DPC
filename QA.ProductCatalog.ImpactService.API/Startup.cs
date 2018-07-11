@@ -54,7 +54,6 @@ namespace QA.ProductCatalog.ImpactService.API
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             loggerFactory.AddNLog();
-            app.AddNLogWeb();
             env.ConfigureNLog("nlog.config");
 
             if (env.IsDevelopment())

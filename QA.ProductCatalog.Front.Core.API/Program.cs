@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using Microsoft.AspNetCore.Hosting;
+using NLog.Web;
 
 namespace QA.ProductCatalog.Front.Core.API
 {
@@ -12,6 +13,7 @@ namespace QA.ProductCatalog.Front.Core.API
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
+                .UseNLog()
                 .CaptureStartupErrors(true)
                 .UseSetting("detailedErrors", "true")
                 .UseApplicationInsights()
