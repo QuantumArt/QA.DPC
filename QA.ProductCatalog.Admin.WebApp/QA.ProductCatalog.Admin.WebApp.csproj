@@ -679,6 +679,9 @@
     <Folder Include="ClientApp\" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Scripts\qp\QP8BackendApi.Interaction.d.ts">
+      <DependentUpon>QP8BackendApi.Interaction.js</DependentUpon>
+    </TypeScriptCompile>
     <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff\MtsFixTariff.tsx" />
     <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff\MtsFixTariffTabs.tsx" />
     <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff\ProductEditorSchema.ts" />
