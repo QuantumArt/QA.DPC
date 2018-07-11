@@ -1,8 +1,10 @@
 import React, { MouseEvent } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
+import { inject } from "react-ioc";
 import { ArticleObject } from "Models/EditorDataModels";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
+import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
 import "./RelationFieldList.scss";
@@ -20,6 +22,7 @@ export interface RelationFieldListProps extends FieldEditorProps {
 export abstract class AbstractRelationFieldList extends AbstractFieldEditor<
   RelationFieldListProps
 > {
+  @inject protected _relationController: RelationController;
   protected _displayField: FieldSelector;
 
   constructor(props: RelationFieldListProps, context?: any) {

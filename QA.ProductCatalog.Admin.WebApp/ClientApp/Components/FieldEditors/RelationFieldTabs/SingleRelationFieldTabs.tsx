@@ -49,6 +49,12 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     });
   };
 
+  private selectArticles = () => {
+    const { fieldSchema } = this.props;
+    const content = (fieldSchema as SingleRelationFieldSchema).Content;
+    this._relationController.selectRelations(content);
+  };
+
   renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const { isOpen } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
@@ -71,6 +77,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
             rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
+            onClick={this.selectArticles}
           >
             Выбрать
           </Button>

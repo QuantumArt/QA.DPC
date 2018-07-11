@@ -7,6 +7,7 @@ import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataSerializer } from "Services/DataSerializer";
+import { RelationController } from "Services/RelationController";
 import { EditorController } from "Services/EditorController";
 import { ArticleObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
@@ -27,6 +28,7 @@ interface ProductEditorProps {
   DataNormalizer,
   DataSerializer,
   EditorController,
+  RelationController,
   RelationsConfig
 )
 export class ProductEditor extends Component<ProductEditorProps> {

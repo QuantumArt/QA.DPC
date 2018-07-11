@@ -7,6 +7,7 @@ import { RelationSelection, validateRelationSelection } from "Models/RelationSel
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataContext } from "Services/DataContext";
+import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
 import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
@@ -29,6 +30,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
 > {
   @inject protected _dataSerializer: DataSerializer;
   @inject protected _dataContext: DataContext;
+  @inject protected _relationController: RelationController;
   protected _displayFields: FieldSelector[];
 
   constructor(props: RelationFieldAccordionProps, context?: any) {

@@ -6,6 +6,7 @@ import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
+import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
 import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
@@ -31,6 +32,7 @@ export abstract class AbstractRelationFieldTabs extends AbstractFieldEditor<
   RelationFieldTabsProps
 > {
   @inject protected _dataContext: DataContext;
+  @inject protected _relationController: RelationController;
   protected _displayField: FieldSelector;
 
   constructor(props: RelationFieldTabsProps, context?: any) {
