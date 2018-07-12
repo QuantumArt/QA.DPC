@@ -46,6 +46,15 @@ namespace QA.Core.DPC.Loader
             throw new NotImplementedException();
         }
 
+        public Article[] GetProductsByIds(
+            Content content, int[] articleIds,
+            Dictionary<string, int[]> ignoredArticleIdsByContent, bool isLive = false)
+        {
+            return articleIds
+                .Select(id => GetProductById(id, isLive, new ProductDefinition { StorageSchema = content }))
+                .ToArray();
+        }
+
         #endregion
 
 

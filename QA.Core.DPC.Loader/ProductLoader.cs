@@ -122,7 +122,9 @@ namespace QA.Core.DPC.Loader
         {
             // TODO: реализовать GetProductsByIds
             // если встретился Article c уже загруженным Id — создаем вместо него `new Article(id)`
-            throw new NotImplementedException();
+            return articleIds
+                .Select(id => GetProductById(id, isLive, new ProductDefinition { StorageSchema = content }))
+                .ToArray();
         }
 
         /// <summary>

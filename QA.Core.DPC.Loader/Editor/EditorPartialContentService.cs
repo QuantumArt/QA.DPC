@@ -80,6 +80,7 @@ namespace QA.Core.DPC.Loader.Editor
         /// начиная с корневого контента, описанного путём <paramref name="contentPath"/>
         /// в формате <c>"/FieldName/.../ExtensionContentName/.../FieldName"</c>,
         /// и поддеревом выбора частичного продукта <paramref name="relationSelection"/>.
+        /// Если <code>relationSelection == null</code> — то выбирается весь подграф продукта целиком.
         /// </summary>
         /// <exception cref="InvalidOperationException" />
         public Content GetPartialContent(
@@ -87,12 +88,16 @@ namespace QA.Core.DPC.Loader.Editor
         {
             if (rootContent == null) throw new ArgumentNullException(nameof(rootContent));
             if (contentPath == null) throw new ArgumentNullException(nameof(contentPath));
-            if (relationSelection == null) throw new ArgumentNullException(nameof(relationSelection));
 
             _contentService.LoadStructureCache();
 
             // находим контент по пути contentPath
             Content foundContent = FindContentByPath(rootContent, contentPath, withDictionaries: true);
+
+            if (relationSelection == null)
+            {
+                return foundContent;
+            }
             
             // выбираем отмеченные связи, удаляя при этом остальные
             Content partialContent = WithSelectedRelations(foundContent, relationSelection);
