@@ -1,15 +1,28 @@
-import qs from "qs";
-import { inject } from "react-ioc";
-import { untracked } from "mobx";
-import { DataContext } from "Services/DataContext";
-import { ContentSchema } from "Models/EditorSchemaModels";
 import "../../Scripts/pmrpc";
 import QP8 from "../../Scripts/qp/QP8BackendApi.Interaction";
+import qs from "qs";
+import { inject } from "react-ioc";
+import { untracked, runInAction } from "mobx";
+import { DataSerializer } from "Services/DataSerializer";
+import { DataNormalizer } from "Services/DataNormalizer";
+import { DataContext } from "Services/DataContext";
+import { ContentSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
+import {
+  ArticleObject,
+  ExtensionObject,
+  ArticleSnapshot,
+  MutableStoreSnapshot
+} from "Models/EditorDataModels";
+import { EditorSettings } from "Models/EditorSettings";
+import { command } from "Utils/Command";
 
 export class RelationController {
+  @inject private _editorSettings: EditorSettings;
+  @inject private _dataSerializer: DataSerializer;
+  @inject private _dataNormalizer: DataNormalizer;
   @inject private _dataContext: DataContext;
 
-  // @ts-ignore TODO:
+  private _query = document.location.search;
   private _rootUrl = document.head.getAttribute("root-url") || "";
   private _hostUid = qs.parse(document.location.search).hostUID as string;
   private _resolvePromise: (articeIds: number[]) => void;
@@ -29,7 +42,19 @@ export class RelationController {
     this._observer.dispose();
   }
 
-  public async selectRelations(contentSchema: ContentSchema, multiple = false) {
+  public async selectRelation(
+    model: ArticleObject | ExtensionObject,
+    fieldSchema: SingleRelationFieldSchema
+  ) {
+    const [relatedArticle] = await this.selectArticles(fieldSchema.Content, false);
+    if (relatedArticle) {
+      runInAction("selectRelation", () => {
+        model[fieldSchema.FieldName] = relatedArticle;
+      });
+    }
+  }
+
+  private async selectArticles(contentSchema: ContentSchema, multiple) {
     const options = {
       selectActionCode: "select_article",
       entityTypeCode: "article",
@@ -55,23 +80,7 @@ export class RelationController {
 
     await this.loadSelectedArticles(contentSchema, articleIdsToLoad);
 
-    // return this.getSelectedArticles(contentSchema, selectedArticleIds);
-  }
-
-  private async loadSelectedArticles(contentSchema: ContentSchema, articleIdsToLoad: number[]) {
-    const existingArticleIdsByContent: {
-      [contentName: string]: number[];
-    } = {};
-
-    untracked(() => {
-      Object.entries(this._dataContext.store).forEach(([contentName, articlesById]) => {
-        existingArticleIdsByContent[contentName] = [...articlesById.keys()].map(Number);
-      });
-    });
-
-    // TODO: call /ProductEditor/LoadPartialProduct
-    console.log({ articleIdsToLoad, existingArticleIdsByContent });
-    console.log(JSON.stringify(existingArticleIdsByContent).length);
+    return this.getSelectedArticles(contentSchema, selectedArticleIds);
   }
 
   private getSelectedArticles(contentSchema: ContentSchema, selectedArticleIds: number[]) {
@@ -80,4 +89,67 @@ export class RelationController {
       return selectedArticleIds.map(id => existingArticles.get(String(id)));
     });
   }
+
+  @command
+  private async loadSelectedArticles(contentSchema: ContentSchema, articleIdsToLoad: number[]) {
+    const existingArticleIds = this.getExistingArticleIdsByContent();
+
+    const response = await fetch(
+      `${this._rootUrl}/ProductEditor/LoadPartialProduct${this._query}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: contentSchema.ContentPath,
+          RelationSelection: null,
+          ArticleIds: articleIdsToLoad,
+          IgnoredArticleIdsByContent: existingArticleIds
+        })
+      }
+    );
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    const dataTrees = this._dataSerializer.deserialize<ArticleSnapshot[]>(await response.text());
+
+    const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
+
+    this.removeExistingArticlesFromSnapshot(dataSnapshot, existingArticleIds);
+
+    this._dataContext.mergeArticles(dataSnapshot);
+  }
+
+  private getExistingArticleIdsByContent() {
+    const existingArticleIds: ArticleIdsByContent = {};
+
+    untracked(() => {
+      Object.entries(this._dataContext.store).forEach(([contentName, articlesById]) => {
+        existingArticleIds[contentName] = [...articlesById.keys()].map(Number);
+      });
+    });
+
+    return existingArticleIds;
+  }
+
+  private removeExistingArticlesFromSnapshot(
+    dataSnapshot: MutableStoreSnapshot,
+    existingArticleIds: ArticleIdsByContent
+  ) {
+    Object.entries(existingArticleIds).forEach(([contentName, articleIds]) => {
+      const articleSnapshotsById = dataSnapshot[contentName];
+      if (articleSnapshotsById) {
+        articleIds.forEach(id => {
+          delete articleSnapshotsById[id];
+        });
+      }
+    });
+  }
+}
+
+interface ArticleIdsByContent {
+  [contentName: string]: number[];
 }

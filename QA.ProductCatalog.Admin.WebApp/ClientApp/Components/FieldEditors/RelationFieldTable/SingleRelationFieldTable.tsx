@@ -19,6 +19,11 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
     model.setTouched(fieldSchema.FieldName, true);
   };
 
+  private selectRelation = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
+  };
+
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const article: ArticleObject = model[fieldSchema.FieldName];
     const serverId = article && this._dataSerializer.getServerId(article);
@@ -31,6 +36,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
             rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
+            onClick={this.selectRelation}
           >
             Выбрать
           </Button>

@@ -3,7 +3,7 @@ import { isObject, isInteger, isString } from "Utils/TypeChecks";
 import { ValidatableObject } from "mst-validation-mixin";
 
 export interface StoreObject {
-  readonly [name: string]: IExtendedObservableMap<ArticleObject>;
+  readonly [contentName: string]: IExtendedObservableMap<ArticleObject>;
 }
 
 export interface ArticleObject extends ValidatableObject, IStateTreeNode {
@@ -27,8 +27,14 @@ export function isExtensionObject(object: any): object is ExtensionObject {
 }
 
 export interface StoreSnapshot {
-  readonly [content: string]: {
-    readonly [id: string]: ArticleSnapshot;
+  readonly [contentName: string]: {
+    readonly [articleId: string]: ArticleSnapshot;
+  };
+}
+
+export interface MutableStoreSnapshot {
+  [contentName: string]: {
+    [articleId: string]: ArticleSnapshot;
   };
 }
 

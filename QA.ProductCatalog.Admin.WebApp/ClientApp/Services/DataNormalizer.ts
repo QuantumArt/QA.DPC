@@ -53,4 +53,8 @@ export class DataNormalizer {
   public normalize(articleObject: ArticleSnapshot, contentName: string): StoreSnapshot {
     return normalize(articleObject, this._entitySchemas[contentName]).entities;
   }
+
+  public normalizeAll(articleObjects: ArticleSnapshot[], contentName: string): StoreSnapshot {
+    return normalize(articleObjects, [this._entitySchemas[contentName]]).entities;
+  }
 }

@@ -1,3 +1,4 @@
+import { action } from "mobx";
 import { types as t, unprotect, IModelType } from "mobx-state-tree";
 import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
 import {
@@ -35,6 +36,7 @@ export class DataContext {
     unprotect(this.store);
   }
 
+  @action
   public createArticle<T extends ArticleObject = ArticleObject>(contentName: string): T {
     const article = this.getContentType(contentName).create({
       ...this._defaultSnapshots[contentName],
@@ -43,6 +45,16 @@ export class DataContext {
 
     this.store[contentName].put(article);
     return article;
+  }
+
+  @action
+  public mergeArticles(storeSnapshot: StoreSnapshot) {
+    Object.entries(storeSnapshot).forEach(([contentName, articlesById]) => {
+      const collection = this.store[contentName];
+      if (collection) {
+        collection.merge(articlesById);
+      }
+    });
   }
 
   private getContentType(contentName: string): IModelType<ArticleSnapshot, ArticleObject> {

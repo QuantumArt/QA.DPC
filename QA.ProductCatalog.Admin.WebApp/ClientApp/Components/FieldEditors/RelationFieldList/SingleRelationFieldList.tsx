@@ -32,6 +32,11 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
     }
   }
 
+  private selectRelation = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
+  };
+
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const { isSelected } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
@@ -48,6 +53,7 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
             rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
+            onClick={this.selectRelation}
           >
             Выбрать
           </Button>

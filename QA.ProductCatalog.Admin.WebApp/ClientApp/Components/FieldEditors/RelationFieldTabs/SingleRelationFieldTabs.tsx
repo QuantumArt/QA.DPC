@@ -49,10 +49,9 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     });
   };
 
-  private selectArticles = () => {
-    const { fieldSchema } = this.props;
-    const content = (fieldSchema as SingleRelationFieldSchema).Content;
-    this._relationController.selectRelations(content);
+  private selectRelation = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
   renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
@@ -77,7 +76,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
             rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
-            onClick={this.selectArticles}
+            onClick={this.selectRelation}
           >
             Выбрать
           </Button>
