@@ -36,10 +36,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
 		#region Overrides
 		protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
-		{            
-            var product = ArticleService.Read(productId);
+		{
+		    bool excludeArchive = NeedToArchive;
+		    var product = ArticleService.Read(productId, excludeArchive);
 			var definition = Productservice.GetProductDefinition(0, product.ContentId);
-			var dictionary = GetProductsToBeProcessed<DeletingMode>(product, definition, ef => ef.DeletingMode, DeletingMode.Delete);
+			var dictionary = GetProductsToBeProcessed<DeletingMode>(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, excludeArchive);
 			bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
 			QA.Core.Models.Entities.Article[] notificationProducts = null;
             if (!doNotSendNotifications)

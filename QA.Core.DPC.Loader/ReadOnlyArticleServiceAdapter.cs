@@ -37,29 +37,29 @@ namespace QA.Core.DPC.Loader
 			ArticleService.LoadStructureCache(ContextStorage);
 		}
 
-		public virtual Article Read(int articleId)
+		public virtual Article Read(int articleId, bool excludeArchive = true)
 		{
-            return ArticleService.Read(articleId, true);
+            return ArticleService.Read(articleId, true, excludeArchive);
 		}
 
-        public virtual Article Read(int articleId, int contentId)
+        public virtual Article Read(int articleId, int contentId, bool excludeArchive = true)
         {
-            return ArticleService.Read(articleId, contentId, true);
+            return ArticleService.Read(articleId, contentId, true, excludeArchive);
         }
 
-        public virtual IEnumerable<Article> List(int contentId, int[] ids)
+        public virtual IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
 		{
-			return ArticleService.List(contentId, ids, true);
+			return ArticleService.List(contentId, ids, excludeArchive);
 		}
 
-		public string GetLinkedItems(int linkId, int id)
+		public string GetLinkedItems(int linkId, int id, bool excludeArchive = true)
 		{
-			return ArticleService.GetLinkedItems(linkId, id, true);
+			return ArticleService.GetLinkedItems(linkId, id, excludeArchive);
 		}
 
-		public string GetRelatedItems(int fieldId, int? id)
+		public string GetRelatedItems(int fieldId, int? id, bool excludeArchive = true)
 		{
-			return ArticleService.GetRelatedItems(fieldId, id, true);
+			return ArticleService.GetRelatedItems(fieldId, id, excludeArchive);
 		}
 
 		public string[] GetFieldValues(int[] ids, int contentId, string fieldName)

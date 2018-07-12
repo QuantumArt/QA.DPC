@@ -32,26 +32,21 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 			StructureCacheIsLoaded = true;
 		}
 
-		public Article Read(int articleId, bool isLive = true)
-		{
-			throw new NotImplementedException();
-		}
-
-		public Article Read(int articleId)
+	    public Article Read(int articleId, bool excludeArchive = true)
 		{
 			Article article;
 			Articles.TryGetValue(articleId, out article);
 			return article;
 		}
 
-        public Article Read(int articleId, int contentId)
+        public Article Read(int articleId, int contentId, bool excludeArchive = true)
         {
             Article article;
             Articles.TryGetValue(articleId, out article);
             return article;
         }
 
-        public IEnumerable<Article> List(int contentId, int[] ids)
+        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
 		{
 			foreach (int id in ids)
 			{
@@ -133,12 +128,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 			}
 		}
 
-		public string GetLinkedItems(int linkId, int id)
+		public string GetLinkedItems(int linkId, int id, bool excludeArchive = true)
 		{
 			return string.Empty;
 		}
 
-		public string GetRelatedItems(int fieldId, int? id)
+		public string GetRelatedItems(int fieldId, int? id, bool excludeArchive = true)
 		{
 			return string.Empty;
 		}
