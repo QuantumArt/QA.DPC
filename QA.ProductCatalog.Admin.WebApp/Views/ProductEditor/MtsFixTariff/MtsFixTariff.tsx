@@ -1,18 +1,15 @@
 ﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
-import { LocaleContext } from "react-lazy-i18n";
+import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
 import { RelationFieldList } from "Components/FieldEditors/FieldEditors";
 import { MtsFixTariffEditor } from "./MtsFixTariffEditor";
 
-const settings = window["ProductEditorSettings"];
-
 const App = () => (
   <LocaleContext.Provider value="ru">
     <ProductEditor
-      productDefinitionId={settings.ProductDefinitionId}
-      articleId={settings.ArticleId}
+      settings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: props => <RelationFieldList selectMultiple orderByField="Title" {...props} />,
         Group: RelationFieldListDefault,

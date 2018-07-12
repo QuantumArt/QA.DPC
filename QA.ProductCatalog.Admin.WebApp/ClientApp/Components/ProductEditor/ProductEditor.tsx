@@ -12,12 +12,12 @@ import { EditorController } from "Services/EditorController";
 import { ArticleObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { isFunction } from "Utils/TypeChecks";
+import { EditorSettings } from "Models/EditorSettings";
 
 type RenderEditor = (article: ArticleObject, contentSchema: ContentSchema) => ReactNode;
 
 interface ProductEditorProps {
-  productDefinitionId: number;
-  articleId?: number;
+  settings: EditorSettings;
   relationEditors?: RelationsConfig;
   children?: RenderEditor | ReactNode;
 }
@@ -29,9 +29,11 @@ interface ProductEditorProps {
   DataSerializer,
   EditorController,
   RelationController,
-  RelationsConfig
+  RelationsConfig,
+  EditorSettings
 )
 export class ProductEditor extends Component<ProductEditorProps> {
+  @inject private _editorSettings: EditorSettings;
   @inject private _relationsConfig: RelationsConfig;
   @inject private _editorController: EditorController;
   @inject private _schemaContext: SchemaContext;
@@ -41,14 +43,14 @@ export class ProductEditor extends Component<ProductEditorProps> {
 
   constructor(props: ProductEditorProps, context?: any) {
     super(props, context);
+    Object.assign(this._editorSettings, props.settings);
     if (props.relationEditors) {
       Object.assign(this._relationsConfig, props.relationEditors);
     }
   }
 
   async componentDidMount() {
-    const { productDefinitionId, articleId } = this.props;
-    const article = await this._editorController.initialize(productDefinitionId, articleId);
+    const article = await this._editorController.initialize();
     if (DEBUG) {
       onPatch(article, patch => console.log(patch));
     }

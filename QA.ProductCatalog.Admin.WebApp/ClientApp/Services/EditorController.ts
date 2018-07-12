@@ -1,6 +1,7 @@
 import { inject } from "react-ioc";
 import { runInAction } from "mobx";
 import { ArticleSnapshot } from "Models/EditorDataModels";
+import { EditorSettings } from "Models/EditorSettings";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataContext } from "Services/DataContext";
@@ -8,6 +9,7 @@ import { SchemaContext } from "Services/SchemaContext";
 import { command } from "Utils/Command";
 
 export class EditorController {
+  @inject private _editorSettings: EditorSettings;
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
   @inject private _dataContext: DataContext;
@@ -15,20 +17,15 @@ export class EditorController {
 
   private _query = document.location.search;
   private _rootUrl = document.head.getAttribute("root-url") || "";
-  private _productDefinitionId: number;
-  private _articleId: number | null;
 
   @command
-  public async initialize(productDefinitionId: number, articleId: number | null) {
-    this._productDefinitionId = productDefinitionId;
-    this._articleId = articleId;
-
+  public async initialize() {
     const initSchemaTask = this.initSchema();
 
-    if (this._articleId > 0) {
+    if (this._editorSettings.ArticleId > 0) {
       const response = await fetch(
         `${this._rootUrl}/ProductEditor/GetEditorData_Test${this._query}&articleId=${
-          this._articleId
+          this._editorSettings.ArticleId
         }`
       );
       if (!response.ok) {
@@ -55,7 +52,7 @@ export class EditorController {
   private async initSchema() {
     const response = await fetch(
       `${this._rootUrl}/ProductEditor/GetEditorSchema_Test${this._query}&productDefinitionId=${
-        this._productDefinitionId
+        this._editorSettings.ProductDefinitionId
       }`
     );
     if (!response.ok) {
