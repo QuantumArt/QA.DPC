@@ -108,6 +108,11 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     }
   };
 
+  private selectRelations = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
+  };
+
   private handleTabChange = (newTabId: number, _prevTabId: number, _e: any) => {
     const { touchedIds } = this.state;
     touchedIds[newTabId] = true;
@@ -148,6 +153,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
             rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
+            onClick={this.selectRelations}
           >
             Выбрать
           </Button>

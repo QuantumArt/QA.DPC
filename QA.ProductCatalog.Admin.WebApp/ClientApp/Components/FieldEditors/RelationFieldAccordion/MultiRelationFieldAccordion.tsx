@@ -99,6 +99,11 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     }
   }
 
+  private selectRelations = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
+  };
+
   renderControls(_model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     return (
       <ButtonGroup>
@@ -118,6 +123,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
           rightIcon="th-derived"
           intent={Intent.PRIMARY}
           disabled={fieldSchema.IsReadOnly}
+          onClick={this.selectRelations}
         >
           Выбрать
         </Button>

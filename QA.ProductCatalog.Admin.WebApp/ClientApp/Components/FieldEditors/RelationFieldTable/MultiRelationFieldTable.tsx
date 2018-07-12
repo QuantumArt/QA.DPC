@@ -45,6 +45,11 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     }
   }
 
+  private selectRelations = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
+  };
+
   renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     return (
       <>
@@ -70,6 +75,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
             rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
+            onClick={this.selectRelations}
           >
             Выбрать
           </Button>

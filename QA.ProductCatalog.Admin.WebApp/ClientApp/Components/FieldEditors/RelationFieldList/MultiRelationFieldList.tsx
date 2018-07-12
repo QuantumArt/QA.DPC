@@ -2,6 +2,7 @@ import React, { Fragment } from "react";
 import { Col } from "react-flexbox-grid";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
+import { consumer } from "react-ioc";
 import cn from "classnames";
 import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import { Validate } from "mst-validation-mixin";
@@ -19,6 +20,7 @@ interface MultiRelationFieldListState {
   };
 }
 
+@consumer
 @observer
 export class MultiRelationFieldList extends AbstractRelationFieldList {
   private _orderByField: FieldSelector;
@@ -75,6 +77,11 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
     }
   }
 
+  private selectRelations = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
+  };
+
   renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     return (
       <>
@@ -101,6 +108,7 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
             rightIcon="th-derived"
             intent={Intent.PRIMARY}
             disabled={fieldSchema.IsReadOnly}
+            onClick={this.selectRelations}
           >
             Выбрать
           </Button>

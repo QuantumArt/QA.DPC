@@ -6,7 +6,11 @@ import { untracked, runInAction } from "mobx";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataContext } from "Services/DataContext";
-import { ContentSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
+import {
+  ContentSchema,
+  SingleRelationFieldSchema,
+  MultiRelationFieldSchema
+} from "Models/EditorSchemaModels";
 import {
   ArticleObject,
   ExtensionObject,
@@ -15,6 +19,7 @@ import {
 } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { command } from "Utils/Command";
+import { ObservableArray } from "../../node_modules/mobx/lib/types/observablearray";
 
 export class RelationController {
   @inject private _editorSettings: EditorSettings;
@@ -46,17 +51,32 @@ export class RelationController {
     model: ArticleObject | ExtensionObject,
     fieldSchema: SingleRelationFieldSchema
   ) {
-    const [relatedArticle] = await this.selectArticles(fieldSchema.Content, false);
-    if (relatedArticle) {
+    const [selectedArticle] = await this.selectArticles(fieldSchema.Content, false);
+    if (selectedArticle) {
       runInAction("selectRelation", () => {
-        model[fieldSchema.FieldName] = relatedArticle;
+        model[fieldSchema.FieldName] = selectedArticle;
+      });
+    }
+  }
+
+  public async selectRelations(
+    model: ArticleObject | ExtensionObject,
+    fieldSchema: MultiRelationFieldSchema
+  ) {
+    const selectedArticles = await this.selectArticles(fieldSchema.Content, true);
+    if (selectedArticles.length > 0) {
+      runInAction("selectRelations", () => {
+        const modelArticles = model[fieldSchema.FieldName] as ObservableArray<ArticleObject>;
+        const existingArticles = new Set(modelArticles.peek());
+        const articlesToAdd = selectedArticles.filter(article => !existingArticles.has(article));
+        modelArticles.push(...articlesToAdd);
       });
     }
   }
 
   private async selectArticles(contentSchema: ContentSchema, multiple) {
     const options = {
-      selectActionCode: "select_article",
+      selectActionCode: multiple ? "multiple_select_article" : "select_article",
       entityTypeCode: "article",
       parentEntityId: contentSchema.ContentId,
       isMultiple: multiple,

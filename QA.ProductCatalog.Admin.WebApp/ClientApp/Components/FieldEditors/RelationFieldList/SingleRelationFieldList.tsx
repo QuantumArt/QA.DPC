@@ -2,12 +2,14 @@ import React from "react";
 import { Col } from "react-flexbox-grid";
 import { action } from "mobx";
 import { observer } from "mobx-react";
+import { consumer } from "react-ioc";
 import cn from "classnames";
 import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { AbstractRelationFieldList } from "./AbstractRelationFieldList";
 
+@consumer
 @observer
 export class SingleRelationFieldList extends AbstractRelationFieldList {
   readonly state = {
