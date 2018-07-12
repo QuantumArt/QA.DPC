@@ -19,7 +19,7 @@
     "QA.ProductCatalog.ImpactService.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5000/api/mnr",
+      "launchUrl": "/api/mnr",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

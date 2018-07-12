@@ -1,6 +1,5 @@
-﻿using System.IO;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Builder;
 using NLog.Web;
 
 namespace QA.ProductCatalog.ImpactService.API
@@ -9,17 +8,13 @@ namespace QA.ProductCatalog.ImpactService.API
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .CaptureStartupErrors(true)
-                .UseSetting("detailedErrors", "true")
-                .UseNLog()
-                .UseStartup<Startup>()
-                .Build();
-
-            host.Run();
+            BuildWebHost(args).Run();
         }
+
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>()
+                .UseNLog()
+                .Build();
     }
 }

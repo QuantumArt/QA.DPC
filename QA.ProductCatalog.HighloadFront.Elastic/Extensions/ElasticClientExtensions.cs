@@ -50,7 +50,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic.Extensions
                     descriptor = descriptor.Map(type, m => m.DynamicTemplates(d => {
                         foreach (var field in fields)
                         {
-                            d = d.DynamicTemplate($"analyzed_{type}_{field}", t => t.Match(field).MatchMappingType("string").Mapping(mf => mf.String(f => f.NotAnalyzed())));
+                            d = d.DynamicTemplate($"analyzed_{type}_{field}", t => t.Match(field).MatchMappingType("string").Mapping(mf => mf.Keyword(f => f)));
                         }
 
                         return d;
@@ -70,10 +70,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic.Extensions
                     descriptor = descriptor.Map(type, m => m.DynamicTemplates(d => {
                         foreach (var field in fields)
                         {
-                            d = d.DynamicTemplate($"analyzed_{type}_{field}", t => t.Match(field).MatchMappingType("string").Mapping(mf => mf.String(f => f)));
+                            d = d.DynamicTemplate($"analyzed_{type}_{field}", t => t.Match(field).MatchMappingType("string").Mapping(mf => mf.Text(f => f)));
                         }
 
-                        d = d.DynamicTemplate($"analyzed_{type}_all", t => t.Match("*").MatchMappingType("string").Mapping(mf => mf.String(f => f.NotAnalyzed())));
+                        d = d.DynamicTemplate($"analyzed_{type}_all", t => t.Match("*").MatchMappingType("string").Mapping(mf => mf.Keyword(f => f)));
 
                         return d;
                     }));

@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using NLog.Web;
 
@@ -9,21 +8,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-#if DEBUG
-                .UseUrls("http://*:9092;http://localhost:5000/")
-#endif
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .CaptureStartupErrors(true)
-                .UseSetting("detailedErrors", "true")
+            BuildWebHost(args).Run();
+        }
+
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .UseNLog()
-                .UseApplicationInsights()
                 .Build();
-
-            host.Run();
-        }
     }
 }
