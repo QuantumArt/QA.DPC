@@ -273,41 +273,33 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				foreach (var item in relatedItems)
 				{
 					var ids = item.RelatedItems.Select(itm => itm.Id).Distinct().ToArray();
-					var articleMap = ArticleService.List(item.ContentId, ids).ToDictionary(a => a.Id);
-
-					if (articleMap.Count < ids.Length)
-						{
-							throw new Exception(string.Format("В бд отсутствуют статьи из контента {0}: {1}", item.ContentId,
-								string.Join(", ", ids.Except(articleMap.Keys))));
-						}
+					var articleMap = ArticleService.List(item.ContentId, ids, excludeArchive).ToDictionary(a => a.Id);
 
 					foreach (var relatedItem in item.RelatedItems)
 					{
-						var relatedArticle = articleMap[relatedItem.Id];
+					    if (articleMap.TryGetValue(relatedItem.Id, out var relatedArticle) && filter(relatedArticle))
+					    {
 
-						if (filter(relatedArticle))
-						{
+					        Models.Configuration.Content def = null;
+					        fieldDefinitions.TryGetValue(relatedItem.FieldId, out def);
 
-							Models.Configuration.Content def = null;
-							fieldDefinitions.TryGetValue(relatedItem.FieldId, out def);
+					        if (relatedItem.Relation != RelationType.ManyToMany || relatedArticle.ContentId != root.ContentId)
+					        {
+					            GetProductsToBeProcessed(relatedArticle, def, dictionary, selectMode, mode, filter, excludeArchive);
 
-							if (relatedItem.Relation != RelationType.ManyToMany || relatedArticle.ContentId != root.ContentId)
-							{
-								GetProductsToBeProcessed(relatedArticle, def, dictionary, selectMode, mode, filter, excludeArchive);
+					            var relatedProduct = dictionary[relatedArticle.Id];
 
-								var relatedProduct = dictionary[relatedArticle.Id];
+					            var backwardFields = from fv in relatedFields
+					                where fv.Field.RelationType == RelationType.ManyToOne
+					                join pfv in relatedProduct.Article.FieldValues on fv.Field.BackRelationId equals pfv.Field.Id
+					                select pfv;
 
-								var backwardFields = from fv in relatedFields
-													 where fv.Field.RelationType == RelationType.ManyToOne
-													 join pfv in relatedProduct.Article.FieldValues on fv.Field.BackRelationId equals pfv.Field.Id
-													 select pfv;
-
-								foreach (var fv in backwardFields)
-								{
-									relatedProduct.BackwardMap[fv.Field.Id] = true;
-								}
-							}
-						}
+					            foreach (var fv in backwardFields)
+					            {
+					                relatedProduct.BackwardMap[fv.Field.Id] = true;
+					            }
+					        }
+					    }
 					}
 				}
 
