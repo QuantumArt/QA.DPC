@@ -55,15 +55,7 @@ export interface ${getRootName(editorSchema)}Entities {${
 ${forEach(mergedSchemas, content => `
 export interface ${getName(content)} extends ${
   content.ForExtension ? "ExtensionObject" : "ArticleObject"
-} {${
-content.ForExtension
-  ? `
-  ContentName: "${getName(content)}";`
-  : `
-  Id: number;
-  ContentName: "${getName(content)}";
-  Modified: Date;`
-}${forEach(getFields(content), field => `${field.FieldTitle || field.FieldDescription ? `
+} {${forEach(getFields(content), field => `${field.FieldTitle || field.FieldDescription ? `
   /** ${field.FieldTitle || field.FieldDescription} */`: ""}
   ${field.FieldName}: ${print(() => {
 

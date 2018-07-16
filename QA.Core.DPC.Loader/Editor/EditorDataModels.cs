@@ -11,10 +11,10 @@ namespace QA.Core.DPC.Loader.Editor
         /// </summary>
         internal const string _ClientId = "_ClientId";
         /// <summary>
-        /// Имя поля для глобального Id статьи, полученного при сохранении в БД.
+        /// Имя поля для серверного Id статьи, полученного при сохранении в БД.
         /// Совпадает с <see cref="Models.Entities.Article.Id"/>.
         /// </summary>
-        internal const string _ServerId = "_ServerId";
+        internal const string _Id = "_Id";
         /// <summary>
         /// Имя поля для .NET-названия контента статьи <see cref="Quantumart.QP8.BLL.Content.NetName" />.
         /// </summary>

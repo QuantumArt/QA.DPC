@@ -31,7 +31,7 @@ export class DataSerializer {
 
   public getServerId(article: ArticleObject) {
     if (article.Id < 0) {
-      const idMapping = this._idMappings[article.ContentName];
+      const idMapping = this._idMappings[article._ContentName];
       if (idMapping) {
         return idMapping[article.Id] || article.Id;
       }
@@ -40,7 +40,7 @@ export class DataSerializer {
   }
 
   private getClientId(article: ArticleObject) {
-    const idMapping = this._idMappings[article.ContentName];
+    const idMapping = this._idMappings[article._ContentName];
     return (idMapping && idMapping[article.Id]) || article.Id;
   }
 

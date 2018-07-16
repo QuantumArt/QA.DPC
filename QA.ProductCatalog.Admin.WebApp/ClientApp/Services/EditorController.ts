@@ -36,7 +36,7 @@ export class EditorController {
       await initSchemaTask;
       const contentName = this._schemaContext.contentSchema.ContentName;
 
-      const dataSnapshot = this._dataNormalizer.normalize(dataTree, dataTree.ContentName);
+      const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentName);
 
       this._dataContext.initStore(dataSnapshot);
       return this._dataContext.store[contentName].get(String(dataTree.Id));
@@ -63,4 +63,6 @@ export class EditorController {
     this._dataContext.initSchema(schema.MergedSchemas);
     this._schemaContext.initSchema(schema.EditorSchema);
   }
+
+  public async savePartialProduct() {}
 }

@@ -38,9 +38,6 @@ export interface ProductEntities {
 }
 
 export interface Region extends ArticleObject {
-  Id: number;
-  ContentName: "Region";
-  Modified: Date;
   Title: string;
   Alias: string;
   Parent: Region;
@@ -48,9 +45,6 @@ export interface Region extends ArticleObject {
 }
 
 export interface Product extends ArticleObject {
-  Id: number;
-  ContentName: "Product";
-  Modified: Date;
   /** Маркетинговый продукт */
   MarketingProduct: MarketingProduct;
   /** GlobalCode */
@@ -127,9 +121,6 @@ export interface Product extends ArticleObject {
 }
 
 export interface Group extends ArticleObject {
-  Id: number;
-  ContentName: "Group";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -137,9 +128,6 @@ export interface Group extends ArticleObject {
 }
 
 export interface ProductModifer extends ArticleObject {
-  Id: number;
-  ContentName: "ProductModifer";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -147,13 +135,9 @@ export interface ProductModifer extends ArticleObject {
 }
 
 export interface Tariff extends ExtensionObject {
-  ContentName: "Tariff";
 }
 
 export interface TariffZone extends ArticleObject {
-  Id: number;
-  ContentName: "TariffZone";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -161,9 +145,6 @@ export interface TariffZone extends ArticleObject {
 }
 
 export interface Direction extends ArticleObject {
-  Id: number;
-  ContentName: "Direction";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -171,9 +152,6 @@ export interface Direction extends ArticleObject {
 }
 
 export interface BaseParameter extends ArticleObject {
-  Id: number;
-  ContentName: "BaseParameter";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -183,9 +161,6 @@ export interface BaseParameter extends ArticleObject {
 }
 
 export interface BaseParameterModifier extends ArticleObject {
-  Id: number;
-  ContentName: "BaseParameterModifier";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -199,9 +174,6 @@ export interface BaseParameterModifier extends ArticleObject {
 }
 
 export interface ParameterModifier extends ArticleObject {
-  Id: number;
-  ContentName: "ParameterModifier";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -209,9 +181,6 @@ export interface ParameterModifier extends ArticleObject {
 }
 
 export interface ProductParameter extends ArticleObject {
-  Id: number;
-  ContentName: "ProductParameter";
-  Modified: Date;
   /** Группа параметров */
   Group: ProductParameterGroup;
   /** Название */
@@ -246,9 +215,6 @@ export interface ProductParameter extends ArticleObject {
 }
 
 export interface Unit extends ArticleObject {
-  Id: number;
-  ContentName: "Unit";
-  Modified: Date;
   Alias: string;
   Title: string;
   Display: string;
@@ -282,9 +248,6 @@ export interface Unit extends ArticleObject {
 }
 
 export interface LinkModifier extends ArticleObject {
-  Id: number;
-  ContentName: "LinkModifier";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -292,9 +255,6 @@ export interface LinkModifier extends ArticleObject {
 }
 
 export interface ProductRelation extends ArticleObject {
-  Id: number;
-  ContentName: "ProductRelation";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Модификаторы */
@@ -332,9 +292,6 @@ export interface ProductRelation extends ArticleObject {
 }
 
 export interface LinkParameter extends ArticleObject {
-  Id: number;
-  ContentName: "LinkParameter";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Группа параметров */
@@ -368,17 +325,12 @@ export interface LinkParameter extends ArticleObject {
 }
 
 export interface TariffTransfer extends ExtensionObject {
-  ContentName: "TariffTransfer";
 }
 
 export interface MutualGroup extends ExtensionObject {
-  ContentName: "MutualGroup";
 }
 
 export interface ProductParameterGroup extends ArticleObject {
-  Id: number;
-  ContentName: "ProductParameterGroup";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -395,9 +347,6 @@ export interface ProductParameterGroup extends ArticleObject {
 }
 
 export interface MarketingProduct extends ArticleObject {
-  Id: number;
-  ContentName: "MarketingProduct";
-  Modified: Date;
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -459,29 +408,23 @@ export interface MarketingProduct extends ArticleObject {
 }
 
 export interface MarketingTariff extends ExtensionObject {
-  ContentName: "MarketingTariff";
 }
 
 export interface MarketingService extends ExtensionObject {
-  ContentName: "MarketingService";
 }
 
 export interface Service extends ExtensionObject {
-  ContentName: "Service";
 }
 
 export interface ServiceOnTariff extends ExtensionObject {
-  ContentName: "ServiceOnTariff";
   Description: string;
 }
 
 export interface ServicesUpsale extends ExtensionObject {
-  ContentName: "ServicesUpsale";
   Order: number;
 }
 
 export interface TariffOptionPackage extends ExtensionObject {
-  ContentName: "TariffOptionPackage";
   /** Подзаголовок */
   SubTitle: string;
   /** Описание */
@@ -493,39 +436,27 @@ export interface TariffOptionPackage extends ExtensionObject {
 }
 
 export interface ServiceRelation extends ExtensionObject {
-  ContentName: "ServiceRelation";
 }
 
 export interface CommunicationType extends ArticleObject {
-  Id: number;
-  ContentName: "CommunicationType";
-  Modified: Date;
   Title: string;
   /** Псевдоним */
   Alias: string;
 }
 
 export interface Segment extends ArticleObject {
-  Id: number;
-  ContentName: "Segment";
-  Modified: Date;
   Title: string;
   /** Псевдоним */
   Alias: string;
 }
 
 export interface Action extends ExtensionObject {
-  ContentName: "Action";
 }
 
 export interface MarketingAction extends ExtensionObject {
-  ContentName: "MarketingAction";
 }
 
 export interface MarketingProductParameter extends ArticleObject {
-  Id: number;
-  ContentName: "MarketingProductParameter";
-  Modified: Date;
   /** Группа параметров */
   Group: ProductParameterGroup;
   /** Базовый параметр */
@@ -556,21 +487,15 @@ export interface MarketingProductParameter extends ArticleObject {
 }
 
 export interface RoamingScale extends ExtensionObject {
-  ContentName: "RoamingScale";
 }
 
 export interface MarketingRoamingScale extends ExtensionObject {
-  ContentName: "MarketingRoamingScale";
 }
 
 export interface RoamingScaleOnTariff extends ExtensionObject {
-  ContentName: "RoamingScaleOnTariff";
 }
 
 export interface TariffCategory extends ArticleObject {
-  Id: number;
-  ContentName: "TariffCategory";
-  Modified: Date;
   /** Типы связи */
   ConnectionTypes: FixedType[];
   /** Название */
@@ -590,13 +515,9 @@ export interface TariffCategory extends ArticleObject {
 }
 
 export interface ServiceOnRoamingScale extends ExtensionObject {
-  ContentName: "ServiceOnRoamingScale";
 }
 
 export interface Advantage extends ArticleObject {
-  Id: number;
-  ContentName: "Advantage";
-  Modified: Date;
   Title: string;
   /** Текстовые данные */
   Text: string;
@@ -611,21 +532,16 @@ export interface Advantage extends ArticleObject {
 }
 
 export interface CrossSale extends ExtensionObject {
-  ContentName: "CrossSale";
   /** Порядок */
   Order: number;
 }
 
 export interface MarketingCrossSale extends ExtensionObject {
-  ContentName: "MarketingCrossSale";
   /** Порядок */
   Order: number;
 }
 
 export interface TimeZone extends ArticleObject {
-  Id: number;
-  ContentName: "TimeZone";
-  Modified: Date;
   /** Название часовой зоны */
   Name: string;
   /** Код зоны */
@@ -638,9 +554,6 @@ export interface TimeZone extends ArticleObject {
 }
 
 export interface NetworkCity extends ArticleObject {
-  Id: number;
-  ContentName: "NetworkCity";
-  Modified: Date;
   /** Город */
   City: Region;
   /** IPTV */
@@ -648,9 +561,6 @@ export interface NetworkCity extends ArticleObject {
 }
 
 export interface ChannelCategory extends ArticleObject {
-  Id: number;
-  ContentName: "ChannelCategory";
-  Modified: Date;
   /** Название для сайта */
   Name: string;
   Alias: string;
@@ -663,17 +573,11 @@ export interface ChannelCategory extends ArticleObject {
 }
 
 export interface ChannelType extends ArticleObject {
-  Id: number;
-  ContentName: "ChannelType";
-  Modified: Date;
   Title: string;
   OldSiteId: number;
 }
 
 export interface ChannelFormat extends ArticleObject {
-  Id: number;
-  ContentName: "ChannelFormat";
-  Modified: Date;
   Title: string;
   Image: string;
   Message: string;
@@ -681,9 +585,6 @@ export interface ChannelFormat extends ArticleObject {
 }
 
 export interface TvChannel extends ArticleObject {
-  Id: number;
-  ContentName: "TvChannel";
-  Modified: Date;
   /** Название телеканала */
   Title: string;
   /** Лого 150x150 */
@@ -723,16 +624,12 @@ export interface TvChannel extends ArticleObject {
 }
 
 export interface ParameterChoice extends ArticleObject {
-  Id: number;
-  ContentName: "ParameterChoice";
-  Modified: Date;
   Title: string;
   Alias: string;
   OldSiteId: number;
 }
 
 export interface MarketingDevice extends ExtensionObject {
-  ContentName: "MarketingDevice";
   /** Тип оборудования */
   DeviceType: EquipmentType;
   /** Сегменты */
@@ -742,7 +639,6 @@ export interface MarketingDevice extends ExtensionObject {
 }
 
 export interface Device extends ExtensionObject {
-  ContentName: "Device";
   /** Загрузки */
   Downloads: EquipmentDownload[];
   /** Состав комплекта */
@@ -756,16 +652,10 @@ export interface Device extends ExtensionObject {
 }
 
 export interface FixedType extends ArticleObject {
-  Id: number;
-  ContentName: "FixedType";
-  Modified: Date;
   Title: string;
 }
 
 export interface EquipmentType extends ArticleObject {
-  Id: number;
-  ContentName: "EquipmentType";
-  Modified: Date;
   /** Тип связи */
   ConnectionType: FixedType;
   Title: string;
@@ -775,15 +665,11 @@ export interface EquipmentType extends ArticleObject {
 }
 
 export interface EquipmentDownload extends ArticleObject {
-  Id: number;
-  ContentName: "EquipmentDownload";
-  Modified: Date;
   Title: string;
   File: string;
 }
 
 export interface MarketingFixConnectAction extends ExtensionObject {
-  ContentName: "MarketingFixConnectAction";
   /** Сегмент */
   Segment: Segment[];
   /** Акция в Каталоге акций */
@@ -797,7 +683,6 @@ export interface MarketingFixConnectAction extends ExtensionObject {
 }
 
 export interface FixConnectAction extends ExtensionObject {
-  ContentName: "FixConnectAction";
   /** Маркетинговые предложения */
   MarketingOffers: MarketingProduct[];
   /** Описание промо-периода. */
@@ -807,7 +692,6 @@ export interface FixConnectAction extends ExtensionObject {
 }
 
 export interface MarketingTvPackage extends ExtensionObject {
-  ContentName: "MarketingTvPackage";
   /** Каналы */
   Channels: TvChannel[];
   TitleForSite: string;
@@ -818,11 +702,9 @@ export interface MarketingTvPackage extends ExtensionObject {
 }
 
 export interface TvPackage extends ExtensionObject {
-  ContentName: "TvPackage";
 }
 
 export interface MarketingFixConnectTariff extends ExtensionObject {
-  ContentName: "MarketingFixConnectTariff";
   Segment: Segment;
   /** Тип предложения (Категория тарифа) */
   Category: TariffCategory;
@@ -835,32 +717,24 @@ export interface MarketingFixConnectTariff extends ExtensionObject {
 }
 
 export interface FixConnectTariff extends ExtensionObject {
-  ContentName: "FixConnectTariff";
   TitleForSite: string;
 }
 
 export interface MarketingPhoneTariff extends ExtensionObject {
-  ContentName: "MarketingPhoneTariff";
 }
 
 export interface PhoneTariff extends ExtensionObject {
-  ContentName: "PhoneTariff";
   /** ВЗ вызовы (ссылка на Ростелеком) */
   RostelecomLink: string;
 }
 
 export interface MarketingInternetTariff extends ExtensionObject {
-  ContentName: "MarketingInternetTariff";
 }
 
 export interface InternetTariff extends ExtensionObject {
-  ContentName: "InternetTariff";
 }
 
 export interface DeviceOnTariffs extends ArticleObject {
-  Id: number;
-  ContentName: "DeviceOnTariffs";
-  Modified: Date;
   Parent: ProductRelation;
   Order: number;
   /** Маркетинговое устройство */
@@ -872,9 +746,6 @@ export interface DeviceOnTariffs extends ArticleObject {
 }
 
 export interface DevicesForFixConnectAction extends ArticleObject {
-  Id: number;
-  ContentName: "DevicesForFixConnectAction";
-  Modified: Date;
   Order: number;
   /** Акция фиксированной связи */
   FixConnectAction: Product;

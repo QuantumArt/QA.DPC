@@ -3,6 +3,9 @@ import { isObject } from "Utils/TypeChecks";
 
 export class SchemaContext {
   public contentSchema: ContentSchema;
+  public contentSchemasById: {
+    readonly [contentId: number]: ContentSchema;
+  };
 
   public initSchema(editorSchema: { Content: any; Definitions: { [name: string]: any } }) {
     // editorSchema = JSON.parse(JSON.stringify(editorSchema));
@@ -10,6 +13,7 @@ export class SchemaContext {
     delete editorSchema.Definitions;
     visitSchema(editorSchema, definitions, new Set());
     this.contentSchema = editorSchema.Content;
+    this.contentSchemasById = definitions;
   }
 }
 

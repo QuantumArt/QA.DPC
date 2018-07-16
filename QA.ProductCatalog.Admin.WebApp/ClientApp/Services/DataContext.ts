@@ -106,7 +106,7 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
       Object.entries(field.Contents).forEach(([extName, extContent]) => {
         // для каждого контента-расширения создаем словарь его полей
         const extFieldModels = {
-          ContentName: t.optional(t.literal(extName), extName)
+          _ContentName: t.optional(t.literal(extName), extName)
         };
         // заполняем словарь полей обходя все поля контента-расширения
         Object.values(getFields(extContent)).forEach(field => visitField(field, extFieldModels));
@@ -169,8 +169,8 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
     .forEach(content => {
       const fieldModels = {
         Id: t.identifier(t.number),
-        ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
-        Modified: t.maybe(t.Date)
+        _ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
+        _Modified: t.maybe(t.Date)
       };
       // заполняем поля модели объекта
       Object.values(content.Fields).forEach(field => visitField(field, fieldModels));
