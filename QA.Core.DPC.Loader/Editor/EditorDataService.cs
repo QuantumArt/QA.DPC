@@ -68,13 +68,13 @@ namespace QA.Core.DPC.Loader.Editor
 
             if (forExtension)
             {
-                dict[nameof(Article.ContentName)] = article.ContentName;
+                dict[ArticleObject._ContentName] = article.ContentName;
             }
             else
             {
-                dict[nameof(Article.Id)] = article.Id;
-                dict[nameof(Article.ContentName)] = article.ContentName;
-                dict[nameof(Article.Modified)] = article.Modified == default(DateTime)
+                dict[ArticleObject._ServerId] = article.Id;
+                dict[ArticleObject._ContentName] = article.ContentName;
+                dict[ArticleObject._Modified] = article.Modified == default(DateTime)
                     ? article.Created : article.Modified;
             }
 
@@ -131,7 +131,7 @@ namespace QA.Core.DPC.Loader.Editor
             Article article = field.Item;
 
             dict[field.FieldName] = article.ContentName;
-            dict[ArticleObject.Contents(field.FieldName)] = new ExtensionFieldObject
+            dict[ArticleObject._Contents(field.FieldName)] = new ExtensionFieldObject
             {
                 [article.ContentName] = ConvertArticle(article, context, forExtension: true)
             };

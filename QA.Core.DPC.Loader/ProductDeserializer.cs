@@ -63,15 +63,13 @@ namespace QA.Core.DPC.Loader
             if (productDataSource == null)
                 return null;
 
-            int? id = productDataSource.GetInt("Id");
-
             var qpContent = _contentService.Read(definition.ContentId);
 
             Article article = new Article
             {
-                Id = id ?? default(int),
+                Id = productDataSource.GetArticleId(),
                 ContentName = qpContent.NetName,
-                Modified = productDataSource.GetDateTime(nameof(Article.Modified)) ?? default(DateTime),
+                Modified = productDataSource.GetModified(),
                 ContentId = definition.ContentId,
                 ContentDisplayName = qpContent.Name,
                 PublishingMode = definition.PublishingMode,
@@ -228,15 +226,9 @@ namespace QA.Core.DPC.Loader
 
                 extensionArticleField.Value = valueDef.ContentId.ToString();
 
-                // при десериализации для редактора используем объект [$"{fieldName}_Contents"][contentName]
-                if (productDataSource is EditorJsonProductDataSource)
-                {
-                    productDataSource = productDataSource
-                        .GetContainer(ArticleObject.Contents(fieldName))
-                        .GetContainer(contentName);
-                }
+                IProductDataSource extensionDataSource = productDataSource.GetExtensionContainer(fieldName, contentName);
 
-                extensionArticleField.Item = DeserializeArticle(productDataSource, valueDef, connector);
+                extensionArticleField.Item = DeserializeArticle(extensionDataSource, valueDef, connector);
 
                 extensionArticleField.Item.Id = default(int);
 

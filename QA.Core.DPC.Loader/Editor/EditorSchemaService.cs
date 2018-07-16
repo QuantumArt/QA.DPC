@@ -155,7 +155,7 @@ namespace QA.Core.DPC.Loader.Editor
                 .OrderByDescending(f => f.ViewInList)
                 .ThenBy(f => f.FieldOrder)
                 .Select(f => f.FieldName)
-                .FirstOrDefault() ?? nameof(Article.Id);
+                .FirstOrDefault() ?? ArticleObject._ServerId;
 
             return contentSchema;
         }
@@ -292,7 +292,7 @@ namespace QA.Core.DPC.Loader.Editor
                     Content = contentSchema,
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     DisplayFieldNames = displayFieldNames,
-                    OrderByFieldName = orderByFieldName ?? nameof(Article.Id),
+                    OrderByFieldName = orderByFieldName ?? ArticleObject._ServerId,
                     MaxDataListItemCount = maxDataListItemCount
                 };
             }

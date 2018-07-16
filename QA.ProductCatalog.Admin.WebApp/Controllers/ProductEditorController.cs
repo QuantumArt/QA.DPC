@@ -18,6 +18,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using QA.Core.Web;
+using Quantumart.QP8.BLL.Services.API.Models;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -25,7 +26,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
     public class ProductEditorController : Controller
     {
         private const string FIELD_NAME_EDITOR_VIEW_PATH = "EditorViewPath";
-        private const string FIELD_NAME_PRODUCT_DEFINITION_ID = "Id";
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IProductService _productService;
         private readonly IProductUpdateService _productUpdateService;
@@ -98,7 +98,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var fieldsByName = GetDefinitionFieldsByArticleId(content_item_id, isLive);
 
             if (fieldsByName == null
-                || !fieldsByName.TryGetValue(FIELD_NAME_PRODUCT_DEFINITION_ID, out string productDefinitionsId))
+                || !fieldsByName.TryGetValue(nameof(Article.Id), out string productDefinitionsId))
             {
                 throw new InvalidOperationException($"ProductDefinition for article {content_item_id} was not found");
             }
@@ -334,7 +334,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             // TODO: what about validation ?
             // TODO: what about Id-s of new articles ?
             // TODO: concurrency checks based on `Modified` field
-            // InsertData[] idMapping = _productUpdateService.Update(partialProduct, partialDefinition, request.IsLive);
+            // InsertData[] idMapping = _productUpdateService.Update(partialProduct, partialDefinition, isLive);
 
             return new HttpStatusCodeResult(HttpStatusCode.NoContent);
         }
