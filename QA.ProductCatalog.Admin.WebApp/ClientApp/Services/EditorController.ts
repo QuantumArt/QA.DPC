@@ -33,15 +33,17 @@ export class EditorController {
       if (!response.ok) {
         throw new Error(await response.text());
       }
-      const dataTree = this._dataSerializer.deserialize<ArticleSnapshot>(await response.text());
+      const nestedObjectTree = this._dataSerializer.deserialize<ArticleSnapshot>(
+        await response.text()
+      );
 
       await initSchemaTask;
       const contentName = this._schemaContext.contentSchema.ContentName;
 
-      const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentName);
+      const flatObjectsByContent = this._dataNormalizer.normalize(nestedObjectTree, contentName);
 
-      this._dataContext.initStore(dataSnapshot);
-      return this._dataContext.store[contentName].get(String(dataTree._ClientId));
+      this._dataContext.initStore(flatObjectsByContent);
+      return this._dataContext.store[contentName].get(String(nestedObjectTree._ClientId));
     } else {
       await initSchemaTask;
       const contentName = this._schemaContext.contentSchema.ContentName;

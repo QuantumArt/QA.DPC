@@ -10,5 +10,7 @@
   "search.exclude": {
     "**/node_modules": true,
     "Scripts/Bundles": true
-  }
+  },
+  "plantuml.exportSubFolder": false,
+  "plantuml.exportOutDirName": "Diagrams"
 }

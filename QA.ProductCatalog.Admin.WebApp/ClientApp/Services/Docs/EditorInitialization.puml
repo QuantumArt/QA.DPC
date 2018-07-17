@@ -1,0 +1,100 @@
+@startuml EditorInitialization
+skinparam shadowing false
+skinparam ParticipantPadding 30
+skinparam BoxPadding 100
+
+participant Backend
+
+box "Frontend Services"
+participant EditorController
+participant DataSerializer
+participant DataNormalizer
+database DataContext
+database SchemaContext
+end box
+
+collections Components
+
+hnote over Components
+  регистрируем
+  настройки и
+  сервисы в DI
+end note
+
+hnote over EditorController
+  читаем настройкииз DI
+end note
+
+Components -> EditorController: <b>.initialize()
+activate EditorController
+
+EditorController -> Backend: <b>/GetEditorSchema\n<b>?productDefinitionId
+note left of EditorController: EditorSchemaModel
+Backend --> EditorController:
+
+EditorController -> DataNormalizer: <b>.initSchema( schemaModel )
+hnote over DataNormalizer: строим схему Normalizr
+
+EditorController -> DataContext: <b>.initSchema( schemaModel )
+hnote over DataContext
+  строим схему
+  MobX State Tree
+end note
+hnote over DataContext
+  строим снапшоты статей со
+  значениями по-умолчанию
+end note
+
+EditorController -> SchemaContext: <b>.initSchema( schemaModel )
+hnote over SchemaContext
+ Линкуем $ref
+ ссылки в схеме
+end note
+
+alt Создаем новый продукт
+
+  EditorController -> DataContext: <b>.initStore( {} )
+  hnote over DataContext: Создаем пустой Store
+
+  EditorController -> DataContext: <b>.createArticle( contentName )
+
+  note right of EditorController: New Article
+  DataContext --> EditorController
+
+else Редактируем существующий продукт
+
+  ...
+
+  EditorController -> Backend: <b>/GetEditorData\n<b>?articleId
+  note left of EditorController: EditorDataModel
+  Backend --> EditorController:
+
+  EditorController -> DataSerializer: <b>.deserialize( JSON )
+  note right of EditorController: Nested Objects
+  DataSerializer --> EditorController
+
+  EditorController -> DataNormalizer: <b>.normalize( nestedObjects )
+  note right of EditorController: Flat Objects
+  DataNormalizer --> EditorController
+
+  ...
+
+  EditorController -> DataContext: <b>.initStore( flatObjects )
+  hnote over DataContext
+    Создаем Store из
+    плоских объектов
+  end note
+
+  EditorController -> DataContext: <b>.store[ contentName ].get( articleId )
+  note right of EditorController: Existing Article
+  DataContext --> EditorController
+
+deactivate EditorController
+end
+
+note left of Components: Article
+EditorController --> Components
+
+deactivate EditorController
+
+@enduml
