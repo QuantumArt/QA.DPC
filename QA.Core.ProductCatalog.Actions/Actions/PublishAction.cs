@@ -64,7 +64,7 @@ namespace QA.Core.ProductCatalog.Actions
                 ValidateMessageResult(product.Id, MessageResult.Error("продукт заморожен"));
             }
 
-            var xamlValidationErrors = DoWithLogging("ValidateXaml", transactionId, () => ArticleService.XamlValidationById(product.Id));
+            var xamlValidationErrors = DoWithLogging("ValidateXaml", transactionId, () => ArticleService.XamlValidationById(product.Id, true));
             if (!xamlValidationErrors.IsEmpty)
                 ValidateMessageResult(product.Id, MessageResult.Error(string.Join(@";" + Environment.NewLine, xamlValidationErrors.Errors.Select(s=>s.Message))));
 

@@ -187,7 +187,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			throw new NotImplementedException();
 		}
 
-        public RulesException XamlValidationById(int articleId)
+        public RulesException XamlValidationById(int articleId, bool persistChanges)
         {
             return null;
         }
