@@ -43,15 +43,15 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const {
       model,
       fieldSchema,
-      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "Id"
+      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "_ServerId"
     } = props;
     this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
     untracked(() => {
-      const array = model[fieldSchema.FieldName];
+      const array = model[fieldSchema.FieldName] as ArticleObject[];
       if (array.length > 0) {
         const firstArticle = array[0];
-        this.state.activeId = firstArticle.Id;
-        this.state.touchedIds[firstArticle.Id] = true;
+        this.state.activeId = firstArticle._ClientId;
+        this.state.touchedIds[firstArticle._ClientId] = true;
       }
     });
   }
@@ -62,9 +62,9 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const { touchedIds } = this.state;
     const contentName = (fieldSchema as MultiRelationFieldSchema).Content.ContentName;
     const article = this._dataContext.createArticle(contentName);
-    touchedIds[article.Id] = true;
+    touchedIds[article._ClientId] = true;
     this.setState({
-      activeId: article.Id,
+      activeId: article._ClientId,
       touchedIds,
       isOpen: true,
       isTouched: true
@@ -89,13 +89,13 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const { model, fieldSchema } = this.props;
     const { activeId, touchedIds } = this.state;
     const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
-    delete touchedIds[article.Id];
-    if (activeId === article.Id) {
+    delete touchedIds[article._ClientId];
+    if (activeId === article._ClientId) {
       const index = array.indexOf(article);
       const nextArticle = index > 0 ? array[index - 1] : array.length > 1 ? array[1] : null;
       if (nextArticle) {
-        touchedIds[nextArticle.Id] = true;
-        this.setState({ activeId: nextArticle.Id, touchedIds });
+        touchedIds[nextArticle._ClientId] = true;
+        this.setState({ activeId: nextArticle._ClientId, touchedIds });
       } else {
         this.setState({ activeId: null, touchedIds });
       }
@@ -194,6 +194,9 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     );
   }
 
+  private static _nextTabId = 0;
+  private static _tabIdsByModel = new WeakMap<ArticleObject | ExtensionObject, number>();
+
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const {
       saveRelations,
@@ -206,10 +209,15 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
+    let tabId = MultiRelationFieldTabs._tabIdsByModel.get(model);
+    if (!tabId) {
+      tabId = MultiRelationFieldTabs._nextTabId++;
+      MultiRelationFieldTabs._tabIdsByModel.set(model, tabId);
+    }
     return (
       <Tabs
         vertical={vertical}
-        id={`${model.Id || ""}.${fieldSchema.FieldName}`}
+        id={`${tabId}_${fieldSchema.FieldName}`}
         className={cn("multi-relation-field-tabs", {
           "multi-relation-field-tabs--hidden": !isOpen,
           "multi-relation-field-tabs--empty": isEmpty,
@@ -230,10 +238,10 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
               }
               return (
                 <Tab
-                  key={article.Id}
-                  id={article.Id}
+                  key={article._ClientId}
+                  id={article._ClientId}
                   panel={
-                    touchedIds[article.Id] && (
+                    touchedIds[article._ClientId] && (
                       <ArticleEditor
                         model={article}
                         contentSchema={fieldSchema.Content}

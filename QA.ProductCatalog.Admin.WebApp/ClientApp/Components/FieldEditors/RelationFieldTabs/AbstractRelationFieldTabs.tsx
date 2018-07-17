@@ -40,17 +40,13 @@ export abstract class AbstractRelationFieldTabs extends AbstractFieldEditor<
     const {
       fieldSchema,
       saveRelations,
-      displayField = (fieldSchema as RelationFieldSchema).Content.DisplayFieldName || "Id"
+      displayField = (fieldSchema as RelationFieldSchema).Content.DisplayFieldName || (() => "")
     } = this.props;
     if (DEBUG && saveRelations) {
       const contentSchema = (fieldSchema as RelationFieldSchema).Content;
       validateRelationSelection(contentSchema, saveRelations);
     }
-    this._displayField = isString(displayField)
-      ? displayField === "Id"
-        ? () => ""
-        : article => article[displayField]
-      : displayField;
+    this._displayField = isString(displayField) ? article => article[displayField] : displayField;
   }
 
   protected abstract renderControls(

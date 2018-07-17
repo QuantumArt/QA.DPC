@@ -29,13 +29,9 @@ export abstract class AbstractRelationFieldList extends AbstractFieldEditor<
     super(props, context);
     const {
       fieldSchema,
-      displayField = (fieldSchema as RelationFieldSchema).Content.DisplayFieldName || "Id"
+      displayField = (fieldSchema as RelationFieldSchema).Content.DisplayFieldName || (() => "")
     } = this.props;
-    this._displayField = isString(displayField)
-      ? displayField === "Id"
-        ? () => ""
-        : article => article[displayField]
-      : displayField;
+    this._displayField = isString(displayField) ? article => article[displayField] : displayField;
   }
 
   render() {

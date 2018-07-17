@@ -22,7 +22,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     super(props, context);
     const {
       fieldSchema,
-      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "Id"
+      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "_ServerId"
     } = props;
     this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
   }
@@ -97,11 +97,10 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
               .slice()
               .sort(asc(this._orderByField))
               .map(article => {
-                const serverId = this._dataSerializer.getServerId(article);
                 return (
-                  <div key={article.Id} className="relation-field-table__row">
+                  <div key={article._ClientId} className="relation-field-table__row">
                     <div key={-1} className="relation-field-table__cell">
-                      {serverId > 0 && `(${serverId})`}
+                      {article._ServerId > 0 && `(${article._ServerId})`}
                     </div>
                     {this._displayFields.map((displayField, i) => (
                       <div key={i} className="relation-field-table__cell">

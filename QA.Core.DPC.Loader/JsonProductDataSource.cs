@@ -71,7 +71,7 @@ namespace QA.Core.DPC.Loader
         {
         }
 
-        public override int GetArticleId() => GetInt(ArticleObject._Id) ?? default(int);
+        public override int GetArticleId() => GetInt(ArticleObject._ServerId) ?? default(int);
 
         public override DateTime GetModified() => GetDateTime(ArticleObject._Modified) ?? default(DateTime);
 

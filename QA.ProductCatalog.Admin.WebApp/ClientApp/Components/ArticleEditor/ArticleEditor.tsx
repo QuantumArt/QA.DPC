@@ -1,11 +1,10 @@
 import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import { Button, Intent } from "@blueprintjs/core";
-import { inject, consumer } from "react-ioc";
+import { consumer } from "react-ioc";
 import { observer } from "mobx-react";
 import { ArticleObject } from "Models/EditorDataModels";
 import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
-import { DataSerializer } from "Services/DataSerializer";
 import { isString, isFunction } from "Utils/TypeChecks";
 import { ObjectEditor, ObjectEditorProps } from "./ObjectEditor";
 export { IGNORE, FieldsConfig, RelationsConfig } from "./ObjectEditor";
@@ -26,7 +25,6 @@ interface ArticleEditorProps {
 @consumer
 @observer
 export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
-  @inject private _dataSerializer: DataSerializer;
   private _titleField: (model: ArticleObject) => string;
 
   constructor(props: ObjectEditorProps & ArticleEditorProps, context?: any) {
@@ -34,16 +32,12 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
     const {
       contentSchema,
       saveRelations,
-      titleField = contentSchema.DisplayFieldName || "Id"
+      titleField = contentSchema.DisplayFieldName || (() => "")
     } = this.props;
     if (DEBUG && saveRelations) {
       validateRelationSelection(contentSchema, saveRelations);
     }
-    this._titleField = isString(titleField)
-      ? titleField === "Id"
-        ? () => ""
-        : article => article[titleField]
-      : titleField;
+    this._titleField = isString(titleField) ? article => article[titleField] : titleField;
   }
 
   render() {
@@ -51,13 +45,12 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
     if (isFunction(children) && children.length === 0) {
       return children(null, null);
     }
-    const serverId = this._dataSerializer.getServerId(model);
     const headerNode =
       header === true ? (
         <Col key={1} md className="article-editor__header">
           <div className="article-editor__title" title={contentSchema.ContentDescription}>
             {contentSchema.ContentTitle || contentSchema.ContentName}
-            {serverId > 0 && `: (${serverId})`} {this._titleField(model)}
+            {model._ServerId > 0 && `: (${model._ServerId})`} {this._titleField(model)}
           </div>
           {buttons === true ? (
             <div className="article-editor__buttons">

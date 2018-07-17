@@ -41,7 +41,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     super(props, context);
     const {
       fieldSchema,
-      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "Id"
+      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "_ServerId"
     } = props;
     this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
   }
@@ -72,8 +72,8 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const { activeId, touchedIds } = this.state;
-    delete touchedIds[article.Id];
-    if (activeId === article.Id) {
+    delete touchedIds[article._ClientId];
+    if (activeId === article._ClientId) {
       this.setState({ activeId: null, touchedIds });
     } else {
       this.setState({ touchedIds });
@@ -91,11 +91,11 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
 
   private toggleRelation(article: ArticleObject) {
     const { activeId, touchedIds } = this.state;
-    if (activeId === article.Id) {
+    if (activeId === article._ClientId) {
       this.setState({ activeId: null });
     } else {
-      touchedIds[article.Id] = true;
-      this.setState({ activeId: article.Id, touchedIds });
+      touchedIds[article._ClientId] = true;
+      this.setState({ activeId: article._ClientId, touchedIds });
     }
   }
 
@@ -166,10 +166,9 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
             .filter(filterItems)
             .sort(asc(this._orderByField))
             .map(article => {
-              const serverId = this._dataSerializer.getServerId(article);
-              const isOpen = article.Id === activeId;
+              const isOpen = article._ClientId === activeId;
               return (
-                <Fragment key={article.Id}>
+                <Fragment key={article._ClientId}>
                   <tr
                     className={cn("relation-field-accordion__header", {
                       "relation-field-accordion__header--open": isOpen
@@ -184,7 +183,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
                     </td>
                     <td key={-2} className="relation-field-accordion__cell">
-                      {serverId > 0 && `(${serverId})`}
+                      {article._ServerId > 0 && `(${article._ServerId})`}
                     </td>
                     {this._displayFields.map((displayField, i) => (
                       <td key={i} className="relation-field-accordion__cell">
@@ -217,7 +216,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       })}
                       colSpan={this._displayFields.length + 3}
                     >
-                      {touchedIds[article.Id] && (
+                      {touchedIds[article._ClientId] && (
                         <ArticleEditor
                           model={article}
                           contentSchema={fieldSchema.Content}

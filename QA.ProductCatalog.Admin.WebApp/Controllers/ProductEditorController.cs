@@ -332,11 +332,19 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var partialDefinition = new ProductDefinition { StorageSchema = partialContent };
 
             // TODO: what about validation ?
-            // TODO: what about Id-s of new articles ?
             // TODO: concurrency checks based on `Modified` field
-            // InsertData[] idMapping = _productUpdateService.Update(partialProduct, partialDefinition, isLive);
+            InsertData[] idMappings = _productUpdateService.Update(partialProduct, partialDefinition, isLive);
 
-            return new HttpStatusCodeResult(HttpStatusCode.NoContent);
+            var idMappingsByContent = idMappings
+                .ToLookup(data => data.ContentId, data => new
+                {
+                    ClientId = data.OriginalArticleId,
+                    ServerId = data.CreatedArticleId,
+                });
+
+            string json = JsonConvert.SerializeObject(idMappingsByContent);
+
+            return Content(json, "application/json");
         }
         
         private Content GetContentByArticleId(int articleId, bool isLive)

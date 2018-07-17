@@ -8,7 +8,7 @@ import {
   isExtensionField
 } from "Models/EditorSchemaModels";
 
-const options = { idAttribute: "Id", mergeStrategy: deepMerge };
+const options = { idAttribute: "_ClientId", mergeStrategy: deepMerge };
 
 export class DataNormalizer {
   private _entitySchemas: {

@@ -2,6 +2,9 @@
 
 namespace QA.Core.DPC.Loader.Editor
 {
+    /// <summary>
+    /// Объект, содержащий поля нормальной статьи или статьи-расширения
+    /// </summary>
     public class ArticleObject : Dictionary<string, object>
     {
         /// <summary>
@@ -14,7 +17,7 @@ namespace QA.Core.DPC.Loader.Editor
         /// Имя поля для серверного Id статьи, полученного при сохранении в БД.
         /// Совпадает с <see cref="Models.Entities.Article.Id"/>.
         /// </summary>
-        internal const string _Id = "_Id";
+        internal const string _ServerId = "_ServerId";
         /// <summary>
         /// Имя поля для .NET-названия контента статьи <see cref="Quantumart.QP8.BLL.Content.NetName" />.
         /// </summary>
@@ -28,13 +31,10 @@ namespace QA.Core.DPC.Loader.Editor
         /// </summary>
         internal static string _Contents(string prop) => $"{prop}_Contents";
     }
-
-    public class FileFieldObject
-    {
-        public string Name { get; set; }
-        public string AbsoluteUrl { get; set; }
-    }
-
+    
+    /// <summary>
+    /// Словарь, отображающий имя контента-расширения на объект с полями статьи-расширения
+    /// </summary>
     public class ExtensionFieldObject : Dictionary<string, ArticleObject>
     {
     }

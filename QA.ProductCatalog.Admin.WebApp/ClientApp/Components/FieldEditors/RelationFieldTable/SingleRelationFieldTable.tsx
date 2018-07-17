@@ -26,7 +26,6 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const article: ArticleObject = model[fieldSchema.FieldName];
-    const serverId = article && this._dataSerializer.getServerId(article);
     return (
       <Col md>
         <ButtonGroup>
@@ -56,7 +55,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
           <div className="relation-field-table">
             <div className="relation-field-table__row">
               <div key={-1} className="relation-field-table__cell">
-                {serverId > 0 && `(${serverId})`}
+                {article._ServerId > 0 && `(${article._ServerId})`}
               </div>
               {this._displayFields.map((displayField, i) => (
                 <div key={i} className="relation-field-table__cell">

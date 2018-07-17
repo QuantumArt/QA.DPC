@@ -1,7 +1,9 @@
 import { inject } from "react-ioc";
 import { runInAction } from "mobx";
-import { ArticleSnapshot } from "Models/EditorDataModels";
+import { ArticleSnapshot, ArticleObject } from "Models/EditorDataModels";
+import { ContentSchema } from "Models/EditorSchemaModels";
 import { EditorSettings } from "Models/EditorSettings";
+import { RelationSelection } from "Models/RelationSelection";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataContext } from "Services/DataContext";
@@ -39,7 +41,7 @@ export class EditorController {
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentName);
 
       this._dataContext.initStore(dataSnapshot);
-      return this._dataContext.store[contentName].get(String(dataTree.Id));
+      return this._dataContext.store[contentName].get(String(dataTree._ClientId));
     } else {
       await initSchemaTask;
       const contentName = this._schemaContext.contentSchema.ContentName;
@@ -64,5 +66,9 @@ export class EditorController {
     this._schemaContext.initSchema(schema.EditorSchema);
   }
 
-  public async savePartialProduct() {}
+  public async savePartialProduct(
+    _article: ArticleObject,
+    _contentSchema: ContentSchema,
+    _relationSelection?: RelationSelection
+  ) {}
 }

@@ -96,7 +96,6 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const { fieldEditors, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
-    const serverId = article && this._dataSerializer.getServerId(article);
     return article ? (
       <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
         <tbody>
@@ -114,7 +113,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
             </td>
             <td key={-2} className="relation-field-accordion__cell">
-              {serverId > 0 && `(${serverId})`}
+              {article._ServerId > 0 && `(${article._ServerId})`}
             </td>
             {this._displayFields.map((displayField, i) => (
               <td key={i} className="relation-field-accordion__cell">

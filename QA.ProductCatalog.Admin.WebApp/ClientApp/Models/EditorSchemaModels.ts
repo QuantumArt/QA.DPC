@@ -6,7 +6,7 @@ export interface ContentSchema {
   readonly ContentName: string;
   readonly ContentTitle?: string;
   readonly ContentDescription?: string;
-  readonly DisplayFieldName: string;
+  readonly DisplayFieldName?: string;
   /** Используется только в качестве расширения */
   readonly ForExtension: boolean;
   readonly Fields: {
@@ -127,7 +127,7 @@ export function isSingleRelationField(field: any): field is SingleRelationFieldS
 }
 
 export interface MultiRelationFieldSchema extends RelationFieldSchema {
-  readonly OrderByFieldName: string;
+  readonly OrderByFieldName?: string;
   readonly MaxDataListItemCount?: number;
 }
 

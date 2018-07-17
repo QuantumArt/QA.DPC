@@ -32,7 +32,7 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
     super(props, context);
     const {
       fieldSchema,
-      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "Id"
+      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName || "_ServerId"
     } = props;
     this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
   }
@@ -50,7 +50,7 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const { selectedIds } = this.state;
-    delete selectedIds[article.Id];
+    delete selectedIds[article._ClientId];
     this.setState({ selectedIds });
     const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
     if (array) {
@@ -63,13 +63,13 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
     const { selectMultiple, onClick } = this.props;
     if (onClick) {
       let { selectedIds } = this.state;
-      if (selectedIds[article.Id]) {
-        delete selectedIds[article.Id];
+      if (selectedIds[article._ClientId]) {
+        delete selectedIds[article._ClientId];
       } else {
         if (selectMultiple) {
-          selectedIds[article.Id] = true;
+          selectedIds[article._ClientId] = true;
         } else {
-          selectedIds = { [article.Id]: true };
+          selectedIds = { [article._ClientId]: true };
         }
       }
       this.setState({ selectedIds });
@@ -133,13 +133,13 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
                 title = "...";
               }
               return (
-                <Fragment key={article.Id}>
+                <Fragment key={article._ClientId}>
                   {" "}
                   <span
                     onClick={e => this.toggleRelation(e, article)}
                     className={cn("pt-tag pt-minimal pt-interactive", {
                       "pt-tag-removable": !fieldSchema.IsReadOnly,
-                      "pt-intent-primary": selectedIds[article.Id]
+                      "pt-intent-primary": selectedIds[article._ClientId]
                     })}
                   >
                     {title}

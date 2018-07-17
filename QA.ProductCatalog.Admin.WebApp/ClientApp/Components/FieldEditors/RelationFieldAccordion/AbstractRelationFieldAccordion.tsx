@@ -5,7 +5,6 @@ import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
-import { DataSerializer } from "Services/DataSerializer";
 import { DataContext } from "Services/DataContext";
 import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
@@ -28,7 +27,6 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
 export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor<
   RelationFieldAccordionProps
 > {
-  @inject protected _dataSerializer: DataSerializer;
   @inject protected _dataContext: DataContext;
   @inject protected _relationController: RelationController;
   protected _displayFields: FieldSelector[];

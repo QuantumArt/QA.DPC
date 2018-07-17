@@ -40,7 +40,7 @@ export class DataContext {
   public createArticle<T extends ArticleObject = ArticleObject>(contentName: string): T {
     const article = this.getContentType(contentName).create({
       ...this._defaultSnapshots[contentName],
-      Id: this._nextId--
+      _ClientId: this._nextId--
     }) as T;
 
     this.store[contentName].put(article);
@@ -76,12 +76,12 @@ export class DataContext {
  *   Region: Map<string, Region>;
  * }
  * interface Product {
- *   Id: number;
+ *   _ClientId: number;
  *   Description: string;
  *   Regions: Region[];
  * }
  * interface Region {
- *   Id: number;
+ *   _ClientId: number;
  *   Title: string;
  *   Parent: Region;
  * }
@@ -168,7 +168,8 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
     .filter(content => !content.ForExtension)
     .forEach(content => {
       const fieldModels = {
-        Id: t.identifier(t.number),
+        _ClientId: t.identifier(t.number),
+        _ServerId: t.maybe(t.number),
         _ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
         _Modified: t.maybe(t.Date)
       };

@@ -30,12 +30,12 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
         if (change.type === "splice") {
           if (change.removedCount > 0) {
             change.removed.forEach(oldValue => {
-              // oldValue.snapshot хранит Region.Id
+              // oldValue.snapshot хранит Region._ClientId
               this._selectedRegionIds.delete(String(oldValue.snapshot));
             });
           }
         } else {
-          // oldValue.snapshot хранит Region.Id
+          // oldValue.snapshot хранит Region._ClientId
           this._selectedRegionIds.delete(String(change.oldValue.snapshot));
         }
       })
@@ -50,7 +50,7 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
 
   @action
   private toggleRegion = (_e: any, region: Region) => {
-    const regionId = String(region.Id);
+    const regionId = String(region._ClientId);
     const isSelected = this._selectedRegionIds.has(regionId);
     if (isSelected) {
       this._selectedRegionIds.delete(regionId);
@@ -63,7 +63,7 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
     if (this._selectedRegionIds.size === 0) {
       return true;
     }
-    return device.Cities.some(city => this._selectedRegionIds.has(String(city.Id)));
+    return device.Cities.some(city => this._selectedRegionIds.has(String(city._ClientId)));
   };
 
   render() {
