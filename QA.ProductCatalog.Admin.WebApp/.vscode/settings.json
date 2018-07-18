@@ -12,5 +12,5 @@
     "Scripts/Bundles": true
   },
   "plantuml.exportSubFolder": false,
-  "plantuml.exportOutDirName": "Diagrams"
+  "plantuml.exportOutDirName": "/"
 }

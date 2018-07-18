@@ -249,6 +249,10 @@ namespace QA.Core.DPC.Loader
 			return article.FieldValues.Single(x => x.Field.Name == FIELD_NAME_XML_DEF).Value;
 		}
 
+        /// <summary>
+        /// Получить словарь со значениями полей контента ProductDefinition соответствующий
+        /// контенту <paramref name="contentId"/> и типу продукта <paramref name="productTypeId"/>.
+        /// </summary>
         public IReadOnlyDictionary<string, string> GetDefinitionFields(int productTypeId, int contentId, bool isLive = false)
         {
             int xamlContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
@@ -256,6 +260,10 @@ namespace QA.Core.DPC.Loader
             return GetDefinitionFields(xamlContentId, contentId, productTypeId, isLive);
         }
 
+        /// <summary>
+        /// Получить словарь со значениями полей контента ProductDefinition соответствующий
+        /// статье <paramref name="articleId"/>.
+        /// </summary>
         public IReadOnlyDictionary<string, string> GetDefinitionFields(int articleId, bool isLive = false)
         {
             _articleService.IsLive = isLive;

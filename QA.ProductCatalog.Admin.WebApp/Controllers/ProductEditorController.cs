@@ -98,7 +98,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var fieldsByName = GetDefinitionFieldsByArticleId(content_item_id, isLive);
 
             if (fieldsByName == null
-                || !fieldsByName.TryGetValue(nameof(Article.Id), out string productDefinitionsId))
+                || !fieldsByName.TryGetValue(nameof(Article.Id), out string productDefinitionId))
             {
                 throw new InvalidOperationException($"ProductDefinition for article {content_item_id} was not found");
             }
@@ -113,7 +113,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return View(editorViewPath, new ProductEditorSettingsModel
             {
                 ArticleId = content_item_id,
-                ProductDefinitionId = Int32.Parse(productDefinitionsId),
+                ProductDefinitionId = Int32.Parse(productDefinitionId),
             });
         }
 

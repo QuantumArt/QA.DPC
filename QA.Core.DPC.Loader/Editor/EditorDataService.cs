@@ -43,6 +43,9 @@ namespace QA.Core.DPC.Loader.Editor
             }
         }
 
+        /// <summary>
+        /// Преобразовать DPC-Article в формат редактора продуктов
+        /// </summary>
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="NotSupportedException" />
         public ArticleObject ConvertArticle(Article article, IArticleFilter filter)
@@ -160,6 +163,9 @@ namespace QA.Core.DPC.Loader.Editor
             }
         }
 
+        /// <summary>
+        /// Преобразовать статью из формата редактора продуктов в DPC-Article
+        /// </summary>
         public Article DeserializeProduct(JObject rootArticleDictionary, Content definition)
         {
             var productDeserializer = ObjectFactoryBase.Resolve<IProductDeserializer>();

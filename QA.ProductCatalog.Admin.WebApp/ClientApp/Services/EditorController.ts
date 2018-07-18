@@ -1,5 +1,4 @@
 import { inject } from "react-ioc";
-import { runInAction } from "mobx";
 import { ArticleSnapshot, ArticleObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { EditorSettings } from "Models/EditorSettings";
@@ -49,7 +48,7 @@ export class EditorController {
       const contentName = this._schemaContext.contentSchema.ContentName;
 
       this._dataContext.initStore({});
-      return runInAction(() => this._dataContext.createArticle(contentName));
+      return this._dataContext.createArticle(contentName);
     }
   }
 

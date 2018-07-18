@@ -395,6 +395,9 @@ namespace QA.Core.DPC.Loader.Editor
             }
         }
 
+        /// <summary>
+        /// Построить схему корневого DPC-контента и набор ссылок на повторяющиеся контенты
+        /// </summary>
         private ProductSchema GetProductSchema(ContentSchema contentSchema, SchemaContext context)
         {
             context.DefinitionNamesBySchema = context.RepeatedSchemas
@@ -417,6 +420,9 @@ namespace QA.Core.DPC.Loader.Editor
             };
         }
 
+        /// <summary>
+        /// Заменить повторяющиеся объекты <see cref="ContentSchema"/> на ссылки <see cref="ContentSchemaJsonRef"/>
+        /// </summary>
         private IContentSchema DeduplicateContentSchema(
             IContentSchema schema, SchemaContext context, HashSet<ContentSchema> visitedSchemas)
         {

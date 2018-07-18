@@ -1,5 +1,4 @@
 ﻿using QA.Core.Models.Configuration;
-using QA.Core.Models.Tools;
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;

@@ -64,6 +64,9 @@ namespace QA.Core.DPC.Loader
         public virtual IProductDataSource GetExtensionContainer(string fieldName, string extensionContentName) => this;
     }
 
+    /// <summary>
+    /// ProductDataSource для формата редактора продуктов
+    /// </summary>
     internal class EditorJsonProductDataSource : JsonProductDataSource
     {
         public EditorJsonProductDataSource(IDictionary<string, JToken> article)
