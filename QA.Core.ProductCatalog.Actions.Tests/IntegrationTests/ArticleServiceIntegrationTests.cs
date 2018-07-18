@@ -1,8 +1,8 @@
 ﻿using System;
-using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Services;
+using Unity;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
 {

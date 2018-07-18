@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {
-	public class ActionProfiler : ProfilerBase, IAction
+    public class ActionProfiler : ProfilerBase, IAction
 	{
 		private readonly IAction _action;
 

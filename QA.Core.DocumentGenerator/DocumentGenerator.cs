@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using GemBox.Document;
@@ -15,7 +12,7 @@ using LoadOptions = GemBox.Document.LoadOptions;
 
 namespace QA.Core.DocumentGenerator
 {
-	public class DocumentGenerator : IDocumentGenerator
+    public class DocumentGenerator : IDocumentGenerator
 	{
 		private static readonly Regex NotesRegex = new Regex(@"<note\s+id\=[\'""”](\d+)[\'""”]\s*\/>", RegexOptions.Compiled);
 

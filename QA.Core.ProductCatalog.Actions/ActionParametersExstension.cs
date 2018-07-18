@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QA.Core.ProductCatalog.Actions
 {
-	public static class ActionParametersExstension
+    public static class ActionParametersExstension
 	{
 		private const string ChannelsKey = "Channels";
         private const string ClearFieldIdsKey = "ClearFieldIds";

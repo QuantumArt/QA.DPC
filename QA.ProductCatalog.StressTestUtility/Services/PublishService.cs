@@ -1,5 +1,4 @@
-﻿using QA.Core;
-using QA.Core.ProductCatalog.Actions;
+﻿using QA.Core.ProductCatalog.Actions;
 using System;
 using System.Threading;
 using QA.Core.Logger;
@@ -7,7 +6,7 @@ using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 
 namespace QA.ProductCatalog.StressTestUtility.Services
 {
-	public class PublishService : IPublishService
+    public class PublishService : IPublishService
 	{
 		private const int ContentId = 288;
 

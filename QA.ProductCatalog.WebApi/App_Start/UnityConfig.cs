@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Unity;
-using Microsoft.Practices.Unity.Configuration;
+﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
 using QA.Core.DocumentGenerator;
 using QA.Core.DPC.API.Container;
@@ -17,6 +16,7 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.Configuration;
 using System;
+using Unity;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {

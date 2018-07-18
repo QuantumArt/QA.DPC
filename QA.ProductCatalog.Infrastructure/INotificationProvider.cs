@@ -1,9 +1,6 @@
-﻿
-using System;
-
-namespace QA.ProductCatalog.Infrastructure
+﻿namespace QA.ProductCatalog.Infrastructure
 {
-	public interface INotificationProvider
+    public interface INotificationProvider
 	{
 		NotificationSenderConfig GetConfiguration();
 	}

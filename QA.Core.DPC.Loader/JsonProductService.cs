@@ -8,7 +8,6 @@ using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Serialization;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
-using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
@@ -20,7 +19,7 @@ using Field = QA.Core.Models.Configuration.Field;
 
 namespace QA.Core.DPC.Loader
 {
-	public class JsonProductService : IJsonProductService
+    public class JsonProductService : IJsonProductService
 	{
 		private readonly Quantumart.QP8.BLL.Services.API.FieldService _fieldService;
 

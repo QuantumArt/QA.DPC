@@ -1,11 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
-using System.Web.Script.Serialization;
-using Newtonsoft.Json;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions;
 using QA.Core.ProductCatalog.Actions.Tasks;
-using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using System;
 using System.Linq;

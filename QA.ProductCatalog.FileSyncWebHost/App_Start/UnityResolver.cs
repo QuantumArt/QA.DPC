@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Http.Dependencies;
-using Microsoft.Practices.Unity;
-using QA.Core;
 using QA.Core.Logger;
+using Unity;
+using Unity.Exceptions;
 
 namespace QA.ProductCatalog.FileSyncWebHost
 {
-	public class UnityResolver : IDependencyResolver
+    public class UnityResolver : IDependencyResolver
 	{
 		private readonly IUnityContainer _container;
 		private readonly ILogger _logger;

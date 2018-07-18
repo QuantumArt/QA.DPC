@@ -4,13 +4,12 @@ using System.Configuration;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using QA.Core;
 using QA.Core.Logger;
 using QA.Scheduler.API.Services;
 
 namespace QA.Scheduler.Core
 {
-	internal sealed class Scheduler : IScheduler, IDisposable
+    internal sealed class Scheduler : IScheduler, IDisposable
 	{
 		private const string ServiceRepeatIntervalKey = "ServiceRepeatInterval";
 		private const string ServiceRepeatOnErrorIntervalKey = "ServiceRepeatOnErrorInterval";

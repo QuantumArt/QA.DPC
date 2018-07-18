@@ -1,11 +1,11 @@
 ﻿using System;
 using System.ServiceProcess;
-using Microsoft.Practices.Unity;
 using QA.Scheduler.API.Models;
+using Unity;
 
 namespace QA.Scheduler.Core.Service
 {
-	internal sealed class SchedulerService : ServiceBase
+    internal sealed class SchedulerService : ServiceBase
 	{
 		private readonly Func<IUnityContainer> _getContainer;
 		private IUnityContainer _container;

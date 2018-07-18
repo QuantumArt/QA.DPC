@@ -1,10 +1,10 @@
 ﻿using System;
 using System.ServiceModel;
-using Microsoft.Practices.Unity;
+using Unity;
 
 namespace QA.ProductCatalog.SiteSyncWebHost.Services
 {
-	public class UnityServiceHost : ServiceHost
+    public class UnityServiceHost : ServiceHost
 	{
 		public IUnityContainer Container { set; get; }
 

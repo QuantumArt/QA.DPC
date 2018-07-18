@@ -1,6 +1,8 @@
-﻿using Microsoft.Practices.Unity;
-using QA.Core.DPC.QP.Models;
+﻿using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using Unity;
+using Unity.Extension;
+using Unity.Injection;
 
 namespace QA.Core.DPC.QP.Configuration
 {

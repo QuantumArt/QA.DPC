@@ -43,7 +43,7 @@ namespace QA.Core.ProductCatalog.Actions
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
             {
-                dictionary = GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete);
+                dictionary = GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, false);
                 products = doNotSendNotifications ? null : Productservice.GetSimpleProductsByIds(new[] { product.Id });
             }
 

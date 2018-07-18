@@ -1,10 +1,12 @@
-﻿using Microsoft.Practices.Unity;
-using QA.ProductCatalog.Infrastructure;
+﻿using QA.ProductCatalog.Infrastructure;
 using System;
+using Unity;
+using Unity.Extension;
+using Unity.Injection;
 
 namespace QA.ProductCatalog.Validation.Configuration
 {
-	public class ValidationConfiguration : UnityContainerExtension
+    public class ValidationConfiguration : UnityContainerExtension
 	{
 		protected override void Initialize()
 		{

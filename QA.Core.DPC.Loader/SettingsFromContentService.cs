@@ -2,13 +2,12 @@
 using System.Linq;
 using QA.Core.Cache;
 using Quantumart.QP8.BLL;
-using QA.Core.DPC.Loader.Resources;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC.Loader
 {
-	public class SettingsFromContentService : SettingsServiceBase
+    public class SettingsFromContentService : SettingsServiceBase
 	{
 		private readonly IVersionedCacheProvider _cacheProvider;
 

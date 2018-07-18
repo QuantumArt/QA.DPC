@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace QA.Core.DPC
+﻿namespace QA.Core.DPC
 {
     public class SettingsInfo
     {        

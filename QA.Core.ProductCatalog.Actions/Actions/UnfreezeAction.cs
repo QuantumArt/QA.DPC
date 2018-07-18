@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.ProductCatalog.ActionsRunnerModel;

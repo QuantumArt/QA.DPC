@@ -35,8 +35,8 @@ namespace QA.Core.ProductCatalog.Actions
 
 			ArticleService.LoadStructureCache();
 
-			bool doNotCloneArchice = actionParameters.ContainsKey(DoNotCloneArchiceKey) && bool.Parse(actionParameters[DoNotCloneArchiceKey]);
-			Func<Article, bool> filter = a => !doNotCloneArchice || !a.Archived;
+			bool doNotCloneArticle = actionParameters.ContainsKey(DoNotCloneArchiceKey) && bool.Parse(actionParameters[DoNotCloneArchiceKey]);
+			Func<Article, bool> filter = a => !doNotCloneArticle;
 
 			var article = ArticleService.Read(productId);
 
@@ -44,7 +44,7 @@ namespace QA.Core.ProductCatalog.Actions
 				throw new ProductException(productId, "Операция недопустима из-за недостаточных прав доступа по связям");
 
 			var definition = Productservice.GetProductDefinition(0, article.ContentId);
-			var dictionary = GetProductsToBeProcessed(article, definition, ef => ef.CloningMode, CloningMode.Copy, filter);
+			var dictionary = GetProductsToBeProcessed(article, definition, ef => ef.CloningMode, CloningMode.Copy, filter, true);
 
 			PrepareProducts(dictionary);
 			MapProducts(dictionary[productId], dictionary);

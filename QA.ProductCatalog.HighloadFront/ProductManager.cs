@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using QA.Core;
 using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 using QA.Core.Cache;
-using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;

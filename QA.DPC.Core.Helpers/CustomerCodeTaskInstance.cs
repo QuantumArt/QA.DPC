@@ -1,6 +1,5 @@
 using System;
 using System.Threading;
-using QA.Core;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.ActionsRunner;

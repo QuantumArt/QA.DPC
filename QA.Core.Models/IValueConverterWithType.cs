@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Globalization;
 
 namespace QA.Core.Models
 {
-	public interface IFixedTypeValueConverter
+    public interface IFixedTypeValueConverter
 	{
 		object Convert(object value);
 

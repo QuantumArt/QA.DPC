@@ -119,7 +119,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
 				int productTypesContentId = helper.GetSettingValue(SettingsTitles.PRODUCT_TYPES_CONTENT_ID);
 
-				var allTypesCompatibility = articleSerivce.List(productTypesContentId, null);
+				var allTypesCompatibility = articleSerivce.List(productTypesContentId, null, true);
 
 				typesIncompatible = !allTypesCompatibility.Any(x =>
 					x.FieldValues.FirstOrDefault(a => a.Field.Name == Constants.FieldProductContent)?.Value == productTypeId

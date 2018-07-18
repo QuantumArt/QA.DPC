@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.Models;
-using QA.Core.Models.UI;
 
 namespace QA.Core.DPC.UI.Converters
 {

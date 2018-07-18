@@ -1,5 +1,4 @@
-﻿using System;
-using QA.Core.Models.UI;
+﻿using QA.Core.Models.UI;
 namespace QA.Core.DPC.UI
 {
     public interface IProductControlProvider

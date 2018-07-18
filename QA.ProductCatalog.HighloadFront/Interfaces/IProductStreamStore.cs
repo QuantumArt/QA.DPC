@@ -1,7 +1,6 @@
 using System.IO;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
-using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront.Interfaces

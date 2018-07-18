@@ -1,6 +1,4 @@
-﻿using QA.Core.Models.Entities;
-using QA.Core.Models.UI;
-using QA.ProductCatalog.Infrastructure;
+﻿using QA.Core.Models.UI;
 
 namespace QA.Core.DPC.UI.Controls
 {

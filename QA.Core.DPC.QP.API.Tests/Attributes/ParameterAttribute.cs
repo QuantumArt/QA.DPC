@@ -2,7 +2,6 @@
 using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using QA.Core.DPC.QP.API.Tests.Providers;
-using System;
 using System.Collections;
 
 namespace QA.Core.DPC.QP.API.Tests.Attributes

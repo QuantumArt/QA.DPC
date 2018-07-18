@@ -4,7 +4,6 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 

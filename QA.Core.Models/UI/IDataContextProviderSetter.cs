@@ -1,5 +1,4 @@
-﻿using System;
-namespace QA.Core.Models.UI
+﻿namespace QA.Core.Models.UI
 {
     public interface IDataContextProviderSetter
     {

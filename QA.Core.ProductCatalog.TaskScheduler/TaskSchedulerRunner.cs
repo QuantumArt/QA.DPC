@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Timers;
 using QA.Core.Logger;
@@ -12,7 +10,7 @@ using Quartz.Spi;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
-	public class TaskSchedulerRunner
+    public class TaskSchedulerRunner
 	{
 		private readonly ISchedulerFactory _schedulerFactory;
 		private readonly Func<ITaskService> _taskServiceFunc;

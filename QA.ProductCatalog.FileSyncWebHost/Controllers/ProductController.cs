@@ -4,12 +4,11 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using QA.Core;
 using QA.Core.Logger;
 
 namespace QA.ProductCatalog.FileSyncWebHost.Controllers
 {
-	public class ProductController : ApiController
+    public class ProductController : ApiController
 	{
 		private readonly string _path;
 		private readonly ILogger _logger;

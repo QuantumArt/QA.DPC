@@ -52,7 +52,7 @@ namespace QA.Core.ProductCatalog.Actions
 				var definition = Productservice.GetProductDefinition(0, article.ContentId);
 				UpdateDefinition(article, definition, actionParameters);
 
-				var dictionary = GetProductsToBeProcessed<CloningMode>(article, definition, ef => ef.CloningMode, CloningMode.Copy, Filter);
+				var dictionary = GetProductsToBeProcessed<CloningMode>(article, definition, ef => ef.CloningMode, CloningMode.Copy, Filter, true);
 				var missedAggArticles = PrepareProducts(dictionary, clearFieldIds);
 				MapProducts(dictionary[productId], dictionary);
 				int id = SaveProducts(productId, dictionary, missedAggArticles);

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xaml;
+﻿using System.Xaml;
 using QA.Core.Models.Configuration;
 
 namespace QA.Core.Models.Tools

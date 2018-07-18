@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.Http.Dependencies;
-using Microsoft.Practices.Unity;
-using QA.Core;
-using QA.Core.DPC.QP.Models;
 using QA.ProductCatalog.WebApi.Controllers;
 using System.Web;
-using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
+using Unity;
+using Unity.Exceptions;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
-	public class UnityResolver : IDependencyResolver
+    public class UnityResolver : IDependencyResolver
 	{
 		private readonly IUnityContainer _container;
 		private readonly ILogger _logger;

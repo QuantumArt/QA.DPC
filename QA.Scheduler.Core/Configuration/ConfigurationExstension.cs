@@ -1,14 +1,15 @@
 ﻿using System;
-using Microsoft.Practices.Unity;
-using QA.Core;
 using QA.Core.Logger;
 using QA.Scheduler.API.Models;
 using QA.Scheduler.API.Services;
 using QA.Scheduler.Core.Schedules;
+using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
 
 namespace QA.Scheduler.Core.Configuration
 {
-	public static class ConfigurationExstension
+    public static class ConfigurationExstension
 	{
 		public const string DefaultScheduleName = "NullSchedule";
 
@@ -84,7 +85,7 @@ namespace QA.Scheduler.Core.Configuration
 
 		public static void RegisterSchedule(this IUnityContainer container, string name, TimeSpan interval, LifetimeManager lifetimeManager)
 		{
-			container.RegisterType<ISchedule, IntervalSchedule>(name, lifetimeManager, new InjectionFactory(c => new IntervalSchedule(interval)));
+			container.RegisterType<ISchedule>(name, lifetimeManager, new InjectionFactory(c => new IntervalSchedule(interval)));
 		}
 
 		public static void RegisterService(this IUnityContainer container, string key, string name, string description)

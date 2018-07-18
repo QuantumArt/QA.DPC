@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
+﻿using System.Collections.Generic;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models
 {

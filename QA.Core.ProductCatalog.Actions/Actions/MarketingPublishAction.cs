@@ -3,14 +3,13 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-	public class MarketingPublishAction : IAction
+    public class MarketingPublishAction : IAction
 	{
 		#region Constants
 		private const string PublishActionKey = "PublishAction";

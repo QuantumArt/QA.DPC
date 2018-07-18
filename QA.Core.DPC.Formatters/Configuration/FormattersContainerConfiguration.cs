@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Net.Http.Formatting;
-using Microsoft.Practices.Unity;
 using QA.Core.DocumentGenerator;
 using QA.Core.DPC.Formatters.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Entities;
 using QA.Core.Models.Configuration;
+using Unity;
+using Unity.Extension;
+using Unity.Injection;
 
 namespace QA.Core.DPC.Formatters.Configuration
 {
-	public class FormattersContainerConfiguration : UnityContainerExtension
+    public class FormattersContainerConfiguration : UnityContainerExtension
 	{
 		protected override void Initialize()
 		{

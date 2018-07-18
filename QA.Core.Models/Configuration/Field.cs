@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Markup;
 
 namespace QA.Core.Models.Configuration
 {
-	public abstract class Field
+    public abstract class Field
 	{
         /// <summary>
         /// специфичные для конкретных сериализаторов свойства

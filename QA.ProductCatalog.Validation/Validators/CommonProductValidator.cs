@@ -84,7 +84,7 @@ namespace QA.ProductCatalog.Validation.Validators
                     var fieldService = new FieldService(helper.ConnectionString, 1);
                     var fieldId = fieldService.List(contentServiceOnTariffId).Where(w => w.Name.Equals(tariffRelationFieldName)).Select(s => s.Id).FirstOrDefault();
                     //Получение Id услуг из контента "Услуги на тарифах"
-                    var relationsIds = articleService.GetRelatedItems(fieldId, productId)?
+                    var relationsIds = articleService.GetRelatedItems(fieldId, productId, true)?
                                                      .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                                                      .Select(int.Parse)
                                                      .ToArray();
@@ -118,14 +118,14 @@ namespace QA.ProductCatalog.Validation.Validators
                         foreach (var field in productField)
                         {
                             //Получение ids связанных статей
-                            var relatedArticlesId = articleService.GetRelatedItems(field.Id, productId)?
+                            var relatedArticlesId = articleService.GetRelatedItems(field.Id, productId, true)?
                                                       .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                                                       .Select(int.Parse)
                                 .ToArray();
 
                             if (relatedArticlesId != null && relatedArticlesId.Any())
                             {
-                                var relatedArticles = articleService.List(con.Id, relatedArticlesId).Where(w => !w.Archived).Select(s => s).ToList();
+                                var relatedArticles = articleService.List(con.Id, relatedArticlesId, true).Where(w => !w.Archived).Select(s => s).ToList();
                                 var relField = productField.Where(f => f.Name != field.Name).Select(s => s).First();
                                 var rel = relatedArticles.Select(s => s.FieldValues.First(f => f.Field.Name == relField.Name).Value).ToArray();
                                 if (rel.Any())
@@ -144,7 +144,7 @@ namespace QA.ProductCatalog.Validation.Validators
                         .Value;
 
                 //Проверка, что тип маркетингового продукта и тип продукта -- сопоставимы
-                if (!articleService.List(productTypesContentId, null).Any(x =>
+                if (!articleService.List(productTypesContentId, null, true).Any(x =>
                                 x.FieldValues.FirstOrDefault(a => a.Field.Name == Constants.FieldProductContent)?.Value == typeId.ToString()
                                 && x.FieldValues.FirstOrDefault(a => a.Field.Name == Constants.FieldMarkProductContent)?.Value == markProductType))
                 {

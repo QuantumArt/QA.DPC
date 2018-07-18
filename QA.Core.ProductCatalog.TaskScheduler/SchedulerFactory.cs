@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Quartz;
 using Quartz.Core;
 using Quartz.Impl;
@@ -12,7 +9,7 @@ using Quartz.Util;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
-	public class SchedulerFactory : ISchedulerFactory
+    public class SchedulerFactory : ISchedulerFactory
 	{
 		public ICollection<IScheduler> AllSchedulers
 		{

@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QA.Core.Models.Entities;
-using QA.Core.Models.UI;
+﻿using System.ComponentModel;
 
 namespace QA.Core.Models.Configuration
 {
-	public sealed class VirtualField : BaseVirtualField
+    public sealed class VirtualField : BaseVirtualField
 	{
 		public string Path { get; set; }
 

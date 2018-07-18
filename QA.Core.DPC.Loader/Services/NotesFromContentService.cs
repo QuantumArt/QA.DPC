@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Loader.Services
 {
-	public class NotesFromContentService : INotesService
+    public class NotesFromContentService : INotesService
 	{
 		private readonly ISettingsService _settingsService;
 

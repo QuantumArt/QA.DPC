@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.Models.UI;
-using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.Models.Tests.Controls
 {
