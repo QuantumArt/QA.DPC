@@ -87,7 +87,7 @@
       <HintPath>$(SolutionDir)packages\Unity.5.8.6\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
     <Reference Include="EFExtensions, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\EFExtensions.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\EFExtensions.dll</HintPath>
     </Reference>
     <Reference Include="Flurl, Version=2.5.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\Flurl.2.5.1\lib\net40\Flurl.dll</HintPath>
@@ -96,7 +96,7 @@
       <HintPath>$(SolutionDir)packages\Flurl.Http.2.0.1\lib\net45\Flurl.Http.dll</HintPath>
     </Reference>
     <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\Irony.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\Irony.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>$(SolutionDir)packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
@@ -154,28 +154,28 @@
       <HintPath>$(SolutionDir)packages\Quantumart.3.1.3\lib\net471\Quantumart.QP8.Assembling.dll</HintPath>
     </Reference>
     <Reference Include="Quantumart.QP8.BLL, Version=2.7.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\Quantumart.QP8.BLL.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\Quantumart.QP8.BLL.dll</HintPath>
     </Reference>
     <Reference Include="Quantumart.QP8.Configuration, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\Quantumart.QP8.Configuration.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\Quantumart.QP8.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Quantumart.QP8.Constants, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\Quantumart.QP8.Constants.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\Quantumart.QP8.Constants.dll</HintPath>
     </Reference>
     <Reference Include="Quantumart.QP8.DAL, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\Quantumart.QP8.DAL.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\Quantumart.QP8.DAL.dll</HintPath>
     </Reference>
     <Reference Include="Quantumart.QP8.Merger, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\Quantumart.QP8.Merger.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\Quantumart.QP8.Merger.dll</HintPath>
     </Reference>
     <Reference Include="Quantumart.QP8.Security, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\Quantumart.QP8.Security.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\Quantumart.QP8.Security.dll</HintPath>
     </Reference>
     <Reference Include="Quantumart.QP8.Utils, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\Quantumart.QP8.Utils.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\Quantumart.QP8.Utils.dll</HintPath>
     </Reference>
     <Reference Include="Quantumart.QP8.Validators, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta3\lib\net471\Quantumart.QP8.Validators.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.7.0-beta5\lib\net471\Quantumart.QP8.Validators.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />

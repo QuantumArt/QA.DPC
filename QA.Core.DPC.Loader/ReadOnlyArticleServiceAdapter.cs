@@ -70,6 +70,7 @@ namespace QA.Core.DPC.Loader
 		public bool IsLive
 		{
 			get { return ArticleService.IsLive; }
+
 			set { ArticleService.IsLive = value; }
 		}
 	}
