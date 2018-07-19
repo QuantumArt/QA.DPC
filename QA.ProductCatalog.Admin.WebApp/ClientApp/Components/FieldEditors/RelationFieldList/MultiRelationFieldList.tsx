@@ -127,33 +127,27 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
           list
             .slice()
             .sort(asc(this._orderByField))
-            .map(article => {
-              let title = this._displayField(article);
-              if (title == null) {
-                title = "...";
-              }
-              return (
-                <Fragment key={article._ClientId}>
-                  {" "}
-                  <span
-                    onClick={e => this.toggleRelation(e, article)}
-                    className={cn("pt-tag pt-minimal pt-interactive", {
-                      "pt-tag-removable": !fieldSchema.IsReadOnly,
-                      "pt-intent-primary": selectedIds[article._ClientId]
-                    })}
-                  >
-                    {title}
-                    {!fieldSchema.IsReadOnly && (
-                      <button
-                        className="pt-tag-remove"
-                        title="Удалить"
-                        onClick={e => this.removeRelation(e, article)}
-                      />
-                    )}
-                  </span>
-                </Fragment>
-              );
-            })}
+            .map(article => (
+              <Fragment key={article._ClientId}>
+                {" "}
+                <span
+                  onClick={e => this.toggleRelation(e, article)}
+                  className={cn("pt-tag pt-minimal pt-interactive", {
+                    "pt-tag-removable": !fieldSchema.IsReadOnly,
+                    "pt-intent-primary": selectedIds[article._ClientId]
+                  })}
+                >
+                  {this.getTitle(article)}
+                  {!fieldSchema.IsReadOnly && (
+                    <button
+                      className="pt-tag-remove"
+                      title="Удалить"
+                      onClick={e => this.removeRelation(e, article)}
+                    />
+                  )}
+                </span>
+              </Fragment>
+            ))}
       </Col>
     );
   }

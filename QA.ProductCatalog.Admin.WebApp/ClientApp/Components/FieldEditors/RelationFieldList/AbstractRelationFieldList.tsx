@@ -34,6 +34,11 @@ export abstract class AbstractRelationFieldList extends AbstractFieldEditor<
     this._displayField = isString(displayField) ? article => article[displayField] : displayField;
   }
 
+  protected getTitle(article: ArticleObject) {
+    const title = this._displayField(article);
+    return title != null && !/^\s*$/.test(title) ? title : "...";
+  }
+
   render() {
     const { model, fieldSchema } = this.props;
     return (

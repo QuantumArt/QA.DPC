@@ -232,10 +232,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
             .filter(filterItems)
             .sort(asc(this._orderByField))
             .map(article => {
-              let title = this._displayField(article);
-              if (title == null) {
-                title = "...";
-              }
+              const title = this.getTitle(article);
               return (
                 <Tab
                   key={article._ClientId}
