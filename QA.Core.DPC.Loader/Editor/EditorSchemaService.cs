@@ -272,20 +272,20 @@ namespace QA.Core.DPC.Loader.Editor
                 }
 
                 int? maxDataListItemCount = null;
-                // TODO: дождаться когда Quantumart.QP8.BLL обновится до v2.5
-                //if (qpField.ExactType == FieldExactTypes.M2ORelation && qpField.BackRelationId != null)
-                //{
-                //    // MaxDataListItemCount лежит в соотв. поле O2MRelation
-                //    var reverseField = _fieldService.Read(qpField.BackRelationId.Value);
-                //    if (reverseField.MaxDataListItemCount > 0)
-                //    {
-                //        maxDataListItemCount = reverseField.MaxDataListItemCount;
-                //    }
-                //}
-                //else if (qpField.MaxDataListItemCount > 0)
-                //{
-                //    maxDataListItemCount = qpField.MaxDataListItemCount;
-                //}
+
+                if (qpField.ExactType == FieldExactTypes.M2ORelation && qpField.BackRelationId != null)
+                {
+                    // MaxDataListItemCount лежит в соотв. поле O2MRelation
+                    var reverseField = _fieldService.Read(qpField.BackRelationId.Value);
+                    if (reverseField.MaxDataListItemCount > 0)
+                    {
+                        maxDataListItemCount = reverseField.MaxDataListItemCount;
+                    }
+                }
+                else if (qpField.MaxDataListItemCount > 0)
+                {
+                    maxDataListItemCount = qpField.MaxDataListItemCount;
+                }
 
                 return new MultiRelationFieldSchema
                 {
