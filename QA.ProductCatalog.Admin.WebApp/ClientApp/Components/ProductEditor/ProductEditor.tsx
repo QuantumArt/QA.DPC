@@ -1,7 +1,6 @@
 import React, { Component, ReactNode } from "react";
 import { provider, inject } from "react-ioc";
 import { Grid } from "react-flexbox-grid";
-import { onPatch } from "mobx-state-tree";
 import { ArticleEditor, RelationsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
@@ -51,9 +50,6 @@ export class ProductEditor extends Component<ProductEditorProps> {
 
   async componentDidMount() {
     const article = await this._editorController.initialize();
-    if (DEBUG) {
-      onPatch(article, patch => console.log(patch));
-    }
     this.setState({ article });
   }
 

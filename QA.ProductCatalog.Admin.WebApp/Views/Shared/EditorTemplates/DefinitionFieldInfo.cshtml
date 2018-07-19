@@ -62,16 +62,16 @@ else
 		@Html.EnumDropDownListFor(x => ((Association)Model.Field).DeletingMode, new { Name = "Field.DeletingMode" })
 	</div>
 
-    <div class="editor-label">
-        @Html.LabelFor(x => association.UpdatingMode)
-    </div>
-    <div class="editor-field">
-        @Html.EnumDropDownListFor(x => ((Association)Model.Field).UpdatingMode, new { Name = "Field.UpdatingMode" })
-    </div>
+  <div class="editor-label">
+      @Html.LabelFor(x => association.UpdatingMode)
+  </div>
+  <div class="editor-field">
+      @Html.EnumDropDownListFor(x => ((Association)Model.Field).UpdatingMode, new { Name = "Field.UpdatingMode" })
+  </div>
 
-    if (Model.Field is BackwardRelationField)
-    {
-        var backwardField = (BackwardRelationField)Model.Field;
+  if (Model.Field is BackwardRelationField)
+  {
+      var backwardField = (BackwardRelationField)Model.Field;
 
 		<div class="editor-label">
 			@Html.LabelFor(x => backwardField.DisplayName)
@@ -86,22 +86,21 @@ else
 			@backwardField.Content.ContentName @backwardField.Content.ContentId
 		</div>
 	}
-	else
-		if (Model.Field is EntityField && ((EntityField)Model.Field).Content != null)
-		{
-			<div class="display-label">
-				Ссылается на контент
-			</div>
-			<div class="display-field">
-				@(((EntityField)Model.Field).Content.ContentName + " " + ((EntityField)Model.Field).Content.ContentId)
-			</div>
-		}
-		else if (Model.Field is ExtensionField)
-		{
-			<div class="display-label">
-				<span class="EditorNote">Поле является классификатором</span>
-			</div>
-		}
+	else if (Model.Field is EntityField && ((EntityField)Model.Field).Content != null)
+	{
+		<div class="display-label">
+			Ссылается на контент
+		</div>
+		<div class="display-field">
+			@(((EntityField)Model.Field).Content.ContentName + " " + ((EntityField)Model.Field).Content.ContentId)
+		</div>
+	}
+	else if (Model.Field is ExtensionField)
+	{
+		<div class="display-label">
+			<span class="EditorNote">Поле является классификатором</span>
+		</div>
+	}
 }
 else if (Model.Field is VirtualField || Model.Field is VirtualMultiEntityField)
 {
@@ -132,18 +131,13 @@ else if (Model.Field is PlainField)
 	<div class="editor-label">
 		Не оборачивать в CDATA
 	</div>
-    <div class="editor-field">
-        @Html.CheckBox("skipcdata", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName))
-    </div>
-    <div class="editor-label">
-        Загружать как поле типа Image
-    </div>
-    <div class="editor-field">
-        @Html.CheckBox("loadlikeimage", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage))
-    </div>        
-    }
-
+  <div class="editor-field">
+      @Html.CheckBox("skipcdata", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName))
+  </div>
+  <div class="editor-label">
+      Загружать как поле типа Image
+  </div>
+  <div class="editor-field">
+      @Html.CheckBox("loadlikeimage", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage))
+  </div>        
 }
-
-
-

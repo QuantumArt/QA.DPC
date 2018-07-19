@@ -129,7 +129,6 @@ namespace QA.Core.Models.Configuration
 		[DefaultValue(CloningMode.Ignore)]
 		public CloningMode CloningMode { get; set; }
 
-
         [DisplayName("При создании\\обновлении")]
         [DefaultValue(UpdatingMode.Ignore)]
         public UpdatingMode UpdatingMode { get; set; }

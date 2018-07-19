@@ -1,5 +1,5 @@
 import { action } from "mobx";
-import { types as t, unprotect, IModelType } from "mobx-state-tree";
+import { types as t, unprotect, IModelType, onPatch } from "mobx-state-tree";
 import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
 import {
   StoreObject,
@@ -32,6 +32,9 @@ export class DataContext {
 
   public initStore(storeSnapshot: StoreSnapshot) {
     this.store = this._storeType.create(storeSnapshot);
+    if (DEBUG) {
+      onPatch(this.store, patch => console.log(patch));
+    }
     // разрешаем изменения моделей из других сервисов и компонентов
     unprotect(this.store);
   }
