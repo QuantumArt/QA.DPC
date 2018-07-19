@@ -4,7 +4,6 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.Core.Cache;
 using QA.Core.Logger;
@@ -14,6 +13,7 @@ using QA.ProductCatalog.Infrastructure;
 using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
 using Quantumart.QP8.BLL.Services.API;
+using Unity;
 using Qp8Bll = Quantumart.QP8.BLL;
 
 namespace QA.Core.DPC.Loader.Tests

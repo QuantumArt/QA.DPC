@@ -78,7 +78,7 @@ namespace QA.ProductCatalog.Validation.Validators
         {
 
             int contentId = GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID);
-            var productsList = articleService.List(contentId, productsIds).Where(w => !w.Archived).ToArray();
+            var productsList = articleService.List(contentId, productsIds, true).Where(w => !w.Archived).ToArray();
             
            Lookup<int, int[]> productToRegions = (Lookup<int, int[]>)productsList
                  .ToLookup(x => x.Id, x => x.FieldValues.Single(a => a.Field.Name == regionsName).RelatedItems.ToArray());
@@ -115,7 +115,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
             int contentId = GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID);
 
-            Dictionary<int, int[]> productToRegions = articleService.List(contentId, productsIds)
+            Dictionary<int, int[]> productToRegions = articleService.List(contentId, productsIds, true)
                   .ToDictionary(x => x.Id, x => x.FieldValues.Single(a => a.Field.Name == regionsName).RelatedItems.ToArray());
 
             Dictionary<int, HashSet<int>> regionsToProducts = new Dictionary<int, HashSet<int>>();
@@ -154,14 +154,14 @@ namespace QA.ProductCatalog.Validation.Validators
         {
             var fieldParentName = GetSettingStringValue(SettingsTitles.FIELD_PARENT_NAME);
             //получение id статей матрицы отношений из услуги на тарифах
-            var relationMatrixList = articleService.List(contentProductsId, relationsIds).Where(w => !w.Archived)
+            var relationMatrixList = articleService.List(contentProductsId, relationsIds, true).Where(w => !w.Archived)
                                                    .Select(x =>
                                                                 x.FieldValues
                                                                 .Single(a => a.Field.Name == fieldParentName)
                                                                 .RelatedItems.FirstOrDefault())
                                                    .ToArray();
             var productRelationsContentId = GetSettingValue(SettingsTitles.PRODUCT_RELATIONS_CONTENT_ID);
-            var relationMatrixElements = articleService.List(productRelationsContentId, relationMatrixList);
+            var relationMatrixElements = articleService.List(productRelationsContentId, relationMatrixList, true);
 
             foreach (var item in relationMatrixElements)
             {
@@ -184,7 +184,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
         public void CheckTariffAreaDuplicateExist(ArticleService articleService, int contentId, int[] parametersList, string parametersFieldName)
         {
-            Lookup<int, int[]> tariffAreaLists = (Lookup<int, int[]>)articleService.List(contentId, parametersList).Where(w => !w.Archived)
+            Lookup<int, int[]> tariffAreaLists = (Lookup<int, int[]>)articleService.List(contentId, parametersList, true).Where(w => !w.Archived)
                 .ToLookup(s => s.Id, s => s.FieldValues
                     .Where(w => GetListOfParametersNames().Contains(w.Field.Name))
                     .SelectMany(r => r.RelatedItems).ToArray());
@@ -225,7 +225,7 @@ namespace QA.ProductCatalog.Validation.Validators
         public void CheckRelationProductsDuplicate(ArticleService articleService, string idFieldName, int contentProductsId, int[] relationsIds)
         {
             var servicesFieldName = GetSettingStringValue(SettingsTitles.SERVICE_FIELD_NAME);
-            var relatedProductsIds = articleService.List(contentProductsId, relationsIds).Where(w => !w.Archived).Select(x =>
+            var relatedProductsIds = articleService.List(contentProductsId, relationsIds, true).Select(x =>
                         x.FieldValues.Single(a => a.Field.Name == servicesFieldName))
                 .Select(s => int.Parse(s.Value)).ToArray();
             var duplicateServices = relatedProductsIds.Where(relId => relatedProductsIds.Count(r => r == relId) > 1).Distinct().ToArray();

@@ -1,9 +1,8 @@
-﻿using QA.Validation.Xaml;
-using QA.Validation.Xaml.Extensions.Rules;
+﻿using QA.Validation.Xaml.Extensions.Rules;
 
 namespace QA.ProductCatalog.Infrastructure
 {
-	public interface IRemoteValidator2
+    public interface IRemoteValidator2
 	{
         RemoteValidationResult Validate(RemoteValidationContext context, RemoteValidationResult result);
 	}

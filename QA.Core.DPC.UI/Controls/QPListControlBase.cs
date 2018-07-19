@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Markup;
-using QA.Core.Models.Entities;
 using QA.Core.Models.UI;
-using QA.Core.Extensions;
-using System.ComponentModel;
-using QA.Core.Models.Comparers;
 
 namespace QA.Core.DPC.UI
 {

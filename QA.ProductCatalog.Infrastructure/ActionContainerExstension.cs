@@ -1,10 +1,9 @@
-﻿using Microsoft.Practices.Unity;
-using System;
-using QA.Core.DPC.QP.Services;
+﻿using QA.Core.DPC.QP.Services;
+using Unity;
 
 namespace QA.Core.ProductCatalog
 {
-	public static class ActionContainerExstension
+    public static class ActionContainerExstension
 	{
 		public static void RegisterConnectionString(this IUnityContainer container, string connectionString)
 		{

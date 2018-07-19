@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Cache;
 using System.Web.Mvc;
 using QA.Core.Models.Configuration;
 
 namespace QA.ProductCatalog.Admin.WebApp.Binders
 {
-	public class ContentBinder : IModelBinder
+    public class ContentBinder : IModelBinder
 	{
 		public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{

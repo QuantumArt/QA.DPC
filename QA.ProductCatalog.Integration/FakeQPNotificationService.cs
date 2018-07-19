@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Entities;
 
 namespace QA.ProductCatalog.Integration
 {
-	public class FakeQPNotificationService : IQPNotificationService
+    public class FakeQPNotificationService : IQPNotificationService
 	{
         public async Task<int[]> SendProductsAsync(Article[] products, bool isStage, string userName, int userId, bool localize, bool autopublish, string[] forcedСhannels = null)
         {

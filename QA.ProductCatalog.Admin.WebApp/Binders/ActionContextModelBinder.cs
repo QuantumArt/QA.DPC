@@ -3,13 +3,12 @@ using QA.Core.ProductCatalog.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.Admin.WebApp.Binders
 {
-	public class ActionContextModelBinder : IModelBinder
+    public class ActionContextModelBinder : IModelBinder
 	{
 		#region Constants
 		private const string CustomerCodeKey = "customerCode";

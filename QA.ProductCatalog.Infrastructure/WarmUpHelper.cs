@@ -1,11 +1,10 @@
 ﻿using System;
-using Microsoft.Practices.Unity;
-using QA.Core;
 using QA.Core.Logger;
+using Unity;
 
 namespace QA.ProductCatalog.Infrastructure
 {
-	public class WarmUpHelper
+    public class WarmUpHelper
 	{
 		public static void WarmUp(IUnityContainer unityContainer)
 		{

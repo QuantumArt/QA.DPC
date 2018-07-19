@@ -1,10 +1,9 @@
 ﻿using System.Web.Http.Filters;
-using QA.Core;
 using QA.Core.Logger;
 
 namespace QA.ProductCatalog.WebApi.Filters
 {
-	public class ExceptionLoggerFilterAttribute : ExceptionFilterAttribute
+    public class ExceptionLoggerFilterAttribute : ExceptionFilterAttribute
 	{
 		private readonly ILogger _loggeer;
 

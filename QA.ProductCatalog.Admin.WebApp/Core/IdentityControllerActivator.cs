@@ -1,10 +1,10 @@
-﻿using Microsoft.Practices.Unity;
-using QA.Core.DPC.QP.Models;
+﻿using QA.Core.DPC.QP.Models;
 using QA.Core.Web;
 using System;
 using System.Web.Mvc;
 using System.Web.Routing;
 using QA.Core.DPC.QP.Services;
+using Unity;
 
 namespace QA.ProductCatalog.Admin.WebApp.Core
 {

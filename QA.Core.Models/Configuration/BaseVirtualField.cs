@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace QA.Core.Models.Configuration
+﻿namespace QA.Core.Models.Configuration
 {
 	public abstract class BaseVirtualField : Field
 	{

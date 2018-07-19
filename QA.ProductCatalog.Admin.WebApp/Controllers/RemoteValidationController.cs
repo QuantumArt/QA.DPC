@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Web.Mvc;
-using Microsoft.Practices.Unity;
-using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Validation;
+using Unity.Exceptions;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {

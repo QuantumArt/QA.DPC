@@ -1,6 +1,5 @@
 ﻿using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
-using System;
 
 namespace QA.Core.ProductCatalog.Actions.Services
 {

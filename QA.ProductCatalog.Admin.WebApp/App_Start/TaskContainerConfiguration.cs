@@ -1,12 +1,14 @@
 ﻿using System;
-using Microsoft.Practices.Unity;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Admin.WebApp.Core.Adapters;
 using QA.ProductCatalog.Infrastructure;
+using Unity;
+using Unity.Extension;
+using Unity.Injection;
 
 namespace QA.ProductCatalog.Admin.WebApp
 {
-	public class TaskContainerConfiguration : UnityContainerExtension
+    public class TaskContainerConfiguration : UnityContainerExtension
 	{
 		protected override void Initialize()
 		{

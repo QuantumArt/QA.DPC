@@ -1,13 +1,10 @@
-﻿using QA.Core;
-using QA.Core.Cache;
+﻿using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using System.Xaml;

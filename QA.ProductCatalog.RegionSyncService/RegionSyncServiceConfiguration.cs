@@ -1,7 +1,8 @@
-﻿using Microsoft.Practices.Unity;
+﻿using Unity;
 using QA.ProductCatalog.RegionSync.Core.Processors;
 using QA.ProductCatalog.RegionSync.Core.Configuration;
 using QA.Scheduler.Core.Configuration;
+using Unity.Extension;
 
 namespace QA.ProductCatalog.RegionSync.Service
 {

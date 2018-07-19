@@ -1,15 +1,9 @@
-﻿using Quantumart.QPublishing;
-using Quantumart.QPublishing.Database;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace QA.Core.ProductCatalog.Actions
 {
-	[Serializable]
+    [Serializable]
 	public class ActionContext
 	{
 		public Guid BackendSid { get; set; }

@@ -1,7 +1,8 @@
-﻿using Microsoft.Practices.Unity;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.API.Services;
 using QA.ProductCatalog.Infrastructure;
+using Unity;
+using Unity.Extension;
 
 namespace QA.Core.DPC.QP.API.Container
 {

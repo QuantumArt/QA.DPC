@@ -264,7 +264,7 @@ namespace QA.Core.DPC.Loader.Services
 		private int[] GetManyToManyLinkedItems(int? linkId, int[] articleIds)
 		{
 			return linkId.HasValue
-				? _articleService.GetLinkedItemsMultiple(linkId.Value, articleIds)
+				? _articleService.GetLinkedItemsMultiple(linkId.Value, articleIds, true)
 					.SelectMany(x => Converter.ToIdArray(x.Value))
 					.Distinct()
 					.ToArray()
@@ -327,7 +327,7 @@ namespace QA.Core.DPC.Loader.Services
 				{
 					case RelationType.OneToMany:
 
-						return _articleService.GetRelatedItemsMultiple(parentField.FieldId, childArticleIds)
+						return _articleService.GetRelatedItemsMultiple(parentField.FieldId, childArticleIds, true)
 							.SelectMany(x => Converter.ToIdArray(x.Value))
 							.Distinct()
 							.ToArray();

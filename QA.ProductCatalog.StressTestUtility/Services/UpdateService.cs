@@ -1,5 +1,4 @@
-﻿using QA.Core;
-using QA.Core.ProductCatalog.Actions.Services;
+﻿using QA.Core.ProductCatalog.Actions.Services;
 using Quantumart.QP8.BLL;
 using System;
 using System.Linq;
@@ -9,7 +8,7 @@ using QA.Core.Logger;
 
 namespace QA.ProductCatalog.StressTestUtility.Services
 {
-	public class UpdateService : IUpdateService
+    public class UpdateService : IUpdateService
 	{
 		private const string FieldNameForUpdate = "Title";
 		private const string ErrorMessage = "Updating article {0} error";

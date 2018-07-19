@@ -4,7 +4,6 @@ using System.Security.Principal;
 using QA.Core.DPC.QP.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Services;
 
 namespace QA.DPC.Core.Helpers

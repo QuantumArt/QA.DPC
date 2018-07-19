@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.Data;
 using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;
 
 namespace QA.Core.DPC.Loader.Services
 {
-	public class StructureCacheTracker : CacheItemTracker
+    public class StructureCacheTracker : CacheItemTracker
 	{
 		private readonly string _qpConnectionString;
 

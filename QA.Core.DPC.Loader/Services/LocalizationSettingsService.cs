@@ -1,12 +1,9 @@
 ﻿using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QPublishing.Database;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Data;
 using Quantumart.QP8.Utils;
 using System.Data.SqlClient;

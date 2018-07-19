@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
-using System.Web;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models
 {
-	public class TaskScheduleModel
+    public class TaskScheduleModel
 	{
 		[DisplayName("ID задачи")]
 		public int TaskId { get; set; }

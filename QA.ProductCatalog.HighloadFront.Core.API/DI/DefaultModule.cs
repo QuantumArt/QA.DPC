@@ -20,7 +20,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 {
     internal class DefaultModule : Module
     {
-        public IConfigurationRoot Configuration { get; set; }
+        public IConfiguration Configuration { get; set; }
 
         public bool IsQpMode => !String.Equals(Configuration["Data:QpMode"], "false"
             , StringComparison.InvariantCultureIgnoreCase);

@@ -1,6 +1,4 @@
-﻿using Microsoft.Practices.Unity;
-using QA.Core.Cache;
-using QA.Core.Data;
+﻿using QA.Core.Cache;
 using QA.Core.DPC.Loader;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
@@ -8,10 +6,13 @@ using QA.Core.Web;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using System;
+using Unity;
+using Unity.Extension;
+using Unity.Lifetime;
 
 namespace QA.Core.ProductCatalog.Actions.Container
 {
-	public class ProductLoaderContainerConfiguration : UnityContainerExtension
+    public class ProductLoaderContainerConfiguration : UnityContainerExtension
 	{
 		protected override void Initialize()
 		{

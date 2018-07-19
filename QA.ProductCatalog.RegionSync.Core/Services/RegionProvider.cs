@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Quantumart.QPublishing;
 using Quantumart.QPublishing.Database;
 using QA.ProductCatalog.RegionSync.Core.Exstensions;
 using Quantumart.QPublishing.Info;
 
 namespace QA.ProductCatalog.RegionSync.Core.Services
 {
-	public class RegionProvider<TModel, TConfig> : IRegionProvider<TModel>
+    public class RegionProvider<TModel, TConfig> : IRegionProvider<TModel>
 		where TModel : class
 		where TConfig : IRegionProviderConfiguration
 	{

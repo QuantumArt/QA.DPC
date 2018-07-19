@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc.Internal;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace QA.DPC.Core.Helpers
@@ -16,11 +15,11 @@ namespace QA.DPC.Core.Helpers
             var contentType = bindingContext.HttpContext.Request.ContentType;
 
             string model;
-            if (contentType != null && (contentType.StartsWith(MediaTypeHeaderValues.ApplicationXml.MediaType) || contentType.StartsWith(MediaTypeHeaderValues.TextXml.MediaType)))
+            if (contentType != null && (contentType.StartsWith(MediaTypeHeaderValues.ApplicationXml.MediaType.ToString()) || contentType.StartsWith(MediaTypeHeaderValues.TextXml.MediaType.ToString())))
             {
                 model = "xml";
             }
-            else if (contentType != null && contentType.StartsWith(MediaTypeHeaderValues.ApplicationJson.MediaType))
+            else if (contentType != null && contentType.StartsWith(MediaTypeHeaderValues.ApplicationJson.MediaType.ToString()))
             {
                 model = "json";
             }
@@ -30,7 +29,7 @@ namespace QA.DPC.Core.Helpers
             }
 
             bindingContext.Result = ModelBindingResult.Success(model);
-            return TaskCache.CompletedTask;
+            return Task.CompletedTask;
         }
     }
 }

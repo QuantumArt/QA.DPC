@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.Integration
 {
-   public class FakeConsumerMonitoringService : IConsumerMonitoringService
+    public class FakeConsumerMonitoringService : IConsumerMonitoringService
     {
 
         public int[] FindMissingProducts(int[] productIDs)

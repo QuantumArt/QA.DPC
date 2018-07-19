@@ -1,9 +1,11 @@
-﻿using Microsoft.Practices.Unity;
-using QA.Core.DPC.QP.Models;
+﻿using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using System;
 using System.Threading;
+using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
 
 namespace QA.Core.DPC.QP.Configuration
 {

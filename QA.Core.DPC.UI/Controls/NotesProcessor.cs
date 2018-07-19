@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using QA.Core.Models.Entities;
-using QA.Core.Models.UI;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.UI.Controls
 {
-	public class NotesProcessor : NotesProcessorBase
+    public class NotesProcessor : NotesProcessorBase
 	{
 		private static readonly Regex NotesRegex = new Regex(@"&lt;note\s+id\=&quot;(\d+)&quot;\s*\/&gt;",
 			RegexOptions.Compiled);

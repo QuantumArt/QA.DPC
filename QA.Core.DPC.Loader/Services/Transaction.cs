@@ -1,10 +1,6 @@
 ﻿using Quantumart.QP8.BLL;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Transactions;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;

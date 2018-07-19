@@ -149,10 +149,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			Article source,
 			ProductDefinition definition,
 			Func<Association, T> selectMode,
-			T mode)
+			T mode,
+			bool excludeArchive
+            )
 			where T : struct
 		{
-			return GetProductsToBeProcessed<T>(source, definition, selectMode, mode, arcicle => true);
+			return GetProductsToBeProcessed<T>(source, definition, selectMode, mode, arcicle => true, excludeArchive);
 		}
 
 		protected Dictionary<int, Product<T>> GetProductsToBeProcessed<T>(
@@ -160,12 +162,14 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			ProductDefinition definition,
 			Func<Association, T> selectMode,
 			T mode,
-			Func<Article, bool> filter)
+			Func<Article, bool> filter,
+            bool excludeArchive
+		    )
 			where T : struct
 		{
 			var dictionary = new Dictionary<int, Product<T>>();
 
-			GetProductsToBeProcessed(source, definition.StorageSchema, dictionary, selectMode, mode, filter);
+			GetProductsToBeProcessed(source, definition.StorageSchema, dictionary, selectMode, mode, filter, excludeArchive);
 
 			return dictionary;
 		}
@@ -229,14 +233,16 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			Dictionary<int, Product<T>> dictionary,
 			Func<Association, T> selectMode,
 			T mode,
-			Func<Article, bool> filter)
+			Func<Article, bool> filter,
+			bool excludeArchive
+		    )
 			where T : struct
 		{
 							
 				var entityFields = definition == null ? new Association[0] : definition.Fields.OfType<Association>().ToArray();
 				var fieldDefinitions = entityFields.ToDictionary(f => f.FieldId, ContentSelector<T>);
 				var fieldModes = entityFields.ToDictionary(f => f.FieldId, selectMode);
-				var backwardFieldValues = GetBackwardFieldValues(article, entityFields.OfType<BackwardRelationField>());
+				var backwardFieldValues = GetBackwardFieldValues(article, entityFields.OfType<BackwardRelationField>(), excludeArchive);
 
 				var product = new Product<T>(article, fieldModes, backwardFieldValues);
 
@@ -267,41 +273,33 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				foreach (var item in relatedItems)
 				{
 					var ids = item.RelatedItems.Select(itm => itm.Id).Distinct().ToArray();
-					var articleMap = ArticleService.List(item.ContentId, ids).ToDictionary(a => a.Id);
-
-					if (articleMap.Count < ids.Length)
-						{
-							throw new Exception(string.Format("В бд отсутствуют статьи из контента {0}: {1}", item.ContentId,
-								string.Join(", ", ids.Except(articleMap.Keys))));
-						}
+					var articleMap = ArticleService.List(item.ContentId, ids, excludeArchive).ToDictionary(a => a.Id);
 
 					foreach (var relatedItem in item.RelatedItems)
 					{
-						var relatedArticle = articleMap[relatedItem.Id];
+					    if (articleMap.TryGetValue(relatedItem.Id, out var relatedArticle) && filter(relatedArticle))
+					    {
 
-						if (filter(relatedArticle))
-						{
+					        Models.Configuration.Content def = null;
+					        fieldDefinitions.TryGetValue(relatedItem.FieldId, out def);
 
-							Models.Configuration.Content def = null;
-							fieldDefinitions.TryGetValue(relatedItem.FieldId, out def);
+					        if (relatedItem.Relation != RelationType.ManyToMany || relatedArticle.ContentId != root.ContentId)
+					        {
+					            GetProductsToBeProcessed(relatedArticle, def, dictionary, selectMode, mode, filter, excludeArchive);
 
-							if (relatedItem.Relation != RelationType.ManyToMany || relatedArticle.ContentId != root.ContentId)
-							{
-								GetProductsToBeProcessed(relatedArticle, def, dictionary, selectMode, mode, filter);
+					            var relatedProduct = dictionary[relatedArticle.Id];
 
-								var relatedProduct = dictionary[relatedArticle.Id];
+					            var backwardFields = from fv in relatedFields
+					                where fv.Field.RelationType == RelationType.ManyToOne
+					                join pfv in relatedProduct.Article.FieldValues on fv.Field.BackRelationId equals pfv.Field.Id
+					                select pfv;
 
-								var backwardFields = from fv in relatedFields
-													 where fv.Field.RelationType == RelationType.ManyToOne
-													 join pfv in relatedProduct.Article.FieldValues on fv.Field.BackRelationId equals pfv.Field.Id
-													 select pfv;
-
-								foreach (var fv in backwardFields)
-								{
-									relatedProduct.BackwardMap[fv.Field.Id] = true;
-								}
-							}
-						}
+					            foreach (var fv in backwardFields)
+					            {
+					                relatedProduct.BackwardMap[fv.Field.Id] = true;
+					            }
+					        }
+					    }
 					}
 				}
 
@@ -336,14 +334,14 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				product.Article.AggregatedArticles = aggregatedArticles;
 		}	
 
-		private List<FieldValue> GetBackwardFieldValues(Article article, IEnumerable<BackwardRelationField> fields)
+		private List<FieldValue> GetBackwardFieldValues(Article article, IEnumerable<BackwardRelationField> fields, bool excludeArchive)
 		{
 			var fieldValues = new List<FieldValue>();
 
 			foreach (var field in fields)
 			{
 				var articleField = FieldService.Read(field.FieldId);
-				var value = GetBackwardValue(articleField, article.Id);
+				var value = GetBackwardValue(articleField, article.Id, excludeArchive);
 
 				var fv = new FieldValue();
 				fv.Article = article;
@@ -356,17 +354,17 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			return fieldValues;
 		}
 
-		private string GetBackwardValue(Quantumart.QP8.BLL.Field field, int articleId)
+		private string GetBackwardValue(Quantumart.QP8.BLL.Field field, int articleId, bool excludeArchive)
 		{
 			string res = string.Empty;
 
 			if (field.RelationType == RelationType.ManyToMany && field.LinkId.HasValue)
 			{
-				res = ArticleService.GetLinkedItems(field.LinkId.Value, articleId);
+				res = ArticleService.GetLinkedItems(field.LinkId.Value, articleId, excludeArchive);
 			}
 			else if (field.RelationType == RelationType.ManyToOne || field.RelationType == RelationType.OneToMany)
 			{
-				res = ArticleService.GetRelatedItems(field.Id, articleId);
+				res = ArticleService.GetRelatedItems(field.Id, articleId, excludeArchive);
 			}
 
 			return res;

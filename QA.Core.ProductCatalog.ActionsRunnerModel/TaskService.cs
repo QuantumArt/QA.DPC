@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 using System.Web.Configuration;
 using System.Linq.Expressions;
 using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
-using Microsoft.Practices.Unity;
 
 namespace QA.Core.ProductCatalog.ActionsRunnerModel
 {

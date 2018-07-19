@@ -1,10 +1,6 @@
 ﻿using QA.Core.DPC.QP.Models;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -18,7 +14,7 @@ namespace QA.Core.DPC.QP.Services
     {
         private Customer[] _customers;
         private readonly ICustomerProvider _customerProvider;
-        private readonly IX[] _ix;
+        private readonly IX[] _ix = {};
         public ConnectionWatcher(ICustomerProvider customerProvider)
         {
             _customerProvider = customerProvider;

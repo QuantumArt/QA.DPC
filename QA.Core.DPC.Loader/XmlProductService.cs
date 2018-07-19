@@ -1,25 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.Models.Entities;
-using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QPublishing.Database;
 using Article = QA.Core.Models.Entities.Article;
 
 namespace QA.Core.DPC.Loader
 {
 
-	public class XmlProductService : IXmlProductService
+    public class XmlProductService : IXmlProductService
 	{
 		public const string RenderTextFieldAsXmlName = "RenderTextFieldAsXml";
 	    public const string RenderFileFieldAsImage = "RenderFileFieldAsImage";

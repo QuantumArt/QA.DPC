@@ -3,11 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QPublishing.Database;
 
@@ -71,7 +68,7 @@ namespace QA.Core.ProductCatalog.Actions
 				null,
 				0,
 				int.MaxValue,
-				ref totalRecords,
+				out totalRecords,
 				0,
 				null,
 				1,

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Routing;
-using Microsoft.Practices.Unity;
 using QA.Core.Logger;
 using QA.Core.Web;
+using Unity;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {

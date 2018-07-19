@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Web;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models

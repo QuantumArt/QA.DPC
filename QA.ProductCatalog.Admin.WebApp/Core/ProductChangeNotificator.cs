@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Xml.Linq;
 using QA.Core;
 using QA.Core.DPC.Loader.Services;
@@ -10,7 +9,7 @@ using QA.ProductCatalog.Admin.WebApp.Models;
 
 namespace QA.ProductCatalog.Admin.WebApp.Core
 {
-	internal class ProductChangeNotificator : IProductChangeNotificator
+    internal class ProductChangeNotificator : IProductChangeNotificator
 	{
 		private readonly List<IProductChangeSubscriber> _subscribers;
 		private readonly ILogger _logger;

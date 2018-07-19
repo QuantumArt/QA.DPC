@@ -1,10 +1,9 @@
 ﻿using System.Configuration;
-using QA.Core;
 using QA.Core.Logger;
 
 namespace QA.ProductCatalog.RegionSync.Core.Services
 {
-	public class RegionProviderConfiguration : IRegionProviderConfiguration
+    public class RegionProviderConfiguration : IRegionProviderConfiguration
 	{
 		private const string ConnectionStringKey = "{0}";
 		private const string RegionContentIdKey = "RegionProvider.{0}.RegionContentId";

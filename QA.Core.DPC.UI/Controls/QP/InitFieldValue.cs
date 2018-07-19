@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using QA.Core.Models.Entities;
-using QA.Core.Models.UI;
+﻿using QA.Core.Models.UI;
 
 namespace QA.Core.DPC.UI
 {

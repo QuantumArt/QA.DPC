@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web;
-using System.Web.Mvc;
-using Microsoft.Practices.ServiceLocation;
-using Microsoft.Practices.Unity;
+﻿using System.Web.Mvc;
+using CommonServiceLocator;
 using QA.Configuration;
 using QA.Core;
-using QA.Core.Service.Interaction;
 using QA.Core.Web;
+using Unity;
+using Unity.Lifetime;
+using Unity.ServiceLocation;
 
 
 namespace QA.ProductCatalog.SiteSyncWebHost

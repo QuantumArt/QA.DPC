@@ -2,11 +2,11 @@
 using System.ServiceModel;
 using System.ServiceModel.Channels;
 using System.ServiceModel.Dispatcher;
-using Microsoft.Practices.Unity;
+using Unity;
 
 namespace QA.ProductCatalog.SiteSyncWebHost.Services
 {
-	public class UnityInstanceProvider : IInstanceProvider
+    public class UnityInstanceProvider : IInstanceProvider
 	{
 		public IUnityContainer Container { set; get; }
 		public Type ServiceType { set; get; }

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using NLog.Web;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API
 {
@@ -12,20 +8,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
     {
         public static void Main(string[] args)
         {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-#if DEBUG
-                .UseUrls("http://*:9092;http://localhost:5000/")
-#endif
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .CaptureStartupErrors(true)
-                .UseSetting("detailedErrors", "true")
-                .UseStartup<Startup>()
-                .UseApplicationInsights()
-                .Build();
-
-            host.Run();
+            BuildWebHost(args).Run();
         }
+
+        public static IWebHost BuildWebHost(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseStartup<Startup>()
+                .UseNLog()
+                .Build();
     }
 }

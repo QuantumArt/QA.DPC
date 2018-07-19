@@ -1,5 +1,4 @@
-﻿using Microsoft.Practices.Unity;
-using QA.Core.Cache;
+﻿using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
@@ -14,6 +13,9 @@ using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using Unity;
+using Unity.Extension;
+using Unity.Injection;
 
 namespace QA.Core.DPC.Loader.Container
 {
@@ -39,11 +41,11 @@ namespace QA.Core.DPC.Loader.Container
 
             Container.RegisterType<IFreezeService, FreezeService>();
 
-            Container.RegisterType<IFieldService, FieldServiceAdapter>("FieldServiceAdapterAlwaysAdmin",
+            Container.RegisterType<IFieldService>("FieldServiceAdapterAlwaysAdmin",
                 new HttpContextLifetimeManager(),
                 new InjectionFactory(x => new FieldServiceAdapter(new FieldService(x.Resolve<IConnectionProvider>().GetConnection(), 1), x.Resolve<IConnectionProvider>())));
 
-            Container.RegisterType<ITransaction, Transaction>(new InjectionFactory(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>())));
+            Container.RegisterType<ITransaction>(new InjectionFactory(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>())));
             Container.RegisterType<Func<ITransaction>>(new InjectionFactory(c => new Func<ITransaction>(() => c.Resolve<ITransaction>())));
 
             Container.RegisterType<IJsonProductService, JsonProductService>();
@@ -54,18 +56,18 @@ namespace QA.Core.DPC.Loader.Container
 
             //Фейк юзер нужен для работы ремоут валидации. Также нужны варианты сервисов с фейк-юзером
             Container.RegisterType<IUserProvider, AlwaysAdminUserProvider>(AlwaysAdminUserProviderName);
-            Container.RegisterType<IServiceFactory, ServiceFactory>("ServiceFactoryFakeUser", new InjectionFactory(c => new ServiceFactory(c.Resolve<IConnectionProvider>(), c.Resolve<IUserProvider>(AlwaysAdminUserProviderName))));
+            Container.RegisterType<IServiceFactory>("ServiceFactoryFakeUser", new InjectionFactory(c => new ServiceFactory(c.Resolve<IConnectionProvider>(), c.Resolve<IUserProvider>(AlwaysAdminUserProviderName))));
             Container.RegisterType<ArticleService>("ArticleServiceFakeUser", new InjectionFactory(c => c.Resolve<IServiceFactory>("ServiceFactoryFakeUser").GetArticleService()));
-            Container.RegisterType<IArticleService, ArticleServiceAdapter>("ArticleServiceAdapterFakeUser",
+            Container.RegisterType<IArticleService>("ArticleServiceAdapterFakeUser",
                 new InjectionFactory(c => new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(), c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>())));
 
-            Container.RegisterType<IReadOnlyArticleService, ReadOnlyArticleServiceAdapter>(
+            Container.RegisterType<IReadOnlyArticleService>(
                 new InjectionFactory(
                     c =>
                         new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
                             c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>())));
 
-            Container.RegisterType<IReadOnlyArticleService, CachedReadOnlyArticleServiceAdapter>("CachedReadOnlyArticleServiceAdapter",
+            Container.RegisterType<IReadOnlyArticleService>("CachedReadOnlyArticleServiceAdapter",
                 new InjectionFactory(
                     c =>
                         new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
@@ -73,14 +75,14 @@ namespace QA.Core.DPC.Loader.Container
 
             Container.RegisterType<IDBConnector, DBConnectorProxy>(new HttpContextLifetimeManager());
 
-            Container.RegisterType<IRegionService, RegionService>("RegionServiceFakeUser",
+            Container.RegisterType<IRegionService>("RegionServiceFakeUser",
                     new InjectionFactory(c => new RegionService(Container.Resolve<IVersionedCacheProvider>(),
                         Container.Resolve<ICacheItemWatcher>(),
                         Container.Resolve<IUserProvider>(AlwaysAdminUserProviderName),
                         Container.Resolve<ISettingsService>(),
                         Container.Resolve<IConnectionProvider>())));
 
-            Container.RegisterType<IContentDefinitionService, ContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin",
+            Container.RegisterType<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin",
                 new InjectionFactory(x => new ContentDefinitionService(
                     x.Resolve<ISettingsService>(),
                     x.Resolve<IVersionedCacheProvider>(),
@@ -107,7 +109,7 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<ILocalizationSettingsService, LocalizationSettingsService>();
             Container.RegisterType<IProductLocalizationService, ProductLocalizationService>();
 
-            Container.RegisterType<IArticleDependencyService, ArticleDependencyService>(
+            Container.RegisterType<IArticleDependencyService>(
                 new InjectionFactory(c => new ArticleDependencyService(
                     c.Resolve<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin"),
                     c.Resolve<IServiceFactory>("ServiceFactoryFakeUser"),

@@ -1,5 +1,4 @@
-﻿using QA.Core.ProductCatalog.Actions.Services;
-using Quantumart.QP8.BLL;
+﻿using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.DTO;
 using System;
 using System.Collections.Generic;
@@ -9,7 +8,7 @@ using Quantumart.QP8.BLL.Services.API.Models;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {
-	public class ArticleServiceProfiler : ProfilerBase, IArticleService
+    public class ArticleServiceProfiler : ProfilerBase, IArticleService
 	{
 		private readonly IArticleService _articleService;
 
@@ -37,28 +36,28 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			EndMethod(token);
 		}
 
-		public Article Read(int articleId)
+		public Article Read(int articleId, bool excludeArchive = true)
 		{
 			var token = CallMethod("Read", "articleId = {0}", articleId);
-			var result = _articleService.Read(articleId);
+			var result = _articleService.Read(articleId, excludeArchive);
 			EndMethod(token, result);
 			return result;
 		}
 
 
-        public Article Read(int articleId, int contentId)
+        public Article Read(int articleId, int contentId, bool excludeArchive = true)
         {
             var token = CallMethod("Read", "articleId = {0}, contentId = {1}", articleId, contentId);
-            var result = _articleService.Read(articleId, contentId);
+            var result = _articleService.Read(articleId, contentId, excludeArchive);
             EndMethod(token, result);
             return result;
         }
 
 
-        public IEnumerable<Article> List(int contentId, int[] ids)
+        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
 		{
 			var token = CallMethod("List", "contentId = {0}, ids = {1}", contentId, string.Join(",", ids));
-			var result = _articleService.List(contentId, ids);
+			var result = _articleService.List(contentId, ids, excludeArchive);
 			EndMethod(token, "IEnumerable<Article>");
 			return result;
 		}
@@ -124,18 +123,18 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			EndMethod(token);
 		}
 
-		public string GetLinkedItems(int linkId, int id)
+		public string GetLinkedItems(int linkId, int id, bool excludeArchive = true)
 		{
 			var token = CallMethod("GetLinkedItems", "linkId = {0}, id = {1}", linkId, id);
-			var result = _articleService.GetLinkedItems(linkId, id);
+			var result = _articleService.GetLinkedItems(linkId, id, excludeArchive);
 			EndMethod(token, result);
 			return result;
 		}
 
-		public string GetRelatedItems(int fieldId, int? id)
+		public string GetRelatedItems(int fieldId, int? id, bool excludeArchive = true)
 		{
 			var token = CallMethod("GetRelatedItems", "fieldId = {0}, id = {1}", fieldId, id);
-			var result = _articleService.GetRelatedItems(fieldId, id);
+			var result = _articleService.GetRelatedItems(fieldId, id, excludeArchive);
 			EndMethod(token, result);
 			return result;
 		}
@@ -188,7 +187,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			throw new NotImplementedException();
 		}
 
-        public RulesException XamlValidationById(int articleId)
+        public RulesException XamlValidationById(int articleId, bool persistChanges)
         {
             return null;
         }

@@ -1,10 +1,10 @@
-﻿using Microsoft.Practices.Unity;
-using Microsoft.Practices.Unity.Configuration;
+﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
+using Unity;
 
 namespace QA.ProductCatalog.FileSyncWebHost
 {
-	public static class UnityConfig
+    public static class UnityConfig
 	{
 		public static IUnityContainer Configure()
 		{

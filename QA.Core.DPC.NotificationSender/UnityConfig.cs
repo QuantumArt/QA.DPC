@@ -1,6 +1,4 @@
-﻿using Microsoft.Practices.Unity;
-using Microsoft.Practices.Unity.Configuration;
-using QA.Core.Cache;
+﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
@@ -8,16 +6,17 @@ using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Notification.Services;
 using QA.Core.DPC.QP.API.Services;
 using QA.Core.DPC.QP.Autopublish.Configuration;
-using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
-using QA.Core.DPC.Service;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
+using Unity;
+using Unity.Injection;
+using Unity.Lifetime;
 
 namespace QA.Core.DPC
 {

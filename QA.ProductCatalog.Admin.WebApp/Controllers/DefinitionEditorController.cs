@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Web.Mvc;
 using QA.Configuration;
-using QA.Core;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Models.Configuration;
@@ -16,7 +15,7 @@ using Field = QA.Core.Models.Configuration.Field;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-	[ValidateInput(false)]
+    [ValidateInput(false)]
 	public class DefinitionEditorController : Controller
 	{
 		private readonly IContentDefinitionService _contentDefinitionService;

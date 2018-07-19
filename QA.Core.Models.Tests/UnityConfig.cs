@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Practices.Unity;
 using QA.Core.DPC.Loader;
 using QA.Core.Logger;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Cache;
-using QA.Core.Data;
 using QA.Core.DPC.Loader.Container;
+using Unity;
+using Unity.Lifetime;
 
 namespace QA.Core.Models.Tests
 {

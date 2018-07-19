@@ -26,11 +26,11 @@ namespace QA.Core.DPC.Loader
 		private readonly Dictionary<int, Article> _loadedArticles = new Dictionary<int, Article>();
 		private readonly ILogger _logger;
 
-		public override Article Read(int articleId)
+		public override Article Read(int articleId, bool excludeArchive = true)
 		{
 			if (!_loadedArticles.ContainsKey(articleId))
 			{
-				_loadedArticles[articleId] = base.Read(articleId);
+				_loadedArticles[articleId] = base.Read(articleId, excludeArchive);
 
 				_logger.Debug("loading article {0} from qp", articleId);
 			}
@@ -48,14 +48,14 @@ namespace QA.Core.DPC.Loader
 
 		}
 
-		public override IEnumerable<Article> List(int contentId, int[] ids)
+		public override IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
 		{
 			if (ids != null && ids.Length > 0)
 			{
 				int[] articlesToLoadIds = ids.Except(_loadedArticles.Keys).ToArray();
 
 				if (articlesToLoadIds.Any())
-					FillArticlesCache(base.List(contentId, articlesToLoadIds));
+					FillArticlesCache(base.List(contentId, articlesToLoadIds, excludeArchive));
 
 				_logger.Debug(() => string.Format("returning list of articles: {0} from cache and {1} from qp", ids.Length - articlesToLoadIds.Length, articlesToLoadIds.Length));
 
@@ -65,7 +65,7 @@ namespace QA.Core.DPC.Loader
 			{
 				if (!_listFromQpCacheByContentId.ContainsKey(contentId))
 				{
-					var allArticlesFromContent = base.List(contentId, null).ToArray();
+					var allArticlesFromContent = base.List(contentId, null, excludeArchive).ToArray();
 
 					_listFromQpCacheByContentId[contentId] = allArticlesFromContent;
 

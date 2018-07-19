@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using QA.Core;
 using QA.Core.Logger;
 
 namespace QA.Scheduler.API.Services
 {
-	public abstract class ProcessorBase : IProcessor
+    public abstract class ProcessorBase : IProcessor
 	{
 		protected ILogger Logger { get; private set; }
 

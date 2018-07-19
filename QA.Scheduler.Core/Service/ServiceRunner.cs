@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceProcess;
 using System.Threading.Tasks;
-using Microsoft.Practices.Unity;
 using QA.Scheduler.API.Models;
 using QA.Scheduler.Core.Configuration;
+using Unity;
+using Unity.Extension;
 
 namespace QA.Scheduler.Core.Service
 {
-	public static class ServiceRunner
+    public static class ServiceRunner
 	{
 		public static void RunService<T>()
 			where T : UnityContainerExtension
