@@ -57,10 +57,22 @@ namespace QA.Core.DPC.Loader
 			return ArticleService.GetLinkedItems(linkId, id, excludeArchive);
 		}
 
+	    public Dictionary<int, Dictionary<int, List<int>>> GetLinkedItems(int[] linkIds, int[] ids,
+	        bool excludeArchive = true)
+	    {
+	        return ArticleService.GetLinkedItemsMultiple(linkIds, ids, excludeArchive);
+	    } 
+
 		public string GetRelatedItems(int fieldId, int? id, bool excludeArchive = true)
 		{
 			return ArticleService.GetRelatedItems(fieldId, id, excludeArchive);
 		}
+
+	    public Dictionary<int, Dictionary<int, List<int>>> GetRelatedItems(int[] linkIds, int[] ids,
+	        bool excludeArchive = true)
+	    {
+	        return ArticleService.GetRelatedItemsMultiple(linkIds, ids, excludeArchive);
+	    } 
 
 		public string[] GetFieldValues(int[] ids, int contentId, string fieldName)
 		{
