@@ -11,6 +11,7 @@ import {
   ContentSchema,
   FieldSchema,
   FieldExactTypes,
+  ContentSchemasById,
   isExtensionField,
   isMultiRelationField,
   isSingleRelationField,
@@ -21,11 +22,11 @@ import { validationMixin } from "mst-validation-mixin";
 
 export class DataContext {
   private _nextId = -1;
-  private _defaultSnapshots: { [content: string]: Object } = null;
+  private _defaultSnapshots: DefaultSnapshots = null;
   private _storeType: IModelType<StoreSnapshot, StoreObject> = null;
   public store: StoreObject = null;
 
-  public initSchema(mergedSchemas: { [name: string]: ContentSchema }) {
+  public initSchema(mergedSchemas: ContentSchemasById) {
     this._storeType = compileStoreType(mergedSchemas);
     this._defaultSnapshots = compileDefaultSnapshots(mergedSchemas);
   }
@@ -93,10 +94,6 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
   // создаем словарь с моделями основных контентов
   const contentModels = {};
 
-  const getName = (content: ContentSchema) => mergedSchemas[content.ContentId].ContentName;
-  const getFields = (content: ContentSchema) => mergedSchemas[content.ContentId].Fields;
-  const getModel = (content: ContentSchema) => contentModels[getName(content)];
-
   const visitField = (field: FieldSchema, fieldModels: Object) => {
     if (isExtensionField(field)) {
       // создаем nullable поле-классификатор в виде enum
@@ -112,7 +109,7 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
           _ContentName: t.optional(t.literal(extName), extName)
         };
         // заполняем словарь полей обходя все поля контента-расширения
-        Object.values(getFields(extContent)).forEach(field => visitField(field, extFieldModels));
+        Object.values(extContent.Fields).forEach(field => visitField(field, extFieldModels));
         // создаем анонимную модель контента-расширения
         // prettier-ignore
         extContentModels[extName] = t.optional(
@@ -123,12 +120,14 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
       fieldModels[`${field.FieldName}_Contents`] = t.optional(t.model(extContentModels), {});
     } else if (isSingleRelationField(field)) {
       // для O2MRelation создаем nullable ссылку на сущность
-      fieldModels[field.FieldName] = t.maybe(t.reference(t.late(() => getModel(field.Content))));
+      fieldModels[field.FieldName] = t.maybe(
+        t.reference(t.late(() => contentModels[field.Content.ContentName]))
+      );
     } else if (isMultiRelationField(field)) {
       // для M2MRelation и M2ORelation создаем массив ссылок на сущности
       // prettier-ignore
       fieldModels[field.FieldName] = t.optional(
-        t.array(t.reference(t.late(() => getModel(field.Content)))), []
+        t.array(t.reference(t.late(() => contentModels[field.Content.ContentName]))), []
       );
     } else if (isEnumField(field)) {
       // создаем nullable строковое поле в виде enum
@@ -191,6 +190,11 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
   });
   // создаем модель хранилища
   return t.model(collectionModels);
+}
+
+/** словарь со снапшотами-по умолчанию для создания новых статей */
+interface DefaultSnapshots {
+  readonly [contentName: string]: Readonly<Object>;
 }
 
 /**

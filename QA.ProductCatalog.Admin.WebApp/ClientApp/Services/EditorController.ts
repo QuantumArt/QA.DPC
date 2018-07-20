@@ -36,7 +36,7 @@ export class EditorController {
       );
 
       await initSchemaTask;
-      const contentName = this._schemaContext.contentSchema.ContentName;
+      const contentName = this._schemaContext.rootSchema.ContentName;
 
       const flatObjectsByContent = this._dataNormalizer.normalize(nestedObjectTree, contentName);
 
@@ -44,7 +44,7 @@ export class EditorController {
       return this._dataContext.store[contentName].get(String(nestedObjectTree._ClientId));
     } else {
       await initSchemaTask;
-      const contentName = this._schemaContext.contentSchema.ContentName;
+      const contentName = this._schemaContext.rootSchema.ContentName;
 
       this._dataContext.initStore({});
       return this._dataContext.createArticle(contentName);
@@ -61,9 +61,9 @@ export class EditorController {
       throw new Error(await response.text());
     }
     const schema = await response.json();
-    this._dataNormalizer.initSchema(schema.MergedSchemas);
-    this._dataContext.initSchema(schema.MergedSchemas);
-    this._schemaContext.initSchema(schema.EditorSchema);
+    this._schemaContext.initSchema(schema.EditorSchema, schema.MergedSchemas);
+    this._dataContext.initSchema(this._schemaContext.contentSchemasById);
+    this._dataNormalizer.initSchema(this._schemaContext.contentSchemasById);
   }
 
   public async savePartialProduct(_article: ArticleObject, _contentSchema: ContentSchema) {}

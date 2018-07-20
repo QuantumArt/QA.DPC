@@ -2,7 +2,7 @@ import { normalize, schema } from "normalizr";
 import { deepMerge } from "Utils/DeepMerge";
 import { StoreSnapshot, ArticleSnapshot } from "Models/EditorDataModels";
 import {
-  ContentSchema,
+  ContentSchemasById,
   isSingleRelationField,
   isMultiRelationField,
   isExtensionField
@@ -18,9 +18,7 @@ export class DataNormalizer {
     [contentName: string]: schema.Object;
   } = {};
 
-  public initSchema(mergedSchemas: { [name: string]: ContentSchema }) {
-    const getName = (content: ContentSchema) => mergedSchemas[content.ContentId].ContentName;
-
+  public initSchema(mergedSchemas: ContentSchemasById) {
     Object.values(mergedSchemas).forEach(content => {
       this._entitySchemas[content.ContentName] = new schema.Entity(
         content.ContentName,
@@ -36,13 +34,13 @@ export class DataNormalizer {
         if (isExtensionField(field)) {
           const extReferences = {};
           Object.values(field.Contents).forEach(extContent => {
-            extReferences[getName(extContent)] = this._objectSchemas[getName(extContent)];
+            extReferences[extContent.ContentName] = this._objectSchemas[extContent.ContentName];
           });
           references[`${field.FieldName}_Contents`] = extReferences;
         } else if (isSingleRelationField(field)) {
-          references[field.FieldName] = this._entitySchemas[getName(field.Content)];
+          references[field.FieldName] = this._entitySchemas[field.Content.ContentName];
         } else if (isMultiRelationField(field)) {
-          references[field.FieldName] = [this._entitySchemas[getName(field.Content)]];
+          references[field.FieldName] = [this._entitySchemas[field.Content.ContentName]];
         }
       });
       this._entitySchemas[content.ContentName].define(references);

@@ -39,8 +39,7 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
     if (isFunction(children) && children.length === 0) {
       return children(null, null);
     }
-    const showSaveButton =
-      model._ServerId > 0 || this._schemaContext.contentSchema === contentSchema;
+    const showSaveButton = model._ServerId > 0 || this._schemaContext.rootSchema === contentSchema;
 
     const headerNode =
       header === true ? (

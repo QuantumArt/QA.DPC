@@ -151,3 +151,14 @@ export interface ExtensionFieldSchema extends FieldSchema {
 export function isExtensionField(field: any): field is ExtensionFieldSchema {
   return isField(field) && field.ClassNames.includes("ExtensionFieldSchema");
 }
+
+export interface EditorSchema {
+  readonly Content: ContentSchema;
+  Definitions: {
+    readonly [partialContentName: string]: ContentSchema;
+  };
+}
+
+export interface ContentSchemasById {
+  readonly [contentName: string]: ContentSchema;
+}

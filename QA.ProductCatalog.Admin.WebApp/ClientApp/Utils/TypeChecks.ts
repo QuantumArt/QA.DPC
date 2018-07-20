@@ -38,6 +38,19 @@ export function isPlainObject(arg): arg is Object {
   return false;
 }
 
+export function isSingleKeyObject(arg): arg is Object {
+  if (!isObject(arg)) {
+    return false;
+  }
+  let count = 0;
+  for (const _key in arg) {
+    if (++count === 2) {
+      return false;
+    }
+  }
+  return count === 1;
+}
+
 // Примеры для проверки
 // 2018-03-12 10:46:32
 // 2018-03-12T10:46:32

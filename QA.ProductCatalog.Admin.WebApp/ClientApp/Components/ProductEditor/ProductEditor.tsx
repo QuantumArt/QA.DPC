@@ -60,7 +60,7 @@ export class ProductEditor extends Component<ProductEditorProps> {
       return null;
     }
 
-    const contentSchema = this._schemaContext.contentSchema;
+    const contentSchema = this._schemaContext.rootSchema;
     return (
       <Grid fluid>
         {isFunction(children) ? (
