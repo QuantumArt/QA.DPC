@@ -4,11 +4,9 @@ import { consumer } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
-import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
-import { maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTable, RelationFieldTableProps } from "./AbstractRelationFieldTable";
@@ -49,20 +47,6 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     const { model, fieldSchema } = this.props;
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
-
-  renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    return (
-      <>
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          silent
-          rules={fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)}
-        />
-        {super.renderValidation(model, fieldSchema)}
-      </>
-    );
-  }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const list: ArticleObject[] = model[fieldSchema.FieldName];

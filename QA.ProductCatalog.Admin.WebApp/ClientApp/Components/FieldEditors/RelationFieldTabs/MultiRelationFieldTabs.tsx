@@ -4,11 +4,9 @@ import { action, untracked, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup, Tab, Tabs, Intent } from "@blueprintjs/core";
-import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
-import { maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { FieldSelector } from "../AbstractFieldEditor";
@@ -177,20 +175,6 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
           {isOpen ? "Свернуть" : "Развернуть"}
         </Button>
       </div>
-    );
-  }
-
-  renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    return (
-      <>
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          silent
-          rules={fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)}
-        />
-        {super.renderValidation(model, fieldSchema)}
-      </>
     );
   }
 

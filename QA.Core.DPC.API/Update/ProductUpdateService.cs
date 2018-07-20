@@ -182,6 +182,7 @@ namespace QA.Core.DPC.API.Update
                         .Select(x => x.Id));
             }
 
+            // TODO: filter readonly fields
             var updatedFields = newArticle.Fields.Values
                 .OfType<PlainArticleField>()
                 .Where(x => plainFieldIds.Contains(x.FieldId.Value)

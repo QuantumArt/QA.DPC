@@ -1,5 +1,5 @@
 /* global module */
-/* eslint-disable prefer-arrow-callback, no-empty-function, line-comment-position */
+/* eslint-disable prefer-arrow-callback, no-empty-function, line-comment-position, object-shorthand */
 (function(factory) {
   // @ts-ignore
   if (typeof module === "object" && module.exports) {
@@ -27,7 +27,7 @@
     CheckHost: 4
   };
 
-  /** class ExecuteActionOptions (Парамеры сообщения на выполнение BackendAction) */
+  // class ExecuteActionOptions (Парамеры сообщения на выполнение BackendAction)
   const ExecuteActionOptions = function() {};
 
   ExecuteActionOptions.prototype = {

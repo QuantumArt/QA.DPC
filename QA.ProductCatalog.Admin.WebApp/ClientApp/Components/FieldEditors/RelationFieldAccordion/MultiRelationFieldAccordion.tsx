@@ -4,12 +4,10 @@ import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup, Icon, Intent } from "@blueprintjs/core";
-import { Validate } from "mst-validation-mixin";
 import { SaveButton } from "Components/FormControls/FormControls";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
-import { maxCount } from "Utils/Validators";
 import { asc } from "Utils/Array/Sort";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { FieldSelector } from "../AbstractFieldEditor";
@@ -142,20 +140,6 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
           Очистить
         </Button>
       </ButtonGroup>
-    );
-  }
-
-  renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    return (
-      <>
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          silent
-          rules={fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)}
-        />
-        {super.renderValidation(model, fieldSchema)}
-      </>
     );
   }
 

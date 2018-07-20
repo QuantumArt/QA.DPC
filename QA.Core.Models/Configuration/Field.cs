@@ -133,7 +133,7 @@ namespace QA.Core.Models.Configuration
         [DefaultValue(UpdatingMode.Ignore)]
         public UpdatingMode UpdatingMode { get; set; }
 
-        [DisplayName("При удалении родительской сущности")]
+        [DisplayName("При удалении родительской сущности или удалении связи")]
 		[DefaultValue(DeletingMode.Keep)]
 		public DeletingMode DeletingMode { get; set; }
 

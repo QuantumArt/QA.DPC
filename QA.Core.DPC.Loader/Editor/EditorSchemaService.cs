@@ -219,7 +219,10 @@ namespace QA.Core.DPC.Loader.Editor
                 fieldSchema.FieldTitle = "";
             }
 
-            fieldSchema.IsRequired = qpField.Required;
+            if (!(fieldSchema is MultiRelationFieldSchema))
+            {
+                fieldSchema.IsRequired = qpField.Required;
+            }
             fieldSchema.IsReadOnly = qpField.ReadOnly;
             fieldSchema.ViewInList = qpField.ViewInList;
             fieldSchema.DefaultValue = GetDefaultValue(qpField);

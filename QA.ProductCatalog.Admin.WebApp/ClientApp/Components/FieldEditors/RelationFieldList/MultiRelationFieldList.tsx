@@ -5,12 +5,10 @@ import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
 import cn from "classnames";
 import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
-import { Validate } from "mst-validation-mixin";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { asc } from "Utils/Array/Sort";
 import { isString } from "Utils/TypeChecks";
-import { maxCount } from "Utils/Validators";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldList, RelationFieldListProps } from "./AbstractRelationFieldList";
 
@@ -81,20 +79,6 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
     const { model, fieldSchema } = this.props;
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
-
-  renderValidation(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    return (
-      <>
-        <Validate
-          model={model}
-          name={fieldSchema.FieldName}
-          silent
-          rules={fieldSchema.MaxDataListItemCount && maxCount(fieldSchema.MaxDataListItemCount)}
-        />
-        {super.renderValidation(model, fieldSchema)}
-      </>
-    );
-  }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const { selectedIds } = this.state;
