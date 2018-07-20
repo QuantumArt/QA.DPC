@@ -5,7 +5,6 @@ import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { SaveButton } from "Components/FormControls/FormControls";
 import { ArticleObject } from "Models/EditorDataModels";
-import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { SchemaContext } from "Services/SchemaContext";
 import { isString, isFunction } from "Utils/TypeChecks";
 import { ObjectEditor, ObjectEditorProps } from "./ObjectEditor";
@@ -19,7 +18,6 @@ interface ArticleEditorProps {
   header?: ReactNode | boolean;
   buttons?: ReactNode | boolean;
   onRemove?: (article: ArticleObject) => void;
-  saveRelations?: RelationSelection;
   titleField?: string | ((article: ArticleObject) => string);
   children?: RenderArticle | ReactNode;
 }
@@ -32,14 +30,7 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
 
   constructor(props: ObjectEditorProps & ArticleEditorProps, context?: any) {
     super(props, context);
-    const {
-      contentSchema,
-      saveRelations,
-      titleField = contentSchema.DisplayFieldName || (() => "")
-    } = this.props;
-    if (DEBUG && saveRelations) {
-      validateRelationSelection(contentSchema, saveRelations);
-    }
+    const { contentSchema, titleField = contentSchema.DisplayFieldName || (() => "") } = this.props;
     this._titleField = isString(titleField) ? article => article[titleField] : titleField;
   }
 

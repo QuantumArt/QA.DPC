@@ -182,14 +182,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   private static _tabIdsByModel = new WeakMap<ArticleObject | ExtensionObject, number>();
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const {
-      saveRelations,
-      skipOtherFields,
-      fieldEditors,
-      vertical,
-      filterItems,
-      children
-    } = this.props;
+    const { skipOtherFields, fieldEditors, vertical, filterItems, children } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
@@ -228,7 +221,6 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                         contentSchema={fieldSchema.Content}
                         skipOtherFields={skipOtherFields}
                         fieldEditors={fieldEditors}
-                        saveRelations={saveRelations}
                         header
                         buttons={!fieldSchema.IsReadOnly}
                         onRemove={this.removeRelation}

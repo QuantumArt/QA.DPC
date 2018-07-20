@@ -125,7 +125,6 @@ export class RelationController {
         body: JSON.stringify({
           ProductDefinitionId: this._editorSettings.ProductDefinitionId,
           ContentPath: contentSchema.ContentPath,
-          RelationSelection: null,
           ArticleIds: articleIdsToLoad,
           IgnoredArticleIdsByContent: existingArticleIds
         })

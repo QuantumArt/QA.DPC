@@ -2,7 +2,6 @@ import { inject } from "react-ioc";
 import { ArticleSnapshot, ArticleObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { EditorSettings } from "Models/EditorSettings";
-import { RelationSelection } from "Models/RelationSelection";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataContext } from "Services/DataContext";
@@ -67,9 +66,5 @@ export class EditorController {
     this._schemaContext.initSchema(schema.EditorSchema);
   }
 
-  public async savePartialProduct(
-    _article: ArticleObject,
-    _contentSchema: ContentSchema,
-    _relationSelection?: RelationSelection
-  ) {}
+  public async savePartialProduct(_article: ArticleObject, _contentSchema: ContentSchema) {}
 }

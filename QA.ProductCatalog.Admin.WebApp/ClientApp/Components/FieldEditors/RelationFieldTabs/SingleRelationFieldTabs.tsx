@@ -104,7 +104,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   }
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
-    const { saveRelations, skipOtherFields, fieldEditors, borderless, children } = this.props;
+    const { skipOtherFields, fieldEditors, borderless, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
     return isTouched && article ? (
@@ -119,7 +119,6 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           contentSchema={fieldSchema.Content}
           skipOtherFields={skipOtherFields}
           fieldEditors={fieldEditors}
-          saveRelations={saveRelations}
           header
           buttons={!fieldSchema.IsReadOnly}
           onRemove={this.removeRelation}

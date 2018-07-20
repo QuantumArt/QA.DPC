@@ -182,7 +182,7 @@ namespace QA.Core.DPC.API.Update
                         .Select(x => x.Id));
             }
 
-            // TODO: filter readonly fields
+            // TODO: исключаем Readonly поля
             var updatedFields = newArticle.Fields.Values
                 .OfType<PlainArticleField>()
                 .Where(x => plainFieldIds.Contains(x.FieldId.Value)
@@ -328,6 +328,8 @@ namespace QA.Core.DPC.API.Update
             // if (newArticleUpdateData.Fields.Any())
             _updateData.Add(newArticleUpdateData);
 
+            // TODO: Рекурсивно обходим новые статьи (с Id < 0)
+            // TODO: Рекурсивно обходим статьи расщирения независимо от UpdatingMode
             foreach (var fieldInfo in associationFieldsInfo
                 .Where(x => x.fieldDef.UpdatingMode == UpdatingMode.Update))
             {

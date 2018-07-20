@@ -3,7 +3,6 @@ import { inject } from "react-ioc";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
-import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
@@ -19,7 +18,6 @@ import "./RelationFieldAccordion.scss";
 export interface RelationFieldAccordionProps extends FieldEditorProps {
   displayFields?: (string | FieldSelector)[];
   orderByField?: string | FieldSelector;
-  saveRelations?: RelationSelection;
   fieldEditors?: FieldsConfig;
   filterItems?: (item: ArticleObject) => boolean;
   children?: RenderArticle | ReactNode;
@@ -37,13 +35,8 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
     super(props, context);
     const {
       fieldSchema,
-      saveRelations,
       displayFields = (fieldSchema as RelationFieldSchema).DisplayFieldNames || []
     } = this.props;
-    if (DEBUG && saveRelations) {
-      const contentSchema = (fieldSchema as RelationFieldSchema).Content;
-      validateRelationSelection(contentSchema, saveRelations);
-    }
     this._displayFields = displayFields.map(
       field => (isString(field) ? article => article[field] : field)
     );

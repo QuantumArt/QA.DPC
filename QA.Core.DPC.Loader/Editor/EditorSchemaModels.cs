@@ -311,32 +311,4 @@ namespace QA.Core.DPC.Loader.Editor
             return (ExtensionFieldSchema)MemberwiseClone();
         }
     }
-
-    /// <summary>
-    /// Дерево выбора частичного продукта в формате:
-    /// <code>
-    /// {
-    ///   RelationFieldName: {
-    ///     RelationFieldName: true,
-    ///   },
-    ///   ExtensionFieldName: {
-    ///     ExtensionContentName: {
-    ///       RelationFieldName: true
-    ///     }
-    ///   }
-    /// }
-    /// </code>
-    /// </summary>
-    public sealed class RelationSelection : Dictionary<string, RelationSelection>
-    {
-        /// <remarks>
-        /// Используется при десериализации из JSON.
-        /// Записи <code>{ RelationFieldName: true }</code>
-        /// и <code>{ RelationFieldName: null }</code> эквивалентны.
-        /// </remarks>
-        public static implicit operator RelationSelection(bool value)
-        {
-            return null;
-        }
-    }
 }

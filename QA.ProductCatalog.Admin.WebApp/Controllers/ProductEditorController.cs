@@ -165,34 +165,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 MergedSchema = mergedSchemaJson,
             });
         }
-
-        /// <summary>
-        /// Построить JSON-схему части продукта, начиная с корневого контента,
-        /// описанного путём <paramref name="contentPath"/>
-        /// и поддеревом выбора частичного продукта <see cref="contentSelection"/>.
-        /// </summary>
-        /// <param name="productDefinitionId">Id описания продукта</param>
-        /// <param name="contentPath">Путь к контенту в продукте</param>
-        /// <param name="relationSelection">Дерево выбора частичного продукта</param>
-        /// <returns>JSON-схема продукта</returns>
-        [HttpPost]
-        public ContentResult PartialJsonSchema_Test(
-            int productDefinitionId,
-            string contentPath,
-            [ModelBinder(typeof(JsonModelBinder))]
-            RelationSelection relationSelection,
-            bool isLive = false)
-        {
-            Content content = _contentDefinitionService.GetDefinitionById(productDefinitionId, isLive);
-
-            Content partialContent = _editorPartialContentService
-              .GetPartialContent(content, contentPath, relationSelection);
-
-            string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(partialContent);
-
-            return Content(jsonSchema, "application/json");
-        }
-
+        
         /// <summary>
         /// Получить JSON схему для редактора продукта.
         /// </summary>
@@ -290,7 +263,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .GetDefinitionById(request.ProductDefinitionId, isLive);
 
             Content partialContent = _editorPartialContentService
-                .GetPartialContent(rootContent, request.ContentPath, request.RelationSelection);
+                .FindContentByPath(rootContent, request.ContentPath);
 
             Article[] articles = _productService.GetProductsByIds(
                 partialContent, request.ArticleIds, request.IgnoredArticleIdsByContent, isLive);
@@ -308,8 +281,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         
         /// <summary>
         /// Сохранить часть продукта начиная с корневого контента,
-        /// описанного путём <see cref="PartialProductRequest.ContentPath"/>
-        /// и поддеревом выбора частичного продукта <see cref="PartialProductRequest.RelationSelection"/>.
+        /// описанного путём <see cref="PartialProductRequest.ContentPath"/>.
         /// </summary>
         [HttpPost]
         public ActionResult SavePartialProduct(
@@ -324,7 +296,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .GetDefinitionById(request.ProductDefinitionId, isLive);
 
             Content partialContent = _editorPartialContentService
-                .GetPartialContent(rootContent, request.ContentPath, request.RelationSelection);
+                .FindContentByPath(rootContent, request.ContentPath);
 
             Article partialProduct = _editorDataService
                 .DeserializeProduct(request.PartialProduct, partialContent);
@@ -394,12 +366,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             /// Путь к контенту в продукте в формате <c>"/FieldName/.../ExtensionContentName/.../FieldName"</c>
             /// </summary>
             public string ContentPath { get; set; } = "/";
-
-            /// <summary>
-            /// Дерево выбора частичного продукта.
-            /// Если <code>null</code> — то выбирается весь подграф продукта целиком.
-            /// </summary>
-            public RelationSelection RelationSelection { get; set; }
         }
         
         public class LoadPartialProductRequest : PartialProductRequest

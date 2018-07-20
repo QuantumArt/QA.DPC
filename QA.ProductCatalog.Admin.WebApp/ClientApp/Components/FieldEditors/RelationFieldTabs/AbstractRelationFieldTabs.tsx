@@ -3,7 +3,6 @@ import { inject } from "react-ioc";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
-import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { RelationController } from "Services/RelationController";
@@ -18,7 +17,6 @@ import "./RelationFieldTabs.scss";
 export interface RelationFieldTabsProps extends FieldEditorProps {
   displayField?: string | FieldSelector;
   orderByField?: string | FieldSelector;
-  saveRelations?: RelationSelection;
   fieldEditors?: FieldsConfig;
   skipOtherFields?: boolean;
   filterItems?: (item: ArticleObject) => boolean;
@@ -39,13 +37,8 @@ export abstract class AbstractRelationFieldTabs extends AbstractFieldEditor<
     super(props, context);
     const {
       fieldSchema,
-      saveRelations,
       displayField = (fieldSchema as RelationFieldSchema).Content.DisplayFieldName || (() => "")
     } = this.props;
-    if (DEBUG && saveRelations) {
-      const contentSchema = (fieldSchema as RelationFieldSchema).Content;
-      validateRelationSelection(contentSchema, saveRelations);
-    }
     this._displayField = isString(displayField) ? article => article[displayField] : displayField;
   }
 
