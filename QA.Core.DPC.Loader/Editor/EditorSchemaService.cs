@@ -219,10 +219,7 @@ namespace QA.Core.DPC.Loader.Editor
                 fieldSchema.FieldTitle = "";
             }
 
-            if (!(fieldSchema is MultiRelationFieldSchema))
-            {
-                fieldSchema.IsRequired = qpField.Required;
-            }
+            fieldSchema.IsRequired = qpField.Required;
             fieldSchema.IsReadOnly = qpField.ReadOnly;
             fieldSchema.ViewInList = qpField.ViewInList;
             fieldSchema.DefaultValue = GetDefaultValue(qpField);
@@ -252,6 +249,7 @@ namespace QA.Core.DPC.Loader.Editor
                 return new SingleRelationFieldSchema
                 {
                     Content = contentSchema,
+                    UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     DisplayFieldNames = displayFieldNames
                 };
@@ -293,6 +291,7 @@ namespace QA.Core.DPC.Loader.Editor
                 return new MultiRelationFieldSchema
                 {
                     Content = contentSchema,
+                    UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     DisplayFieldNames = displayFieldNames,
                     OrderByFieldName = orderByFieldName,

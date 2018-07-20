@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using QA.Core.Models.Configuration;
 using Quantumart.QP8.BLL.ListItems;
 using Quantumart.QP8.Constants;
 using System;
@@ -136,7 +137,7 @@ namespace QA.Core.DPC.Loader.Editor
         /// QP-тип поля 
         /// </summary>
         public FieldExactTypes FieldType { get; set; }
-
+        
         /// <summary>
         /// Поле является обязательным
         /// </summary>
@@ -234,10 +235,25 @@ namespace QA.Core.DPC.Loader.Editor
     /// </summary>
     public abstract class RelationFieldSchema : FieldSchema
     {
+        /// <summary>
+        /// Схема DPC-контента связанных статей
+        /// </summary>
         public IContentSchema Content { get; set; }
 
+        /// <summary>
+        /// Следует ли обновлять связанные статьи при рекурсивном обновлении связей
+        /// </summary>
+        public UpdatingMode UpdatingMode { get; set; }
+
+        /// <summary>
+        /// Является обратным полем
+        /// </summary>
         public bool IsDpcBackwardField { get; set; }
 
+        /// <summary>
+        /// Название поелй, которы используются для отображения контента
+        /// в строке таблици или в заголовке аккордеона
+        /// </summary>
         public string[] DisplayFieldNames { get; set; } = new string[0];
     }
 

@@ -112,12 +112,18 @@ interface StringEnumItem {
 
 export interface RelationFieldSchema extends FieldSchema {
   readonly Content: ContentSchema;
+  readonly UpdatingMode: UpdatingMode;
   readonly IsDpcBackwardField: boolean;
   readonly DisplayFieldNames: string[];
 }
 
 export function isRelationField(field: any): field is RelationFieldSchema {
   return isField(field) && field.ClassNames.includes("RelationFieldSchema");
+}
+
+export enum UpdatingMode {
+  Ignore = "Ignore",
+  Update = "Update"
 }
 
 export interface SingleRelationFieldSchema extends RelationFieldSchema {}
