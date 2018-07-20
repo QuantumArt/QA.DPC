@@ -65,6 +65,11 @@ $pt-danger-box-shadow: 0 0 0 3px rgba(219, 55, 55, 0.3),
   resize: none;
 }
 
+/* ==== SaveButton ==== */
+.editor-save-button {
+  width: 140px;
+}
+
 /* ==== DatePicker ==== */
 .editor-datepicker {
   .rdtPicker {

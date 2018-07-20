@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup, Icon, Intent } from "@blueprintjs/core";
 import { Validate } from "mst-validation-mixin";
+import { SaveButton } from "Components/FormControls/FormControls";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
@@ -85,7 +86,10 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     }
   }
 
-  private handleToggle(_e: any, article: ArticleObject) {
+  private handleToggle(e: any, article: ArticleObject) {
+    // нажали на элемент находящийся внутри <button>
+    if (e.target.closest("button")) return;
+
     this.toggleRelation(article);
   }
 
@@ -193,9 +197,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                     <td key={-3} className="relation-field-accordion__controls">
                       {!fieldSchema.IsReadOnly && (
                         <ButtonGroup>
-                          <Button minimal small rightIcon="floppy-disk" intent={Intent.PRIMARY}>
-                            Сохранить
-                          </Button>
+                          {this.showSaveButtion(article) && <SaveButton small />}
                           <Button
                             minimal
                             small

@@ -4,6 +4,7 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup, Icon, Intent } from "@blueprintjs/core";
+import { SaveButton } from "Components/FormControls/FormControls";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
@@ -42,7 +43,10 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     model.setTouched(fieldSchema.FieldName, true);
   };
 
-  private toggleRelation = () => {
+  private toggleRelation = (e: any) => {
+    // нажали на элемент находящийся внутри <button>
+    if (e.target.closest("button")) return;
+
     const { isOpen } = this.state;
     this.setState({
       isOpen: !isOpen,
@@ -123,9 +127,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
             <td key={-3} className="relation-field-accordion__controls">
               {!fieldSchema.IsReadOnly && (
                 <ButtonGroup>
-                  <Button minimal small rightIcon="floppy-disk" intent={Intent.PRIMARY}>
-                    Сохранить
-                  </Button>
+                  {this.showSaveButtion(article) && <SaveButton small />}
                   <Button
                     minimal
                     small

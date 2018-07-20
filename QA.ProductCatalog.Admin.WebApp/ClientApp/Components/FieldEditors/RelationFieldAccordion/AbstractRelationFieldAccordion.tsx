@@ -6,6 +6,7 @@ import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { RelationSelection, validateRelationSelection } from "Models/RelationSelection";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
+import { SchemaContext } from "Services/SchemaContext";
 import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
 import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
@@ -28,6 +29,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
   RelationFieldAccordionProps
 > {
   @inject protected _dataContext: DataContext;
+  @inject private _schemaContext: SchemaContext;
   @inject protected _relationController: RelationController;
   protected _displayFields: FieldSelector[];
 
@@ -45,6 +47,12 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
     this._displayFields = displayFields.map(
       field => (isString(field) ? article => article[field] : field)
     );
+  }
+
+  protected showSaveButtion(article: ArticleObject) {
+    const { fieldSchema } = this.props;
+    const contentSchema = (fieldSchema as RelationFieldSchema).Content;
+    return article._ServerId > 0 || this._schemaContext.contentSchema === contentSchema;
   }
 
   protected abstract renderControls(

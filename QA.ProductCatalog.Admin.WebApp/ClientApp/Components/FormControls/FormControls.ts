@@ -7,4 +7,5 @@ export { TextArea } from "./TextArea";
 export { DatePicker } from "./DatePicker";
 export { Select } from "./Select";
 export { RadioGroup } from "./RadioGroup";
+export { SaveButton } from "./SaveButton";
 import "./FormControls.scss";
