@@ -11,6 +11,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
         {
         }
 
-        protected override string ActionKey { get { return "RestoreAction"; } }
+        protected override string ActionKey => "RestoreAction";
+
+        public override bool ExcludeArchive => false;
     }
 }
