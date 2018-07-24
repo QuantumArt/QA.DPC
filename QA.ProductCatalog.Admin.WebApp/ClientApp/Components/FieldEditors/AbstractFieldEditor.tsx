@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
+import { Icon } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { FieldSchema } from "Models/EditorSchemaModels";
 import { Validator, Validate } from "mst-validation-mixin";
@@ -54,6 +55,20 @@ export abstract class AbstractFieldEditor<
     );
   }
 
+  protected renderLabel(fieldSchema: FieldSchema) {
+    return (
+      <label htmlFor={this.id} title={fieldSchema.FieldName}>
+        {fieldSchema.IsRequired && <span className="field-editor__label-required">*&nbsp;</span>}
+        {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+        {fieldSchema.FieldDescription && (
+          <>
+            &nbsp;<Icon icon="help" title={fieldSchema.FieldDescription} />
+          </>
+        )}
+      </label>
+    );
+  }
+
   render() {
     const { model, fieldSchema } = this.props;
     return (
@@ -66,12 +81,7 @@ export abstract class AbstractFieldEditor<
       >
         <Row>
           <Col xl={4} md={3} className="field-editor__label">
-            <label htmlFor={this.id} title={fieldSchema.FieldDescription || fieldSchema.FieldName}>
-              {fieldSchema.FieldTitle || fieldSchema.FieldName}:
-              {fieldSchema.IsRequired && (
-                <span className="field-editor__label-required">&nbsp;*</span>
-              )}
-            </label>
+            {this.renderLabel(fieldSchema)}
           </Col>
           {this.renderField(model, fieldSchema)}
         </Row>

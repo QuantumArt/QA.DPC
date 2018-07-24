@@ -18,6 +18,14 @@
   &--small {
     line-height: 24px;
   }
+
+  .pt-icon {
+    position: relative;
+    top: 2px;
+    zoom: 0.9;
+    color: #5c7080;
+    cursor: help;
+  }
 }
 
 .field-editor__label-required {

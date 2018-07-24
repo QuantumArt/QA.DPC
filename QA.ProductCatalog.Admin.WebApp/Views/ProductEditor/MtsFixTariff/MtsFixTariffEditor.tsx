@@ -6,7 +6,9 @@ import { ArticleEditor, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import {
   SingleRelationFieldTabs,
   MultiRelationFieldList,
-  MultiRelationFieldTabs
+  MultiRelationFieldTabs,
+  MultiRelationFieldTable,
+  SingleRelationFieldList
 } from "Components/FieldEditors/FieldEditors";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
 import { ArticleObject } from "Models/EditorDataModels";
@@ -96,7 +98,15 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
           MarketingProduct: props => (
             <SingleRelationFieldTabs
               borderless
-              fieldEditors={{ DevicesOnMarketingTariff: IGNORE }}
+              fieldEditors={{
+                DevicesOnMarketingTariff: IGNORE,
+                Type_Contents: {
+                  MarketingFixConnectTariff: {
+                    Category: SingleRelationFieldList,
+                    MarketingDevices: MultiRelationFieldTable
+                  }
+                }
+              }}
               {...props}
             />
           )

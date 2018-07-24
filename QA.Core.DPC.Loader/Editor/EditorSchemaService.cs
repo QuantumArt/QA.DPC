@@ -219,7 +219,7 @@ namespace QA.Core.DPC.Loader.Editor
                 fieldSchema.FieldTitle = "";
             }
 
-            fieldSchema.IsRequired = qpField.Required;
+            fieldSchema.IsRequired = qpField.Required && !(field is BackwardRelationField);
             fieldSchema.IsReadOnly = qpField.ReadOnly;
             fieldSchema.ViewInList = qpField.ViewInList;
             fieldSchema.DefaultValue = GetDefaultValue(qpField);
