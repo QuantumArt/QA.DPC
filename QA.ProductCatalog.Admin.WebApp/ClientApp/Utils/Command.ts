@@ -65,6 +65,11 @@ Object.defineProperty(commandDecorator, "isRunning", {
   get: () => commandState.isRunning
 });
 
+/**
+ * Декоратор для пользовательских действий, требующих асинхронных вызовов.
+ * Блокирует ввод данных от пользователя, не блокируя при этом UI браузера.
+ * Включает полосу NProgress. Логирует время выполнения операции в DEBUG-режиме.
+ */
 export const command = commandDecorator as CommandDecorator;
 
 /** Prevent all user input to some element and all it's descentants */
