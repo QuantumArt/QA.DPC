@@ -26,6 +26,7 @@ namespace QA.Core.DPC.API.Update
 
         private readonly List<ArticleData> _updateData = new List<ArticleData>();
         private readonly Dictionary<int, Content> _articlesToDelete = new Dictionary<int, Content>();
+        private readonly HashSet<int> _outdatedArticleIds = new HashSet<int>();
         private readonly IFieldService _fieldService;
         private readonly DeleteAction _deleteAction;
 
@@ -51,12 +52,17 @@ namespace QA.Core.DPC.API.Update
             var oldProduct = _productService.GetProductById(product.Id, isLive, definition);
 
             _updateData.Clear();
-
+            _outdatedArticleIds.Clear();
             _articlesToDelete.Clear();
 
             _filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
             ProcessArticlesTree(product, oldProduct, definition.StorageSchema);
+
+            if (_outdatedArticleIds.Any())
+            {
+                throw new ProductUpdateConcurrencyException(_outdatedArticleIds.ToArray());
+            }
 
             _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
             _articleService.BatchUpdate(_updateData);
@@ -101,6 +107,8 @@ namespace QA.Core.DPC.API.Update
 
             if (definition == null)
                 throw new ArgumentNullException("definition");
+
+            ValidateDates(newArticle, existingArticle);
 
             ArticleData newArticleUpdateData = new ArticleData
             {
@@ -283,6 +291,14 @@ namespace QA.Core.DPC.API.Update
             else childArticles = new Article[] { };
 
             return childArticles;
+        }
+
+        private void ValidateDates(Article newArticle, Article existingArticle)
+        {
+            if (existingArticle != null && newArticle.Modified != default(DateTime) && newArticle.Modified != existingArticle.Modified)
+            {
+                _outdatedArticleIds.Add(newArticle.Id);
+            }
         }
 
         #endregion

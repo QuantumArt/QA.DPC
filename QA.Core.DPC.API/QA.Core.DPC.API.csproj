@@ -271,6 +271,7 @@
     <Compile Include="Search\ProductQuery.cs" />
     <Compile Include="Search\ProductSearchService.cs" />
     <Compile Include="Search\QueryConditionMapper.cs" />
+    <Compile Include="Update\ProductUpdateConcurrencyException.cs" />
     <Compile Include="Update\ProductUpdateService.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -316,4 +317,3 @@
   </Target>
   -->
 </Project>
-
