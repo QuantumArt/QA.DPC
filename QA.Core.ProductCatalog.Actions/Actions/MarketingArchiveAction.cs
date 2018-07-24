@@ -9,8 +9,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
     {
         public MarketingArchiveAction(Func<string, IAction> getService, IArticleService articleService, ISettingsService settingsService) : base(getService, articleService, settingsService)
         {
+
         }
 
-        protected override string ActionKey { get { return "ArchiveAction"; } }
+        protected override string ActionKey => "ArchiveAction";
     }
 }
