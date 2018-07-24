@@ -30,6 +30,11 @@
     > .pt-tab {
       max-width: 33vw;
     }
+
+    > .pt-tab-indicator-wrapper {
+      min-width: calc(100% - 20px);
+      min-height: 30px;
+    }
   }
 }
 
