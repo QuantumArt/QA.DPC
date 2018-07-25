@@ -571,7 +571,7 @@ namespace QA.Core.DPC.Loader
 			if (field is MultiArticleField)
 			{
 				var articles = ((MultiArticleField)field)
-					.GetArticles(filter)
+					.GetArticlesSorted(filter)
 					.Select(x => ConvertArticle(x, filter))
 					.ToArray();
 

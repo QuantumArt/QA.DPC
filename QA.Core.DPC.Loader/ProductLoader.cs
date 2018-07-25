@@ -651,95 +651,10 @@ FROM
         /// <summary>
         /// Получение статьи и всех ее полей, описанных в структуре маппинга
         /// </summary>
-        private Article[] GetArticlesByIds(int[] ids, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticlesCache, bool isLive, ArticleCounter counter)
-        {
-            if (ids == null || !ids.Any())
-                return new Article[] {};
-            var actualIds = ids.Where(n => n != 0).ToArray();
-            if (!actualIds.Any())
-                return new Article[] {};
-
-
-            if (contentDef == null)
-            {
-                var idstr = String.Join(", ", actualIds.Select(n => n.ToString()));
-                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENT_MAP_NOT_EXISTS, idstr));
-            }
-
-            var keysInLoadedArticlesCache = ids.Select(n => new ArticleShapedByDefinitionKey(n, contentDef, isLive));
-
-            var result = new List<Article>();
-            var keysToProcess = new List<string>();
-
-            foreach (var key in keysInLoadedArticlesCache)
-            {
-                if (loadedArticlesCache.TryGetValue(key, out var res))
-                {
-                    _hits += 1;
-                    counter.CheckCacheArticlesLimit(new[] {key.ArticleId});
-                    result.Add(res);
-                }
-                else
-                {
-                    keysToProcess.Add(GetArticleKeyStringForCache(key));
-                }
-            }
-
-            Dictionary<string, Article> Func(string[] keysToLoad)
-            {
-                var idsToLoad = ArticleShapedByDefinitionKey.ParseArray(keysToLoad);
-                var qpArticles = ReadArticles(idsToLoad, isLive, contentDef);
-                return GetArticlesForQpArticles(qpArticles, contentDef, loadedArticlesCache, isLive, counter)
-                    .ToDictionary(n => n.Id.ToString(), m => m);
-            }
-
-            if (keysToProcess.Any())
-            {
-                var cachePeriod = contentDef.GetCachePeriodForContent();
-
-                if (cachePeriod != null)
-                {
-                    var cacheTags = GetTags(contentDef);
-
-                    return _cacheProvider.GetOrAddValues(keysToProcess.ToArray(), String.Empty, cacheTags, cachePeriod.Value, Func);
-                }
-            }
-
-            result.AddRange(Func(keysToProcess.ToArray()).Select(n => n.Value));
-            return result.ToArray();
-        }
-
-        /// <summary>
-        /// Получение статьи и всех ее полей, описанных в структуре маппинга
-        /// </summary>
-        private Article[] GetArticlesForQpArticles(Qp8Bll.Article[] articles, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> loaded, bool isLive, ArticleCounter counter)
+        private Article[] GetArticlesForQpArticles(Qp8Bll.Article[] articles, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter)
         {
             if (articles == null || !articles.Any())
                 return new Article[] {};
-
-            var articleIds = articles.Select(n => n.Id).ToArray();
-            counter.CheckHitArticlesLimit(articleIds);
-
-            var articlesFiltered =
-                articles.Where(n => (!isLive || n.Status.Name == ARTICLE_STATUS_PUBLISHED)).ToArray();
-
-            var cachePeriod = contentDef.GetCachePeriodForContent();
-
-            if (cachePeriod != null)
-            {
-                var cacheTags = GetTags(contentDef);
-
-                var keys = articlesFiltered.Select(n =>
-                    GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive))).ToArray();
-
-                return _cacheProvider.GetOrAddValues(keys, String.Empty, cacheTags, cachePeriod.Value, keysToLoad => GetArticlesNotCached(articles, contentDef, loaded, isLive, counter));
-            }
-            return GetArticlesNotCached(articles, contentDef, loaded, isLive, counter).Select(n => n.Value).ToArray();
-        }
-
-
-        private Dictionary<string, Article> GetArticlesNotCached(Qp8Bll.Article[] articles, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticlesCache, bool isLive, ArticleCounter counter)
-        {
 
             if (contentDef == null)
             {
@@ -747,40 +662,39 @@ FROM
                 throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENT_MAP_NOT_EXISTS, idstr));
             }
 
+            var articleIds = articles.Select(n => n.Id).ToArray();
+            counter.CheckHitArticlesLimit(articleIds);
 
-            if (articles == null || !articles.Any())
-                return new Dictionary<string, Article>();
+            articles = articles.Where(n => !isLive || n.Status.Name == ARTICLE_STATUS_PUBLISHED).ToArray();
 
-
-
-            var keysInLoadedArticlesCache = articles.Select(n => n.Id).Select(n => new ArticleShapedByDefinitionKey(n, contentDef, isLive));
+            var localKeys = articles.Select(n => n.Id).Select(n => new ArticleShapedByDefinitionKey(n, contentDef, isLive));
 
             var result = new Dictionary<string, Article>();
-            var keysToProcess = new HashSet<ArticleShapedByDefinitionKey>();
+            var localCacheMisses = new HashSet<ArticleShapedByDefinitionKey>();
 
-            foreach (var key in keysInLoadedArticlesCache)
+            foreach (var localKey in localKeys)
             {
-                if (loadedArticlesCache.TryGetValue(key, out Article res))
+                if (localCache.TryGetValue(localKey, out Article res))
                 {
                     _hits += 1;
-                    counter.CheckCacheArticlesLimit(new[] { key.ArticleId });
-                    result.Add(GetArticleKeyStringForCache(key), res);
+                    counter.CheckCacheArticlesLimit(new[] { localKey.ArticleId });
+                    result.Add(GetArticleKeyStringForCache(localKey), res);
                 }
                 else
                 {
                     _misses += 1;
-                    keysToProcess.Add(key);
+                    localCacheMisses.Add(localKey);
                 }
             }
 
             var initialArticles = articles.Select(n => new
                 {
                     Article = n,
-                    Key = new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)
+                    LocalKey = new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)
                 })
-                .Where(n => keysToProcess.Contains(n.Key)).Select(n => new
+                .Where(n => localCacheMisses.Contains(n.LocalKey)).Select(n => new
                 {
-                    n.Key,
+                    n.LocalKey,
                     Article = new Article()
                     {
                         ContentId = contentDef.ContentId,
@@ -804,8 +718,9 @@ FROM
 
             foreach (var initialArticle in initialArticles)
             {
-                loadedArticlesCache[initialArticle.Key] = initialArticle.Article;
-                result.Add(GetArticleKeyStringForCache(initialArticle.Key), initialArticle.Article);
+                localCache[initialArticle.LocalKey] = initialArticle.Article;
+                var globalKey = GetArticleKeyStringForCache(initialArticle.LocalKey);
+                result.Add(globalKey, initialArticle.Article);
             }
 
 
@@ -822,12 +737,12 @@ FROM
                 {
                     foreach (var fieldId in plainFieldsNotDefIds)
                     {
-                        var articleFields = GetArticleField(fieldId, articles, null, loadedArticlesCache, isLive, counter);
+                        var articleFields = GetArticleField(fieldId, articles, null, localCache, isLive, counter);
                         bool hasVirtualFields = CheckVirtualFields(articleFields);
-                        foreach (var key in articles.Select(n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
+                        foreach (var localKey in articles.Select(n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
                         {
-                            var articleField = articleFields[key.ArticleId];
-                            var currentRes = loadedArticlesCache[key];
+                            var articleField = articleFields[localKey.ArticleId];
+                            var currentRes = localCache[localKey];
                             if (articleField != null)
                             {
                                 currentRes.Fields.Add(articleField.FieldName, articleField);
@@ -841,13 +756,13 @@ FROM
             //Заполнение полей из xaml-маппинга
             foreach (var fieldDef in contentDef.Fields.Where(x => !(x is Dictionaries) && !(x is BaseVirtualField)))
             {
-                var articleFields = GetArticleField(fieldDef.FieldId, articles, contentDef, loadedArticlesCache, isLive, counter, fieldDef.FieldName);
+                var articleFields = GetArticleField(fieldDef.FieldId, articles, contentDef, localCache, isLive, counter, fieldDef.FieldName);
                 var hasVirtualFields = CheckVirtualFields(articleFields);
                 
-                foreach (var key in articles.Select(n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
+                foreach (var localKey in articles.Select(n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
                 {
-                    var articleField = articleFields[key.ArticleId];
-                    var currentRes = loadedArticlesCache[key];
+                    var articleField = articleFields[localKey.ArticleId];
+                    var currentRes = localCache[localKey];
                     if (articleField != null)
                     {
                         currentRes.Fields.Add(articleField.FieldName, articleField);
@@ -856,13 +771,13 @@ FROM
                 }
             }
 
-            return result;
+            return result.Select(n => n.Value).ToArray();
         }
 
         /// <summary>
         /// Получение объекта поля (значение или связь с другим контентом)
         /// </summary>
-        private Dictionary<int, ArticleField> GetArticleField(int fieldId, Qp8Bll.Article[] articles, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticles, bool isLive, ArticleCounter counter, string fieldName = "")
+        private Dictionary<int, ArticleField> GetArticleField(int fieldId, Qp8Bll.Article[] articles, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter, string fieldName = "")
         {
             var result = new Dictionary<int, ArticleField>();
 
@@ -902,7 +817,7 @@ FROM
             }
             else if (fieldDef is BackwardRelationField)
             {
-                result.AddRange(ProcessBackwardRelationField(fieldId, articleIds, loadedArticles, isLive, counter, fieldName, fieldDef));
+                result.AddRange(ProcessBackwardRelationField(fieldId, articleIds, localCache, isLive, counter, fieldName, fieldDef));
             }
             else if (fieldDef is EntityField field)   //Сложное поле (контент)
             {
@@ -913,16 +828,16 @@ FROM
 
                 if (fieldValue.Field.RelationType == Qp8Bll.RelationType.OneToMany)
                 {
-                    result.AddRange(ProcessOneToManyField(loadedArticles, isLive, counter, fieldValues, subContentDef));
+                    result.AddRange(ProcessOneToManyField(localCache, isLive, counter, fieldValues, subContentDef));
                 }
                 else if (fieldValue.Field.RelationType == Qp8Bll.RelationType.ManyToMany || fieldValue.Field.RelationType == Qp8Bll.RelationType.ManyToOne)
                 {
-                    result.AddRange(ProcessManyField(loadedArticles, isLive, counter, fieldValues, subContentDef));
+                    result.AddRange(ProcessManyField(localCache, isLive, counter, fieldValues, subContentDef));
                 }
             }
             else if (fieldDef is ExtensionField) //Поле-расширение
             {
-                result.AddRange(ProcessExtensionField(fieldId, articles, loadedArticles, isLive, counter, fieldDef));
+                result.AddRange(ProcessExtensionField(fieldId, articles, localCache, isLive, counter, fieldDef));
             }
             else
                 throw new Exception($"Поле типа {fieldDef.GetType()} не поддерживается");
@@ -932,7 +847,7 @@ FROM
             return result;
         }
 
-        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessExtensionField(int fieldId, Qp8Bll.Article[] articles, Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticles, bool isLive,
+        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessExtensionField(int fieldId, Qp8Bll.Article[] articles, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive,
             ArticleCounter counter, Field fieldDef)
         {
             var contentMapping = ((ExtensionField) fieldDef).ContentMapping;
@@ -976,7 +891,7 @@ FROM
 
                 var subContentDef = contentMapping[extContentId];
                 var extArticles =
-                    GetArticlesForQpArticles(extQpArticles, subContentDef, loadedArticles, isLive, counter)
+                    GetArticlesForQpArticles(extQpArticles, subContentDef, localCache, isLive, counter)
                         .ToDictionary(n => n.Id, m => m);
 
 
@@ -996,55 +911,94 @@ FROM
             }
         }
 
-        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessManyField(Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticles, bool isLive, ArticleCounter counter, Qp8Bll.FieldValue[] fieldValues,
+        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessManyField(Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter, Qp8Bll.FieldValue[] fieldValues,
             Content subContentDef)
         {
-            var articleBag = new Dictionary<int, Article>();
-
-            var articleToReadFromQpIds = new List<int>();
-
             var flattenedRelatedArticlesIds = fieldValues.SelectMany(n => n.RelatedItems).Distinct().ToArray();
-            foreach (var relatedArticleId in flattenedRelatedArticlesIds)
-            {
-                var key = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(relatedArticleId, subContentDef,
-                    isLive));
 
-                var tags = GetTags(subContentDef);
-
-                if (_cacheProvider.Get(key, tags) is Article cachedArticle)
-                    articleBag.Add(relatedArticleId, cachedArticle);
-                else if (loadedArticles.TryGetValue(new ArticleShapedByDefinitionKey(relatedArticleId, subContentDef, isLive),
-                    out cachedArticle))
-                    articleBag.Add(relatedArticleId, cachedArticle);
-                else
-                    articleToReadFromQpIds.Add(relatedArticleId);
-            }
-
-            if (articleToReadFromQpIds.Count > 0)
-            {
-                var relatedQpArticles = ArticleService.List(subContentDef.ContentId, articleToReadFromQpIds.ToArray()).ToArray();
-
-                var relatedArticles =
-                    GetArticlesForQpArticles(relatedQpArticles, subContentDef, loadedArticles, isLive, counter);
-
-                foreach (var relatedArticle in relatedArticles)
-                {
-                    articleBag.Add(relatedArticle.Id, relatedArticle);
-                }
-            }
+            var articleBag = GetArticleBag(flattenedRelatedArticlesIds, subContentDef, localCache, isLive, counter);
 
             foreach (var fieldValue in fieldValues)
             {
-                var results = fieldValue.RelatedItems.Select(n => articleBag[n]).ToDictionary(n => n.Id, m => m);
+                var relatedItems = fieldValue.RelatedItems
+                    .Select(n => articleBag.TryGetValue(n, out var article) ? article : null)
+                    .Where(n => n != null);
+
+                var dict = relatedItems.ToDictionary(relatedItem => relatedItem.Id);
+
                 var res = new MultiArticleField
                 {
-                    Items = results,
+                    Items = dict,
                     SubContentId = subContentDef.ContentId
                 };
+
                 var result = new KeyValuePair<int, ArticleField>(fieldValue.Article.Id, res);
                 yield return result;
 
             }
+        }
+
+        private Dictionary<int, Article> GetArticleBag(int[] articleIds, Content subContentDef, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter)
+        {
+            var result = new Dictionary<int, Article>();
+
+            if (articleIds == null)
+                return result;
+
+            if (subContentDef == null)
+            {
+                var idstr = String.Join(", ", articleIds.Select(n => n.ToString()));
+                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENT_MAP_NOT_EXISTS, idstr));
+            }
+
+            var cacheMisses = new List<string>();
+            var keyItems = articleIds.Select(n => new ArticleShapedByDefinitionKey(n, subContentDef, isLive))
+                .Select(n => new { LocalKey = n, GlobalKey =  GetArticleKeyStringForCache(n)}).ToArray();
+            var tags = GetTags(subContentDef);
+
+            foreach (var keyItem in keyItems)
+            {
+                var id = keyItem.LocalKey.ArticleId;
+                if (_cacheProvider.Get(keyItem.GlobalKey, tags) is Article cachedArticle)
+                    result.Add(id, cachedArticle);
+                else if (localCache.TryGetValue(new ArticleShapedByDefinitionKey(id, subContentDef, isLive),
+                    out cachedArticle))
+                    result.Add(id, cachedArticle);
+                else
+                    cacheMisses.Add(keyItem.GlobalKey);
+            }
+
+            if (cacheMisses.Any())
+            {
+
+                var cachePeriod = subContentDef.GetCachePeriodForContent();
+
+
+                if (cachePeriod != null)
+                {
+                    var cacheValues = _cacheProvider.GetOrAddValues(cacheMisses.ToArray(), string.Empty, tags, cachePeriod.Value, Func);
+                    result.AddRange(cacheValues.ToDictionary(n => n.Id, m => m));
+                }
+                else
+                {
+                    var rawValues = Func(cacheMisses.ToArray());
+                    result.AddRange(rawValues.Values.ToDictionary(n => n.Id, m => m));
+                }
+
+            }
+
+            return result;
+
+            
+            Dictionary<string, Article> Func(string[] keysToLoad)
+            {
+                var keyPairs = keysToLoad.ToDictionary(ArticleShapedByDefinitionKey.Parse, m => m);
+                var idsToLoad = keyPairs.Keys.ToArray();
+                var qpArticles = ReadArticles(idsToLoad, isLive, subContentDef);
+                return GetArticlesForQpArticles(qpArticles, subContentDef, localCache, isLive, counter)
+                    .ToDictionary(n => keyPairs[n.Id], m => m);
+            }
+
         }
 
         private bool CheckVirtualFields(Dictionary<int, ArticleField> dict)
@@ -1078,12 +1032,12 @@ FROM
 
         }
 
-        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessOneToManyField(Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticles, bool isLive,
+        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessOneToManyField(Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive,
             ArticleCounter counter, Qp8Bll.FieldValue[] fieldValues, Content subContentDef)
         {
             var itemIds = fieldValues.Where(n => n.RelatedItems.Any()).Select(n => n.RelatedItems.First()).Distinct().ToArray();
 
-            var items = GetArticlesByIds(itemIds, subContentDef, loadedArticles, isLive, counter).ToDictionary(n => n.Id, m => m);
+            var articleBag = GetArticleBag(itemIds, subContentDef, localCache, isLive, counter);
 
             foreach (var fieldValue in fieldValues)
             {
@@ -1091,7 +1045,7 @@ FROM
                 var relatedId = fieldValue.RelatedItems.Any() ? fieldValue.RelatedItems.First() : 0;
                 var res = new SingleArticleField
                 {
-                    Item = items.TryGetValue(relatedId, out var article) ? article : null,
+                    Item = articleBag.TryGetValue(relatedId, out var article) ? article : null,
                     Aggregated = fieldValue.Field.Aggregated,
                     SubContentId = subContentDef.ContentId
                 };
@@ -1101,11 +1055,10 @@ FROM
 
         }
 
-        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessBackwardRelationField(int id, int[] articleIds, Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticles, bool isLive,
+        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessBackwardRelationField(int id, int[] articleIds, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive,
            ArticleCounter counter, string fieldName, Field fieldDef)
         {
             var subContentDef = ((BackwardRelationField) fieldDef).Content;
-            var subContentId = subContentDef.ContentId;
 
             if (subContentDef == null)
                 throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_MAP_NOT_EXISTS, 0,
@@ -1116,34 +1069,7 @@ FROM
             var relatedArticlesIds = GetBackwardArticlesIds(qpField, articleIds);
             var flattenedRelatedArticlesIds = relatedArticlesIds.SelectMany(n => n.Value).Distinct().ToArray();
 
-
-            var articleBag = new Dictionary<int, Article>();
-
-            var articleToReadFromQpIds = new List<int>();
-
-            foreach (var relatedArticleId in flattenedRelatedArticlesIds)
-            {
-                var articleKey = new ArticleShapedByDefinitionKey(relatedArticleId, subContentDef, isLive);
-                var key = GetArticleKeyStringForCache(articleKey);
-
-                if (_cacheProvider.Get(key, GetTags(subContentDef)) is Article cachedArticle)
-                    articleBag.Add(relatedArticleId, cachedArticle);
-                else if (loadedArticles.TryGetValue(articleKey, out cachedArticle))
-                    articleBag.Add(relatedArticleId, cachedArticle);
-                else
-                    articleToReadFromQpIds.Add(relatedArticleId);
-            }
-
-            if (articleToReadFromQpIds.Count > 0)
-            {
-                var relatedQpArticles = ArticleService.List(subContentId, articleToReadFromQpIds.ToArray()).ToArray();
-
-                var relatedArticles =
-                    GetArticlesForQpArticles(relatedQpArticles, subContentDef, loadedArticles, isLive, counter);
-
-                if (relatedArticles.Any())
-                    articleBag.AddRange(relatedArticles.ToDictionary(n => n.Id, m => m));
-            }
+            var articleBag = GetArticleBag(flattenedRelatedArticlesIds, subContentDef, localCache, isLive, counter);
 
             var backwardFieldName = string.IsNullOrEmpty(fieldName) ? Guid.NewGuid().ToString() : fieldName;
 
@@ -1152,7 +1078,11 @@ FROM
                 var items = new Dictionary<int, Article>();
                 if (relatedArticlesIds.TryGetValue(articleId, out var relatedIds))
                 {
-                    items = relatedIds.Select(n => articleBag[n]).ToDictionary(n => n.Id, m => m);
+                    items = relatedIds
+                        .Select(n => articleBag.TryGetValue(n, out var article) ? article : null)
+                        .Where(n => n != null)
+                        .ToDictionary(n => n.Id, m => m);
+
                 }
 
                 var res = new BackwardArticleField
@@ -1238,6 +1168,9 @@ FROM
 
         private class ArticleShapedByDefinitionKey
         {
+            
+            private static readonly Regex Re = new Regex(KEY_CACHE_GET_ARTICLE + @"_(\d+)");
+
             public bool IsLive { get; }
 
             public Content Definition { get; }
@@ -1272,13 +1205,11 @@ FROM
                 return HashHelper.CombineHashCodes(HashHelper.CombineHashCodes(IsLive.GetHashCode(), Definition.GetHashCode()), ArticleId.GetHashCode());
             }
 
-            public static int[] ParseArray(string[] keysToLoad)
+
+            public static int Parse(string keyToLoad)
             {
-                Regex re = new Regex(KEY_CACHE_GET_ARTICLE + @"_(\d+)");
-                return keysToLoad
-                    .Select(key => re.Match(key))
-                    .Select(m => int.Parse(m.Groups[1].Captures[0].Value))
-                    .ToArray();
+                var m = Re.Match(keyToLoad);
+                return int.Parse(m.Groups[1].Captures[0].Value);
             }
         }
 
