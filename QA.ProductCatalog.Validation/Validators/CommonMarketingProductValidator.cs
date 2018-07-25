@@ -76,9 +76,14 @@ namespace QA.ProductCatalog.Validation.Validators
 			object aliasValue = alias;
 			var matchItems = matchService.MatchArticles(marketingProductContentId, article => article[Constants.FieldAlias].Value == aliasValue, MatchMode.Strict);
 			var matchIds = matchItems.Where(itm => itm.Id != id).Select(itm => itm.Id).ToArray();
-			var matchTypeIds = articleSerivce.GetFieldValues(matchIds, marketingProductContentId, productTypeName);
-			var matchData = matchIds.Zip(matchTypeIds, (productId, typeId) => new { productId, typeId = int.Parse(typeId) }).Where(itm => itm.typeId == marketingProductTypeId);
-			var ids = String.Join(", ", matchData.Select(x => x.productId));
+
+		    var ids = "";
+		    var matches = articleSerivce.List(marketingProductContentId, matchIds, true).ToArray();
+		    if (matches.Any())
+		    {
+		        var fieldValues = matches.Select(n => n.FieldValues.Single(m => m.Field.Name == productTypeName)).ToArray();
+		        ids = String.Join(", ", fieldValues.Where(n => int.Parse(n.Value) == marketingProductTypeId).Select(n => n.Article.Id));
+		    }
 			return ids;
 		}
 
