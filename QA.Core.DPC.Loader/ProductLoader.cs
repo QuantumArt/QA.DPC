@@ -128,15 +128,9 @@ namespace QA.Core.DPC.Loader
                 timer.Start();
 
                 ArticleService.LoadStructureCache();
-
+                
                 timer.Stop();
-
                 _logger.Debug("LoadStructureCache took {0} secs", timer.Elapsed.TotalSeconds);
-
-
-                // вот тут мы принудительно проверяем изменения и чистим кеш.
-
-                timer.Stop();
 
                 Article article = null;
 
@@ -149,6 +143,9 @@ namespace QA.Core.DPC.Loader
 
                 if (article == null)
                 {
+                    timer.Reset();
+                    timer.Start();
+
                     var counter = GetArticleCounter(id);
 
                     var qpArticle = ReadArticles(new[]{id}, isLive).FirstOrDefault();
@@ -159,23 +156,42 @@ namespace QA.Core.DPC.Loader
                     int.TryParse(qpArticle.FieldValues.Where(x => x.Field.IsClassifier).Select(x => x.Value).FirstOrDefault(),
                         out var productTypeId);
 
+                    timer.Stop();
+                    _logger.Debug("Root article loading took {0} secs", timer.Elapsed.TotalSeconds);
+
+
+                    timer.Reset();
+                    timer.Start();
+
                     if (productDefinition == null)
                         productDefinition = GetProductDefinition(productTypeId, qpArticle.ContentId, isLive);
 
-                    timer.Reset();
+                    timer.Stop();
+                    _logger.Debug("Product definition loading took {0} secs", timer.Elapsed.TotalSeconds);
 
+
+                    timer.Reset();
                     timer.Start();
 
                     article = GetProduct(qpArticle, productDefinition, isLive, counter);
                     counter.LogCounter();
+
+                    timer.Stop();
+                    _logger.Debug("GetProduct took {0} secs", timer.Elapsed.TotalSeconds);
                 }
 
                 if (article.HasVirtualFields)
+                {
+                    timer.Reset();
+                    timer.Start();
+
                     article = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
+                    
+                    timer.Stop();
+                    _logger.Debug("Virtual fields generating took {0} secs", timer.Elapsed.TotalSeconds);
+                }
 
-                timer.Stop();
 
-                _logger.Debug("GetProduct took {0} secs", timer.Elapsed.TotalSeconds);
 
                 return article;
             }

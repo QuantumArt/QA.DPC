@@ -34,16 +34,20 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private IVersionedCacheProvider _versionedCacheProvider;
         private readonly Func<string, IArticleFormatter> _getFormatter;
         private readonly IProductLocalizationService _localizationService;
+        private readonly IProductService _productService;
 
         public ProductController(Func<string, string, IAction> getAction,
             IVersionedCacheProvider versionedCacheProvider,
             Func<string, IArticleFormatter> getFormatter, 
-            IProductLocalizationService localizationService)
+            IProductLocalizationService localizationService,
+            IProductService productService
+            )
         {
             _getAction = getAction;
             _versionedCacheProvider = versionedCacheProvider;
             _getFormatter = getFormatter;
             _localizationService = localizationService;
+            _productService = productService;
         }
 
         [RequireCustomAction]
@@ -62,11 +66,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
 
             Stopwatch sw = Stopwatch.StartNew();
-
-            var originalOroduct = ObjectFactoryBase.Resolve<IProductService>().GetProductById(content_item_id, live);
-            var product = originalOroduct;
+            var originalProduct = _productService.GetProductById(content_item_id, live);
+            var product = originalProduct;
             var cultures = new CultureInfo[0];
             var currentCulture = CultureInfo.InvariantCulture;
+
+            var productLoadedIn = sw.ElapsedMilliseconds;
 
             if (product == null)
             {
@@ -100,7 +105,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 product = _localizationService.Localize(product, currentCulture);                
             }
 
-            var productLoadedIn = sw.ElapsedMilliseconds;
+            var productLocalized = sw.ElapsedMilliseconds;
 
             var control = ObjectFactoryBase.Resolve<IProductControlProvider>().GetControlForProduct(product);
 
@@ -124,13 +129,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
                 if (localize)
                 {
-                    originalOroduct = ArticleFilteredCopier.Copy(originalOroduct, allFilter);
-                    relevanceItems = relevanceService.GetProductRelevance(originalOroduct, live);
+                    originalProduct = ArticleFilteredCopier.Copy(originalProduct, allFilter);
+                    relevanceItems = relevanceService.GetProductRelevance(originalProduct, live);
                 }
                 else
                 {
                     relevanceItems = relevanceService.GetProductRelevance(product, live);
                 }
+
                 var relevanceField = new MultiArticleField() { FieldName = "Relevance" };                          
                 int id = 0;
 
@@ -157,6 +163,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 }
             }
 
+            var relevanceLoaded = sw.ElapsedMilliseconds;
+
             IModelPostProcessor processor = new HierarchySorter(new HierarchySorterParameter
             {
                 Domain = 100,
@@ -169,11 +177,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             product = processor.ProcessModel(product);
 
+            var hierarchySorted = sw.ElapsedMilliseconds;
+
             product.AddArticle("Diagnostics",
                 new Article()
                     .AddPlainField("ProductLoaded", productLoadedIn, "Продукт загружен")
+                    .AddPlainField("ProductLocalized", productLocalized, "Продукт локализован")
                     .AddPlainField("ControlLoaded", controlLoadedIn, "Карточка получена")
-                    .AddPlainField("RelevanceLoaded", sw.ElapsedMilliseconds, "Актуальность получена")
+                    .AddPlainField("RelevanceLoaded", relevanceLoaded, "Актуальность получена")
+                    .AddPlainField("HierarchySorted", hierarchySorted, "Иерархия отсортирована")
                     .AddPlainField("Stopwatch", sw));
 
 
@@ -186,11 +198,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         [RequireCustomAction]
         public ActionResult GetXml(int content_item_id, bool live = false)
         {
-            var product = ObjectFactoryBase.Resolve<IProductService>().GetProductById(content_item_id, live);
+            var product = _productService.GetProductById(content_item_id, live);
             if (product == null)
             {
                 ViewBag.Message = "Продукт не найден.";
-                return View();
+                return View("GetXml");
             }
 
             var filter = live ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
@@ -202,23 +214,22 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         public ActionResult GetProductData(int content_item_id, string formatter, bool live = false, string lang = null, bool simple = false)
         {
-            var service = ObjectFactoryBase.Resolve<IProductService>();
 
             Article product = null;
                 
             if (simple)
             {
-                product = service.GetSimpleProductsByIds(new[] { content_item_id }, live).FirstOrDefault();
+                product = _productService.GetSimpleProductsByIds(new[] { content_item_id }, live).FirstOrDefault();
             }
             else
             {
-                product = service.GetProductById(content_item_id, live);
+                product = _productService.GetProductById(content_item_id, live);
             }                
 
             if (product == null)
             {
                 ViewBag.Message = "Продукт не найден.";
-                return View();
+                return View(formatter);
             }
 
             if (lang != null)
@@ -268,7 +279,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             _versionedCacheProvider.Invalidate(oneTimeKey);
 
-            var product = ObjectFactoryBase.Resolve<IProductService>().GetProductById(content_item_id, live);
+            var product = _productService.GetProductById(content_item_id, live);
 
             if (product == null)
                 return HttpNotFound("Продукт не найден.");

@@ -85,7 +85,9 @@ namespace QA.Core.DPC.Loader.Services
 
         public Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures)
         {
-            return cultures.ToDictionary(c => c, c => Localize(product, c));
+            return (cultures.Length == 1) 
+                ? new Dictionary<CultureInfo, Article>() {{ cultures[0], product }} 
+                : cultures.ToDictionary(c => c, c => Localize(product, c));
         }
 
         public CultureInfo[] GetCultures()

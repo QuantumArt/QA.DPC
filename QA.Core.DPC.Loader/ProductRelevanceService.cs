@@ -8,6 +8,8 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using System.Globalization;
+using QA.Core.Logger;
+using System.Diagnostics;
 
 namespace QA.Core.DPC.Loader
 {
@@ -17,6 +19,7 @@ namespace QA.Core.DPC.Loader
 		private readonly IArticleFormatter _formatter;	
         private readonly Func<bool, CultureInfo, IConsumerMonitoringService> _consumerMonitoringServiceFunc;
         private readonly IProductLocalizationService _localisationService;
+        private readonly ILogger _logger;
 
         private string GetHash(string data)
         {
@@ -36,7 +39,8 @@ namespace QA.Core.DPC.Loader
 		public ProductRelevanceService(
             IArticleFormatter formatter,
             Func<bool, CultureInfo, IConsumerMonitoringService> consumerMonitoringServiceFunc,
-            IProductLocalizationService localisationService
+            IProductLocalizationService localisationService,
+            ILogger logger
             )
         {
 			if (formatter == null)
@@ -45,6 +49,7 @@ namespace QA.Core.DPC.Loader
 			_formatter = formatter;
             _consumerMonitoringServiceFunc = consumerMonitoringServiceFunc;
             _localisationService = localisationService;
+            _logger = logger;
         }
 
         public RelevanceInfo[] GetProductRelevance(Article product, bool isLive)
@@ -57,6 +62,8 @@ namespace QA.Core.DPC.Loader
 
         private RelevanceInfo GetRelevance(Article localizedProduct, CultureInfo culture, bool isLive)
         {
+            var sw = new Stopwatch();
+            sw.Start();
             var consumerMonitoringService = _consumerMonitoringServiceFunc(isLive, culture);
 
             if (consumerMonitoringService == null)
@@ -74,12 +81,20 @@ namespace QA.Core.DPC.Loader
             
             var consumerProductInfo = consumerMonitoringService.GetProductInfo(localizedProduct.Id);
 
+            sw.Stop();
+            _logger.Debug("Relevance: Product info receiving for {1} took {0} sec", sw.Elapsed.TotalSeconds, localizedProduct.Id);
+
             if (consumerProductInfo != null)
             {
+                sw.Reset();
+                sw.Start();
                 relevanceInfo.LastPublished = consumerProductInfo.Updated;
                 relevanceInfo.LastPublishedUserName = consumerProductInfo.LastPublishedUserName;
 
                 var allArticlesNeededToCheck = GetAllProductChildAtriclesToPublish(localizedProduct).ToArray();
+
+                sw.Stop();
+                _logger.Debug("Relevance: Status checking for {1} took {0} sec", sw.Elapsed.TotalSeconds, localizedProduct.Id);
 
                 if (isLive && allArticlesNeededToCheck.Any(x => !x.IsPublished))
                 {
@@ -87,9 +102,22 @@ namespace QA.Core.DPC.Loader
                 }
                 else
                 {
+                    sw.Reset();
+                    sw.Start();
+
                     string localizedProductData = _formatter.Serialize(localizedProduct, ArticleFilter.DefaultFilter, true);
 
+                    sw.Stop();
+                    _logger.Debug("Relevance: Product serializing for {1} took {0} sec", sw.Elapsed.TotalSeconds, localizedProduct.Id);
+
+
+                    sw.Reset();
+                    sw.Start();
+
                     string localizedProductHash = GetHash(localizedProductData);
+
+                    sw.Stop();
+                    _logger.Debug("Relevance: Hash computing for {1} took {0} sec", sw.Elapsed.TotalSeconds, localizedProduct.Id);
 
                     if (localizedProductHash == consumerProductInfo.Hash)
                     {
