@@ -24,9 +24,9 @@ export class EditorController {
 
     if (this._editorSettings.ArticleId > 0) {
       const response = await fetch(
-        `${this._rootUrl}/ProductEditor/GetEditorData_Test${this._query}&articleId=${
-          this._editorSettings.ArticleId
-        }`
+        `${this._rootUrl}/ProductEditor/GetEditorData_Test${this._query}&productDefinitionId=${
+          this._editorSettings.ProductDefinitionId
+        }&articleId=${this._editorSettings.ArticleId}`
       );
       if (!response.ok) {
         throw new Error(await response.text());

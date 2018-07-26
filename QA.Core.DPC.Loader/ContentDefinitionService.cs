@@ -12,18 +12,17 @@ using Quantumart.QPublishing.Info;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
-using Content = QA.Core.Models.Configuration.Content;
 using Quantumart.QP8.BLL;
+using Content = QA.Core.Models.Configuration.Content;
 
 namespace QA.Core.DPC.Loader
 {
     public class ContentDefinitionService : IContentDefinitionService
 	{
-		#region Константы
-		
-		private const string FIELD_NAME_CONTENT = "Content";
+        private const string FIELD_NAME_CONTENT = "Content";
 		private const string FIELD_NAME_TITLE = "Title";
 		private const string FIELD_NAME_XML_DEF = "XmlDefinition";
+        private const string FIELD_NAME_EDITOR_VIEW_PATH = "EditorViewPath";
         private const string FIELD_NAME_APPLY_TO_TYPES = "ApplyToTypes";
 		private const string FIELD_NAME_SLUG = "Slug";
 		private const string FIELD_NAME_VERSION = "Version";
@@ -31,20 +30,12 @@ namespace QA.Core.DPC.Loader
 		private const string FIELD_NAME_TYPE = "Type";
 		private const string FIELD_NAME_FILTER = "Filter";
 
-		#endregion
-
-		#region Глобальные переменные
-
 		private readonly ISettingsService _settingsService;
 		private readonly IVersionedCacheProvider _cacheProvider;
 		private readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
 		private readonly ILogger _logger;
 		private readonly IArticleService _articleService;
 		private readonly string _connectionString;
-
-		#endregion
-
-		#region Конструкторы
 
 		public ContentDefinitionService(ISettingsService settingsService,
 			IVersionedCacheProvider cacheProvider,
@@ -58,8 +49,6 @@ namespace QA.Core.DPC.Loader
 			_articleService = articleService;
 			_connectionString = connectionProvider.GetConnection(); 
 		}
-
-        #endregion
 
         #region IContentDefinitionService
 
@@ -206,7 +195,29 @@ namespace QA.Core.DPC.Loader
 			}		
 		}
 
-		public string GetControlDefinition(int contentId, int productTypeId)
+        public EditorDefinition GetEditorDefinition(int productTypeId, int contentId, bool isLive = false)
+        {
+            int xamlContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
+
+            var fieldsByName = GetDefinitionFields(xamlContentId, contentId, productTypeId, isLive, forEditor: true);
+
+            if (fieldsByName != null
+                && fieldsByName.TryGetValue(FIELD_NAME_XML_DEF, out string xmlDefinition)
+                && fieldsByName.TryGetValue(nameof(Article.Id), out string productDefinitionId)
+                && fieldsByName.TryGetValue(FIELD_NAME_EDITOR_VIEW_PATH, out string editorViewPath))
+            {
+                return new EditorDefinition
+                {
+                    Content = (Content)XamlConfigurationParser.CreateFrom(xmlDefinition),
+                    ProductDefinitionId = Int32.Parse(productDefinitionId),
+                    EditorViewPath = editorViewPath
+                };
+            }
+
+            return null;
+        }
+
+        public string GetControlDefinition(int contentId, int productTypeId)
 		{
 			_logger.Debug("Запрошен контрол для contentId: {0},  productTypeId: {1}", contentId, productTypeId);
 
@@ -248,35 +259,7 @@ namespace QA.Core.DPC.Loader
 
 			return article.FieldValues.Single(x => x.Field.Name == FIELD_NAME_XML_DEF).Value;
 		}
-
-        /// <summary>
-        /// Получить словарь со значениями полей контента ProductDefinition соответствующий
-        /// контенту <paramref name="contentId"/> и типу продукта <paramref name="productTypeId"/>.
-        /// </summary>
-        public IReadOnlyDictionary<string, string> GetDefinitionFields(int productTypeId, int contentId, bool isLive = false)
-        {
-            int xamlContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
-
-            return GetDefinitionFields(xamlContentId, contentId, productTypeId, isLive);
-        }
-
-        /// <summary>
-        /// Получить словарь со значениями полей контента ProductDefinition соответствующий
-        /// статье <paramref name="articleId"/>.
-        /// </summary>
-        public IReadOnlyDictionary<string, string> GetDefinitionFields(int articleId, bool isLive = false)
-        {
-            _articleService.IsLive = isLive;
-
-            var article = _articleService.Read(articleId);
-
-            var fieldsByName = article.FieldValues.ToDictionary(fv => fv.Field.Name, fv => fv.Value);
-
-            fieldsByName[nameof(Article.Id)] = article.Id.ToString();
-
-            return fieldsByName;
-        }
-
+        
         public void SaveDefinition(int content_item_id, string xml)
 		{
 			using (_articleService.CreateQpConnectionScope())
@@ -294,7 +277,7 @@ namespace QA.Core.DPC.Loader
         #region Закрытые методы
 
         private Dictionary<string, string> GetDefinitionFields(
-            int xamlContentId, int contentId, int productTypeId, bool isLive = false)
+            int xamlContentId, int contentId, int productTypeId, bool isLive = false, bool forEditor = false)
         {
             string keyInCache = $"{nameof(GetDefinitionFields)}_{xamlContentId}_{productTypeId}_{contentId}_{isLive}";
 
@@ -330,10 +313,31 @@ namespace QA.Core.DPC.Loader
                                 && a.RelatedItems.Intersect(typesIds).Any()));
                     }
 
-                    var definition = definitions.FirstOrDefault();
+                    definitions = definitions.ToArray();
+
+                    Article definition;
+
+                    if (forEditor)
+                    {
+                        definition = definitions.FirstOrDefault(d => d.FieldValues
+                            .Any(f => f.Field.Name == FIELD_NAME_EDITOR_VIEW_PATH
+                                && !String.IsNullOrWhiteSpace(f.Value)));
+                    }
+                    else
+                    {
+                        definition = definitions.FirstOrDefault(d => d.FieldValues
+                            .Any(f => f.Field.Name == FIELD_NAME_EDITOR_VIEW_PATH
+                                && String.IsNullOrWhiteSpace(f.Value)));
+                    }
+                    
                     if (definition == null)
                     {
-                        return null;
+                        definition = definitions.FirstOrDefault();
+
+                        if (definition == null)
+                        {
+                            return null;
+                        }
                     }
 
                     var fieldsByName = definition.FieldValues.ToDictionary(fv => fv.Field.Name, fv => fv.Value);
