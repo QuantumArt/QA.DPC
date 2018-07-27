@@ -47,9 +47,9 @@ namespace QA.Core.DPC.Loader
             return ArticleService.Read(articleId, contentId, true, excludeArchive);
         }
 
-        public virtual IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
+        public virtual IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true, string filter = "")
 		{
-			return ArticleService.List(contentId, ids, excludeArchive);
+			return ArticleService.List(contentId, ids, excludeArchive, filter);
 		}
 
 		public string GetLinkedItems(int linkId, int id, bool excludeArchive = true)

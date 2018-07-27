@@ -126,7 +126,7 @@ namespace QA.ProductCatalog.SiteSyncWebHost.Controllers
 
         public ActionResult Index()
         {
-            return View();
+            return View("Send");
         }
     }
 }

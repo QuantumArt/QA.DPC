@@ -8,15 +8,12 @@
 	<meta name="app" content="dpc" />
 	@Styles.Render("~/content/site")
 
-	@this.RenderSection("jquery",
-	@<text>
-		@Scripts.Render("~/bundles/jquery")
-	</text>)
+	@RenderSection("jquery", false)
 
 	@Scripts.Render("~/bundles/scripts")
 	@RenderSection("head", false)
 	<script>
-        Url.SetRootPath("@Url.Content("~/")");
+		Url.SetRootPath("@Url.Content("~/")");
 		if (!window.console) {
 			window.console = {};
 			window.console.log = function () { };
@@ -24,16 +21,22 @@
 		}
 
 		@if (!string.IsNullOrEmpty(QA.Core.Web.Qp.QpHelper.HostId))
-        {
-        <text>
+		{
+			<text>
 		window.name = '@(QA.Core.Web.Qp.QpHelper.HostId)';
-		</text>
-        }
+			</text>
+		}
 	</script>
 </head>
 <body>
-	<div class="loadingLayer hidden"></div>
-	@RenderBody()
-	@RenderSection("scripts", false)
+<div class="loadingLayer hidden"></div>
+@RenderBody()
+@RenderSection("scripts", false)
 </body>
 </html>
+
+@section jquery {
+	<text>
+		@Scripts.Render("~/bundles/jquery")
+	</text>	
+}

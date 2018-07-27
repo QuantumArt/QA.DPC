@@ -54,7 +54,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
         }
 
 
-        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
+        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true, string filter = "")
 		{
 			var token = CallMethod("List", "contentId = {0}, ids = {1}", contentId, string.Join(",", ids));
 			var result = _articleService.List(contentId, ids, excludeArchive);

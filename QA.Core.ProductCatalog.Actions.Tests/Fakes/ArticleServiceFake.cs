@@ -46,7 +46,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
             return article;
         }
 
-        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
+        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true, string filter = "")
 		{
 			foreach (int id in ids)
 			{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
@@ -66,23 +67,45 @@ namespace QA.Core.DPC.Loader
 
 		public string SerializeProduct(Article article, IArticleFilter filter, bool includeRegionTags = false)
 		{
-		    string productJson = JsonConvert.SerializeObject(ConvertArticle(article, filter), Formatting.Indented);
+		    var sw = new Stopwatch();
+            sw.Start();
+            var started = sw.Elapsed.TotalSeconds;
+            var convertedArticle = ConvertArticle(article, filter);
+            sw.Stop();
+            _logger.Debug("Product {1} conversion took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
+            var result = "";
+
+            sw.Reset();
+            sw.Start();
+            string productJson = JsonConvert.SerializeObject(convertedArticle, Formatting.Indented);
+            sw.Stop();
+            _logger.Debug("Product {1} serializing took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
+
+
 			var regionField = article.GetField("Regions") as MultiArticleField;
 
-			if (includeRegionTags && regionField != null)
-		    {
+            if (includeRegionTags && regionField != null)
+            {
+                sw.Reset();
+                sw.Start();                
+                
                 int[] regionIds = regionField.Items.Keys.ToArray();
 
-		        TagWithValues[] tags = _regionTagReplaceService.GetRegionTagValues(productJson, regionIds);
+                TagWithValues[] tags = _regionTagReplaceService.GetRegionTagValues(productJson, regionIds);
 
-		        string tagsJson = JsonConvert.SerializeObject(tags,
-					Formatting.Indented,
-		            new JsonSerializerSettings {ContractResolver = new CamelCasePropertyNamesContractResolver()});
+                string tagsJson = JsonConvert.SerializeObject(tags,
+                    Formatting.Indented,
+                    new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 
-                return $"{{ \"{_productPropertyName}\" : {productJson}, \"{_regionTagsPropertyName}\" : {tagsJson} }}";
-		    }
+                sw.Stop();
+                _logger.Debug("Product {1} enrichment with regional tags took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
+
+                result = $"{{ \"{_productPropertyName}\" : {productJson}, \"{_regionTagsPropertyName}\" : {tagsJson} }}";
+            }
             else
-				return $"{{ \"{_productPropertyName}\" : {productJson} }}";
+                result = $"{{ \"{_productPropertyName}\" : {productJson} }}";
+
+            return result;
 		}
 
 	    private const string _productPropertyName = "product";
@@ -470,51 +493,45 @@ namespace QA.Core.DPC.Loader
 
 			switch (plainArticleField.PlainFieldType)
 			{
-				case PlainFieldType.File:
-					{
-						if (string.IsNullOrWhiteSpace(plainArticleField.Value))
-							return null;
+                case PlainFieldType.File:
+                    {
+                        if (string.IsNullOrWhiteSpace(plainArticleField.Value))
+                            return null;
 
-						string path = Common.GetFileFromQpFieldPath(_dbConnector, plainArticleField.FieldId.Value, plainArticleField.Value);
+                        string path = Common.GetFileFromQpFieldPath(_dbConnector, plainArticleField.FieldId.Value, plainArticleField.Value);
 
-						int size = 0;
+                        int size = 0;
 
-						try
-						{
-							var fi = new FileInfo(path);
+                        if (File.Exists(path))
+                        {
+                            size = (int)new FileInfo(path).Length;
+                        }
 
-							size = (int)fi.Length;
-						}
-						catch (Exception ex)
-						{
-							_logger.ErrorException("DBConnector error", ex);
-						}
+                        return new PlainFieldFileInfo
+                        {
+                            Name = plainArticleField.Value.Contains("/")
+                                    ? plainArticleField.Value.Substring(plainArticleField.Value.LastIndexOf("/") + 1)
+                                    : plainArticleField.Value,
+                            FileSizeBytes = size,
+                            AbsoluteUrl = string.Format(@"{0}/{1}",
+                                _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
+                                plainArticleField.Value)
+                        };
+                    }
 
-						return new PlainFieldFileInfo
-						{
-							Name = plainArticleField.Value.Contains("/")
-									? plainArticleField.Value.Substring(plainArticleField.Value.LastIndexOf("/") + 1)
-									: plainArticleField.Value,
-							FileSizeBytes = size,
-							AbsoluteUrl = string.Format(@"{0}/{1}",
-								_dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
-								plainArticleField.Value)
-						};
-					}
+                case PlainFieldType.Image:
+                case PlainFieldType.DynamicImage:
+                	if (string.IsNullOrWhiteSpace(plainArticleField.Value))
+                		return null;
 
-				case PlainFieldType.Image:
-				case PlainFieldType.DynamicImage:
-					if (string.IsNullOrWhiteSpace(plainArticleField.Value))
-						return null;
+                	return string.Format(@"{0}/{1}",
+                		_dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
+                		plainArticleField.Value);
 
-					return string.Format(@"{0}/{1}",
-						_dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
-						plainArticleField.Value);
+                case PlainFieldType.Boolean:
+                	return (decimal)plainArticleField.NativeValue == 1;
 
-				case PlainFieldType.Boolean:
-					return (decimal)plainArticleField.NativeValue == 1;
-
-				default:
+                default:
 					return plainArticleField.NativeValue;
 			}
 		}
