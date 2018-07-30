@@ -1,21 +1,20 @@
 /* global module */
 /* eslint-disable prefer-arrow-callback, no-empty-function, line-comment-position, object-shorthand */
-(function(factory) {
+// prettier-ignore
+(function (factory) {
+  window.Quantumart = window.Quantumart || {};
+  window.Quantumart.QP8 = window.Quantumart.QP8 || {};
+  window.Quantumart.QP8.Interaction = window.Quantumart.QP8.Interaction || factory();
   // @ts-ignore
-  if (typeof module === "object" && module.exports) {
-    module.exports = factory();
-  } else {
-    window.Quantumart = window.Quantumart || {};
-    window.Quantumart.QP8 = window.Quantumart.QP8 || {};
-    window.Quantumart.QP8.Interaction =
-      window.Quantumart.QP8.Interaction || factory();
+  if (typeof module === 'object' && module.exports) {
+    module.exports = window.Quantumart.QP8.Interaction;
   }
-})(function() {
+}(function () {
   // class BackendExternalMessage (сообщения для передачи в Backend)
-  const BackendExternalMessage = function() {};
+  const BackendExternalMessage = function () { };
 
   BackendExternalMessage.prototype = {
-    type: "", // Тип
+    type: '', // Тип
     hostUID: null, // UID хоста
     data: null // параметры
   };
@@ -28,16 +27,16 @@
   };
 
   // class ExecuteActionOptions (Парамеры сообщения на выполнение BackendAction)
-  const ExecuteActionOptions = function() {};
+  const ExecuteActionOptions = function () { };
 
   ExecuteActionOptions.prototype = {
-    actionCode: "",
-    entityTypeCode: "",
+    actionCode: '',
+    entityTypeCode: '',
     parentEntityId: 0,
     entityId: 0,
 
     actionUID: null,
-    callerCallback: "",
+    callerCallback: '',
     changeCurrentTab: false,
     isWindow: false,
 
@@ -45,7 +44,7 @@
   };
 
   // class ArticleFormState (Параметры для инициализации формы статьи)
-  const ArticleFormState = function() {};
+  const ArticleFormState = function () { };
 
   ArticleFormState.prototype = {
     initFieldValues: null, // значения для инициализации полей (массив ArticleFormState.InitFieldValue)
@@ -56,29 +55,29 @@
   };
 
   // class ArticleFormState.InitFieldValue (значение поля)
-  ArticleFormState.InitFieldValue = function() {};
+  ArticleFormState.InitFieldValue = function () { };
 
   ArticleFormState.InitFieldValue.prototype = {
-    fieldName: "", // имя поля
+    fieldName: '', // имя поля
     value: null // значение (зависит от типа)
   };
 
   // class OpenSelectWindowOtions (Парамеры сообщения на открытие окна выбора из списка)
-  const OpenSelectWindowOptions = function() {};
+  const OpenSelectWindowOptions = function () { };
 
   OpenSelectWindowOptions.prototype = {
-    selectActionCode: "",
-    entityTypeCode: "",
+    selectActionCode: '',
+    entityTypeCode: '',
     parentEntityId: 0,
     isMultiple: false,
     selectedEntityIDs: null,
     selectWindowUID: null, // ID для идентификации окна со списком
-    callerCallback: "",
+    callerCallback: '',
     options: null
   };
 
   // class BackendEventObserver (Observer сообщений от хоста)
-  const BackendEventObserver = function(callbackProcName, callback) {
+  const BackendEventObserver = function (callbackProcName, callback) {
     this.callbackProcName = callbackProcName;
     this.callback = callback;
     pmrpc.register({
@@ -89,9 +88,9 @@
   };
 
   BackendEventObserver.prototype = {
-    callbackProcName: "",
+    callbackProcName: '',
     callback: null,
-    dispose: function() {
+    dispose: function () {
       pmrpc.unregister(this.callback);
     }
   };
@@ -104,8 +103,8 @@
   };
 
   BackendEventObserver.HostUnbindingReason = {
-    Closed: "closed",
-    Changed: "changed"
+    Closed: 'closed',
+    Changed: 'changed'
   };
 
   return {
@@ -118,7 +117,7 @@
     BackendEventTypes: BackendEventObserver.EventType, // Типы событий backend'а
 
     // Выполнить BackendAction
-    executeBackendAction: function(executeOtions, hostUID, destination) {
+    executeBackendAction: function (executeOtions, hostUID, destination) {
       const message = new BackendExternalMessage();
       message.type = BackendExternalMessage.Types.ExecuteAction;
       message.hostUID = hostUID;
@@ -131,7 +130,7 @@
     },
 
     // Закрыть Backend хост
-    closeBackendHost: function(actionUID, hostUID, destination) {
+    closeBackendHost: function (actionUID, hostUID, destination) {
       const message = new BackendExternalMessage();
       message.type = BackendExternalMessage.Types.CloseBackendHost;
       message.hostUID = hostUID;
@@ -144,7 +143,7 @@
     },
 
     // Открытие всплывающего окна для выбора значения
-    openSelectWindow: function(openSelectWindowOptions, hostUID, destination) {
+    openSelectWindow: function (openSelectWindowOptions, hostUID, destination) {
       const message = new BackendExternalMessage();
       message.type = BackendExternalMessage.Types.OpenSelectWindow;
       message.hostUID = hostUID;
@@ -157,7 +156,7 @@
     },
 
     // Проверка, что веб-приложение выполняется внутри бекэнда
-    checkHost: function(hostUID, destination, callback) {
+    checkHost: function (hostUID, destination, callback) {
       let callbackIsCalled = false;
       const message = new BackendExternalMessage();
       message.type = BackendExternalMessage.Types.CheckHost;
@@ -167,13 +166,13 @@
         destination: destination,
         publicProcedureName: message.hostUID,
         params: [message],
-        onSuccess: function(args) {
+        onSuccess: function (args) {
           if (!callbackIsCalled) {
             callbackIsCalled = true;
             callback({ success: true, hostVersion: args.returnValue });
           }
         },
-        onError: function(args) {
+        onError: function (args) {
           if (!callbackIsCalled) {
             callbackIsCalled = true;
             callback({ success: false, error: args.description });
@@ -182,4 +181,4 @@
       });
     }
   };
-});
+}));
