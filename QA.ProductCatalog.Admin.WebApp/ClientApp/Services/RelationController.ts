@@ -2,7 +2,7 @@ import "../../Scripts/pmrpc";
 import QP8 from "../../Scripts/qp/QP8BackendApi.Interaction";
 import qs from "qs";
 import { inject } from "react-ioc";
-import { untracked, runInAction } from "mobx";
+import { untracked, runInAction, IObservableArray } from "mobx";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataContext } from "Services/DataContext";
@@ -11,15 +11,10 @@ import {
   SingleRelationFieldSchema,
   MultiRelationFieldSchema
 } from "Models/EditorSchemaModels";
-import {
-  ArticleObject,
-  ExtensionObject,
-  ArticleSnapshot,
-  MutableStoreSnapshot
-} from "Models/EditorDataModels";
+import { ArticleObject, ExtensionObject, ArticleSnapshot } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { command } from "Utils/Command";
-import { ObservableArray } from "../../node_modules/mobx/lib/types/observablearray";
+import { isArray } from "Utils/TypeChecks";
 
 export class RelationController {
   @inject private _editorSettings: EditorSettings;
@@ -30,16 +25,16 @@ export class RelationController {
   private _query = document.location.search;
   private _rootUrl = document.head.getAttribute("root-url") || "";
   private _hostUid = qs.parse(document.location.search).hostUID as string;
-  private _resolvePromise: (articeIds: number[]) => void;
+  private _resolvePromise: (articleIds: number[] | "CANCEL") => void;
   private _callbackUid = Math.random()
     .toString(36)
     .slice(2);
 
   private _observer = new QP8.BackendEventObserver(this._callbackUid, (eventType, args) => {
     if (eventType === QP8.BackendEventTypes.EntitiesSelected) {
-      this._resolvePromise(args.selectedEntityIDs || []);
+      this._resolvePromise(isArray(args.selectedEntityIDs) ? args.selectedEntityIDs : "CANCEL");
     } else {
-      this._resolvePromise([]);
+      this._resolvePromise("CANCEL");
     }
   });
 
@@ -51,10 +46,18 @@ export class RelationController {
     model: ArticleObject | ExtensionObject,
     fieldSchema: SingleRelationFieldSchema
   ) {
-    const [selectedArticle] = await this.selectArticles(fieldSchema.Content, false);
-    if (selectedArticle) {
+    const existingArticleIds = untracked(() => {
+      const existingArticle: ArticleObject = model[fieldSchema.FieldName];
+      return existingArticle && existingArticle._ServerId > 0 ? [existingArticle._ServerId] : [];
+    });
+    const selectedArticles = await this.selectArticles(
+      existingArticleIds,
+      fieldSchema.Content,
+      false
+    );
+    if (selectedArticles !== "CANCEL") {
       runInAction("selectRelation", () => {
-        model[fieldSchema.FieldName] = selectedArticle;
+        model[fieldSchema.FieldName] = selectedArticles[0] || null;
       });
     }
   }
@@ -63,57 +66,71 @@ export class RelationController {
     model: ArticleObject | ExtensionObject,
     fieldSchema: MultiRelationFieldSchema
   ) {
-    const selectedArticles = await this.selectArticles(fieldSchema.Content, true);
-    if (selectedArticles.length > 0) {
+    const existingArticleIds = untracked(() => {
+      const existingArticles: ArticleObject[] = model[fieldSchema.FieldName];
+      return existingArticles.map(article => article._ServerId).filter(id => id > 0);
+    });
+    const selectedArticles = await this.selectArticles(
+      existingArticleIds,
+      fieldSchema.Content,
+      true
+    );
+    if (selectedArticles !== "CANCEL") {
       runInAction("selectRelations", () => {
-        const modelArticles = model[fieldSchema.FieldName] as ObservableArray<ArticleObject>;
-        const existingArticles = new Set(modelArticles.peek());
-        const articlesToAdd = selectedArticles.filter(article => !existingArticles.has(article));
-        modelArticles.push(...articlesToAdd);
+        const modelArticles: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
+        const newlyCreatedArticles = modelArticles.filter(article => article._ServerId === null);
+
+        modelArticles.clear();
+        modelArticles.push(...selectedArticles);
+        modelArticles.push(...newlyCreatedArticles);
       });
     }
   }
 
-  private async selectArticles(contentSchema: ContentSchema, multiple) {
+  private async selectArticles(
+    existingArticleIds: number[],
+    contentSchema: ContentSchema,
+    multiple: boolean
+  ) {
     const options = {
       selectActionCode: multiple ? "multiple_select_article" : "select_article",
       entityTypeCode: "article",
       parentEntityId: contentSchema.ContentId,
+      selectedEntityIDs: existingArticleIds,
       isMultiple: multiple,
       callerCallback: this._callbackUid
     };
 
     QP8.openSelectWindow(options, this._hostUid, window.parent);
 
-    const selectedArticleIds = await new Promise<number[]>(resolve => {
+    const selectedArticleIds = await new Promise<number[] | "CANCEL">(resolve => {
       this._resolvePromise = resolve;
     });
 
-    const articleIdsToLoad = untracked(() => {
-      const existingArticles = this._dataContext.store[contentSchema.ContentName];
-      return selectedArticleIds.filter(id => !existingArticles.has(String(id)));
-    });
+    if (selectedArticleIds === "CANCEL") {
+      return "CANCEL";
+    }
 
-    if (articleIdsToLoad.length === 0) {
+    const articleToLoadIds = selectedArticleIds.filter(id => !existingArticleIds.includes(id));
+
+    if (articleToLoadIds.length === 0) {
       return this.getSelectedArticles(contentSchema, selectedArticleIds);
     }
 
-    await this.loadSelectedArticles(contentSchema, articleIdsToLoad);
+    await this.loadSelectedArticles(contentSchema, articleToLoadIds);
 
     return this.getSelectedArticles(contentSchema, selectedArticleIds);
   }
 
   private getSelectedArticles(contentSchema: ContentSchema, selectedArticleIds: number[]) {
     return untracked(() => {
-      const existingArticles = this._dataContext.store[contentSchema.ContentName];
-      return selectedArticleIds.map(id => existingArticles.get(String(id)));
+      const contextArticles = this._dataContext.store[contentSchema.ContentName];
+      return selectedArticleIds.map(id => contextArticles.get(String(id)));
     });
   }
 
   @command
-  private async loadSelectedArticles(contentSchema: ContentSchema, articleIdsToLoad: number[]) {
-    const existingArticleIds = this.getExistingArticleIdsByContent();
-
+  private async loadSelectedArticles(contentSchema: ContentSchema, articleToLoadIds: number[]) {
     const response = await fetch(
       `${this._rootUrl}/ProductEditor/LoadPartialProduct${this._query}`,
       {
@@ -125,8 +142,7 @@ export class RelationController {
         body: JSON.stringify({
           ProductDefinitionId: this._editorSettings.ProductDefinitionId,
           ContentPath: contentSchema.ContentPath,
-          ArticleIds: articleIdsToLoad,
-          IgnoredArticleIdsByContent: existingArticleIds
+          ArticleIds: articleToLoadIds
         })
       }
     );
@@ -137,38 +153,6 @@ export class RelationController {
 
     const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
 
-    this.removeExistingArticlesFromSnapshot(dataSnapshot, existingArticleIds);
-
     this._dataContext.mergeArticles(dataSnapshot);
   }
-
-  private getExistingArticleIdsByContent() {
-    const existingArticleIds: ArticleIdsByContent = {};
-
-    untracked(() => {
-      Object.entries(this._dataContext.store).forEach(([contentName, articlesById]) => {
-        existingArticleIds[contentName] = [...articlesById.keys()].map(Number);
-      });
-    });
-
-    return existingArticleIds;
-  }
-
-  private removeExistingArticlesFromSnapshot(
-    dataSnapshot: MutableStoreSnapshot,
-    existingArticleIds: ArticleIdsByContent
-  ) {
-    Object.entries(existingArticleIds).forEach(([contentName, articleIds]) => {
-      const articleSnapshotsById = dataSnapshot[contentName];
-      if (articleSnapshotsById) {
-        articleIds.forEach(id => {
-          delete articleSnapshotsById[id];
-        });
-      }
-    });
-  }
-}
-
-interface ArticleIdsByContent {
-  [contentName: string]: number[];
 }

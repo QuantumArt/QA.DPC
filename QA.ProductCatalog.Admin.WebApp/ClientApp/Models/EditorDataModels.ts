@@ -44,12 +44,6 @@ export interface StoreSnapshot {
   };
 }
 
-export interface MutableStoreSnapshot {
-  [contentName: string]: {
-    [articleId: string]: ArticleSnapshot;
-  };
-}
-
 export interface ArticleSnapshot {
   readonly [field: string]: any;
   /**

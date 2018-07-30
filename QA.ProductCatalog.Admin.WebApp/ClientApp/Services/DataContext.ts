@@ -53,6 +53,7 @@ export class DataContext {
 
   @action
   public mergeArticles(storeSnapshot: StoreSnapshot) {
+    // TODO: слияние с учетом isTouched | isChanged
     Object.entries(storeSnapshot).forEach(([contentName, articlesById]) => {
       const collection = this.store[contentName];
       if (collection) {
