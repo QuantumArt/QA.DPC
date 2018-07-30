@@ -108,18 +108,11 @@ namespace QA.Core.DPC.Loader
         }
 
         /// <summary>
-        /// Загрузить список статей <paramref name="articleIds"/>
-        /// игнорируя уже загруженные статьи <paramref name="ignoredArticleIdsByContent"/>
+        /// Загрузить список статей <paramref name="articleIds"/> по описанию продукта <paramref name="content"/>
         /// </summary>
-        /// <param name="ignoredArticleIdsByContent">
-        /// Списки Id уже загруженных статей, сгруппированные по имени контента
-        /// </param>
-        public virtual Article[] GetProductsByIds(
-            Content content, int[] articleIds,
-            Dictionary<string, int[]> ignoredArticleIdsByContent, bool isLive = false)
+        public virtual Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
         {
-            // TODO: реализовать GetProductsByIds
-            // если встретился Article c уже загруженным Id — создаем вместо него `new Article(id)`
+            // TODO: профилирование и оптимизация GetProductsByIds
             return articleIds
                 .Select(id => GetProductById(id, isLive, new ProductDefinition { StorageSchema = content }))
                 .ToArray();

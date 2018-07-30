@@ -219,8 +219,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             Content partialContent = _editorPartialContentService
                 .FindContentByPath(rootContent, request.ContentPath);
 
-            Article[] articles = _productService.GetProductsByIds(
-                partialContent, request.ArticleIds, request.IgnoredArticleIdsByContent, isLive);
+            Article[] articles = _productService
+                .GetProductsByIds(partialContent, request.ArticleIds, isLive);
             
             IArticleFilter filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
@@ -328,11 +328,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             /// </summary>
             [Required]
             public int[] ArticleIds { get; set; }
-
-            /// <summary>
-            /// Списки Id уже загруженных статей, сгруппированные по имени контента
-            /// </summary>
-            public Dictionary<string, int[]> IgnoredArticleIdsByContent { get; set; } = new Dictionary<string, int[]>();
         }
 
         public class SavePartialProductRequest : PartialProductRequest

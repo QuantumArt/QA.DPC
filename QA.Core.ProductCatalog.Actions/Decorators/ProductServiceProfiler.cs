@@ -46,12 +46,10 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			return result;
 		}
 
-        public Article[] GetProductsByIds(
-            Content content, int[] articleIds,
-            Dictionary<string, int[]> ignoredArticleIdsByContent, bool isLive = false)
+        public Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
         {
             var token = CallMethod();
-            var result = _productService.GetProductsByIds(content, articleIds, ignoredArticleIdsByContent, isLive);
+            var result = _productService.GetProductsByIds(content, articleIds, isLive);
             EndMethod(token, "Article[]");
             return result;
         }

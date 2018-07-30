@@ -16,17 +16,9 @@ namespace QA.ProductCatalog.Infrastructure
         Article[] GetProductsByIds(int[] ids, bool isLive = false);
 
         /// <summary>
-        /// Загрузить список статей <paramref name="articleIds"/>
-        /// игнорируя уже загруженные статьи <paramref name="ignoredArticleIdsByContent"/>
+        /// Загрузить список статей <paramref name="articleIds"/> по описанию продукта <paramref name="content"/>
         /// </summary>
-        /// <param name="ignoredArticleIdsByContent">
-        /// Списки Id уже загруженных статей, сгруппированные по имени контента
-        /// </param>
-        Article[] GetProductsByIds(
-            Content content,
-            int[] articleIds,
-            Dictionary<string, int[]> ignoredArticleIdsByContent,
-            bool isLive = false);
+        Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false);
 
         /// <summary>
         /// Получение базовой информании о продуктах

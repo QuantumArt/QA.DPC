@@ -38,9 +38,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 			throw new NotImplementedException();
 		}
 
-        public Article[] GetProductsByIds(
-            Content content, int[] articleIds,
-            Dictionary<string, int[]> ignoredArticleIdsByContent, bool isLive = false)
+        public Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
         {
             throw new NotImplementedException();
         }
