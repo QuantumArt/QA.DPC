@@ -12,7 +12,7 @@ namespace QA.ProductCatalog.ImpactService
 
         }
 
-        public override IEnumerable<JToken> FilterProductParameters(JArray root, string region)
+        public override IEnumerable<JToken> FilterProductParameters(JArray root, string region, bool generateNewTitles)
         {
 
             var markedParams = root
@@ -23,6 +23,8 @@ namespace QA.ProductCatalog.ImpactService
                             .Contains(ParameterModifierName)).ToArray();
             var regionParams = markedParams
                 .Where(n => n.SelectTokens("Direction.Regions.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains(region)).ToArray();
+            
+            var toDelete = new HashSet<string>();
 
             if (regionParams.Length == 0)
             {
@@ -33,10 +35,9 @@ namespace QA.ProductCatalog.ImpactService
             else if (regionParams.Length > 1)
             {
                 var dirCount = new Dictionary<string, JToken>();
-                var toDelete = new List<JToken>();
                 foreach (var regionParam in regionParams)
                 {
-                    var key = regionParam.ExtractDirection().GetKey();
+                    var key = regionParam.ExtractDirection().GetKey(new DirectionExclusion() {Direction = true});
 
                     if (!dirCount.ContainsKey(key))
                     {
@@ -47,24 +48,31 @@ namespace QA.ProductCatalog.ImpactService
                         var saved = dirCount[key];
                         if (CountDirectionRegions(regionParam) < CountDirectionRegions(saved))
                         {
-                            toDelete.Add(saved);
+                            toDelete.Add(saved["Id"].ToString());
                             dirCount[key] = regionParam;
+                        }
+                        else
+                        {
+                            toDelete.Add(regionParam["Id"].ToString());
                         }
                     }
                 }
-
-                foreach (var p in toDelete)
-                {
-                    p.Remove();
-                }
             }
-
+            
+            if (toDelete.Any())
+            {
+                regionParams = regionParams.Where(n => !toDelete.Contains(n["Id"].ToString())).ToArray();
+                markedParams = markedParams.Where(n => !toDelete.Contains(n["Id"].ToString())).ToArray();               
+            }
+            
             foreach (var p in regionParams)
             {
-                p["Title"] = GenerateNewTitle(p);
+                if (generateNewTitles && p["Changed"] == null)
+                {
+                    p["Title"] = GenerateNewTitle(p);
+                }
                 p["SpecialDirection"] = true;
             }
-
 
             regionParams = regionParams.Union(markedParams.Where(n => n["Direction"] == null)).ToArray();
 
@@ -89,7 +97,7 @@ namespace QA.ProductCatalog.ImpactService
 
         private static int CountDirectionRegions(JToken countryParam)
         {
-            return countryParam.SelectTokens("Direction.Regions").Count();
+            return countryParam.SelectTokens("Direction.Regions.[?(@.Alias)].Alias").Count();
         }
 
         public override JObject Calculate(JObject tariff, JObject[] options, string homeRegion)
@@ -108,17 +116,23 @@ namespace QA.ProductCatalog.ImpactService
             var optionRoot = option.SelectToken("Parameters");
             foreach (var p in optionRoot.SelectTokens("[?(@.SpecialDirection == true)]"))
             {
-                var bpAlias = p.SelectToken("BaseParameter.Alias")?.ToString();
                 var numValueToken = p["NumValue"];
-                if (numValueToken == null) continue;
-                var toChange =
-                    tariffRoot.SelectTokens($"[?(@.BaseParameter.Alias == '{bpAlias}')]")
-                        .Where(n => n["Changed"] == null && n["SpecialDirection"] != null);
+                var bpAlias = p.SelectToken("BaseParameter.Alias")?.ToString();
+                if (numValueToken == null || bpAlias == null) continue;
+                
+                var ex = new DirectionExclusion() {Direction = true};
+                var key = p.ExtractDirection().GetKey(ex);
+                var toChange = FindByKey(tariffRoot, key, ex)
+                    .Where(n => n["Changed"] == null && n["SpecialDirection"] != null).ToArray();
 
                 foreach (var c in toChange)
                 {
                     if (c["NumValue"] != null && (int) c["NumValue"] >= (int) numValueToken)
                     {
+                        if (c["OldNumValue"] == null)
+                        {
+                            c["OldNumValue"] = c["NumValue"];
+                        }                        
                         c["NumValue"] = numValueToken;
                         c["Changed"] = true;
                     }

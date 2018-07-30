@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net471</TargetFramework>
   </PropertyGroup>
@@ -15,14 +14,12 @@
     <PackageReference Include="QA.Core" Version="3.2.1-beta1" />
     <PackageReference Include="Quantumart.QP8.BLL" Version="2.7.0-beta3" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj" />
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunner\QA.Core.ProductCatalog.ActionsRunner.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>
-
 </Project>

@@ -5,6 +5,11 @@ namespace QA.ProductCatalog.ImpactService
     public class DirectionExclusion
     {
 
+        public DirectionExclusion() : this(null)
+        {
+            
+        }
+        
         public DirectionExclusion(IEnumerable<string> excludeModifiers)
         {
             Modifiers = excludeModifiers != null ? new HashSet<string>(excludeModifiers) : new HashSet<string>();

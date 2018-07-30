@@ -17,14 +17,14 @@ namespace QA.ProductCatalog.ImpactService
         protected bool ConsolidateCallGroups { get; private set; }
        
 
-        public abstract IEnumerable<JToken> FilterProductParameters(JArray root, string code);
+        public abstract IEnumerable<JToken> FilterProductParameters(JArray root, string code, bool generateNewTitles);
 
         public virtual void FilterServicesParameters(JObject[] services, string region)
         {
             foreach (var service in services)
             {
                 var root = (JArray)service.SelectToken("Parameters");
-                var countryParams = FilterProductParameters(root, region).ToArray();
+                var countryParams = FilterProductParameters(root, region, false).ToArray();
                 countryParams = AppendParents(root, countryParams);
                 service["Parameters"] = new JArray((IEnumerable<JToken>)countryParams);
             }
