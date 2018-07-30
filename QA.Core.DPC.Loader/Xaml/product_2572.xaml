@@ -25,7 +25,7 @@
                         <PlainArticleField x:Key="TitleForFamily" ContentId="287" FieldDisplayName="Название для семейства" FieldId="1287" FieldName="TitleForFamily" PlainFieldType="String" Value="7 Гб" />
                         <PlainArticleField x:Key="CommentForFamily" ContentId="287" FieldDisplayName="Комментарий для семейства" FieldId="1288" FieldName="CommentForFamily" PlainFieldType="Textbox" Value="" />
                         <PlainArticleField x:Key="OldSiteId" ContentId="287" FieldDisplayName="OldSiteId" FieldId="1328" FieldName="OldSiteId" PlainFieldType="Numeric" Value="635564" />
-                        <MultiArticleField x:Key="Categories" ContentId="287" FieldDisplayName="Categories" FieldId="1202" FieldName="Categories" Type="M2M">
+                        <MultiArticleField x:Key="Categories" ContentId="287" FieldDisplayName="Categories" FieldId="1202" FieldName="Categories">
                             <MultiArticleField.Items>
                                 <Article x:Key="2305" Archived="False" ContentDisplayName="Категории продуктов" ContentId="304" ContentName="ProductCategory" Created="2014-04-08T16:58:42.703" Id="2305" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -53,7 +53,7 @@
                             </SingleArticleField.Item>
                         </SingleArticleField>
                         <SingleArticleField Item="{x:Null}" x:Key="MarketingSign" ContentId="287" FieldDisplayName="Маркетинговый признак" FieldId="1297" FieldName="MarketingSign" />
-                        <MultiArticleField x:Key="Modifiers" ContentId="287" FieldDisplayName="Модификаторы" FieldId="1293" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="287" FieldDisplayName="Модификаторы" FieldId="1293" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2244" Archived="False" ContentDisplayName="Модификаторы продукта" ContentId="300" ContentName="ProductModifier" Created="2014-04-08T10:25:02.347" Id="2244" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -69,7 +69,7 @@
                                 </Article>
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Images" ContentId="287" FieldDisplayName="Images" FieldId="1450" FieldName="Images" Type="M2O">
+                        <MultiArticleField x:Key="Images" ContentId="287" FieldDisplayName="Images" FieldId="1450" FieldName="Images">
                             <MultiArticleField.Items>
                                 <Article x:Key="2721" Archived="False" ContentDisplayName="Изображения продуктов" ContentId="342" ContentName="ProductImage" Created="2014-05-23T11:54:57.69" Id="2721" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -88,7 +88,7 @@
                                 </Article>
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="PreOpenParamGroups" ContentId="287" FieldDisplayName="PreOpenParamGroups" FieldId="1289" FieldName="PreOpenParamGroups" Type="M2M">
+                        <MultiArticleField x:Key="PreOpenParamGroups" ContentId="287" FieldDisplayName="PreOpenParamGroups" FieldId="1289" FieldName="PreOpenParamGroups">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -111,7 +111,7 @@
                 </Article>
             </SingleArticleField.Item>
         </SingleArticleField>
-        <MultiArticleField x:Key="Regions" ContentId="288" FieldDisplayName="Регионы" FieldId="1228" FieldName="Regions" Type="M2M">
+        <MultiArticleField x:Key="Regions" ContentId="288" FieldDisplayName="Регионы" FieldId="1228" FieldName="Regions">
             <MultiArticleField.Items>
                 <Article x:Key="1762" Archived="False" ContentDisplayName="Регионы" ContentId="294" ContentName="Region" Created="2014-04-03T13:38:23.457" Id="1762" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                     <Article.Fields>
@@ -121,7 +121,7 @@
                 </Article>
             </MultiArticleField.Items>
         </MultiArticleField>
-        <MultiArticleField x:Key="Parameters" ContentId="288" FieldDisplayName="Параметры продукта" FieldId="1193" FieldName="Parameters" Type="M2O">
+        <MultiArticleField x:Key="Parameters" ContentId="288" FieldDisplayName="Параметры продукта" FieldId="1193" FieldName="Parameters">
             <MultiArticleField.Items>
                 <Article x:Key="2574" Archived="False" ContentDisplayName="Параметры продукта" ContentId="291" ContentName="ProductParameter" Created="2014-04-17T19:27:15.9" Id="2574" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                     <Article.Fields>
@@ -154,12 +154,12 @@
                             </SingleArticleField.Item>
                         </SingleArticleField>
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -226,7 +226,7 @@
                             </SingleArticleField.Item>
                         </SingleArticleField>
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2566" Archived="False" ContentDisplayName="Модификаторы базовых параметров продукта" ContentId="339" ContentName="BaseParameterModifier" Created="2014-04-17T13:06:20.727" Id="2566" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -238,7 +238,7 @@
                                 </Article>
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -296,12 +296,12 @@
                         </SingleArticleField>
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -354,12 +354,12 @@
                         </SingleArticleField>
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -403,12 +403,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -452,12 +452,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -519,12 +519,12 @@
                             </SingleArticleField.Item>
                         </SingleArticleField>
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -592,12 +592,12 @@
                             </SingleArticleField.Item>
                         </SingleArticleField>
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -655,12 +655,12 @@
                         </SingleArticleField>
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -709,12 +709,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -753,12 +753,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -797,12 +797,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -846,12 +846,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -890,12 +890,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -934,12 +934,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -978,12 +978,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -1027,12 +1027,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2806" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-05-23T14:44:45.57" Id="2806" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -1076,12 +1076,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2806" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-05-23T14:44:45.57" Id="2806" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -1125,12 +1125,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -1169,12 +1169,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -1213,12 +1213,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -1262,12 +1262,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -1306,12 +1306,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -1355,12 +1355,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -1404,12 +1404,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2209" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-04-07T16:03:40.953" Id="2209" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -1453,12 +1453,12 @@
                         <SingleArticleField Item="{x:Null}" x:Key="BaseParamenter" ContentId="291" FieldDisplayName="Базовый параметр" FieldId="1169" FieldName="BaseParamenter" />
                         <SingleArticleField Item="{x:Null}" x:Key="Zone" ContentId="291" FieldDisplayName="Зона действия базового параметра" FieldId="1396" FieldName="Zone" />
                         <SingleArticleField Item="{x:Null}" x:Key="Direction" ContentId="291" FieldDisplayName="Направление действия базового параметра" FieldId="1397" FieldName="Direction" />
-                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers" Type="M2M">
+                        <MultiArticleField x:Key="BaseParameterModifiers" ContentId="291" FieldDisplayName="Модификаторы базового параметра" FieldId="1413" FieldName="BaseParameterModifiers">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
                         </MultiArticleField>
-                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="291" FieldDisplayName="Модификаторы" FieldId="1179" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="2806" Archived="False" ContentDisplayName="Модификаторы параметров продукта" ContentId="293" ContentName="ProductParamsModifier" Created="2014-05-23T14:44:45.57" Id="2806" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -1492,7 +1492,7 @@
             </MultiArticleField.Items>
         </MultiArticleField>
         <SingleArticleField Item="{x:Null}" x:Key="MarketingSign" ContentId="288" FieldDisplayName="Маркетинговый признак" FieldId="1296" FieldName="MarketingSign" />
-        <MultiArticleField x:Key="Modifiers" ContentId="288" FieldDisplayName="Модификаторы" FieldId="1295" FieldName="Modifiers" Type="M2M">
+        <MultiArticleField x:Key="Modifiers" ContentId="288" FieldDisplayName="Модификаторы" FieldId="1295" FieldName="Modifiers">
             <MultiArticleField.Items>
                 <Article x:Key="2225" Archived="False" ContentDisplayName="Модификаторы продукта" ContentId="300" ContentName="ProductModifier" Created="2014-04-07T20:06:24.43" Id="2225" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                     <Article.Fields>
@@ -1502,7 +1502,7 @@
                 </Article>
             </MultiArticleField.Items>
         </MultiArticleField>
-        <MultiArticleField x:Key="ModifiersMore" ContentId="288" FieldDisplayName="Архивные закладки" FieldId="1313" FieldName="ModifiersMore" Type="M2O">
+        <MultiArticleField x:Key="ModifiersMore" ContentId="288" FieldDisplayName="Архивные закладки" FieldId="1313" FieldName="ModifiersMore">
             <MultiArticleField.Items>
                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
             </MultiArticleField.Items>
@@ -1514,7 +1514,7 @@
                         <PlainArticleField x:Key="ArchivePrice" ContentId="312" FieldDisplayName="Архивная цена" FieldId="1315" FieldName="ArchivePrice" PlainFieldType="VisualEdit" Value="" />
                         <PlainArticleField x:Key="SplitInternetDeviceCount" ContentId="312" FieldDisplayName="SplitInternetDeviceCount" FieldId="1442" FieldName="SplitInternetDeviceCount" PlainFieldType="Numeric" Value="" />
                         <SingleArticleField Item="{x:Null}" x:Key="ProductFilters" ContentId="312" FieldDisplayName="Фильтры по продуктам" FieldId="1363" FieldName="ProductFilters" />
-                        <MultiArticleField x:Key="AccountTypes" ContentId="312" FieldDisplayName="AccountTypes" FieldId="1454" FieldName="AccountTypes" Type="M2M">
+                        <MultiArticleField x:Key="AccountTypes" ContentId="312" FieldDisplayName="AccountTypes" FieldId="1454" FieldName="AccountTypes">
                             <MultiArticleField.Items>
                                 <scg:Dictionary x:TypeArguments="x:Int32, Article" />
                             </MultiArticleField.Items>
@@ -1527,7 +1527,7 @@
             <BackwardArticleField.Items>
                 <Article x:Key="3094" Archived="False" ContentDisplayName="Связи продуктов и WebEntity" ContentId="344" ContentName="ProductWebEntity" Created="2014-05-29T13:46:59.97" Id="3094" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                     <Article.Fields>
-                        <MultiArticleField x:Key="Modifiers" ContentId="344" FieldDisplayName="Modifiers" FieldId="1472" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="344" FieldDisplayName="Modifiers" FieldId="1472" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="3093" Archived="False" ContentDisplayName="Модификаторы связей продуктов и WebEntity" ContentId="345" ContentName="WebEntityRelationModifier" Created="2014-05-29T13:30:09.933" Id="3093" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
@@ -1556,7 +1556,7 @@
                 </Article>
                 <Article x:Key="3095" Archived="False" ContentDisplayName="Связи продуктов и WebEntity" ContentId="344" ContentName="ProductWebEntity" Created="2014-05-29T13:49:22.437" Id="3095" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                     <Article.Fields>
-                        <MultiArticleField x:Key="Modifiers" ContentId="344" FieldDisplayName="Modifiers" FieldId="1472" FieldName="Modifiers" Type="M2M">
+                        <MultiArticleField x:Key="Modifiers" ContentId="344" FieldDisplayName="Modifiers" FieldId="1472" FieldName="Modifiers">
                             <MultiArticleField.Items>
                                 <Article x:Key="3101" Archived="False" ContentDisplayName="Модификаторы связей продуктов и WebEntity" ContentId="345" ContentName="WebEntityRelationModifier" Created="2014-05-29T14:04:37.08" Id="3101" IsPublished="True" Splitted="False" Status="Published" Visible="True">
                                     <Article.Fields>
