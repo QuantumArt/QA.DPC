@@ -1,13 +1,20 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
 $pt-icon-color: #5c7080;
-$pt-danger-color: #db3737;
-$pt-focus-color: #137cbd;
+$pt-focus-color: $blue3;
+$pt-danger-color: $red3;
+$pt-primary-color: $blue3;
 $pt-focus-border: 1px solid $pt-focus-color;
 $pt-danger-border: 1px solid $pt-danger-color;
+$pt-primary-border: 1px solid $pt-primary-color;
 $pt-focus-backgorund: rgba(19, 124, 189, 0.3);
 $pt-danger-backgorund: rgba(219, 55, 55, 0.3);
+$pt-primary-backgorund: rgba(19, 124, 189, 0.3);
 $pt-focus-box-shadow: 0 0 0 3px rgba(19, 124, 189, 0.3),
   inset 0 1px 1px rgba(16, 22, 26, 0.2);
 $pt-danger-box-shadow: 0 0 0 3px rgba(219, 55, 55, 0.3),
+  inset 0 1px 1px rgba(16, 22, 26, 0.2);
+$pt-primary-box-shadow: 0 0 0 3px rgba(19, 124, 189, 0.3),
   inset 0 1px 1px rgba(16, 22, 26, 0.2);
 
 .pt-button {
@@ -29,6 +36,17 @@ $pt-danger-box-shadow: 0 0 0 3px rgba(219, 55, 55, 0.3),
 
   input[type="file"]:focus + .pt-file-upload-input {
     box-shadow: 0 0 0 1px $pt-focus-color, $pt-focus-box-shadow;
+  }
+
+  &.pt-intent-primary {
+    .pt-file-upload-input {
+      box-shadow: 0 0 0 1px $pt-primary-color,
+        inset 0 1px 1px rgba(16, 22, 26, 0.2);
+    }
+
+    input[type="file"]:focus + .pt-file-upload-input {
+      box-shadow: 0 0 0 1px $pt-primary-color, $pt-primary-box-shadow;
+    }
   }
 
   &.pt-intent-danger {
@@ -177,6 +195,38 @@ $pt-danger-box-shadow: 0 0 0 3px rgba(219, 55, 55, 0.3),
       border-bottom-left-radius: 7px;
       border-bottom-right-radius: 7px;
       background: $pt-focus-backgorund;
+    }
+  }
+}
+
+.Select.pt-intent-primary {
+  .Select-control {
+    border: $pt-primary-border;
+  }
+
+  .Select-clear {
+    color: $pt-primary-color;
+  }
+
+  .Select-arrow {
+    border-color: $pt-primary-color transparent transparent;
+  }
+}
+
+.Select.pt-intent-danger.is-focused {
+  .Select-control {
+    border: $pt-primary-border;
+    box-shadow: $pt-primary-box-shadow;
+  }
+
+  .Select-menu-outer {
+    position: relative;
+    border-left: $pt-primary-border;
+    border-bottom: $pt-primary-border;
+    border-right: $pt-primary-border;
+
+    &::before {
+      background: $pt-primary-backgorund;
     }
   }
 }

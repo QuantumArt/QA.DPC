@@ -95,7 +95,7 @@ export class NumericFieldEditor extends AbstractFieldEditor {
             model.hasVisibleErrors(fieldSchema.FieldName)
               ? Intent.DANGER
               : model.isEdited(fieldSchema.FieldName)
-                ? Intent.WARNING
+                ? Intent.PRIMARY
                 : Intent.NONE
           }
         />
