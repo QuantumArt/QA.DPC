@@ -48,11 +48,17 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return null;
         }
 
-        protected ActionResult FilterProductParameters(string region)
+        protected ActionResult FilterProductParameters(string region, bool generateNewTitles = true, bool reassignParameters = true)
         {
             try
             {
-                Parameters = CallsCalculator.FilterProductParameters((JArray) Product.SelectToken("Parameters"), region);
+                var parameters = CallsCalculator.FilterProductParameters((JArray) Product.SelectToken("Parameters"),
+                    region, generateNewTitles);
+                if (reassignParameters)
+                {
+                    Parameters = parameters;
+                }
+
             }
             catch (Exception ex)
             {

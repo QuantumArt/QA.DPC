@@ -21,11 +21,18 @@ namespace QA.ProductCatalog.ImpactService
             param["Changed"] = true;
             return param;
         }
+        
+        public static JToken SetNew(this JToken param)
+        {
+            param["New"] = true;
+            return param;
+        }
 
         public static JToken PrepareForAdd(this JToken param, bool clearTariffDirection)
         {
             var newParam = param.DeepClone();
             SetChanged(newParam);
+            SetNew(newParam);
             if (clearTariffDirection)
             {
                 newParam.SelectToken("BaseParameter")?.Parent.Remove();
