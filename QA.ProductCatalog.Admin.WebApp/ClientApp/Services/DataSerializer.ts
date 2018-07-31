@@ -60,7 +60,7 @@ export class DataSerializer {
         const clientId = this.getClientId(value);
         return { ...value, _ClientId: clientId };
       } else if (isIsoDateString(value)) {
-        return new Date(value);
+        return Number(new Date(value));
       }
       return value;
     });

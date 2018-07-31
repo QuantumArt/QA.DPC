@@ -1,11 +1,14 @@
-import { action } from "mobx";
-import { types as t, unprotect, IModelType, onPatch } from "mobx-state-tree";
-import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
+import { action, comparer } from "mobx";
+import { types as t, unprotect, IModelType, onPatch, getSnapshot } from "mobx-state-tree";
+import { validationMixin, ValidatableObject } from "mst-validation-mixin";
+import { isNumber, isString, isIsoDateString, isBoolean, isObject } from "Utils/TypeChecks";
 import {
   StoreObject,
   StoreSnapshot,
   ArticleObject,
-  ArticleSnapshot
+  ArticleSnapshot,
+  isArticleObject,
+  isExtensionObject
 } from "Models/EditorDataModels";
 import {
   ContentSchema,
@@ -18,7 +21,6 @@ import {
   isPlainField,
   isEnumField
 } from "Models/EditorSchemaModels";
-import { validationMixin } from "mst-validation-mixin";
 
 export class DataContext {
   private _nextId = -1;
@@ -52,12 +54,43 @@ export class DataContext {
   }
 
   @action
-  public mergeArticles(storeSnapshot: StoreSnapshot) {
-    // TODO: слияние с учетом isTouched | isChanged
+  public mergeArticles(storeSnapshot: StoreSnapshot, shouldOverwrite = false) {
     Object.entries(storeSnapshot).forEach(([contentName, articlesById]) => {
       const collection = this.store[contentName];
       if (collection) {
-        collection.merge(articlesById);
+        Object.entries(articlesById).forEach(([id, articleSnapshot]) => {
+          const article = collection.get(id);
+          if (article) {
+            this.mergeArticleSnapshot(article, articleSnapshot, shouldOverwrite);
+          } else {
+            collection.put(articleSnapshot);
+          }
+        });
+      }
+    });
+  }
+
+  private mergeArticleSnapshot(model: Object, snapshot: Object, shouldOverwrite: boolean) {
+    const modelIsValidatable = isArticleObject(model) || isExtensionObject(model);
+
+    const modelSnapshot = getSnapshot(model);
+    Object.entries(snapshot).forEach(([name, newValue]) => {
+      if (name === "_ClientId") {
+        return;
+      }
+      const fieldIsEdited = modelIsValidatable && (model as ValidatableObject).isEdited(name);
+
+      if (shouldOverwrite || !fieldIsEdited) {
+        const fieldSnapshot = modelSnapshot[name];
+        if (isObject(fieldSnapshot) && isObject(newValue)) {
+          this.mergeArticleSnapshot(model[name], newValue, shouldOverwrite);
+        } else if (!comparer.structural(fieldSnapshot, newValue)) {
+          model[name] = newValue;
+        }
+        if (fieldIsEdited) {
+          (model as ValidatableObject).setChanged(name, false);
+          (model as ValidatableObject).setTouched(name, false);
+        }
       }
     });
   }
