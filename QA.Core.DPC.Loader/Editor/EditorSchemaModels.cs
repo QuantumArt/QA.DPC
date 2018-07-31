@@ -241,6 +241,11 @@ namespace QA.Core.DPC.Loader.Editor
         public IContentSchema Content { get; set; }
 
         /// <summary>
+        /// Поведение поля связи при клонировании родительской статьи
+        /// </summary>
+        public CloningMode CloningMode { get; set; }
+
+        /// <summary>
         /// Следует ли обновлять связанные статьи при рекурсивном обновлении связей
         /// </summary>
         public UpdatingMode UpdatingMode { get; set; }

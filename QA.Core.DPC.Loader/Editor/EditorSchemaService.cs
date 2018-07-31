@@ -249,6 +249,7 @@ namespace QA.Core.DPC.Loader.Editor
                 return new SingleRelationFieldSchema
                 {
                     Content = contentSchema,
+                    CloningMode = entityField.CloningMode,
                     UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     DisplayFieldNames = displayFieldNames
@@ -291,6 +292,7 @@ namespace QA.Core.DPC.Loader.Editor
                 return new MultiRelationFieldSchema
                 {
                     Content = contentSchema,
+                    CloningMode = entityField.CloningMode,
                     UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     DisplayFieldNames = displayFieldNames,
