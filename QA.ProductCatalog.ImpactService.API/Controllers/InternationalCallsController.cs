@@ -143,7 +143,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         private bool HasImpactForDirections()
         {
-            return CallsCalculator.HasImpactForDirections(Product);
+            return CallsCalculator.HasImpactForDirections(Parameters);
         }
 
         private ActionResult FindPreCalcServices()

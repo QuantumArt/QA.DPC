@@ -70,7 +70,7 @@ namespace QA.ProductCatalog.ImpactService
             
             foreach (var p in countryParams)
             {
-                if (generateNewTitles && p["Changed"] == null)
+                if (generateNewTitles && p["New"] == null)
                 {
                     p["Title"] = GenerateNewTitle(p);
                 }
@@ -123,7 +123,7 @@ namespace QA.ProductCatalog.ImpactService
 
                 foreach (var c in toChange)
                 {
-                    if (c["NumValue"] != null && (int) c["NumValue"] >= (int) numValueToken)
+                    if (c["NumValue"] != null && (int) c["NumValue"] > (int) numValueToken)
                     {
                         if (c["OldNumValue"] == null)
                         {
