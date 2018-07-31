@@ -31,12 +31,13 @@ export class TextFieldEditor extends AbstractFieldEditor {
       <Col
         md={12}
         className={cn("field-editor__block pt-form-group", {
+          "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
           "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
         <Row>
           <Col xl={2} md={3} className="field-editor__label">
-            {this.renderLabel(fieldSchema)}
+            {this.renderLabel(model, fieldSchema)}
           </Col>
           {this.renderField(model, fieldSchema)}
         </Row>

@@ -71,6 +71,7 @@ export class StringFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
@@ -90,7 +91,13 @@ export class NumericFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           isInteger={fieldSchema.IsInteger}
           disabled={fieldSchema.IsReadOnly}
-          intent={model.hasVisibleErrors(fieldSchema.FieldName) ? Intent.DANGER : Intent.NONE}
+          intent={
+            model.hasVisibleErrors(fieldSchema.FieldName)
+              ? Intent.DANGER
+              : model.isEdited(fieldSchema.FieldName)
+                ? Intent.WARNING
+                : Intent.NONE
+          }
         />
       </Col>
     );
@@ -108,6 +115,7 @@ export class BooleanFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
@@ -128,6 +136,7 @@ export class DateFieldEditor extends AbstractFieldEditor {
           type="date"
           disabled={fieldSchema.IsReadOnly}
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
@@ -148,6 +157,7 @@ export class TimeFieldEditor extends AbstractFieldEditor {
           type="time"
           disabled={fieldSchema.IsReadOnly}
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
@@ -167,6 +177,7 @@ export class DateTimeFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
@@ -190,6 +201,7 @@ export class ClassifierFieldEditor extends AbstractFieldEditor {
           required
           disabled
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
@@ -210,6 +222,7 @@ export class EnumFieldEditor extends AbstractFieldEditor {
           options={options}
           disabled={fieldSchema.IsReadOnly}
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
@@ -224,6 +237,7 @@ export class EnumFieldEditor extends AbstractFieldEditor {
           required={fieldSchema.IsRequired}
           disabled={fieldSchema.IsReadOnly}
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
@@ -252,6 +266,7 @@ export class ExtensionFieldEditor extends AbstractFieldEditor {
           required={fieldSchema.IsRequired}
           disabled={disabled}
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />

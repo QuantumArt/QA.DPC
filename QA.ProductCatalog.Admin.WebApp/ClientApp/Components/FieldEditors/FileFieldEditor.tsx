@@ -22,6 +22,7 @@ export class FileFieldEditor extends AbstractFieldEditor {
             disabled={fieldSchema.IsReadOnly}
             accept={fieldSchema.FieldType === FieldExactTypes.Image ? "image/*" : ""}
             className={cn({
+              "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
               "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
             })}
           />

@@ -55,9 +55,15 @@ export abstract class AbstractFieldEditor<
     );
   }
 
-  protected renderLabel(fieldSchema: FieldSchema) {
+  protected renderLabel(model: ArticleObject | ExtensionObject, fieldSchema: FieldSchema) {
     return (
-      <label htmlFor={this.id} title={fieldSchema.FieldName}>
+      <label
+        htmlFor={this.id}
+        title={fieldSchema.FieldName}
+        className={cn("field-editor__label-text", {
+          "field-editor__label-text--edited": model.isEdited(fieldSchema.FieldName)
+        })}
+      >
         {fieldSchema.IsRequired && <span className="field-editor__label-required">*&nbsp;</span>}
         {fieldSchema.FieldTitle || fieldSchema.FieldName}:
         {fieldSchema.FieldDescription && (
@@ -81,7 +87,7 @@ export abstract class AbstractFieldEditor<
       >
         <Row>
           <Col xl={4} md={3} className="field-editor__label">
-            {this.renderLabel(fieldSchema)}
+            {this.renderLabel(model, fieldSchema)}
           </Col>
           {this.renderField(model, fieldSchema)}
         </Row>

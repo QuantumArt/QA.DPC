@@ -10,9 +10,14 @@
   line-height: 30px;
   min-width: 196px;
 
-  > label {
+  .field-editor__label-text {
     display: inline-block;
     line-height: 18px;
+
+    &--edited {
+      color: $blue2;
+      text-shadow: 0 0 0 $blue2;
+    }
   }
 
   &--small {

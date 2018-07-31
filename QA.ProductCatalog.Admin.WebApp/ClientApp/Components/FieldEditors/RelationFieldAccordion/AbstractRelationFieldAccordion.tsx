@@ -64,7 +64,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
       >
         <Row>
           <Col xl={2} md={3} className="field-editor__label field-editor__label--small">
-            {this.renderLabel(fieldSchema)}
+            {this.renderLabel(model, fieldSchema)}
           </Col>
           <Col md>
             {this.renderControls(model, fieldSchema)}
