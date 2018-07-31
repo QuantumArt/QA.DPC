@@ -22,7 +22,7 @@
     {
         public string Value { get; set; }
 
-        public int[] RegionIds { get; set; }
+        public int[] RegionsId { get; set; }
     }
 
     public class TagWithValues

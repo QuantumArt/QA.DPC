@@ -130,7 +130,7 @@ namespace QA.Core.DPC.Loader
                         if (t == null)
                             continue;
 
-                        if (!v.RegionIds.Any(z => ids.Contains(z)))
+                        if (!v.RegionsId.Any(z => ids.Contains(z)))
                             continue;
 
                         //Исключение дублирования тегов: если, например, задан тег для России и Москвы, приоритет должен быть отдан тегу Мосвы и он должен быть один в результате
@@ -154,7 +154,7 @@ namespace QA.Core.DPC.Loader
                                     break;
                                 }
 
-                                if (v.RegionIds.Any(x => x == id))
+                                if (v.RegionsId.Any(x => x == id))
                                 {
                                     break;
                                 }
@@ -173,7 +173,7 @@ namespace QA.Core.DPC.Loader
                             while (ids.Count != index)
                             {
                                 var id = ids[index];
-                                if (v.RegionIds.Any(x => x == id))
+                                if (v.RegionsId.Any(x => x == id))
                                 {
                                     break;
                                 }
@@ -207,12 +207,12 @@ namespace QA.Core.DPC.Loader
                 var newTagValues = new List<TagValue>();
                 foreach (var tagValue in tag.Values)
                 {
-                    var commonRegionIds = tagValue.RegionIds.Intersect(regionIds).ToArray();
+                    var commonRegionIds = tagValue.RegionsId.Intersect(regionIds).ToArray();
                     if (commonRegionIds.Any())
                     {
                         newTagValues.Add(new TagValue()
                         {
-                            RegionIds = commonRegionIds,
+                            RegionsId = commonRegionIds,
                             Value = tagValue.Value
                         }); 
                     }
@@ -278,7 +278,7 @@ namespace QA.Core.DPC.Loader
             return new TagValue()
             {
                 Value = input.FieldValues.Single(m => m.Field.Name == TagValueName).Value,
-                RegionIds = input.FieldValues.Single(m => m.Field.RelateToContentId == RegionsContentId)
+                RegionsId = input.FieldValues.Single(m => m.Field.RelateToContentId == RegionsContentId)
                     .RelatedItems
 
             };
@@ -365,7 +365,7 @@ namespace QA.Core.DPC.Loader
                     {
                         Id = item.Id,
                         Value = item.FieldValues.Where(a => a.Field.Name == TagValueName).Select(a => a.Value).FirstOrDefault(),
-                        RegionIds = item.FieldValues.Where(a => a.Field.RelateToContentId == RegionsContentId).SelectMany(a => a.RelatedItems).ToArray(),
+                        RegionsId = item.FieldValues.Where(a => a.Field.RelateToContentId == RegionsContentId).SelectMany(a => a.RelatedItems).ToArray(),
                         RegionTagId = string.IsNullOrEmpty(regionTagId) ? 0 : int.Parse(regionTagId)
                     }); 
                 }
