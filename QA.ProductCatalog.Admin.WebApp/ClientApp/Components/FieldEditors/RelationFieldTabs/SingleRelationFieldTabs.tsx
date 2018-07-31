@@ -65,7 +65,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
             small
             rightIcon="add"
             intent={Intent.SUCCESS}
-            disabled={fieldSchema.IsReadOnly}
+            disabled={fieldSchema.IsReadOnly || !!article}
             onClick={this.createRelation}
           >
             Создать

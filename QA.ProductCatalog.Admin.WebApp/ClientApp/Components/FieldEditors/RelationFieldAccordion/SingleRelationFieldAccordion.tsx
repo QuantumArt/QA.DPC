@@ -59,7 +59,8 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
-  renderControls(_model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+  renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+    const article: ArticleObject = model[fieldSchema.FieldName];
     return (
       <ButtonGroup>
         <Button
@@ -67,7 +68,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
           small
           rightIcon="add"
           intent={Intent.SUCCESS}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={fieldSchema.IsReadOnly || !!article}
           onClick={this.createRelation}
         >
           Создать
