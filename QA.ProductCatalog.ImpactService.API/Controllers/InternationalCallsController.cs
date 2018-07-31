@@ -79,8 +79,11 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
 
             result = result ?? FilterServiceParameters(countryCode);
+            
+            result = result ?? FilterProductParameters(countryCode, false, false); // to mark special directions
             result = result ?? CalculateImpact(homeRegion);
-            result = result ?? FilterProductParameters(countryCode);
+            result = result ?? FilterProductParameters(countryCode);                 
+            
             result = result ?? FilterServicesOnProduct(false, NoImpactServiceIds);
 
             var product = (result == null) ? GetNewProduct(homeRegion) : null;
@@ -140,7 +143,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         private bool HasImpactForDirections()
         {
-            return CallsCalculator.HasImpactForDirections(Product);
+            return CallsCalculator.HasImpactForDirections(Parameters);
         }
 
         private ActionResult FindPreCalcServices()

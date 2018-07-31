@@ -33,11 +33,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
        
         protected abstract string ActionKey { get; }
 
+        public virtual bool ExcludeArchive => true;
+
         #region Overrides
         public override string Process(ActionContext context)
         {
             if (context == null)
-                throw new ArgumentNullException("context");
+                throw new ArgumentNullException(nameof(context));
 
             if (context.ContentItemIds == null || context.ContentItemIds.Length == 0)
                 throw new ArgumentException("ContentItemIds cant be empty", "context.ContentItemIds");
@@ -50,7 +52,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
                 throw new ArgumentException("Action is available for marketing products only", "context.ContentId");
             }
 
-            var marketingProducts = _articleService.List(marketingProductContentId, context.ContentItemIds).ToArray();
+            var marketingProducts = _articleService.List(marketingProductContentId, context.ContentItemIds, ExcludeArchive).ToArray();
             string productsFieldName = _settingsService.GetSetting(SettingsTitles.MARKETING_PRODUCT_PRODUCTS_FIELD_NAME);
             var productsMap = marketingProducts.ToDictionary(p => p.Id, p => p.FieldValues.Where(fv => fv.Field.Name == productsFieldName).SelectMany(fv => fv.RelatedItems).ToArray());
             int count = productsMap.Count + productsMap.Values.Sum(products => products.Length);
