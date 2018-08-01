@@ -269,7 +269,7 @@ namespace QA.Core.DPC.Loader
         private TagValue[] GetTagValues(Article t, Dictionary<int, List<int>> tagValuesRelations,  Dictionary<int, Article> tagValues)
         {
             return tagValuesRelations.TryGetValue(t.Id, out var tagValueRelation)
-                ? tagValueRelation.Select(n => tagValues[n]).Select(GetTagValue).ToArray()
+                ? tagValueRelation.Select(n => tagValues[n]).Select(GetTagValue).OrderBy(n => n.RegionsId.FirstOrDefault()).ToArray()
                 : new TagValue[] { };
         }
 
