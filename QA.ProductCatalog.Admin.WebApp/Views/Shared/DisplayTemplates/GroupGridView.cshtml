@@ -43,7 +43,7 @@
                         continue;
                     }
                 }
-                if (Model.GroupingTemplate != null)
+                if (Model.GroupingTemplate != null && (gr.Key as string) != string.Empty)
                 {
                     Model.GroupingTemplate.DataContext = gr.Key;
                     content = Html.DisplayFor(x => Model.GroupingTemplate);
