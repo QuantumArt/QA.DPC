@@ -1,0 +1,82 @@
+@startuml AllowedRelations
+
+object Action {
+  <b>Id = 123
+  Tariffs = <b>[234, 345]
+  MarketingTariff = <b>456
+  MarketingDevices = <b>[567]
+}
+
+object "Product" as Tariff1 {
+  <b>Id = 234
+  Type = "Tariff"
+  MarketingProduct = <b>456
+}
+
+object "Product" as Tariff2 {
+  <b>Id = 345
+  Type = "Tariff"
+  MarketingProduct = <b>456
+}
+
+package "Product-MarketingTariff" <<Frame>> {
+  object "MarketingProduct" as MarketingTariff {
+    <b>Id = 456
+    <b>Modified = 15 : 00 [1]
+    Type = "MarketingTariff"
+    Title = "Маркетинговый тариф"
+    Category = <b>890
+  }
+
+  object TariffCategory {
+    <b>Id = 890
+    Alias = "tariff"
+  }
+}
+
+
+
+package "Action-MarketingTariff" <<Frame>> {
+  object "MarketingProduct" as MarketingTariff1 {
+    <b>Id = 456
+    <b>Modified = 15 : 00 [2]
+    Type = "MarketingTariff"
+    Description = "Описание тарифа"
+    Parent = <b>789
+  }
+
+  object "MarketingProduct" as MarketingTariffParent {
+    <b>Id = 789
+    Alias = "parent_tariff"
+  }
+}
+
+object "MarketingProduct" as MarketingDevice {
+  <b>Id = 567
+  <b>Modified = 14 : 00
+  Type = "MarketingDevice"
+  Description = "Описание оборудования"
+  Parent = <b>678
+}
+
+object "MarketingProduct" as MarketingDeviceParent {
+  <b>Id = 678
+  Alias = "parent_device"
+}
+
+Action --> Tariff1
+Action --> Tariff2
+Action ..> MarketingTariff : OK
+Action ..> MarketingTariff1 : BAD
+Tariff1 --> MarketingTariff : OK
+Tariff2 --> MarketingTariff : OK
+Action --> MarketingDevice : OK
+MarketingTariff --> TariffCategory
+MarketingDevice --> MarketingDeviceParent
+MarketingTariff1 --> MarketingTariffParent
+
+note "Same <b>Id</b>\nDifferent <b>Fields</b>" as Note
+MarketingTariff .. Note
+Note .. MarketingTariff1
+
+@enduml

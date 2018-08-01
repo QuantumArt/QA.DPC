@@ -30,7 +30,13 @@ activate EditorController
 
 EditorController -> Backend: <b>/GetEditorSchema\n<b>?productDefinitionId
 note left of EditorController: EditorSchemaModel
-Backend --> EditorController:
+Backend --> EditorController
+
+EditorController -> SchemaContext: <b>.initSchema( schemaModel )
+hnote over SchemaContext
+ Линкуем $ref
+ ссылки в схеме
+end note
 
 EditorController -> DataNormalizer: <b>.initSchema( schemaModel )
 hnote over DataNormalizer: строим схему Normalizr
@@ -43,12 +49,6 @@ end note
 hnote over DataContext
   строим снапшоты статей со
   значениями по-умолчанию
-end note
-
-EditorController -> SchemaContext: <b>.initSchema( schemaModel )
-hnote over SchemaContext
- Линкуем $ref
- ссылки в схеме
 end note
 
 alt Создаем новый продукт
