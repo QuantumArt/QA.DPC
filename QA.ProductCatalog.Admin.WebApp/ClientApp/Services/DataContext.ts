@@ -75,7 +75,7 @@ export class DataContext {
 
     const modelSnapshot = getSnapshot(model);
     Object.entries(snapshot).forEach(([name, newValue]) => {
-      if (name === "_ClientId") {
+      if (name === "_ClientId" || name === "_ContentName") {
         return;
       }
       const fieldIsEdited = modelIsValidatable && (model as ValidatableObject).isEdited(name);
