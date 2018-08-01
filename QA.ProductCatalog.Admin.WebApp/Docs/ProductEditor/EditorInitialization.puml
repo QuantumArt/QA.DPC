@@ -73,26 +73,24 @@ else Редактируем существующий продукт
   note right of EditorController: Nested Objects
   DataSerializer --> EditorController
 
-  EditorController -> DataNormalizer: <b>.normalize( nestedObjects )
+  EditorController -> DataNormalizer: \n<b>.normalize( nestedObjects )
   note right of EditorController: Flat Objects
   DataNormalizer --> EditorController
 
-  ...
-
-  EditorController -> DataContext: <b>.initStore( flatObjects )
+  EditorController -> DataContext: \n<b>.initStore( flatObjects )
   hnote over DataContext
     Создаем Store из
     плоских объектов
   end note
 
   EditorController -> DataContext: <b>.store[ contentName ].get( articleId )
-  note right of EditorController: Existing Article
+  note right of EditorController: Article Graph
   DataContext --> EditorController
 
 deactivate EditorController
 end
 
-note left of Components: Article
+note left of Components: Article Graph
 EditorController --> Components
 
 deactivate EditorController
