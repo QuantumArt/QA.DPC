@@ -1,14 +1,14 @@
-﻿using System.Xaml;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Practices.Unity;
-using QA.Core.Logger;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.Core.DPC.API.Container;
+using QA.Core.Logger;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog;
+using System.Xaml;
+using Unity;
 
 namespace QA.Core.DPC.API.Test.Tests
 {
-	public class TestBase
+    public class TestBase
 	{
 		protected IUnityContainer Container { get; private set; }
 		protected const string Slug = "cdpsubscriptions";

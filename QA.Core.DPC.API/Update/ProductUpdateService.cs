@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Logger;
+using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions;
@@ -13,7 +14,6 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API.Models;
 using Article = QA.Core.Models.Entities.Article;
 using Content = QA.Core.Models.Configuration.Content;
-using QA.Core.Models;
 
 namespace QA.Core.DPC.API.Update
 {
@@ -27,6 +27,7 @@ namespace QA.Core.DPC.API.Update
 
         private readonly List<ArticleData> _updateData = new List<ArticleData>();
         private readonly Dictionary<int, Content> _articlesToDelete = new Dictionary<int, Content>();
+        private readonly HashSet<int> _outdatedArticleIds = new HashSet<int>();
 
         private IArticleFilter _filter;
 
@@ -102,7 +103,6 @@ namespace QA.Core.DPC.API.Update
 
         #region IProductUpdateService
         
-        // TODO: проверка конфликтов обновления по полю Modified (если оно default(DateTime) - игнорируем)
         /// <exception cref="ProductUpdateConcurrencyException" />
         public InsertData[] Update(
             Article product, ProductDefinition definition, bool isLive = false)
@@ -111,10 +111,16 @@ namespace QA.Core.DPC.API.Update
 
             _updateData.Clear();
             _articlesToDelete.Clear();
+            _outdatedArticleIds.Clear();
 
             _filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
             ProcessArticlesTree(product, oldProduct, definition.StorageSchema);
+
+            if (_outdatedArticleIds.Any())
+            {
+                throw new ProductUpdateConcurrencyException(_outdatedArticleIds.ToArray());
+            }
 
             _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
 
@@ -161,6 +167,8 @@ namespace QA.Core.DPC.API.Update
                 existingArticle = null;
             }
             if (definition == null) throw new ArgumentNullException(nameof(definition));
+
+            ValidateDates(newArticle, existingArticle);
 
             ArticleData newArticleUpdateData = new ArticleData
             {
@@ -379,6 +387,14 @@ namespace QA.Core.DPC.API.Update
             else
             {
                 return new Article[0];
+            }
+        }
+
+        private void ValidateDates(Article newArticle, Article existingArticle)
+        {
+            if (existingArticle != null && newArticle.Modified != default(DateTime) && newArticle.Modified != existingArticle.Modified)
+            {
+                _outdatedArticleIds.Add(newArticle.Id);
             }
         }
     }
