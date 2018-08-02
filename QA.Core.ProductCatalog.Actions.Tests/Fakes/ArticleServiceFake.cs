@@ -46,7 +46,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
             return article;
         }
 
-        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
+        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true, string filter = "")
 		{
 			foreach (int id in ids)
 			{
@@ -138,7 +138,17 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 			return string.Empty;
 		}
 
-		public string[] GetFieldValues(int[] ids, int contentId, string fieldName)
+	    public Dictionary<int, Dictionary<int, List<int>>> GetLinkedItems(int[] linkIds, int[] ids, bool excludeArchive = true)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public Dictionary<int, Dictionary<int, List<int>>> GetRelatedItems(int[] fieldId, int[] ids, bool excludeArchive = true)
+	    {
+	        throw new NotImplementedException();
+	    }
+
+	    public string[] GetFieldValues(int[] ids, int contentId, string fieldName)
 		{
 			throw new NotImplementedException();
 		}

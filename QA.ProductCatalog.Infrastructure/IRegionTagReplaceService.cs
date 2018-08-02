@@ -10,9 +10,10 @@ namespace QA.ProductCatalog.Infrastructure
         /// Делает автозамену в тексте для региональных тэгов
         /// </summary>
         /// <param name="text"></param>
-        /// <param name="currenrRegion"></param>
+        /// <param name="currentRegion"></param>
+        /// <param name="exceptions"></param>
         /// <returns></returns>
-        string Replace(string text, int currenrRegion, string[] exceptions = null);
+        string Replace(string text, int currentRegion, string[] exceptions = null);
 
         /// <summary>
         /// Получение списка тегов встречающихся в тексте
@@ -28,6 +29,7 @@ namespace QA.ProductCatalog.Infrastructure
         /// <returns></returns>
         List<RegionTag> GetRegionTags(int currentRegion);
 
-        TagWithValues[] GetRegionTagValues(string text, IEnumerable<int> regionIds);
+        TagWithValues[] GetRegionTagValues(string text, int[] regionIds);
+        
     }
 }

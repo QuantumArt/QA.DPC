@@ -48,7 +48,7 @@ namespace QA.Core.DPC.Loader
 
 		}
 
-		public override IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
+		public override IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true, string filter = "")
 		{
 			if (ids != null && ids.Length > 0)
 			{

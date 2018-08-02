@@ -318,7 +318,7 @@ namespace QA.Core.DPC.Loader
 			if (articleField is SingleArticleField && ((SingleArticleField)articleField).GetItem(ctx.Filter) == null)
 				return null;
 
-			if (articleField is MultiArticleField && !((MultiArticleField)articleField).GetArticles(ctx.Filter).Any())
+			if (articleField is MultiArticleField && !((MultiArticleField)articleField).GetArticlesSorted(ctx.Filter).Any())
 				return null;
 
 			return new XElement(articleField.FieldName, (
@@ -440,7 +440,7 @@ namespace QA.Core.DPC.Loader
         private IEnumerable<object> ConvertValue(MultiArticleField article, CallContext ctx)
 		{
 			return article
-				.GetArticles(ctx.Filter)
+				.GetArticlesSorted(ctx.Filter)
 				.Select(x => Convert(x, ctx));
 		}
 

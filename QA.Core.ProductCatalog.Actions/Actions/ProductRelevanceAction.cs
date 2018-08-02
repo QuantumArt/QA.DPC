@@ -67,7 +67,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                             foreach (var isLive in new[] { true, false })
                             {
                                 var product = productService.GetProductById(productId, isLive);
-                                var relevanceItems = productRelevanceService.GetProductRelevance(product, isLive);
+                                var relevanceItems = productRelevanceService.GetProductRelevance(product, isLive, true);
 
                                 foreach (var relevanceItem in relevanceItems)
                                 {

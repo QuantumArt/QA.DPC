@@ -162,7 +162,7 @@ namespace QA.Core.DPC.UI
             {
                 return ApplyConverter(dp, be, value, source);
             }
-            if (value == null || value == DependencyProperty.UnsetValue)
+            if (value == null || (value as string) == string.Empty || value == DependencyProperty.UnsetValue)
             {
                 return dp.GetDefaultValue();
             }

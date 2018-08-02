@@ -54,7 +54,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
         }
 
 
-        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
+        public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true, string filter = "")
 		{
 			var token = CallMethod("List", "contentId = {0}, ids = {1}", contentId, string.Join(",", ids));
 			var result = _articleService.List(contentId, ids, excludeArchive);
@@ -139,9 +139,28 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			return result;
 		}
 
-		public string[] GetFieldValues(int[] ids, int contentId, string fieldName)
+	    public Dictionary<int, Dictionary<int, List<int>>> GetLinkedItems(int[] linkIds, int[] ids, bool excludeArchive = true)
+	    {
+	        var token = CallMethod("GetLinkedItems", "linkIds = {0}, ids = {1}", String.Join(",", linkIds), String.Join(",", ids));
+	        var result = _articleService.GetLinkedItems(linkIds, ids, excludeArchive);
+	        EndMethod(token, result);
+	        return result;
+	    }
+
+	    public Dictionary<int, Dictionary<int, List<int>>> GetRelatedItems(int[] fieldIds, int[] ids, bool excludeArchive = true)
+	    {
+	        var token = CallMethod("GetRelatedItems", "fieldIds = {0}, ids = {1}", String.Join(",", fieldIds), String.Join(",", ids));
+	        var result = _articleService.GetRelatedItems(fieldIds, ids, excludeArchive);
+	        EndMethod(token, result);
+	        return result;
+	    }
+
+	    public string[] GetFieldValues(int[] ids, int contentId, string fieldName)
 		{
-			throw new NotImplementedException();
+		    var token = CallMethod("GetFieldValues", "ids = {0}, contentId = {1}, fieldName = {2}", String.Join(",", ids), contentId, fieldName);
+		    var result = _articleService.GetFieldValues(ids, contentId, fieldName);
+		    EndMethod(token, result);
+		    return result;
 		}
 
 		public bool IsLive
