@@ -14,13 +14,11 @@ namespace QA.Core.DPC.Loader.Services
     {
         private readonly ILocalizationSettingsService _settingsService;
         private readonly IContentProvider<NotificationChannel> _channelProvider;
-        private readonly IVersionedCacheProvider _cacheProvider;
 
-        public ProductLocalizationService(ILocalizationSettingsService settingsService, IContentProvider<NotificationChannel> channelProvider, IVersionedCacheProvider cacheProvider)
+        public ProductLocalizationService(ILocalizationSettingsService settingsService, IContentProvider<NotificationChannel> channelProvider)
         {
             _settingsService = settingsService;
             _channelProvider = channelProvider;
-            _cacheProvider = cacheProvider;
         }
 
         #region IProductLocalizationService implementation
@@ -96,14 +94,7 @@ namespace QA.Core.DPC.Loader.Services
         }
         public CultureInfo[] GetCultures()
         {
-            var key = "Localization_Cultures";
-            var _cachePeriod = new TimeSpan(0, 30, 0);
-            return _cacheProvider.GetOrAdd(key, _cachePeriod, () => {
-                var channels = _channelProvider.GetArticles();
-                var cultures = channels.Select(c => c.Culture).Distinct().ToArray();
-                return cultures;
-            });
-
+            return _channelProvider.GetArticles().Select(c => c.Culture).Distinct().ToArray();
         }
         #endregion
 

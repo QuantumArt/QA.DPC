@@ -261,6 +261,7 @@
   <ItemGroup>
     <Compile Include="ActionContainerExstension.cs" />
     <Compile Include="ContentProviderBase.cs" />
+    <Compile Include="ContentProviderBaseCached.cs" />
     <Compile Include="ElasticIndexProvider.cs" />
     <Compile Include="HighloadApiLimit.cs" />
     <Compile Include="HighloadApiLimitProvider.cs" />
@@ -329,4 +330,3 @@
   </Target>
   -->
 </Project>
-

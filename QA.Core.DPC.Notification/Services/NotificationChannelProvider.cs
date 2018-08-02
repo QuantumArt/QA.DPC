@@ -3,7 +3,7 @@ using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Notification.Services
 {
-	public class NotificationChannelProvider : ContentProviderBase<NotificationChannel>
+	public class NotificationChannelProvider : ContentProviderBaseCached<NotificationChannel>
 	{
         #region Constants
         private const string AutopublishField = "c.Autopublish,";
@@ -54,8 +54,8 @@ namespace QA.Core.DPC.Notification.Services
 	            l.VISIBLE = 1";
         #endregion
 
-        public NotificationChannelProvider(ISettingsService settingsService, IConnectionProvider connectionProvider)
-			: base(settingsService, connectionProvider)
+        public NotificationChannelProvider(ISettingsService settingsService, IConnectionProvider connectionProvider, IVersionedCacheProvider cacheProvider)
+			: base(settingsService, connectionProvider, cacheProvider)
 		{
 		}
 
@@ -107,5 +107,7 @@ namespace QA.Core.DPC.Notification.Services
             }
         }
         #endregion
-    }
+
+		protected override string CacheKey => "NotificationChannel";
+	}
 }
