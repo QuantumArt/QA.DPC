@@ -1,5 +1,4 @@
-import { isObservable, toJS } from "mobx";
-import { isIsoDateString } from "Utils/TypeChecks";
+import { isIsoDateString, isObject, isArray } from "Utils/TypeChecks";
 import { ArticleObject, isArticleObject } from "Models/EditorDataModels";
 
 /**
@@ -28,29 +27,26 @@ export class DataSerializer {
     });
   }
 
-  /**
-   * Заменяет все повторные вхождения одной и той же статьи на объект `{ _ServerId: article._ServerId }`
-   * Заменяет все отрицательные клиентские Id на соответствующие им серверные Id (если они уже определены)
-   */
-  public serialize(object: ArticleObject): string {
-    if (isObservable(object)) {
-      object = toJS(object);
-    }
-    const visitedArticles = new Set<ArticleObject>();
-
-    return JSON.stringify(object, (_key, value) => {
-      if (isArticleObject(value)) {
-        const serverId = value._ServerId > 0 ? value._ServerId : value._ClientId;
-        if (visitedArticles.has(value)) {
-          return { _ServerId: serverId };
+  /** Заменяет все отрицательные клиентские Id на соответствующие им серверные Id (если они уже определены). */
+  public serialize(article: ArticleObject): string {
+    function toObject(argument: any) {
+      if (isObject(argument)) {
+        const object: { _ServerId?: number } = {};
+        Object.keys(argument).forEach(key => {
+          object[key] = toObject(argument[key]);
+        });
+        if (isArticleObject(argument)) {
+          object._ServerId = argument._ServerId > 0 ? argument._ServerId : argument._ClientId;
         }
-        visitedArticles.add(value);
-        if (value._ServerId !== serverId) {
-          return { ...value, _ServerId: serverId };
-        }
+        return object;
       }
-      return value;
-    });
+      if (isArray(argument)) {
+        return argument.map(toObject);
+      }
+      return argument;
+    }
+
+    return JSON.stringify(toObject(article));
   }
 
   /** Заменяет все серверные Id на соответствующие им клиентские отрицательные Id (если они определены) */
