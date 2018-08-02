@@ -6,6 +6,8 @@ using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
+using QA.Core.Models.Filters;
+using QA.Core.Models.Filters.Base;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
@@ -100,12 +102,25 @@ namespace QA.Core.DPC.API.Update
         }
 
         #endregion
-
-        #region IProductUpdateService
         
+        #region IProductUpdateService
+
         /// <exception cref="ProductUpdateConcurrencyException" />
         public InsertData[] Update(
             Article product, ProductDefinition definition, bool isLive = false)
+        {
+            return Update(product, definition, isLive, saveMinimalSubtree: false);
+        }
+
+        /// <exception cref="ProductUpdateConcurrencyException" />
+        public InsertData[] UpdateMinimalSubtree(
+            Article product, ProductDefinition definition, bool isLive = false)
+        {
+            return Update(product, definition, isLive, saveMinimalSubtree: true);
+        }
+
+        private InsertData[] Update(
+            Article product, ProductDefinition definition, bool isLive, bool saveMinimalSubtree)
         {
             Article oldProduct = _productService.GetProductById(product.Id, isLive, definition);
 
@@ -114,6 +129,10 @@ namespace QA.Core.DPC.API.Update
             _outdatedArticleIds.Clear();
 
             _filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+            if (saveMinimalSubtree)
+            {
+                _filter = new AllFilter(_filter, new NotCreatedFilter());
+            }
 
             ProcessArticlesTree(product, oldProduct, definition.StorageSchema);
 
@@ -336,10 +355,8 @@ namespace QA.Core.DPC.API.Update
             // if (newArticleUpdateData.Fields.Any())
             _updateData.Add(newArticleUpdateData);
 
-            // TODO: Рекурсивно обходим новые статьи (с Id < 0)
-            // TODO: Рекурсивно обходим статьи расщирения независимо от UpdatingMode
             foreach (var fieldInfo in associationFieldsInfo
-                .Where(x => x.fieldDef.UpdatingMode == UpdatingMode.Update))
+                .Where(x => x.fieldDef.UpdatingMode == UpdatingMode.Update || x.fieldDef is ExtensionField))
             {
                 Article[] oldFieldsArticles = fieldInfo.oldField == null
                     ? new Article[0]

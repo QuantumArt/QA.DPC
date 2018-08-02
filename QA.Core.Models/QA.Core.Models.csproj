@@ -302,6 +302,7 @@
     <Compile Include="Filters\NotArchivedFilter.cs" />
     <Compile Include="Filters\Base\AllFilter.cs" />
     <Compile Include="Filters\ArticleFilter.cs" />
+    <Compile Include="Filters\NotCreatedFilter.cs" />
     <Compile Include="Filters\NullFilter.cs" />
     <Compile Include="Filters\PublishedFilter.cs" />
     <Compile Include="Filters\ArchivedFilter.cs" />
