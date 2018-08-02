@@ -22,10 +22,11 @@ object "Product" as Tariff2 {
 package "Product-MarketingTariff" <<Frame>> {
   object "MarketingProduct" as MarketingTariff {
     <b>Id = 456
-    <b>Modified = 15 : 00 [1]
+    <b>Modified = 15 : 00
     Type = "MarketingTariff"
     Title = "Маркетинговый тариф"
     Category = <b>890
+    Actions = <b>[123]
   }
 
   object TariffCategory {
@@ -39,7 +40,7 @@ package "Product-MarketingTariff" <<Frame>> {
 package "Action-MarketingTariff" <<Frame>> {
   object "MarketingProduct" as MarketingTariff1 {
     <b>Id = 456
-    <b>Modified = 15 : 00 [2]
+    <b>Modified = 15 : 00
     Type = "MarketingTariff"
     Description = "Описание тарифа"
     Parent = <b>789
@@ -64,19 +65,40 @@ object "MarketingProduct" as MarketingDeviceParent {
   Alias = "parent_device"
 }
 
-Action --> Tariff1
-Action --> Tariff2
-Action ..> MarketingTariff : OK
-Action ..> MarketingTariff1 : BAD
+
+
+Action --> Tariff1 : OK
+Action --> Tariff2 : OK
+Action --> MarketingTariff : OK
+Action ..> MarketingTariff1 : BAD\n(Different\nFields)
 Tariff1 --> MarketingTariff : OK
 Tariff2 --> MarketingTariff : OK
 Action --> MarketingDevice : OK
 MarketingTariff --> TariffCategory
-MarketingDevice --> MarketingDeviceParent
-MarketingTariff1 --> MarketingTariffParent
+MarketingTariff ..> Action: BAD\n(Circular\nReference)
+MarketingDevice --> MarketingDeviceParent : OK
+MarketingTariff1 --> MarketingTariffParent : OK
 
 note "Same <b>Id</b>\nDifferent <b>Fields</b>" as Note
 MarketingTariff .. Note
 Note .. MarketingTariff1
+
+object "Region" as ParentRegion {
+  <b>Id = 1234
+  Name = "Российя"
+  Parent = <b>null
+}
+
+object "Region" as ChildRegion {
+  <b>Id = 3456
+  Name = "Москва"
+  Parent = <b>1234
+}
+
+ChildRegion --> ParentRegion : OK
+note right of ChildRegion
+  Circular <b>Definition
+  But Different <b>Ids
+endnote
 
 @enduml

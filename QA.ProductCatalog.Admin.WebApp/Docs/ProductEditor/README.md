@@ -27,3 +27,74 @@
 ## Инициализация редактора
 
 ![](./EditorInitialization.png)
+
+## Ограничения редактора
+
+* Данные продукта должны представлять собой направленный ациклический граф.
+* Каждая статья (с уникальным Id) доступная для редактирования,
+  должна быть представлена Definition-ами c одинаковым набором полей.
+
+![](./AllowedRelations.png)
+
+Можно иметь циклические ссылки в схеме продукта,
+но нельзя иметь цикличекские ссылки в данных продукта.
+Например, DPC-ProductDefinition для регионов может выглядеть так:
+
+```js
+class Region {
+  Id: number;
+  Name: string;
+  Parent: Region; // циклическая ссылка на схему
+}
+```
+
+Но данные не должны содержать циклов:
+
+```json
+{
+  "Id": 123,
+  "Name": "Москва",
+  "Parent": {
+    "Id:": 456,
+    "Name": "Россия",
+    "Parent": null // циклов нет
+  }
+}
+```
+
+Можно ссылаться из разных мест на одно и то же определение продукта,
+но не на разные определения для одинаковой сущности (если она не Readonly):
+
+```js
+class Action {
+  Id: number;
+  Tariffs: Tariff[];
+  MarketingTariffs: MarketingTariff[]; // OK
+  MarketingTariffs: MarketingTariff2[]; // BAD (Different Fields)
+}
+
+class Product {
+  Id: number;
+  Type: string;
+  MarketingProduct: MarketingProduct;
+}
+
+class Tariff extends Product {
+  Type: Tariff;
+  MarketingProduct: MarketingTariff;
+}
+
+class MarketingProduct {
+  Id: number;
+  Type: string;
+}
+
+class MarketingTariff extends MarketingProduct {
+  Actions: Action[]; // BAD (Circular Reference)
+  Category: Category;
+}
+
+class MarketingTariff2 extends MarketingProduct {
+  Parent: MarketingProduct;
+}
+```
