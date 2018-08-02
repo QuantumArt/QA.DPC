@@ -52,9 +52,9 @@ namespace QA.Core.DPC.Loader
             _logger = logger;
         }
 
-        public RelevanceInfo[] GetProductRelevance(Article product, bool isLive)
+        public RelevanceInfo[] GetProductRelevance(Article product, bool isLive, bool localize)
         {
-            return _localisationService.SplitLocalizations(product)
+            return _localisationService.SplitLocalizations(product, localize)
                 .Select(e => GetRelevance(e.Value, e.Key, isLive))
                 .Where(r => r != null)
                 .ToArray();

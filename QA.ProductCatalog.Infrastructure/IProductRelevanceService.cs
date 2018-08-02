@@ -13,7 +13,7 @@ namespace QA.ProductCatalog.Infrastructure
 
     public interface IProductRelevanceService
     {
-        RelevanceInfo[] GetProductRelevance(Article product, bool isLive);
+        RelevanceInfo[] GetProductRelevance(Article product, bool isLive, bool localize);
     }
 
     public class RelevanceInfo

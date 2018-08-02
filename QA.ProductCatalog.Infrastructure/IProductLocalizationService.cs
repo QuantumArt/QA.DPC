@@ -7,8 +7,8 @@ namespace QA.ProductCatalog.Infrastructure
     public interface IProductLocalizationService
     {
         Article Localize(Article product, CultureInfo culture);
-        Dictionary<CultureInfo, Article> SplitLocalizations(Article product);
-        Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures);
+        Dictionary<CultureInfo, Article> SplitLocalizations(Article product, bool localize);
+        Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures, bool localize);
         CultureInfo[] GetCultures();
     }
 }

@@ -127,7 +127,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
                 relevanceResolved = sw.ElapsedMilliseconds;
 
-                var relevanceItems = relevanceService.GetProductRelevance(localize ? originalProduct : product, live);
+                var relevanceItems = relevanceService.GetProductRelevance(localize ? originalProduct : product, live, localize);
 
                 var relevanceField = new MultiArticleField() { FieldName = "Relevance" };                          
                 var id = 0;

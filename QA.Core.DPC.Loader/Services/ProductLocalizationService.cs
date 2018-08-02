@@ -80,19 +80,20 @@ namespace QA.Core.DPC.Loader.Services
             return articleMap[product];
         }
 
-        public Dictionary<CultureInfo, Article> SplitLocalizations(Article product)
+        public Dictionary<CultureInfo, Article> SplitLocalizations(Article product, bool localize)
         {
             var cultures = GetCultures();
-            return SplitLocalizations(product, cultures);
+            return SplitLocalizations(product, cultures, localize);
         }
 
-        public Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures)
+        public Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures,
+            bool localize)
         {
-            return (cultures.Length == 1) 
-                ? new Dictionary<CultureInfo, Article>() {{ cultures[0], product }} 
-                : cultures.ToDictionary(c => c, c => Localize(product, c));
-        }
+            return (localize) 
+                ? cultures.ToDictionary(c => c, c => Localize(product, c)) 
+                : new Dictionary<CultureInfo, Article>() {{ cultures[0], product }};  
 
+        }
         public CultureInfo[] GetCultures()
         {
             var key = "Localization_Cultures";
