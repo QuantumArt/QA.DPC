@@ -143,6 +143,9 @@ export abstract class ObjectEditor<P = {}> extends Component<ObjectEditorProps &
       }
       return;
     }
+    if (fieldSchema.IsReadOnly) {
+      return;
+    }
     if (isRelationField(fieldSchema)) {
       const contentName = fieldSchema.Content.ContentName;
       if (this._relationsConfig.hasOwnProperty(contentName)) {
