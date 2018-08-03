@@ -13,7 +13,7 @@ namespace QA.ProductCatalog.Infrastructure
         /// <param name="currentRegion"></param>
         /// <param name="exceptions"></param>
         /// <returns></returns>
-        string Replace(string text, int currentRegion, string[] exceptions = null);
+        string Replace(string text, int currentRegion, string[] exceptions = null, int depth = 0);
 
         /// <summary>
         /// Получение списка тегов встречающихся в тексте
@@ -21,13 +21,6 @@ namespace QA.ProductCatalog.Infrastructure
         /// <param name="text"></param>
         /// <returns></returns>
         string[] GetTags(string text);
-
-        /// <summary>
-        /// Получение региональных тегов со значениями для данного региона
-        /// </summary>
-        /// <param name="currentRegion"></param>
-        /// <returns></returns>
-        List<RegionTag> GetRegionTags(int currentRegion);
 
         TagWithValues[] GetRegionTagValues(string text, int[] regionIds);
         

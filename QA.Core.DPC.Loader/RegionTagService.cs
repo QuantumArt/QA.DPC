@@ -22,6 +22,9 @@ namespace QA.Core.DPC.Loader
         private readonly IRegionService _regionService;
         private static readonly Regex DefaultRegex =
             new Regex(@"[<\[]replacement[>\]]tag=(\w+)[<\[]/replacement[>\]]", RegexOptions.Compiled);
+        private static readonly Regex XmlEntityRegex =
+            new Regex(@"&lt;replacement&gt;tag=(\w+)&lt;/replacement&gt;", RegexOptions.Compiled);
+
         private static readonly TimeSpan CacheInterval = new TimeSpan(0, 10, 0); 
         private readonly string _connectionString;
         private readonly IArticleService _articleService;
@@ -62,36 +65,42 @@ namespace QA.Core.DPC.Loader
         #endregion
 
         #region IRegionTagReplaceService
-        public string Replace(string text, int currentRegion, string[] exceptions = null)
+        public string Replace(string text, int currentRegion, string[] exceptions = null, int depth = 0)
         {
-            // Сделал замену универсальной, на основании групп регулярного выражения
-            List<RegionTag> tags;
-
-            tags = GetRegionTags(currentRegion);
+            var tags = GetRegionTagValues(text, new[]{ currentRegion});
 
             if (exceptions != null)
             {
-                tags = tags.Where(t => !exceptions.Contains(t.Tag)).ToList();
+                var ex = new HashSet<string>(exceptions);
+                tags = tags.Where(t => !ex.Contains(t.Title)).ToArray();
             }
 
-            var depth = GetRecursiveDepth();
-
-            for (var i = 0; i < depth; i++)
+            var maxdepth = GetRecursiveDepth();
+            if (depth <= maxdepth)
             {
                 foreach (var tag in tags)
                 {
-                    tag.Value = Replace(tag.Value, tags);
+                    foreach (var tagValue in tag.Values)
+                    {
+                        tagValue.Value = Replace(tagValue.Value, currentRegion, exceptions, depth + 1);
+                    }
                 }
             }
 
-            return Replace(text, tags);
+            var result = DefaultRegex.Replace(text, match => ReplaceMatch(tags, match));
+            result = XmlEntityRegex.Replace(result, match => ReplaceMatch(tags, match));
+
+            return result;
         }
 
         public string[] GetTags(string text)
         {
             var matches = new List<string>();
 
-            foreach (Match match in DefaultRegex.Matches(text))
+            var list = new List<Match>(DefaultRegex.Matches(text).Cast<Match>()
+                .Concat(XmlEntityRegex.Matches(text).Cast<Match>())); 
+
+            foreach (Match match in list)
             {
                 if (match.Groups.Count > 1)
                 {
@@ -105,111 +114,24 @@ namespace QA.Core.DPC.Loader
             return matches.Distinct().ToArray();
         }
 
-        public List<RegionTag> GetRegionTags(int currentRegion)
-        {
-
-            var key = "RegionTagService.GetRegionTags_currentRegion: " + currentRegion;
-            var tags = new[] { TagsContentId.ToString(), TagValuesContentId.ToString() };
-
-            // выбираем сущности только для данного региона.
-            // меньше элементов = быстрее получаем из кеша
-            return _cacheProvider.GetOrAdd(key, tags, CacheInterval, () =>
-            {
-                var result = new List<RegionTag>();
-                using (new QPConnectionScope(_connectionString))
-                {
-                    _articleService.LoadStructureCache();
-                    var rtags = GetAllRegionTags(_articleService);
-                    var tagvalues = GetAllRegionTagsValues(_articleService);
-                    var ids = new List<int> {currentRegion};
-                    ids.AddRange(_regionService.GetParentsIds(currentRegion));
-
-                    foreach (var v in tagvalues)
-                    {
-                        var t = rtags.FirstOrDefault(x => x.Id == v.RegionTagId);
-                        if (t == null)
-                            continue;
-
-                        if (!v.RegionsId.Any(z => ids.Contains(z)))
-                            continue;
-
-                        //Исключение дублирования тегов: если, например, задан тег для России и Москвы, приоритет должен быть отдан тегу Мосвы и он должен быть один в результате
-                        //RegionId при этом устанавливается в фактический регион значения тега (т.е. Москва)
-                        var existingTagRegion =
-                            result.FirstOrDefault(x =>
-                                x.Id == v
-                                    .RegionTagId); //Регион уже добавленный в рузультат. Если он есть, будем сравнивать текущий на приоритетность
-                        var index = 0;
-                        if (existingTagRegion != null
-                        ) //Ранее было найдено значение тега для данного региона или его родителя
-                        {
-                            var hasMorePriority =
-                                false; //ранее было найдено значение тега для региона этого же уровня (или ниже), т.е. с таким или более высоким приоритетом
-                            while (ids.Count != index)
-                            {
-                                var id = ids[index];
-                                if (id == existingTagRegion.RegionId) //уже найден для данного региона
-                                {
-                                    hasMorePriority = true;
-                                    break;
-                                }
-
-                                if (v.RegionsId.Any(x => x == id))
-                                {
-                                    break;
-                                }
-
-                                index++;
-                            }
-
-                            if (!hasMorePriority)
-                            {
-                                existingTagRegion.Value = v.Value;
-                                existingTagRegion.RegionId = ids[index];
-                            }
-                        }
-                        else
-                        {
-                            while (ids.Count != index)
-                            {
-                                var id = ids[index];
-                                if (v.RegionsId.Any(x => x == id))
-                                {
-                                    break;
-                                }
-
-                                index++;
-                            }
-
-                            result.Add(new RegionTag
-                            {
-                                Id = t.Id,
-                                Tag = t.Tag,
-                                Value = v.Value,
-                                RegionId = ids[index]
-                            });
-                        }
-
-                    }
-                }
-                return result;
-            });
-        }
-
         public TagWithValues[] GetRegionTagValues(string text, int[] regionIds)
         {
-            var textTags = GetTags(text);
             var newTags = new List<TagWithValues>();
-
-            var tags = LoadTagWithValues(textTags);
+            var regions = new HashSet<int>(regionIds);            
+            var textTags = GetTags(text);
+            var tags = LoadTagWithValues(textTags).OrderBy(n => n.Title).ToArray();
             foreach (var tag in tags)
             {
                 var newTagValues = new List<TagValue>();
+                var regionsUsed = new HashSet<int>(); 
                 foreach (var tagValue in tag.Values)
                 {
-                    var commonRegionIds = tagValue.RegionsId.Intersect(regionIds).ToArray();
+                    // if we've found values for all regions then stop searching
+                    if (regions.Count == regionsUsed.Count) break; 
+                    var commonRegionIds = tagValue.RegionsId.Intersect(regions).ToArray();
                     if (commonRegionIds.Any())
                     {
+                        regionsUsed.UnionWith(commonRegionIds);
                         newTagValues.Add(new TagValue()
                         {
                             RegionsId = commonRegionIds,
@@ -218,13 +140,60 @@ namespace QA.Core.DPC.Loader
                     }
                 }
 
+                if (regions.Count != regionsUsed.Count)
+                {
+                    regions.ExceptWith(regionsUsed);
+                                       
+                    if (regions.Any()) // if we have product regions that is not used the we'll check their parents 
+                    {
+                        foreach (var region in regions)
+                        {
+                            var parents = _regionService.GetParentsIds(region);
+                            foreach (var parent in parents)
+                            {
+                                // if parent region has already been used for tag                                
+                                if (regionsUsed.Contains(parent)) 
+                                {
+                                    var newTagValue = newTagValues.FirstOrDefault(n => n.RegionsId.Contains(parent));
+                                    if (newTagValue == null) continue;
+                                    // append region to found parent tag value
+                                    newTagValue.RegionsId = newTagValue.RegionsId.Append(region).ToArray();
+                                    break;
+
+                                }
+                                else
+                                {
+                                    // if parent has not used tag value
+                                    var commonTagValue = tag.Values.FirstOrDefault(n => n.RegionsId.Contains(parent));
+                                    if (commonTagValue == null) continue;
+                                    // append found parent value with region itself
+                                    newTagValues.Add(new TagValue()
+                                    {
+                                        RegionsId = new[] { region },
+                                        Value = commonTagValue.Value
+                                    });
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var resultValues = ( 
+                    from v in newTagValues
+                    group v.RegionsId by v.Value
+                    into g
+                    select new TagValue() { Value = g.Key, RegionsId = g.SelectMany(n => n).ToArray() }).ToArray();
+
+                
                 newTags.Add(new TagWithValues()
                     {
                         Title = tag.Title,
-                        Values = newTagValues.ToArray()
+                        Values = resultValues.ToArray()
                     }
                 );
             }
+            
 
             return newTags.ToArray();
         }
@@ -287,91 +256,30 @@ namespace QA.Core.DPC.Loader
         #endregion
 
         #region Закрытые методы
-        private string Replace(string text, List<RegionTag> tags)
-        {         
-            var result = DefaultRegex.Replace(text, match =>
+
+        private static string ReplaceMatch(TagWithValues[] tags, Match match)
+        {
+            if (match.Groups.Count > 1)
             {
-                if (match.Groups.Count > 1)
+                var group = match.Groups[1];
+                if (@group.Success)
                 {
-                    var group = match.Groups[1];
-                    if (group.Success)
+                    var tag = @group.Value;
+
+
+                    var replacement = tags
+                        .FirstOrDefault(x => x.Title.Equals(tag, StringComparison.InvariantCulture));
+
+                    if (replacement != null)
                     {
-                        var tag = group.Value;
-
-
-                        var replacement = tags
-                            .FirstOrDefault(x => x.Tag.Equals(tag, StringComparison.InvariantCulture));
-
-                        if (replacement != null)
-                        {
-                            return replacement.Value;
-                        }
-                        else
-                        {
-                            return match.ToString(); //тег в списке исключений
-                        }
+                        return replacement.Values.FirstOrDefault()?.Value;
                     }
+
+                    return match.ToString(); //тег в списке исключений
                 }
-                return string.Empty;
-            });
+            }
 
-            return result;
-        }
-
-        /// <summary>
-        /// Получение всех региональных тегов (контент Региональные теги). Без значений.
-        /// </summary>
-        /// <param name="articleService"></param>
-        /// <returns></returns>
-        private List<RegionTag> GetAllRegionTags(IReadOnlyArticleService articleService)
-        {
-            var regTagsContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.REGIONAL_TAGS_CONTENT_ID));
-            const string key = "RegionTagService.GetAllRegionTags";
-            var tags = new[] { regTagsContentId.ToString() };
-
-            return _cacheProvider.GetOrAdd(key, tags, CacheInterval, () =>
-            {
-                var res = new List<RegionTag>();
-                var list = articleService.List(regTagsContentId, null).Where(x => !x.Archived && x.Visible);
-                res.AddRange(list.Select(x => new RegionTag()
-                {
-                    Id = x.Id, 
-                    Tag = x.FieldValues.Where(a => a.Field.Name == TagTitleName).Select(a => a.Value).FirstOrDefault()
-                }));
-
-                return res;
-            });
-        }
-
-        /// <summary>
-        /// Получение всех региональных тегов (контент Региональные теги). Без названий тегов.
-        /// </summary>
-        /// <param name="articleService"></param>
-        /// <returns></returns>
-        private IEnumerable<RegionTagValue> GetAllRegionTagsValues(IReadOnlyArticleService articleService)
-        {
-            var ragTagsValuesContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.REGIONAL_TAGS_VALUES_CONTENT_ID));
-            const string key = "RegionTagService.GetAllRegionTagsValues";
-            var tags = new[] { ragTagsValuesContentId.ToString() };
-
-            return _cacheProvider.GetOrAdd(key, tags, CacheInterval, () =>
-            {
-                var res = new List<RegionTagValue>();
-                var list = articleService.List(ragTagsValuesContentId, null).Where(x => !x.Archived && x.Visible);
-                foreach (var item in list)
-                {
-                    var regionTagId = item.FieldValues.Where(a => a.Field.RelateToContentId == TagsContentId).Select(a => a.Value).FirstOrDefault();
-                    res.Add(new RegionTagValue()
-                    {
-                        Id = item.Id,
-                        Value = item.FieldValues.Where(a => a.Field.Name == TagValueName).Select(a => a.Value).FirstOrDefault(),
-                        RegionsId = item.FieldValues.Where(a => a.Field.RelateToContentId == RegionsContentId).SelectMany(a => a.RelatedItems).ToArray(),
-                        RegionTagId = string.IsNullOrEmpty(regionTagId) ? 0 : int.Parse(regionTagId)
-                    }); 
-                }
-
-                return res;
-            });
+            return string.Empty;
         }
 
         private int GetRecursiveDepth()
