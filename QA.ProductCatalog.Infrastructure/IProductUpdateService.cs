@@ -6,8 +6,7 @@ namespace QA.ProductCatalog.Infrastructure
 {
 	public interface IProductUpdateService
 	{
-		InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false);
-
-        InsertData[] UpdateMinimalSubtree(Article product, ProductDefinition definition, bool isLive = false);
+		InsertData[] Update(
+            Article product, ProductDefinition definition, bool isLive = false, bool saveMinimalSubtree = false);
     }
 }

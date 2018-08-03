@@ -19,6 +19,7 @@ using System.Net;
 using System.Web.Mvc;
 using QA.Core.Web;
 using Quantumart.QP8.BLL.Services.API.Models;
+using QA.Core.DPC.API.Update;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -185,23 +186,16 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             Content rootContent = _contentDefinitionService.GetDefinitionById(productDefinitionId, isLive);
 
-            var productDefinition = new ProductDefinition { StorageSchema = rootContent };
+            ArticleObject articleObject = LoadProductGraph(rootContent, articleId, isLive);
 
-            Article article = _productService.GetProductById(articleId, isLive, productDefinition);
+            string dataJson = JsonConvert.SerializeObject(articleObject);
 
-            IArticleFilter filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
-
-            ArticleObject articleObject = _editorDataService.ConvertArticle(article, filter);
-
-            string json = JsonConvert.SerializeObject(articleObject);
-
-            return Content(json, "application/json");
+            return Content(dataJson, "application/json");
         } 
 
         /// <summary>
         /// Загрузить часть продукта начиная с корневого контента,
         /// описанного путём <see cref="PartialProductRequest.ContentPath"/>
-        /// игнорируя уже загруженные статьи <see cref="LoadPartialProductRequest.IgnoredArticleIdsByContent"/>
         /// </summary>
         /// <returns>JSON части продукта</returns>
         [HttpPost]
@@ -228,11 +222,47 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .Select(article => _editorDataService.ConvertArticle(article, filter))
                 .ToArray();
 
-            string json = JsonConvert.SerializeObject(articleObjects);
+            string productsJson = JsonConvert.SerializeObject(articleObjects);
 
-            return Content(json, "application/json");
+            return Content(productsJson, "application/json");
         }
-        
+
+        /// <summary>
+        /// Загрузить связь продукта <see cref="LoadProductRelationRequest.RelationFieldName"/>
+        /// начиная с корневого контента, описанного путём <see cref="PartialProductRequest.ContentPath"/>
+        /// </summary>
+        /// <returns>JSON связи продукта</returns>
+        [HttpPost]
+        public ActionResult LoadProductRelation(
+             [ModelBinder(typeof(JsonModelBinder))] LoadProductRelationRequest request, bool isLive = false)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Content rootContent = _contentDefinitionService
+                .GetDefinitionById(request.ProductDefinitionId, isLive);
+
+            Content relationContent = _editorPartialContentService
+                .FindContentByPath(rootContent, request.ContentPath)
+                .ShallowCopy();
+
+            Field relationField = relationContent.Fields
+                .Single(f => f.FieldName == request.RelationFieldName);
+
+            relationContent.Fields.Clear();
+            relationContent.Fields.Add(relationField);
+
+            ArticleObject parentObject = LoadProductGraph(relationContent, request.ParentArticleId, isLive);
+
+            object relationObject = parentObject?[request.RelationFieldName];
+
+            string relationJson = JsonConvert.SerializeObject(relationObject);
+
+            return Content(relationJson, "application/json");
+        }
+
         /// <summary>
         /// Сохранить часть продукта начиная с корневого контента,
         /// описанного путём <see cref="PartialProductRequest.ContentPath"/>.
@@ -240,6 +270,22 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         [HttpPost]
         public ActionResult SavePartialProduct(
             [ModelBinder(typeof(JsonModelBinder))] SavePartialProductRequest request, bool isLive = false)
+        {
+            return SavePartialProduct(request, isLive, saveMinimalSubtree: false);
+        }
+
+        /// <summary>
+        /// Сохранить первую статью продукта начиная с корневого контента,
+        /// описанного путём <see cref="PartialProductRequest.ContentPath"/>.
+        /// </summary>
+        [HttpPost]
+        public ActionResult SaveMinimalProduct(
+            [ModelBinder(typeof(JsonModelBinder))] SavePartialProductRequest request, bool isLive = false)
+        {
+            return SavePartialProduct(request, isLive, saveMinimalSubtree: true);
+        }
+
+        public ActionResult SavePartialProduct(SavePartialProductRequest request, bool isLive, bool saveMinimalSubtree)
         {
             if (!ModelState.IsValid)
             {
@@ -257,20 +303,57 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             var partialDefinition = new ProductDefinition { StorageSchema = partialContent };
 
-            // TODO: what about validation ?
-            // TODO: concurrency checks based on `Modified` field
-            InsertData[] idMappings = _productUpdateService.Update(partialProduct, partialDefinition, isLive);
+            try
+            {
+                // TODO: what about validation ?
+                InsertData[] insertData = _productUpdateService
+                    .Update(partialProduct, partialDefinition, isLive, saveMinimalSubtree);
 
-            var idMappingsByContent = idMappings
-                .ToLookup(data => data.ContentId, data => new
+                var idMappings = insertData.Select(data => new
                 {
                     ClientId = data.OriginalArticleId,
                     ServerId = data.CreatedArticleId,
                 });
 
-            string json = JsonConvert.SerializeObject(idMappingsByContent);
+                ArticleObject articleObject = LoadProductGraph(partialContent, partialProduct.Id, isLive);
 
-            return Content(json, "application/json");
+                string responseJson = JsonConvert.SerializeObject(new
+                {
+                    IdMappings = idMappings,
+                    PartialProduct = articleObject,
+                });
+
+                return Content(responseJson, "application/json");
+            }
+            catch (ProductUpdateConcurrencyException)
+            {
+                ArticleObject articleObject = LoadProductGraph(partialContent, partialProduct.Id, isLive);
+
+                string productJson = JsonConvert.SerializeObject(articleObject);
+
+                Response.ContentType = "application/json";
+                Response.Write(productJson);
+
+                return new HttpStatusCodeResult(HttpStatusCode.Conflict);
+            }
+        }
+        
+        private ArticleObject LoadProductGraph(Content content, int articleId, bool isLive)
+        {
+            var productDefinition = new ProductDefinition { StorageSchema = content };
+
+            Article article = _productService.GetProductById(articleId, isLive, productDefinition);
+
+            if (article == null)
+            {
+                return null;
+            }
+
+            IArticleFilter filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+
+            ArticleObject articleObject = _editorDataService.ConvertArticle(article, filter);
+
+            return articleObject;
         }
 
 #if DEBUG
@@ -328,6 +411,20 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             /// </summary>
             [Required]
             public int[] ArticleIds { get; set; }
+        }
+
+        public class LoadProductRelationRequest : PartialProductRequest
+        {
+            /// <summary>
+            /// Id родительской статьи
+            /// </summary>
+            public int ParentArticleId { get; set; }
+
+            /// <summary>
+            /// Имя поля связи, которое необходимо загрузить
+            /// </summary>
+            [Required]
+            public string RelationFieldName { get; set; }
         }
 
         public class SavePartialProductRequest : PartialProductRequest

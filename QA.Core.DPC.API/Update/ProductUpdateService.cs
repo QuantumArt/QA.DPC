@@ -107,20 +107,7 @@ namespace QA.Core.DPC.API.Update
 
         /// <exception cref="ProductUpdateConcurrencyException" />
         public InsertData[] Update(
-            Article product, ProductDefinition definition, bool isLive = false)
-        {
-            return Update(product, definition, isLive, saveMinimalSubtree: false);
-        }
-
-        /// <exception cref="ProductUpdateConcurrencyException" />
-        public InsertData[] UpdateMinimalSubtree(
-            Article product, ProductDefinition definition, bool isLive = false)
-        {
-            return Update(product, definition, isLive, saveMinimalSubtree: true);
-        }
-
-        private InsertData[] Update(
-            Article product, ProductDefinition definition, bool isLive, bool saveMinimalSubtree)
+            Article product, ProductDefinition definition, bool isLive = false, bool saveMinimalSubtree = false)
         {
             Article oldProduct = _productService.GetProductById(product.Id, isLive, definition);
 
