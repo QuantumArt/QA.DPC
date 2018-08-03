@@ -9,9 +9,6 @@ import { isString } from "Utils/TypeChecks";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
 import "./RelationFieldList.scss";
 
-// TODO: Интеграция с окном выбора статей QP
-// TODO: Загрузка части продукта, которая начинается с новой выбранной статьи
-
 export interface RelationFieldListProps extends FieldEditorProps {
   displayField?: string | FieldSelector;
   orderByField?: string | FieldSelector;

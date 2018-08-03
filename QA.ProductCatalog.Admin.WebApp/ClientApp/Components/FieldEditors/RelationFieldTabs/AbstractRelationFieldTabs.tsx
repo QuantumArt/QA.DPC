@@ -11,9 +11,6 @@ import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEdi
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
 import "./RelationFieldTabs.scss";
 
-// TODO: Интеграция с окном выбора статей QP
-// TODO: Загрузка части продукта, которая начинается с новой выбранной статьи
-
 export interface RelationFieldTabsProps extends FieldEditorProps {
   displayField?: string | FieldSelector;
   orderByField?: string | FieldSelector;

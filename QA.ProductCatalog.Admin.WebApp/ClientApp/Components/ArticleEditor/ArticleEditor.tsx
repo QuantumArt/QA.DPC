@@ -53,9 +53,9 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
                 onSave={showSaveButton && (() => {})}
                 onSaveAll={showSaveButton && (() => {})}
                 onRemove={onRemove && (() => onRemove(model))}
-                onRefresh={() => {}}
-                onClone={() => {}}
-                onPublish={() => {}}
+                onRefresh={() => {}} // TODO: refersh PartialProduct
+                onClone={() => {}} // TODO: clone PartialProduct
+                onPublish={() => {}} // TODO: publish PartialProduct
               />
             </div>
           ) : (
