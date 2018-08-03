@@ -12,9 +12,6 @@ import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEdi
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
 import "./RelationFieldAccordion.scss";
 
-// TODO: Интеграция с окном выбора статей QP
-// TODO: Загрузка части продукта, которая начинается с новой выбранной статьи
-
 export interface RelationFieldAccordionProps extends FieldEditorProps {
   displayFields?: (string | FieldSelector)[];
   orderByField?: string | FieldSelector;
@@ -42,7 +39,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
     );
   }
 
-  protected showSaveButtion(article: ArticleObject) {
+  protected showSaveButton(article: ArticleObject) {
     const { fieldSchema } = this.props;
     const contentSchema = (fieldSchema as RelationFieldSchema).Content;
     return article._ServerId > 0 || this._schemaContext.rootSchema === contentSchema;

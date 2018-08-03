@@ -1,12 +1,11 @@
 import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
-import { Button, Intent } from "@blueprintjs/core";
 import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
-import { SaveButton } from "Components/FormControls/FormControls";
 import { ArticleObject } from "Models/EditorDataModels";
 import { SchemaContext } from "Services/SchemaContext";
 import { isString, isFunction } from "Utils/TypeChecks";
+import { ArticleMenu } from "./ArticleMenu";
 import { ObjectEditor, ObjectEditorProps } from "./ObjectEditor";
 export { IGNORE, FieldsConfig, RelationsConfig } from "./ObjectEditor";
 import "./ArticleEditor.scss";
@@ -50,17 +49,14 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
           </div>
           {buttons === true ? (
             <div className="article-editor__buttons">
-              {showSaveButton && <SaveButton />}
-              {onRemove && (
-                <Button
-                  minimal
-                  rightIcon="remove"
-                  intent={Intent.DANGER}
-                  onClick={() => onRemove(model)}
-                >
-                  Удалить
-                </Button>
-              )}
+              <ArticleMenu
+                onSave={showSaveButton && (() => {})}
+                onSaveAll={showSaveButton && (() => {})}
+                onRemove={onRemove && (() => onRemove(model))}
+                onRefresh={() => {}}
+                onClone={() => {}}
+                onPublish={() => {}}
+              />
             </div>
           ) : (
             buttons || null

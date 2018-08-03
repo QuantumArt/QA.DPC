@@ -4,9 +4,9 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup, Icon, Intent } from "@blueprintjs/core";
-import { SaveButton } from "Components/FormControls/FormControls";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
+import { ArticleMenu } from "Components/ArticleEditor/ArticleMenu";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { AbstractRelationFieldAccordion } from "./AbstractRelationFieldAccordion";
 
@@ -101,6 +101,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const { fieldEditors, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: ArticleObject = model[fieldSchema.FieldName];
+    const showSaveButton = this.showSaveButton(article);
     return article ? (
       <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
         <tbody>
@@ -127,18 +128,15 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
             ))}
             <td key={-3} className="relation-field-accordion__controls">
               {!fieldSchema.IsReadOnly && (
-                <ButtonGroup>
-                  {this.showSaveButtion(article) && <SaveButton small />}
-                  <Button
-                    minimal
-                    small
-                    rightIcon="remove"
-                    intent={Intent.DANGER}
-                    onClick={this.removeRelation}
-                  >
-                    Удалить
-                  </Button>
-                </ButtonGroup>
+                <ArticleMenu
+                  small
+                  onSave={showSaveButton && (() => {})}
+                  onSaveAll={showSaveButton && (() => {})}
+                  onRemove={this.removeRelation}
+                  onRefresh={() => {}}
+                  onClone={() => {}}
+                  onPublish={() => {}}
+                />
               )}
             </td>
           </tr>

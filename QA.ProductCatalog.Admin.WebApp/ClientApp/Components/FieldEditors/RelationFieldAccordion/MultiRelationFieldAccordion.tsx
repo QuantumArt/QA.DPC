@@ -4,11 +4,11 @@ import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, ButtonGroup, Icon, Intent } from "@blueprintjs/core";
-import { SaveButton } from "Components/FormControls/FormControls";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
 import { asc } from "Utils/Array/Sort";
+import { ArticleMenu } from "Components/ArticleEditor/ArticleMenu";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { FieldSelector } from "../AbstractFieldEditor";
 import {
@@ -155,6 +155,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
             .sort(asc(this._orderByField))
             .map(article => {
               const isOpen = article._ClientId === activeId;
+              const showSaveButton = this.showSaveButton(article);
               return (
                 <Fragment key={article._ClientId}>
                   <tr
@@ -180,18 +181,15 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                     ))}
                     <td key={-3} className="relation-field-accordion__controls">
                       {!fieldSchema.IsReadOnly && (
-                        <ButtonGroup>
-                          {this.showSaveButtion(article) && <SaveButton small />}
-                          <Button
-                            minimal
-                            small
-                            rightIcon="remove"
-                            intent={Intent.DANGER}
-                            onClick={e => this.removeRelation(e, article)}
-                          >
-                            Удалить
-                          </Button>
-                        </ButtonGroup>
+                        <ArticleMenu
+                          small
+                          onSave={showSaveButton && (() => {})}
+                          onSaveAll={showSaveButton && (() => {})}
+                          onRemove={e => this.removeRelation(e, article)}
+                          onRefresh={() => {}}
+                          onClone={() => {}}
+                          onPublish={() => {}}
+                        />
                       )}
                     </td>
                   </tr>
