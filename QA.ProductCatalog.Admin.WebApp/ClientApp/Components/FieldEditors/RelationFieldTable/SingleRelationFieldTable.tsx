@@ -3,9 +3,10 @@ import { Col } from "react-flexbox-grid";
 import { consumer } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
+import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTable } from "./AbstractRelationFieldTable";
 
 @consumer
@@ -28,28 +29,10 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
     const article: ArticleObject = model[fieldSchema.FieldName];
     return (
       <Col md>
-        <ButtonGroup>
-          <Button
-            minimal
-            small
-            rightIcon="th-derived"
-            intent={Intent.PRIMARY}
-            disabled={fieldSchema.IsReadOnly}
-            onClick={this.selectRelation}
-          >
-            Выбрать
-          </Button>
-          <Button
-            minimal
-            small
-            rightIcon="eraser"
-            intent={Intent.DANGER}
-            disabled={fieldSchema.IsReadOnly}
-            onClick={this.removeRelation}
-          >
-            Очистить
-          </Button>
-        </ButtonGroup>
+        <RelationFieldMenu
+          onSelect={this.selectRelation}
+          onClear={!!article && this.removeRelation}
+        />
         {this.renderValidation(model, fieldSchema)}
         {article && (
           <div className="relation-field-table">
@@ -69,6 +52,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
                     small
                     rightIcon="remove"
                     intent={Intent.DANGER}
+                    title="Удалить связь"
                     onClick={this.removeRelation}
                   >
                     Удалить

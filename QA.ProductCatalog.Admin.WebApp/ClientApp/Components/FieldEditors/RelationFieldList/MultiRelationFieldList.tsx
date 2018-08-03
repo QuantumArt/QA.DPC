@@ -4,11 +4,11 @@ import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
 import cn from "classnames";
-import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { asc } from "Utils/Array/Sort";
 import { isString } from "Utils/TypeChecks";
+import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldList, RelationFieldListProps } from "./AbstractRelationFieldList";
 
@@ -83,30 +83,13 @@ export class MultiRelationFieldList extends AbstractRelationFieldList {
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const { selectedIds } = this.state;
     const list: ArticleObject[] = model[fieldSchema.FieldName];
+    const isEmpty = !list || list.length === 0;
     return (
       <Col md className="relation-field-list__tags">
-        <ButtonGroup>
-          <Button
-            minimal
-            small
-            rightIcon="th-derived"
-            intent={Intent.PRIMARY}
-            disabled={fieldSchema.IsReadOnly}
-            onClick={this.selectRelations}
-          >
-            Выбрать
-          </Button>
-          <Button
-            minimal
-            small
-            rightIcon="eraser"
-            intent={Intent.DANGER}
-            disabled={fieldSchema.IsReadOnly}
-            onClick={this.clearRelation}
-          >
-            Очистить
-          </Button>
-        </ButtonGroup>
+        <RelationFieldMenu
+          onSelect={this.selectRelations}
+          onClear={!isEmpty && this.clearRelation}
+        />
         {list &&
           list
             .slice()

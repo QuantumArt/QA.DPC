@@ -4,9 +4,9 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
 import cn from "classnames";
-import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
+import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldList } from "./AbstractRelationFieldList";
 
 @consumer
@@ -44,18 +44,7 @@ export class SingleRelationFieldList extends AbstractRelationFieldList {
     const article: ArticleObject = model[fieldSchema.FieldName];
     return (
       <Col md className="relation-field-list__tags">
-        <ButtonGroup>
-          <Button
-            minimal
-            small
-            rightIcon="th-derived"
-            intent={Intent.PRIMARY}
-            disabled={fieldSchema.IsReadOnly}
-            onClick={this.selectRelation}
-          >
-            Выбрать
-          </Button>
-        </ButtonGroup>{" "}
+        <RelationFieldMenu onSelect={this.selectRelation} />
         {article && (
           <span
             className={cn("pt-tag pt-minimal pt-interactive", {

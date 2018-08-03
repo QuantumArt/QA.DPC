@@ -3,11 +3,12 @@ import { Col } from "react-flexbox-grid";
 import { consumer } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
-import { Button, ButtonGroup, Intent } from "@blueprintjs/core";
+import { Button, Intent } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
 import { asc } from "Utils/Array/Sort";
+import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTable, RelationFieldTableProps } from "./AbstractRelationFieldTable";
 
@@ -50,30 +51,13 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
 
   renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
     const list: ArticleObject[] = model[fieldSchema.FieldName];
+    const isEmpty = !list || list.length === 0;
     return (
       <Col md>
-        <ButtonGroup>
-          <Button
-            minimal
-            small
-            rightIcon="th-derived"
-            intent={Intent.PRIMARY}
-            disabled={fieldSchema.IsReadOnly}
-            onClick={this.selectRelations}
-          >
-            Выбрать
-          </Button>
-          <Button
-            minimal
-            small
-            rightIcon="eraser"
-            intent={Intent.DANGER}
-            disabled={fieldSchema.IsReadOnly}
-            onClick={this.clearRelation}
-          >
-            Очистить
-          </Button>
-        </ButtonGroup>
+        <RelationFieldMenu
+          onSelect={this.selectRelations}
+          onClear={!isEmpty && this.clearRelation}
+        />
         {this.renderValidation(model, fieldSchema)}
         {list && (
           <div className="relation-field-table">
@@ -98,6 +82,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
                           small
                           rightIcon="remove"
                           intent={Intent.DANGER}
+                          title="Удалить связь"
                           onClick={e => this.removeRelation(e, article)}
                         >
                           Удалить

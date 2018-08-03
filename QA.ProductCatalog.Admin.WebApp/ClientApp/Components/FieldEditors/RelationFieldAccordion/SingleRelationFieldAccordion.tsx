@@ -3,11 +3,12 @@ import { consumer } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
-import { Button, ButtonGroup, Icon, Intent } from "@blueprintjs/core";
+import { Icon } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ArticleMenu } from "Components/ArticleEditor/ArticleMenu";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldAccordion } from "./AbstractRelationFieldAccordion";
 
 @consumer
@@ -62,38 +63,12 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
     const article: ArticleObject = model[fieldSchema.FieldName];
     return (
-      <ButtonGroup>
-        <Button
-          minimal
-          small
-          rightIcon="add"
-          intent={Intent.SUCCESS}
-          disabled={fieldSchema.IsReadOnly || !!article}
-          onClick={this.createRelation}
-        >
-          Создать
-        </Button>
-        <Button
-          minimal
-          small
-          rightIcon="th-derived"
-          intent={Intent.PRIMARY}
-          disabled={fieldSchema.IsReadOnly}
-          onClick={this.selectRelation}
-        >
-          Выбрать
-        </Button>
-        <Button
-          minimal
-          small
-          rightIcon="eraser"
-          intent={Intent.DANGER}
-          disabled={fieldSchema.IsReadOnly}
-          onClick={this.removeRelation}
-        >
-          Очистить
-        </Button>
-      </ButtonGroup>
+      <RelationFieldMenu
+        onCreate={!article && this.createRelation}
+        onSelect={this.selectRelation}
+        onClear={!!article && this.removeRelation}
+        onRefresh={() => {}} // TODO: refersh SingleRelation
+      />
     );
   }
 

@@ -3,13 +3,14 @@ import { consumer } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
-import { Button, ButtonGroup, Icon, Intent } from "@blueprintjs/core";
+import { Icon } from "@blueprintjs/core";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
 import { asc } from "Utils/Array/Sort";
 import { ArticleMenu } from "Components/ArticleEditor/ArticleMenu";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { FieldSelector } from "../AbstractFieldEditor";
 import {
   AbstractRelationFieldAccordion,
@@ -106,40 +107,16 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
-  renderControls(_model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+  renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+    const list: ArticleObject[] = model[fieldSchema.FieldName];
+    const isEmpty = !list || list.length === 0;
     return (
-      <ButtonGroup>
-        <Button
-          minimal
-          small
-          rightIcon="add"
-          intent={Intent.SUCCESS}
-          disabled={fieldSchema.IsReadOnly}
-          onClick={this.createRelation}
-        >
-          Создать
-        </Button>
-        <Button
-          minimal
-          small
-          rightIcon="th-derived"
-          intent={Intent.PRIMARY}
-          disabled={fieldSchema.IsReadOnly}
-          onClick={this.selectRelations}
-        >
-          Выбрать
-        </Button>
-        <Button
-          minimal
-          small
-          rightIcon="eraser"
-          intent={Intent.DANGER}
-          disabled={fieldSchema.IsReadOnly}
-          onClick={this.clearRelation}
-        >
-          Очистить
-        </Button>
-      </ButtonGroup>
+      <RelationFieldMenu
+        onCreate={this.createRelation}
+        onSelect={this.selectRelations}
+        onClear={!isEmpty && this.clearRelation}
+        onRefresh={() => {}} // TODO: refersh MultiRelation
+      />
     );
   }
 
