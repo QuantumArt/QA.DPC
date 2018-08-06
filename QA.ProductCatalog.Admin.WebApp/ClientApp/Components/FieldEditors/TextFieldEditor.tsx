@@ -18,6 +18,7 @@ export class TextFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}
           className={cn({
+            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
@@ -31,7 +32,6 @@ export class TextFieldEditor extends AbstractFieldEditor {
       <Col
         md={12}
         className={cn("field-editor__block pt-form-group", {
-          "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
           "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >

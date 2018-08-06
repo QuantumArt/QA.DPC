@@ -30,7 +30,7 @@ function commandDecorator(target: Object, key: string, descriptor: PropertyDescr
     }
     commandState.runningCount++;
   });
-  const finishCommand = action(`${commandName}: finish`, () => {
+  const finishCommand = action(`${commandName}: finish`, (error?: any) => {
     if (DEBUG) {
       console.timeEnd(`${commandName} #${commandNumber}`);
     }
@@ -38,6 +38,9 @@ function commandDecorator(target: Object, key: string, descriptor: PropertyDescr
     if (commandState.runningCount === 0) {
       captureUserInput(document.body, false);
       NProgress.done();
+    }
+    if (error instanceof Error) {
+      throw error;
     }
   });
   return {

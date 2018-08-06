@@ -11,6 +11,13 @@ namespace QA.Core.DPC.Loader
     {
         protected readonly IDictionary<string, JToken> _article;
 
+        protected JToken GetJToken(string fieldName)
+        {
+            JToken token = _article[fieldName];
+
+            return token == null || token.Type == JTokenType.Null ? null : token;
+        }
+
         public JsonProductDataSource(IDictionary<string, JToken> article)
         {
             _article = article;
@@ -22,42 +29,42 @@ namespace QA.Core.DPC.Loader
 
         public int? GetInt(string fieldName)
         {
-            object value = _article[fieldName];
+            JToken value = GetJToken(fieldName);
 
             return value != null ? Convert.ToInt32(value) : (int?)null;
         }
 
         public DateTime? GetDateTime(string fieldName)
         {
-            object value = _article[fieldName];
+            JToken value = GetJToken(fieldName);
 
-            return value != null ? Convert.ToDateTime(value) : (DateTime?)null;
+            return value != null ? Convert.ToDateTime(value).ToLocalTime() : (DateTime?)null;
         }
 
         public decimal? GetDecimal(string fieldName)
         {
-            object value = _article[fieldName];
+            JToken value = GetJToken(fieldName);
 
             return value != null ? Convert.ToDecimal(value) : (decimal?)null;
         }
         
         public string GetString(string fieldName)
         {
-            return (string)_article[fieldName];
+            return (string)GetJToken(fieldName);
         }
 
         public virtual IProductDataSource GetContainer(string fieldName)
         {
-            object value = _article[fieldName];
+            JToken token = GetJToken(fieldName);
 
-            return value == null ? null : new JsonProductDataSource((IDictionary<string, JToken>)value);
+            return token == null ? null : new JsonProductDataSource((IDictionary<string, JToken>)token);
         }
 
         public virtual IEnumerable<IProductDataSource> GetContainersCollection(string fieldName)
         {
-            object value = _article[fieldName];
+            JToken token = GetJToken(fieldName);
 
-            return value == null ? null : ((JArray)value)
+            return token == null ? null : ((JArray)token)
                 .Select(x => new JsonProductDataSource((IDictionary<string, JToken>)x));
         }
 
@@ -80,16 +87,16 @@ namespace QA.Core.DPC.Loader
 
         public override IProductDataSource GetContainer(string fieldName)
         {
-            object value = _article[fieldName];
+            JToken token = GetJToken(fieldName);
 
-            return value == null ? null : new EditorJsonProductDataSource((IDictionary<string, JToken>)value);
+            return token == null ? null : new EditorJsonProductDataSource((IDictionary<string, JToken>)token);
         }
         
         public override IEnumerable<IProductDataSource> GetContainersCollection(string fieldName)
         {
-            object value = _article[fieldName];
+            JToken token = GetJToken(fieldName);
 
-            return value == null ? null : ((JArray)value)
+            return token == null ? null : ((JArray)token)
                 .Select(x => new EditorJsonProductDataSource((IDictionary<string, JToken>)x));
         }
 
