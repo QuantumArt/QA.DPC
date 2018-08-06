@@ -67,7 +67,7 @@ namespace QA.Core.DPC.Loader
         #region IRegionTagReplaceService
         public string Replace(string text, int currentRegion, string[] exceptions = null, int depth = 0)
         {
-            var tags = GetRegionTagValues(text, new[]{ currentRegion});
+            var tags = GetRegionTagValuesWithoutRecursion(text, new[]{ currentRegion});
 
             if (exceptions != null)
             {
@@ -114,16 +114,41 @@ namespace QA.Core.DPC.Loader
             return matches.Distinct().ToArray();
         }
 
+
         public TagWithValues[] GetRegionTagValues(string text, int[] regionIds)
         {
-            var newTags = new List<TagWithValues>();
-            var regions = new HashSet<int>(regionIds);            
+            return GetRegionTagValues(text, regionIds, 0).OrderBy(n => n.Title).ToArray();
+        }
+        
+        private TagWithValues[] GetRegionTagValues(string text, int[] regionIds, int depth)
+        {
+            var result = new List<TagWithValues>();
+            var tags = GetRegionTagValuesWithoutRecursion(text, regionIds);
+            result.AddRange(tags);
+            
+            if (depth > GetRecursiveDepth()) return result.ToArray();
+
+            foreach (var tagValue in tags.SelectMany(n => n.Values))
+            {
+                var extraTags = GetRegionTagValues(tagValue.Value, regionIds, depth + 1);
+                result.AddRange(extraTags); 
+            }
+            
+            return result.ToArray();
+        }
+
+        private TagWithValues[] GetRegionTagValuesWithoutRecursion(string text, int[] regionIds)
+        {
             var textTags = GetTags(text);
-            var tags = LoadTagWithValues(textTags).OrderBy(n => n.Title).ToArray();
+            var tags = LoadTagWithValues(textTags);
+            var newTags = new List<TagWithValues>();
+
             foreach (var tag in tags)
             {
+                var regions = new HashSet<int>(regionIds);
+                var regionsUsed = new HashSet<int>();
                 var newTagValues = new List<TagValue>();
-                var regionsUsed = new HashSet<int>(); 
+                
                 foreach (var tagValue in tag.Values)
                 {
                     // if we've found values for all regions then stop searching
