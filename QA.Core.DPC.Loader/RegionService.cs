@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Data;
+using System.Linq;
 using QA.Core.DPC.QP.Services;
 
 namespace QA.Core.DPC.Loader
@@ -13,92 +14,89 @@ namespace QA.Core.DPC.Loader
     {
         #region Глобальные переменные
         private readonly IVersionedCacheProvider _cacheProvider;
-        private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly ISettingsService _settingsService;
-
-        //private IUserProvider _userProvider;
-
-        private static readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
+        private readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
         private readonly string _connectionString;
 
         #endregion
 
         #region Конструкторы
-        public RegionService(IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher, IUserProvider userProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
+        public RegionService(IVersionedCacheProvider cacheProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _cacheProvider = cacheProvider;
             _settingsService = settingsService;
-            _cacheItemWatcher = cacheItemWatcher;
-
-
-            //_userProvider = userProvider;
-            this._cacheItemWatcher.TrackChanges();
             _connectionString = connectionProvider.GetConnection();
         }
         #endregion
 
+        class Region
+        {
+            public int Id { get; set; }
+            public int ParentId { get; set; }
+            public string Title { get; set; }
+        }
+
+        private Dictionary<int, Region> LoadRegions() 
+        {
+            
+            var regContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.REGIONS_CONTENT_ID));
+            
+            var regions = new List<Region>();
+            
+            var sql = $@"select content_item_id, parent, Title from content_{regContentId}_united where ARCHIVE = 0";
+
+            using (var cs = new QPConnectionScope(_connectionString))
+            {
+                var con = cs.DbConnection;
+
+                if (con.State != ConnectionState.Open)
+                    con.Open();
+                
+                using (var cmd = new SqlCommand(sql, con))
+                {
+
+                    using (var rd = cmd.ExecuteReader())
+                    {
+                        while (rd.Read())
+                        {
+                            var regionId = (int)rd.GetDecimal(0);
+                            var parentId = rd.IsDBNull(1) ? 0 : (int)rd.GetDecimal(1);
+                            var title = rd.GetString(2);
+                            regions.Add(new Region { Id = regionId, ParentId = parentId, Title = title});
+                        }
+                        rd.Close();
+                    }
+
+                }
+            }
+
+            return regions.ToDictionary(n => n.Id, m => m);
+        }
+
+        private Dictionary<int, Region> GetRegions()
+        {
+            const string key = "RegionService__Regions";
+            var tags = new[] {_settingsService.GetSetting(SettingsTitles.REGIONS_CONTENT_ID)};
+            return _cacheProvider.GetOrAdd(key, tags, _cachePeriod, LoadRegions);          
+        }
 
         #region IRegionService
         public List<int> GetParentsIds(int id)
         {
-            var regContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.REGIONS_CONTENT_ID));
-
-            var key = string.Format("GetParentsIds_{0}", id);
-            return _cacheProvider.GetOrAdd(key, new string[] { regContentId.ToString() }, _cachePeriod, () =>
+            var result = new List<int>();
+            var regions = GetRegions();
+            while (true)
             {
-                var sql = string.Format(@"with region_tree as (
-                       select content_item_id, parent, Title, ARCHIVE
-                       from content_{0}
-                       where content_item_id = (select parent from content_{0} where content_item_id = @id and ARCHIVE = 0) and ARCHIVE = 0
-                       union all
-                       select c.content_item_id, c.parent, c.Title, c.ARCHIVE
-                       from content_{0} c
-                         join region_tree p on p.parent = c.content_item_id  and c.ARCHIVE = 0
-                    ) 
-                    select *
-                    from region_tree;", regContentId, id);
+                var region = regions[id];
+                if (region.ParentId == 0) break;
+                id = region.ParentId;
+                result.Add(id);
+            }
 
-                List<int> ids = new List<int>();
-                using (var cs = new QPConnectionScope(_connectionString))
-                {
-                    var con = cs.DbConnection;
+            return result;
 
-                    if (con.State != System.Data.ConnectionState.Open)
-                        con.Open();
-
-                    using (SqlCommand cmd = new SqlCommand(
-                       sql, con))
-                    {
-                        SqlParameter idParametr = new SqlParameter();
-                        idParametr.ParameterName = "@id";// Defining Name
-                        idParametr.SqlDbType = SqlDbType.Int; // Defining DataType
-                        idParametr.Direction = ParameterDirection.Input; // Setting the direction 
-                        idParametr.Value = id;
-
-                        cmd.Parameters.Add(idParametr);
-
-                        using (SqlDataReader rd = cmd.ExecuteReader())
-                        {
-                            while (rd.Read())
-                            {
-                                ids.Add((int)rd.GetDecimal(0));
-                            }
-                            rd.Close();
-                        }
-
-                    }
-
-                }
-
-                return ids;
-            });
         }
         #endregion
-
-        #region Закрытые методы
-        #endregion
-
-
 
     }
 }

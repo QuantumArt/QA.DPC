@@ -77,8 +77,6 @@ namespace QA.Core.DPC.Loader.Container
 
             Container.RegisterType<IRegionService>("RegionServiceFakeUser",
                     new InjectionFactory(c => new RegionService(Container.Resolve<IVersionedCacheProvider>(),
-                        Container.Resolve<ICacheItemWatcher>(),
-                        Container.Resolve<IUserProvider>(AlwaysAdminUserProviderName),
                         Container.Resolve<ISettingsService>(),
                         Container.Resolve<IConnectionProvider>())));
 
@@ -123,7 +121,8 @@ namespace QA.Core.DPC.Loader.Container
             {
                 int loaderWarmUpProductId = int.Parse(loaderWarmUpProductIdStr);
 
-                Container.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>("ProductLoaderWarmUpProvider", new InjectionConstructor(typeof(ProductLoader), typeof(ILogger), loaderWarmUpProductId));
+                Container.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>("ProductLoaderWarmUpProvider", 
+                    new InjectionConstructor(typeof(ProductLoader), typeof(ILogger), typeof(IVersionedCacheProvider), loaderWarmUpProductId));
             }
         }
     }
