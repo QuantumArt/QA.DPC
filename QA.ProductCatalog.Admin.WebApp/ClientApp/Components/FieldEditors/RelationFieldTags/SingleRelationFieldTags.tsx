@@ -7,11 +7,11 @@ import cn from "classnames";
 import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
-import { AbstractRelationFieldList } from "./AbstractRelationFieldList";
+import { AbstractRelationFieldTags } from "./AbstractRelationFieldTags";
 
 @consumer
 @observer
-export class SingleRelationFieldList extends AbstractRelationFieldList {
+export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   readonly state = {
     isSelected: false
   };

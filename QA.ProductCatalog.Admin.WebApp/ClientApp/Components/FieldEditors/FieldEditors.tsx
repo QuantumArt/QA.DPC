@@ -31,10 +31,10 @@ export {
   RelationFieldAccordion
 } from "./RelationFieldAccordion/RelationFieldAccordion";
 export {
-  SingleRelationFieldList,
-  MultiRelationFieldList,
-  RelationFieldList
-} from "./RelationFieldList/RelationFieldList";
+  SingleRelationFieldTags,
+  MultiRelationFieldTags,
+  RelationFieldTags
+} from "./RelationFieldTags/RelationFieldTags";
 export {
   SingleRelationFieldTable,
   MultiRelationFieldTable,

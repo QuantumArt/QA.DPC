@@ -5,10 +5,10 @@ import { Tabs, Tab, Icon } from "@blueprintjs/core";
 import { ArticleEditor, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import {
   SingleRelationFieldTabs,
-  MultiRelationFieldList,
+  MultiRelationFieldTags,
   MultiRelationFieldTabs,
   MultiRelationFieldTable,
-  SingleRelationFieldList
+  SingleRelationFieldTags
 } from "Components/FieldEditors/FieldEditors";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
 import { ArticleObject } from "Models/EditorDataModels";
@@ -102,7 +102,7 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
                 DevicesOnMarketingTariff: IGNORE,
                 Type_Contents: {
                   MarketingFixConnectTariff: {
-                    Category: SingleRelationFieldList,
+                    Category: SingleRelationFieldTags,
                     MarketingDevices: MultiRelationFieldTable
                   }
                 }
@@ -125,7 +125,7 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
         fieldEditors={{
           MarketingProduct: IGNORE,
           Regions: props => (
-            <MultiRelationFieldList
+            <MultiRelationFieldTags
               selectMultiple
               orderByField="Title"
               onClick={this.toggleRegion}

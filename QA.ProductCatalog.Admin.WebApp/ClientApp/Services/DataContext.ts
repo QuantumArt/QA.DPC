@@ -1,14 +1,12 @@
-import { action, comparer } from "mobx";
-import { types as t, unprotect, IModelType, onPatch, getSnapshot } from "mobx-state-tree";
-import { validationMixin, ValidatableObject } from "mst-validation-mixin";
-import { isNumber, isString, isIsoDateString, isBoolean, isObject } from "Utils/TypeChecks";
+import { action } from "mobx";
+import { types as t, unprotect, IModelType, onPatch } from "mobx-state-tree";
+import { validationMixin } from "mst-validation-mixin";
+import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
 import {
   StoreObject,
   StoreSnapshot,
   ArticleObject,
-  ArticleSnapshot,
-  isArticleObject,
-  isExtensionObject
+  ArticleSnapshot
 } from "Models/EditorDataModels";
 import {
   ContentSchema,
@@ -51,48 +49,6 @@ export class DataContext {
 
     this.store[contentName].put(article);
     return article;
-  }
-
-  @action
-  public mergeArticles(storeSnapshot: StoreSnapshot, shouldOverwrite = false) {
-    Object.entries(storeSnapshot).forEach(([contentName, articlesById]) => {
-      const collection = this.store[contentName];
-      if (collection) {
-        Object.entries(articlesById).forEach(([id, articleSnapshot]) => {
-          const article = collection.get(id);
-          if (article) {
-            this.mergeArticleSnapshot(article, articleSnapshot, shouldOverwrite);
-          } else {
-            collection.put(articleSnapshot);
-          }
-        });
-      }
-    });
-  }
-
-  private mergeArticleSnapshot(model: Object, snapshot: Object, shouldOverwrite: boolean) {
-    const modelIsValidatable = isArticleObject(model) || isExtensionObject(model);
-
-    const modelSnapshot = getSnapshot(model);
-    Object.entries(snapshot).forEach(([name, newValue]) => {
-      if (name === "_ClientId" || name === "_ContentName") {
-        return;
-      }
-      const fieldIsEdited = modelIsValidatable && (model as ValidatableObject).isEdited(name);
-
-      if (shouldOverwrite || !fieldIsEdited) {
-        const fieldSnapshot = modelSnapshot[name];
-        if (isObject(fieldSnapshot) && isObject(newValue)) {
-          this.mergeArticleSnapshot(model[name], newValue, shouldOverwrite);
-        } else if (!comparer.structural(fieldSnapshot, newValue)) {
-          model[name] = newValue;
-        }
-        if (fieldIsEdited) {
-          (model as ValidatableObject).setChanged(name, false);
-          (model as ValidatableObject).setTouched(name, false);
-        }
-      }
-    });
   }
 
   private getContentType(contentName: string): IModelType<ArticleSnapshot, ArticleObject> {

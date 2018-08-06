@@ -7,22 +7,22 @@ import { RelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
-import "./RelationFieldList.scss";
+import "./RelationFieldTags.scss";
 
-export interface RelationFieldListProps extends FieldEditorProps {
+export interface RelationFieldTagsProps extends FieldEditorProps {
   displayField?: string | FieldSelector;
   orderByField?: string | FieldSelector;
   selectMultiple?: boolean;
   onClick?: (e: MouseEvent<HTMLElement>, article: ArticleObject) => void;
 }
 
-export abstract class AbstractRelationFieldList extends AbstractFieldEditor<
-  RelationFieldListProps
+export abstract class AbstractRelationFieldTags extends AbstractFieldEditor<
+  RelationFieldTagsProps
 > {
   @inject protected _relationController: RelationController;
   protected _displayField: FieldSelector;
 
-  constructor(props: RelationFieldListProps, context?: any) {
+  constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
     const {
       fieldSchema,

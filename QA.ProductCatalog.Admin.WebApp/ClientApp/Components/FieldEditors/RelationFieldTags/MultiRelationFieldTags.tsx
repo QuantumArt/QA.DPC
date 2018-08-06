@@ -10,9 +10,9 @@ import { asc } from "Utils/Array/Sort";
 import { isString } from "Utils/TypeChecks";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { FieldSelector } from "../AbstractFieldEditor";
-import { AbstractRelationFieldList, RelationFieldListProps } from "./AbstractRelationFieldList";
+import { AbstractRelationFieldTags, RelationFieldTagsProps } from "./AbstractRelationFieldTags";
 
-interface MultiRelationFieldListState {
+interface MultiRelationFieldTagsState {
   selectedIds: {
     [articleId: number]: boolean;
   };
@@ -20,13 +20,13 @@ interface MultiRelationFieldListState {
 
 @consumer
 @observer
-export class MultiRelationFieldList extends AbstractRelationFieldList {
+export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   private _orderByField: FieldSelector;
-  readonly state: MultiRelationFieldListState = {
+  readonly state: MultiRelationFieldTagsState = {
     selectedIds: {}
   };
 
-  constructor(props: RelationFieldListProps, context?: any) {
+  constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
     const {
       fieldSchema,
