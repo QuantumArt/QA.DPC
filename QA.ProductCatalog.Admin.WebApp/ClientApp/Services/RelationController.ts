@@ -5,6 +5,7 @@ import { inject } from "react-ioc";
 import { untracked, runInAction, IObservableArray } from "mobx";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
+import { DataMerger } from "Services/DataMerger";
 import { DataContext } from "Services/DataContext";
 import {
   ContentSchema,
@@ -20,6 +21,7 @@ export class RelationController {
   @inject private _editorSettings: EditorSettings;
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
+  @inject private _dataMerger: DataMerger;
   @inject private _dataContext: DataContext;
 
   private _query = document.location.search;
@@ -153,6 +155,6 @@ export class RelationController {
 
     const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
 
-    this._dataContext.mergeArticles(dataSnapshot);
+    this._dataMerger.mergeArticles(dataSnapshot);
   }
 }

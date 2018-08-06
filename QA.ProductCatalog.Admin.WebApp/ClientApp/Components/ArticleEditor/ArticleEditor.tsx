@@ -4,6 +4,7 @@ import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { ArticleObject } from "Models/EditorDataModels";
 import { SchemaContext } from "Services/SchemaContext";
+import { EditorController } from "Services/EditorController";
 import { isString, isFunction } from "Utils/TypeChecks";
 import { ArticleMenu } from "./ArticleMenu";
 import { ObjectEditor, ObjectEditorProps } from "./ObjectEditor";
@@ -24,6 +25,7 @@ interface ArticleEditorProps {
 @consumer
 @observer
 export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
+  @inject private _editorController: EditorController;
   @inject private _schemaContext: SchemaContext;
   private _titleField: (model: ArticleObject) => string;
 
@@ -32,6 +34,11 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
     const { contentSchema, titleField = contentSchema.DisplayFieldName || (() => "") } = this.props;
     this._titleField = isString(titleField) ? article => article[titleField] : titleField;
   }
+
+  hadleSaveAll = () => {
+    const { model, contentSchema } = this.props;
+    this._editorController.savePartialProduct(model, contentSchema);
+  };
 
   render() {
     const { model, contentSchema, header, buttons, onRemove, children } = this.props;
@@ -51,7 +58,7 @@ export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
             <div className="article-editor__buttons">
               <ArticleMenu
                 onSave={showSaveButton && (() => {})}
-                onSaveAll={showSaveButton && (() => {})}
+                onSaveAll={showSaveButton && this.hadleSaveAll}
                 onRemove={onRemove && (() => onRemove(model))}
                 onRefresh={() => {}} // TODO: refersh PartialProduct
                 onClone={() => {}} // TODO: clone PartialProduct

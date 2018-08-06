@@ -211,8 +211,14 @@ export const validationMixin = (self: Object) => {
         return this;
       },
       setTouched(name: string, isTouched = true) {
-        const fieldState = getOrAddFieldState(name);
-        fieldState.isTouched = isTouched;
+        if (isTouched) {
+          getOrAddFieldState(name).isTouched = true;
+        } else {
+          const fieldState = fields.get(name);
+          if (fieldState) {
+            fieldState.isTouched = false;
+          }
+        }
         return this;
       },
       setUntouched() {
@@ -222,11 +228,14 @@ export const validationMixin = (self: Object) => {
         return this;
       },
       setChanged(name: string, isChanged = true) {
-        const fieldState = getOrAddFieldState(name);
-        fieldState.isChanged = isChanged;
         if (isChanged) {
+          getOrAddFieldState(name).isChanged = true;
           changedFieldNames.set(name, true);
         } else {
+          const fieldState = fields.get(name);
+          if (fieldState) {
+            fieldState.isChanged = false;
+          }
           changedFieldNames.delete(name);
         }
         return this;
@@ -239,7 +248,14 @@ export const validationMixin = (self: Object) => {
         return this;
       },
       setFocus(name: string, hasFocus = true) {
-        getOrAddFieldState(name).hasFocus = hasFocus;
+        if (hasFocus) {
+          getOrAddFieldState(name).hasFocus = true;
+        } else {
+          const fieldState = fields.get(name);
+          if (fieldState) {
+            fieldState.hasFocus = false;
+          }
+        }
         return this;
       }
     },

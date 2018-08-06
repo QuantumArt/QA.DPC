@@ -2,8 +2,9 @@ import { inject } from "react-ioc";
 import { ArticleSnapshot, ArticleObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { EditorSettings } from "Models/EditorSettings";
-import { DataSerializer } from "Services/DataSerializer";
+import { DataSerializer, IdMapping } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
+import { DataMerger } from "Services/DataMerger";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { command } from "Utils/Command";
@@ -12,6 +13,7 @@ export class EditorController {
   @inject private _editorSettings: EditorSettings;
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
+  @inject private _dataMerger: DataMerger;
   @inject private _dataContext: DataContext;
   @inject private _schemaContext: SchemaContext;
 
@@ -66,5 +68,52 @@ export class EditorController {
     this._dataNormalizer.initSchema(this._schemaContext.contentSchemasById);
   }
 
-  public async savePartialProduct(_article: ArticleObject, _contentSchema: ContentSchema) {}
+  @command
+  public async savePartialProduct(article: ArticleObject, contentSchema: ContentSchema) {
+    const partialProduct = this._dataSerializer.serialize(article);
+
+    const response = await fetch(
+      `${this._rootUrl}/ProductEditor/SavePartialProduct${this._query}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: contentSchema.ContentPath,
+          PartialProduct: partialProduct
+        })
+      }
+    );
+    if (response.status === 409) {
+      const dataTree = this._dataSerializer.deserialize<ArticleSnapshot>(await response.text());
+      const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
+      const { hasMergeConfilicts } = this._dataMerger.mergeArticles(dataSnapshot);
+      if (hasMergeConfilicts) {
+        // TODO: React confirm dialog
+        if (window.confirm(`Данные на сервере были изменены.\nПрименить изменения с сервера?`)) {
+          this._dataMerger.overwriteArticles(dataSnapshot);
+        }
+      }
+      return;
+    } else if (!response.ok) {
+      // TODO: React alert dialog
+      alert("При сохранении произошла ошибка!");
+      throw new Error(await response.text());
+    }
+
+    const okResponse: {
+      IdMappings: IdMapping[];
+      PartialProduct: Object;
+    } = await response.json();
+
+    this._dataSerializer.extendIdMappings(okResponse.IdMappings);
+
+    const dataTreeJson = JSON.stringify(okResponse.PartialProduct);
+    const dataTree = this._dataSerializer.deserialize<ArticleSnapshot>(dataTreeJson);
+    const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
+    this._dataMerger.overwriteArticles(dataSnapshot);
+  }
 }

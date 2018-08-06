@@ -24,9 +24,12 @@ export class DataSerializer {
    * Заменяет все отрицательные клиентские Id на соответствующие им
    * серверные Id (если они уже определены).
    */
-  public serialize(article: ArticleObject): string {
+  public serialize(article: ArticleObject): Object {
     function toObject(argument: any) {
       if (isObject(argument)) {
+        if (argument instanceof Date) {
+          return argument;
+        }
         const object: { _ServerId?: number } = {};
         Object.keys(argument).forEach(key => {
           object[key] = toObject(argument[key]);
@@ -42,7 +45,7 @@ export class DataSerializer {
       return argument;
     }
 
-    return JSON.stringify(toObject(article));
+    return toObject(article);
   }
 
   /**

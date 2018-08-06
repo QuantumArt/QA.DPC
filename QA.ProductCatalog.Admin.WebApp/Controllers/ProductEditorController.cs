@@ -247,7 +247,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             Content relationContent = _editorPartialContentService
                 .FindContentByPath(rootContent, request.ContentPath)
                 .ShallowCopy();
-
+            
             Field relationField = relationContent.Fields
                 .Single(f => f.FieldName == request.RelationFieldName);
 
@@ -285,7 +285,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return SavePartialProduct(request, isLive, saveMinimalSubtree: true);
         }
 
-        public ActionResult SavePartialProduct(SavePartialProductRequest request, bool isLive, bool saveMinimalSubtree)
+        private ActionResult SavePartialProduct(SavePartialProductRequest request, bool isLive, bool saveMinimalSubtree)
         {
             if (!ModelState.IsValid)
             {
