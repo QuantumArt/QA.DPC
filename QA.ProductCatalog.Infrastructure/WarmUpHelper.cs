@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Threading;
+using QA.Core;
 using QA.Core.Logger;
 using Unity;
 
@@ -6,11 +8,12 @@ namespace QA.ProductCatalog.Infrastructure
 {
     public class WarmUpHelper
 	{
-		public static void WarmUp(IUnityContainer unityContainer)
+		
+		public static void WarmUp()
 		{
-			var warmUpProviders = unityContainer.ResolveAll<IWarmUpProvider>();
+			var warmUpProviders = ObjectFactoryBase.DefaultContainer.ResolveAll<IWarmUpProvider>();
 
-			var logger = unityContainer.Resolve<ILogger>();
+			var logger = ObjectFactoryBase.Logger;
 
 			foreach (var warmUpProvider in warmUpProviders)
 				try

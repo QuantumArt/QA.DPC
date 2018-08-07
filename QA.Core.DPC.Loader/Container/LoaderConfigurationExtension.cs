@@ -77,8 +77,6 @@ namespace QA.Core.DPC.Loader.Container
 
             Container.RegisterType<IRegionService>("RegionServiceFakeUser",
                     new InjectionFactory(c => new RegionService(Container.Resolve<IVersionedCacheProvider>(),
-                        Container.Resolve<ICacheItemWatcher>(),
-                        Container.Resolve<IUserProvider>(AlwaysAdminUserProviderName),
                         Container.Resolve<ISettingsService>(),
                         Container.Resolve<IConnectionProvider>())));
 
@@ -117,13 +115,16 @@ namespace QA.Core.DPC.Loader.Container
                     c.Resolve<ISettingsService>(),
                     c.Resolve<IConnectionProvider>())));
 
-            string loaderWarmUpProductIdStr = ConfigurationManager.AppSettings["LoaderWarmUpProductId"];
-
-            if (!string.IsNullOrEmpty(loaderWarmUpProductIdStr))
+            if (int.TryParse(ConfigurationManager.AppSettings["LoaderWarmUpProductId"], out var loaderWarmUpProductId))
             {
-                int loaderWarmUpProductId = int.Parse(loaderWarmUpProductIdStr);
+                Container.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>("ProductLoaderWarmUpProvider", 
+                    new InjectionConstructor(typeof(ProductLoader), typeof(ILogger), loaderWarmUpProductId));
 
-                Container.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>("ProductLoaderWarmUpProvider", new InjectionConstructor(typeof(ProductLoader), typeof(ILogger), loaderWarmUpProductId));
+                if (int.TryParse(ConfigurationManager.AppSettings["LoaderWarmUpRepeatInMinutes"],
+                    out var loaderWarmUpRepeatInMinutes))
+                {
+                    Container.RegisterInstance(new WarmUpRepeater(loaderWarmUpRepeatInMinutes));
+                }
             }
         }
     }

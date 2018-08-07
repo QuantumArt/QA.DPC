@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -74,12 +75,24 @@ namespace QA.Core.DPC.Loader
 
         public string SerializeProduct(Article article, IArticleFilter filter, bool includeRegionTags = false)
         {
-            Dictionary<string, object> product = ConvertArticle(article, filter);
-
-            string productJson = JsonConvert.SerializeObject(product, Formatting.Indented);
+            var sw = new Stopwatch();
+            sw.Start();
+            Dictionary<string, object> convertedArticle = ConvertArticle(article, filter);
+            sw.Stop();
+            _logger.Debug("Product {1} conversion took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
             
+            sw.Reset();
+            sw.Start();
+            string productJson = JsonConvert.SerializeObject(convertedArticle, Formatting.Indented);
+            sw.Stop();
+            _logger.Debug("Product {1} serializing took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
+
+            string result;
             if (includeRegionTags && article.GetField("Regions") is MultiArticleField regionField)
             {
+                sw.Reset();
+                sw.Start();
+
                 int[] regionIds = regionField.Items.Keys.ToArray();
 
                 TagWithValues[] tags = _regionTagReplaceService.GetRegionTagValues(productJson, regionIds);
@@ -89,10 +102,17 @@ namespace QA.Core.DPC.Loader
                     Formatting.Indented,
                     new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
 
-                return $"{{ \"{ProductProp}\" : {productJson}, \"{RegionTagsProp}\" : {tagsJson} }}";
+                sw.Stop();
+                _logger.Debug("Product {1} enrichment with regional tags took {0} sec", sw.Elapsed.TotalSeconds, article.Id);
+
+                result = $"{{ \"{ProductProp}\" : {productJson}, \"{RegionTagsProp}\" : {tagsJson} }}";
+            }
+            else
+            {
+                result = $"{{ \"{ProductProp}\" : {productJson} }}";
             }
 
-            return $"{{ \"{ProductProp}\" : {productJson} }}";
+            return result;
         }
         
         private class SchemaContext
@@ -745,17 +765,12 @@ namespace QA.Core.DPC.Loader
                         _dbConnector, plainArticleField.FieldId.Value, plainArticleField.Value);
 
                     int size = 0;
-                    try
+                    if (File.Exists(path))
                     {
-                        var fi = new FileInfo(path);
-                        size = (int)fi.Length;
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.ErrorException("DBConnector error", ex);
+                        size = (int)new FileInfo(path).Length;
                     }
 
-                    return new PlainFieldFileInfo
+                        return new PlainFieldFileInfo
                     {
                         Name = plainArticleField.Value.Contains("/")
                             ? plainArticleField.Value.Substring(plainArticleField.Value.LastIndexOf("/") + 1)
@@ -863,7 +878,7 @@ namespace QA.Core.DPC.Loader
             if (field is MultiArticleField multiArticleField)
             {
                 var articles = multiArticleField
-                    .GetArticles(filter)
+                    .GetArticlesSorted(filter)
                     .Select(x => ConvertArticle(x, filter))
                     .ToArray();
 

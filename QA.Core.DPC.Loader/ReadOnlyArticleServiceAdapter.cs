@@ -47,9 +47,9 @@ namespace QA.Core.DPC.Loader
             return ArticleService.Read(articleId, contentId, true, excludeArchive);
         }
 
-        public virtual IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true)
+        public virtual IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true, string filter = "")
 		{
-			return ArticleService.List(contentId, ids, excludeArchive);
+			return ArticleService.List(contentId, ids, excludeArchive, filter);
 		}
 
 		public string GetLinkedItems(int linkId, int id, bool excludeArchive = true)
@@ -57,10 +57,22 @@ namespace QA.Core.DPC.Loader
 			return ArticleService.GetLinkedItems(linkId, id, excludeArchive);
 		}
 
+	    public Dictionary<int, Dictionary<int, List<int>>> GetLinkedItems(int[] linkIds, int[] ids,
+	        bool excludeArchive = true)
+	    {
+	        return ArticleService.GetLinkedItemsMultiple(linkIds, ids, excludeArchive);
+	    } 
+
 		public string GetRelatedItems(int fieldId, int? id, bool excludeArchive = true)
 		{
 			return ArticleService.GetRelatedItems(fieldId, id, excludeArchive);
 		}
+
+	    public Dictionary<int, Dictionary<int, List<int>>> GetRelatedItems(int[] linkIds, int[] ids,
+	        bool excludeArchive = true)
+	    {
+	        return ArticleService.GetRelatedItemsMultiple(linkIds, ids, excludeArchive);
+	    } 
 
 		public string[] GetFieldValues(int[] ids, int contentId, string fieldName)
 		{
@@ -70,6 +82,7 @@ namespace QA.Core.DPC.Loader
 		public bool IsLive
 		{
 			get { return ArticleService.IsLive; }
+
 			set { ArticleService.IsLive = value; }
 		}
 	}

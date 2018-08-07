@@ -146,7 +146,7 @@ namespace QA.ProductCatalog.Integration
                                              where Match(c.Filter, p)
                                              group c by p into g
                                              let cultures = g.Select(x => x.Culture).Distinct().ToArray()
-                                             let localizationMap = _localizationService.SplitLocalizations(g.Key, cultures)
+                                             let localizationMap = _localizationService.SplitLocalizations(g.Key, cultures, true)
                                              select from c2 in g
                                                     group c2 by new { c2.Culture, c2.Formatter } into g2
                                                     let localProduct = localizationMap[g2.Key.Culture]

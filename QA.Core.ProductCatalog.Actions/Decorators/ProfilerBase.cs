@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using QA.Core.Logger;
 
@@ -47,6 +48,11 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
         protected void EndMethod(ProfilerToken token, string[] result)
         {
             EndMethod(token, "[" + string.Join("], [", result) + "]");
+        }
+
+        protected void EndMethod(ProfilerToken token, Dictionary<int, Dictionary<int, List<int>>> result)
+        {
+            EndMethod(token, "Dictionary");
         }
     }
 }

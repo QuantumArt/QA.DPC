@@ -16,6 +16,8 @@
         REGIONAL_TAGS_CONTENT_ID,    //Идентификатор контента Региональные теги
         REGIONAL_TAGS_VALUES_CONTENT_ID,    //Идентификатор контента Значения региональных тегов
         REGIONAL_TAGS_RECURSIVE_DEPTH, //Глубина рекурсивных замен внутри самих тэгов,
+        REGIONAL_TAGS_KEY_FIELD_NAME,    //Поле, содержащее имя тега 
+        REGIONAL_TAGS_VALUES_VALUE_FIELD_NAME,   //Поле, содержащее значение регионального тега 
         REGIONS_CONTENT_ID,    //Идентификатор контента Регионы
         MARKETING_PRODUCT_CONTENT_ID, //Идентификатор контента Марекетинговые регионы
         PRODUCTS_CONTENT_ID,        //Идентификатор контента Продукты

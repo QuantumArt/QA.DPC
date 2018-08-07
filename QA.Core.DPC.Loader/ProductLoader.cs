@@ -22,15 +22,19 @@ using Content = QA.Core.Models.Configuration.Content;
 using Qp8Bll = Quantumart.QP8.BLL;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
+using QP8.Infrastructure.Extensions;
 using Quantumart.QP8.Constants;
 
 namespace QA.Core.DPC.Loader
 {
     public class ProductLoader : IProductService
     {
+        // ReSharper disable once InconsistentNaming
         private const string ARTICLE_STATUS_PUBLISHED = "Published";
+        // ReSharper disable once InconsistentNaming
         private const string KEY_CACHE_GET_ARTICLE = "GetArticle_";
 
         private int _hits;
@@ -75,7 +79,7 @@ namespace QA.Core.DPC.Loader
             var fields = _fieldService.List(definition.Content.ContentId).ToArray();
 
             var fieldNames = definition.Content.Fields
-                .Where(x => x is PlainField && ((PlainField)x).ShowInList)
+                .Where(x => x is PlainField field && field.ShowInList)
                 .Select(x => fields.Single(y => y.Id == x.FieldId).Name)
                 .ToList();
 
@@ -134,15 +138,9 @@ namespace QA.Core.DPC.Loader
                 timer.Start();
 
                 ArticleService.LoadStructureCache();
-
+                
                 timer.Stop();
-
                 _logger.Debug("LoadStructureCache took {0} secs", timer.Elapsed.TotalSeconds);
-
-
-                // вот тут мы принудительно проверяем изменения и чистим кеш.
-
-                timer.Stop();
 
                 Article article = null;
 
@@ -155,35 +153,55 @@ namespace QA.Core.DPC.Loader
 
                 if (article == null)
                 {
+                    timer.Reset();
+                    timer.Start();
+
                     var counter = GetArticleCounter(id);
 
-                    var qpArticle = ReadArticle(id, isLive);
+                    var qpArticle = ReadArticles(new[]{id}, isLive).FirstOrDefault();
 
                     if (qpArticle == null)
                         return null;
 
-                    int productTypeId; // Идентификатор контента-расширения
-
                     int.TryParse(qpArticle.FieldValues.Where(x => x.Field.IsClassifier).Select(x => x.Value).FirstOrDefault(),
-                        out productTypeId);
+                        out var productTypeId);
+
+                    timer.Stop();
+                    _logger.Debug("Root article loading took {0} secs", timer.Elapsed.TotalSeconds);
+
+
+                    timer.Reset();
+                    timer.Start();
 
                     if (productDefinition == null)
                         productDefinition = GetProductDefinition(productTypeId, qpArticle.ContentId, isLive);
 
-                    timer.Reset();
+                    timer.Stop();
+                    _logger.Debug("Product definition loading took {0} secs", timer.Elapsed.TotalSeconds);
 
+
+                    timer.Reset();
                     timer.Start();
 
                     article = GetProduct(qpArticle, productDefinition, isLive, counter);
                     counter.LogCounter();
+
+                    timer.Stop();
+                    _logger.Debug("GetProduct took {0} secs", timer.Elapsed.TotalSeconds);
                 }
 
                 if (article.HasVirtualFields)
+                {
+                    timer.Reset();
+                    timer.Start();
+
                     article = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
+                    
+                    timer.Stop();
+                    _logger.Debug("Virtual fields generating took {0} secs", timer.Elapsed.TotalSeconds);
+                }
 
-                timer.Stop();
 
-                _logger.Debug("GetProduct took {0} secs", timer.Elapsed.TotalSeconds);
 
                 return article;
             }
@@ -215,10 +233,10 @@ namespace QA.Core.DPC.Loader
                 _cacheItemWatcher.TrackChanges();
                 ArticleService.LoadStructureCache();
 
-                var articles = ArticleService.List(contentId, ids);
-                if (articles == null || !articles.Any())
+                var articles = ArticleService.List(contentId, ids).ToArray();
+                if (!articles.Any())
                 {
-                    return new Article[] {};
+                    return new Article[] { };
                 }
 
                 //Группируем статьи по значению productTypeId (идентификатору контента-расширения)
@@ -245,7 +263,7 @@ namespace QA.Core.DPC.Loader
                             .Select(product =>
                             {
                                 var counter = GetArticleCounter(product.Id);
-                                var article = GetArticle(product, productDefinition.StorageSchema, loadedArticles, isLive, counter);
+                                var article = GetArticlesForQpArticles(new[]{product}, productDefinition.StorageSchema, loadedArticles, isLive, counter).FirstOrDefault();
 
                                 if (article != null && article.HasVirtualFields)
                                     article = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
@@ -281,10 +299,10 @@ namespace QA.Core.DPC.Loader
                     }
                 }
 
-                products.AddRange(missingIds.Select(id => GetMissingProduct(id)));
+                products.AddRange(missingIds.Select(GetMissingProduct));
             }
 
-            products.AddRange(existingItems.Select(item => GetExistingProduct(item)));
+            products.AddRange(existingItems.Select(GetExistingProduct));
 
             return products.ToArray();
 
@@ -303,7 +321,7 @@ namespace QA.Core.DPC.Loader
                 ContentDisplayName = item.ContentDisplayName
             };
 
-            if(!string.IsNullOrEmpty(item.TypeAttributeName) && item.TypeAttributeName != item.ExtensionAttributeName)
+            if (!string.IsNullOrEmpty(item.TypeAttributeName) && item.TypeAttributeName != item.ExtensionAttributeName)
             {
                 product.Fields.Add(item.TypeAttributeName, new PlainArticleField
                 {
@@ -384,10 +402,10 @@ namespace QA.Core.DPC.Loader
         {
             var res = new ProductDefinition
             {
-                ProdictTypeId = productTypeId
+                ProdictTypeId = productTypeId,
+                StorageSchema = _definitionService.GetDefinitionForContent(productTypeId, contentId, isLive)
             };
 
-            res.StorageSchema = _definitionService.GetDefinitionForContent(productTypeId, contentId, isLive);
 
             if (res.StorageSchema == null)
                 throw new Exception(
@@ -436,7 +454,7 @@ FROM
                     cmd.Parameters.Add(new SqlParameter("@ids", SqlDbType.Structured) { TypeName = "Ids", Value = Quantumart.QP8.DAL.Common.IdsToDataTable(productIds) });
                     cmd.Parameters.AddWithValue("@typeField", typeField);
                     var data = cnn.GetRealData(cmd);
-                    return data.AsEnumerable().Select(row => Converter.ToModelFromDataRow<ProductInfo>(row)).ToArray();
+                    return data.AsEnumerable().Select(Converter.ToModelFromDataRow<ProductInfo>).ToArray();
                 }
             }
         }
@@ -478,7 +496,7 @@ FROM
 
             _hits = _misses = 0;
 
-            var article = GetArticle(qpArticle, productDefinition.StorageSchema, loadedArticles, isLive, counter);
+            var article = GetArticlesForQpArticles(new []{qpArticle}, productDefinition.StorageSchema, loadedArticles, isLive, counter).FirstOrDefault();
 
             _logger.Info($"GetArticle called with hits {_hits} misses {_misses}");
 
@@ -505,25 +523,21 @@ FROM
 
             foreach (var articleField in article.Fields.Values)
             {
-                if (articleField is SingleArticleField)
+                if (articleField is SingleArticleField singleArticleField)
                 {
-                    var singleArticleField = (SingleArticleField)articleField;
-
                     if (singleArticleField.Item != null)
                     {
                         var field = content.Fields.Single(x => x.FieldId == articleField.FieldId);
 
-                        var childContent = field is EntityField
-                            ? ((EntityField)field).Content
+                        var childContent = field is EntityField entityField
+                            ? entityField.Content
                             : ((ExtensionField)field).ContentMapping[singleArticleField.Item.ContentId];
 
                         FillVirtualFields(singleArticleField.Item, childContent, processedArticleKeys);
                     }
                 }
-                else if (articleField is MultiArticleField)
+                else if (articleField is MultiArticleField multiArticleField)
                 {
-                    var multiArticleField = (MultiArticleField)articleField;
-
                     var field = content.Fields.Single(x => x.FieldId == articleField.FieldId);
 
                     var childContent = ((EntityField)field).Content;
@@ -546,17 +560,17 @@ FROM
         private ArticleField CreateAnyTypeVirtualField(BaseVirtualField virtualField, Article article)
         {
             ArticleField field;
-            if (virtualField is VirtualField)
+            if (virtualField is VirtualField field1)
             {
-                field = CreateVirtualField((VirtualField)virtualField, article);
+                field = CreateVirtualField(field1, article);
             }
-            else if (virtualField is VirtualMultiEntityField)
+            else if (virtualField is VirtualMultiEntityField entityField)
             {
-                field = CreateVirtualMiltiEntityField((VirtualMultiEntityField)virtualField, article);
+                field = CreateVirtualMiltiEntityField(entityField, article);
             }
-            else if (virtualField is VirtualEntityField)
+            else if (virtualField is VirtualEntityField virtualEntityField)
             {
-                field = CreateVirtualArticleField((VirtualEntityField)virtualField, article);
+                field = CreateVirtualArticleField(virtualEntityField, article);
             }
             else
             {
@@ -624,15 +638,13 @@ FROM
                 return null;
             }
 
-            var field = covertedObject as ArticleField;
-            if (field != null)
+            if (covertedObject is ArticleField field)
             {
                 field.FieldName = virtualField.FieldName;
                 return field;
             }
 
-            var foundArticle = covertedObject as Article;
-            if (foundArticle != null)
+            if (covertedObject is Article foundArticle)
             {
                 return new SingleArticleField { Item = foundArticle, FieldName = virtualField.FieldName };
             }
@@ -647,15 +659,13 @@ FROM
 
         private static void RemoveModelObject(ModelObjectWithParent modelObjectWithParent)
         {
-            var articleField = modelObjectWithParent.ModelObject as ArticleField;
-            if (articleField != null)
+            if (modelObjectWithParent.ModelObject is ArticleField articleField)
             {
                 ((Article)modelObjectWithParent.Parent).Fields.Remove(articleField.FieldName);
             }
             else
             {
-                var article = modelObjectWithParent.ModelObject as Article;
-                if (article != null)
+                if (modelObjectWithParent.ModelObject is Article article)
                 {
                     ((MultiArticleField)modelObjectWithParent.Parent).Items.Remove(article.Id);
                 }
@@ -667,111 +677,78 @@ FROM
         /// <summary>
         /// Получение статьи и всех ее полей, описанных в структуре маппинга
         /// </summary>
-        private Article GetArticle(int id, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticlesCache, bool isLive, ArticleCounter counter)
+        private Article[] GetArticlesForQpArticles(Qp8Bll.Article[] articles, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter)
         {
-            if (id == default(int))
-                return null;
+            if (articles == null || !articles.Any())
+                return new Article[] {};
 
             if (contentDef == null)
-                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENT_MAP_NOT_EXISTS, id));
-
-            var keyInLoadedArticlesCache = new ArticleShapedByDefinitionKey(id, contentDef, isLive);
-
-            Article res;
-
-            if (loadedArticlesCache.TryGetValue(keyInLoadedArticlesCache, out res))
             {
-                _hits += 1;
-                counter.CheckCacheArticlesLimit(id);
-                return res;
+                var idstr = String.Join(", ", articles.Select(n => n.Id.ToString()));
+                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENT_MAP_NOT_EXISTS, idstr));
             }
 
+            var articleIds = articles.Select(n => n.Id).ToArray();
+            counter.CheckHitArticlesLimit(articleIds);
 
-            var cachePeriod = contentDef.GetCachePeriodForContent();
+            articles = articles.Where(n => !isLive || n.Status.Name == ARTICLE_STATUS_PUBLISHED).ToArray();
 
-            if (cachePeriod != null)
+            var localKeys = articles.Select(n => n.Id).Select(n => new ArticleShapedByDefinitionKey(n, contentDef, isLive));
+
+            var result = new Dictionary<string, Article>();
+            var localCacheMisses = new HashSet<ArticleShapedByDefinitionKey>();
+
+            foreach (var localKey in localKeys)
             {
-                var cacheTags = GetTags(contentDef);
-                var key = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(id, contentDef, isLive));
-                return _cacheProvider.GetOrAdd(key, cacheTags, cachePeriod.Value, () =>
+                if (localCache.TryGetValue(localKey, out Article res))
                 {
-                    var qpArticle = ReadArticle(id, isLive, contentDef);
-                    return GetArticle(qpArticle, contentDef, loadedArticlesCache, isLive, counter);
-                });
+                    _hits += 1;
+                    counter.CheckCacheArticlesLimit(new[] { localKey.ArticleId });
+                    result.Add(GetArticleKeyStringForCache(localKey), res);
+                }
+                else
+                {
+                    _misses += 1;
+                    localCacheMisses.Add(localKey);
+                }
             }
 
-            var article = ReadArticle(id, isLive, contentDef);
-            return GetArticle(article, contentDef, loadedArticlesCache, isLive, counter);
-        }
+            var initialArticles = articles.Select(n => new
+                {
+                    Article = n,
+                    LocalKey = new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)
+                })
+                .Where(n => localCacheMisses.Contains(n.LocalKey)).Select(n => new
+                {
+                    n.LocalKey,
+                    Article = new Article()
+                    {
+                        ContentId = contentDef.ContentId,
+                        Archived = n.Article.Archived,
+                        ContentDisplayName = n.Article.DisplayContentName,
+                        PublishingMode = contentDef.PublishingMode,
+                        ContentName = n.Article.Content.NetName,
+                        Created = n.Article.Created,
+                        Modified = n.Article.Modified,
+                        IsPublished = n.Article.Status.Name == ARTICLE_STATUS_PUBLISHED && !n.Article.Delayed,
+                        Splitted = n.Article.Splitted,
+                        Status = n.Article.Status.Name,
+                        Visible = n.Article.Visible,
+                        Id = n.Article.Id,
+                        HasVirtualFields = contentDef.Fields.Any(x => x is BaseVirtualField)
+                    }
+                }).ToArray();
 
-        /// <summary>
-        /// Получение статьи и всех ее полей, описанных в структуре маппинга
-        /// </summary>
-        private Article GetArticle(Qp8Bll.Article article, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> loaded, bool isLive, ArticleCounter counter)
-        {
-            if (article == null)
-                return null;
+            //кладем в словарь Articles до а не после загрузки полей так как может быть цикл по данным одновременно с циклом по дефинишенам
+            //и иначе бы был stackoverflow на вызовах GetArticlesNotCached->GetArticlesField->GetArticlesNotCached->...
 
-            counter.CheckHitArticlesLimit(article.Id);
-
-            if (isLive && article.Status.Name != ARTICLE_STATUS_PUBLISHED)
+            foreach (var initialArticle in initialArticles)
             {
-                return null;
+                localCache[initialArticle.LocalKey] = initialArticle.Article;
+                var globalKey = GetArticleKeyStringForCache(initialArticle.LocalKey);
+                result.Add(globalKey, initialArticle.Article);
             }
 
-            var cachePeriod = contentDef.GetCachePeriodForContent();
-
-            if (cachePeriod != null)
-            {
-                var cacheTags = GetTags(contentDef);
-
-                var key = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(article.Id, contentDef, isLive));
-
-                return _cacheProvider.GetOrAdd(key, cacheTags, cachePeriod.Value, () => GetArticleNotCached(article, contentDef, loaded, isLive, counter));
-            }
-            return GetArticleNotCached(article, contentDef, loaded, isLive, counter);
-        }
-
-
-        private Article GetArticleNotCached(Qp8Bll.Article article, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticlesCache, bool isLive, ArticleCounter counter)
-        {
-            if (article == null)
-                throw new Exception(ProductLoaderResources.ERR_XML_ARTICLE_NOT_EXISTS);
-
-            if (contentDef == null)
-                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENT_MAP_NOT_EXISTS, article.Id));
-
-            var keyInLoaded = new ArticleShapedByDefinitionKey(article.Id, contentDef, isLive);
-
-            Article res;
-
-            if (loadedArticlesCache.TryGetValue(keyInLoaded, out res))
-            {
-                _hits += 1;
-                return res;
-            }
-            _misses += 1;
-
-            res = new Article
-            {
-                ContentId = contentDef.ContentId,
-                Archived = article.Archived,
-                ContentDisplayName = article.DisplayContentName,
-                PublishingMode = contentDef.PublishingMode,
-                ContentName = article.Content.NetName,
-                Created = article.Created,
-                Modified = article.Modified,
-                IsPublished = article.Status.Name == ARTICLE_STATUS_PUBLISHED && !article.Delayed,
-                Splitted = article.Splitted,
-                Status = article.Status.Name,
-                Visible = article.Visible,
-                Id = article.Id,
-                HasVirtualFields = contentDef.Fields.Any(x => x is BaseVirtualField)
-            };
-
-            //кладем в словарь Article до а не после загрузки полей так как может быть цикл по данным одновременно с циклом по дефинишенам
-            //и иначе бы был stackowerflow на вызовах GetArticleNotCached->GetArticleField->GetArticleNotCached->...
-            loadedArticlesCache[keyInLoaded] = res;
 
             //Заполнение Plain-полей по параметру LoadAllPlainFields="True"
             if (contentDef.LoadAllPlainFields)
@@ -779,24 +756,25 @@ FROM
                 //Сбор идентификаторов PlainFields полей не описанных в маппинге, но требующихся для получения
                 //Важно: также исключаются идентификаторы ExtensionField, т.к. в qp они также представлены как Plain, но обработаны должны быть иначе
                 var plainFieldsDefIds = contentDef.Fields.Where(x => x is PlainField || x is ExtensionField).Select(x => x.FieldId).ToList();
-                var plainFieldsNotDefIds = article.FieldValues.Where(x => x.Field.RelationType == Qp8Bll.RelationType.None
+                var plainFieldsNotDefIds = articles.First().FieldValues.Where(x => x.Field.RelationType == Qp8Bll.RelationType.None
                                                                                 && !plainFieldsDefIds.Contains(x.Field.Id))
                                                                     .Select(x => x.Field.Id).ToList(); //Список идентификаторов полей который не описаны в xml, но должны быть получены по LoadAllPlainFields="True"
                 if (plainFieldsNotDefIds.Count > 0) //Есть Plain поля не описанные в маппинге, но требуемые по аттрибуту LoadAllPlainFields="True"
                 {
                     foreach (var fieldId in plainFieldsNotDefIds)
                     {
-                        bool hasVirtualFields;
-
-                        var articleField = GetArticleField(fieldId, article, null, loadedArticlesCache, isLive, out hasVirtualFields, counter);
-
-                        if (articleField != null)
+                        var articleFields = GetArticleField(fieldId, articles, null, localCache, isLive, counter);
+                        bool hasVirtualFields = CheckVirtualFields(articleFields);
+                        foreach (var localKey in articles.Select(n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
                         {
-                            res.Fields.Add(articleField.FieldName, articleField);
-
-                            res.HasVirtualFields = res.HasVirtualFields || hasVirtualFields;
+                            var articleField = articleFields[localKey.ArticleId];
+                            var currentRes = localCache[localKey];
+                            if (articleField != null)
+                            {
+                                currentRes.Fields.Add(articleField.FieldName, articleField);
+                                currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
+                            }
                         }
-
                     }
                 }
             }
@@ -804,292 +782,410 @@ FROM
             //Заполнение полей из xaml-маппинга
             foreach (var fieldDef in contentDef.Fields.Where(x => !(x is Dictionaries) && !(x is BaseVirtualField)))
             {
-                bool hasVirtualFields;
-
-                var articleField = GetArticleField(fieldDef.FieldId, article, contentDef, loadedArticlesCache, isLive, out hasVirtualFields, counter, fieldDef.FieldName);
-
-                if (articleField != null)
+                var articleFields = GetArticleField(fieldDef.FieldId, articles, contentDef, localCache, isLive, counter, fieldDef.FieldName);
+                var hasVirtualFields = CheckVirtualFields(articleFields);
+                
+                foreach (var localKey in articles.Select(n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
                 {
-                    res.Fields.Add(articleField.FieldName, articleField);
-
-                    res.HasVirtualFields = res.HasVirtualFields || hasVirtualFields;
+                    var articleField = articleFields[localKey.ArticleId];
+                    var currentRes = localCache[localKey];
+                    if (articleField != null)
+                    {
+                        currentRes.Fields.Add(articleField.FieldName, articleField);
+                        currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
+                    }
                 }
             }
 
-            return res;
+            return result.Select(n => n.Value).ToArray();
         }
 
         /// <summary>
         /// Получение объекта поля (значение или связь с другим контентом)
         /// </summary>
-        private ArticleField GetArticleField(int id, Qp8Bll.Article article, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> loadedArticles, bool isLive, out bool hasVirtualFields, ArticleCounter counter, string fieldName = "")
+        private Dictionary<int, ArticleField> GetArticleField(int fieldId, Qp8Bll.Article[] articles, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter, string fieldName = "")
         {
-            ArticleField res = null;
+            var result = new Dictionary<int, ArticleField>();
 
-            if (article == null)
-                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_ARTICLE_EMPTY, id));
+            if (articles == null || !articles.Any())
+                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_ARTICLE_EMPTY, fieldId));
 
             Field fieldDef = null;
 
             if (contentDef != null)
             {
-                var fieldsFromDef = contentDef.Fields.Where(x => x.FieldId == id).ToArray();
+                var fieldsFromDef = contentDef.Fields.Where(x => x.FieldId == fieldId).ToArray();
 
                 if (fieldsFromDef.Length > 1)
-                    throw new Exception($"В Content с id={contentDef.ContentId} есть более одного поля с id={id}");
+                    throw new Exception($"В Content с id={contentDef.ContentId} есть более одного поля с id={fieldId}");
 
                 if (fieldsFromDef.Length == 1)
                     fieldDef = fieldsFromDef[0];
             }
 
 
-            Qp8Bll.FieldValue field = null;
+            Qp8Bll.FieldValue[] fieldValues = articles.Select(n => n.FieldValues.SingleOrDefault(m => m.Field.Id == fieldId)).ToArray();
+            var fieldValue = fieldValues.First();
+            var articleIds = articles.Select(n => n.Id).ToArray();
 
             if (!(fieldDef is BackwardRelationField)) //Поле может быть определено для любого, кроме обратного (т.к. при обратном подразумевается, что прямого нет)
             {
-                field = article.FieldValues.SingleOrDefault(x => x.Field.Id == id);
-
-                if (field == null)
-                    throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_NOT_EXISTS, id, article.Id, article.ContentId));
-            }
-
-            hasVirtualFields = false;
-
-            if (fieldDef == null || fieldDef is PlainField) //Для поля не переданы настройки маппинга или оно PlainField => если оно простое, надо получить его значение, если не простое -- пропускается
-            {
-                object nativeValue = field.ObjectValue;
-
-                if (field.ObjectValue != null && field.Field.ExactType == FieldExactTypes.Numeric)
+                if (!fieldValues.Any() || fieldValues.First() == null)
                 {
-                    if (field.Field.IsInteger && field.Field.IsLong)
-                    {
-                        nativeValue = Convert.ToInt64(field.ObjectValue);
-                    }
-                    else if ((field.Field.IsInteger && !field.Field.IsLong) || field.Field.RelationType == Qp8Bll.RelationType.OneToMany)
-                    {
-                        nativeValue = Convert.ToInt32(field.ObjectValue);
-                    }
-                    else if (field.Field.IsDecimal)
-                    {
-                        nativeValue = Convert.ToDecimal(field.ObjectValue);
-                    }
-                    else if (!field.Field.IsDecimal)
-                    {
-                        nativeValue = Convert.ToDouble(field.ObjectValue);
-                    }
+                    var article = articles.First();
+                    throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_NOT_EXISTS, fieldId, article.Id, article.ContentId));
                 }
 
-                res = new PlainArticleField
-                {
-                    Value = field.Value,
-                    NativeValue = nativeValue,
-                    PlainFieldType = (PlainFieldType)field.Field.ExactType /*map to our types*/
-                };
+            }
+            if (fieldDef == null || fieldDef is PlainField) //Для поля не переданы настройки маппинга или оно PlainField => если оно простое, надо получить его значение, если не простое -- пропускается
+            {
+                result.AddRange(ProcessSimpleFields(fieldValues));
             }
             else if (fieldDef is BackwardRelationField)
             {
-                var subContentDef = ((BackwardRelationField)fieldDef).Content;
-
-                if (subContentDef == null)
-                    throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_MAP_NOT_EXISTS, 0, "BackwardRelationField", id));
-
-                var qpField = _fieldService.Read(id);
-
-                var relatedArticlesIds = GetBackwardArticlesIds(qpField, article.Id);
-
-                var items = new Dictionary<int, Article>();
-
-                var articleToReadFromQpIds = new List<int>();
-
-                foreach (var relatedArticleId in relatedArticlesIds)
-                {
-                    var key = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(relatedArticleId, subContentDef, isLive));
-
-                    var cachedArticle = _cacheProvider.Get(key, GetTags(subContentDef)) as Article;
-
-                    if (cachedArticle != null)
-                        items.Add(relatedArticleId, cachedArticle);
-                    else if (loadedArticles.TryGetValue(new ArticleShapedByDefinitionKey(relatedArticleId, subContentDef, isLive), out cachedArticle))
-                        items.Add(relatedArticleId, cachedArticle);
-                    else
-                        articleToReadFromQpIds.Add(relatedArticleId);
-                }
-
-                if (articleToReadFromQpIds.Count > 0)
-                {
-                    var relatedQpArticles = ArticleService.List(default(int), articleToReadFromQpIds.ToArray());
-
-                    foreach (var relatedQpArticle in relatedQpArticles)
-                    {
-                        var relatedArticle = GetArticle(relatedQpArticle, subContentDef, loadedArticles, isLive, counter);
-
-                        if (relatedArticle != null)
-                            items.Add(relatedArticle.Id, relatedArticle);
-                    }
-                }
-
-                res = new BackwardArticleField
-                {
-                    Items = items,
-                    FieldDisplayName = ((BackwardRelationField)fieldDef).DisplayName,
-                    ContentId = subContentDef.ContentId,
-                    SubContentId = subContentDef.ContentId,
-                    FieldId = id,
-                    FieldName = string.IsNullOrEmpty(fieldName) ? Guid.NewGuid().ToString() : fieldName
-                };
-
-                hasVirtualFields = items.Any(x => x.Value.HasVirtualFields);
+                result.AddRange(ProcessBackwardRelationField(fieldId, articleIds, localCache, isLive, counter, fieldName, fieldDef));
             }
-            else if (fieldDef is EntityField)   //Сложное поле (контент)
+            else if (fieldDef is EntityField field)   //Сложное поле (контент)
             {
-                var subContentDef = ((EntityField)fieldDef).Content;
+                var subContentDef = field.Content;
 
                 if (subContentDef == null)
-                    throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_MAP_NOT_EXISTS, field.Field.Id, field.Field.Name, id));
+                    throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_MAP_NOT_EXISTS, fieldValue.Field.Id, fieldValue.Field.Name, fieldId));
 
-                var hasRelatedItems = field.RelatedItems.Count() > 0; //К данному полю-связи есть привязанные статьи
-
-                if (field.Field.RelationType == Qp8Bll.RelationType.OneToMany)
+                if (fieldValue.Field.RelationType == Qp8Bll.RelationType.OneToMany)
                 {
-                    Article item = null;
-
-                    if (hasRelatedItems)
-                    {
-                        var itemId = field.RelatedItems.First();
-
-                        item = GetArticle(itemId, subContentDef, loadedArticles, isLive, counter);
-                    }
-
-                    res = new SingleArticleField
-                    {
-                        Item = item,
-                        Aggregated = field.Field.Aggregated,
-                        SubContentId = subContentDef.ContentId
-                    };
-
-                    if (item != null)
-                        hasVirtualFields = item.HasVirtualFields;
+                    result.AddRange(ProcessOneToManyField(localCache, isLive, counter, fieldValues, subContentDef));
                 }
-                else if (field.Field.RelationType == Qp8Bll.RelationType.ManyToMany || field.Field.RelationType == Qp8Bll.RelationType.ManyToOne)
+                else if (fieldValue.Field.RelationType == Qp8Bll.RelationType.ManyToMany || fieldValue.Field.RelationType == Qp8Bll.RelationType.ManyToOne)
                 {
-                    var items = new Dictionary<int, Article>();
-
-                    if (hasRelatedItems)
-                    {
-                        var articleToReadFromQpIds = new List<int>();
-
-                        foreach (var relatedArticleId in field.RelatedItems)
-                        {
-                            var key = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(relatedArticleId, subContentDef, isLive));
-
-                            var tags = GetTags(subContentDef);
-
-                            var cachedArticle = _cacheProvider.Get(key, tags) as Article;
-
-                            if (cachedArticle != null)
-                                items.Add(relatedArticleId, cachedArticle);
-                            else if (loadedArticles.TryGetValue(new ArticleShapedByDefinitionKey(relatedArticleId, subContentDef, isLive), out cachedArticle))
-                                items.Add(relatedArticleId, cachedArticle);
-                            else
-                                articleToReadFromQpIds.Add(relatedArticleId);
-                        }
-
-                        if (articleToReadFromQpIds.Count > 0)
-                        {
-                            var relatedQpArticles = ArticleService.List(default(int), articleToReadFromQpIds.ToArray());
-
-                            foreach (var relatedQpArticle in relatedQpArticles)
-                            {
-                                var relatedArticle = GetArticle(relatedQpArticle, subContentDef, loadedArticles, isLive, counter);
-
-                                if (relatedArticle != null)
-                                    items.Add(relatedArticle.Id, relatedArticle);
-                            }
-                        }
-                    }
-                    res = new MultiArticleField
-                    {
-                        Items = items,
-                        SubContentId = subContentDef.ContentId
-                    };
-
-                    hasVirtualFields = items.Any(x => x.Value.HasVirtualFields);
+                    result.AddRange(ProcessManyField(localCache, isLive, counter, fieldValues, subContentDef));
                 }
             }
             else if (fieldDef is ExtensionField) //Поле-расширение
             {
-                var contentMapping = ((ExtensionField)fieldDef).ContentMapping;
-
-                if (contentMapping == null)
-                    throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_EXT_MAP_NOT_EXISTS, id, article.Id));
-
-                var extensionArticleField = new ExtensionArticleField();
-
-                res = extensionArticleField;
-
-                if (contentMapping.Count > 0 && article.AggregatedArticles != null && field.RelatedItems.Length > 0)
-                {
-                    var extensionContentId = field.RelatedItems.First();
-
-                    var extensionArticle = article.AggregatedArticles.FirstOrDefault(x => x.ContentId == extensionContentId);
-
-                    if (!contentMapping.ContainsKey(extensionContentId))
-                        throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_MAP_NOT_EXISTS, field.Field.Id, field.Field.Name, id));
-
-                    var subContentDef = contentMapping[extensionContentId];
-
-                    extensionArticleField.Value = field.Value;
-
-                    if (extensionArticle == null)
-                    {
-                        _logger.Error(
-                            $"Статья {article.Id} не имеет расширения, хотя поле {id} классификатора  запонено значением {field.Value}.");
-                    }
-                    else
-                    {
-                        extensionArticleField.Item = GetArticle(extensionArticle, subContentDef, loadedArticles, isLive, counter);
-
-                        hasVirtualFields = extensionArticleField.Item.HasVirtualFields;
-                    }
-                }
+                result.AddRange(ProcessExtensionField(fieldId, articles, localCache, isLive, counter, fieldDef));
             }
             else
                 throw new Exception($"Поле типа {fieldDef.GetType()} не поддерживается");
 
-            if (field != null) //field == null только для BackwardArticleField
+            AppendCommonProperties(result, fieldValue, fieldDef, fieldName);
+
+            return result;
+        }
+
+        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessExtensionField(int fieldId, Qp8Bll.Article[] articles, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive,
+            ArticleCounter counter, Field fieldDef)
+        {
+            var contentMapping = ((ExtensionField) fieldDef).ContentMapping;
+
+            Qp8Bll.FieldValue[] fieldValues = articles.Select(n => n.FieldValues.SingleOrDefault(m => m.Field.Id == fieldId)).ToArray();
+            var fieldValue = fieldValues.First();
+            var articleIds = articles.Select(n => n.Id).ToArray();
+
+            if (contentMapping == null || !contentMapping.Any())
+                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_EXT_MAP_NOT_EXISTS, fieldId,
+                    articleIds.First()));
+
+            var extContentIds = fieldValues
+                .Where(fv => fv.RelatedItems.Any())
+                .Select(fv => fieldValue.RelatedItems.First())
+                .Distinct()
+                .ToArray();
+
+            foreach (var extContentId in extContentIds)
             {
-                res.ContentId = field.Field.ContentId;
-                res.FieldId = id;
-                res.FieldName = string.IsNullOrEmpty(fieldName) ? field.Field.Name : fieldName;
-                res.FieldDisplayName = field.Field.DisplayName;
+                if (!contentMapping.ContainsKey(extContentId))
+                    throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_MAP_NOT_EXISTS,
+                        fieldValue.Field.Id, fieldValue.Field.Name, fieldId));
+
+                var extensionsQpData = articles.Select(n => new
+                {
+                    n.Id,
+                    n.FieldValues.Single(k => k.Field.Id == fieldId).Value,
+                    Article = n.AggregatedArticles.FirstOrDefault(x => x.ContentId == extContentId)
+                }).ToArray();
+
+                var extQpNullIds = extensionsQpData.Where(n => n.Article == null).ToArray();
+                if (extQpNullIds.Any())
+                {
+                    var errData = extQpNullIds.First();
+                    _logger.Error(
+                        $"Статья {errData.Id} не имеет расширения, хотя поле {fieldId} классификатора  запонено значением {errData.Value}.");
+                }
+
+                var extQpArticles = extensionsQpData.Select(n => n.Article).ToArray();
+
+                var subContentDef = contentMapping[extContentId];
+                var extArticles =
+                    GetArticlesForQpArticles(extQpArticles, subContentDef, localCache, isLive, counter)
+                        .ToDictionary(n => n.Id, m => m);
+
+
+                var results = extensionsQpData.Select(n => new KeyValuePair<int, ArticleField>(
+                    n.Id, 
+                    new ExtensionArticleField()
+                    {
+                        Value = n.Value,
+                        Item = extArticles[n.Article.Id]
+                    })).ToArray();
+
+                foreach (var result in results)
+                {
+                    yield return result;
+                }
+
+            }
+        }
+
+        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessManyField(Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter, Qp8Bll.FieldValue[] fieldValues,
+            Content subContentDef)
+        {
+            var flattenedRelatedArticlesIds = fieldValues.SelectMany(n => n.RelatedItems).Distinct().ToArray();
+
+            var articleBag = GetArticleBag(flattenedRelatedArticlesIds, subContentDef, localCache, isLive, counter);
+
+            foreach (var fieldValue in fieldValues)
+            {
+                var relatedItems = fieldValue.RelatedItems
+                    .Select(n => articleBag.TryGetValue(n, out var article) ? article : null)
+                    .Where(n => n != null);
+
+                var dict = relatedItems.ToDictionary(relatedItem => relatedItem.Id);
+
+                var res = new MultiArticleField
+                {
+                    Items = dict,
+                    SubContentId = subContentDef.ContentId
+                };
+
+                var result = new KeyValuePair<int, ArticleField>(fieldValue.Article.Id, res);
+                yield return result;
+
+            }
+        }
+
+        private Dictionary<int, Article> GetArticleBag(int[] articleIds, Content subContentDef, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter)
+        {
+            var result = new Dictionary<int, Article>();
+
+            if (articleIds == null)
+                return result;
+
+            if (subContentDef == null)
+            {
+                var idstr = String.Join(", ", articleIds.Select(n => n.ToString()));
+                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENT_MAP_NOT_EXISTS, idstr));
             }
 
-            res.CustomProperties = (fieldDef == null ? null : fieldDef.CustomProperties) ?? new Dictionary<string, object>();
+            var cacheMisses = new List<string>();
+            var keyItems = articleIds.Select(n => new ArticleShapedByDefinitionKey(n, subContentDef, isLive))
+                .Select(n => new { LocalKey = n, GlobalKey =  GetArticleKeyStringForCache(n)}).ToArray();
+            var tags = GetTags(subContentDef);
 
-            return res;
+            foreach (var keyItem in keyItems)
+            {
+                var id = keyItem.LocalKey.ArticleId;
+                if (_cacheProvider.Get(keyItem.GlobalKey, tags) is Article cachedArticle)
+                    result.Add(id, cachedArticle);
+                else if (localCache.TryGetValue(new ArticleShapedByDefinitionKey(id, subContentDef, isLive),
+                    out cachedArticle))
+                    result.Add(id, cachedArticle);
+                else
+                    cacheMisses.Add(keyItem.GlobalKey);
+            }
+
+            if (cacheMisses.Any())
+            {
+
+                var cachePeriod = subContentDef.GetCachePeriodForContent();
+
+
+                if (cachePeriod != null)
+                {
+                    var cacheValues = _cacheProvider.GetOrAddValues(cacheMisses.ToArray(), string.Empty, tags, cachePeriod.Value, Func);
+                    result.AddRange(cacheValues.ToDictionary(n => n.Id, m => m));
+                }
+                else
+                {
+                    var rawValues = Func(cacheMisses.ToArray());
+                    result.AddRange(rawValues.Values.ToDictionary(n => n.Id, m => m));
+                }
+
+            }
+
+            return result;
+
+            
+            Dictionary<string, Article> Func(string[] keysToLoad)
+            {
+                var keyPairs = keysToLoad.ToDictionary(ArticleShapedByDefinitionKey.Parse, m => m);
+                var idsToLoad = keyPairs.Keys.ToArray();
+                var qpArticles = ReadArticles(idsToLoad, isLive, subContentDef);
+                return GetArticlesForQpArticles(qpArticles, subContentDef, localCache, isLive, counter)
+                    .ToDictionary(n => keyPairs[n.Id], m => m);
+            }
+
+        }
+
+        private bool CheckVirtualFields(Dictionary<int, ArticleField> dict)
+        {
+            var result = false;
+            var field = dict.First().Value;
+            if (field is SingleArticleField sf)
+            {
+                result = sf.Item?.HasVirtualFields ?? false;
+            }
+            else if (field is MultiArticleField mf)
+            {
+                result = mf.Items.Any() && mf.Items.First().Value.HasVirtualFields;
+            }
+            return result;
+        }
+
+        private void AppendCommonProperties(Dictionary<int, ArticleField> dict, Qp8Bll.FieldValue fieldValue, Field fieldDef, string fieldName)
+        {
+            foreach (var elem in dict)
+            {
+                if (fieldValue != null) //field == null только для BackwardArticleField
+                {
+                    elem.Value.ContentId = fieldValue.Field.ContentId;
+                    elem.Value.FieldId = fieldValue.Field.Id;
+                    elem.Value.FieldName = string.IsNullOrEmpty(fieldName) ? fieldValue.Field.Name : fieldName;
+                    elem.Value.FieldDisplayName = fieldValue.Field.DisplayName;
+                }
+                elem.Value.CustomProperties = fieldDef?.CustomProperties ?? new Dictionary<string, object>();               
+            }
+
+        }
+
+        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessOneToManyField(Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive,
+            ArticleCounter counter, Qp8Bll.FieldValue[] fieldValues, Content subContentDef)
+        {
+            var itemIds = fieldValues.Where(n => n.RelatedItems.Any()).Select(n => n.RelatedItems.First()).Distinct().ToArray();
+
+            var articleBag = GetArticleBag(itemIds, subContentDef, localCache, isLive, counter);
+
+            foreach (var fieldValue in fieldValues)
+            {
+                var id = fieldValue.Article.Id;
+                var relatedId = fieldValue.RelatedItems.Any() ? fieldValue.RelatedItems.First() : 0;
+                var res = new SingleArticleField
+                {
+                    Item = articleBag.TryGetValue(relatedId, out var article) ? article : null,
+                    Aggregated = fieldValue.Field.Aggregated,
+                    SubContentId = subContentDef.ContentId
+                };
+                var result = new KeyValuePair<int, ArticleField>(id, res);
+                yield return result;
+            }
+
+        }
+
+        private IEnumerable<KeyValuePair<int, ArticleField>> ProcessBackwardRelationField(int id, int[] articleIds, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive,
+           ArticleCounter counter, string fieldName, Field fieldDef)
+        {
+            var subContentDef = ((BackwardRelationField) fieldDef).Content;
+
+            if (subContentDef == null)
+                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_MAP_NOT_EXISTS, 0,
+                    "BackwardRelationField", id));
+
+            var qpField = _fieldService.Read(id);
+
+            var relatedArticlesIds = GetBackwardArticlesIds(qpField, articleIds);
+            var flattenedRelatedArticlesIds = relatedArticlesIds.SelectMany(n => n.Value).Distinct().ToArray();
+
+            var articleBag = GetArticleBag(flattenedRelatedArticlesIds, subContentDef, localCache, isLive, counter);
+
+            var backwardFieldName = string.IsNullOrEmpty(fieldName) ? Guid.NewGuid().ToString() : fieldName;
+
+            foreach (var articleId in articleIds)
+            {
+                var items = new Dictionary<int, Article>();
+                if (relatedArticlesIds.TryGetValue(articleId, out var relatedIds))
+                {
+                    items = relatedIds
+                        .Select(n => articleBag.TryGetValue(n, out var article) ? article : null)
+                        .Where(n => n != null)
+                        .ToDictionary(n => n.Id, m => m);
+
+                }
+
+                var res = new BackwardArticleField
+                    {
+                        Items = items,
+                        FieldDisplayName = ((BackwardRelationField) fieldDef).DisplayName,
+                        ContentId = subContentDef.ContentId,
+                        SubContentId = subContentDef.ContentId,
+                        FieldId = id,
+                        FieldName = backwardFieldName
+                    };
+
+                    var result = new KeyValuePair<int, ArticleField>(articleId, res);
+                    yield return result;
+
+            }
+        }
+
+        private static IEnumerable<KeyValuePair<int, ArticleField>> ProcessSimpleFields(Qp8Bll.FieldValue[] fieldValues)
+        {
+            foreach (var fieldValue in fieldValues)
+            {
+                object nativeValue = fieldValue.ObjectValue;
+
+                if (fieldValue.ObjectValue != null && fieldValue.Field.ExactType == FieldExactTypes.Numeric)
+                {
+                    if (fieldValue.Field.IsInteger && fieldValue.Field.IsLong)
+                    {
+                        nativeValue = Convert.ToInt64(fieldValue.ObjectValue);
+                    }
+                    else if ((fieldValue.Field.IsInteger && !fieldValue.Field.IsLong) ||
+                             fieldValue.Field.RelationType == Qp8Bll.RelationType.OneToMany)
+                    {
+                        nativeValue = Convert.ToInt32(fieldValue.ObjectValue);
+                    }
+                    else if (fieldValue.Field.IsDecimal)
+                    {
+                        nativeValue = Convert.ToDecimal(fieldValue.ObjectValue);
+                    }
+                    else if (!fieldValue.Field.IsDecimal)
+                    {
+                        nativeValue = Convert.ToDouble(fieldValue.ObjectValue);
+                    }
+                }
+
+                var res = new PlainArticleField
+                {
+                    Value = fieldValue.Value,
+                    NativeValue = nativeValue,
+                    PlainFieldType = (PlainFieldType) fieldValue.Field.ExactType /*map to our types*/
+                };
+
+                var result = new KeyValuePair<int, ArticleField>(fieldValue.Article.Id, res);
+
+                yield return result;
+            }
         }
 
         /// <summary>
         /// Получение идентификаторов статей которые связаны с данной по backward field
         /// </summary>
         /// <returns></returns>
-        private int[] GetBackwardArticlesIds(Qp8Bll.Field field, int articleId)
+        private Dictionary<int, List<int>> GetBackwardArticlesIds(Qp8Bll.Field field, int[] articleIds)
         {
-            var res = string.Empty;
+            var res = new Dictionary<int, List<int>>();
 
             if (field.RelationType == Qp8Bll.RelationType.ManyToMany && field.LinkId.HasValue)
             {
-                res = ArticleService.GetLinkedItems(field.LinkId.Value, articleId);
+                var linkId = field.LinkId.Value;
+                res = ArticleService.GetLinkedItems(new [] {linkId}, articleIds)[linkId];
             }
             else if (field.RelationType == Qp8Bll.RelationType.ManyToOne || field.RelationType == Qp8Bll.RelationType.OneToMany)
             {
-                res = ArticleService.GetRelatedItems(field.Id, articleId);
+                res = ArticleService.GetRelatedItems(new [] {field.Id}, articleIds)[field.Id];
             }
 
-            if (string.IsNullOrEmpty(res))
-                return new int[] { };
-
-            return res.Split(',').Select(x => int.Parse(x)).ToArray();
+            return res;
         }
         #endregion
 
@@ -1098,6 +1194,9 @@ FROM
 
         private class ArticleShapedByDefinitionKey
         {
+            
+            private static readonly Regex Re = new Regex(KEY_CACHE_GET_ARTICLE + @"_(\d+)");
+
             public bool IsLive { get; }
 
             public Content Definition { get; }
@@ -1115,9 +1214,7 @@ FROM
 
             public override bool Equals(object obj)
             {
-                var otherKey = obj as ArticleShapedByDefinitionKey;
-
-                if (otherKey == null)
+                if (!(obj is ArticleShapedByDefinitionKey otherKey))
                     return false;
 
                 if (ReferenceEquals(this, otherKey))
@@ -1132,6 +1229,13 @@ FROM
             public override int GetHashCode()
             {
                 return HashHelper.CombineHashCodes(HashHelper.CombineHashCodes(IsLive.GetHashCode(), Definition.GetHashCode()), ArticleId.GetHashCode());
+            }
+
+
+            public static int Parse(string keyToLoad)
+            {
+                var m = Re.Match(keyToLoad);
+                return int.Parse(m.Groups[1].Captures[0].Value);
             }
         }
 
@@ -1155,11 +1259,12 @@ FROM
                 var cacheTags = GetTags(contentToCache);
                 var itemsToAdd = _cacheProvider.GetOrAdd(string.Format(keyCacheInitDic, contentToCache.ContentId, isLive, contentToCache.GetHashCode()), cacheTags, cachePeriod, () =>
                 {
-                    var qpArticles = ArticleService.List(contentToCache.ContentId, null);
+                    var qpArticles = ArticleService.List(contentToCache.ContentId, null).ToArray();
                     var contentDic = new Dictionary<ArticleShapedByDefinitionKey, Article>();
-                    foreach (var qpArticle in qpArticles)
+                    var articles = GetArticlesForQpArticles(qpArticles, contentToCache, res, isLive, counter);
+
+                    foreach (var article in articles)
                     {
-                        var article = GetArticle(qpArticle, contentToCache, res, isLive, counter);
                         if (article != null)
                         {
                             var dicKey = new ArticleShapedByDefinitionKey(article.Id, contentToCache, isLive);
@@ -1195,11 +1300,9 @@ FROM
         #region Articles limitation
         private int GetArticlesLimit()
         {
-            int limit;
-
             var limitText = _settingsService.GetSetting(SettingsTitles.PRODUCT_ARTICLES_LIMIT);
 
-            if (int.TryParse(limitText, out limit))
+            if (int.TryParse(limitText, out var limit))
             {
                 return limit;
             }
@@ -1217,25 +1320,26 @@ FROM
         }
         #endregion
 
-        private Qp8Bll.Article ReadArticle(int id, bool isLive, Content contentDef = null)
+        private Qp8Bll.Article[] ReadArticles(int[] ids, bool isLive, Content contentDef = null)
         {
-            var article = contentDef == null ? ArticleService.Read(id) : ArticleService.Read(id, contentDef.ContentId);
-            if (article == null)
+            var articles = ArticleService.List(contentDef?.ContentId ?? 0, ids)?.ToArray() ?? new Qp8Bll.Article[] {};
+
+            
+            if (contentDef != null && articles.Any())
             {
-                return null;
+                var article = articles.First();
+                if (article.ContentId != contentDef.ContentId)
+                {
+                    throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENTID_DOES_NOT_MATCH_EXPECTED, article.ContentId, article.Id, contentDef.ContentId));
+                }
             }
 
-            if (contentDef != null && article != null && article.ContentId != contentDef.ContentId)
+            if (isLive )
             {
-                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENTID_DOES_NOT_MATCH_EXPECTED, article.ContentId, id, contentDef.ContentId));
+                articles = articles.Where(n => n.Status.Name != ARTICLE_STATUS_PUBLISHED).ToArray();
             }
 
-            if (isLive && article.Status.Name != ARTICLE_STATUS_PUBLISHED)
-            {
-                return null;
-            }
-
-            return article;
+            return articles;
         }
         #endregion
     }
@@ -1259,21 +1363,21 @@ FROM
             _cacheCount = 0;
         }
 
-        public void CheckHitArticlesLimit(int id)
+        public void CheckHitArticlesLimit(int[] ids)
         {
             if (IsActive())
             {
-                _hitCount++;
-                CheckArticlesLimit();
+                _hitCount += ids.Length;
+                CheckArticlesLimit(ids.Length);
             }
         }
 
-        public void CheckCacheArticlesLimit(int id)
+        public void CheckCacheArticlesLimit(int[] ids)
         {
             if (IsActive())
             {
-                _cacheCount++;
-                CheckArticlesLimit();
+                _cacheCount += ids.Length;
+                CheckArticlesLimit(ids.Length);
             }
         }
 
@@ -1285,9 +1389,9 @@ FROM
             }
         }
 
-        private void CheckArticlesLimit()
+        private void CheckArticlesLimit(int increment = 1)
         {
-            _totalCount++;
+            _totalCount += increment;
             if (IsExceeded())
             {
                 LogCounter();

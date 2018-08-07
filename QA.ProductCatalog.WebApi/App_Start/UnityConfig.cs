@@ -16,28 +16,40 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.Configuration;
 using System;
+using System.Configuration;
+using System.Threading;
 using Unity;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
     public static class UnityConfig
-	{
+    {
 		public static IUnityContainer Configure()
 		{
 		    var container = RegisterTypes(new UnityContainer());
 		    ObjectFactoryConfigurator.DefaultContainer = container;
+			WarmUpHelper.WarmUp();
 		    return container;
         }
 
 		private static IUnityContainer RegisterTypes(IUnityContainer unityContainer)
 		{
-            unityContainer.AddNewExtension<QPAutopublishContainerConfiguration>();
+			unityContainer.AddNewExtension<LoaderConfigurationExtension>();
+			unityContainer.AddNewExtension<QPAutopublishContainerConfiguration>();
             unityContainer.AddNewExtension<QPContainerConfiguration>();
             unityContainer.AddNewExtension<FormattersContainerConfiguration>();
 			unityContainer.AddNewExtension<APIContainerConfiguration>();
             unityContainer.AddNewExtension<QPAPIContainerConfiguration>();
-
-            unityContainer.RegisterType<IUserProvider, IdentityUserProvider>();
+			
+			
+			if (bool.TryParse(ConfigurationManager.AppSettings["UseAuthorization"], out bool useAuthorization) && useAuthorization)
+			{
+				unityContainer.RegisterType<IUserProvider, IdentityUserProvider>();
+			}
+			else
+			{
+				unityContainer.RegisterType<IUserProvider, ConfigurableUserProvider>();
+			}
 
 			unityContainer.RegisterType<ISettingsService, SettingsFromContentService>();
 
@@ -48,8 +60,6 @@ namespace QA.ProductCatalog.WebApi.App_Start
 			unityContainer.RegisterType<IXmlProductService, XmlProductService>();
 
 			unityContainer.RegisterType<IContentDefinitionService, ContentDefinitionService>();
-
-			unityContainer.AddNewExtension<LoaderConfigurationExtension>();
 
 			unityContainer.RegisterType<IProductPdfTemplateService, ProductPdfTemplateService>();
 

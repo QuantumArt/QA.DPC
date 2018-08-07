@@ -24,12 +24,15 @@ namespace QA.Core.DPC.Loader
         private readonly ILogger _logger;
         private readonly ISettingsService _settingsService;
         private readonly string _connectionString;
+		private readonly IRegionTagReplaceService _regionTagReplaceService;
 
-        public XmlProductService(ILogger logger, ISettingsService settingsService, IConnectionProvider connectionProvider)
+        public XmlProductService(ILogger logger, ISettingsService settingsService, IConnectionProvider connectionProvider, IRegionTagReplaceService regionTagReplaceService)
         {
             _logger = logger;
             _settingsService = settingsService;
+	        _regionTagReplaceService = regionTagReplaceService;	        
             _connectionString = connectionProvider.GetConnection();
+
         }
 
         public string GetProductXml(Article article, IArticleFilter filter)
@@ -96,7 +99,7 @@ namespace QA.Core.DPC.Loader
 					return xml;
 
 				return EnableRegionTagReplacement
-					? ObjectFactoryBase.Resolve<IRegionTagReplaceService>().Replace(xml, regionId, exceptions)
+					? _regionTagReplaceService.Replace(xml, regionId, exceptions)
 					: xml;
 			}
 		}
@@ -144,7 +147,7 @@ namespace QA.Core.DPC.Loader
 
         public Article DeserializeProductXml(XDocument productXml, Models.Configuration.Content definition)
         {
-            var rootProductElement = productXml.Root.Elements().First().Elements().First();
+            var rootProductElement = productXml.Root?.Elements().First().Elements().First();
 
             var productDeserializer = ObjectFactoryBase.Resolve<IProductDeserializer>();
 
@@ -152,38 +155,19 @@ namespace QA.Core.DPC.Loader
         }
 
 
-		/// <summary>
-        ///     Создание элемента xml для региональных замен
-		/// </summary>
-		/// <param name="produts">Xml-Продукты, для которых генерировать</param>
-		/// <param name="regionIds">Идентификаторы регионов, для которых искать значения тегов</param>
-		/// <returns></returns>
-        private XObject GenerateRegionTags(XObject produts, int[] regionIds, out string[] exceptions)
+        private XObject GenerateRegionTags(XObject product, int[] regionIds, out string[] exceptions)
 		{
-			var serviceRegionTags = ObjectFactoryBase.Resolve<IRegionTagReplaceService>();
-			var textTags = serviceRegionTags.GetTags(produts.ToString());
-			var tags = new List<Tuple<int, List<RegionTag>>>();
-
-			foreach (var regId in regionIds)
-			{
-				var regTags = serviceRegionTags.GetRegionTags(regId).ToList();
-				var itemsToRemove = regTags.Where(x => !textTags.Contains(x.Tag)).ToArray();
-				regTags.RemoveAll(x => itemsToRemove.Contains(x));
-				tags.Add(new Tuple<int, List<RegionTag>>(regId, regTags));
-			}
-
+			var tags = _regionTagReplaceService.GetRegionTagValues(product.ToString(), regionIds);
+			
 			var node = new XElement("RegionsTags");
 			var xmlTags = new List<XElement>();
 			var expt = new List<string>();
-			foreach (var tag in textTags)
+			foreach (var tag in tags)
 			{
-				var tagContent = ConvertRegionTag(tag, tags);
-                if (tagContent != null)
-                //Тег имеет разные значения для разных регионов => попадает в XML-список замен и должен быть исключен при проведении региональных замен сейчас
-				{
-					expt.Add(tag);
-					xmlTags.Add(new XElement("Tag", new XElement("Title", tag), tagContent));
-				}
+				var tagContent = ConvertRegionTag(tag);
+				if (tagContent == null) continue;
+				expt.Add(tag.Title);
+				xmlTags.Add(new XElement("Tag", new XElement("Title", tag.Title), tagContent));
 			}
 
 			exceptions = expt.ToArray();
@@ -196,36 +180,16 @@ namespace QA.Core.DPC.Loader
 			return node;
 		}
 
-		/// <summary>
-        ///     Получение объекта со списком рениональных замен для тега
-		/// </summary>
-		/// <param name="tag">текст тега</param>
-		/// <param name="tags">все региональные замены</param>
-		/// <returns></returns>
-        private object ConvertRegionTag(string tag, List<Tuple<int, List<RegionTag>>> tags)
+        private static object ConvertRegionTag(TagWithValues tag)
 		{
-			//exclude = false;
-			//Выбор листа всех значений данного тега для регионов с записью в RegionId Id региона для которого выбрали (а не для которого оно записано в бд, т.к. может быть записано для родителя)
-			var values = tags.Where(x => x.Item2.Any(a => a.Tag == tag))
-							 .Select(x => CreateRegionTag(x.Item1, x.Item2.Where(a => a.Tag == tag).FirstOrDefault())).ToList();
-
-			if (values.Count == 0) //Тег не найден в БД
-				return null;
-
-			//Перебор тегов, поиск с одинаковыми значениями, выделение их в отдельный
-			var results = from v in values
-                          group v.RegionId by v.Value
-                into g
-						  select new { Value = g.Key, Regions = g.ToList() };
-
-            if (results.Count() <= 1) //Тег одинаковый для всех регионов, будез заменен сразу при формировании XML
+			if (!tag.Values.Any() || tag.Values.Length <= 1) 
 				return null;
 
 			return new XElement("RegionsValues",
-				results.Select(x => new XElement("RegionsValue",
+				tag.Values.Select(x => new XElement("RegionsValue",
 													new XElement("Value", new XCData(x.Value)),
 													new XElement("Regions",
-														x.Regions.Select(a => new XElement("Region", a)))
+														x.RegionsId.Select(a => new XElement("Region", a)))
 								  )).ToList());
 		}
 
@@ -318,7 +282,7 @@ namespace QA.Core.DPC.Loader
 			if (articleField is SingleArticleField && ((SingleArticleField)articleField).GetItem(ctx.Filter) == null)
 				return null;
 
-			if (articleField is MultiArticleField && !((MultiArticleField)articleField).GetArticles(ctx.Filter).Any())
+			if (articleField is MultiArticleField && !((MultiArticleField)articleField).GetArticlesSorted(ctx.Filter).Any())
 				return null;
 
 			return new XElement(articleField.FieldName, (
@@ -385,16 +349,7 @@ namespace QA.Core.DPC.Loader
 
                 var path = Common.GetFileFromQpFieldPath(cnn, fieldId, article.Value);
 
-                var size = 0;
-				try
-				{
-                    var fi = new FileInfo(path);
-					size = (int)fi.Length;
-				}
-				catch (Exception ex)
-				{
-					_logger.ErrorException("DBConnector error", ex);
-				}
+                var size = (File.Exists(path)) ? (int)new FileInfo(path).Length : 0;
 
                 return new[]
                 {
@@ -440,7 +395,7 @@ namespace QA.Core.DPC.Loader
         private IEnumerable<object> ConvertValue(MultiArticleField article, CallContext ctx)
 		{
 			return article
-				.GetArticles(ctx.Filter)
+				.GetArticlesSorted(ctx.Filter)
 				.Select(x => Convert(x, ctx));
 		}
 
