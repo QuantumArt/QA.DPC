@@ -228,7 +228,10 @@ namespace QA.Core.DPC.Loader
 
                 extensionArticleField.Item = DeserializeArticle(extensionDataSource, valueDef, connector);
 
-                extensionArticleField.Item.Id = default(int);
+                if (extensionArticleField.Item.Id == productDataSource.GetArticleId())
+                {
+                    extensionArticleField.Item.Id = default(int);
+                }
 
                 extensionArticleField.SubContentId = valueDef.ContentId;
             }

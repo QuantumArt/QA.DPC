@@ -27,6 +27,10 @@ namespace QA.Core.DPC.Loader.Editor
         /// </summary>
         internal const string _Modified = "_Modified";
         /// <summary>
+        /// Признак того, что объект является статьей-расшиернием
+        /// </summary>
+        internal const string _IsExtension = "_IsExtension";
+        /// <summary>
         /// Имя поля для словаря, группирующего поля расширений по имени контента-расширения.
         /// </summary>
         internal static string _Contents(string prop) => $"{prop}_Contents";

@@ -27,7 +27,7 @@ export class DataContext {
   public store: StoreObject = null;
 
   public initSchema(mergedSchemas: ContentSchemasById) {
-    this._storeType = compileStoreType(mergedSchemas);
+    this._storeType = compileStoreType(mergedSchemas, () => this._nextId--);
     this._defaultSnapshots = compileDefaultSnapshots(mergedSchemas);
   }
 
@@ -44,7 +44,7 @@ export class DataContext {
   public createArticle<T extends ArticleObject = ArticleObject>(contentName: string): T {
     const article = this.getContentType(contentName).create({
       ...this._defaultSnapshots[contentName],
-      _ClientId: this._nextId--
+      _ClientId: this._nextId
     }) as T;
 
     this.store[contentName].put(article);
@@ -80,7 +80,10 @@ export class DataContext {
  *   Parent: Region;
  * }
  */
-function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
+function compileStoreType(
+  mergedSchemas: { [name: string]: ContentSchema },
+  getNextId: () => number
+) {
   // создаем словарь с моделями основных контентов
   const contentModels = {};
 
@@ -96,7 +99,10 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
       Object.entries(field.Contents).forEach(([extName, extContent]) => {
         // для каждого контента-расширения создаем словарь его полей
         const extFieldModels = {
-          _ContentName: t.optional(t.literal(extName), extName)
+          _ServerId: t.optional(t.number, getNextId),
+          _ContentName: t.optional(t.literal(extName), extName),
+          _Modified: t.maybe(t.Date),
+          _IsExtension: t.optional(t.literal(true), true)
         };
         // заполняем словарь полей обходя все поля контента-расширения
         Object.values(extContent.Fields).forEach(field => visitField(field, extFieldModels));
@@ -161,9 +167,10 @@ function compileStoreType(mergedSchemas: { [name: string]: ContentSchema }) {
     .forEach(content => {
       const fieldModels = {
         _ClientId: t.identifier(t.number),
-        _ServerId: t.maybe(t.number),
+        _ServerId: t.optional(t.number, getNextId),
         _ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
-        _Modified: t.maybe(t.Date)
+        _Modified: t.maybe(t.Date),
+        _IsExtension: t.optional(t.literal(false), false)
       };
       // заполняем поля модели объекта
       Object.values(content.Fields).forEach(field => visitField(field, fieldModels));

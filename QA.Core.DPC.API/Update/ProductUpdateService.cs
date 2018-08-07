@@ -396,7 +396,9 @@ namespace QA.Core.DPC.API.Update
 
         private void ValidateDates(Article newArticle, Article existingArticle)
         {
-            if (existingArticle != null && newArticle.Modified != default(DateTime) && newArticle.Modified != existingArticle.Modified)
+            if (existingArticle != null
+                && newArticle.Modified != default(DateTime)
+                && newArticle.Modified != existingArticle.Modified)
             {
                 _outdatedArticleIds.Add(newArticle.Id);
             }

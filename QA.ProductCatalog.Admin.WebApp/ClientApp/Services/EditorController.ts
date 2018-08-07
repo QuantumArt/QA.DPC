@@ -1,3 +1,4 @@
+import { toJS } from "mobx";
 import { inject } from "react-ioc";
 import { ArticleSnapshot, ArticleObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
@@ -26,7 +27,7 @@ export class EditorController {
 
     if (this._editorSettings.ArticleId > 0) {
       const response = await fetch(
-        `${this._rootUrl}/ProductEditor/GetEditorData_Test${this._query}&productDefinitionId=${
+        `${this._rootUrl}/ProductEditor/GetEditorData${this._query}&productDefinitionId=${
           this._editorSettings.ProductDefinitionId
         }&articleId=${this._editorSettings.ArticleId}`
       );
@@ -55,7 +56,7 @@ export class EditorController {
 
   private async initSchema() {
     const response = await fetch(
-      `${this._rootUrl}/ProductEditor/GetEditorSchema_Test${this._query}&productDefinitionId=${
+      `${this._rootUrl}/ProductEditor/GetEditorSchema${this._query}&productDefinitionId=${
         this._editorSettings.ProductDefinitionId
       }`
     );
@@ -70,7 +71,7 @@ export class EditorController {
 
   @command
   public async savePartialProduct(article: ArticleObject, contentSchema: ContentSchema) {
-    const partialProduct = this._dataSerializer.serialize(article);
+    const partialProduct = toJS(article);
 
     const response = await fetch(
       `${this._rootUrl}/ProductEditor/SavePartialProduct${this._query}`,

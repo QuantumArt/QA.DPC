@@ -6,36 +6,47 @@ export interface StoreObject {
   readonly [contentName: string]: IExtendedObservableMap<ArticleObject>;
 }
 
-/** Объект, содержащий поля нормальной статьи */
-export interface ArticleObject extends ValidatableObject, IStateTreeNode {
+/** Объект, содержащий поля нормальной статьи или статьи-расширения */
+export interface EntityObject extends ValidatableObject, IStateTreeNode {
   [field: string]: any;
+  /** Серверный Id статьи, полученный при сохранении в БД */
+  _ServerId: number;
+  /** .NET-название контента статьи `Quantumart.QP8.BLL.Content.NetName` */
+  readonly _ContentName: string;
+  /** Дата создания или последнего изменения статьи `QA.Core.Models.Entities.Article.Modified` */
+  _Modified?: Date;
+  /** Признак того, что объект является статьей-расшиернием */
+  readonly _IsExtension: boolean;
+}
+
+export function isEntityObject(object: any): object is EntityObject {
+  return isObject(object) && isString(object._ContentName);
+}
+
+/** Объект, содержащий поля нормальной статьи */
+export interface ArticleObject extends EntityObject {
   /**
    * Локальный неизменяемый Id статьи на клиенте.
    * Совпадает с `_ServerId` для статей загруженных с сервера.
    * Является отрицательным для статей созданных на клиенте.
    */
   readonly _ClientId: number;
-  /** .NET-название контента статьи `Quantumart.QP8.BLL.Content.NetName` */
-  readonly _ContentName: string;
-  /** Серверный Id статьи, полученный при сохранении в БД */
-  _ServerId?: number;
-  /** Дата создания или последнего изменения статьи `QA.Core.Models.Entities.Article.Modified` */
-  _Modified?: Date;
+  /** Признак того, что объект не является статьей-расшиернием */
+  readonly _IsExtension: false;
 }
 
 export function isArticleObject(object: any): object is ArticleObject {
-  return isObject(object) && isString(object._ContentName) && "_ServerId" in object;
+  return isEntityObject(object) && !object._IsExtension;
 }
 
 /** Объект, содержащий поля статьи-расширения */
-export interface ExtensionObject extends ValidatableObject, IStateTreeNode {
-  [field: string]: any;
-  /** .NET-название контента статьи `Quantumart.QP8.BLL.Content.NetName` */
-  readonly _ContentName: string;
+export interface ExtensionObject extends EntityObject {
+  /** Признак того, что объект является статьей-расшиернием */
+  readonly _IsExtension: true;
 }
 
 export function isExtensionObject(object: any): object is ExtensionObject {
-  return isObject(object) && isString(object._ContentName) && !("_ServerId" in object);
+  return isEntityObject(object) && object._IsExtension;
 }
 
 export interface StoreSnapshot {

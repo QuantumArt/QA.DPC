@@ -2,7 +2,7 @@ import React, { Component, StatelessComponent } from "react";
 import { consumer, inject } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
+import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import {
   ContentSchema,
   FieldSchema,
@@ -46,7 +46,7 @@ export interface ContentsConfig {
 }
 
 function isContentsConfig(field: any): field is ContentsConfig {
-  return isObject(field) && !isArticleObject(field) && Object.values(field).every(isObject);
+  return isObject(field) && Object.values(field).every(isObject);
 }
 
 export const IGNORE = Symbol("IGNORE");

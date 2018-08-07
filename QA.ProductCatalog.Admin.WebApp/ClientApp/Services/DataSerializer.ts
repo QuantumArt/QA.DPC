@@ -1,5 +1,5 @@
-import { isIsoDateString, isObject, isArray } from "Utils/TypeChecks";
-import { ArticleObject, isArticleObject } from "Models/EditorDataModels";
+import { isIsoDateString } from "Utils/TypeChecks";
+import { isArticleObject } from "Models/EditorDataModels";
 
 /**
  * Отображения положительных серверных Id на  отрицательные клиентские,
@@ -18,34 +18,6 @@ export class DataSerializer {
     idMappings.forEach(pair => {
       this._idMappingDict[pair.ServerId] = pair.ClientId;
     });
-  }
-
-  /**
-   * Заменяет все отрицательные клиентские Id на соответствующие им
-   * серверные Id (если они уже определены).
-   */
-  public serialize(article: ArticleObject): Object {
-    function toObject(argument: any) {
-      if (isObject(argument)) {
-        if (argument instanceof Date) {
-          return argument;
-        }
-        const object: { _ServerId?: number } = {};
-        Object.keys(argument).forEach(key => {
-          object[key] = toObject(argument[key]);
-        });
-        if (isArticleObject(argument)) {
-          object._ServerId = argument._ServerId > 0 ? argument._ServerId : argument._ClientId;
-        }
-        return object;
-      }
-      if (isArray(argument)) {
-        return argument.map(toObject);
-      }
-      return argument;
-    }
-
-    return toObject(article);
   }
 
   /**

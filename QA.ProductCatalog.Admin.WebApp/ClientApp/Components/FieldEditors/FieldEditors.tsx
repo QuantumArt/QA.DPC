@@ -2,7 +2,7 @@ import React from "react";
 import { Col } from "react-flexbox-grid";
 import cn from "classnames";
 import { observer } from "mobx-react";
-import { ArticleObject, ExtensionObject, isArticleObject } from "Models/EditorDataModels";
+import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
 import {
   EnumFieldSchema,
   PlainFieldSchema,
@@ -253,9 +253,8 @@ export class ExtensionFieldEditor extends AbstractFieldEditor {
       value: contentSchema.ContentName,
       label: contentSchema.ContentTitle || contentSchema.ContentName
     }));
-    const disabled =
-      fieldSchema.IsReadOnly ||
-      (!fieldSchema.Changeable && isArticleObject(model) && model._ServerId > 0);
+
+    const disabled = fieldSchema.IsReadOnly || (!fieldSchema.Changeable && model._ServerId > 0);
     return (
       <Col xl md={6}>
         <Select
