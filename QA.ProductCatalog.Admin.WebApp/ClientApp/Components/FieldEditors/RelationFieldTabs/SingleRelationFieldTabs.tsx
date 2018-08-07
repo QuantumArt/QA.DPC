@@ -4,7 +4,7 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button } from "@blueprintjs/core";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
@@ -55,9 +55,9 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
-  renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+  renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const { isOpen } = this.state;
-    const article: ArticleObject = model[fieldSchema.FieldName];
+    const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <div className="relation-field-tabs__controls">
         <RelationFieldMenu
@@ -78,10 +78,10 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     );
   }
 
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const { skipOtherFields, fieldEditors, borderless, children } = this.props;
     const { isOpen, isTouched } = this.state;
-    const article: ArticleObject = model[fieldSchema.FieldName];
+    const article: EntityObject = model[fieldSchema.FieldName];
     return isTouched && article ? (
       <div
         className={cn("single-relation-field-tabs", {

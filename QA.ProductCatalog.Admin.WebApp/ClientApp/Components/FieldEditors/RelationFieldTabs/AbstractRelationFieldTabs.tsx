@@ -3,7 +3,7 @@ import { inject } from "react-ioc";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
@@ -16,7 +16,7 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   orderByField?: string | FieldSelector;
   fieldEditors?: FieldsConfig;
   skipOtherFields?: boolean;
-  filterItems?: (item: ArticleObject) => boolean;
+  filterItems?: (item: EntityObject) => boolean;
   collapsed?: boolean;
   vertical?: boolean;
   borderless?: boolean;
@@ -39,15 +39,12 @@ export abstract class AbstractRelationFieldTabs extends AbstractFieldEditor<
     this._displayField = isString(displayField) ? article => article[displayField] : displayField;
   }
 
-  protected getTitle(article: ArticleObject) {
+  protected getTitle(article: EntityObject) {
     const title = this._displayField(article);
     return title != null && !/^\s*$/.test(title) ? title : "...";
   }
 
-  protected abstract renderControls(
-    model: ArticleObject | ExtensionObject,
-    fieldSchema: FieldSchema
-  ): ReactNode;
+  protected abstract renderControls(model: ArticleObject, fieldSchema: FieldSchema): ReactNode;
 
   render() {
     const { model, fieldSchema } = this.props;

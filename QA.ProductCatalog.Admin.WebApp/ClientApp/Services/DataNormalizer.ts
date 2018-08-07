@@ -1,6 +1,6 @@
 import { normalize, schema } from "normalizr";
 import { deepMerge } from "Utils/DeepMerge";
-import { StoreSnapshot, ArticleSnapshot } from "Models/EditorDataModels";
+import { StoreSnapshot, EntitySnapshot } from "Models/EditorDataModels";
 import {
   ContentSchemasById,
   isSingleRelationField,
@@ -48,11 +48,11 @@ export class DataNormalizer {
     });
   }
 
-  public normalize(articleObject: ArticleSnapshot, contentName: string): StoreSnapshot {
+  public normalize(articleObject: EntitySnapshot, contentName: string): StoreSnapshot {
     return normalize(articleObject, this._entitySchemas[contentName]).entities;
   }
 
-  public normalizeAll(articleObjects: ArticleSnapshot[], contentName: string): StoreSnapshot {
+  public normalizeAll(articleObjects: EntitySnapshot[], contentName: string): StoreSnapshot {
     return normalize(articleObjects, [this._entitySchemas[contentName]]).entities;
   }
 }

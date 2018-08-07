@@ -12,7 +12,7 @@ import {
   SingleRelationFieldSchema,
   MultiRelationFieldSchema
 } from "Models/EditorSchemaModels";
-import { ArticleObject, ExtensionObject, ArticleSnapshot } from "Models/EditorDataModels";
+import { ArticleObject, EntitySnapshot, EntityObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { command } from "Utils/Command";
 import { isArray } from "Utils/TypeChecks";
@@ -44,12 +44,9 @@ export class RelationController {
     this._observer.dispose();
   }
 
-  public async selectRelation(
-    model: ArticleObject | ExtensionObject,
-    fieldSchema: SingleRelationFieldSchema
-  ) {
+  public async selectRelation(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const existingArticleIds = untracked(() => {
-      const existingArticle: ArticleObject = model[fieldSchema.FieldName];
+      const existingArticle: EntityObject = model[fieldSchema.FieldName];
       return existingArticle && existingArticle._ServerId > 0 ? [existingArticle._ServerId] : [];
     });
     const selectedArticles = await this.selectArticles(
@@ -64,12 +61,9 @@ export class RelationController {
     }
   }
 
-  public async selectRelations(
-    model: ArticleObject | ExtensionObject,
-    fieldSchema: MultiRelationFieldSchema
-  ) {
+  public async selectRelations(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const existingArticleIds = untracked(() => {
-      const existingArticles: ArticleObject[] = model[fieldSchema.FieldName];
+      const existingArticles: EntityObject[] = model[fieldSchema.FieldName];
       return existingArticles.map(article => article._ServerId).filter(id => id > 0);
     });
     const selectedArticles = await this.selectArticles(
@@ -79,7 +73,7 @@ export class RelationController {
     );
     if (selectedArticles !== "CANCEL") {
       runInAction("selectRelations", () => {
-        const modelArticles: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
+        const modelArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
         const newlyCreatedArticles = modelArticles.filter(article => article._ServerId === null);
 
         modelArticles.clear();
@@ -151,7 +145,7 @@ export class RelationController {
     if (!response.ok) {
       throw new Error(await response.text());
     }
-    const dataTrees = this._dataSerializer.deserialize<ArticleSnapshot[]>(await response.text());
+    const dataTrees = this._dataSerializer.deserialize<EntitySnapshot[]>(await response.text());
 
     const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
 

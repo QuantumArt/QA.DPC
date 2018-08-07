@@ -3,7 +3,7 @@ import { inject } from "react-ioc";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { RelationController } from "Services/RelationController";
@@ -16,7 +16,7 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   displayFields?: (string | FieldSelector)[];
   orderByField?: string | FieldSelector;
   fieldEditors?: FieldsConfig;
-  filterItems?: (item: ArticleObject) => boolean;
+  filterItems?: (item: EntityObject) => boolean;
   children?: RenderArticle | ReactNode;
 }
 
@@ -39,16 +39,13 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
     );
   }
 
-  protected showSaveButton(article: ArticleObject) {
+  protected showSaveButton(article: EntityObject) {
     const { fieldSchema } = this.props;
     const contentSchema = (fieldSchema as RelationFieldSchema).Content;
     return article._ServerId > 0 || this._schemaContext.rootSchema === contentSchema;
   }
 
-  protected abstract renderControls(
-    model: ArticleObject | ExtensionObject,
-    fieldSchema: FieldSchema
-  ): ReactNode;
+  protected abstract renderControls(model: ArticleObject, fieldSchema: FieldSchema): ReactNode;
 
   render() {
     const { model, fieldSchema } = this.props;

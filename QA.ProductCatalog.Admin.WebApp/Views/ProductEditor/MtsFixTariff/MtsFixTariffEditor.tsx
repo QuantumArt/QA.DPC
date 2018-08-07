@@ -11,11 +11,11 @@ import {
   SingleRelationFieldTags
 } from "Components/FieldEditors/FieldEditors";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
-import { ArticleObject } from "Models/EditorDataModels";
+import { EntityObject } from "Models/EditorDataModels";
 import { Product, DeviceOnTariffs, Region } from "./ProductEditorSchema";
 
 interface MtsFixTariffEditorProps {
-  model: ArticleObject;
+  model: EntityObject;
   contentSchema: ContentSchema;
 }
 

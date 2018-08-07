@@ -4,7 +4,7 @@ import { consumer } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import { Button, Intent } from "@blueprintjs/core";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
 import { asc } from "Utils/Array/Sort";
@@ -34,10 +34,10 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
   };
 
   @action
-  private removeRelation(e: any, article: ArticleObject) {
+  private removeRelation(e: any, article: EntityObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
-    const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
+    const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
     if (array) {
       array.remove(article);
       model.setTouched(fieldSchema.FieldName, true);
@@ -49,8 +49,8 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
-    const list: ArticleObject[] = model[fieldSchema.FieldName];
+  renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
+    const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
       <Col md>

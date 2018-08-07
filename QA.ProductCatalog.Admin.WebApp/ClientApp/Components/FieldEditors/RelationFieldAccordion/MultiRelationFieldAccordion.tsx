@@ -4,7 +4,7 @@ import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Icon } from "@blueprintjs/core";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
 import { asc } from "Utils/Array/Sort";
@@ -68,7 +68,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   };
 
   @action
-  private removeRelation(e: any, article: ArticleObject) {
+  private removeRelation(e: any, article: EntityObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const { activeId, touchedIds } = this.state;
@@ -78,21 +78,21 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     } else {
       this.setState({ touchedIds });
     }
-    const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
+    const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
     if (array) {
       array.remove(article);
       model.setTouched(fieldSchema.FieldName, true);
     }
   }
 
-  private handleToggle(e: any, article: ArticleObject) {
+  private handleToggle(e: any, article: EntityObject) {
     // нажали на элемент находящийся внутри <button>
     if (e.target.closest("button")) return;
 
     this.toggleRelation(article);
   }
 
-  private toggleRelation(article: ArticleObject) {
+  private toggleRelation(article: EntityObject) {
     const { activeId, touchedIds } = this.state;
     if (activeId === article._ClientId) {
       this.setState({ activeId: null });
@@ -107,8 +107,8 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
-  renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
-    const list: ArticleObject[] = model[fieldSchema.FieldName];
+  renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
+    const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
       <RelationFieldMenu
@@ -120,10 +120,10 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     );
   }
 
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const { fieldEditors, filterItems, children } = this.props;
     const { activeId, touchedIds } = this.state;
-    const list: ArticleObject[] = model[fieldSchema.FieldName];
+    const list: EntityObject[] = model[fieldSchema.FieldName];
     return list ? (
       <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
         <tbody>

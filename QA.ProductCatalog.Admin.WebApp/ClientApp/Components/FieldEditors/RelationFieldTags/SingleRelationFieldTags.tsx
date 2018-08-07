@@ -4,7 +4,7 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
 import cn from "classnames";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTags } from "./AbstractRelationFieldTags";
@@ -25,7 +25,7 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
     model.setTouched(fieldSchema.FieldName, true);
   };
 
-  private toggleRelation(e: any, article: ArticleObject) {
+  private toggleRelation(e: any, article: EntityObject) {
     const { onClick } = this.props;
     if (onClick) {
       const { isSelected } = this.state;
@@ -39,9 +39,9 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
     await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const { isSelected } = this.state;
-    const article: ArticleObject = model[fieldSchema.FieldName];
+    const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <Col md className="relation-field-list__tags">
         <RelationFieldMenu onSelect={this.selectRelation} />

@@ -1,4 +1,4 @@
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { EntityObject, ExtensionObject } from "Models/EditorDataModels";
 
 /** Типизация хранилища данных */
 export interface ProductEntities {
@@ -37,14 +37,14 @@ export interface ProductEntities {
   DevicesForFixConnectAction: DevicesForFixConnectAction;
 }
 
-export interface Region extends ArticleObject {
+export interface Region extends EntityObject {
   Title: string;
   Alias: string;
   Parent: Region;
   IsMainCity: boolean;
 }
 
-export interface Product extends ArticleObject {
+export interface Product extends EntityObject {
   /** Маркетинговый продукт */
   MarketingProduct: MarketingProduct;
   /** GlobalCode */
@@ -120,14 +120,14 @@ export interface Product extends ArticleObject {
   Advantages: Advantage[];
 }
 
-export interface Group extends ArticleObject {
+export interface Group extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
   Alias: string;
 }
 
-export interface ProductModifer extends ArticleObject {
+export interface ProductModifer extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -137,21 +137,21 @@ export interface ProductModifer extends ArticleObject {
 export interface Tariff extends ExtensionObject {
 }
 
-export interface TariffZone extends ArticleObject {
+export interface TariffZone extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
   Alias: string;
 }
 
-export interface Direction extends ArticleObject {
+export interface Direction extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
   Alias: string;
 }
 
-export interface BaseParameter extends ArticleObject {
+export interface BaseParameter extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -160,7 +160,7 @@ export interface BaseParameter extends ArticleObject {
   AllowDirection: boolean;
 }
 
-export interface BaseParameterModifier extends ArticleObject {
+export interface BaseParameterModifier extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -173,14 +173,14 @@ export interface BaseParameterModifier extends ArticleObject {
     | "Refining";
 }
 
-export interface ParameterModifier extends ArticleObject {
+export interface ParameterModifier extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
   Alias: string;
 }
 
-export interface ProductParameter extends ArticleObject {
+export interface ProductParameter extends EntityObject {
   /** Группа параметров */
   Group: ProductParameterGroup;
   /** Название */
@@ -214,7 +214,7 @@ export interface ProductParameter extends ArticleObject {
   Choice: ParameterChoice;
 }
 
-export interface Unit extends ArticleObject {
+export interface Unit extends EntityObject {
   Alias: string;
   Title: string;
   Display: string;
@@ -247,14 +247,14 @@ export interface Unit extends ArticleObject {
   Type: string;
 }
 
-export interface LinkModifier extends ArticleObject {
+export interface LinkModifier extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
   Alias: string;
 }
 
-export interface ProductRelation extends ArticleObject {
+export interface ProductRelation extends EntityObject {
   /** Название */
   Title: string;
   /** Модификаторы */
@@ -291,7 +291,7 @@ export interface ProductRelation extends ArticleObject {
   };
 }
 
-export interface LinkParameter extends ArticleObject {
+export interface LinkParameter extends EntityObject {
   /** Название */
   Title: string;
   /** Группа параметров */
@@ -330,7 +330,7 @@ export interface TariffTransfer extends ExtensionObject {
 export interface MutualGroup extends ExtensionObject {
 }
 
-export interface ProductParameterGroup extends ArticleObject {
+export interface ProductParameterGroup extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -346,7 +346,7 @@ export interface ProductParameterGroup extends ArticleObject {
   TitleForIcin: string;
 }
 
-export interface MarketingProduct extends ArticleObject {
+export interface MarketingProduct extends EntityObject {
   /** Название */
   Title: string;
   /** Псевдоним */
@@ -438,13 +438,13 @@ export interface TariffOptionPackage extends ExtensionObject {
 export interface ServiceRelation extends ExtensionObject {
 }
 
-export interface CommunicationType extends ArticleObject {
+export interface CommunicationType extends EntityObject {
   Title: string;
   /** Псевдоним */
   Alias: string;
 }
 
-export interface Segment extends ArticleObject {
+export interface Segment extends EntityObject {
   Title: string;
   /** Псевдоним */
   Alias: string;
@@ -456,7 +456,7 @@ export interface Action extends ExtensionObject {
 export interface MarketingAction extends ExtensionObject {
 }
 
-export interface MarketingProductParameter extends ArticleObject {
+export interface MarketingProductParameter extends EntityObject {
   /** Группа параметров */
   Group: ProductParameterGroup;
   /** Базовый параметр */
@@ -495,7 +495,7 @@ export interface MarketingRoamingScale extends ExtensionObject {
 export interface RoamingScaleOnTariff extends ExtensionObject {
 }
 
-export interface TariffCategory extends ArticleObject {
+export interface TariffCategory extends EntityObject {
   /** Типы связи */
   ConnectionTypes: FixedType[];
   /** Название */
@@ -517,7 +517,7 @@ export interface TariffCategory extends ArticleObject {
 export interface ServiceOnRoamingScale extends ExtensionObject {
 }
 
-export interface Advantage extends ArticleObject {
+export interface Advantage extends EntityObject {
   Title: string;
   /** Текстовые данные */
   Text: string;
@@ -541,7 +541,7 @@ export interface MarketingCrossSale extends ExtensionObject {
   Order: number;
 }
 
-export interface TimeZone extends ArticleObject {
+export interface TimeZone extends EntityObject {
   /** Название часовой зоны */
   Name: string;
   /** Код зоны */
@@ -553,14 +553,14 @@ export interface TimeZone extends ArticleObject {
   OldSiteId: number;
 }
 
-export interface NetworkCity extends ArticleObject {
+export interface NetworkCity extends EntityObject {
   /** Город */
   City: Region;
   /** IPTV */
   HasIpTv: boolean;
 }
 
-export interface ChannelCategory extends ArticleObject {
+export interface ChannelCategory extends EntityObject {
   /** Название для сайта */
   Name: string;
   Alias: string;
@@ -572,19 +572,19 @@ export interface ChannelCategory extends ArticleObject {
   OldSiteId: number;
 }
 
-export interface ChannelType extends ArticleObject {
+export interface ChannelType extends EntityObject {
   Title: string;
   OldSiteId: number;
 }
 
-export interface ChannelFormat extends ArticleObject {
+export interface ChannelFormat extends EntityObject {
   Title: string;
   Image: string;
   Message: string;
   OldSiteId: number;
 }
 
-export interface TvChannel extends ArticleObject {
+export interface TvChannel extends EntityObject {
   /** Название телеканала */
   Title: string;
   /** Лого 150x150 */
@@ -623,7 +623,7 @@ export interface TvChannel extends ArticleObject {
   LcnIpTvR: number;
 }
 
-export interface ParameterChoice extends ArticleObject {
+export interface ParameterChoice extends EntityObject {
   Title: string;
   Alias: string;
   OldSiteId: number;
@@ -651,11 +651,11 @@ export interface Device extends ExtensionObject {
   QuickStartGuide: string;
 }
 
-export interface FixedType extends ArticleObject {
+export interface FixedType extends EntityObject {
   Title: string;
 }
 
-export interface EquipmentType extends ArticleObject {
+export interface EquipmentType extends EntityObject {
   /** Тип связи */
   ConnectionType: FixedType;
   Title: string;
@@ -664,7 +664,7 @@ export interface EquipmentType extends ArticleObject {
   Order: number;
 }
 
-export interface EquipmentDownload extends ArticleObject {
+export interface EquipmentDownload extends EntityObject {
   Title: string;
   File: string;
 }
@@ -734,7 +734,7 @@ export interface MarketingInternetTariff extends ExtensionObject {
 export interface InternetTariff extends ExtensionObject {
 }
 
-export interface DeviceOnTariffs extends ArticleObject {
+export interface DeviceOnTariffs extends EntityObject {
   Parent: ProductRelation;
   Order: number;
   /** Маркетинговое устройство */
@@ -745,7 +745,7 @@ export interface DeviceOnTariffs extends ArticleObject {
   Cities: Region[];
 }
 
-export interface DevicesForFixConnectAction extends ArticleObject {
+export interface DevicesForFixConnectAction extends EntityObject {
   Order: number;
   /** Акция фиксированной связи */
   FixConnectAction: Product;

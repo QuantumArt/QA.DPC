@@ -4,7 +4,7 @@ import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Icon } from "@blueprintjs/core";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ArticleMenu } from "Components/ArticleEditor/ArticleMenu";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
@@ -60,8 +60,8 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
-  renderControls(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
-    const article: ArticleObject = model[fieldSchema.FieldName];
+  renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
+    const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <RelationFieldMenu
         onCreate={!article && this.createRelation}
@@ -72,10 +72,10 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     );
   }
 
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const { fieldEditors, children } = this.props;
     const { isOpen, isTouched } = this.state;
-    const article: ArticleObject = model[fieldSchema.FieldName];
+    const article: EntityObject = model[fieldSchema.FieldName];
     const showSaveButton = this.showSaveButton(article);
     return article ? (
       <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">

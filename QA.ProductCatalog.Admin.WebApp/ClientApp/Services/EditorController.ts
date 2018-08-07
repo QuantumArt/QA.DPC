@@ -1,6 +1,6 @@
 import { toJS } from "mobx";
 import { inject } from "react-ioc";
-import { ArticleSnapshot, ArticleObject } from "Models/EditorDataModels";
+import { EntitySnapshot, EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { DataSerializer, IdMapping } from "Services/DataSerializer";
@@ -34,7 +34,7 @@ export class EditorController {
       if (!response.ok) {
         throw new Error(await response.text());
       }
-      const nestedObjectTree = this._dataSerializer.deserialize<ArticleSnapshot>(
+      const nestedObjectTree = this._dataSerializer.deserialize<EntitySnapshot>(
         await response.text()
       );
 
@@ -70,7 +70,7 @@ export class EditorController {
   }
 
   @command
-  public async savePartialProduct(article: ArticleObject, contentSchema: ContentSchema) {
+  public async savePartialProduct(article: EntityObject, contentSchema: ContentSchema) {
     const partialProduct = toJS(article);
 
     const response = await fetch(
@@ -89,7 +89,7 @@ export class EditorController {
       }
     );
     if (response.status === 409) {
-      const dataTree = this._dataSerializer.deserialize<ArticleSnapshot>(await response.text());
+      const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
       const { hasMergeConfilicts } = this._dataMerger.mergeArticles(dataSnapshot);
       if (hasMergeConfilicts) {
@@ -113,7 +113,7 @@ export class EditorController {
     this._dataSerializer.extendIdMappings(okResponse.IdMappings);
 
     const dataTreeJson = JSON.stringify(okResponse.PartialProduct);
-    const dataTree = this._dataSerializer.deserialize<ArticleSnapshot>(dataTreeJson);
+    const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(dataTreeJson);
     const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
     this._dataMerger.overwriteArticles(dataSnapshot);
   }

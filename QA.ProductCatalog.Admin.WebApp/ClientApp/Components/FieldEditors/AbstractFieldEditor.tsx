@@ -2,17 +2,17 @@ import React, { Component, ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { Icon } from "@blueprintjs/core";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject } from "Models/EditorDataModels";
 import { FieldSchema } from "Models/EditorSchemaModels";
 import { Validator, Validate } from "mst-validation-mixin";
 import { isArray } from "Utils/TypeChecks";
 import { required } from "Utils/Validators";
 import "./FieldEditors.scss";
 
-export type FieldSelector = (model: ArticleObject | ExtensionObject) => any;
+export type FieldSelector = (model: ArticleObject) => any;
 
 export interface FieldEditorProps {
-  model: ArticleObject | ExtensionObject;
+  model: ArticleObject;
   fieldSchema: FieldSchema;
   validate?: Validator | Validator[];
 }
@@ -24,15 +24,9 @@ export abstract class AbstractFieldEditor<
     .toString(36)
     .slice(2)}`;
 
-  protected abstract renderField(
-    model: ArticleObject | ExtensionObject,
-    fieldSchema: FieldSchema
-  ): ReactNode;
+  protected abstract renderField(model: ArticleObject, fieldSchema: FieldSchema): ReactNode;
 
-  protected renderValidation(
-    model: ArticleObject | ExtensionObject,
-    fieldSchema: FieldSchema
-  ): ReactNode {
+  protected renderValidation(model: ArticleObject, fieldSchema: FieldSchema): ReactNode {
     const { validate } = this.props;
     const rules = [];
     if (validate) {
@@ -55,7 +49,7 @@ export abstract class AbstractFieldEditor<
     );
   }
 
-  protected renderLabel(model: ArticleObject | ExtensionObject, fieldSchema: FieldSchema) {
+  protected renderLabel(model: ArticleObject, fieldSchema: FieldSchema) {
     return (
       <label
         htmlFor={this.id}

@@ -2,12 +2,7 @@ import { action } from "mobx";
 import { types as t, unprotect, IModelType, onPatch } from "mobx-state-tree";
 import { validationMixin } from "mst-validation-mixin";
 import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
-import {
-  StoreObject,
-  StoreSnapshot,
-  ArticleObject,
-  ArticleSnapshot
-} from "Models/EditorDataModels";
+import { StoreObject, StoreSnapshot, EntityObject, EntitySnapshot } from "Models/EditorDataModels";
 import {
   ContentSchema,
   FieldSchema,
@@ -41,17 +36,17 @@ export class DataContext {
   }
 
   @action
-  public createArticle<T extends ArticleObject = ArticleObject>(contentName: string): T {
+  public createArticle<T extends EntityObject = EntityObject>(contentName: string): T {
     const article = this.getContentType(contentName).create({
-      ...this._defaultSnapshots[contentName],
-      _ClientId: this._nextId
+      _ClientId: this._nextId,
+      ...this._defaultSnapshots[contentName]
     }) as T;
 
     this.store[contentName].put(article);
     return article;
   }
 
-  private getContentType(contentName: string): IModelType<ArticleSnapshot, ArticleObject> {
+  private getContentType(contentName: string): IModelType<EntitySnapshot, EntityObject> {
     const optionalType = this._storeType.properties[contentName];
     if (!optionalType) {
       throw new TypeError(`Content "${contentName}" is not defined in this Store schema`);

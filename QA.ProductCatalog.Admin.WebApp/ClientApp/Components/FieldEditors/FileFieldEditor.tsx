@@ -2,7 +2,7 @@ import React from "react";
 import { Col } from "react-flexbox-grid";
 import cn from "classnames";
 import { observer } from "mobx-react";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject } from "Models/EditorDataModels";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { InputFile } from "Components/FormControls/FormControls";
 import { AbstractFieldEditor } from "./AbstractFieldEditor";
@@ -11,7 +11,7 @@ import { AbstractFieldEditor } from "./AbstractFieldEditor";
 
 @observer
 export class FileFieldEditor extends AbstractFieldEditor {
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: FileFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: FileFieldSchema) {
     return (
       <Col xl md={6} className="file-field-editor">
         <div className="pt-control-group pt-fill">

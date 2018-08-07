@@ -4,7 +4,7 @@ import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
 import cn from "classnames";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { asc } from "Utils/Array/Sort";
 import { isString } from "Utils/TypeChecks";
@@ -44,20 +44,20 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   };
 
   @action
-  private removeRelation(e: any, article: ArticleObject) {
+  private removeRelation(e: any, article: EntityObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const { selectedIds } = this.state;
     delete selectedIds[article._ClientId];
     this.setState({ selectedIds });
-    const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
+    const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
     if (array) {
       array.remove(article);
       model.setTouched(fieldSchema.FieldName, true);
     }
   }
 
-  private toggleRelation(e: any, article: ArticleObject) {
+  private toggleRelation(e: any, article: EntityObject) {
     const { selectMultiple, onClick } = this.props;
     if (onClick) {
       let { selectedIds } = this.state;
@@ -80,9 +80,9 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const { selectedIds } = this.state;
-    const list: ArticleObject[] = model[fieldSchema.FieldName];
+    const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
       <Col md className="relation-field-list__tags">

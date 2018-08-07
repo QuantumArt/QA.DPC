@@ -1,5 +1,5 @@
 import { isIsoDateString } from "Utils/TypeChecks";
-import { isArticleObject } from "Models/EditorDataModels";
+import { isEntityObject } from "Models/EditorDataModels";
 
 /**
  * Отображения положительных серверных Id на  отрицательные клиентские,
@@ -27,7 +27,7 @@ export class DataSerializer {
    */
   public deserialize<T = any>(json: string): T {
     return JSON.parse(json, (_key, value) => {
-      if (isArticleObject(value)) {
+      if (isEntityObject(value)) {
         // @ts-ignore
         value._ClientId = this._idMappingDict[value._ServerId] || value._ServerId;
         return value;

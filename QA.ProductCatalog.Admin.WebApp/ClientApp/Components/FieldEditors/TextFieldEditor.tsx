@@ -2,14 +2,14 @@ import React from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { observer } from "mobx-react";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject } from "Models/EditorDataModels";
 import { PlainFieldSchema } from "Models/EditorSchemaModels";
 import { TextArea } from "Components/FormControls/FormControls";
 import { AbstractFieldEditor } from "./AbstractFieldEditor";
 
 @observer
 export class TextFieldEditor extends AbstractFieldEditor {
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col md>
         <TextArea

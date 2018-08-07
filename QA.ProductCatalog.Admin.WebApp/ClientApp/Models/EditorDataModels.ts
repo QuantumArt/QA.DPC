@@ -3,11 +3,11 @@ import { isObject, isString } from "Utils/TypeChecks";
 import { ValidatableObject } from "mst-validation-mixin";
 
 export interface StoreObject {
-  readonly [contentName: string]: IExtendedObservableMap<ArticleObject>;
+  readonly [contentName: string]: IExtendedObservableMap<EntityObject>;
 }
 
 /** Объект, содержащий поля нормальной статьи или статьи-расширения */
-export interface EntityObject extends ValidatableObject, IStateTreeNode {
+export interface ArticleObject extends ValidatableObject, IStateTreeNode {
   [field: string]: any;
   /** Серверный Id статьи, полученный при сохранении в БД */
   _ServerId: number;
@@ -19,12 +19,12 @@ export interface EntityObject extends ValidatableObject, IStateTreeNode {
   readonly _IsExtension: boolean;
 }
 
-export function isEntityObject(object: any): object is EntityObject {
+export function isArticleObject(object: any): object is ArticleObject {
   return isObject(object) && isString(object._ContentName);
 }
 
 /** Объект, содержащий поля нормальной статьи */
-export interface ArticleObject extends EntityObject {
+export interface EntityObject extends ArticleObject {
   /**
    * Локальный неизменяемый Id статьи на клиенте.
    * Совпадает с `_ServerId` для статей загруженных с сервера.
@@ -35,27 +35,27 @@ export interface ArticleObject extends EntityObject {
   readonly _IsExtension: false;
 }
 
-export function isArticleObject(object: any): object is ArticleObject {
-  return isEntityObject(object) && !object._IsExtension;
+export function isEntityObject(object: any): object is EntityObject {
+  return isArticleObject(object) && !object._IsExtension;
 }
 
 /** Объект, содержащий поля статьи-расширения */
-export interface ExtensionObject extends EntityObject {
+export interface ExtensionObject extends ArticleObject {
   /** Признак того, что объект является статьей-расшиернием */
   readonly _IsExtension: true;
 }
 
 export function isExtensionObject(object: any): object is ExtensionObject {
-  return isEntityObject(object) && object._IsExtension;
+  return isArticleObject(object) && object._IsExtension;
 }
 
 export interface StoreSnapshot {
   readonly [contentName: string]: {
-    readonly [articleId: string]: ArticleSnapshot;
+    readonly [articleId: string]: EntitySnapshot;
   };
 }
 
-export interface ArticleSnapshot {
+export interface EntitySnapshot {
   readonly [field: string]: any;
   /**
    * Локальный неизменяемый Id статьи на клиенте.
@@ -69,4 +69,6 @@ export interface ArticleSnapshot {
   readonly _ServerId?: number;
   /** Дата создания или последнего изменения статьи `QA.Core.Models.Entities.Article.Modified` */
   readonly _Modified?: Date;
+  /** Признак того, что объект не является статьей-расшиернием */
+  readonly _IsExtension?: false;
 }

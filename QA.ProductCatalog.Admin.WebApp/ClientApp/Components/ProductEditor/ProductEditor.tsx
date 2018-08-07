@@ -9,12 +9,12 @@ import { DataSerializer } from "Services/DataSerializer";
 import { DataMerger } from "Services/DataMerger";
 import { RelationController } from "Services/RelationController";
 import { EditorController } from "Services/EditorController";
-import { ArticleObject } from "Models/EditorDataModels";
+import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { isFunction } from "Utils/TypeChecks";
 import { EditorSettings } from "Models/EditorSettings";
 
-type RenderEditor = (article: ArticleObject, contentSchema: ContentSchema) => ReactNode;
+type RenderEditor = (article: EntityObject, contentSchema: ContentSchema) => ReactNode;
 
 interface ProductEditorProps {
   settings: EditorSettings;

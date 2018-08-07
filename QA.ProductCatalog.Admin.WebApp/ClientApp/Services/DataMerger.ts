@@ -3,7 +3,7 @@ import { action, comparer } from "mobx";
 import { getSnapshot } from "mobx-state-tree";
 import { ValidatableObject } from "mst-validation-mixin";
 import { isObject } from "Utils/TypeChecks";
-import { StoreSnapshot, isEntityObject } from "Models/EditorDataModels";
+import { StoreSnapshot, isArticleObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 
 export class DataMerger {
@@ -32,7 +32,7 @@ export class DataMerger {
   }
 
   private mergeArticleSnapshot(model: Object, snapshot: Object) {
-    const modelIsValidatable = isEntityObject(model);
+    const modelIsValidatable = isArticleObject(model);
     const modelSnapshot = getSnapshot(model);
 
     Object.entries(snapshot).forEach(([name, valueSnapshot]) => {
@@ -72,7 +72,7 @@ export class DataMerger {
   }
 
   private overwriteArticleSnapshot(model: Object, snapshot: Object) {
-    const modelIsValidatable = isEntityObject(model);
+    const modelIsValidatable = isArticleObject(model);
     const modelSnapshot = getSnapshot(model);
 
     Object.entries(snapshot).forEach(([name, valueSnapshot]) => {

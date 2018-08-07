@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
-import { ArticleObject } from "Models/EditorDataModels";
+import { EntityObject } from "Models/EditorDataModels";
 import { SchemaContext } from "Services/SchemaContext";
 import { EditorController } from "Services/EditorController";
 import { isString, isFunction } from "Utils/TypeChecks";
@@ -14,11 +14,11 @@ import "./ArticleEditor.scss";
 export type RenderArticle = (headerNode: ReactNode, fieldsNode: ReactNode) => ReactNode;
 
 interface ArticleEditorProps {
-  model: ArticleObject;
+  model: EntityObject;
   header?: ReactNode | boolean;
   buttons?: ReactNode | boolean;
-  onRemove?: (article: ArticleObject) => void;
-  titleField?: string | ((article: ArticleObject) => string);
+  onRemove?: (article: EntityObject) => void;
+  titleField?: string | ((article: EntityObject) => string);
   children?: RenderArticle | ReactNode;
 }
 
@@ -27,7 +27,7 @@ interface ArticleEditorProps {
 export class ArticleEditor extends ObjectEditor<ArticleEditorProps> {
   @inject private _editorController: EditorController;
   @inject private _schemaContext: SchemaContext;
-  private _titleField: (model: ArticleObject) => string;
+  private _titleField: (model: EntityObject) => string;
 
   constructor(props: ObjectEditorProps & ArticleEditorProps, context?: any) {
     super(props, context);

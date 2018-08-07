@@ -2,7 +2,7 @@ import React, { Component, StatelessComponent } from "react";
 import { consumer, inject } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject, ExtensionObject } from "Models/EditorDataModels";
 import {
   ContentSchema,
   FieldSchema,
@@ -59,11 +59,11 @@ type FieldValue =
   | number[]
   | boolean
   | Date
-  | ArticleObject
-  | ArticleObject[];
+  | EntityObject
+  | EntityObject[];
 
 interface FieldEditorProps {
-  model: ArticleObject | ExtensionObject;
+  model: ArticleObject;
   fieldSchema: FieldSchema;
 }
 
@@ -80,7 +80,7 @@ type RelationFieldEditor =
   | typeof RelationFieldEditorComponent;
 
 export interface ObjectEditorProps {
-  model: ArticleObject | ExtensionObject;
+  model: ArticleObject;
   contentSchema: ContentSchema;
   fieldEditors?: FieldsConfig;
   skipOtherFields?: boolean;

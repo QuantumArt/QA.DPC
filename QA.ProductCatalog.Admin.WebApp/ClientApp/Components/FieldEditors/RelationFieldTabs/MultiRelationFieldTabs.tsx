@@ -4,7 +4,7 @@ import { action, untracked, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, Tab, Tabs } from "@blueprintjs/core";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
 import { asc } from "Utils/Array/Sort";
@@ -46,7 +46,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     } = props;
     this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
     untracked(() => {
-      const array = model[fieldSchema.FieldName] as ArticleObject[];
+      const array = model[fieldSchema.FieldName] as EntityObject[];
       if (array.length > 0) {
         const firstArticle = array[0];
         this.state.activeId = firstArticle._ClientId;
@@ -84,10 +84,10 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   @action
-  private removeRelation = (article: ArticleObject) => {
+  private removeRelation = (article: EntityObject) => {
     const { model, fieldSchema } = this.props;
     const { activeId, touchedIds } = this.state;
-    const array: IObservableArray<ArticleObject> = model[fieldSchema.FieldName];
+    const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
     delete touchedIds[article._ClientId];
     if (activeId === article._ClientId) {
       const index = array.indexOf(article);
@@ -129,9 +129,9 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     });
   };
 
-  renderControls(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
+  renderControls(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const { isOpen } = this.state;
-    const list: ArticleObject[] = model[fieldSchema.FieldName];
+    const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
       <div className="relation-field-tabs__controls">
@@ -154,12 +154,12 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   }
 
   private static _nextTabId = 0;
-  private static _tabIdsByModel = new WeakMap<ArticleObject | ExtensionObject, number>();
+  private static _tabIdsByModel = new WeakMap<ArticleObject, number>();
 
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: MultiRelationFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const { skipOtherFields, fieldEditors, vertical, filterItems, children } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
-    const list: ArticleObject[] = model[fieldSchema.FieldName];
+    const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     let tabId = MultiRelationFieldTabs._tabIdsByModel.get(model);
     if (!tabId) {

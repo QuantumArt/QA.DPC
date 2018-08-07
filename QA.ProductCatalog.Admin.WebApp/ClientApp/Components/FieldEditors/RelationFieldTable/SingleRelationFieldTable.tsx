@@ -4,7 +4,7 @@ import { consumer } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { Button, Intent } from "@blueprintjs/core";
-import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTable } from "./AbstractRelationFieldTable";
@@ -25,8 +25,8 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
     await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
-  renderField(model: ArticleObject | ExtensionObject, fieldSchema: SingleRelationFieldSchema) {
-    const article: ArticleObject = model[fieldSchema.FieldName];
+  renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
+    const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <Col md>
         <RelationFieldMenu
