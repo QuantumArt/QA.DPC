@@ -10,21 +10,12 @@ namespace QA.Core.ProductCatalog.Actions.Services
 
 		public int GetUserId()
 		{
-			int userId;
-
-			if (int.TryParse(ConfigurationManager.AppSettings["UserId"], out userId))
-			{
-				return userId;
-			}
-			else
-			{
-				return DefaultUserId;
-			}
+			return int.TryParse(ConfigurationManager.AppSettings["UserId"], out var userId) ? userId : DefaultUserId;
 		}
 
 		public string GetUserName()
 		{
-			throw new NotImplementedException();
+			return "Configured user";
 		}
 	}
 }
