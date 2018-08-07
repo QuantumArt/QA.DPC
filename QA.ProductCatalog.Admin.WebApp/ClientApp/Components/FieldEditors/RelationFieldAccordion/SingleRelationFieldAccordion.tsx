@@ -7,7 +7,7 @@ import { Icon } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ArticleMenu } from "Components/ArticleEditor/ArticleMenu";
-import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldAccordion } from "./AbstractRelationFieldAccordion";
 
@@ -123,13 +123,13 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               colSpan={this._displayFields.length + 3}
             >
               {isTouched && (
-                <ArticleEditor
+                <EntityEditor
                   model={article}
                   contentSchema={fieldSchema.Content}
                   fieldEditors={fieldEditors}
                 >
                   {children}
-                </ArticleEditor>
+                </EntityEditor>
               )}
             </td>
           </tr>

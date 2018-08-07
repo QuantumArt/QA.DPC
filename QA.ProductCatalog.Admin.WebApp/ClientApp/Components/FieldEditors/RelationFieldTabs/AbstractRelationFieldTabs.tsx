@@ -7,7 +7,7 @@ import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
-import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
+import { RenderEntity, FieldsConfig } from "Components/ArticleEditor/EntityEditor";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
 import "./RelationFieldTabs.scss";
 
@@ -20,7 +20,7 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   collapsed?: boolean;
   vertical?: boolean;
   borderless?: boolean;
-  children?: RenderArticle | ReactNode;
+  children?: RenderEntity | ReactNode;
 }
 
 export abstract class AbstractRelationFieldTabs extends AbstractFieldEditor<

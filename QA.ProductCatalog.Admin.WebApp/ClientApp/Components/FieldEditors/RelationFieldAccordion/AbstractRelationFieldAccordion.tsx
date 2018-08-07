@@ -8,7 +8,7 @@ import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
-import { RenderArticle, FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
+import { RenderEntity, FieldsConfig } from "Components/ArticleEditor/EntityEditor";
 import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
 import "./RelationFieldAccordion.scss";
 
@@ -17,7 +17,7 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   orderByField?: string | FieldSelector;
   fieldEditors?: FieldsConfig;
   filterItems?: (item: EntityObject) => boolean;
-  children?: RenderArticle | ReactNode;
+  children?: RenderEntity | ReactNode;
 }
 
 export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor<

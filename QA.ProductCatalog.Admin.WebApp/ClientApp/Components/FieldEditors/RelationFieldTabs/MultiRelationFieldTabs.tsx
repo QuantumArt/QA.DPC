@@ -8,7 +8,7 @@ import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
 import { asc } from "Utils/Array/Sort";
-import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTabs, RelationFieldTabsProps } from "./AbstractRelationFieldTabs";
@@ -191,7 +191,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                   id={article._ClientId}
                   panel={
                     touchedIds[article._ClientId] && (
-                      <ArticleEditor
+                      <EntityEditor
                         model={article}
                         contentSchema={fieldSchema.Content}
                         skipOtherFields={skipOtherFields}
@@ -201,7 +201,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                         onRemove={this.removeRelation}
                       >
                         {children}
-                      </ArticleEditor>
+                      </EntityEditor>
                     )
                   }
                 >

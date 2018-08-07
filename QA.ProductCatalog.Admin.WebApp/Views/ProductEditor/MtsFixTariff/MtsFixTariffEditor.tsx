@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { observable, observe, action, Lambda, untracked, IArrayChange, IArraySplice } from "mobx";
 import { observer } from "mobx-react";
 import { Tabs, Tab, Icon } from "@blueprintjs/core";
-import { ArticleEditor, IGNORE } from "Components/ArticleEditor/ArticleEditor";
+import { EntityEditor, IGNORE } from "Components/ArticleEditor/EntityEditor";
 import {
   SingleRelationFieldTabs,
   MultiRelationFieldTags,
@@ -90,7 +90,7 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
   private renderFederal() {
     const { model, contentSchema } = this.props;
     return (
-      <ArticleEditor
+      <EntityEditor
         model={model}
         contentSchema={contentSchema}
         skipOtherFields
@@ -118,7 +118,7 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
   private renderRegional() {
     const { model, contentSchema } = this.props;
     return (
-      <ArticleEditor
+      <EntityEditor
         model={model}
         contentSchema={contentSchema}
         titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
@@ -144,7 +144,7 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
     model = model.MarketingProduct;
     contentSchema = (contentSchema.Fields.MarketingProduct as RelationFieldSchema).Content;
     return model ? (
-      <ArticleEditor
+      <EntityEditor
         model={model}
         contentSchema={contentSchema}
         skipOtherFields

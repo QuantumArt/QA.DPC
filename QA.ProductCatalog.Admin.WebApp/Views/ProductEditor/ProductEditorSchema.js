@@ -45,7 +45,7 @@ function compileEditorDataInterfaces(mergedSchemas, editorSchema) {
   const print = func => func();
 
   // prettier-ignore
-  return `import { ArticleObject, ExtensionObject } from "Models/EditorDataModels";
+  return `import { EntityObject, ExtensionObject } from "Models/EditorDataModels";
 
 /** Типизация хранилища данных */
 export interface ${getRootName(editorSchema)}Entities {${
@@ -54,7 +54,7 @@ export interface ${getRootName(editorSchema)}Entities {${
 }
 ${forEach(mergedSchemas, content => `
 export interface ${getName(content)} extends ${
-  content.ForExtension ? "ExtensionObject" : "ArticleObject"
+  content.ForExtension ? "ExtensionObject" : "EntityObject"
 } {${forEach(getFields(content), field => `${field.FieldTitle || field.FieldDescription ? `
   /** ${field.FieldTitle || field.FieldDescription} */`: ""}
   ${field.FieldName}: ${print(() => {

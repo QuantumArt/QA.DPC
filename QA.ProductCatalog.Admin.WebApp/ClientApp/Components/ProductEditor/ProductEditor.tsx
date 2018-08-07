@@ -1,7 +1,7 @@
 import React, { Component, ReactNode } from "react";
 import { provider, inject } from "react-ioc";
 import { Grid } from "react-flexbox-grid";
-import { ArticleEditor, RelationsConfig } from "Components/ArticleEditor/ArticleEditor";
+import { EntityEditor, RelationsConfig } from "Components/ArticleEditor/EntityEditor";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { DataNormalizer } from "Services/DataNormalizer";
@@ -68,7 +68,7 @@ export class ProductEditor extends Component<ProductEditorProps> {
         {isFunction(children) ? (
           children(article, contentSchema)
         ) : (
-          <ArticleEditor model={article} contentSchema={contentSchema} />
+          <EntityEditor model={article} contentSchema={contentSchema} />
         )}
       </Grid>
     );

@@ -6,7 +6,7 @@ import cn from "classnames";
 import { Button } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTabs } from "./AbstractRelationFieldTabs";
 
@@ -89,7 +89,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           "single-relation-field-tabs--borderless": borderless
         })}
       >
-        <ArticleEditor
+        <EntityEditor
           model={article}
           contentSchema={fieldSchema.Content}
           skipOtherFields={skipOtherFields}
@@ -99,7 +99,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           onRemove={this.removeRelation}
         >
           {children}
-        </ArticleEditor>
+        </EntityEditor>
       </div>
     ) : null;
   }

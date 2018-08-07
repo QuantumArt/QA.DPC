@@ -2,7 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { LocaleContext } from "Packages/react-lazy-i18n";
-import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
 import { RelationFieldTags } from "Components/FieldEditors/FieldEditors";
 
@@ -24,7 +24,7 @@ const App = () => (
       }}
     >
       {(model, contentSchema) => (
-        <ArticleEditor
+        <EntityEditor
           model={model}
           contentSchema={contentSchema}
           titleField={p => p.MarketingProduct && p.MarketingProduct.Title}

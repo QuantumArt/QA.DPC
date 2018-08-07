@@ -9,7 +9,7 @@ import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/Edit
 import { isString } from "Utils/TypeChecks";
 import { asc } from "Utils/Array/Sort";
 import { ArticleMenu } from "Components/ArticleEditor/ArticleMenu";
-import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { FieldSelector } from "../AbstractFieldEditor";
 import {
@@ -178,13 +178,13 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       colSpan={this._displayFields.length + 3}
                     >
                       {touchedIds[article._ClientId] && (
-                        <ArticleEditor
+                        <EntityEditor
                           model={article}
                           contentSchema={fieldSchema.Content}
                           fieldEditors={fieldEditors}
                         >
                           {children}
-                        </ArticleEditor>
+                        </EntityEditor>
                       )}
                     </td>
                   </tr>
