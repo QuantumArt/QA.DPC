@@ -180,7 +180,7 @@ export const validationMixin = (self: Object) => {
             fieldErrors.push(error);
           }
         });
-        return this;
+        return self;
       },
       clearErrors(name?: string) {
         if (name) {
@@ -195,11 +195,11 @@ export const validationMixin = (self: Object) => {
             }
           });
         }
-        return this;
+        return self;
       },
       addValidators(name: string, ...validators: Validator[]) {
         getOrAddFieldState(name).validators.push(...validators);
-        return this;
+        return self;
       },
       removeValidators(name: string, ...validators: Validator[]) {
         const fieldState = fields.get(name);
@@ -208,7 +208,7 @@ export const validationMixin = (self: Object) => {
             fieldState.validators.remove(validator);
           });
         }
-        return this;
+        return self;
       },
       setTouched(name: string, isTouched = true) {
         if (isTouched) {
@@ -219,13 +219,13 @@ export const validationMixin = (self: Object) => {
             fieldState.isTouched = false;
           }
         }
-        return this;
+        return self;
       },
       setUntouched() {
         fields.forEach(fieldState => {
           fieldState.isTouched = false;
         });
-        return this;
+        return self;
       },
       setChanged(name: string, isChanged = true) {
         if (isChanged) {
@@ -238,14 +238,14 @@ export const validationMixin = (self: Object) => {
           }
           changedFieldNames.delete(name);
         }
-        return this;
+        return self;
       },
       setUnchanged() {
         fields.forEach(fieldState => {
           fieldState.isChanged = false;
         });
         changedFieldNames.clear();
-        return this;
+        return self;
       },
       setFocus(name: string, hasFocus = true) {
         if (hasFocus) {
@@ -256,7 +256,7 @@ export const validationMixin = (self: Object) => {
             fieldState.hasFocus = false;
           }
         }
-        return this;
+        return self;
       }
     },
     views: {
