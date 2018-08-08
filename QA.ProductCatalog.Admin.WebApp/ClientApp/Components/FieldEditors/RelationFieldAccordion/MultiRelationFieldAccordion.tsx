@@ -149,7 +149,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
         onCreate={this.createRelation}
         onSelect={this.selectRelations}
         onClear={!isEmpty && this.clearRelation}
-        onRefresh={model._ServerId > 0 && this.reloadRelations}
+        onReload={model._ServerId > 0 && this.reloadRelations}
       />
     );
   }

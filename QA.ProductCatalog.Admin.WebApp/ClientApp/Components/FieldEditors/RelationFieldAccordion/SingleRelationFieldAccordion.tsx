@@ -116,7 +116,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
         onCreate={!article && this.createRelation}
         onSelect={this.selectRelation}
         onClear={!!article && this.removeRelation}
-        onRefresh={model._ServerId > 0 && this.reloadRelation}
+        onReload={model._ServerId > 0 && this.reloadRelation}
       />
     );
   }

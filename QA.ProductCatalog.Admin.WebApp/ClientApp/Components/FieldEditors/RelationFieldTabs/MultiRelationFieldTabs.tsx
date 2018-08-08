@@ -155,7 +155,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
           onCreate={this.createRelation}
           onSelect={this.selectRelations}
           onClear={!isEmpty && this.clearRelation}
-          onRefresh={model._ServerId > 0 && this.reloadRelations}
+          onReload={model._ServerId > 0 && this.reloadRelations}
         />
         <Button
           small
