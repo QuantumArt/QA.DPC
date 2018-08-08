@@ -29,12 +29,23 @@ export class DataSerializer {
     return JSON.parse(json, (_key, value) => {
       if (isEntityObject(value)) {
         // @ts-ignore
-        value._ClientId = this._idMappingDict[value._ServerId] || value._ServerId;
+        value._ClientId = this.getClientId(value._ServerId);
         return value;
       } else if (isIsoDateString(value)) {
         return Number(new Date(value));
       }
       return value;
     });
+  }
+
+  private getClientId(serverId: number) {
+    for (let i = 0; i < 9999; i++) {
+      const clientId = this._idMappingDict[serverId];
+      if (!clientId) {
+        return serverId;
+      }
+      serverId = clientId;
+    }
+    throw new Error("There is a cycle in DataSerializer._idMappingDict");
   }
 }

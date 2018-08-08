@@ -147,7 +147,7 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
       return;
     }
     if (isRelationField(fieldSchema)) {
-      const contentName = fieldSchema.Content.ContentName;
+      const contentName = fieldSchema.RelatedContent.ContentName;
       if (this._relationsConfig.hasOwnProperty(contentName)) {
         const field = this._relationsConfig[contentName];
 
@@ -229,7 +229,9 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
         const contentName: string = model[fieldName];
         if (contentName) {
           const extensionModel = model[`${fieldName}${ArticleObject._Contents}`][contentName];
-          const extensionSchema = (fieldSchema as ExtensionFieldSchema).Contents[contentName];
+          const extensionSchema = (fieldSchema as ExtensionFieldSchema).ExtensionContents[
+            contentName
+          ];
           const extensionFields = contentsConfig && contentsConfig[contentName];
           return (
             <ExtensionEditor

@@ -50,7 +50,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   @action
   private createRelation = () => {
     const { model, fieldSchema } = this.props;
-    const contentName = (fieldSchema as MultiRelationFieldSchema).Content.ContentName;
+    const contentName = (fieldSchema as MultiRelationFieldSchema).RelatedContent.ContentName;
     const article = this._dataContext.createArticle(contentName);
     this.toggleRelation(article);
     model[fieldSchema.FieldName].push(article);
@@ -108,6 +108,11 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
+  private reloadRelations = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.reloadRelations(model, fieldSchema as MultiRelationFieldSchema);
+  };
+
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
@@ -116,7 +121,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
         onCreate={this.createRelation}
         onSelect={this.selectRelations}
         onClear={!isEmpty && this.clearRelation}
-        onRefresh={() => {}} // TODO: refersh MultiRelation
+        onRefresh={model._ServerId > 0 && this.reloadRelations}
       />
     );
   }
@@ -181,7 +186,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       {touchedIds[article._ClientId] && (
                         <EntityEditor
                           model={article}
-                          contentSchema={fieldSchema.Content}
+                          contentSchema={fieldSchema.RelatedContent}
                           fieldEditors={fieldEditors}
                         >
                           {children}

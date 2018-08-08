@@ -248,7 +248,7 @@ namespace QA.Core.DPC.Loader.Editor
             {
                 return new SingleRelationFieldSchema
                 {
-                    Content = contentSchema,
+                    RelatedContent = contentSchema,
                     CloningMode = entityField.CloningMode,
                     UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
@@ -291,7 +291,7 @@ namespace QA.Core.DPC.Loader.Editor
 
                 return new MultiRelationFieldSchema
                 {
-                    Content = contentSchema,
+                    RelatedContent = contentSchema,
                     CloningMode = entityField.CloningMode,
                     UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
@@ -327,7 +327,7 @@ namespace QA.Core.DPC.Loader.Editor
             return new ExtensionFieldSchema
             {
                 Changeable = qpField.Changeable,
-                Contents = contentSchemas
+                ExtensionContents = contentSchemas
             };
         }
 
@@ -443,14 +443,14 @@ namespace QA.Core.DPC.Loader.Editor
                 {
                     if (fieldSchema is RelationFieldSchema relationSchema)
                     {
-                        relationSchema.Content = DeduplicateContentSchema(
-                            relationSchema.Content, context, visitedSchemas);
+                        relationSchema.RelatedContent = DeduplicateContentSchema(
+                            relationSchema.RelatedContent, context, visitedSchemas);
                     }
                     else if (fieldSchema is ExtensionFieldSchema extensionSchema)
                     {
-                        foreach (var pair in extensionSchema.Contents.ToArray())
+                        foreach (var pair in extensionSchema.ExtensionContents.ToArray())
                         {
-                            extensionSchema.Contents[pair.Key] = DeduplicateContentSchema(
+                            extensionSchema.ExtensionContents[pair.Key] = DeduplicateContentSchema(
                                 pair.Value, context, visitedSchemas);
                         }
                     }
@@ -551,7 +551,7 @@ namespace QA.Core.DPC.Loader.Editor
                 {
                     var copy = extFieldSchema.ShallowCopy();
 
-                    copy.Contents = extFieldSchema.Contents.ToDictionary(
+                    copy.ExtensionContents = extFieldSchema.ExtensionContents.ToDictionary(
                         pair => pair.Key,
                         pair => (IContentSchema)new ContentSchemaIdRef
                         {
@@ -563,18 +563,18 @@ namespace QA.Core.DPC.Loader.Editor
                 else if (fieldSchema is SingleRelationFieldSchema singleFieldSchema)
                 {
                     var copy = singleFieldSchema.ShallowCopy();
-                    copy.Content = new ContentSchemaIdRef
+                    copy.RelatedContent = new ContentSchemaIdRef
                     {
-                        ContentId = singleFieldSchema.Content.ContentId,
+                        ContentId = singleFieldSchema.RelatedContent.ContentId,
                     };
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
                 else if (fieldSchema is MultiRelationFieldSchema multiFieldSchema)
                 {
                     var copy = multiFieldSchema.ShallowCopy();
-                    copy.Content = new ContentSchemaIdRef
+                    copy.RelatedContent = new ContentSchemaIdRef
                     {
-                        ContentId = multiFieldSchema.Content.ContentId,
+                        ContentId = multiFieldSchema.RelatedContent.ContentId,
                     };
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
@@ -596,14 +596,14 @@ namespace QA.Core.DPC.Loader.Editor
             {
                 if (fieldSchema is RelationFieldSchema relationFieldSchema)
                 {
-                    if (relationFieldSchema.Content is ContentSchema childContentSchema)
+                    if (relationFieldSchema.RelatedContent is ContentSchema childContentSchema)
                     {
                         action.Invoke(childContentSchema, schemasByContentId);
                     }
                 }
                 else if (fieldSchema is ExtensionFieldSchema extensionFieldSchema)
                 {
-                    foreach (var childContentSchema in extensionFieldSchema.Contents.Values.OfType<ContentSchema>())
+                    foreach (var childContentSchema in extensionFieldSchema.ExtensionContents.Values.OfType<ContentSchema>())
                     {
                         action.Invoke(childContentSchema, schemasByContentId);
                     }

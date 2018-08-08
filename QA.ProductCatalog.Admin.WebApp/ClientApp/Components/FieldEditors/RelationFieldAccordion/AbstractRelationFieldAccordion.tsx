@@ -41,7 +41,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
 
   protected showSaveButton(article: EntityObject) {
     const { fieldSchema } = this.props;
-    const contentSchema = (fieldSchema as RelationFieldSchema).Content;
+    const contentSchema = (fieldSchema as RelationFieldSchema).RelatedContent;
     return article._ServerId > 0 || this._schemaContext.rootSchema === contentSchema;
   }
 

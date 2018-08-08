@@ -1,4 +1,10 @@
-import { ContentSchema, EditorSchema, ContentSchemasById } from "Models/EditorSchemaModels";
+import {
+  ContentSchema,
+  EditorSchema,
+  ContentSchemasById,
+  isContent,
+  isField
+} from "Models/EditorSchemaModels";
 import { isObject, isInteger, isSingleKeyObject } from "Utils/TypeChecks";
 
 export class SchemaContext {
@@ -15,11 +21,11 @@ export class SchemaContext {
     const definitions = editorSchema.Definitions;
     delete editorSchema.Definitions;
 
-    linkNestedSchemas(editorSchema, definitions, new Set());
+    linkNestedSchemas(editorSchema, definitions, new Set(), null);
     this.rootSchema = editorSchema.Content;
 
     const mergedSchemasRef = { mergedSchemas };
-    linkMergedSchemas(mergedSchemasRef, mergedSchemas, new Set());
+    linkMergedSchemas(mergedSchemasRef, mergedSchemas, new Set(), null);
     this.contentSchemasById = mergedSchemasRef.mergedSchemas;
 
     this.contentSchemasByName = Object.values(mergedSchemas).reduce((obj, contentSchema) => {
@@ -36,7 +42,8 @@ export class SchemaContext {
 function linkNestedSchemas(
   object: any,
   definitions: { [name: string]: any },
-  visited: Set<Object>
+  visited: Set<Object>,
+  lastContent: ContentSchema
 ): void {
   if (object && typeof object === "object") {
     if (visited.has(object)) {
@@ -47,13 +54,20 @@ function linkNestedSchemas(
     if (Array.isArray(object)) {
       object.forEach((value, index) => {
         object[index] = resolveJsonRef(value, definitions);
-        linkNestedSchemas(object[index], definitions, visited);
+        linkNestedSchemas(object[index], definitions, visited, lastContent);
       });
     } else {
+      if (isContent(object)) {
+        lastContent = object;
+      }
       Object.keys(object).forEach(key => {
         object[key] = resolveJsonRef(object[key], definitions);
-        linkNestedSchemas(object[key], definitions, visited);
+        linkNestedSchemas(object[key], definitions, visited, lastContent);
       });
+      if (isField(object)) {
+        // @ts-ignore
+        object.ParentContent = lastContent;
+      }
     }
   }
 }
@@ -69,7 +83,8 @@ function resolveJsonRef(object: any, definitions: { [name: string]: any }): any 
 function linkMergedSchemas(
   object: any,
   mergedSchemas: { [name: string]: any },
-  visited: Set<Object>
+  visited: Set<Object>,
+  lastContent: ContentSchema
 ): void {
   if (object && typeof object === "object") {
     if (visited.has(object)) {
@@ -80,13 +95,20 @@ function linkMergedSchemas(
     if (Array.isArray(object)) {
       object.forEach((value, index) => {
         object[index] = resolveContentIdRef(value, mergedSchemas);
-        linkMergedSchemas(object[index], mergedSchemas, visited);
+        linkMergedSchemas(object[index], mergedSchemas, visited, lastContent);
       });
     } else {
+      if (isContent(object)) {
+        lastContent = object;
+      }
       Object.keys(object).forEach(key => {
         object[key] = resolveContentIdRef(object[key], mergedSchemas);
-        linkMergedSchemas(object[key], mergedSchemas, visited);
+        linkMergedSchemas(object[key], mergedSchemas, visited, lastContent);
       });
+      if (isField(object)) {
+        // @ts-ignore
+        object.ParentContent = lastContent;
+      }
     }
   }
 }

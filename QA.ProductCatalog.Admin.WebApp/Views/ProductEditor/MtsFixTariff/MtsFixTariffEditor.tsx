@@ -142,7 +142,7 @@ export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
   private renderDevices() {
     let { model, contentSchema } = this.props;
     model = model.MarketingProduct;
-    contentSchema = (contentSchema.Fields.MarketingProduct as RelationFieldSchema).Content;
+    contentSchema = (contentSchema.Fields.MarketingProduct as RelationFieldSchema).RelatedContent;
     return model ? (
       <EntityEditor
         model={model}

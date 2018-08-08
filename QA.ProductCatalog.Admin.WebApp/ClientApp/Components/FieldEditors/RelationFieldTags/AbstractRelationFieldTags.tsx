@@ -26,7 +26,8 @@ export abstract class AbstractRelationFieldTags extends AbstractFieldEditor<
     super(props, context);
     const {
       fieldSchema,
-      displayField = (fieldSchema as RelationFieldSchema).Content.DisplayFieldName || (() => "")
+      displayField = (fieldSchema as RelationFieldSchema).RelatedContent.DisplayFieldName ||
+        (() => "")
     } = this.props;
     this._displayField = isString(displayField) ? article => article[displayField] : displayField;
   }

@@ -61,19 +61,19 @@ export interface ${getName(content)} extends ${
   ${field.FieldName}: ${print(() => {
 
     if (isExtensionField(field)) {
-      return `${forEach(field.Contents, content => `
+      return `${forEach(field.ExtensionContents, content => `
     | "${getName(content)}"`)};
-  ${field.FieldName}${ArticleObject._Contents}: {${forEach(field.Contents, content => `
+  ${field.FieldName}${ArticleObject._Contents}: {${forEach(field.ExtensionContents, content => `
     ${getName(content)}: ${getName(content)};`)}
   }`;
     }
 
     if (isSingleRelationField(field)) {
-      return `${getName(field.Content)}`;
+      return `${getName(field.RelatedContent)}`;
     }
 
     if (isMultiRelationField(field)) {
-      return `${getName(field.Content)}[]`;
+      return `${getName(field.RelatedContent)}[]`;
     }
 
     if (isEnumField(field)) {

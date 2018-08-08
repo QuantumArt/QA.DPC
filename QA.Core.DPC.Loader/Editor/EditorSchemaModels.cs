@@ -175,6 +175,11 @@ namespace QA.Core.DPC.Loader.Editor
                 return types;
             }
         }
+
+        /// <summary>
+        /// Циклическая сылка на родительский контент. Заполняется на клиенте.
+        /// </summary>
+        public IContentSchema ParentContent => null;
     }
 
     /// <summary>
@@ -238,7 +243,7 @@ namespace QA.Core.DPC.Loader.Editor
         /// <summary>
         /// Схема DPC-контента связанных статей
         /// </summary>
-        public IContentSchema Content { get; set; }
+        public IContentSchema RelatedContent { get; set; }
 
         /// <summary>
         /// Поведение поля связи при клонировании родительской статьи
@@ -308,7 +313,7 @@ namespace QA.Core.DPC.Loader.Editor
         /// <summary>
         /// Схемы DPC-контентов-расширений по .NET-имени контента
         /// </summary>
-        public Dictionary<string, IContentSchema> Contents { get; set; }
+        public Dictionary<string, IContentSchema> ExtensionContents { get; set; }
             = new Dictionary<string, IContentSchema>();
 
         internal ExtensionFieldSchema ShallowCopy()

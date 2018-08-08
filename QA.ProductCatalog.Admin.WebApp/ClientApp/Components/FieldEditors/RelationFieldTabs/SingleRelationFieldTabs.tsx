@@ -21,7 +21,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   @action
   private createRelation = () => {
     const { model, fieldSchema } = this.props;
-    const contentName = (fieldSchema as SingleRelationFieldSchema).Content.ContentName;
+    const contentName = (fieldSchema as SingleRelationFieldSchema).RelatedContent.ContentName;
     const article = this._dataContext.createArticle(contentName);
     this.setState({
       isOpen: true,
@@ -55,6 +55,11 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
+  private reloadRelation = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.reloadRelation(model, fieldSchema as SingleRelationFieldSchema);
+  };
+
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const { isOpen } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
@@ -64,7 +69,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           onCreate={!article && this.createRelation}
           onSelect={this.selectRelation}
           onClear={!!article && this.removeRelation}
-          onRefresh={() => {}} // TODO: refersh SingleRelation
+          onRefresh={model._ServerId > 0 && this.reloadRelation}
         />
         <Button
           small
@@ -91,7 +96,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
       >
         <EntityEditor
           model={article}
-          contentSchema={fieldSchema.Content}
+          contentSchema={fieldSchema.RelatedContent}
           skipOtherFields={skipOtherFields}
           fieldEditors={fieldEditors}
           header

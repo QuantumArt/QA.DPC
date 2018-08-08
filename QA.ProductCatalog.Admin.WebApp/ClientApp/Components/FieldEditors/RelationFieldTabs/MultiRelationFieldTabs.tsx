@@ -60,7 +60,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   private createRelation = () => {
     const { model, fieldSchema } = this.props;
     const { touchedIds } = this.state;
-    const contentName = (fieldSchema as MultiRelationFieldSchema).Content.ContentName;
+    const contentName = (fieldSchema as MultiRelationFieldSchema).RelatedContent.ContentName;
     const article = this._dataContext.createArticle(contentName);
     touchedIds[article._ClientId] = true;
     this.setState({
@@ -113,6 +113,11 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
+  private reloadRelations = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._relationController.reloadRelations(model, fieldSchema as MultiRelationFieldSchema);
+  };
+
   private handleTabChange = (newTabId: number, _prevTabId: number, _e: any) => {
     const { touchedIds } = this.state;
     touchedIds[newTabId] = true;
@@ -140,7 +145,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
           onCreate={this.createRelation}
           onSelect={this.selectRelations}
           onClear={!isEmpty && this.clearRelation}
-          onRefresh={() => {}} // TODO: refersh MultiRelation
+          onRefresh={model._ServerId > 0 && this.reloadRelations}
         />
         <Button
           small
@@ -194,7 +199,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                     touchedIds[article._ClientId] && (
                       <EntityEditor
                         model={article}
-                        contentSchema={fieldSchema.Content}
+                        contentSchema={fieldSchema.RelatedContent}
                         skipOtherFields={skipOtherFields}
                         fieldEditors={fieldEditors}
                         header

@@ -92,12 +92,12 @@ function compileStoreType(
     if (isExtensionField(field)) {
       // создаем nullable поле-классификатор в виде enum
       fieldModels[field.FieldName] = t.maybe(
-        t.enumeration(field.FieldName, Object.keys(field.Contents))
+        t.enumeration(field.FieldName, Object.keys(field.ExtensionContents))
       );
       // создаем словарь с моделями контентов-расширений
       const extContentModels: Object = {};
       // заполняем его, обходя field.Contents
-      Object.entries(field.Contents).forEach(([extName, extContent]) => {
+      Object.entries(field.ExtensionContents).forEach(([extName, extContent]) => {
         // для каждого контента-расширения создаем словарь его полей
         const extFieldModels = {
           _ServerId: t.optional(t.number, getNextId),
@@ -121,13 +121,13 @@ function compileStoreType(
     } else if (isSingleRelationField(field)) {
       // для O2MRelation создаем nullable ссылку на сущность
       fieldModels[field.FieldName] = t.maybe(
-        t.reference(t.late(() => contentModels[field.Content.ContentName]))
+        t.reference(t.late(() => contentModels[field.RelatedContent.ContentName]))
       );
     } else if (isMultiRelationField(field)) {
       // для M2MRelation и M2ORelation создаем массив ссылок на сущности
       // prettier-ignore
       fieldModels[field.FieldName] = t.optional(
-        t.array(t.reference(t.late(() => contentModels[field.Content.ContentName]))), []
+        t.array(t.reference(t.late(() => contentModels[field.RelatedContent.ContentName]))), []
       );
     } else if (isEnumField(field)) {
       // создаем nullable строковое поле в виде enum
@@ -229,7 +229,7 @@ function compileDefaultSnapshots(mergedSchemas: { [name: string]: ContentSchema 
       // создаем словарь со снапшотами по-умолчанию контентов-расширений
       const extContentSnapshots = {};
       // заполняем его, обходя field.Contents
-      Object.entries(field.Contents).forEach(([extName, extContent]) => {
+      Object.entries(field.ExtensionContents).forEach(([extName, extContent]) => {
         // для каждого контента-расширения создаем словарь значений его полей
         const extFieldValues = {};
         // заполняем словарь полей обходя все поля контента-расширения

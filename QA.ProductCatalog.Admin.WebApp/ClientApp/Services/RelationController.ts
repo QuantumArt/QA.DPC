@@ -52,7 +52,7 @@ export class RelationController {
     });
     const selectedArticles = await this.selectArticles(
       existingArticleIds,
-      fieldSchema.Content,
+      fieldSchema.RelatedContent,
       false
     );
     if (selectedArticles !== "CANCEL") {
@@ -69,7 +69,7 @@ export class RelationController {
     });
     const selectedArticles = await this.selectArticles(
       existingArticleIds,
-      fieldSchema.Content,
+      fieldSchema.RelatedContent,
       true
     );
     if (selectedArticles !== "CANCEL") {
@@ -161,12 +161,14 @@ export class RelationController {
 
       const dataSnapshot = this._dataNormalizer.normalize(
         dataTree,
-        fieldSchema.Content.ContentName
+        fieldSchema.RelatedContent.ContentName
       );
 
       this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
 
-      const loadedArticles = this.getSelectedArticles(fieldSchema.Content, [dataTree._ClientId]);
+      const loadedArticles = this.getSelectedArticles(fieldSchema.RelatedContent, [
+        dataTree._ClientId
+      ]);
 
       model[fieldSchema.FieldName] = loadedArticles[0] || null;
     });
@@ -180,14 +182,14 @@ export class RelationController {
 
       const dataSnapshot = this._dataNormalizer.normalizeAll(
         dataTrees,
-        fieldSchema.Content.ContentName
+        fieldSchema.RelatedContent.ContentName
       );
 
       this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
 
       const loadedArticleIds = dataTrees.map(article => article._ClientId);
 
-      const loadedArticles = this.getSelectedArticles(fieldSchema.Content, loadedArticleIds);
+      const loadedArticles = this.getSelectedArticles(fieldSchema.RelatedContent, loadedArticleIds);
 
       const relatedArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
 
@@ -208,7 +210,7 @@ export class RelationController {
         },
         body: JSON.stringify({
           ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-          ContentPath: fieldSchema.Content.ContentPath,
+          ContentPath: fieldSchema.ParentContent.ContentPath,
           RelationFieldName: fieldSchema.FieldName,
           ParentArticleId: model._ServerId
         })

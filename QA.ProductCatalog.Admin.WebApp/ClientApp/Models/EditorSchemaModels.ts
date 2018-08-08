@@ -30,6 +30,7 @@ export interface FieldSchema {
   readonly ViewInList: boolean;
   readonly DefaultValue?: any;
   readonly ClassNames: string[];
+  readonly ParentContent: ContentSchema;
 }
 
 export function isField(field: any): field is FieldSchema {
@@ -111,7 +112,7 @@ interface StringEnumItem {
 }
 
 export interface RelationFieldSchema extends FieldSchema {
-  readonly Content: ContentSchema;
+  readonly RelatedContent: ContentSchema;
   readonly CloningMode: CloningMode;
   readonly UpdatingMode: UpdatingMode;
   readonly IsDpcBackwardField: boolean;
@@ -150,8 +151,8 @@ export function isMultiRelationField(field: any): field is MultiRelationFieldSch
 
 export interface ExtensionFieldSchema extends FieldSchema {
   readonly Changeable: boolean;
-  readonly Contents: {
-    readonly [name: string]: ContentSchema;
+  readonly ExtensionContents: {
+    readonly [contentName: string]: ContentSchema;
   };
 }
 

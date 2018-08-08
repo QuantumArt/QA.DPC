@@ -249,7 +249,7 @@ export class EnumFieldEditor extends AbstractFieldEditor {
 @observer
 export class ExtensionFieldEditor extends AbstractFieldEditor {
   renderField(model: EntityObject | ExtensionObject, fieldSchema: ExtensionFieldSchema) {
-    const options = Object.values(fieldSchema.Contents).map(contentSchema => ({
+    const options = Object.values(fieldSchema.ExtensionContents).map(contentSchema => ({
       value: contentSchema.ContentName,
       label: contentSchema.ContentTitle || contentSchema.ContentName
     }));
