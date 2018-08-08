@@ -235,7 +235,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var cntBefore = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
 
             calculator.Calculate(tariff, option);
-            calculator.Reorder(tariff);
+            calculator.Reorder(tariff, null);            
 
             var cntAfter = tariff.SelectTokens("Parameters.[?(@.Id)]").Count();
             var root = tariff.SelectToken("Parameters");
@@ -423,7 +423,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var calculator = new TariffOptionCalculator();
 
             calculator.Calculate(tariff, option);
-            calculator.Reorder(tariff);
+            calculator.Reorder(tariff, null);
 
             var root = tariff.SelectToken("Parameters");
             var direction = new TariffDirection("OutgoingCalls", null, "Russia", null);
@@ -469,7 +469,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
             var calculator = new TariffOptionCalculator();
 
             calculator.Calculate(tariff, option);
-            calculator.Reorder(tariff);
+            calculator.Reorder(tariff, null);            
 
             var root = tariff.SelectToken("Parameters");
             var direction = new TariffDirection("OutgoingCalls", null, null, null);

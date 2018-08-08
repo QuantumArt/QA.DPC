@@ -69,7 +69,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var defaultProduct = (JObject)Product.DeepClone();
             var defaultServices = Services;
             Services = new JObject[] {};
-            result = result ?? CalculateImpact(countryCode);
+            result = CalculateImpact(countryCode, searchOptions.HomeRegionData);
             var simpleProduct = Product;
             var resultProducts = new List<JObject>();
 
@@ -79,7 +79,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 {
                     Product = (JObject)defaultProduct.DeepClone();
                     Services = new[] { s };
-                    result = CalculateImpact(countryCode);
+                    result = CalculateImpact(countryCode, searchOptions.HomeRegionData);
                     Product["OptionId"] = s["Id"];
                     resultProducts.Add(Product);
                 }
@@ -108,7 +108,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
 
-            result = await LoadProducts(id, serviceIds, searchOptions);
+            result = await FillHomeRegion(searchOptions);
+            result = result ?? await LoadProducts(id, serviceIds, searchOptions);
+            result = result ?? await FillDefaultHomeRegion(searchOptions, Product);
 
             result = result ?? CalculateOption(countryCode);
 
@@ -137,13 +139,15 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
 
-            result = await LoadProducts(id, serviceIds, searchOptions);
+            result = await FillHomeRegion(searchOptions);
+            result = result ?? await LoadProducts(id, serviceIds, searchOptions);
+            result = result ?? await FillDefaultHomeRegion(searchOptions, Product);            
 
             result = result ?? FilterServicesOnProduct(true);
 
             LogStartImpact("MNR", id, serviceIds);
 
-            result = result ?? CalculateImpact(countryCode);
+            result = result ?? CalculateImpact(countryCode, searchOptions.HomeRegionData);
 
             LogEndImpact("MNR", id, serviceIds);
 
@@ -158,11 +162,11 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         }
 
-        protected new ActionResult CalculateImpact(string countryCode)
+        private ActionResult CalculateImpact(string countryCode, JObject homeRegionData)
         {
             try
             {
-                _calc.Calculate(Product, Services.ToArray(), countryCode, null);
+                _calc.Calculate(Product, Services.ToArray(), countryCode, homeRegionData);
             }
             catch (Exception ex)
             {
@@ -173,7 +177,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return null;
         }
 
-        protected ActionResult CalculateOption(string countryCode)
+        private ActionResult CalculateOption(string countryCode)
         {
             try
             {

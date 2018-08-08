@@ -65,7 +65,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
 
-            result = await LoadProducts(id, serviceIds, searchOptions);
+            result = await FillHomeRegion(searchOptions);
+            result = result ?? await LoadProducts(id, serviceIds, searchOptions);
+            result = result ?? await FillDefaultHomeRegion(searchOptions, Product);            
 
             if (initial)
             {
@@ -81,12 +83,12 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             result = result ?? FilterServiceParameters(countryCode);
             
             result = result ?? FilterProductParameters(countryCode, false, false); // to mark special directions
-            result = result ?? CalculateImpact(homeRegion);
+            result = result ?? CalculateImpact(searchOptions.HomeRegionData);
             result = result ?? FilterProductParameters(countryCode);                 
             
             result = result ?? FilterServicesOnProduct(false, NoImpactServiceIds);
 
-            var product = (result == null) ? GetNewProduct(homeRegion) : null;
+            var product = (result == null) ? GetNewProduct(searchOptions.HomeRegionData) : null;
 
             if (initial)
             {

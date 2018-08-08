@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
@@ -39,9 +40,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
 
-
-            result = await LoadProducts(id, serviceIds, searchOptions);
-
+            result = await FillHomeRegion(searchOptions);
+            result = result ?? await LoadProducts(id, serviceIds, searchOptions);
+            result = result ?? await FillDefaultHomeRegion(searchOptions, Product);
+            
             if (ConfigurationOptions.LoadDefaultServices && Services != null && !Services.Any())
             {
                 result = result ?? await LoadDefaultService(searchOptions);
@@ -51,7 +53,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogStartImpact("Base", id, serviceIds);
 
-            result = result ?? CalculateImpact(homeRegion);
+            result = result ?? CalculateImpact(searchOptions.HomeRegionData);
 
             LogEndImpact("Base", id, serviceIds);
 

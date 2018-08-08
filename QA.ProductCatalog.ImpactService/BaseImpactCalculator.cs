@@ -39,13 +39,13 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
 
-        public void Reorder(JObject product, string homeRegion = null, Dictionary<int, int> forcedGroupOrderOverride = null)
+        public void Reorder(JObject product, JObject homeRegionData)
         {
             var parametersRoot = (JArray)product.SelectToken("Parameters");
 
             if (parametersRoot == null) return;
 
-            var groupOrderOverride = forcedGroupOrderOverride ?? GetGroupOrderOverride(product, homeRegion);
+            var groupOrderOverride = GetGroupOrderOverride(homeRegionData);
 
             SetGroupOrder(parametersRoot, groupOrderOverride);
 
@@ -80,22 +80,10 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
 
-        public Dictionary<int, int> GetGroupOrderOverride(JObject product, string homeRegion)
+        public Dictionary<int, int> GetGroupOrderOverride(JObject homeRegion)
         {
             var result = new Dictionary<int, int>();
-            JToken region = null;
-            if (!string.IsNullOrEmpty(homeRegion))
-            {
-                region = product.SelectToken($"Regions[?(@.Alias == '{homeRegion}')]");
-            }
-
-            if (region == null)
-            {
-                region = product.SelectToken($"Regions[0]");
-            }
-
-            var usagesRoot = (JArray)region?.SelectToken("ParameterGroupUsages");
-
+            var usagesRoot = homeRegion?.SelectToken("ParameterGroupUsages");
             if (usagesRoot != null)
             {
                 foreach (var usage in usagesRoot)
@@ -104,7 +92,12 @@ namespace QA.ProductCatalog.ImpactService
                     var orderToken = usage.SelectToken("SortOrder");
                     if (idToken != null && orderToken != null)
                     {
-                        result.Add((int)idToken, (int)orderToken);
+                        var key = (int) idToken;
+                        var value = (int) orderToken;
+                        if (!result.ContainsKey(key))
+                        {
+                            result.Add(key, value);
+                        }
                     }
                 }
             }
@@ -254,23 +247,26 @@ namespace QA.ProductCatalog.ImpactService
 
                     foreach (var p in parametersToProcess)
                     {
-                        var toReplace = linkParameter.DeepClone();
+                        var replaceKey = (int) linkParameter["Id"];
+                        if (!changedIds.ContainsKey(replaceKey))
+                        {
+                            var toReplace = linkParameter.DeepClone();
 
-                        if (toReplace["SortOrder"] == null && p["SortOrder"] != null)
-                            toReplace["SortOrder"] = p["SortOrder"];
+                            if (toReplace["SortOrder"] == null && p["SortOrder"] != null)
+                                toReplace["SortOrder"] = p["SortOrder"];
 
-                        if (toReplace["Group"] == null && p["Group"] != null)
-                            toReplace["Group"] = p["Group"].DeepClone();
+                            if (toReplace["Group"] == null && p["Group"] != null)
+                                toReplace["Group"] = p["Group"].DeepClone();
 
-                        if (toReplace["Parent"] == null && p["Parent"] != null)
-                            toReplace["Parent"] = p["Parent"].DeepClone();
+                            if (toReplace["Parent"] == null && p["Parent"] != null)
+                                toReplace["Parent"] = p["Parent"].DeepClone();
 
-                        changedIds.Add((int)toReplace["Id"], (int)p["Id"]);
-                        toReplace["Id"] = p["Id"];
-                        
-
-                        p.Replace(toReplace);
+                            changedIds.Add(replaceKey, (int)p["Id"]);
+                            toReplace["Id"] = p["Id"];  
                             
+                            p.Replace(toReplace);
+                            
+                        }
                     }
                 }
 
@@ -688,13 +684,13 @@ namespace QA.ProductCatalog.ImpactService
             return defaultResult;
         }
 
-        public virtual JObject Calculate(JObject tariff, JObject[] options, string homeRegion)
+        public virtual JObject Calculate(JObject tariff, JObject[] options, JObject homeRegionData)
         {
             foreach (var option in options)
             {
                 Calculate(tariff, option);
             }
-            Reorder(tariff, homeRegion);
+            Reorder(tariff, homeRegionData);
             return tariff;
         }
 
