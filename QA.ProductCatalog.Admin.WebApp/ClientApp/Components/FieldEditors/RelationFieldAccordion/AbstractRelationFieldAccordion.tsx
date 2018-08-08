@@ -6,6 +6,7 @@ import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
+import { EditorController } from "Services/EditorController";
 import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
 import { RenderEntity, FieldsConfig } from "Components/ArticleEditor/EntityEditor";
@@ -25,6 +26,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
 > {
   @inject protected _dataContext: DataContext;
   @inject private _schemaContext: SchemaContext;
+  @inject protected _editorController: EditorController;
   @inject protected _relationController: RelationController;
   protected _displayFields: FieldSelector[];
 

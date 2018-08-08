@@ -35,9 +35,14 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
     this._titleField = isString(titleField) ? article => article[titleField] : titleField;
   }
 
-  hadleSaveAll = () => {
+  private saveMinimalProduct = async () => {
     const { model, contentSchema } = this.props;
-    this._editorController.savePartialProduct(model, contentSchema);
+    await this._editorController.saveMinimalProduct(model, contentSchema);
+  };
+
+  private savePartialProduct = async () => {
+    const { model, contentSchema } = this.props;
+    await this._editorController.savePartialProduct(model, contentSchema);
   };
 
   render() {
@@ -57,8 +62,8 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
           {buttons === true ? (
             <div className="article-editor__buttons">
               <ArticleMenu
-                onSave={showSaveButton && (() => {})}
-                onSaveAll={showSaveButton && this.hadleSaveAll}
+                onSave={showSaveButton && this.saveMinimalProduct}
+                onSaveAll={showSaveButton && this.savePartialProduct}
                 onRemove={onRemove && (() => onRemove(model))}
                 onRefresh={() => {}} // TODO: refersh PartialProduct
                 onClone={() => {}} // TODO: clone PartialProduct

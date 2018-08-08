@@ -44,6 +44,28 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     model.setTouched(fieldSchema.FieldName, true);
   };
 
+  @action
+  private saveMinimalProduct = async (e: any) => {
+    e.stopPropagation();
+    const { model, fieldSchema } = this.props;
+    const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
+    const article: EntityObject = model[fieldSchema.FieldName];
+    if (article) {
+      await this._editorController.saveMinimalProduct(article, contentSchema);
+    }
+  };
+
+  @action
+  private savePartialProduct = async (e: any) => {
+    e.stopPropagation();
+    const { model, fieldSchema } = this.props;
+    const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
+    const article: EntityObject = model[fieldSchema.FieldName];
+    if (article) {
+      await this._editorController.savePartialProduct(article, contentSchema);
+    }
+  };
+
   private toggleRelation = (e: any) => {
     // нажали на элемент находящийся внутри <button>
     if (e.target.closest("button")) return;
@@ -110,8 +132,8 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               {!fieldSchema.IsReadOnly && (
                 <ArticleMenu
                   small
-                  onSave={showSaveButton && (() => {})}
-                  onSaveAll={showSaveButton && (() => {})}
+                  onSave={showSaveButton && this.saveMinimalProduct}
+                  onSaveAll={showSaveButton && this.savePartialProduct}
                   onRemove={this.removeRelation}
                   onRefresh={() => {}}
                   onClone={() => {}}
