@@ -5,12 +5,13 @@ import { inject } from "react-ioc";
 import { untracked, runInAction, IObservableArray } from "mobx";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
-import { DataMerger } from "Services/DataMerger";
+import { DataMerger, MergeStrategy } from "Services/DataMerger";
 import { DataContext } from "Services/DataContext";
 import {
   ContentSchema,
   SingleRelationFieldSchema,
-  MultiRelationFieldSchema
+  MultiRelationFieldSchema,
+  RelationFieldSchema
 } from "Models/EditorSchemaModels";
 import { ArticleObject, EntitySnapshot, EntityObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
@@ -73,12 +74,12 @@ export class RelationController {
     );
     if (selectedArticles !== "CANCEL") {
       runInAction("selectRelations", () => {
-        const modelArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
-        const newlyCreatedArticles = modelArticles.filter(article => article._ServerId === null);
+        const relatedArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
+        const newlyCreatedArticles = relatedArticles.filter(article => article._ServerId === null);
 
-        modelArticles.clear();
-        modelArticles.push(...selectedArticles);
-        modelArticles.push(...newlyCreatedArticles);
+        relatedArticles.clear();
+        relatedArticles.push(...selectedArticles);
+        relatedArticles.push(...newlyCreatedArticles);
       });
     }
   }
@@ -149,6 +150,73 @@ export class RelationController {
 
     const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
 
-    this._dataMerger.mergeArticles(dataSnapshot);
+    this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.KeepTimestamp);
+  }
+
+  public async reloadRelation(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
+    const relationsJson = await this.loadProductRelationJson(model, fieldSchema);
+
+    runInAction("reloadRelation", () => {
+      const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(relationsJson);
+
+      const dataSnapshot = this._dataNormalizer.normalize(
+        dataTree,
+        fieldSchema.Content.ContentName
+      );
+
+      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+
+      const loadedArticles = this.getSelectedArticles(fieldSchema.Content, [dataTree._ClientId]);
+
+      model[fieldSchema.FieldName] = loadedArticles[0] || null;
+    });
+  }
+
+  public async reloadRelations(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
+    const relationsJson = await this.loadProductRelationJson(model, fieldSchema);
+
+    runInAction("reloadRelations", () => {
+      const dataTrees = this._dataSerializer.deserialize<EntitySnapshot[]>(relationsJson);
+
+      const dataSnapshot = this._dataNormalizer.normalizeAll(
+        dataTrees,
+        fieldSchema.Content.ContentName
+      );
+
+      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+
+      const loadedArticleIds = dataTrees.map(article => article._ClientId);
+
+      const loadedArticles = this.getSelectedArticles(fieldSchema.Content, loadedArticleIds);
+
+      const relatedArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
+
+      relatedArticles.clear();
+      relatedArticles.push(...loadedArticles);
+    });
+  }
+
+  @command
+  private async loadProductRelationJson(model: ArticleObject, fieldSchema: RelationFieldSchema) {
+    const response = await fetch(
+      `${this._rootUrl}/ProductEditor/LoadProductRelation${this._query}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: fieldSchema.Content.ContentPath,
+          RelationFieldName: fieldSchema.FieldName,
+          ParentArticleId: model._ServerId
+        })
+      }
+    );
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    return await response.text();
   }
 }

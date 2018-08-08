@@ -1,103 +1,116 @@
 import { inject } from "react-ioc";
 import { action, comparer } from "mobx";
 import { getSnapshot } from "mobx-state-tree";
-import { ValidatableObject } from "mst-validation-mixin";
-import { isObject } from "Utils/TypeChecks";
-import { StoreSnapshot, isArticleObject } from "Models/EditorDataModels";
+import {
+  StoreSnapshot,
+  ArticleSnapshot,
+  ArticleObject,
+  isExtensionDictionary
+} from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
+
+export enum MergeStrategy {
+  KeepTimestamp = 1,
+  ClientWins = 2,
+  ServerWins = 3,
+  UpdateIfNewer = 4
+}
 
 export class DataMerger {
   @inject private _dataContext: DataContext;
-  private _hasMergeConfilicts = false;
 
-  @action
-  public mergeArticles(storeSnapshot: StoreSnapshot) {
-    this._hasMergeConfilicts = false;
-
-    Object.entries(storeSnapshot).forEach(([contentName, articlesById]) => {
+  public storeHasConflicts(storeSnapshot: StoreSnapshot) {
+    for (const [contentName, articlesById] of Object.entries(storeSnapshot)) {
       const collection = this._dataContext.store[contentName];
-      if (collection) {
-        Object.entries(articlesById).forEach(([id, articleSnapshot]) => {
-          const article = collection.get(id);
-          if (article) {
-            this.mergeArticleSnapshot(article, articleSnapshot);
-          } else {
-            collection.put(articleSnapshot);
-          }
-        });
+      for (const [id, articleSnapshot] of Object.entries(articlesById)) {
+        const article = collection.get(id);
+        if (article && this.articleHasConfilcts(article, articleSnapshot)) {
+          return true;
+        }
       }
-    });
-
-    return { hasMergeConfilicts: this._hasMergeConfilicts };
-  }
-
-  private mergeArticleSnapshot(model: Object, snapshot: Object) {
-    const modelIsValidatable = isArticleObject(model);
-    const modelSnapshot = getSnapshot(model);
-
-    Object.entries(snapshot).forEach(([name, valueSnapshot]) => {
-      if (name === "_ClientId" || name === "_ContentName") {
-        return;
-      }
-      const fieldSnapshot = modelSnapshot[name];
-
-      if (isObject(fieldSnapshot) && isObject(valueSnapshot)) {
-        this.mergeArticleSnapshot(model[name], valueSnapshot);
-      } else if (comparer.structural(fieldSnapshot, valueSnapshot)) {
-        this.markFieldAsUnchanged(modelIsValidatable, model, name);
-      } else if (this.fieldIsEdited(modelIsValidatable, model, name)) {
-        this._hasMergeConfilicts = true;
-      } else {
-        model[name] = valueSnapshot;
-        this.markFieldAsUnchanged(modelIsValidatable, model, name);
-      }
-    });
-  }
-
-  @action
-  public overwriteArticles(storeSnapshot: StoreSnapshot) {
-    Object.entries(storeSnapshot).forEach(([contentName, articlesById]) => {
-      const collection = this._dataContext.store[contentName];
-      if (collection) {
-        Object.entries(articlesById).forEach(([id, articleSnapshot]) => {
-          const article = collection.get(id);
-          if (article) {
-            this.overwriteArticleSnapshot(article, articleSnapshot);
-          } else {
-            collection.put(articleSnapshot);
-          }
-        });
-      }
-    });
-  }
-
-  private overwriteArticleSnapshot(model: Object, snapshot: Object) {
-    const modelIsValidatable = isArticleObject(model);
-    const modelSnapshot = getSnapshot(model);
-
-    Object.entries(snapshot).forEach(([name, valueSnapshot]) => {
-      if (name === "_ClientId" || name === "_ContentName") {
-        return;
-      }
-      const fieldSnapshot = modelSnapshot[name];
-
-      if (isObject(fieldSnapshot) && isObject(valueSnapshot)) {
-        this.overwriteArticleSnapshot(model[name], valueSnapshot);
-      } else if (!comparer.structural(fieldSnapshot, valueSnapshot)) {
-        model[name] = valueSnapshot;
-      }
-
-      this.markFieldAsUnchanged(modelIsValidatable, model, name);
-    });
-  }
-
-  private fieldIsEdited(modelIsValidatable: boolean, model: Object, name: string) {
-    return modelIsValidatable && (model as ValidatableObject).isEdited(name);
-  }
-
-  private markFieldAsUnchanged(modelIsValidatable: boolean, model: Object, name: string) {
-    if (modelIsValidatable) {
-      (model as ValidatableObject).setChanged(name, false);
     }
+    return false;
+  }
+
+  public articleHasConfilcts(article: ArticleObject, snapshot: ArticleSnapshot) {
+    const oldSnapshot = getSnapshot<ArticleSnapshot>(article);
+
+    for (const [name, fieldSnapshot] of Object.entries(snapshot)) {
+      const fieldValue = article[name];
+
+      if (name.endsWith(ArticleObject._Contents) && isExtensionDictionary(fieldValue)) {
+        for (const [contentName, extensionSnapshot] of Object.entries(fieldSnapshot)) {
+          if (this.articleHasConfilcts(fieldValue[contentName], extensionSnapshot)) {
+            return true;
+          }
+        }
+      } else if (
+        oldSnapshot._Modified < snapshot._Modified &&
+        article.isEdited(name) &&
+        !comparer.structural(oldSnapshot[name], fieldSnapshot)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  @action
+  public mergeStore(snapshot: StoreSnapshot, strategy: MergeStrategy) {
+    Object.entries(snapshot).forEach(([contentName, articlesById]) => {
+      const collection = this._dataContext.store[contentName];
+      if (collection) {
+        Object.entries(articlesById).forEach(([id, articleSnapshot]) => {
+          const article = collection.get(id);
+          if (article) {
+            this.mergeArticle(article, articleSnapshot, strategy);
+          } else {
+            collection.put(articleSnapshot);
+          }
+        });
+      }
+    });
+  }
+
+  @action
+  public mergeArticle(article: ArticleObject, snapshot: ArticleSnapshot, strategy: MergeStrategy) {
+    const oldSnapshot = getSnapshot<ArticleSnapshot>(article);
+
+    Object.entries(snapshot).forEach(([name, fieldSnapshot]) => {
+      const fieldValue = article[name];
+
+      if (name === ArticleObject._Modified) {
+        if (
+          strategy !== MergeStrategy.KeepTimestamp &&
+          oldSnapshot._Modified !== snapshot._Modified
+        ) {
+          this.setProperty(article, name, fieldSnapshot);
+        }
+      } else if (name.endsWith(ArticleObject._Contents) && isExtensionDictionary(fieldValue)) {
+        Object.entries(fieldSnapshot).forEach(([contentName, extensionSnapshot]) => {
+          this.mergeArticle(fieldValue[contentName], extensionSnapshot, strategy);
+        });
+      } else if (comparer.structural(oldSnapshot[name], fieldSnapshot)) {
+        article.setChanged(name, false);
+      } else if (article.isEdited(name)) {
+        switch (strategy) {
+          case MergeStrategy.ServerWins:
+            this.setProperty(article, name, fieldSnapshot);
+            break;
+          case MergeStrategy.UpdateIfNewer:
+            if (oldSnapshot._Modified < snapshot._Modified) {
+              this.setProperty(article, name, fieldSnapshot);
+            }
+            break;
+        }
+      } else {
+        this.setProperty(article, name, fieldSnapshot);
+      }
+    });
+  }
+
+  private setProperty(article: ArticleObject, name: string, value: any) {
+    article[name] = value;
+    article.setChanged(name, false);
   }
 }

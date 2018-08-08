@@ -5,7 +5,7 @@ import { ContentSchema } from "Models/EditorSchemaModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { DataSerializer, IdMapping } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
-import { DataMerger } from "Services/DataMerger";
+import { DataMerger, MergeStrategy } from "Services/DataMerger";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { command } from "Utils/Command";
@@ -91,12 +91,15 @@ export class EditorController {
     if (response.status === 409) {
       const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
-      const { hasMergeConfilicts } = this._dataMerger.mergeArticles(dataSnapshot);
-      if (hasMergeConfilicts) {
+      if (this._dataMerger.storeHasConflicts(dataSnapshot)) {
         // TODO: React confirm dialog
-        if (window.confirm(`Данные на сервере были изменены.\nПрименить изменения с сервера?`)) {
-          this._dataMerger.overwriteArticles(dataSnapshot);
-        }
+        const takeServer = window.confirm(
+          `Данные на сервере были изменены.\nПрименить изменения с сервера?`
+        );
+        this._dataMerger.mergeStore(
+          dataSnapshot,
+          takeServer ? MergeStrategy.ClientWins : MergeStrategy.UpdateIfNewer
+        );
       }
       return;
     } else if (!response.ok) {
@@ -115,6 +118,6 @@ export class EditorController {
     const dataTreeJson = JSON.stringify(okResponse.PartialProduct);
     const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(dataTreeJson);
     const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
-    this._dataMerger.overwriteArticles(dataSnapshot);
+    this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.UpdateIfNewer);
   }
 }

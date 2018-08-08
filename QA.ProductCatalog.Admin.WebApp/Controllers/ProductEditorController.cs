@@ -416,15 +416,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         public class LoadProductRelationRequest : PartialProductRequest
         {
             /// <summary>
-            /// Id родительской статьи
-            /// </summary>
-            public int ParentArticleId { get; set; }
-
-            /// <summary>
             /// Имя поля связи, которое необходимо загрузить
             /// </summary>
             [Required]
             public string RelationFieldName { get; set; }
+
+            /// <summary>
+            /// Id родительской статьи
+            /// </summary>
+            public int ParentArticleId { get; set; }
         }
 
         public class SavePartialProductRequest : PartialProductRequest
