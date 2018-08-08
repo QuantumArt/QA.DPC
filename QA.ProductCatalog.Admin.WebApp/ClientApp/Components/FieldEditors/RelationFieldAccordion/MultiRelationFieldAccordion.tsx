@@ -100,6 +100,13 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     await this._editorController.savePartialProduct(article, contentSchema);
   }
 
+  private async reloadEntity(e: any, article: EntityObject) {
+    e.stopPropagation();
+    const { fieldSchema } = this.props;
+    const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
+    await this._articleController.reloadEntity(article, contentSchema);
+  }
+
   private handleToggle(e: any, article: EntityObject) {
     // нажали на элемент находящийся внутри <button>
     if (e.target.closest("button")) return;
@@ -183,7 +190,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                           onSave={showSaveButton && (e => this.saveMinimalProduct(e, article))}
                           onSaveAll={showSaveButton && (e => this.savePartialProduct(e, article))}
                           onRemove={e => this.removeRelation(e, article)}
-                          onRefresh={() => {}}
+                          onRefresh={article._ServerId > 0 && (e => this.reloadEntity(e, article))}
                           onClone={() => {}}
                           onPublish={() => {}}
                         />

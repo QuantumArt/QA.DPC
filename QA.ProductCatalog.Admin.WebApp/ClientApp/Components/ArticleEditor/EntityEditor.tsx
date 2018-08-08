@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import { EntityObject } from "Models/EditorDataModels";
 import { SchemaContext } from "Services/SchemaContext";
 import { EditorController } from "Services/EditorController";
+import { ArticleController } from "Services/ArticleController";
 import { isString, isFunction } from "Utils/TypeChecks";
 import { ArticleMenu } from "./ArticleMenu";
 import { ArticleEditor, ArticleEditorProps } from "./ArticleEditor";
@@ -25,6 +26,7 @@ interface EntityEditorProps {
 @consumer
 @observer
 export class EntityEditor extends ArticleEditor<EntityEditorProps> {
+  @inject private _articleController: ArticleController;
   @inject private _editorController: EditorController;
   @inject private _schemaContext: SchemaContext;
   private _titleField: (model: EntityObject) => string;
@@ -43,6 +45,11 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
   private savePartialProduct = async () => {
     const { model, contentSchema } = this.props;
     await this._editorController.savePartialProduct(model, contentSchema);
+  };
+
+  private reloadEntity = async () => {
+    const { model, contentSchema } = this.props;
+    await this._articleController.reloadEntity(model, contentSchema);
   };
 
   render() {
@@ -65,7 +72,7 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
                 onSave={showSaveButton && this.saveMinimalProduct}
                 onSaveAll={showSaveButton && this.savePartialProduct}
                 onRemove={onRemove && (() => onRemove(model))}
-                onRefresh={() => {}} // TODO: refersh PartialProduct
+                onRefresh={model._ServerId > 0 && this.reloadEntity}
                 onClone={() => {}} // TODO: clone PartialProduct
                 onPublish={() => {}} // TODO: publish PartialProduct
               />

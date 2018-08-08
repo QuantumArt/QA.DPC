@@ -66,6 +66,17 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     }
   };
 
+  @action
+  private reloadEntity = async (e: any) => {
+    e.stopPropagation();
+    const { model, fieldSchema } = this.props;
+    const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
+    const article: EntityObject = model[fieldSchema.FieldName];
+    if (article) {
+      await this._articleController.reloadEntity(article, contentSchema);
+    }
+  };
+
   private toggleRelation = (e: any) => {
     // нажали на элемент находящийся внутри <button>
     if (e.target.closest("button")) return;
@@ -135,7 +146,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                   onSave={showSaveButton && this.saveMinimalProduct}
                   onSaveAll={showSaveButton && this.savePartialProduct}
                   onRemove={this.removeRelation}
-                  onRefresh={() => {}}
+                  onRefresh={model._ServerId > 0 && this.reloadEntity}
                   onClone={() => {}}
                   onPublish={() => {}}
                 />
