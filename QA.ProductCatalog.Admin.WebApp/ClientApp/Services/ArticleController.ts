@@ -16,8 +16,20 @@ export class ArticleController {
   private _query = document.location.search;
   private _rootUrl = document.head.getAttribute("root-url") || "";
 
-  @command
+  public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
+    await this.loadArticle(model, contentSchema, MergeStrategy.UpdateIfNewer);
+  }
+
   public async reloadEntity(model: EntityObject, contentSchema: ContentSchema) {
+    await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);
+  }
+
+  @command
+  private async loadArticle(
+    model: EntityObject,
+    contentSchema: ContentSchema,
+    strategy: MergeStrategy
+  ) {
     const response = await fetch(
       `${this._rootUrl}/ProductEditor/LoadPartialProduct${this._query}`,
       {
@@ -40,6 +52,6 @@ export class ArticleController {
 
     const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
 
-    this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+    this._dataMerger.mergeStore(dataSnapshot, strategy);
   }
 }

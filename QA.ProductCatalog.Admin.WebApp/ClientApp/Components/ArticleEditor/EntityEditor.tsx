@@ -47,6 +47,11 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
     await this._editorController.savePartialProduct(model, contentSchema);
   };
 
+  private refreshEntity = async () => {
+    const { model, contentSchema } = this.props;
+    await this._articleController.refreshEntity(model, contentSchema);
+  };
+
   private reloadEntity = async () => {
     const { model, contentSchema } = this.props;
     await this._articleController.reloadEntity(model, contentSchema);
@@ -57,14 +62,15 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
     if (isFunction(children) && children.length === 0) {
       return children(null, null);
     }
-    const showSaveButton = model._ServerId > 0 || this._schemaContext.rootSchema === contentSchema;
+    const hasServerId = model._ServerId > 0;
+    const showSaveButton = hasServerId || this._schemaContext.rootSchema === contentSchema;
 
     const headerNode =
       header === true ? (
         <Col key={1} md className="article-editor__header">
           <div className="article-editor__title" title={contentSchema.ContentDescription}>
             {contentSchema.ContentTitle || contentSchema.ContentName}
-            {model._ServerId > 0 && `: (${model._ServerId})`} {this._titleField(model)}
+            {hasServerId && `: (${model._ServerId})`} {this._titleField(model)}
           </div>
           {buttons === true ? (
             <div className="article-editor__buttons">
@@ -72,7 +78,8 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
                 onSave={showSaveButton && this.saveMinimalProduct}
                 onSaveAll={showSaveButton && this.savePartialProduct}
                 onRemove={onRemove && (() => onRemove(model))}
-                onRefresh={model._ServerId > 0 && this.reloadEntity}
+                onRefresh={hasServerId && this.refreshEntity}
+                onReload={hasServerId && this.reloadEntity}
                 onClone={() => {}} // TODO: clone PartialProduct
                 onPublish={() => {}} // TODO: publish PartialProduct
               />

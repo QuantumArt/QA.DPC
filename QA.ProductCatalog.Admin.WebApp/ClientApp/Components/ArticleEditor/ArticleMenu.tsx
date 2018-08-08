@@ -7,6 +7,7 @@ interface ArticleMenuProps {
   onSaveAll?: (e: any) => void;
   onRemove?: (e: any) => void;
   onRefresh?: (e: any) => void;
+  onReload?: (e: any) => void;
   onClone?: (e: any) => void;
   onPublish?: (e: any) => void;
 }
@@ -17,6 +18,7 @@ export const ArticleMenu = ({
   onSaveAll,
   onRemove,
   onRefresh,
+  onReload,
   onClone,
   onPublish
 }: ArticleMenuProps) => (
@@ -54,25 +56,22 @@ export const ArticleMenu = ({
       )}
       {onRefresh && (
         <MenuItem
-          labelElement={<Icon icon="automatic-updates" />}
+          labelElement={<Icon icon="refresh" />}
           intent={Intent.WARNING}
           onClick={onRefresh}
           text="Обновить"
           title="Загрузить изменения продукта с сервера (несохраненные изменения полей останутся)"
         />
       )}
-      {
-        // TODO: Кнопка полной перезагрузки с сервера
-        /* {onReload && (
+      {onReload && (
         <MenuItem
-          labelElement={<Icon icon="refresh" />}
+          labelElement={<Icon icon="automatic-updates" />}
           intent={Intent.WARNING}
           onClick={onReload}
           text="Перезагрузить"
           title="Перезагрузить часть продукта с сервера (несохраненные изменения полей потеряются)"
         />
-      )} */
-      }
+      )}
       {onRemove && (
         <MenuItem
           labelElement={<Icon icon="remove" />}

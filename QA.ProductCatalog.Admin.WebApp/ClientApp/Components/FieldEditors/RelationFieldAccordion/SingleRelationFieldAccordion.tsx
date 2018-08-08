@@ -67,6 +67,17 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   };
 
   @action
+  private refreshEntity = async (e: any) => {
+    e.stopPropagation();
+    const { model, fieldSchema } = this.props;
+    const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
+    const article: EntityObject = model[fieldSchema.FieldName];
+    if (article) {
+      await this._articleController.refreshEntity(article, contentSchema);
+    }
+  };
+
+  @action
   private reloadEntity = async (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
@@ -114,6 +125,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const { fieldEditors, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
+    const hasServerId = article._ServerId > 0;
     const showSaveButton = this.showSaveButton(article);
     return article ? (
       <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
@@ -132,7 +144,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
             </td>
             <td key={-2} className="relation-field-accordion__cell">
-              {article._ServerId > 0 && `(${article._ServerId})`}
+              {hasServerId && `(${article._ServerId})`}
             </td>
             {this._displayFields.map((displayField, i) => (
               <td key={i} className="relation-field-accordion__cell">
@@ -146,9 +158,10 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                   onSave={showSaveButton && this.saveMinimalProduct}
                   onSaveAll={showSaveButton && this.savePartialProduct}
                   onRemove={this.removeRelation}
-                  onRefresh={model._ServerId > 0 && this.reloadEntity}
-                  onClone={() => {}}
-                  onPublish={() => {}}
+                  onRefresh={hasServerId && this.refreshEntity}
+                  onReload={hasServerId && this.reloadEntity}
+                  onClone={() => {}} // TODO: clone PartialProduct
+                  onPublish={() => {}} // TODO: publish PartialProduct
                 />
               )}
             </td>

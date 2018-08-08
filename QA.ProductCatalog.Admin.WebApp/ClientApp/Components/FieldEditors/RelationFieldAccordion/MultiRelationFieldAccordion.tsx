@@ -100,6 +100,13 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     await this._editorController.savePartialProduct(article, contentSchema);
   }
 
+  private async refreshEntity(e: any, article: EntityObject) {
+    e.stopPropagation();
+    const { fieldSchema } = this.props;
+    const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
+    await this._articleController.refreshEntity(article, contentSchema);
+  }
+
   private async reloadEntity(e: any, article: EntityObject) {
     e.stopPropagation();
     const { fieldSchema } = this.props;
@@ -159,6 +166,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
             .sort(asc(this._orderByField))
             .map(article => {
               const isOpen = article._ClientId === activeId;
+              const hasServerId = article._ServerId > 0;
               const showSaveButton = this.showSaveButton(article);
               return (
                 <Fragment key={article._ClientId}>
@@ -176,7 +184,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
                     </td>
                     <td key={-2} className="relation-field-accordion__cell">
-                      {article._ServerId > 0 && `(${article._ServerId})`}
+                      {hasServerId && `(${article._ServerId})`}
                     </td>
                     {this._displayFields.map((displayField, i) => (
                       <td key={i} className="relation-field-accordion__cell">
@@ -190,9 +198,10 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                           onSave={showSaveButton && (e => this.saveMinimalProduct(e, article))}
                           onSaveAll={showSaveButton && (e => this.savePartialProduct(e, article))}
                           onRemove={e => this.removeRelation(e, article)}
-                          onRefresh={article._ServerId > 0 && (e => this.reloadEntity(e, article))}
-                          onClone={() => {}}
-                          onPublish={() => {}}
+                          onRefresh={hasServerId && (e => this.refreshEntity(e, article))}
+                          onReload={hasServerId && (e => this.reloadEntity(e, article))}
+                          onClone={() => {}} // TODO: clone PartialProduct
+                          onPublish={() => {}} // TODO: publish PartialProduct
                         />
                       )}
                     </td>
