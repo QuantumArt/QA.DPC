@@ -78,7 +78,9 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const { model, fieldSchema } = this.props;
     this.setState({
       activeId: null,
-      touchedIds: {}
+      touchedIds: {},
+      isOpen: false,
+      isTouched: false
     });
     model[fieldSchema.FieldName] = [];
     model.setTouched(fieldSchema.FieldName, true);
@@ -110,11 +112,19 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
 
   private selectRelations = async () => {
     const { model, fieldSchema } = this.props;
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
   private reloadRelations = async () => {
     const { model, fieldSchema } = this.props;
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
     await this._relationController.reloadRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 

@@ -159,18 +159,20 @@ export class RelationController {
     runInAction("reloadRelation", () => {
       const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(relationsJson);
 
-      const dataSnapshot = this._dataNormalizer.normalize(
-        dataTree,
-        fieldSchema.RelatedContent.ContentName
-      );
+      if (dataTree) {
+        const dataSnapshot = this._dataNormalizer.normalize(
+          dataTree,
+          fieldSchema.RelatedContent.ContentName
+        );
 
-      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+        this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
 
-      const loadedArticles = this.getSelectedArticles(fieldSchema.RelatedContent, [
-        dataTree._ClientId
-      ]);
+        const collection = this._dataContext.store[fieldSchema.RelatedContent.ContentName];
 
-      model[fieldSchema.FieldName] = loadedArticles[0] || null;
+        model[fieldSchema.FieldName] = collection.get(String(dataTree._ClientId)) || null;
+      } else {
+        model[fieldSchema.FieldName] = null;
+      }
     });
   }
 

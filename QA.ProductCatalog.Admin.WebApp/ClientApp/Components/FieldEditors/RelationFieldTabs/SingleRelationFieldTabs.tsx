@@ -52,11 +52,19 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
 
   private selectRelation = async () => {
     const { model, fieldSchema } = this.props;
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
     await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
   private reloadRelation = async () => {
     const { model, fieldSchema } = this.props;
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
     await this._relationController.reloadRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
