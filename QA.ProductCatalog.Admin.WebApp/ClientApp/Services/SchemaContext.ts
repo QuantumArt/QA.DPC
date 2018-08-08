@@ -38,6 +38,7 @@ export class SchemaContext {
 /**
  * Преобразует JSON Reference ссылки на `ContentSchema` вида
  * `{ "$ref": "#/definitions/MySchema2" }` в циклическую структуру объектов.
+ * Заполняет обратные ссылки `FieldSchema.ParentContent`.
  */
 function linkNestedSchemas(
   object: any,
@@ -78,7 +79,7 @@ function resolveJsonRef(object: any, definitions: { [name: string]: any }): any 
 
 /**
  * Преобразует ссылки на `ContentSchema` вида `{ "ContentId": 1234 }`
- * в циклическую структуру объектов.
+ * в циклическую структуру объектов. Заполняет обратные ссылки `FieldSchema.ParentContent`.
  */
 function linkMergedSchemas(
   object: any,

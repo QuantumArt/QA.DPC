@@ -10,9 +10,13 @@ import {
 import { DataContext } from "Services/DataContext";
 
 export enum MergeStrategy {
+  /** Обновить только неизмененные поля. Не менять поле `_Modified`. */
   KeepTimestamp = 1,
+  /** Обновить только неизмененные поля. Обновить поле `_Modified`. */
   ClientWins = 2,
+  /** Перезаписать с сервера все поля всех статей. Обновить поле `_Modified`. */
   ServerWins = 3,
+  /** Перезаписать поля статей, которые были изменены на сервере. Обновить поле `_Modified`. */
   UpdateIfNewer = 4
 }
 
@@ -80,11 +84,18 @@ export class DataMerger {
       const fieldValue = article[name];
 
       if (name === ArticleObject._Modified) {
-        if (
-          strategy !== MergeStrategy.KeepTimestamp &&
-          oldSnapshot._Modified !== snapshot._Modified
-        ) {
-          this.setProperty(article, name, fieldSnapshot);
+        if (oldSnapshot._Modified !== snapshot._Modified) {
+          switch (strategy) {
+            case MergeStrategy.KeepTimestamp:
+              break;
+            case MergeStrategy.ClientWins:
+            case MergeStrategy.ServerWins:
+            case MergeStrategy.UpdateIfNewer:
+              this.setProperty(article, name, fieldSnapshot);
+              break;
+            default:
+              throw new Error("Uncovered MergeStrategy");
+          }
         }
       } else if (name.endsWith(ArticleObject._Contents) && isExtensionDictionary(fieldValue)) {
         Object.entries(fieldSnapshot).forEach(([contentName, extensionSnapshot]) => {
@@ -94,6 +105,9 @@ export class DataMerger {
         article.setChanged(name, false);
       } else if (article.isEdited(name)) {
         switch (strategy) {
+          case MergeStrategy.KeepTimestamp:
+          case MergeStrategy.ClientWins:
+            break;
           case MergeStrategy.ServerWins:
             this.setProperty(article, name, fieldSnapshot);
             break;
@@ -102,6 +116,8 @@ export class DataMerger {
               this.setProperty(article, name, fieldSnapshot);
             }
             break;
+          default:
+            throw new Error("Uncovered MergeStrategy");
         }
       } else {
         this.setProperty(article, name, fieldSnapshot);
