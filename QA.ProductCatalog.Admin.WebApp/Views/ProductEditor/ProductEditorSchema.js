@@ -8,6 +8,7 @@ import {
   isPlainField,
   isEnumField
 } from "Models/EditorSchemaModels";
+import { ArticleObject } from "Models/EditorDataModels";
 
 const dataInterfaces = compileEditorDataInterfaces(
   // @ts-ignore
@@ -62,7 +63,7 @@ export interface ${getName(content)} extends ${
     if (isExtensionField(field)) {
       return `${forEach(field.Contents, content => `
     | "${getName(content)}"`)};
-  ${field.FieldName}_Contents: {${forEach(field.Contents, content => `
+  ${field.FieldName}${ArticleObject._Contents}: {${forEach(field.Contents, content => `
     ${getName(content)}: ${getName(content)};`)}
   }`;
     }

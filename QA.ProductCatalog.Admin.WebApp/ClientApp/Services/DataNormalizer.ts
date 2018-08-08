@@ -1,6 +1,6 @@
 import { normalize, schema } from "normalizr";
 import { deepMerge } from "Utils/DeepMerge";
-import { StoreSnapshot, EntitySnapshot } from "Models/EditorDataModels";
+import { ArticleObject, StoreSnapshot, EntitySnapshot } from "Models/EditorDataModels";
 import {
   ContentSchemasById,
   isSingleRelationField,
@@ -8,7 +8,7 @@ import {
   isExtensionField
 } from "Models/EditorSchemaModels";
 
-const options = { idAttribute: "_ClientId", mergeStrategy: deepMerge };
+const options = { idAttribute: ArticleObject._ClientId, mergeStrategy: deepMerge };
 
 export class DataNormalizer {
   private _entitySchemas: {
@@ -36,7 +36,7 @@ export class DataNormalizer {
           Object.values(field.Contents).forEach(extContent => {
             extReferences[extContent.ContentName] = this._objectSchemas[extContent.ContentName];
           });
-          references[`${field.FieldName}_Contents`] = extReferences;
+          references[`${field.FieldName}${ArticleObject._Contents}`] = extReferences;
         } else if (isSingleRelationField(field)) {
           references[field.FieldName] = this._entitySchemas[field.Content.ContentName];
         } else if (isMultiRelationField(field)) {

@@ -2,7 +2,13 @@ import { action } from "mobx";
 import { types as t, unprotect, IModelType, onPatch } from "mobx-state-tree";
 import { validationMixin } from "mst-validation-mixin";
 import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
-import { StoreObject, StoreSnapshot, EntityObject, EntitySnapshot } from "Models/EditorDataModels";
+import {
+  StoreObject,
+  StoreSnapshot,
+  EntityObject,
+  EntitySnapshot,
+  ArticleObject
+} from "Models/EditorDataModels";
 import {
   ContentSchema,
   FieldSchema,
@@ -108,7 +114,10 @@ function compileStoreType(
         );
       });
       // создаем анонимную модель словаря контентов-расширений
-      fieldModels[`${field.FieldName}_Contents`] = t.optional(t.model(extContentModels), {});
+      // prettier-ignore
+      fieldModels[`${field.FieldName}${ArticleObject._Contents}`] = t.optional(
+        t.model(extContentModels), {}
+      );
     } else if (isSingleRelationField(field)) {
       // для O2MRelation создаем nullable ссылку на сущность
       fieldModels[field.FieldName] = t.maybe(
@@ -232,7 +241,7 @@ function compileDefaultSnapshots(mergedSchemas: { [name: string]: ContentSchema 
       });
       // запоминаем объект со со снапшотами контентов-расширений, если они определены
       if (Object.keys(extContentSnapshots).length > 0) {
-        fieldValues[`${field.FieldName}_Contents`] = extContentSnapshots;
+        fieldValues[`${field.FieldName}${ArticleObject._Contents}`] = extContentSnapshots;
       }
     } else if (isPlainField(field)) {
       switch (field.FieldType) {

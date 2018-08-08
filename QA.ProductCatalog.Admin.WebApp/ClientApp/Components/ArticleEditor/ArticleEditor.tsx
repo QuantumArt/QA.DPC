@@ -228,7 +228,7 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
 
         const contentName: string = model[fieldName];
         if (contentName) {
-          const extensionModel = model[`${fieldName}_Contents`][contentName];
+          const extensionModel = model[`${fieldName}${ArticleObject._Contents}`][contentName];
           const extensionSchema = (fieldSchema as ExtensionFieldSchema).Contents[contentName];
           const extensionFields = contentsConfig && contentsConfig[contentName];
           return (
