@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,10 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         protected readonly IDpcService DpcService;
 
         protected readonly DataOptions Options;
+        
+        private static Dictionary<string, object> _lockers = new Dictionary<string, object>(1000);
+        
+        private static object _locker = new object();
 
         public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService, IOptions<DataOptions> options)
         {
@@ -121,6 +126,22 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         private static MediaTypeHeaderValue XmlHeader => new MediaTypeHeaderValue("application/xml") { Charset = Encoding.UTF8.WebName};
 
+        private static object GetLockerObject(ProductLocator locator, int id)
+        {
+            string key = $"{locator.CustomerCode}={id}";
+            // ReSharper disable once InconsistentlySynchronizedField
+            if (!_lockers.TryGetValue(key, out var result))
+            {
+                lock (_locker)
+                {
+                    result = new object();
+                    _lockers.Add(key, new object());
+                }
+            }
+
+            return result;
+        }
+        
         [HttpDelete]
         [HttpDelete("{language}/{state}")]
         public ActionResult DeleteProduct(ProductLocator locator, [FromBody] string data)
@@ -131,6 +152,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             }
 
             ApplyOptions(locator);
+            // ReSharper disable once InconsistentlySynchronizedField
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products != null)
             {
@@ -142,10 +164,14 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                     {
                         Logger.Info($"Deleting product {p.Id}...");
 
-                        var res2 = ProductService.DeleteProduct(locator, p.Id, data);
-                        if (!res2.IsSucceeded)
+                        var locker = GetLockerObject(locator, p.Id);
+                        lock (locker)
                         {
-                            throw new Exception($"Error while deleting product {p.Id}: {res2.Error.Message}");
+                            var res2 = ProductService.DeleteProduct(locator, p.Id, data);
+                            if (!res2.IsSucceeded)
+                            {
+                                throw new Exception($"Error while deleting product {p.Id}: {res2.Error.Message}");
+                            }
                         }
 
                         Logger.Info($"Product {p.Id} successfully deleted");
@@ -176,6 +202,8 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             }
 
             ApplyOptions(locator);
+            
+            // ReSharper disable once InconsistentlySynchronizedField
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products?.Any() == true)
             {
@@ -186,12 +214,15 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                     foreach (var p in res1.Result.Products)
                     {
                         Logger.Info($"Check for creating or updating (product {p.Id})");
+                        
+                        // ReSharper disable once InconsistentlySynchronizedField
                         var res2 = ProductService.HasProductChanged(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
                             throw new Exception($"Error while checking product {p.Id}: {res2.Error.Message}");
                         }
-                        else if (!res2.Result)
+
+                        if (!res2.Result)
                         {
                             Logger.Info($"Product {p.Id} doesn't require updating");
                         }
@@ -199,18 +230,20 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                         {
                             Logger.Info($"Creating or updating product {p.Id}");
 
-                            var res3 = ProductService.UpdateProduct(locator, p, data, userName, userId);
-                            if (res3.IsSucceeded)
+                            var locker = GetLockerObject(locator, p.Id);
+                            lock (locker)
                             {
-                                Logger.Info($"Product {p.Id} successfully created/updated");
+                                var res3 = ProductService.UpdateProduct(locator, p, data, userName, userId);
+                                if (!res3.IsSucceeded)
+                                {
+                                    throw new Exception(
+                                        $"Error while creating/updating product {p.Id}: {res3.Error.Message}");
+                                }
                             }
-                            else
-                            {
-                                throw new Exception($"Error while creating/updating product {p.Id}: {res3.Error.Message}");
-                            }
+                            
+                            Logger.Info($"Product {p.Id} successfully created/updated");
                         }
                     }
-
                 }
                 catch (Exception e)
                 {

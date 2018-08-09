@@ -51,7 +51,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         private string GetRegionQuery(string regionAlias)
         {
-            return $@"{{ ""_source"": [""Id""], ""query"" : {{ ""term"" : {{ ""Alias"" : ""{regionAlias}"" }}}}}}";
+            return $@"{{ ""query"" : {{ ""term"" : {{ ""Alias"" : ""{regionAlias}"" }}}}}}";
         }
 
         private string GetMrQuery(string[] regionAliases)
@@ -204,7 +204,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                     .SelectMany(n => (JArray)n.SelectToken("RegionTags"))
                     .ToArray();
 
-            var homeRegionId = await GetHomeRegionId(options);
+            var homeRegionId = GetHomeRegionId(options.HomeRegionData);
 
             var tagsToProcess = new Dictionary<string, string>();
 
@@ -222,16 +222,21 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return tagsToProcess;
         }
 
-        private async Task<int> GetHomeRegionId(SearchOptions options)
+        private int GetHomeRegionId(JObject homeRegion)
         {
-            if (options.HomeRegion == null) return 0;
+            return (homeRegion != null) ? (int) homeRegion.SelectToken("Id") : 0;
+        }
+
+        public async Task<JObject> GetHomeRegion(SearchOptions options)
+        {
+            if (options.HomeRegion == null) return null;
 
             var newOptions = options.Clone();
             newOptions.TypeName = "Region";
             var regionResult = await GetContent(GetRegionQuery(newOptions.HomeRegion), newOptions);
             var homeRegionIdToken = JObject.Parse(regionResult)
-                .SelectTokens(_sourceQuery)?.FirstOrDefault()?.SelectToken("Id");
-            return homeRegionIdToken != null ? (int) homeRegionIdToken : 0;
+                .SelectTokens(_sourceQuery)?.FirstOrDefault();
+            return (JObject)homeRegionIdToken;
         }
 
         private static string GetTagValue(int homeRegionId, JToken tag)

@@ -20,14 +20,13 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected abstract BaseCallsImpactCalculator CallsCalculator { get; }
 
-        protected JObject GetNewProduct(string homeRegion)
+        protected JObject GetNewProduct(JObject homeRegion)
         {
-            var forcedOverride = CallsCalculator.GetGroupOrderOverride(Product, homeRegion);
 
             var newProduct = new JObject(new JProperty("Parameters", new JArray(Parameters)),
                 new JProperty("ServicesOnTariff", ServicesOnProduct));
 
-            CallsCalculator.Reorder(newProduct, homeRegion, forcedOverride);
+            CallsCalculator.Reorder(newProduct, homeRegion);
 
             return newProduct;
         }

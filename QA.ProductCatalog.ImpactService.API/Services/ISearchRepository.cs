@@ -16,5 +16,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         Task<JObject> GetRoamingCountry(string code, SearchOptions options);
 
+        Task<JObject> GetHomeRegion(SearchOptions options);
+
     }
 }

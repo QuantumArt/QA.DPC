@@ -40,18 +40,20 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
 
-            result = await LoadProducts(id, serviceIds, searchOptions);
+            result = await FillHomeRegion(searchOptions);
+            result = result ?? await LoadProducts(id, serviceIds, searchOptions);
+            result = result ?? await FillDefaultHomeRegion(searchOptions, Product);
 
             LogStartImpact("MG", id, serviceIds);
 
             result = result ?? FilterServiceParameters(region);
             
             result = result ?? FilterProductParameters(region, false, false); // to mark special directions
-            result = result ?? CalculateImpact(homeRegion);
+            result = result ?? CalculateImpact(searchOptions.HomeRegionData);
             result = result ?? FilterProductParameters(region);
 
             result = result ?? FilterServicesOnProduct(false);
-            var product = (result == null) ? GetNewProduct(homeRegion) : null;
+            var product = (result == null) ? GetNewProduct(searchOptions.HomeRegionData) : null;
 
             LogEndImpact("MG", id, serviceIds);
 

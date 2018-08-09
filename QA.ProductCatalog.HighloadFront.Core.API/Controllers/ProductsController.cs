@@ -1,8 +1,11 @@
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using QA.Core.Extensions;
+using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
@@ -28,10 +31,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private readonly SonicElasticStoreOptions _options;
 
-        public ProductsController(ProductManager manager, IOptions<SonicElasticStoreOptions> options)
+        private readonly ILogger _logger;
+
+        public ProductsController(ProductManager manager, IOptions<SonicElasticStoreOptions> options, ILogger logger)
         {
             Manager = manager;
             _options = options.Value;
+            _logger = logger;
         }
 
 
@@ -49,7 +55,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
             catch (ElasticsearchClientException ex)
             {
-                return BadRequest($"Error occurred: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
+                LogElasticException(ex);
+                return BadRequest($"Elastic search error occurred:: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
             }
         }
 
@@ -65,13 +72,20 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 var elasticResponse = await Manager.FindStreamByIdAsync(id, options, language, state);
                 return await GetResponse(elasticResponse.Body, false);
             }
-            catch (ElasticsearchClientException ex) when (ex.Response.HttpStatusCode == 404)
-            {
-                return BadRequest($"Product with id = {id} not found");
-            }
             catch (ElasticsearchClientException ex)
             {
-                return BadRequest($"Error occurred: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
+                if (ex.Response.HttpStatusCode == 404)
+                {
+                    _logger.ErrorException($"Product with id = {id} not found", ex);
+                    return BadRequest($"Product with id = {id} not found");                  
+                }
+                LogElasticException(ex);
+                return BadRequest($"Elastic search error occurred:: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                _logger.ErrorException("Unexpected error occured", ex);
+                return BadRequest($"Unexpected error occurred. Reason: {ex.Message}");
             }
 
         }
@@ -89,7 +103,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
             catch (ElasticsearchClientException ex)
             {
-                return BadRequest($"Error occurred: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
+                LogElasticException(ex);
+                return BadRequest($"Elastic search error occurred:: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
             }
         }
 
@@ -100,6 +115,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             await JsonFragmentExtractor.ExtractJsonFragment("_source", stream, ms, 4);
             return new JsonStreamResult(ms);
 
+        }
+
+        private void LogElasticException(ElasticsearchClientException ex)
+        {
+            var request = ex.Request.PostData != null
+                ? System.Text.Encoding.UTF8.GetString(ex.Request.PostData.WrittenBytes)
+                : "";
+            var str = $"Response Code: {ex.Response.HttpStatusCode}, Uri: {ex.Request.Uri}, Method: {ex.Request.Method}, Request: {request}";
+            _logger.ErrorException($"Elastic search error occurred: {str}", ex);
+           
         }
     }
 }
