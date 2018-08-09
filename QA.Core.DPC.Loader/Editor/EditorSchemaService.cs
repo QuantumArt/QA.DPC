@@ -558,6 +558,20 @@ namespace QA.Core.DPC.Loader.Editor
                             ContentId = pair.Value.ContentId,
                         });
 
+                    // Объединяем наборы допустимых контентов
+                    if (mergedContentSchema.Fields
+                            .TryGetValue(fieldSchema.FieldName, out FieldSchema mergedFieldSchema)
+                        && mergedFieldSchema is ExtensionFieldSchema mergedExtensionSchema)
+                    {
+                        foreach (var pair in mergedExtensionSchema.ExtensionContents)
+                        {
+                            if (!copy.ExtensionContents.ContainsKey(pair.Key))
+                            {
+                                copy.ExtensionContents[pair.Key] = pair.Value;
+                            }
+                        }
+                    }
+
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
                 else if (fieldSchema is SingleRelationFieldSchema singleFieldSchema)

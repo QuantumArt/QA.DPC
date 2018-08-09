@@ -12,15 +12,11 @@ const App = () => (
       settings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: props => <RelationFieldTags selectMultiple orderByField="Title" {...props} />,
-        Group: RelationFieldTagsDefault,
         ProductModifer: RelationFieldTagsDefault,
-        TariffZone: RelationFieldTagsDefault,
-        Direction: RelationFieldTagsDefault,
-        ParameterModifier: RelationFieldTagsDefault,
-        LinkModifier: RelationFieldTagsDefault,
-        CommunicationType: RelationFieldTagsDefault,
+        BaseParameter: RelationFieldTagsDefault,
+        Unit: RelationFieldTagsDefault,
         Segment: RelationFieldTagsDefault,
-        FixedType: RelationFieldTagsDefault
+        TariffCategory: RelationFieldTagsDefault
       }}
     >
       {(model, contentSchema) => (

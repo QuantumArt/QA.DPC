@@ -251,4 +251,4 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
 
 @consumer
 @observer
-class ExtensionEditor extends ArticleEditor<{ model: ExtensionObject }> {}
+export class ExtensionEditor extends ArticleEditor<{ model: ExtensionObject }> {}

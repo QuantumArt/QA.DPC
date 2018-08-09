@@ -8,11 +8,16 @@ import {
   MultiRelationFieldTags,
   MultiRelationFieldTabs,
   MultiRelationFieldTable,
-  SingleRelationFieldTags
+  MultiRelationFieldAccordion
 } from "Components/FieldEditors/FieldEditors";
-import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
+import {
+  ContentSchema,
+  RelationFieldSchema,
+  ExtensionFieldSchema
+} from "Models/EditorSchemaModels";
 import { EntityObject } from "Models/EditorDataModels";
-import { Product, DeviceOnTariffs, Region } from "./ProductEditorSchema";
+import { Product, Region } from "./ProductEditorSchema";
+import { ExtensionEditor } from "Components/ArticleEditor/ArticleEditor";
 
 interface FixConnectTariffEditorProps {
   model: EntityObject;
@@ -61,11 +66,11 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
     }
   };
 
-  private filterDevicesByRegions = (device: DeviceOnTariffs) => {
+  private filterProductsByRegion = (product: Product) => {
     if (this._selectedRegionIds.size === 0) {
       return true;
     }
-    return device.Cities.some(city => this._selectedRegionIds.has(String(city._ClientId)));
+    return product.Regions.some(city => this._selectedRegionIds.has(String(city._ClientId)));
   };
 
   render() {
@@ -99,10 +104,8 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
             <SingleRelationFieldTabs
               borderless
               fieldEditors={{
-                DevicesOnMarketingTariff: IGNORE,
                 Type_Contents: {
                   MarketingFixConnectTariff: {
-                    Category: SingleRelationFieldTags,
                     MarketingDevices: MultiRelationFieldTable
                   }
                 }
@@ -141,20 +144,29 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
 
   private renderDevices() {
     let { model, contentSchema } = this.props;
-    model = model.MarketingProduct;
-    contentSchema = (contentSchema.Fields.MarketingProduct as RelationFieldSchema).RelatedContent;
-    return model ? (
-      <EntityEditor
-        model={model}
+    const extension = model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
+    contentSchema = ((contentSchema.Fields.MarketingProduct as RelationFieldSchema).RelatedContent
+      .Fields.Type as ExtensionFieldSchema).ExtensionContents.MarketingFixConnectTariff;
+    return extension ? (
+      <ExtensionEditor
+        model={extension}
         contentSchema={contentSchema}
         skipOtherFields
         fieldEditors={{
-          DevicesOnMarketingTariff: props => (
-            <MultiRelationFieldTabs
+          MarketingDevices: props => (
+            <MultiRelationFieldAccordion
               {...props}
-              displayField={(device: DeviceOnTariffs) => device.Parent && device.Parent.Title}
-              filterItems={this.filterDevicesByRegions}
-              vertical
+              displayFields={["Title"]}
+              fieldEditors={{
+                Products: props => (
+                  <MultiRelationFieldTabs
+                    {...props}
+                    displayField={(device: Product) => device._ServerId}
+                    filterItems={this.filterProductsByRegion}
+                    vertical
+                  />
+                )
+              }}
             />
           )
         }}
