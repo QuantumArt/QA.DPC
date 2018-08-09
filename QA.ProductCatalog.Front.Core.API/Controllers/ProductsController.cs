@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +22,10 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         protected readonly IDpcService DpcService;
 
         protected readonly DataOptions Options;
+        
+        private static Dictionary<int, object> _lockers = new Dictionary<int, object>(1000);
+        
+        private static object _locker = new object();
 
         public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService, IOptions<DataOptions> options)
         {
@@ -121,6 +126,21 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         private static MediaTypeHeaderValue XmlHeader => new MediaTypeHeaderValue("application/xml") { Charset = Encoding.UTF8.WebName};
 
+        private object GetLockerObject(int id)
+        {
+            // ReSharper disable once InconsistentlySynchronizedField
+            if (!_lockers.TryGetValue(id, out var result))
+            {
+                lock (_locker)
+                {
+                    result = new object();
+                    _lockers.Add(id, new object());
+                }
+            }
+
+            return result;
+        }
+
         [HttpDelete]
         [HttpDelete("{language}/{state}")]
         public ActionResult DeleteProduct(ProductLocator locator, [FromBody] string data)
@@ -142,10 +162,14 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                     {
                         Logger.Info($"Deleting product {p.Id}...");
 
-                        var res2 = ProductService.DeleteProduct(locator, p.Id, data);
-                        if (!res2.IsSucceeded)
+                        var locker = GetLockerObject(p.Id);
+                        lock (locker)
                         {
-                            throw new Exception($"Error while deleting product {p.Id}: {res2.Error.Message}");
+                            var res2 = ProductService.DeleteProduct(locator, p.Id, data);
+                            if (!res2.IsSucceeded)
+                            {
+                                throw new Exception($"Error while deleting product {p.Id}: {res2.Error.Message}");
+                            }
                         }
 
                         Logger.Info($"Product {p.Id} successfully deleted");
@@ -191,7 +215,8 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                         {
                             throw new Exception($"Error while checking product {p.Id}: {res2.Error.Message}");
                         }
-                        else if (!res2.Result)
+
+                        if (!res2.Result)
                         {
                             Logger.Info($"Product {p.Id} doesn't require updating");
                         }
@@ -199,18 +224,20 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                         {
                             Logger.Info($"Creating or updating product {p.Id}");
 
-                            var res3 = ProductService.UpdateProduct(locator, p, data, userName, userId);
-                            if (res3.IsSucceeded)
+                            var locker = GetLockerObject(p.Id);
+                            lock (locker)
                             {
-                                Logger.Info($"Product {p.Id} successfully created/updated");
+                                var res3 = ProductService.UpdateProduct(locator, p, data, userName, userId);
+                                if (!res3.IsSucceeded)
+                                {
+                                    throw new Exception(
+                                        $"Error while creating/updating product {p.Id}: {res3.Error.Message}");
+                                }
                             }
-                            else
-                            {
-                                throw new Exception($"Error while creating/updating product {p.Id}: {res3.Error.Message}");
-                            }
+                            
+                            Logger.Info($"Product {p.Id} successfully created/updated");
                         }
                     }
-
                 }
                 catch (Exception e)
                 {
