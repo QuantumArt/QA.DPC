@@ -14,13 +14,13 @@ import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
 import { EntityObject } from "Models/EditorDataModels";
 import { Product, DeviceOnTariffs, Region } from "./ProductEditorSchema";
 
-interface MtsFixTariffEditorProps {
+interface FixConnectTariffEditorProps {
   model: EntityObject;
   contentSchema: ContentSchema;
 }
 
 @observer
-export class MtsFixTariffEditor extends Component<MtsFixTariffEditorProps> {
+export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProps> {
   private _selectedRegionIds = observable.map<string, true>();
   private _regionsArrayObserver: Lambda;
 

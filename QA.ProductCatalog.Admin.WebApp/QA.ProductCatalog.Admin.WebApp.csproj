@@ -562,7 +562,7 @@
     <Content Include="Views\ProductEditor\TypeScriptSchema.cshtml" />
     <Content Include="tsconfig.json" />
     <Content Include="Views\ProductEditor\ComponentLibrary.cshtml" />
-    <Content Include="Views\ProductEditor\MtsFixTariff\MtsFixTariff.cshtml" />
+    <Content Include="Views\ProductEditor\FixConnectTariff\FixConnectTariff.cshtml" />
     <Content Include="Views\ProductEditor\ProductEditorSchema.cshtml" />
     <Content Include="Views\ProductEditor\DefaultEditor.cshtml" />
   </ItemGroup>
@@ -690,9 +690,9 @@
     <TypeScriptCompile Include="Scripts\qp\QP8BackendApi.Interaction.d.ts">
       <DependentUpon>QP8BackendApi.Interaction.js</DependentUpon>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff\MtsFixTariff.tsx" />
-    <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff\MtsFixTariffTabs.tsx" />
-    <TypeScriptCompile Include="Views\ProductEditor\MtsFixTariff\ProductEditorSchema.ts" />
+    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\FixConnectTariff.tsx" />
+    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\FixConnectTariffEditor.tsx" />
+    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\ProductEditorSchema.ts" />
     <TypeScriptCompile Include="Views\ProductEditor\DefaultEditor.tsx" />
   </ItemGroup>
   <ItemGroup>

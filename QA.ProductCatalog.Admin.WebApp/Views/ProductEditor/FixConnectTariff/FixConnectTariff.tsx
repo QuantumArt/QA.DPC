@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
 import { RelationFieldTags } from "Components/FieldEditors/FieldEditors";
-import { MtsFixTariffEditor } from "./MtsFixTariffEditor";
+import { FixConnectTariffEditor } from "./FixConnectTariffEditor";
 
 const App = () => (
   <LocaleContext.Provider value="ru">
@@ -23,7 +23,9 @@ const App = () => (
         FixedType: RelationFieldTagsDefault
       }}
     >
-      {(model, contentSchema) => <MtsFixTariffEditor model={model} contentSchema={contentSchema} />}
+      {(model, contentSchema) => (
+        <FixConnectTariffEditor model={model} contentSchema={contentSchema} />
+      )}
     </ProductEditor>
   </LocaleContext.Provider>
 );
