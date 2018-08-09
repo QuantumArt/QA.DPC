@@ -165,7 +165,7 @@ export class RelationController {
           fieldSchema.RelatedContent.ContentName
         );
 
-        this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+        this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.Overwrite);
 
         const collection = this._dataContext.store[fieldSchema.RelatedContent.ContentName];
 
@@ -187,7 +187,7 @@ export class RelationController {
         fieldSchema.RelatedContent.ContentName
       );
 
-      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.Overwrite);
 
       const loadedArticleIds = dataTrees.map(article => article._ClientId);
 

@@ -17,11 +17,11 @@ export class ArticleController {
   private _rootUrl = document.head.getAttribute("root-url") || "";
 
   public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
-    await this.loadArticle(model, contentSchema, MergeStrategy.UpdateIfNewer);
+    await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);
   }
 
   public async reloadEntity(model: EntityObject, contentSchema: ContentSchema) {
-    await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);
+    await this.loadArticle(model, contentSchema, MergeStrategy.Overwrite);
   }
 
   @command

@@ -14,10 +14,10 @@ export enum MergeStrategy {
   KeepTimestamp = 1,
   /** Обновить только неизмененные поля. Обновить поле `_Modified`. */
   ClientWins = 2,
-  /** Перезаписать с сервера все поля всех статей. Обновить поле `_Modified`. */
-  ServerWins = 3,
   /** Перезаписать поля статей, которые были изменены на сервере. Обновить поле `_Modified`. */
-  UpdateIfNewer = 4
+  ServerWins = 3,
+  /** Перезаписать с сервера все поля всех статей. Обновить поле `_Modified`. */
+  Overwrite = 4
 }
 
 export class DataMerger {
@@ -90,7 +90,7 @@ export class DataMerger {
               break;
             case MergeStrategy.ClientWins:
             case MergeStrategy.ServerWins:
-            case MergeStrategy.UpdateIfNewer:
+            case MergeStrategy.Overwrite:
               this.setProperty(article, name, fieldSnapshot);
               break;
             default:
@@ -109,12 +109,12 @@ export class DataMerger {
           case MergeStrategy.ClientWins:
             break;
           case MergeStrategy.ServerWins:
-            this.setProperty(article, name, fieldSnapshot);
-            break;
-          case MergeStrategy.UpdateIfNewer:
             if (oldSnapshot._Modified < snapshot._Modified) {
               this.setProperty(article, name, fieldSnapshot);
             }
+            break;
+          case MergeStrategy.Overwrite:
+            this.setProperty(article, name, fieldSnapshot);
             break;
           default:
             throw new Error("Uncovered MergeStrategy");

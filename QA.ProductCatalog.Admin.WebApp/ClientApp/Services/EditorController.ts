@@ -100,23 +100,35 @@ export class EditorController {
     if (response.status === 409) {
       const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
+
       if (this._dataMerger.storeHasConflicts(dataSnapshot)) {
         // TODO: React confirm dialog
-        const takeServer = window.confirm(
-          `Данные на сервере были изменены другим пользователем.\nПрименить изменения с сервера?`
+        const serverWins = window.confirm(
+          `Данные на сервере были изменены другим пользователем.\n` +
+            `Применить изменения с сервера?`
         );
-        this._dataMerger.mergeStore(
-          dataSnapshot,
-          takeServer ? MergeStrategy.ClientWins : MergeStrategy.UpdateIfNewer
+        if (serverWins) {
+          this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+        } else {
+          this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ClientWins);
+        }
+        // TODO: React alert dialog
+        window.alert(`Пожалуйста, проверьте корректность данных и сохраните статью снова.`);
+      } else {
+        this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ClientWins);
+        // TODO: React alert dialog
+        window.alert(
+          `Данные на сервере были изменены другим пользователем.\n` +
+            `Пожалуйста, проверьте корректность данных и сохраните статью снова.`
         );
       }
       return;
-    } else if (!response.ok) {
+    }
+    if (!response.ok) {
       // TODO: React alert dialog
-      alert("При сохранении произошла ошибка!");
+      window.alert("При сохранении произошла ошибка!");
       throw new Error(await response.text());
     }
-
     const okResponse: {
       IdMappings: IdMapping[];
       PartialProduct: Object;
@@ -127,6 +139,6 @@ export class EditorController {
     const dataTreeJson = JSON.stringify(okResponse.PartialProduct);
     const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(dataTreeJson);
     const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
-    this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.UpdateIfNewer);
+    this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
   }
 }
