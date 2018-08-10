@@ -1,10 +1,10 @@
 ﻿using System.Xaml;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.Practices.Unity;
 using QA.Core.Logger;
 using QA.Core.DPC.API.Container;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog;
+using Unity;
 
 namespace QA.Core.DPC.API.Test.Tests
 {
