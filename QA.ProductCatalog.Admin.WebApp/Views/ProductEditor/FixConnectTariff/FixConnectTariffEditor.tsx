@@ -18,12 +18,21 @@ import {
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
 import { EntityObject } from "Models/EditorDataModels";
-import { Product } from "./ProductEditorSchema";
+import { Product, FixConnectAction, DevicesForFixConnectAction } from "./ProductEditorSchema";
 
 interface FixConnectTariffEditorProps {
   model: EntityObject;
   contentSchema: ContentSchema;
 }
+
+const productRegionsField = (device: Product) =>
+  device.Regions.map(region => region.Title).join(", ");
+
+const actionTitleField = (action: FixConnectAction) =>
+  action.Parent && action.Parent.MarketingProduct && action.Parent.MarketingProduct.Title;
+
+const actionRegionsField = (action: FixConnectAction) =>
+  action.Parent && action.Parent.Regions.map(region => region.Title).join(", ");
 
 @observer
 export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProps> {
@@ -50,6 +59,27 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
     const fixTariffRegionIds = this.fixTariffRegionIds;
     return product.Regions.some(city => fixTariffRegionIds[city._ServerId]);
   };
+
+  private filterActionsByRegion = (action: FixConnectAction) => {
+    if (!this.filterByRegions) {
+      return true;
+    }
+    const fixTariffRegionIds = this.fixTariffRegionIds;
+    return action.Parent && action.Parent.Regions.some(city => fixTariffRegionIds[city._ServerId]);
+  };
+
+  private getMarketingFixConnectTariffProps() {
+    const { model, contentSchema } = this.props;
+
+    const extension =
+      model.MarketingProduct && model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
+
+    const extensionSchema = ((contentSchema.Fields.MarketingProduct as RelationFieldSchema)
+      .RelatedContent.Fields.Type as ExtensionFieldSchema).ExtensionContents
+      .MarketingFixConnectTariff;
+
+    return { extension, extensionSchema };
+  }
 
   render() {
     return (
@@ -87,7 +117,8 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
                     FixConnectActions: IGNORE as any,
                     MarketingTvPackage: SingleRelationFieldTable,
                     MarketingInternetTariff: SingleRelationFieldTable,
-                    BonusTVPackages: SingleRelationFieldTable,
+                    MarketingPhoneTariff: SingleRelationFieldTable,
+                    BonusTVPackages: MultiRelationFieldTable,
                     MarketingDevices: MultiRelationFieldTable
                   }
                 }
@@ -102,45 +133,113 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
 
   private renderRegional() {
     const { model, contentSchema } = this.props;
+    const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
+    const marketingProductSchema = (contentSchema.Fields.MarketingProduct as RelationFieldSchema)
+      .RelatedContent;
+
     return (
-      <EntityEditor
-        model={model}
-        contentSchema={contentSchema}
-        titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
-        fieldEditors={{
-          MarketingProduct: IGNORE
-        }}
-        header
-        buttons
-      />
+      <>
+        <EntityEditor
+          model={model}
+          contentSchema={contentSchema}
+          titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
+          fieldEditors={{
+            MarketingProduct: IGNORE
+          }}
+          header
+          buttons
+        />
+        {this.renderFilter()}
+        {extension ? (
+          <ExtensionEditor
+            model={extension}
+            contentSchema={extensionSchema}
+            skipOtherFields
+            fieldEditors={{
+              MarketingInternetTariff: props => (
+                <SingleRelationFieldTabs
+                  {...props}
+                  displayField={"Title"}
+                  skipOtherFields
+                  fieldEditors={{
+                    Products: props => (
+                      <MultiRelationFieldAccordion
+                        {...props}
+                        displayFields={[productRegionsField]}
+                        filterItems={this.filterProductsByRegion}
+                      />
+                    )
+                  }}
+                />
+              ),
+              MarketingPhoneTariff: props => (
+                <SingleRelationFieldTabs
+                  {...props}
+                  displayField={"Title"}
+                  skipOtherFields
+                  fieldEditors={{
+                    Products: props => (
+                      <MultiRelationFieldAccordion
+                        {...props}
+                        displayFields={[productRegionsField]}
+                        filterItems={this.filterProductsByRegion}
+                      />
+                    )
+                  }}
+                />
+              )
+            }}
+          />
+        ) : null}
+        {model.MarketingProduct ? (
+          <EntityEditor
+            model={model.MarketingProduct}
+            contentSchema={marketingProductSchema}
+            skipOtherFields
+            fieldEditors={{
+              FixConnectActions: props => (
+                <MultiRelationFieldAccordion
+                  {...props}
+                  displayFields={[actionTitleField, actionRegionsField]}
+                  filterItems={this.filterActionsByRegion}
+                  fieldEditors={{
+                    Parent: props => (
+                      <SingleRelationFieldTabs
+                        {...props}
+                        fieldEditors={{
+                          MarketingProduct: SingleRelationFieldTable,
+                          ActionMarketingDevices: props => (
+                            <MultiRelationFieldAccordion
+                              {...props}
+                              displayFields={[
+                                (actionDevice: DevicesForFixConnectAction) =>
+                                  actionDevice.MarketingDevice && actionDevice.MarketingDevice.Title
+                              ]}
+                              fieldEditors={{ MarketingDevice: SingleRelationFieldTable }}
+                            />
+                          )
+                        }}
+                      />
+                    )
+                  }}
+                />
+              )
+            }}
+          />
+        ) : null}
+      </>
     );
   }
 
   private renderDevices() {
-    let { model, contentSchema } = this.props;
-    const extension = model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
-    contentSchema = ((contentSchema.Fields.MarketingProduct as RelationFieldSchema).RelatedContent
-      .Fields.Type as ExtensionFieldSchema).ExtensionContents.MarketingFixConnectTariff;
+    const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
 
     return extension ? (
       <>
-        <Col md className="pt-form-group">
-          <Row>
-            <Col xl={2} md={3} className="field-editor__label">
-              <label htmlFor="filterByRegions">Фильтровать по списку регионов: </label>
-            </Col>
-            <Col>
-              <Checkbox
-                id="filterByRegions"
-                checked={this.filterByRegions}
-                onChange={this.setFilterByRegions}
-              />
-            </Col>
-          </Row>
-        </Col>
+        {this.renderFilter()}
         <ExtensionEditor
           model={extension}
-          contentSchema={contentSchema}
+          contentSchema={extensionSchema}
           skipOtherFields
           fieldEditors={{
             MarketingDevices: props => (
@@ -154,9 +253,7 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
                   Products: props => (
                     <MultiRelationFieldAccordion
                       {...props}
-                      displayFields={[
-                        (device: Product) => device.Regions.map(region => region.Title).join(", ")
-                      ]}
+                      displayFields={[productRegionsField]}
                       filterItems={this.filterProductsByRegion}
                     />
                   )
@@ -167,5 +264,24 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
         />
       </>
     ) : null;
+  }
+
+  private renderFilter() {
+    return (
+      <Col md className="pt-form-group">
+        <Row>
+          <Col xl={2} md={3} className="field-editor__label">
+            <label htmlFor="filterByRegions">Фильтровать по списку регионов: </label>
+          </Col>
+          <Col>
+            <Checkbox
+              id="filterByRegions"
+              checked={this.filterByRegions}
+              onChange={this.setFilterByRegions}
+            />
+          </Col>
+        </Row>
+      </Col>
+    );
   }
 }
