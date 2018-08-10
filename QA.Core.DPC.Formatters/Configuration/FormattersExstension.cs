@@ -37,7 +37,7 @@ namespace QA.Core.DPC.Formatters.Configuration
 			where TModel : class
 			where TFormatter : IFormatter<TModel>
 		{
-			container.RegisterType<MediaTypeFormatter, ModelMediaTypeFormatter<TModel>>(name, new InjectionFactory(c => new ModelMediaTypeFormatter<TModel>(c.GetFactory<TFormatter, TModel>(), mediaType)));
+			container.RegisterType<MediaTypeFormatter>(name, new InjectionFactory(c => new ModelMediaTypeFormatter<TModel>(c.GetFactory<TFormatter, TModel>(), mediaType)));
 		}
 
 		public static void RegisterModelMediaTypeFormatter<TFormatter, TModel>(this IUnityContainer container, string mediaType)
