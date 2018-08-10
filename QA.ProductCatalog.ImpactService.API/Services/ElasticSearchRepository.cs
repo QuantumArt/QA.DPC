@@ -249,7 +249,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                    ?.SelectToken("Value")?.ToString();
                      
             }
-            value = JsonConvert.ToString(value ?? tag["Values"][0]["Value"].ToString());
+            value = JsonConvert.ToString(value ?? (tag["Values"].Any() ? tag["Values"][0]["Value"].ToString() : ""));
             return value;
         }
 
