@@ -36,6 +36,12 @@
       min-height: 30px;
     }
   }
+
+  &--single.pt-vertical > .pt-tab-list {
+    > .pt-tab-indicator-wrapper {
+      min-width: 100%;
+    }
+  }
 }
 
 .multi-relation-field-tabs__title {

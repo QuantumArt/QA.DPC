@@ -19,6 +19,7 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
   collapsed?: boolean;
   vertical?: boolean;
+  className?: string;
   borderless?: boolean;
   children?: RenderEntity | ReactNode;
 }

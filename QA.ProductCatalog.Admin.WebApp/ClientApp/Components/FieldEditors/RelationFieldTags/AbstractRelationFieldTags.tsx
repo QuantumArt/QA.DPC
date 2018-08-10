@@ -21,6 +21,7 @@ export abstract class AbstractRelationFieldTags extends AbstractFieldEditor<
 > {
   @inject protected _relationController: RelationController;
   protected _displayField: FieldSelector;
+  protected _isHalfSize = false;
 
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
@@ -41,19 +42,24 @@ export abstract class AbstractRelationFieldTags extends AbstractFieldEditor<
     const { model, fieldSchema } = this.props;
     return (
       <Col
+        xl={this._isHalfSize ? 6 : 12}
         md={12}
         className={cn("field-editor__block pt-form-group", {
           "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
         <Row>
-          <Col xl={2} md={3} className="field-editor__label field-editor__label--small">
+          <Col
+            xl={this._isHalfSize ? 4 : 2}
+            md={3}
+            className="field-editor__label field-editor__label--small"
+          >
             {this.renderLabel(model, fieldSchema)}
           </Col>
           {this.renderField(model, fieldSchema)}
         </Row>
         <Row>
-          <Col xl={2} md={3} className="field-editor__label" />
+          <Col xl={this._isHalfSize ? 4 : 2} md={3} className="field-editor__label" />
           <Col md>{this.renderValidation(model, fieldSchema)}</Col>
         </Row>
       </Col>

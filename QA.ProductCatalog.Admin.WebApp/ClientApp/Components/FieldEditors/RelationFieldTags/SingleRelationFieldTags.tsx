@@ -12,6 +12,8 @@ import { AbstractRelationFieldTags } from "./AbstractRelationFieldTags";
 @consumer
 @observer
 export class SingleRelationFieldTags extends AbstractRelationFieldTags {
+  protected _isHalfSize = true;
+
   readonly state = {
     isSelected: false
   };

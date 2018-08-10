@@ -173,10 +173,18 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   private static _tabIdsByModel = new WeakMap<ArticleObject, number>();
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
-    const { skipOtherFields, fieldEditors, vertical, filterItems, children } = this.props;
+    const {
+      skipOtherFields,
+      fieldEditors,
+      vertical,
+      filterItems,
+      className,
+      children
+    } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
+    const isSingle = list && list.length === 1;
     let tabId = MultiRelationFieldTabs._tabIdsByModel.get(model);
     if (!tabId) {
       tabId = MultiRelationFieldTabs._nextTabId++;
@@ -186,10 +194,11 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       <Tabs
         vertical={vertical}
         id={`${tabId}_${fieldSchema.FieldName}`}
-        className={cn("multi-relation-field-tabs", {
+        className={cn("multi-relation-field-tabs", className, {
           "multi-relation-field-tabs--hidden": !isOpen,
           "multi-relation-field-tabs--empty": isEmpty,
-          "container-md": vertical
+          "multi-relation-field-tabs--single": isSingle,
+          "container-md": vertical && !className
         })}
         selectedTabId={activeId}
         onChange={this.handleTabChange}

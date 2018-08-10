@@ -58,6 +58,7 @@ export class RelationController {
     if (selectedArticles !== "CANCEL") {
       runInAction("selectRelation", () => {
         model[fieldSchema.FieldName] = selectedArticles[0] || null;
+        model.setTouched(fieldSchema.FieldName, true);
       });
     }
   }
@@ -80,6 +81,7 @@ export class RelationController {
         relatedArticles.clear();
         relatedArticles.push(...selectedArticles);
         relatedArticles.push(...newlyCreatedArticles);
+        model.setTouched(fieldSchema.FieldName, true);
       });
     }
   }
@@ -173,6 +175,7 @@ export class RelationController {
       } else {
         model[fieldSchema.FieldName] = null;
       }
+      model.setChanged(fieldSchema.FieldName, false);
     });
   }
 
@@ -197,6 +200,7 @@ export class RelationController {
 
       relatedArticles.clear();
       relatedArticles.push(...loadedArticles);
+      model.setChanged(fieldSchema.FieldName, false);
     });
   }
 
