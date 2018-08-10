@@ -3,7 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import { RelationFieldTags } from "Components/FieldEditors/FieldEditors";
+import { RelationFieldTags, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
 import { FixConnectTariffEditor } from "./FixConnectTariffEditor";
 
 const App = () => (
@@ -11,12 +11,13 @@ const App = () => (
     <ProductEditor
       settings={window["ProductEditorSettings"]}
       relationEditors={{
-        Region: props => <RelationFieldTags selectMultiple orderByField="Title" {...props} />,
-        ProductModifer: RelationFieldTagsDefault,
-        BaseParameter: RelationFieldTagsDefault,
-        Unit: RelationFieldTagsDefault,
-        Segment: RelationFieldTagsDefault,
-        TariffCategory: RelationFieldTagsDefault
+        Region: props => <RelationFieldTags {...props} selectMultiple orderByField="Title" />,
+        ProductModifer: RelationFieldTagsEditor,
+        BaseParameter: RelationFieldTagsEditor,
+        Unit: RelationFieldTagsEditor,
+        Segment: RelationFieldTagsEditor,
+        TariffCategory: RelationFieldTagsEditor,
+        ProductParameter: ProductParameterEditor
       }}
     >
       {(model, contentSchema) => (
@@ -26,8 +27,14 @@ const App = () => (
   </LocaleContext.Provider>
 );
 
-const RelationFieldTagsDefault = props => (
-  <RelationFieldTags displayField="Title" orderByField="Title" {...props} />
+const RelationFieldTagsEditor = props => (
+  <RelationFieldTags {...props} displayField="Title" orderByField="Title" />
+);
+
+const ProductParameterEditor = props => (
+  <RelationFieldTabs {...props} displayField="Title" orderByField="Title">
+    {(_headerNode, fieldsNode) => fieldsNode}
+  </RelationFieldTabs>
 );
 
 ReactDOM.render(<App />, document.getElementById("editor"));

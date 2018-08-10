@@ -1,14 +1,16 @@
 import React, { Component } from "react";
-import { observable, observe, action, Lambda, untracked, IArrayChange, IArraySplice } from "mobx";
+import { computed, observable, action } from "mobx";
 import { observer } from "mobx-react";
-import { Tabs, Tab, Icon } from "@blueprintjs/core";
+import { Tabs, Tab, Icon, Checkbox } from "@blueprintjs/core";
+import { Col, Row } from "react-flexbox-grid";
+import { ExtensionEditor } from "Components/ArticleEditor/ArticleEditor";
 import { EntityEditor, IGNORE } from "Components/ArticleEditor/EntityEditor";
 import {
   SingleRelationFieldTabs,
-  MultiRelationFieldTags,
   MultiRelationFieldTabs,
   MultiRelationFieldTable,
-  MultiRelationFieldAccordion
+  MultiRelationFieldAccordion,
+  SingleRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
 import {
   ContentSchema,
@@ -16,8 +18,7 @@ import {
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
 import { EntityObject } from "Models/EditorDataModels";
-import { Product, Region } from "./ProductEditorSchema";
-import { ExtensionEditor } from "Components/ArticleEditor/ArticleEditor";
+import { Product } from "./ProductEditorSchema";
 
 interface FixConnectTariffEditorProps {
   model: EntityObject;
@@ -26,51 +27,28 @@ interface FixConnectTariffEditorProps {
 
 @observer
 export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProps> {
-  private _selectedRegionIds = observable.map<string, true>();
-  private _regionsArrayObserver: Lambda;
-
-  componentDidMount() {
-    const { model } = this.props;
-    this._regionsArrayObserver = observe(
-      untracked(() => model.Regions),
-      action((change: IArraySplice | IArrayChange) => {
-        if (change.type === "splice") {
-          if (change.removedCount > 0) {
-            change.removed.forEach(oldValue => {
-              // oldValue.snapshot хранит Region._ClientId
-              this._selectedRegionIds.delete(String(oldValue.snapshot));
-            });
-          }
-        } else {
-          // oldValue.snapshot хранит Region._ClientId
-          this._selectedRegionIds.delete(String(change.oldValue.snapshot));
-        }
-      })
-    );
-  }
-
-  componentWillUnmount() {
-    if (this._regionsArrayObserver) {
-      this._regionsArrayObserver();
-    }
-  }
+  @observable private filterByRegions = false;
 
   @action
-  private toggleRegion = (_e: any, region: Region) => {
-    const regionId = String(region._ClientId);
-    const isSelected = this._selectedRegionIds.has(regionId);
-    if (isSelected) {
-      this._selectedRegionIds.delete(regionId);
-    } else {
-      this._selectedRegionIds.set(regionId, true);
-    }
+  private setFilterByRegions = (e: any) => {
+    this.filterByRegions = !!e.target.checked;
   };
 
+  @computed
+  private get fixTariffRegionIds(): { [serverId: number]: true } {
+    const fixTraiff = this.props.model as Product;
+    return fixTraiff.Regions.reduce((obj, region) => {
+      obj[region._ServerId] = true;
+      return obj;
+    }, {});
+  }
+
   private filterProductsByRegion = (product: Product) => {
-    if (this._selectedRegionIds.size === 0) {
+    if (!this.filterByRegions) {
       return true;
     }
-    return product.Regions.some(city => this._selectedRegionIds.has(String(city._ClientId)));
+    const fixTariffRegionIds = this.fixTariffRegionIds;
+    return product.Regions.some(city => fixTariffRegionIds[city._ServerId]);
   };
 
   render() {
@@ -106,6 +84,10 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
               fieldEditors={{
                 Type_Contents: {
                   MarketingFixConnectTariff: {
+                    FixConnectActions: IGNORE as any,
+                    MarketingTvPackage: SingleRelationFieldTable,
+                    MarketingInternetTariff: SingleRelationFieldTable,
+                    BonusTVPackages: SingleRelationFieldTable,
                     MarketingDevices: MultiRelationFieldTable
                   }
                 }
@@ -126,15 +108,7 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
         contentSchema={contentSchema}
         titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
         fieldEditors={{
-          MarketingProduct: IGNORE,
-          Regions: props => (
-            <MultiRelationFieldTags
-              selectMultiple
-              orderByField="Title"
-              onClick={this.toggleRegion}
-              {...props}
-            />
-          )
+          MarketingProduct: IGNORE
         }}
         header
         buttons
@@ -147,30 +121,51 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
     const extension = model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
     contentSchema = ((contentSchema.Fields.MarketingProduct as RelationFieldSchema).RelatedContent
       .Fields.Type as ExtensionFieldSchema).ExtensionContents.MarketingFixConnectTariff;
+
     return extension ? (
-      <ExtensionEditor
-        model={extension}
-        contentSchema={contentSchema}
-        skipOtherFields
-        fieldEditors={{
-          MarketingDevices: props => (
-            <MultiRelationFieldAccordion
-              {...props}
-              displayFields={["Title"]}
-              fieldEditors={{
-                Products: props => (
-                  <MultiRelationFieldTabs
-                    {...props}
-                    displayField={(device: Product) => device._ServerId}
-                    filterItems={this.filterProductsByRegion}
-                    vertical
-                  />
-                )
-              }}
-            />
-          )
-        }}
-      />
+      <>
+        <Col md className="pt-form-group">
+          <Row>
+            <Col xl={2} md={3} className="field-editor__label">
+              <label htmlFor="filterByRegions">Фильтровать по списку регионов: </label>
+            </Col>
+            <Col>
+              <Checkbox
+                id="filterByRegions"
+                checked={this.filterByRegions}
+                onChange={this.setFilterByRegions}
+              />
+            </Col>
+          </Row>
+        </Col>
+        <ExtensionEditor
+          model={extension}
+          contentSchema={contentSchema}
+          skipOtherFields
+          fieldEditors={{
+            MarketingDevices: props => (
+              <MultiRelationFieldTabs
+                {...props}
+                vertical
+                className="container-xl"
+                displayField={"Title"}
+                skipOtherFields
+                fieldEditors={{
+                  Products: props => (
+                    <MultiRelationFieldAccordion
+                      {...props}
+                      displayFields={[
+                        (device: Product) => device.Regions.map(region => region.Title).join(", ")
+                      ]}
+                      filterItems={this.filterProductsByRegion}
+                    />
+                  )
+                }}
+              />
+            )
+          }}
+        />
+      </>
     ) : null;
   }
 }
