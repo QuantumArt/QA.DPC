@@ -323,7 +323,7 @@ namespace QA.Core.DPC.Loader
 
             var value = connector.GetRealScalarData(sqlCommand);
 
-            return (int?)value;
+            return (int?)(decimal?)value;
         }
     }
 
@@ -340,7 +340,7 @@ namespace QA.Core.DPC.Loader
 
         public void AddExtensionArticle(int parentId, Article article)
         {
-            if (_extensionMap.ContainsKey(parentId))
+            if (!_extensionMap.ContainsKey(parentId))
             {
                 _extensionMap[parentId] = new List<Article>();
             }

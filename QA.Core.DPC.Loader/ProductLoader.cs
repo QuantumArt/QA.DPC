@@ -777,12 +777,14 @@ FROM
                 
                 foreach (var localKey in articles.Select(n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
                 {
-                    var articleField = articleFields[localKey.ArticleId];
-                    var currentRes = localCache[localKey];
-                    if (articleField != null)
+                    if (articleFields.TryGetValue(localKey.ArticleId, out var articleField))
                     {
-                        currentRes.Fields.Add(articleField.FieldName, articleField);
-                        currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
+                        var currentRes = localCache[localKey];
+                        if (articleField != null)
+                        {
+                            currentRes.Fields.Add(articleField.FieldName, articleField);
+                            currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
+                        }
                     }
                 }
             }
@@ -1020,7 +1022,7 @@ FROM
         private bool CheckVirtualFields(Dictionary<int, ArticleField> dict)
         {
             var result = false;
-            var field = dict.First().Value;
+            var field = dict.FirstOrDefault().Value;
             if (field is SingleArticleField sf)
             {
                 result = sf.Item?.HasVirtualFields ?? false;
