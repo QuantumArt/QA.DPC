@@ -131,7 +131,7 @@ namespace QA.Core.DPC.API.Update
                     new
                     {
                         field,
-                        oldField = existingArticle?.Fields.Values.Single(x => x.FieldId == field.FieldId),
+                        oldField = existingArticle?.Fields.Values.SingleOrDefault(x => x.FieldId == field.FieldId),
                         fieldDef
                     }).ToArray();
 
