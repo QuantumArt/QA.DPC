@@ -232,7 +232,7 @@ namespace QA.Core.DPC
 		private void NotificationService_OnUpdateConfiguration(object sender, string customerCode)
 		{
             var actualCustomerCode = _connectionProvider.QPMode ? customerCode : SingleCustomerProvider.Key;
-            UpdateConfiguration(customerCode);
+            UpdateConfiguration(actualCustomerCode);
         }
 
         public static void SendToOneChannel(object stateInfo)
