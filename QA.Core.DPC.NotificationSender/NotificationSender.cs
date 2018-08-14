@@ -27,6 +27,7 @@ namespace QA.Core.DPC
         private static string KeySeparator = "#~→";
 
         static ICustomerProvider _customerProvider;
+        static IConnectionProvider _connectionProvider;
         static IIdentityProvider _identityProvider;
         static IFactoryWatcher _configurationWatcher;
 
@@ -40,6 +41,7 @@ namespace QA.Core.DPC
 		    InitializeComponent();
 			UnityConfig.Configure();
             _customerProvider = ObjectFactoryBase.Resolve<ICustomerProvider>();
+            _connectionProvider = ObjectFactoryBase.Resolve<IConnectionProvider>();
             _identityProvider = ObjectFactoryBase.Resolve<IIdentityProvider>();
             _configurationWatcher = ObjectFactoryBase.Resolve<IFactoryWatcher>();
         }
@@ -229,8 +231,9 @@ namespace QA.Core.DPC
         }
 		private void NotificationService_OnUpdateConfiguration(object sender, string customerCode)
 		{
-			UpdateConfiguration(customerCode);
-		}
+            var actualCustomerCode = _connectionProvider.QPMode ? customerCode : SingleCustomerProvider.Key;
+            UpdateConfiguration(customerCode);
+        }
 
         public static void SendToOneChannel(object stateInfo)
         {            
