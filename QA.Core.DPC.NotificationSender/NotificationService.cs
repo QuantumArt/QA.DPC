@@ -144,7 +144,8 @@ namespace QA.Core.DPC
             {
                 countMap = ctx.Messages
                     .GroupBy(m => m.Channel)
-                    .ToDictionary(g => g.Key, g => g.Count());
+                    .Select(g => new { g.Key, Count = g.Count() })
+                    .ToDictionary(g => g.Key, g => g.Count);
             }         
 
             var chennelsStatistic = channelService.GetNotificationChannels();
