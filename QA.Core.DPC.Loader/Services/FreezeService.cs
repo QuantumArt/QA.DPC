@@ -30,6 +30,7 @@ namespace QA.Core.DPC.Loader.Services
             from
                 content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
             where
+				visible = 1 and archive = 0 and	
                 FreezeDate < @date  and
                [' + ex.ATTRIBUTE_NAME + '] is not null
             union'
@@ -50,6 +51,7 @@ namespace QA.Core.DPC.Loader.Services
 			from
 				content_' + cast(c.ID as nvarchar(100)) +'_united
 			where
+				visible = 1 and archive = 0 and
 				FreezeDate < @date
 			union'
 		from
@@ -79,6 +81,7 @@ namespace QA.Core.DPC.Loader.Services
 	        from
 		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
 	        where
+				visible = 1 and archive = 0 and
 		        FreezeDate >= @date and
 		        [' + ex.ATTRIBUTE_NAME + '] in (select Id from @ids)
 	        union'
@@ -99,6 +102,7 @@ namespace QA.Core.DPC.Loader.Services
 			from
 				content_' + cast(c.ID as nvarchar(100)) +'_united
 			where
+				visible = 1 and archive = 0 and	
 				FreezeDate >= @date and
 		        CONTENT_ITEM_ID in (select Id from @ids)
 			union'
@@ -129,7 +133,8 @@ namespace QA.Core.DPC.Loader.Services
 	        from
 		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
 	        where
-		        [' + ex.ATTRIBUTE_NAME + '] = @id and
+				visible = 1 and archive = 0 and		        
+				[' + ex.ATTRIBUTE_NAME + '] = @id and
 		        FreezeDate is not null
 	        union'
         from
@@ -149,6 +154,7 @@ namespace QA.Core.DPC.Loader.Services
 			from
 				content_' + cast(c.ID as nvarchar(100)) +'_united
 			where
+				visible = 1 and archive = 0 and		        
 				CONTENT_ITEM_ID = @id and
 				FreezeDate is not null
 			union'
@@ -181,7 +187,8 @@ namespace QA.Core.DPC.Loader.Services
 	        from
 		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
 	        where
-		        [' + ex.ATTRIBUTE_NAME + '] in (select Id from @ids)
+				visible = 1 and archive = 0 and		        
+				[' + ex.ATTRIBUTE_NAME + '] in (select Id from @ids)
 	        union'
         from
 	        content_attribute base
@@ -202,6 +209,7 @@ namespace QA.Core.DPC.Loader.Services
 	        from
 		        content_' + cast(c.ID as nvarchar(100)) +'_united
 	        where
+				visible = 1 and archive = 0 and		        
 		        CONTENT_ITEM_ID in (select Id from @ids)
 	        union'
         from
