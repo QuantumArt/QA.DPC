@@ -24,6 +24,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 
         public bool IsQpMode => !String.Equals(Configuration["Data:QpMode"], "false"
             , StringComparison.InvariantCultureIgnoreCase);
+        
+        public int SettingsContentId => Int32.TryParse(Configuration["Data:SettingsContentId"], out var result) ? result : 0;
 
 
         protected override void Load(ContainerBuilder builder)
@@ -98,6 +100,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 
             if (IsQpMode)
             {
+                if (SettingsContentId != 0)
+                {
+                    builder.RegisterScoped<ISettingsService>(c => new SettingsFromContentCoreService(
+                        c.Resolve<IVersionedCacheProvider2>(),
+                        c.Resolve<IConnectionProvider>(),
+                        SettingsContentId
+                        ));                    
+                }
+                else
+                {
+                    builder.RegisterScoped<ISettingsService, SettingsFromQpCoreService>();
+                }
                 builder.RegisterScoped<ISettingsService, SettingsFromQpCoreService>();
                 builder.RegisterScoped<IContentProvider<ElasticIndex>, ElasticIndexProvider>();
                 builder.RegisterScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
