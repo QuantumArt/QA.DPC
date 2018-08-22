@@ -42,7 +42,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         {
             if (!ValidateInstance(instanceId, _dataOptions.InstanceId))
             {
-                return CreateForbiddenResult(instanceId, _dataOptions.InstanceId);
+                return CreateUnauthorizedResult(instanceId, _dataOptions.InstanceId);
             }
 
             var syncer = _configuration.GetSyncer(language, state);
@@ -80,7 +80,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         {
             if (!ValidateInstance(instanceId, _dataOptions.InstanceId))
             {
-                return CreateForbiddenResult(instanceId, _dataOptions.InstanceId);
+                return CreateUnauthorizedResult(instanceId, _dataOptions.InstanceId);
             }
 
             var syncer = _configuration.GetSyncer(language, state);
@@ -178,10 +178,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             return new OkResult();
         }
 
-        private IActionResult CreateForbiddenResult(string instanceId, string actualInstanceId)
+        private IActionResult CreateUnauthorizedResult(string instanceId, string actualInstanceId)
         {
             Logger.LogInfo(() => $"InstanceId {instanceId} указан неверно, должен быть {actualInstanceId}");            
-            return new ForbidResult();
+            return new UnauthorizedResult();
         }
 
         private bool ValidateInstance(string instanceId, string actualInstanceId)
