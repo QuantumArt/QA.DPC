@@ -37,10 +37,10 @@ namespace QA.ProductCatalog.Validation.Validators
 
         public RemoteValidationResult Result { get; }
 
-        public RemotePropertyDefinition GetDefinition(string alias)
+        public RemotePropertyDefinition GetDefinition(string alias, bool addError = true)
         {
             var def = Model.Definitions.FirstOrDefault(x => x.Alias == alias);
-            if (def == null)
+            if (def == null && addError)
             {
                 Result.AddErrorMessage(String.Format(RemoteValidationMessages.MissingParam, alias));
             }
