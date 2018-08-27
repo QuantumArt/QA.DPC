@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
@@ -21,7 +22,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
         protected readonly IDpcService DpcService;
 
         protected readonly DataOptions Options;
-
+        
         public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService, IOptions<DataOptions> options)
         {
             ProductService = productService;
@@ -131,6 +132,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             }
 
             ApplyOptions(locator);
+            // ReSharper disable once InconsistentlySynchronizedField
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products != null)
             {
@@ -176,6 +178,8 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             }
 
             ApplyOptions(locator);
+            
+            // ReSharper disable once InconsistentlySynchronizedField
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products?.Any() == true)
             {
@@ -186,12 +190,15 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                     foreach (var p in res1.Result.Products)
                     {
                         Logger.Info($"Check for creating or updating (product {p.Id})");
+                        
+                        // ReSharper disable once InconsistentlySynchronizedField
                         var res2 = ProductService.HasProductChanged(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
                             throw new Exception($"Error while checking product {p.Id}: {res2.Error.Message}");
                         }
-                        else if (!res2.Result)
+
+                        if (!res2.Result)
                         {
                             Logger.Info($"Product {p.Id} doesn't require updating");
                         }
@@ -200,17 +207,15 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                             Logger.Info($"Creating or updating product {p.Id}");
 
                             var res3 = ProductService.UpdateProduct(locator, p, data, userName, userId);
-                            if (res3.IsSucceeded)
+                            if (!res3.IsSucceeded)
                             {
-                                Logger.Info($"Product {p.Id} successfully created/updated");
+                                throw new Exception(
+                                    $"Error while creating/updating product {p.Id}: {res3.Error.Message}");
                             }
-                            else
-                            {
-                                throw new Exception($"Error while creating/updating product {p.Id}: {res3.Error.Message}");
-                            }
+
+                            Logger.Info($"Product {p.Id} successfully created/updated");
                         }
                     }
-
                 }
                 catch (Exception e)
                 {

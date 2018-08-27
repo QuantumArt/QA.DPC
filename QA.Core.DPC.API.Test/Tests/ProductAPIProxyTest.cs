@@ -4,6 +4,7 @@ using Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.ProductCatalog.Infrastructure;
+using Unity;
 
 namespace QA.Core.DPC.API.Test.Tests
 {

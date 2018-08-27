@@ -97,9 +97,9 @@ namespace QA.ProductCatalog.ImpactService
             return countryParam.SelectTokens("Direction.Countries.[?(@.Code)].Code").Count();
         }
 
-        public override JObject Calculate(JObject tariff, JObject[] options, string homeRegion)
+        public override JObject Calculate(JObject tariff, JObject[] options, JObject homeRegionData)
         {   
-            var newTariff = base.Calculate(tariff, options, homeRegion);
+            var newTariff = base.Calculate(tariff, options, homeRegionData);
             foreach (var option in options)
             {
                 newTariff = CalculateSpecialDirectionsImpact(newTariff, option);

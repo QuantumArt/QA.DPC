@@ -123,24 +123,21 @@ namespace QA.Core.DPC.Loader
 
 			node.Add(new XAttribute(XNamespace.Xmlns + "xsi", ns));
 
-			if (EnableRegionTagReplacement)
+			//Получение региональных замен
+            var regionIds =
+                articles
+				.Select(x => x.GetField("Regions") as MultiArticleField)
+				.Where(x => x != null)
+				.SelectMany(x => x.Items.Keys).ToArray();
+
+			if (regionIds.Any())
 			{
-				//Получение региональных замен
-                var regionIds =
-                    articles
-					.Select(x => x.GetField("Regions") as MultiArticleField)
-					.Where(x => x != null)
-					.SelectMany(x => x.Items.Keys).ToArray();
+				var tags = GenerateRegionTags(node, regionIds, out exceptions);
 
-				if (regionIds.Any())
-				{
-					var tags = GenerateRegionTags(node, regionIds, out exceptions);
-
-					if (tags != null)
-						node.Add(tags);
-				}
-
+				if (tags != null)
+					node.Add(tags);
 			}
+			
 			return node;
 		}
 
@@ -161,16 +158,22 @@ namespace QA.Core.DPC.Loader
 			
 			var node = new XElement("RegionsTags");
 			var xmlTags = new List<XElement>();
-			var expt = new List<string>();
+			var exceptionsList = new List<string>();
 			foreach (var tag in tags)
 			{
-				var tagContent = ConvertRegionTag(tag);
+				var tagContent = ConvertRegionTag(tag, regionIds, out bool replace);
+				
+				if (!replace)
+				{
+					exceptionsList.Add(tag.Title);					
+				}
+				
 				if (tagContent == null) continue;
-				expt.Add(tag.Title);
+
 				xmlTags.Add(new XElement("Tag", new XElement("Title", tag.Title), tagContent));
 			}
 
-			exceptions = expt.ToArray();
+			exceptions = exceptionsList.ToArray();
 
 			if (xmlTags.Count == 0) //Список замен пуст
 				return null;
@@ -180,11 +183,23 @@ namespace QA.Core.DPC.Loader
 			return node;
 		}
 
-        private static object ConvertRegionTag(TagWithValues tag)
-		{
-			if (!tag.Values.Any() || tag.Values.Length <= 1) 
-				return null;
+        private object ConvertRegionTag(TagWithValues tag, int[] regionIds, out bool replace)
+        {
 
+	        if (!tag.Values.Any())
+	        {
+		        replace = false;
+		        return null;
+	        }
+
+	        if (EnableRegionTagReplacement && tag.Values.Length == 1 &&
+	            tag.Values[0].RegionsId.Length == regionIds.Length)
+	        {
+		        replace = true;
+		        return null;
+	        }
+
+	        replace = false;
 			return new XElement("RegionsValues",
 				tag.Values.Select(x => new XElement("RegionsValue",
 													new XElement("Value", new XCData(x.Value)),

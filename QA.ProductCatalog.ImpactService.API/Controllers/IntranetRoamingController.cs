@@ -44,7 +44,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
 
-            result = await LoadProducts(id, serviceIds, searchOptions);
+            result = await FillHomeRegion(searchOptions);
+            result = result ?? await LoadProducts(id, serviceIds, searchOptions);
+            result = result ?? await FillDefaultHomeRegion(searchOptions, Product);
 
             var useMacroRegionParameters = await IsOneMacroRegion(region, homeRegion, searchOptions);
 
@@ -54,7 +56,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             LogStartImpact("VSR", id, serviceIds);
 
             result = result ?? await CorrectProductWithScale(id, region, useMacroRegionParameters, searchOptions);
-            result = result ?? CalculateImpact(homeRegion);
+            result = result ?? CalculateImpact(searchOptions.HomeRegionData);
 
             LogEndImpact("VSR", id, serviceIds);
 
@@ -110,7 +112,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return Scale == null ? NotFound($"Roaming scale is not found for tariff {id} in regions: {region}, {ConfigurationOptions.RootRegionId}") : null;
         }
 
-        protected override ActionResult CalculateImpact(string homeRegion)
+        protected override ActionResult CalculateImpact(JObject homeRegionData)
         {
             try
             {
@@ -119,7 +121,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                     _calc.MergeValuesFromTariff(service, InitialTariffProperties);   
                 }
 
-                _calc.Calculate(Product, Services.ToArray(), homeRegion);
+                _calc.Calculate(Product, Services.ToArray(), homeRegionData);
             }
             catch (Exception ex)
             {

@@ -211,12 +211,13 @@ namespace QA.Core.DPC.API.Update
             var associationFieldsInfo = (
                 from fieldDef in definition.Fields.OfType<Association>()
                 join field in newArticle.Fields.Values on fieldDef.FieldId equals field.FieldId
-                select new
-                {
-                    field,
-                    oldField = existingArticle?.Fields.Values.Single(x => x.FieldId == field.FieldId),
-                    fieldDef
-                }).ToArray();
+                select
+                    new
+                    {
+                        field,
+                        oldField = existingArticle?.Fields.Values.SingleOrDefault(x => x.FieldId == field.FieldId),
+                        fieldDef
+                    }).ToArray();
 
             foreach (var fieldToSyncInfo in associationFieldsInfo)
             {

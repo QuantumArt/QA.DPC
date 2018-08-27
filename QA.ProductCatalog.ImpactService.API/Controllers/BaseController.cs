@@ -134,11 +134,11 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return $"Address: {searchOptions.BaseAddress}, Index: {searchOptions.IndexName}";
         }
 
-        protected virtual ActionResult CalculateImpact(string homeRegion)
+        protected virtual ActionResult CalculateImpact(JObject homeRegionData)
         {
             try
             {
-                Calculator.Calculate(Product, Services.ToArray(), homeRegion);
+                Calculator.Calculate(Product, Services.ToArray(), homeRegionData);
             }
             catch (Exception ex)
             {
@@ -264,5 +264,47 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return null;
         }
 
+        protected async Task<ActionResult> FillHomeRegion(SearchOptions searchOptions)
+        {
+            ActionResult result = null;
+            try
+            {
+                if (!string.IsNullOrEmpty(searchOptions.HomeRegion))
+                {
+                    searchOptions.HomeRegionData = await SearchRepo.GetHomeRegion(searchOptions);
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Exception occurs while loading home region: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                result = BadRequest(message);
+            }
+            return result;
+        }
+
+        protected async Task<ActionResult> FillDefaultHomeRegion(SearchOptions searchOptions, JObject product)
+        {
+            ActionResult result = null;
+            try
+            {
+                if (string.IsNullOrEmpty(searchOptions.HomeRegion))
+                {
+                    var alias = product.SelectTokens("Regions.[?(@.Alias)].Alias").FirstOrDefault()?.ToString();
+                    if (!string.IsNullOrEmpty(alias))
+                    {
+                        searchOptions.HomeRegion = alias;
+                        searchOptions.HomeRegionData = await SearchRepo.GetHomeRegion(searchOptions);
+                    }                    
+                }
+            }
+            catch (Exception ex)
+            {
+                var message = $"Exception occurs while loading default home region: {ex.Message}";
+                Logger.LogError(1, ex, message);
+                result = BadRequest(message);
+            }
+            return result;
+        }
     }
 }
