@@ -200,7 +200,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <returns>JSON части продукта</returns>
         [HttpPost]
         public ActionResult LoadPartialProduct(
-             [ModelBinder(typeof(JsonModelBinder))] LoadPartialProductRequest request, bool isLive = false)
+             [ModelBinder(typeof(JsonDefaultModelBinder))] LoadPartialProductRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
@@ -234,7 +234,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <returns>JSON связи продукта</returns>
         [HttpPost]
         public ActionResult LoadProductRelation(
-             [ModelBinder(typeof(JsonModelBinder))] LoadProductRelationRequest request, bool isLive = false)
+             [ModelBinder(typeof(JsonDefaultModelBinder))] LoadProductRelationRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
@@ -269,7 +269,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </summary>
         [HttpPost]
         public ActionResult SavePartialProduct(
-            [ModelBinder(typeof(JsonModelBinder))] SavePartialProductRequest request, bool isLive = false)
+            [ModelBinder(typeof(JsonDefaultModelBinder))] SavePartialProductRequest request, bool isLive = false)
         {
             return SavePartialProduct(request, isLive, saveMinimalSubtree: false);
         }
@@ -280,7 +280,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </summary>
         [HttpPost]
         public ActionResult SaveMinimalProduct(
-            [ModelBinder(typeof(JsonModelBinder))] SavePartialProductRequest request, bool isLive = false)
+            [ModelBinder(typeof(JsonDefaultModelBinder))] SavePartialProductRequest request, bool isLive = false)
         {
             return SavePartialProduct(request, isLive, saveMinimalSubtree: true);
         }

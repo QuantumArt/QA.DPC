@@ -1,4 +1,4 @@
-import React, { Component, StatelessComponent } from "react";
+import React, { Component, StatelessComponent, ReactNode } from "react";
 import { consumer, inject } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
@@ -216,7 +216,7 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
     throw new Error(`Unsupported field type FieldExactTypes.${fieldSchema.FieldType}`);
   }
 
-  render() {
+  render(): ReactNode {
     const { model } = this.props;
 
     return this._editorBlocks
