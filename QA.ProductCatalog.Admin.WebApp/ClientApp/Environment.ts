@@ -9,5 +9,5 @@ require("Styles/FlexboxGrid.scss");
 require("Styles/NProgress.scss");
 require("Styles/Tabs.scss");
 if (DEBUG) {
-  require("mobx").configure({ enforceActions: true });
+  require("mobx").configure({ enforceActions: "observed" });
 }

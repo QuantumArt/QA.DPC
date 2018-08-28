@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "qa.productcatalog.admin.webapp",
   "version": "1.0.0",
   "description": "DPC Admin Web App",
@@ -28,7 +29,7 @@
   },
   "devDependencies": {
     "@types/classnames": "^2.2.3",
-    "@types/jest": "^23.0.2",
+    "@types/jest": "^23.3.1",
     "@types/moment": "^2.13.0",
     "@types/node": "^9.6.5",
     "@types/nprogress": "0.0.29",
@@ -53,10 +54,10 @@
     "prettier": "^1.12.1",
     "sass-loader": "^7.0.1",
     "style-loader": "^0.20.3",
-    "ts-jest": "^22.4.6",
-    "ts-loader": "^4.4.2",
-    "tsconfig-paths-webpack-plugin": "^3.0.3",
-    "typescript": "^2.8.1",
+    "ts-jest": "^23.1.4",
+    "ts-loader": "^4.5.0",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "typescript": "^3.0.1",
     "url-loader": "^1.0.1",
     "webpack": "^4.5.0",
     "webpack-bundle-analyzer": "^2.13.1",
@@ -68,9 +69,9 @@
     "file-loader": "^1.1.11",
     "hoist-non-react-statics": "^2.5.5",
     "json-schema-to-typescript": "^5.4.0",
-    "mobx": "^4.1.1",
-    "mobx-react": "^5.0.0",
-    "mobx-state-tree": "^2.0.5",
+    "mobx": "^4.4.0",
+    "mobx-react": "^5.2.5",
+    "mobx-state-tree": "^2.2.0",
     "moment": "^2.22.1",
     "normalize.css": "^8.0.0",
     "normalizr": "^3.2.4",
@@ -87,7 +88,7 @@
     "react-textarea-autosize": "^6.1.0",
     "react-transition-group": "^2.3.1",
     "reflect-metadata": "^0.1.12",
-    "tslib": "^1.9.0"
+    "tslib": "^1.9.3"
   },
   "jest": {
     "transform": {
@@ -106,6 +107,11 @@
       "jsx",
       "json",
       "node"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "skipBabel": true
+      }
+    }
   }
 }
