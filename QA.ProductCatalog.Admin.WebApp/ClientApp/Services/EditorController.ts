@@ -1,4 +1,3 @@
-import { toJS } from "mobx";
 import { inject } from "react-ioc";
 import { EntitySnapshot, EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
@@ -83,7 +82,7 @@ export class EditorController {
     contentSchema: ContentSchema,
     action: "SaveMinimalProduct" | "SavePartialProduct"
   ) {
-    const partialProduct = toJS(article);
+    const partialProduct = this._dataSerializer.serialize(article, contentSchema);
 
     const response = await fetch(`${this._rootUrl}/ProductEditor/${action}${this._query}`, {
       method: "POST",

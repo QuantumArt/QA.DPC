@@ -1,5 +1,12 @@
 import { isIsoDateString } from "Utils/TypeChecks";
-import { isEntityObject } from "Models/EditorDataModels";
+import { isEntityObject, ArticleObject, EntityObject } from "Models/EditorDataModels";
+import {
+  ContentSchema,
+  isExtensionField,
+  UpdatingMode,
+  isSingleRelationField,
+  isMultiRelationField
+} from "Models/EditorSchemaModels";
 
 /**
  * Отображения положительных серверных Id на  отрицательные клиентские,
@@ -55,5 +62,51 @@ export class DataSerializer {
       serverId = clientId;
     }
     throw new Error("There is a cycle in DataSerializer._idMappingDict");
+  }
+
+  public serialize(article: ArticleObject, contentSchema: ContentSchema) {
+    const snapshot = {
+      _ServerId: article._ServerId,
+      _Modified: article._Modified
+    };
+
+    for (const fieldName in contentSchema.Fields) {
+      const fieldValue = article[fieldName];
+      if (fieldValue == null) {
+        continue;
+      }
+
+      const fieldSchema = contentSchema.Fields[fieldName];
+      if (isSingleRelationField(fieldSchema)) {
+        const relatedEntity = fieldValue as EntityObject;
+        if (fieldSchema.UpdatingMode === UpdatingMode.Ignore) {
+          snapshot[fieldName] = { _ServerId: relatedEntity._ServerId };
+        } else {
+          snapshot[fieldName] = this.serialize(relatedEntity, fieldSchema.RelatedContent);
+        }
+      } else if (isMultiRelationField(fieldSchema)) {
+        const relatedCollection = fieldValue as EntityObject[];
+        if (fieldSchema.UpdatingMode === UpdatingMode.Ignore) {
+          snapshot[fieldName] = relatedCollection.map(entity => ({ _ServerId: entity._ServerId }));
+        } else {
+          snapshot[fieldName] = relatedCollection.map(entity =>
+            this.serialize(entity, fieldSchema.RelatedContent)
+          );
+        }
+      } else if (isExtensionField(fieldSchema)) {
+        // TODO: специальная обработка когда fieldValue == null
+        const extensionFieldName = `${fieldName}${ArticleObject._Contents}`;
+        const extensionArticle = article[extensionFieldName][fieldValue] as ArticleObject;
+        const extensionContentSchema = fieldSchema.ExtensionContents[fieldValue];
+        snapshot[fieldName] = fieldValue;
+        snapshot[extensionFieldName] = {
+          [fieldValue]: this.serialize(extensionArticle, extensionContentSchema)
+        };
+      } else {
+        snapshot[fieldName] = fieldValue;
+      }
+    }
+
+    return snapshot as { [x: string]: any } & typeof snapshot;
   }
 }
