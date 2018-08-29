@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { computed, observable, action } from "mobx";
 import { observer } from "mobx-react";
-import { Tabs, Tab, Icon, Checkbox } from "@blueprintjs/core";
+import { Tabs, Tab, Icon, Checkbox, TabId } from "@blueprintjs/core";
 import { Col, Row } from "react-flexbox-grid";
 import { ExtensionEditor } from "Components/ArticleEditor/ArticleEditor";
 import { EntityEditor, IGNORE } from "Components/ArticleEditor/EntityEditor";
@@ -37,6 +37,14 @@ const actionRegionsField = (action: FixConnectAction) =>
 @observer
 export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProps> {
   @observable private filterByRegions = false;
+  @observable private activatedTabIds: TabId[] = ["federal"];
+
+  @action
+  private handleTabChange = (newTabId: TabId) => {
+    if (!this.activatedTabIds.includes(newTabId)) {
+      this.activatedTabIds.push(newTabId);
+    }
+  };
 
   @action
   private setFilterByRegions = (e: any) => {
@@ -83,7 +91,7 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
 
   render() {
     return (
-      <Tabs id="layout" large>
+      <Tabs id="layout" large onChange={this.handleTabChange}>
         <Tab id="federal" panel={this.renderFederal()}>
           <Icon icon="globe" iconSize={Icon.SIZE_LARGE} />
           <span>Общефедеральные характеристики</span>
@@ -101,7 +109,11 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
   }
 
   private renderFederal() {
+    if (!this.activatedTabIds.includes("federal")) {
+      return null;
+    }
     const { model, contentSchema } = this.props;
+
     return (
       <EntityEditor
         model={model}
@@ -132,6 +144,9 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
   }
 
   private renderRegional() {
+    if (!this.activatedTabIds.includes("regional")) {
+      return null;
+    }
     const { model, contentSchema } = this.props;
     const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
     const marketingProductSchema = (contentSchema.Fields.MarketingProduct as RelationFieldSchema)
@@ -232,6 +247,9 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
   }
 
   private renderDevices() {
+    if (!this.activatedTabIds.includes("devices")) {
+      return null;
+    }
     const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
 
     return extension ? (
