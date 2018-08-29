@@ -68,34 +68,25 @@ export class EditorController {
     this._dataNormalizer.initSchema(this._schemaContext.contentSchemasById);
   }
 
-  public async saveMinimalProduct(article: EntityObject, contentSchema: ContentSchema) {
-    await this.saveProduct(article, contentSchema, "SaveMinimalProduct");
-  }
-
-  public async savePartialProduct(article: EntityObject, contentSchema: ContentSchema) {
-    await this.saveProduct(article, contentSchema, "SavePartialProduct");
-  }
-
   @command
-  private async saveProduct(
-    article: EntityObject,
-    contentSchema: ContentSchema,
-    action: "SaveMinimalProduct" | "SavePartialProduct"
-  ) {
+  public async savePartialProduct(article: EntityObject, contentSchema: ContentSchema) {
     const partialProduct = this._dataSerializer.serialize(article, contentSchema);
 
-    const response = await fetch(`${this._rootUrl}/ProductEditor/${action}${this._query}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-        ContentPath: contentSchema.ContentPath,
-        PartialProduct: partialProduct
-      })
-    });
+    const response = await fetch(
+      `${this._rootUrl}/ProductEditor/SavePartialProduct${this._query}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: contentSchema.ContentPath,
+          PartialProduct: partialProduct
+        })
+      }
+    );
     if (response.status === 409) {
       const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);

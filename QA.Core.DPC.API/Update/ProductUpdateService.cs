@@ -6,8 +6,6 @@ using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
-using QA.Core.Models.Filters;
-using QA.Core.Models.Filters.Base;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
@@ -106,8 +104,7 @@ namespace QA.Core.DPC.API.Update
         #region IProductUpdateService
 
         /// <exception cref="ProductUpdateConcurrencyException" />
-        public InsertData[] Update(
-            Article product, ProductDefinition definition, bool isLive = false, bool saveMinimalSubtree = false)
+        public InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false)
         {
             Article oldProduct = _productService.GetProductById(product.Id, isLive, definition);
 
@@ -116,11 +113,7 @@ namespace QA.Core.DPC.API.Update
             _outdatedArticleIds.Clear();
 
             _filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
-            if (saveMinimalSubtree)
-            {
-                _filter = new AllFilter(_filter, new NotCreatedFilter());
-            }
-
+            
             ProcessArticlesTree(product, oldProduct, definition.StorageSchema);
 
             if (_outdatedArticleIds.Any())

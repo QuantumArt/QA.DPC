@@ -4,7 +4,6 @@ import { Button, Menu, MenuItem, Intent, Popover, Position, Icon } from "@bluepr
 interface ArticleMenuProps {
   small?: boolean;
   onSave?: (e: any) => void;
-  onSaveAll?: (e: any) => void;
   onRemove?: (e: any) => void;
   onRefresh?: (e: any) => void;
   onReload?: (e: any) => void;
@@ -15,7 +14,6 @@ interface ArticleMenuProps {
 export const ArticleMenu = ({
   small,
   onSave,
-  onSaveAll,
   onRemove,
   onRefresh,
   onReload,
@@ -34,15 +32,6 @@ export const ArticleMenu = ({
           onClick={onSave}
           text="Сохранить"
           title="Сохранить текущую статью"
-        />
-      )}
-      {onSaveAll && (
-        <MenuItem
-          labelElement={<Icon icon="floppy-disk" />}
-          intent={Intent.PRIMARY}
-          onClick={onSaveAll}
-          text="Сохранить все"
-          title="Сохранить текущую статью и все связанные статьи"
         />
       )}
       {onClone && (

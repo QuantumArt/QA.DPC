@@ -45,17 +45,6 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   };
 
   @action
-  private saveMinimalProduct = async (e: any) => {
-    e.stopPropagation();
-    const { model, fieldSchema } = this.props;
-    const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
-    const article: EntityObject = model[fieldSchema.FieldName];
-    if (article) {
-      await this._editorController.saveMinimalProduct(article, contentSchema);
-    }
-  };
-
-  @action
   private savePartialProduct = async (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
@@ -155,8 +144,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               {!fieldSchema.IsReadOnly && (
                 <ArticleMenu
                   small
-                  onSave={showSaveButton && this.saveMinimalProduct}
-                  onSaveAll={showSaveButton && this.savePartialProduct}
+                  onSave={showSaveButton && this.savePartialProduct}
                   onRemove={this.removeRelation}
                   onRefresh={hasServerId && this.refreshEntity}
                   onReload={hasServerId && this.reloadEntity}

@@ -37,11 +37,6 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
     this._titleField = isString(titleField) ? article => article[titleField] : titleField;
   }
 
-  private saveMinimalProduct = async () => {
-    const { model, contentSchema } = this.props;
-    await this._editorController.saveMinimalProduct(model, contentSchema);
-  };
-
   private savePartialProduct = async () => {
     const { model, contentSchema } = this.props;
     await this._editorController.savePartialProduct(model, contentSchema);
@@ -63,7 +58,6 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
       return children(null, null);
     }
     const hasServerId = model._ServerId > 0;
-    const showSaveButton = hasServerId || this._schemaContext.rootSchema === contentSchema;
 
     const headerNode =
       header === true ? (
@@ -75,8 +69,7 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
           {buttons === true ? (
             <div className="article-editor__buttons">
               <ArticleMenu
-                onSave={showSaveButton && this.saveMinimalProduct}
-                onSaveAll={showSaveButton && this.savePartialProduct}
+                onSave={this.savePartialProduct}
                 onRemove={onRemove && (() => onRemove(model))}
                 onRefresh={hasServerId && this.refreshEntity}
                 onReload={hasServerId && this.reloadEntity}

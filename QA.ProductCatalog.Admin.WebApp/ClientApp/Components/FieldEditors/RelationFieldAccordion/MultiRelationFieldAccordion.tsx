@@ -86,13 +86,6 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     }
   }
 
-  private async saveMinimalProduct(e: any, article: EntityObject) {
-    e.stopPropagation();
-    const { fieldSchema } = this.props;
-    const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
-    await this._editorController.saveMinimalProduct(article, contentSchema);
-  }
-
   private async savePartialProduct(e: any, article: EntityObject) {
     e.stopPropagation();
     const { fieldSchema } = this.props;
@@ -195,8 +188,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       {!fieldSchema.IsReadOnly && (
                         <ArticleMenu
                           small
-                          onSave={showSaveButton && (e => this.saveMinimalProduct(e, article))}
-                          onSaveAll={showSaveButton && (e => this.savePartialProduct(e, article))}
+                          onSave={showSaveButton && (e => this.savePartialProduct(e, article))}
                           onRemove={e => this.removeRelation(e, article)}
                           onRefresh={hasServerId && (e => this.refreshEntity(e, article))}
                           onReload={hasServerId && (e => this.reloadEntity(e, article))}

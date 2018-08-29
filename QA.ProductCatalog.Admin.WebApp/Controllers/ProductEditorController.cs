@@ -271,22 +271,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         public ActionResult SavePartialProduct(
             [ModelBinder(typeof(JsonModelBinder))] SavePartialProductRequest request, bool isLive = false)
         {
-            return SavePartialProduct(request, isLive, saveMinimalSubtree: false);
-        }
-
-        /// <summary>
-        /// Сохранить первую статью продукта начиная с корневого контента,
-        /// описанного путём <see cref="PartialProductRequest.ContentPath"/>.
-        /// </summary>
-        [HttpPost]
-        public ActionResult SaveMinimalProduct(
-            [ModelBinder(typeof(JsonModelBinder))] SavePartialProductRequest request, bool isLive = false)
-        {
-            return SavePartialProduct(request, isLive, saveMinimalSubtree: true);
-        }
-
-        private ActionResult SavePartialProduct(SavePartialProductRequest request, bool isLive, bool saveMinimalSubtree)
-        {
             if (!ModelState.IsValid)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -306,8 +290,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             try
             {
                 // TODO: what about validation ?
-                InsertData[] insertData = _productUpdateService
-                    .Update(partialProduct, partialDefinition, isLive, saveMinimalSubtree);
+                InsertData[] insertData = _productUpdateService.Update(partialProduct, partialDefinition, isLive);
 
                 var idMappings = insertData.Select(data => new
                 {
