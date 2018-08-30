@@ -298,7 +298,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     ServerId = data.CreatedArticleId,
                 });
 
-                ArticleObject articleObject = LoadProductGraph(partialContent, partialProduct.Id, isLive);
+                int partialProductId = partialProduct.Id;
+                if (partialProductId <= 0)
+                {
+                    partialProductId = insertData
+                        .Single(data => data.OriginalArticleId == partialProduct.Id)
+                        .CreatedArticleId;
+                }
+
+                ArticleObject articleObject = LoadProductGraph(partialContent, partialProductId, isLive);
 
                 string responseJson = JsonConvert.SerializeObject(new
                 {

@@ -62,6 +62,8 @@ export class DataContext {
   }
 }
 
+const nullable = type => t.optional(t.union(type, t.literal(null), t.literal(undefined)), null);
+
 /**
  * Компилирует MobX-модели из нормализованных схем контентов
  * @example
@@ -91,7 +93,7 @@ function compileStoreType(
   const visitField = (field: FieldSchema, fieldModels: Object) => {
     if (isExtensionField(field)) {
       // создаем nullable поле-классификатор в виде enum
-      fieldModels[field.FieldName] = t.maybe(
+      fieldModels[field.FieldName] = nullable(
         t.enumeration(field.FieldName, Object.keys(field.ExtensionContents))
       );
       // создаем словарь с моделями контентов-расширений
@@ -102,7 +104,7 @@ function compileStoreType(
         const extFieldModels = {
           _ServerId: t.optional(t.number, getNextId),
           _ContentName: t.optional(t.literal(extName), extName),
-          _Modified: t.maybe(t.Date),
+          _Modified: nullable(t.Date),
           _IsExtension: t.optional(t.literal(true), true)
         };
         // заполняем словарь полей обходя все поля контента-расширения
@@ -120,7 +122,7 @@ function compileStoreType(
       );
     } else if (isSingleRelationField(field)) {
       // для O2MRelation создаем nullable ссылку на сущность
-      fieldModels[field.FieldName] = t.maybe(
+      fieldModels[field.FieldName] = nullable(
         t.reference(t.late(() => contentModels[field.RelatedContent.ContentName]))
       );
     } else if (isMultiRelationField(field)) {
@@ -131,7 +133,7 @@ function compileStoreType(
       );
     } else if (isEnumField(field)) {
       // создаем nullable строковое поле в виде enum
-      fieldModels[field.FieldName] = t.maybe(
+      fieldModels[field.FieldName] = nullable(
         t.enumeration(field.FieldName, field.Items.map(item => item.Value))
       );
     } else if (isPlainField(field)) {
@@ -142,18 +144,18 @@ function compileStoreType(
         case FieldExactTypes.File:
         case FieldExactTypes.Image:
         case FieldExactTypes.Classifier:
-          fieldModels[field.FieldName] = t.maybe(t.string);
+          fieldModels[field.FieldName] = nullable(t.string);
           break;
         case FieldExactTypes.Numeric:
-          fieldModels[field.FieldName] = t.maybe(t.number);
+          fieldModels[field.FieldName] = nullable(t.number);
           break;
         case FieldExactTypes.Boolean:
-          fieldModels[field.FieldName] = t.maybe(t.boolean);
+          fieldModels[field.FieldName] = nullable(t.boolean);
           break;
         case FieldExactTypes.Date:
         case FieldExactTypes.Time:
         case FieldExactTypes.DateTime:
-          fieldModels[field.FieldName] = t.maybe(t.Date);
+          fieldModels[field.FieldName] = nullable(t.Date);
           break;
       }
     }
@@ -173,7 +175,7 @@ function compileStoreType(
         _ClientId: t.identifier(t.number),
         _ServerId: t.optional(t.number, getNextId),
         _ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
-        _Modified: t.maybe(t.Date),
+        _Modified: nullable(t.Date),
         _IsExtension: t.optional(t.literal(false), false)
       };
       // заполняем поля модели объекта

@@ -102,9 +102,9 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <RelationFieldMenu
-        onCreate={!article && this.createRelation}
-        onSelect={this.selectRelation}
-        onClear={!!article && this.removeRelation}
+        onCreate={this._canEditRelation && !article && this.createRelation}
+        onSelect={this._canEditRelation && this.selectRelation}
+        onClear={this._canEditRelation && !!article && this.removeRelation}
         onReload={model._ServerId > 0 && this.reloadRelation}
       />
     );
@@ -115,7 +115,6 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const { isOpen, isTouched } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
     const hasServerId = article._ServerId > 0;
-    const showSaveButton = this.showSaveButton(article);
     return article ? (
       <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
         <tbody>
@@ -141,10 +140,10 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               </td>
             ))}
             <td key={-3} className="relation-field-accordion__controls">
-              {!fieldSchema.IsReadOnly && (
+              {this._canEditRelation && (
                 <ArticleMenu
                   small
-                  onSave={showSaveButton && this.savePartialProduct}
+                  onSave={this.savePartialProduct}
                   onRemove={this.removeRelation}
                   onRefresh={hasServerId && this.refreshEntity}
                   onReload={hasServerId && this.reloadEntity}

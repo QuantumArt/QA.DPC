@@ -3,7 +3,6 @@ import { Col, Row } from "react-flexbox-grid";
 import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { EntityObject } from "Models/EditorDataModels";
-import { SchemaContext } from "Services/SchemaContext";
 import { EditorController } from "Services/EditorController";
 import { ArticleController } from "Services/ArticleController";
 import { isString, isFunction } from "Utils/TypeChecks";
@@ -28,7 +27,6 @@ interface EntityEditorProps {
 export class EntityEditor extends ArticleEditor<EntityEditorProps> {
   @inject private _articleController: ArticleController;
   @inject private _editorController: EditorController;
-  @inject private _schemaContext: SchemaContext;
   private _titleField: (model: EntityObject) => string;
 
   constructor(props: ArticleEditorProps & EntityEditorProps, context?: any) {

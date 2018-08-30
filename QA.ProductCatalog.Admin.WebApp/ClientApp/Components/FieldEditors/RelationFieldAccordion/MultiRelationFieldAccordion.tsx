@@ -139,9 +139,9 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     const isEmpty = !list || list.length === 0;
     return (
       <RelationFieldMenu
-        onCreate={this.createRelation}
-        onSelect={this.selectRelations}
-        onClear={!isEmpty && this.clearRelation}
+        onCreate={this._canEditRelation && this.createRelation}
+        onSelect={this._canEditRelation && this.selectRelations}
+        onClear={this._canEditRelation && !isEmpty && this.clearRelation}
         onReload={model._ServerId > 0 && this.reloadRelations}
       />
     );
@@ -160,7 +160,6 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
             .map(article => {
               const isOpen = article._ClientId === activeId;
               const hasServerId = article._ServerId > 0;
-              const showSaveButton = this.showSaveButton(article);
               return (
                 <Fragment key={article._ClientId}>
                   <tr
@@ -185,10 +184,10 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       </td>
                     ))}
                     <td key={-3} className="relation-field-accordion__controls">
-                      {!fieldSchema.IsReadOnly && (
+                      {this._canEditRelation && (
                         <ArticleMenu
                           small
-                          onSave={showSaveButton && (e => this.savePartialProduct(e, article))}
+                          onSave={e => this.savePartialProduct(e, article)}
                           onRemove={e => this.removeRelation(e, article)}
                           onRefresh={hasServerId && (e => this.refreshEntity(e, article))}
                           onReload={hasServerId && (e => this.reloadEntity(e, article))}

@@ -5,13 +5,15 @@ import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
-import { SchemaContext } from "Services/SchemaContext";
 import { EditorController } from "Services/EditorController";
 import { ArticleController } from "Services/ArticleController";
-import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
 import { RenderEntity, FieldsConfig } from "Components/ArticleEditor/EntityEditor";
-import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
+import {
+  AbstractRelationFieldEditor,
+  FieldEditorProps,
+  FieldSelector
+} from "../AbstractFieldEditor";
 import "./RelationFieldAccordion.scss";
 
 export interface RelationFieldAccordionProps extends FieldEditorProps {
@@ -22,14 +24,12 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   children?: RenderEntity | ReactNode;
 }
 
-export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor<
+export abstract class AbstractRelationFieldAccordion extends AbstractRelationFieldEditor<
   RelationFieldAccordionProps
 > {
   @inject protected _dataContext: DataContext;
-  @inject private _schemaContext: SchemaContext;
   @inject protected _articleController: ArticleController;
   @inject protected _editorController: EditorController;
-  @inject protected _relationController: RelationController;
   protected _displayFields: FieldSelector[];
 
   constructor(props: RelationFieldAccordionProps, context?: any) {
@@ -41,12 +41,6 @@ export abstract class AbstractRelationFieldAccordion extends AbstractFieldEditor
     this._displayFields = displayFields.map(
       field => (isString(field) ? article => article[field] : field)
     );
-  }
-
-  protected showSaveButton(article: EntityObject) {
-    const { fieldSchema } = this.props;
-    const contentSchema = (fieldSchema as RelationFieldSchema).RelatedContent;
-    return article._ServerId > 0 || this._schemaContext.rootSchema === contentSchema;
   }
 
   protected abstract renderControls(model: ArticleObject, fieldSchema: FieldSchema): ReactNode;
