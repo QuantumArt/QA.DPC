@@ -56,8 +56,8 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     return (
       <Col md>
         <RelationFieldMenu
-          onSelect={this.selectRelations}
-          onClear={!isEmpty && this.clearRelation}
+          onSelect={this._canEditRelation && this.selectRelations}
+          onClear={this._canEditRelation && !isEmpty && this.clearRelation}
         />
         {this.renderValidation(model, fieldSchema)}
         {list && (
@@ -77,7 +77,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
                       </div>
                     ))}
                     <div key={-2} className="relation-field-table__controls">
-                      {!fieldSchema.IsReadOnly && (
+                      {this._canEditRelation && (
                         <Button
                           minimal
                           small

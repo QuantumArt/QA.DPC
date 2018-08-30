@@ -1,11 +1,13 @@
 import React from "react";
-import { inject } from "react-ioc";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
-import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
-import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
+import {
+  AbstractRelationFieldEditor,
+  FieldEditorProps,
+  FieldSelector
+} from "../AbstractFieldEditor";
 import "./RelationFieldTable.scss";
 
 export interface RelationFieldTableProps extends FieldEditorProps {
@@ -13,10 +15,9 @@ export interface RelationFieldTableProps extends FieldEditorProps {
   orderByField?: string | FieldSelector;
 }
 
-export abstract class AbstractRelationFieldTable extends AbstractFieldEditor<
+export abstract class AbstractRelationFieldTable extends AbstractRelationFieldEditor<
   RelationFieldTableProps
 > {
-  @inject protected _relationController: RelationController;
   protected _displayFields: FieldSelector[];
 
   constructor(props: RelationFieldTableProps, context?: any) {

@@ -30,8 +30,8 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
     return (
       <Col md>
         <RelationFieldMenu
-          onSelect={this.selectRelation}
-          onClear={!!article && this.removeRelation}
+          onSelect={this._canEditRelation && this.selectRelation}
+          onClear={this._canEditRelation && !!article && this.removeRelation}
         />
         {this.renderValidation(model, fieldSchema)}
         {article && (
@@ -46,7 +46,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
                 </div>
               ))}
               <div key={-2} className="relation-field-table__controls">
-                {!fieldSchema.IsReadOnly && (
+                {this._canEditRelation && (
                   <Button
                     minimal
                     small

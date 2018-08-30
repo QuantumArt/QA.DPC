@@ -5,10 +5,13 @@ import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
-import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
 import { RenderEntity, FieldsConfig } from "Components/ArticleEditor/EntityEditor";
-import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
+import {
+  AbstractRelationFieldEditor,
+  FieldEditorProps,
+  FieldSelector
+} from "../AbstractFieldEditor";
 import "./RelationFieldTabs.scss";
 
 export interface RelationFieldTabsProps extends FieldEditorProps {
@@ -24,11 +27,10 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   children?: RenderEntity | ReactNode;
 }
 
-export abstract class AbstractRelationFieldTabs extends AbstractFieldEditor<
+export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEditor<
   RelationFieldTabsProps
 > {
   @inject protected _dataContext: DataContext;
-  @inject protected _relationController: RelationController;
   protected _displayField: FieldSelector;
 
   constructor(props: RelationFieldTabsProps, context?: any) {

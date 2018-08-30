@@ -152,9 +152,9 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     return (
       <div className="relation-field-tabs__controls">
         <RelationFieldMenu
-          onCreate={this.createRelation}
-          onSelect={this.selectRelations}
-          onClear={!isEmpty && this.clearRelation}
+          onCreate={this._canEditRelation && this.createRelation}
+          onSelect={this._canEditRelation && this.selectRelations}
+          onClear={this._canEditRelation && !isEmpty && this.clearRelation}
           onReload={model._ServerId > 0 && this.reloadRelations}
         />
         <Button
@@ -222,7 +222,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                         skipOtherFields={skipOtherFields}
                         fieldEditors={fieldEditors}
                         header
-                        buttons={!fieldSchema.IsReadOnly}
+                        buttons={this._canEditRelation}
                         onRemove={this.removeRelation}
                       >
                         {children}

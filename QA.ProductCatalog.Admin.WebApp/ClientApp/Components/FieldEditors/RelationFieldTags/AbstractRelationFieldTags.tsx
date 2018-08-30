@@ -1,12 +1,14 @@
 import React, { MouseEvent } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
-import { inject } from "react-ioc";
 import { EntityObject } from "Models/EditorDataModels";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
-import { RelationController } from "Services/RelationController";
 import { isString } from "Utils/TypeChecks";
-import { AbstractFieldEditor, FieldEditorProps, FieldSelector } from "../AbstractFieldEditor";
+import {
+  AbstractRelationFieldEditor,
+  FieldEditorProps,
+  FieldSelector
+} from "../AbstractFieldEditor";
 import "./RelationFieldTags.scss";
 
 export interface RelationFieldTagsProps extends FieldEditorProps {
@@ -16,11 +18,11 @@ export interface RelationFieldTagsProps extends FieldEditorProps {
   onClick?: (e: MouseEvent<HTMLElement>, article: EntityObject) => void;
 }
 
-export abstract class AbstractRelationFieldTags extends AbstractFieldEditor<
+export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEditor<
   RelationFieldTagsProps
 > {
-  @inject protected _relationController: RelationController;
   protected _displayField: FieldSelector;
+  protected _canEditRelation: boolean;
   protected _isHalfSize = false;
 
   constructor(props: RelationFieldTagsProps, context?: any) {

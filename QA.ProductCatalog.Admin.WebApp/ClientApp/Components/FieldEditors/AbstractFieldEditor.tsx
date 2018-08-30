@@ -1,9 +1,16 @@
 import React, { Component, ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
+import { inject } from "react-ioc";
 import cn from "classnames";
 import { Icon } from "@blueprintjs/core";
 import { ArticleObject } from "Models/EditorDataModels";
-import { FieldSchema } from "Models/EditorSchemaModels";
+import {
+  FieldSchema,
+  RelationFieldSchema,
+  UpdatingMode,
+  FieldExactTypes
+} from "Models/EditorSchemaModels";
+import { RelationController } from "Services/RelationController";
 import { Validator, Validate } from "mst-validation-mixin";
 import { isArray } from "Utils/TypeChecks";
 import { required } from "Utils/Validators";
@@ -90,6 +97,23 @@ export abstract class AbstractFieldEditor<
           <Col md>{this.renderValidation(model, fieldSchema)}</Col>
         </Row>
       </Col>
+    );
+  }
+}
+
+export abstract class AbstractRelationFieldEditor<
+  P extends FieldEditorProps = FieldEditorProps
+> extends AbstractFieldEditor<P> {
+  @inject protected _relationController: RelationController;
+  protected _canEditRelation: boolean;
+
+  constructor(props: P, context?: any) {
+    super(props, context);
+    const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
+    this._canEditRelation = !(
+      fieldSchema.IsReadOnly ||
+      (fieldSchema.FieldType === FieldExactTypes.M2ORelation &&
+        fieldSchema.UpdatingMode === UpdatingMode.Ignore)
     );
   }
 }
