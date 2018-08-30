@@ -140,17 +140,15 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               </td>
             ))}
             <td key={-3} className="relation-field-accordion__controls">
-              {this._canEditRelation && (
-                <ArticleMenu
-                  small
-                  onSave={this.savePartialProduct}
-                  onRemove={this.removeRelation}
-                  onRefresh={hasServerId && this.refreshEntity}
-                  onReload={hasServerId && this.reloadEntity}
-                  onClone={() => {}} // TODO: clone PartialProduct
-                  onPublish={() => {}} // TODO: publish PartialProduct
-                />
-              )}
+              <ArticleMenu
+                small
+                onSave={this.savePartialProduct}
+                onRemove={this.removeRelation}
+                onRefresh={hasServerId && this.refreshEntity}
+                onReload={hasServerId && this.reloadEntity}
+                onClone={() => {}} // TODO: clone PartialProduct
+                onPublish={() => {}} // TODO: publish PartialProduct
+              />
             </td>
           </tr>
           <tr className="relation-field-accordion__main">

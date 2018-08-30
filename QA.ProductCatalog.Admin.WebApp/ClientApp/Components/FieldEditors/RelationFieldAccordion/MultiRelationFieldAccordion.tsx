@@ -184,17 +184,15 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       </td>
                     ))}
                     <td key={-3} className="relation-field-accordion__controls">
-                      {this._canEditRelation && (
-                        <ArticleMenu
-                          small
-                          onSave={e => this.savePartialProduct(e, article)}
-                          onRemove={e => this.removeRelation(e, article)}
-                          onRefresh={hasServerId && (e => this.refreshEntity(e, article))}
-                          onReload={hasServerId && (e => this.reloadEntity(e, article))}
-                          onClone={() => {}} // TODO: clone PartialProduct
-                          onPublish={() => {}} // TODO: publish PartialProduct
-                        />
-                      )}
+                      <ArticleMenu
+                        small
+                        onSave={e => this.savePartialProduct(e, article)}
+                        onRemove={e => this.removeRelation(e, article)}
+                        onRefresh={hasServerId && (e => this.refreshEntity(e, article))}
+                        onReload={hasServerId && (e => this.reloadEntity(e, article))}
+                        onClone={() => {}} // TODO: clone PartialProduct
+                        onPublish={() => {}} // TODO: publish PartialProduct
+                      />
                     </td>
                   </tr>
                   <tr className="relation-field-accordion__main">
