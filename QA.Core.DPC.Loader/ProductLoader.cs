@@ -1326,9 +1326,9 @@ FROM
                 }
             }
 
-            if (isLive )
+            if (isLive)
             {
-                articles = articles.Where(n => n.Status.Name != ARTICLE_STATUS_PUBLISHED).ToArray();
+                articles = articles.Where(n => n.Status.Name == ARTICLE_STATUS_PUBLISHED).ToArray();
             }
 
             return articles;
