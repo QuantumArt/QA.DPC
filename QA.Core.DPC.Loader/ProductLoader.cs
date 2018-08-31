@@ -674,13 +674,15 @@ FROM
         #endregion
 
         #region Чтение на основе XML
+
         /// <summary>
         /// Получение статьи и всех ее полей, описанных в структуре маппинга
         /// </summary>
-        private Article[] GetArticlesForQpArticles(Qp8Bll.Article[] articles, Content contentDef, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter)
+        private Article[] GetArticlesForQpArticles(Qp8Bll.Article[] articles, Content contentDef,
+            Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter)
         {
             if (articles == null || !articles.Any())
-                return new Article[] {};
+                return new Article[] { };
 
             if (contentDef == null)
             {
@@ -692,108 +694,120 @@ FROM
             counter.CheckHitArticlesLimit(articleIds);
 
             articles = articles.Where(n => !isLive || n.Status.Name == ARTICLE_STATUS_PUBLISHED).ToArray();
-
-            var localKeys = articles.Select(n => n.Id).Select(n => new ArticleShapedByDefinitionKey(n, contentDef, isLive));
-
             var result = new Dictionary<string, Article>();
-            var localCacheMisses = new HashSet<ArticleShapedByDefinitionKey>();
 
-            foreach (var localKey in localKeys)
+            if (articles.Any())
             {
-                if (localCache.TryGetValue(localKey, out Article res))
+                var localKeys = articles.Select(n => n.Id)
+                    .Select(n => new ArticleShapedByDefinitionKey(n, contentDef, isLive));
+                
+                
+                var localCacheMisses = new HashSet<ArticleShapedByDefinitionKey>();
+                
+                foreach (var localKey in localKeys)
                 {
-                    _hits += 1;
-                    counter.CheckCacheArticlesLimit(new[] { localKey.ArticleId });
-                    result.Add(GetArticleKeyStringForCache(localKey), res);
-                }
-                else
-                {
-                    _misses += 1;
-                    localCacheMisses.Add(localKey);
-                }
-            }
-
-            var initialArticles = articles.Select(n => new
-                {
-                    Article = n,
-                    LocalKey = new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)
-                })
-                .Where(n => localCacheMisses.Contains(n.LocalKey)).Select(n => new
-                {
-                    n.LocalKey,
-                    Article = new Article()
+                    if (localCache.TryGetValue(localKey, out Article res))
                     {
-                        ContentId = contentDef.ContentId,
-                        Archived = n.Article.Archived,
-                        ContentDisplayName = n.Article.DisplayContentName,
-                        PublishingMode = contentDef.PublishingMode,
-                        ContentName = n.Article.Content.NetName,
-                        Created = n.Article.Created,
-                        Modified = n.Article.Modified,
-                        IsPublished = n.Article.Status.Name == ARTICLE_STATUS_PUBLISHED && !n.Article.Delayed,
-                        Splitted = n.Article.Splitted,
-                        Status = n.Article.Status.Name,
-                        Visible = n.Article.Visible,
-                        Id = n.Article.Id,
-                        HasVirtualFields = contentDef.Fields.Any(x => x is BaseVirtualField)
+                        _hits += 1;
+                        counter.CheckCacheArticlesLimit(new[] {localKey.ArticleId});
+                        result.Add(GetArticleKeyStringForCache(localKey), res);
                     }
-                }).ToArray();
-
-            //кладем в словарь Articles до а не после загрузки полей так как может быть цикл по данным одновременно с циклом по дефинишенам
-            //и иначе бы был stackoverflow на вызовах GetArticlesNotCached->GetArticlesField->GetArticlesNotCached->...
-
-            foreach (var initialArticle in initialArticles)
-            {
-                localCache[initialArticle.LocalKey] = initialArticle.Article;
-                var globalKey = GetArticleKeyStringForCache(initialArticle.LocalKey);
-                result.Add(globalKey, initialArticle.Article);
-            }
-
-
-            //Заполнение Plain-полей по параметру LoadAllPlainFields="True"
-            if (contentDef.LoadAllPlainFields)
-            {
-                //Сбор идентификаторов PlainFields полей не описанных в маппинге, но требующихся для получения
-                //Важно: также исключаются идентификаторы ExtensionField, т.к. в qp они также представлены как Plain, но обработаны должны быть иначе
-                var plainFieldsDefIds = contentDef.Fields.Where(x => x is PlainField || x is ExtensionField).Select(x => x.FieldId).ToList();
-                var plainFieldsNotDefIds = articles.First().FieldValues.Where(x => x.Field.RelationType == Qp8Bll.RelationType.None
-                                                                                && !plainFieldsDefIds.Contains(x.Field.Id))
-                                                                    .Select(x => x.Field.Id).ToList(); //Список идентификаторов полей который не описаны в xml, но должны быть получены по LoadAllPlainFields="True"
-                if (plainFieldsNotDefIds.Count > 0) //Есть Plain поля не описанные в маппинге, но требуемые по аттрибуту LoadAllPlainFields="True"
-                {
-                    foreach (var fieldId in plainFieldsNotDefIds)
+                    else
                     {
-                        var articleFields = GetArticleField(fieldId, articles, null, localCache, isLive, counter);
-                        bool hasVirtualFields = CheckVirtualFields(articleFields);
-                        foreach (var localKey in articles.Select(n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
+                        _misses += 1;
+                        localCacheMisses.Add(localKey);
+                    }
+                }
+                
+                var initialArticles = articles.Select(n => new
+                    {
+                        Article = n,
+                        LocalKey = new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)
+                    })
+                    .Where(n => localCacheMisses.Contains(n.LocalKey)).Select(n => new
+                    {
+                        n.LocalKey,
+                        Article = new Article()
                         {
-                            var articleField = articleFields[localKey.ArticleId];
+                            ContentId = contentDef.ContentId,
+                            Archived = n.Article.Archived,
+                            ContentDisplayName = n.Article.DisplayContentName,
+                            PublishingMode = contentDef.PublishingMode,
+                            ContentName = n.Article.Content.NetName,
+                            Created = n.Article.Created,
+                            Modified = n.Article.Modified,
+                            IsPublished = n.Article.Status.Name == ARTICLE_STATUS_PUBLISHED && !n.Article.Delayed,
+                            Splitted = n.Article.Splitted,
+                            Status = n.Article.Status.Name,
+                            Visible = n.Article.Visible,
+                            Id = n.Article.Id,
+                            HasVirtualFields = contentDef.Fields.Any(x => x is BaseVirtualField)
+                        }
+                    }).ToArray();
+                
+                //кладем в словарь Articles до а не после загрузки полей так как может быть цикл по данным одновременно с циклом по дефинишенам
+                //и иначе бы был stackoverflow на вызовах GetArticlesNotCached->GetArticlesField->GetArticlesNotCached->...
+                
+                foreach (var initialArticle in initialArticles)
+                {
+                    localCache[initialArticle.LocalKey] = initialArticle.Article;
+                    var globalKey = GetArticleKeyStringForCache(initialArticle.LocalKey);
+                    result.Add(globalKey, initialArticle.Article);
+                }
+                
+                
+                //Заполнение Plain-полей по параметру LoadAllPlainFields="True"
+                if (contentDef.LoadAllPlainFields)
+                {
+                    //Сбор идентификаторов PlainFields полей не описанных в маппинге, но требующихся для получения
+                    //Важно: также исключаются идентификаторы ExtensionField, т.к. в qp они также представлены как Plain, но обработаны должны быть иначе
+                    var plainFieldsDefIds = contentDef.Fields.Where(x => x is PlainField || x is ExtensionField)
+                        .Select(x => x.FieldId).ToList();
+                    var plainFieldsNotDefIds = articles.First().FieldValues.Where(x =>
+                            x.Field.RelationType == Qp8Bll.RelationType.None
+                            && !plainFieldsDefIds.Contains(x.Field.Id))
+                        .Select(x => x.Field.Id)
+                        .ToList(); //Список идентификаторов полей который не описаны в xml, но должны быть получены по LoadAllPlainFields="True"
+                    if (plainFieldsNotDefIds.Count > 0
+                    ) //Есть Plain поля не описанные в маппинге, но требуемые по аттрибуту LoadAllPlainFields="True"
+                    {
+                        foreach (var fieldId in plainFieldsNotDefIds)
+                        {
+                            var articleFields = GetArticleField(fieldId, articles, null, localCache, isLive, counter);
+                            bool hasVirtualFields = CheckVirtualFields(articleFields);
+                            foreach (var localKey in articles.Select(n =>
+                                new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
+                            {
+                                var articleField = articleFields[localKey.ArticleId];
+                                var currentRes = localCache[localKey];
+                                if (articleField != null)
+                                {
+                                    currentRes.Fields.Add(articleField.FieldName, articleField);
+                                    currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                //Заполнение полей из xaml-маппинга
+                foreach (var fieldDef in contentDef.Fields.Where(x => !(x is Dictionaries) && !(x is BaseVirtualField)))
+                {
+                    var articleFields = GetArticleField(fieldDef.FieldId, articles, contentDef, localCache, isLive, counter,
+                        fieldDef.FieldName);
+                    var hasVirtualFields = CheckVirtualFields(articleFields);
+                
+                    foreach (var localKey in articles.Select(
+                        n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
+                    {
+                        if (articleFields.TryGetValue(localKey.ArticleId, out var articleField))
+                        {
                             var currentRes = localCache[localKey];
                             if (articleField != null)
                             {
                                 currentRes.Fields.Add(articleField.FieldName, articleField);
                                 currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
                             }
-                        }
-                    }
-                }
-            }
-
-            //Заполнение полей из xaml-маппинга
-            foreach (var fieldDef in contentDef.Fields.Where(x => !(x is Dictionaries) && !(x is BaseVirtualField)))
-            {
-                var articleFields = GetArticleField(fieldDef.FieldId, articles, contentDef, localCache, isLive, counter, fieldDef.FieldName);
-                var hasVirtualFields = CheckVirtualFields(articleFields);
-                
-                foreach (var localKey in articles.Select(n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
-                {
-                    if (articleFields.TryGetValue(localKey.ArticleId, out var articleField))
-                    {
-                        var currentRes = localCache[localKey];
-                        if (articleField != null)
-                        {
-                            currentRes.Fields.Add(articleField.FieldName, articleField);
-                            currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
                         }
                     }
                 }
@@ -923,7 +937,9 @@ FROM
                         .ToDictionary(n => n.Id, m => m);
 
 
-                var results = extensionsQpData.Select(n => new KeyValuePair<int, ArticleField>(
+                var results = extensionsQpData
+                    .Where(n => extArticles.ContainsKey(n.Article.Id))
+                    .Select(n => new KeyValuePair<int, ArticleField>(
                     n.Id, 
                     new ExtensionArticleField()
                     {
@@ -1336,9 +1352,9 @@ FROM
                 }
             }
 
-            if (isLive )
+            if (isLive)
             {
-                articles = articles.Where(n => n.Status.Name != ARTICLE_STATUS_PUBLISHED).ToArray();
+                articles = articles.Where(n => n.Status.Name == ARTICLE_STATUS_PUBLISHED).ToArray();
             }
 
             return articles;
