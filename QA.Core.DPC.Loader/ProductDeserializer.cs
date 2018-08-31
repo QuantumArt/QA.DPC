@@ -193,17 +193,22 @@ namespace QA.Core.DPC.Loader
                     break;
 
                 case PlainFieldType.File:
-
-                    IProductDataSource fileContainer = productDataSource.GetContainer(plainFieldFromQP.Name);
-
-                    if (fileContainer != null)
+                    if (productDataSource is EditorJsonProductDataSource)
                     {
-                        string fileUrl = fileContainer.GetString("AbsoluteUrl");
-                        string fileName = Common.GetFileNameByUrl(connector, plainFieldFromQP.Id, fileUrl);
-
+                        string fileName = productDataSource.GetString(plainFieldFromQP.Name);
                         field.NativeValue = field.Value = fileName;
                     }
+                    else
+                    {
+                        IProductDataSource fileContainer = productDataSource.GetContainer(plainFieldFromQP.Name);
 
+                        if (fileContainer != null)
+                        {
+                            string fileUrl = fileContainer.GetString("AbsoluteUrl");
+                            string fileName = Common.GetFileNameByUrl(connector, plainFieldFromQP.Id, fileUrl);
+                            field.NativeValue = field.Value = fileName;
+                        }
+                    }
                     break;
 
                 case PlainFieldType.Boolean:

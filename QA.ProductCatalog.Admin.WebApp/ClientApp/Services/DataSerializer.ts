@@ -94,7 +94,6 @@ export class DataSerializer {
           );
         }
       } else if (isExtensionField(fieldSchema)) {
-        // TODO: специальная обработка когда fieldValue == null
         const extensionFieldName = `${fieldName}${ArticleObject._Contents}`;
         const extensionArticle = article[extensionFieldName][fieldValue] as ArticleObject;
         const extensionContentSchema = fieldSchema.ExtensionContents[fieldValue];
