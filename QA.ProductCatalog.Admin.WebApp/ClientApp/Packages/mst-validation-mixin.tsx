@@ -12,31 +12,34 @@ import {
   isObservableMap,
   Lambda
 } from "mobx";
-import { getSnapshot, isStateTreeNode } from "mobx-state-tree";
+import { getSnapshot, isStateTreeNode, getChildType, resolveIdentifier } from "mobx-state-tree";
 import { isArray } from "Utils/TypeChecks";
 
 export type Validator = (value: any) => string;
 
 export interface ValidatableObject {
-  isEdited(name?: string): boolean;
-  isTouched(name?: string): boolean;
-  setTouched(name: string, isTouched?: boolean): this;
+  isEdited<K extends keyof this>(name?: K): boolean;
+  isTouched<K extends keyof this>(name?: K): boolean;
+  setTouched<K extends keyof this>(name: K, isTouched?: boolean): this;
   setUntouched(): this;
-  isChanged(name?: string): boolean;
-  setChanged(name: string, isChanged?: boolean): this;
+  isChanged<K extends keyof this>(name?: K): boolean;
+  setChanged<K extends keyof this>(name: K, isChanged?: boolean): this;
   setUnchanged(): this;
-  hasFocus(name: string): boolean;
-  setFocus(name: string, hasFocus?: boolean): this;
-  hasErrors(name?: string): boolean;
-  hasVisibleErrors(name?: string): boolean;
-  getErrors(name: string): string[] | null;
-  getVisibleErrors(name: string): string[] | null;
+  hasFocus<K extends keyof this>(name: K): boolean;
+  setFocus<K extends keyof this>(name: K, hasFocus?: boolean): this;
+  getBaseValue<K extends keyof this>(name: K): Readonly<this[K]>;
+  restoreBaseValue<K extends keyof this>(name: K): this;
+  restoreBaseValues(): this;
+  hasErrors<K extends keyof this>(name?: K): boolean;
+  hasVisibleErrors<K extends keyof this>(name?: K): boolean;
+  getErrors<K extends keyof this>(name: K): string[] | null;
+  getVisibleErrors<K extends keyof this>(name: K): string[] | null;
   getAllErrors(): { [field: string]: string[] } | null;
   getAllVisibleErrors(): { [field: string]: string[] } | null;
-  addErrors(name: string, ...errors: string[]): this;
-  clearErrors(name?: string): this;
-  addValidators(name: string, ...validators: Validator[]): this;
-  removeValidators(name: string, ...validators: Validator[]): this;
+  addErrors<K extends keyof this>(name: K, ...errors: string[]): this;
+  clearErrors<K extends keyof this>(name?: K): this;
+  addValidators<K extends keyof this>(name: K, ...validators: Validator[]): this;
+  removeValidators<K extends keyof this>(name: K, ...validators: Validator[]): this;
 }
 
 const SHALLOW = { deep: false };
@@ -45,6 +48,7 @@ class FieldState {
   @observable.ref isTouched = false;
   @observable.ref isChanged = false;
   @observable.ref hasFocus = false;
+  @observable.ref baseValue = undefined;
   validators = observable.array<Validator>(null, SHALLOW);
   errors = observable.array<string>(null, SHALLOW);
 
@@ -90,22 +94,48 @@ export const validationMixin = (self: Object) => {
       return fieldState;
     }
     fieldState = new FieldState(self, name);
-    fieldState.isChanged = changedFieldNames.has(name);
     fields.set(name, fieldState);
     return fieldState;
   };
 
-  const changedFieldNames = observable.map<string, true>(null, SHALLOW);
-
-  const handleFieldChange = (name: string) => {
-    const fieldState = fields.get(name);
-    if (fieldState) {
+  const handleFieldChange = (name: string, value: any, isCollectionChange = false) => {
+    const fieldState = getOrAddFieldState(name);
+    if (!fieldState.isChanged) {
       fieldState.isChanged = true;
-      if (fieldState.errors.length > 0) {
-        fieldState.errors.clear();
+
+      if (isCollectionChange) {
+        if (isStateTreeNode(value)) {
+          // @ts-ignore
+          const elementType = getChildType(value);
+          // if (isReferenceType(elementType)) {
+          if (isObservableArray(value)) {
+            fieldState.baseValue = getSnapshot(value).map(id =>
+              resolveIdentifier(elementType, self, id)
+            );
+          } else if (isObservableMap(value)) {
+            const mapSnapshot = getSnapshot(value);
+            fieldState.baseValue = new Map(
+              Object.keys(mapSnapshot).map(
+                key =>
+                  [key, resolveIdentifier(elementType, self, mapSnapshot[key])] as [string, any]
+              )
+            );
+          }
+          // } else {
+          //   fieldState.baseValue = getSnapshot(value);
+          // }
+        } else if (isObservableArray(value)) {
+          fieldState.baseValue = observable.array(value.peek());
+        } else if (isObservableMap(value)) {
+          fieldState.baseValue = observable.map(value.entries());
+        }
+      } else {
+        fieldState.baseValue = value;
       }
     }
-    changedFieldNames.set(name, true);
+    if (fieldState.errors.length > 0) {
+      fieldState.errors.clear();
+    }
   };
 
   const fieldInterceptors: { [name: string]: Lambda } = Object.create(null);
@@ -115,11 +145,11 @@ export const validationMixin = (self: Object) => {
       fieldInterceptors[name] = intercept(value, change => {
         if (change.type === "splice") {
           if (change.removedCount > 0 || change.added.length > 0) {
-            handleFieldChange(name);
+            handleFieldChange(name, value, true);
           }
         } else if (change.type === "update") {
           if (!sutructuralEquals(value[change.index], change.newValue.storedValue)) {
-            handleFieldChange(name);
+            handleFieldChange(name, value, true);
           }
         }
         return change;
@@ -127,14 +157,14 @@ export const validationMixin = (self: Object) => {
     } else if (isObservableMap(value)) {
       fieldInterceptors[name] = intercept(value, change => {
         if (change.type === "add") {
-          handleFieldChange(name);
+          handleFieldChange(name, value, true);
         } else if (change.type === "update") {
           if (!sutructuralEquals(value.get(change.name), change.newValue.storedValue)) {
-            handleFieldChange(name);
+            handleFieldChange(name, value, true);
           }
         } else if (change.type === "delete") {
           if (value.has(change.name)) {
-            handleFieldChange(name);
+            handleFieldChange(name, value, true);
           }
         }
         return change;
@@ -151,8 +181,9 @@ export const validationMixin = (self: Object) => {
   };
 
   intercept(self, change => {
-    if (change.type === "remove" || !sutructuralEquals(self[change.name], change.newValue)) {
-      handleFieldChange(change.name);
+    const oldValue = self[change.name];
+    if (change.type === "remove" || !sutructuralEquals(oldValue, change.newValue)) {
+      handleFieldChange(change.name, oldValue);
     }
     return change;
   });
@@ -229,22 +260,42 @@ export const validationMixin = (self: Object) => {
       },
       setChanged(name: string, isChanged = true) {
         if (isChanged) {
-          getOrAddFieldState(name).isChanged = true;
-          changedFieldNames.set(name, true);
+          const oldValue = self[name];
+          const isCollectionChange = isObservableArray(oldValue) || isObservableMap(oldValue);
+          handleFieldChange(name, oldValue, isCollectionChange);
         } else {
           const fieldState = fields.get(name);
           if (fieldState) {
             fieldState.isChanged = false;
+            fieldState.baseValue = undefined;
           }
-          changedFieldNames.delete(name);
         }
         return self as ValidatableObject;
       },
       setUnchanged() {
         fields.forEach(fieldState => {
           fieldState.isChanged = false;
+          fieldState.baseValue = undefined;
         });
-        changedFieldNames.clear();
+        return self as ValidatableObject;
+      },
+      restoreBaseValue(name: string) {
+        const fieldState = fields.get(name);
+        if (fieldState && fieldState.isChanged) {
+          self[name] = fieldState.baseValue;
+          fieldState.isChanged = false;
+          fieldState.baseValue = undefined;
+        }
+        return self as ValidatableObject;
+      },
+      restoreBaseValues() {
+        fields.forEach((fieldState, name) => {
+          if (fieldState.isChanged) {
+            self[name] = fieldState.baseValue;
+            fieldState.isChanged = false;
+            fieldState.baseValue = undefined;
+          }
+        });
         return self as ValidatableObject;
       },
       setFocus(name: string, hasFocus = true) {
@@ -286,11 +337,19 @@ export const validationMixin = (self: Object) => {
       },
       isChanged(name?: string) {
         if (name) {
-          // subscription to only one @observable.ref
           const fieldState = fields.get(name);
-          return fieldState ? fieldState.isChanged : changedFieldNames.has(name);
+          return fieldState ? fieldState.isChanged : false;
         }
-        return changedFieldNames.size > 0;
+        for (const fieldState of fields.values()) {
+          if (fieldState.isChanged) {
+            return true;
+          }
+        }
+        return false;
+      },
+      getBaseValue(name: string) {
+        const fieldState = fields.get(name);
+        return fieldState && fieldState.isChanged ? fieldState.baseValue : self[name];
       },
       hasFocus(name: string) {
         const fieldState = fields.get(name);

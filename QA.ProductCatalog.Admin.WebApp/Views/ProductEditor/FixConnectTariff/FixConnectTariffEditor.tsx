@@ -65,7 +65,7 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
       return true;
     }
     const fixTariffRegionIds = this.fixTariffRegionIds;
-    return product.Regions.some(city => fixTariffRegionIds[city._ServerId]);
+    return product.getBaseValue("Regions").some(city => fixTariffRegionIds[city._ServerId]);
   };
 
   private filterActionsByRegion = (action: FixConnectAction) => {
@@ -73,7 +73,10 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
       return true;
     }
     const fixTariffRegionIds = this.fixTariffRegionIds;
-    return action.Parent && action.Parent.Regions.some(city => fixTariffRegionIds[city._ServerId]);
+    return (
+      action.Parent &&
+      action.Parent.getBaseValue("Regions").some(city => fixTariffRegionIds[city._ServerId])
+    );
   };
 
   private getMarketingFixConnectTariffProps() {
