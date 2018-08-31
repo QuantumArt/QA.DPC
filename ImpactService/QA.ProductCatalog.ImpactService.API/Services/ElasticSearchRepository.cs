@@ -263,19 +263,19 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var client = GetElasticClient(options);
 
-            ElasticsearchResponse<Stream> response; 
+            ElasticsearchResponse<string> response; 
             if (options.TypeName == null)
             {
-                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, json);
+                response = await client.LowLevel.SearchAsync<string>(client.ConnectionSettings.DefaultIndex, json);
             }
             else
             {
-                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, options.TypeName, json);
+                response = await client.LowLevel.SearchAsync<string>(client.ConnectionSettings.DefaultIndex, options.TypeName, json);
             }
 
             if (response.Success)
             {
-                return await new StreamReader(response.Body).ReadToEndAsync();
+                return response.Body;
             }
 
             return string.Empty;
