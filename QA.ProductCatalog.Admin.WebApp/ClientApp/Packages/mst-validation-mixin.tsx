@@ -12,7 +12,14 @@ import {
   isObservableMap,
   Lambda
 } from "mobx";
-import { getSnapshot, isStateTreeNode, getChildType, resolveIdentifier } from "mobx-state-tree";
+import {
+  getSnapshot,
+  isStateTreeNode,
+  getChildType,
+  resolveIdentifier,
+  isReferenceType,
+  clone
+} from "mobx-state-tree";
 import { isArray } from "Utils/TypeChecks";
 
 export type Validator = (value: any) => string;
@@ -107,23 +114,24 @@ export const validationMixin = (self: Object) => {
         if (isStateTreeNode(value)) {
           // @ts-ignore
           const elementType = getChildType(value);
-          // if (isReferenceType(elementType)) {
-          if (isObservableArray(value)) {
-            fieldState.baseValue = getSnapshot(value).map(id =>
-              resolveIdentifier(elementType, self, id)
-            );
-          } else if (isObservableMap(value)) {
-            const mapSnapshot = getSnapshot(value);
-            fieldState.baseValue = new Map(
-              Object.keys(mapSnapshot).map(
-                key =>
-                  [key, resolveIdentifier(elementType, self, mapSnapshot[key])] as [string, any]
-              )
-            );
+          if (isReferenceType(elementType)) {
+            if (isObservableArray(value)) {
+              fieldState.baseValue = getSnapshot(value).map(id =>
+                resolveIdentifier(elementType, self, id)
+              );
+            } else if (isObservableMap(value)) {
+              const mapSnapshot = getSnapshot(value);
+              fieldState.baseValue = new Map(
+                Object.keys(mapSnapshot).map(
+                  key =>
+                    [key, resolveIdentifier(elementType, self, mapSnapshot[key])] as [string, any]
+                )
+              );
+            }
+          } else {
+            // this cloned node is detached and can be used only for restore base value
+            fieldState.baseValue = clone(value);
           }
-          // } else {
-          //   fieldState.baseValue = getSnapshot(value);
-          // }
         } else if (isObservableArray(value)) {
           fieldState.baseValue = observable.array(value.peek());
         } else if (isObservableMap(value)) {
