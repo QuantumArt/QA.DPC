@@ -1,16 +1,15 @@
-import { IExtendedObservableMap, IStateTreeNode, ISnapshottable } from "mobx-state-tree";
+import { IMSTMap, IStateTreeNode } from "mobx-state-tree";
 import { isObject, isString } from "Utils/TypeChecks";
 import { ValidatableObject } from "mst-validation-mixin";
 
 export interface StoreObject {
-  readonly [contentName: string]: IExtendedObservableMap<EntityObject>;
+  readonly [contentName: string]: IMSTMap<any, any, EntityObject>;
 }
 
 /** Объект, содержащий поля нормальной статьи или статьи-расширения */
 export interface ArticleObject
   extends ValidatableObject,
-    IStateTreeNode,
-    ISnapshottable<ArticleSnapshot> {
+    IStateTreeNode<ArticleSnapshot, ArticleSnapshot> {
   [field: string]: any;
   /** Серверный Id статьи, полученный при сохранении в БД */
   _ServerId: number;
@@ -36,7 +35,7 @@ export function isArticleObject(object: any): object is ArticleObject {
 }
 
 /** Объект, содержащий поля нормальной статьи */
-export interface EntityObject extends ArticleObject, ISnapshottable<EntitySnapshot> {
+export interface EntityObject extends ArticleObject {
   /**
    * Локальный неизменяемый Id статьи на клиенте.
    * Совпадает с `_ServerId` для статей загруженных с сервера.
@@ -52,7 +51,7 @@ export function isEntityObject(object: any): object is EntityObject {
 }
 
 /** Объект, содержащий поля статьи-расширения */
-export interface ExtensionObject extends ArticleObject, ISnapshottable<ExtensionSnapshot> {
+export interface ExtensionObject extends ArticleObject {
   /** Признак того, что объект является статьей-расшиернием */
   readonly _IsExtension: true;
 }

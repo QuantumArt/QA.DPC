@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import React from "react";
 import { render } from "react-dom";
-import { types as t, unprotect, IExtendedObservableMap } from "mobx-state-tree";
+import { types as t, unprotect, IMSTMap } from "mobx-state-tree";
 import { IObservableArray } from "mobx";
 import { validationMixin, Validate } from "mst-validation-mixin";
 import { required, pattern, maxCount } from "Utils/Validators";
@@ -12,8 +12,8 @@ describe("mst-validation-mixin", () => {
   it("should validate plain field", async () => {
     const Article = t
       .model("Article", {
-        Id: t.identifier(t.number),
-        Title: t.maybe(t.string)
+        Id: t.identifierNumber,
+        Title: t.maybeNull(t.string)
       })
       .extend(validationMixin);
 
@@ -55,10 +55,10 @@ describe("mst-validation-mixin", () => {
   it("should validate model field", async () => {
     const Article = t
       .model("Article", {
-        Id: t.identifier(t.number),
-        Category: t.maybe(
+        Id: t.identifierNumber,
+        Category: t.maybeNull(
           t.model({
-            Name: t.maybe(t.string)
+            Name: t.maybeNull(t.string)
           })
         )
       })
@@ -91,15 +91,15 @@ describe("mst-validation-mixin", () => {
   it("should validate reference field", async () => {
     const Category = t
       .model("Category", {
-        Id: t.identifier(t.number),
-        Name: t.maybe(t.string)
+        Id: t.identifierNumber,
+        Name: t.maybeNull(t.string)
       })
       .extend(validationMixin);
 
     const Article = t
       .model("Article", {
-        Id: t.identifier(t.number),
-        Category: t.maybe(t.reference(Category))
+        Id: t.identifierNumber,
+        Category: t.maybeNull(t.reference(Category))
       })
       .extend(validationMixin);
 
@@ -141,8 +141,8 @@ describe("mst-validation-mixin", () => {
   it("should validate array field", async () => {
     const Article = t
       .model("Article", {
-        Id: t.identifier(t.number),
-        Tags: t.maybe(t.array(t.string))
+        Id: t.identifierNumber,
+        Tags: t.maybeNull(t.array(t.string))
       })
       .extend(validationMixin);
 
@@ -195,14 +195,13 @@ describe("mst-validation-mixin", () => {
 
   it("should validate map field", async () => {
     const Comment = t.model("Comment", {
-      Id: t.identifier(t.number)
+      Id: t.identifierNumber
     });
 
     const Article = t
       .model("Article", {
-        Id: t.identifier(t.number),
-        Comments: t.maybe(t.map(Comment)),
-        Comments2: t.optional(t.array(t.reference(t.reference(Comment))), [])
+        Id: t.identifierNumber,
+        Comments: t.maybeNull(t.map(Comment))
       })
       .extend(validationMixin);
 
@@ -213,10 +212,10 @@ describe("mst-validation-mixin", () => {
 
     unprotect(article);
 
-    const shouldHaveComments = (value: IExtendedObservableMap<Comment>) =>
+    const shouldHaveComments = (value: IMSTMap<any, any, Comment>) =>
       value && value.keys().next().done ? "Статья должна иметь комментарии" : undefined;
 
-    const maxComments = (max: number) => (value: IExtendedObservableMap<Comment>) =>
+    const maxComments = (max: number) => (value: IMSTMap<any, any, Comment>) =>
       value && Array.from(value.keys()).length > max
         ? `Допустимо не более ${max} комментариев`
         : undefined;

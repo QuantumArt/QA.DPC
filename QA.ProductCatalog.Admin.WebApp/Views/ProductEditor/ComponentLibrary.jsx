@@ -130,27 +130,27 @@ ReactDOM.render(<App />, document.getElementById("translate"));
 
 const Category = t
   .model("Category", {
-    Id: t.identifier(t.number),
-    StringField: t.maybe(t.string)
+    Id: t.identifierNumber,
+    StringField: t.maybeNull(t.string)
   })
   .extend(validationMixin);
 
 const Article = t
   .model("Article", {
-    Id: t.identifier(t.number),
-    Category: t.maybe(t.reference(Category)),
-    StringField: t.maybe(t.string),
-    PhoneField: t.maybe(t.string),
-    NumericField: t.maybe(t.number),
-    SearchField: t.maybe(t.string),
-    FileField: t.maybe(t.string),
-    BooleanField: t.maybe(t.boolean),
-    TextField: t.maybe(t.string),
-    DateField: t.maybe(t.Date),
-    TimeField: t.maybe(t.Date),
-    DateTimeField: t.maybe(t.Date),
-    EnumField: t.maybe(t.string),
-    ArrayField: t.maybe(t.array(t.string))
+    Id: t.identifierNumber,
+    Category: t.maybeNull(t.reference(Category)),
+    StringField: t.maybeNull(t.string),
+    PhoneField: t.maybeNull(t.string),
+    NumericField: t.maybeNull(t.number),
+    SearchField: t.maybeNull(t.string),
+    FileField: t.maybeNull(t.string),
+    BooleanField: t.maybeNull(t.boolean),
+    TextField: t.maybeNull(t.string),
+    DateField: t.maybeNull(t.Date),
+    TimeField: t.maybeNull(t.Date),
+    DateTimeField: t.maybeNull(t.Date),
+    EnumField: t.maybeNull(t.string),
+    ArrayField: t.maybeNull(t.array(t.string))
   })
   .extend(validationMixin);
 
