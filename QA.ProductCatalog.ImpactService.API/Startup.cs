@@ -3,11 +3,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
-using QA.Core.Logger;
 using QA.ProductCatalog.ImpactService.API.Services;
-using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.ImpactService.API.Helpers;
 
 namespace QA.ProductCatalog.ImpactService.API
 {
@@ -35,7 +35,7 @@ namespace QA.ProductCatalog.ImpactService.API
             services.AddMemoryCache();
 
             services.AddScoped(typeof(ISearchRepository), typeof(ElasticSearchRepository));
-            services.AddSingleton<Core.Logger.ILogger>(n => new NLogLogger("NLog.config"));
+            //services.AddSingleton<ILogger>(n => ;
 
         }
 

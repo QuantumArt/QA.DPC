@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
+using Microsoft.Extensions.Logging;
 using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QA.Core.Logger;
-using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.ImpactService.API.Helpers;
 
 namespace QA.ProductCatalog.ImpactService.API.Services
 {
@@ -24,9 +24,9 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return new Regex($@"[<\[]replacement[>\]]tag={tag}[<\[]/replacement[>\]]");
         }
 
-        public ElasticSearchRepository(ILogger logger)
+        public ElasticSearchRepository(ILoggerFactory factory)
         {
-            _logger = logger;
+            _logger = factory.CreateLogger(this.GetType());
         }
 
         public async Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options, DateTimeOffset defaultValue)
@@ -255,7 +255,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         private IElasticClient GetElasticClient(SearchOptions options)
         {
-            return QpElasticConfiguration.GetElasticClient(options.IndexName, options.BaseAddress, _logger, false, _timeout);
+            return ElasticConfiguration.GetElasticClient(options.IndexName, options.BaseAddress, _logger, false, _timeout);
         }
 
 
