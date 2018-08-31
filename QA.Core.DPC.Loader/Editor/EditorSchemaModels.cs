@@ -261,6 +261,11 @@ namespace QA.Core.DPC.Loader.Editor
         public bool IsDpcBackwardField { get; set; }
 
         /// <summary>
+        /// SQL-условие фильтрации при выборе новых значений для связи
+        /// </summary>
+        public string RelationCondition { get; set; }
+
+        /// <summary>
         /// Название поелй, которы используются для отображения контента
         /// в строке таблици или в заголовке аккордеона
         /// </summary>

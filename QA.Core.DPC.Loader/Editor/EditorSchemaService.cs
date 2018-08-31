@@ -234,6 +234,12 @@ namespace QA.Core.DPC.Loader.Editor
         {
             ContentSchema contentSchema = GetContentSchema(entityField.Content, context, path);
 
+            string relationCondition = null;
+            if (qpField.UseRelationCondition && !String.IsNullOrWhiteSpace(qpField.RelationCondition))
+            {
+                relationCondition = qpField.RelationCondition;
+            }
+
             string[] displayFieldNames = contentSchema.Fields.Values
                 .OfType<PlainFieldSchema>()
                 .Where(f => f.FieldType != FieldExactTypes.Textbox && f.FieldType != FieldExactTypes.VisualEdit)
@@ -252,6 +258,7 @@ namespace QA.Core.DPC.Loader.Editor
                     CloningMode = entityField.CloningMode,
                     UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
+                    RelationCondition = relationCondition,
                     DisplayFieldNames = displayFieldNames
                 };
             }
@@ -295,6 +302,7 @@ namespace QA.Core.DPC.Loader.Editor
                     CloningMode = entityField.CloningMode,
                     UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
+                    RelationCondition = relationCondition,
                     DisplayFieldNames = displayFieldNames,
                     OrderByFieldName = orderByFieldName,
                     MaxDataListItemCount = maxDataListItemCount

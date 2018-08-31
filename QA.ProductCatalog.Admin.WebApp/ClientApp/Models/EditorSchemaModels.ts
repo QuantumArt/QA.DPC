@@ -116,6 +116,7 @@ export interface RelationFieldSchema extends FieldSchema {
   readonly CloningMode: CloningMode;
   readonly UpdatingMode: UpdatingMode;
   readonly IsDpcBackwardField: boolean;
+  readonly RelationCondition: string;
   readonly DisplayFieldNames: string[];
 }
 
