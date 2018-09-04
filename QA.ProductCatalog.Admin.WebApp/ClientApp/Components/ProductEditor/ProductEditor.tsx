@@ -7,6 +7,7 @@ import { SchemaContext } from "Services/SchemaContext";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataMerger } from "Services/DataMerger";
+import { DataValidator } from "Services/DataValidator";
 import { ArticleController } from "Services/ArticleController";
 import { RelationController } from "Services/RelationController";
 import { EditorController } from "Services/EditorController";
@@ -29,6 +30,7 @@ interface ProductEditorProps {
   DataNormalizer,
   DataSerializer,
   DataMerger,
+  DataValidator,
   ArticleController,
   EditorController,
   RelationController,

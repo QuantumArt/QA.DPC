@@ -5,6 +5,7 @@ import { EditorSettings } from "Models/EditorSettings";
 import { DataSerializer, IdMapping } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataMerger, MergeStrategy } from "Services/DataMerger";
+import { DataValidator, ArticleErrors } from "Services/DataValidator";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { command } from "Utils/Command";
@@ -14,6 +15,7 @@ export class EditorController {
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
   @inject private _dataMerger: DataMerger;
+  @inject private _dataValidator: DataValidator;
   @inject private _dataContext: DataContext;
   @inject private _schemaContext: SchemaContext;
 
@@ -70,6 +72,12 @@ export class EditorController {
 
   @command
   public async savePartialProduct(article: EntityObject, contentSchema: ContentSchema) {
+    const errors = this._dataValidator.validate(article, contentSchema);
+    if (errors.length > 0) {
+      window.alert(this.getErrorMessage(errors));
+      return;
+    }
+
     const partialProduct = this._dataSerializer.serialize(article, contentSchema);
 
     const response = await fetch(
@@ -130,5 +138,23 @@ export class EditorController {
     const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(dataTreeJson);
     const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
     this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+  }
+
+  private getErrorMessage(articleErrors: ArticleErrors[]) {
+    return articleErrors
+      .slice(0, 3)
+      .map(
+        articleError =>
+          `${articleError.ContentName}: ${articleError.ServerId}\n` +
+          (articleError.ArticleErrors.length > 0
+            ? `${articleError.ArticleErrors.join(", ")}\n`
+            : ``) +
+          (articleError.FieldErrors.length > 0
+            ? `${articleError.FieldErrors.map(
+                fieldError => `${fieldError.Name}: ${fieldError.Messages.join(", ")}`
+              )}\n`
+            : ``)
+      )
+      .join("\n");
   }
 }
