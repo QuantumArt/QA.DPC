@@ -6,11 +6,26 @@ import { ArticleObject } from "Models/EditorDataModels";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { InputFile } from "Components/FormControls/FormControls";
 import { AbstractFieldEditor } from "./AbstractFieldEditor";
+import { consumer, inject } from "react-ioc";
+import { FileController } from "Services/FileController";
+import { action } from "mobx";
 
 // TODO: Интеграция с библиотекой QP
 
+@consumer
 @observer
 export class FileFieldEditor extends AbstractFieldEditor {
+  @inject private _fileController: FileController;
+
+  @action
+  downloadFile = () => {
+    const { model, fieldSchema } = this.props;
+    const fileName = model[fieldSchema.FieldName];
+    if (fileName) {
+      this._fileController.downloadFile(model, fieldSchema as FileFieldSchema);
+    }
+  };
+
   renderField(model: ArticleObject, fieldSchema: FileFieldSchema) {
     return (
       <Col xl md={6} className="file-field-editor">
@@ -29,7 +44,11 @@ export class FileFieldEditor extends AbstractFieldEditor {
           {fieldSchema.FieldType === FieldExactTypes.Image && (
             <button className="pt-button pt-icon-media" title="Просмотр" />
           )}
-          <button className="pt-button pt-icon-cloud-download" title="Скачать" />
+          <button
+            className="pt-button pt-icon-cloud-download"
+            title="Скачать"
+            onClick={this.downloadFile}
+          />
           <button className="pt-button pt-icon-folder-close" title="Библиотека" />
         </div>
       </Col>

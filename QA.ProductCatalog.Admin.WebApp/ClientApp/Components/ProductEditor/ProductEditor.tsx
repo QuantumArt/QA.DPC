@@ -15,6 +15,7 @@ import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { isFunction } from "Utils/TypeChecks";
 import { EditorSettings } from "Models/EditorSettings";
+import { FileController } from "Services/FileController";
 
 type RenderEditor = (article: EntityObject, contentSchema: ContentSchema) => ReactNode;
 
@@ -33,6 +34,7 @@ interface ProductEditorProps {
   DataValidator,
   ArticleController,
   EditorController,
+  FileController,
   RelationController,
   RelationsConfig,
   EditorSettings
