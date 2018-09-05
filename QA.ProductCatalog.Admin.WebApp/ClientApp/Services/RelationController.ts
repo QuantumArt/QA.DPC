@@ -50,11 +50,7 @@ export class RelationController {
       const existingArticle: EntityObject = model[fieldSchema.FieldName];
       return existingArticle && existingArticle._ServerId > 0 ? [existingArticle._ServerId] : [];
     });
-    const selectedArticles = await this.selectArticles(
-      existingArticleIds,
-      fieldSchema.RelatedContent,
-      false
-    );
+    const selectedArticles = await this.selectArticles(existingArticleIds, fieldSchema, false);
     if (selectedArticles !== "CANCEL") {
       runInAction("selectRelation", () => {
         model[fieldSchema.FieldName] = selectedArticles[0] || null;
@@ -68,11 +64,7 @@ export class RelationController {
       const existingArticles: EntityObject[] = model[fieldSchema.FieldName];
       return existingArticles.map(article => article._ServerId).filter(id => id > 0);
     });
-    const selectedArticles = await this.selectArticles(
-      existingArticleIds,
-      fieldSchema.RelatedContent,
-      true
-    );
+    const selectedArticles = await this.selectArticles(existingArticleIds, fieldSchema, true);
     if (selectedArticles !== "CANCEL") {
       runInAction("selectRelations", () => {
         const relatedArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
@@ -88,10 +80,11 @@ export class RelationController {
 
   private async selectArticles(
     existingArticleIds: number[],
-    contentSchema: ContentSchema,
+    fieldSchema: RelationFieldSchema,
     multiple: boolean
   ) {
-    const options = {
+    const contentSchema = fieldSchema.RelatedContent;
+    const options: QP8.OpenSelectWindowOptions = {
       selectActionCode: multiple ? "multiple_select_article" : "select_article",
       entityTypeCode: "article",
       parentEntityId: contentSchema.ContentId,
@@ -99,6 +92,10 @@ export class RelationController {
       isMultiple: multiple,
       callerCallback: this._callbackUid
     };
+
+    if (fieldSchema.RelationCondition) {
+      options.options = { filter: fieldSchema.RelationCondition };
+    }
 
     QP8.openSelectWindow(options, this._hostUid, window.parent);
 

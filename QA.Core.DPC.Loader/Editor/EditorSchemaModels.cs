@@ -217,6 +217,10 @@ namespace QA.Core.DPC.Loader.Editor
     public sealed class FileFieldSchema : PlainFieldSchema
     {
         /// <summary>
+        /// Библиотека сайта
+        /// </summary>
+        public bool UseSiteLibrary { get; set; }
+        /// <summary>
         /// URL каталога, где физически хранятся загруженные файлы
         /// </summary>
         public string FolderUrl { get; set; }

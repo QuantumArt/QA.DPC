@@ -235,7 +235,13 @@ namespace QA.Core.DPC.Loader.Editor
             ContentSchema contentSchema = GetContentSchema(entityField.Content, context, path);
 
             string relationCondition = null;
-            if (qpField.UseRelationCondition && !String.IsNullOrWhiteSpace(qpField.RelationCondition))
+            if (!String.IsNullOrWhiteSpace(entityField.RelationCondition))
+            {
+                relationCondition = entityField.RelationCondition;
+            } 
+            else if (!(entityField is BackwardRelationField)
+                && qpField.UseRelationCondition
+                && !String.IsNullOrWhiteSpace(qpField.RelationCondition))
             {
                 relationCondition = qpField.RelationCondition;
             }
@@ -356,6 +362,7 @@ namespace QA.Core.DPC.Loader.Editor
                 case FieldExactTypes.Image:
                     return new FileFieldSchema
                     {
+                        UseSiteLibrary = qpField.UseSiteLibrary,
                         FolderUrl = _dbConnector.GetUrlForFileAttribute(qpField.Id, true, true)
                     };
 
