@@ -245,11 +245,11 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             Logger.LogTrace($"Start calculating {code} impact for product {id} and services {services}");
         }
 
-        protected ActionResult FilterServicesOnProduct(bool saveInProduct = false, IEnumerable<int> excludeIds = null)
+        protected ActionResult FilterServicesOnProduct(bool saveInProduct = false, IEnumerable<int> excludeIds = null, JObject homeRegionData = null)
         {
             try
             {
-                ServicesOnProduct = Calculator.FilterServicesOnProduct(Product, excludeIds).ToArray();
+                ServicesOnProduct = Calculator.FilterServicesOnProduct(Product, excludeIds, homeRegionData).ToArray();
                 if (saveInProduct)
                 {
                     Calculator.SaveServicesOnProduct(Product, ServicesOnProduct);
