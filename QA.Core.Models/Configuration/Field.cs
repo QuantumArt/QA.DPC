@@ -175,6 +175,9 @@ namespace QA.Core.Models.Configuration
 	[ContentProperty("Content")]
 	public class EntityField : Association
 	{
+        [DefaultValue(null)]
+        public string RelationCondition { get; set; }
+
         /// <summary>
         /// опциональный дефинишен для клонирования, если null то используется Content
         /// </summary>
@@ -207,6 +210,7 @@ namespace QA.Core.Models.Configuration
         internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
 			return base.RecursiveEquals(other, visitedContents)
+                && RelationCondition == ((EntityField)other).RelationCondition
                 && Content.RecursiveEquals(((EntityField)other).Content, visitedContents)
                 && (CloneDefinition == null
                     ? ((EntityField)other).CloneDefinition == null
@@ -222,6 +226,10 @@ namespace QA.Core.Models.Configuration
 		{
 			int hash = base.GetHashCode();
 
+            if (RelationCondition != null)
+            {
+                hash = HashHelper.CombineHashCodes(hash, RelationCondition.GetHashCode());
+            }
             if (Content != null)
             {
                 hash = HashHelper.CombineHashCodes(hash, Content.GetRecurciveHashCode(visitedContents));
