@@ -363,7 +363,7 @@ namespace QA.Core.DPC.Loader.Editor
                     return new FileFieldSchema
                     {
                         UseSiteLibrary = qpField.UseSiteLibrary,
-                        FolderUrl = _dbConnector.GetUrlForFileAttribute(qpField.Id, true, true)
+                        // FolderUrl = _dbConnector.GetUrlForFileAttribute(qpField.Id, true, true)
                     };
 
                 case FieldExactTypes.StringEnum:

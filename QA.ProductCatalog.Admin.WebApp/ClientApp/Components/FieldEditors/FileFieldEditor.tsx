@@ -18,6 +18,15 @@ export class FileFieldEditor extends AbstractFieldEditor {
   @inject private _fileController: FileController;
 
   @action
+  previewImage = () => {
+    const { model, fieldSchema } = this.props;
+    const fileName = model[fieldSchema.FieldName];
+    if (fileName) {
+      this._fileController.previewImage(model, fieldSchema as FileFieldSchema);
+    }
+  };
+
+  @action
   downloadFile = () => {
     const { model, fieldSchema } = this.props;
     const fileName = model[fieldSchema.FieldName];
@@ -42,7 +51,11 @@ export class FileFieldEditor extends AbstractFieldEditor {
             })}
           />
           {fieldSchema.FieldType === FieldExactTypes.Image && (
-            <button className="pt-button pt-icon-media" title="Просмотр" />
+            <button
+              className="pt-button pt-icon-media"
+              title="Просмотр"
+              onClick={this.previewImage}
+            />
           )}
           <button
             className="pt-button pt-icon-cloud-download"

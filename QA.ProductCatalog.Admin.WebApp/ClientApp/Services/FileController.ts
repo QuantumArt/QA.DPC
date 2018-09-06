@@ -22,6 +22,16 @@ export class FileController {
   }
 
   @command
+  public previewImage(model: ArticleObject, fieldSchema: FileFieldSchema) {
+    const entityId = model._ServerId > 0 ? model._ServerId : 0;
+    const fieldId = fieldSchema.FieldId;
+    const fileName = untracked(() => model[fieldSchema.FieldName]);
+    if (fileName) {
+      QP8.previewImage({ entityId, fieldId, fileName }, this._hostUid, window.parent);
+    }
+  }
+
+  @command
   public downloadFile(model: ArticleObject, fieldSchema: FileFieldSchema) {
     const entityId = model._ServerId > 0 ? model._ServerId : 0;
     const fieldId = fieldSchema.FieldId;

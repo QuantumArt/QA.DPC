@@ -220,10 +220,6 @@ namespace QA.Core.DPC.Loader.Editor
         /// Библиотека сайта
         /// </summary>
         public bool UseSiteLibrary { get; set; }
-        /// <summary>
-        /// URL каталога, где физически хранятся загруженные файлы
-        /// </summary>
-        public string FolderUrl { get; set; }
     }
 
     public sealed class EnumFieldSchema : PlainFieldSchema
