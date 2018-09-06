@@ -363,6 +363,9 @@ namespace QA.Core.DPC.Loader.Editor
                     return new FileFieldSchema
                     {
                         UseSiteLibrary = qpField.UseSiteLibrary,
+                        SubFolder = qpField.SubFolder,
+                        LibraryEntityId = qpField.LibraryEntityId,
+                        LibraryParentEntityId = qpField.LibraryParentEntityId
                         // FolderUrl = _dbConnector.GetUrlForFileAttribute(qpField.Id, true, true)
                     };
 

@@ -28,16 +28,16 @@ export class RelationController {
   private _query = document.location.search;
   private _rootUrl = document.head.getAttribute("root-url") || "";
   private _hostUid = qs.parse(document.location.search).hostUID as string;
-  private _resolvePromise: (articleIds: number[] | "CANCEL") => void;
+  private _resolvePromise: (articleIds: number[] | typeof CANCEL) => void;
   private _callbackUid = Math.random()
     .toString(36)
     .slice(2);
 
   private _observer = new QP8.BackendEventObserver(this._callbackUid, (eventType, args) => {
-    if (eventType === QP8.BackendEventTypes.EntitiesSelected) {
-      this._resolvePromise(isArray(args.selectedEntityIDs) ? args.selectedEntityIDs : "CANCEL");
+    if (eventType === QP8.BackendEventTypes.EntitiesSelected && isArray(args.selectedEntityIDs)) {
+      this._resolvePromise(args.selectedEntityIDs);
     } else {
-      this._resolvePromise("CANCEL");
+      this._resolvePromise(CANCEL);
     }
   });
 
@@ -51,7 +51,7 @@ export class RelationController {
       return existingArticle && existingArticle._ServerId > 0 ? [existingArticle._ServerId] : [];
     });
     const selectedArticles = await this.selectArticles(existingArticleIds, fieldSchema, false);
-    if (selectedArticles !== "CANCEL") {
+    if (selectedArticles !== CANCEL) {
       runInAction("selectRelation", () => {
         model[fieldSchema.FieldName] = selectedArticles[0] || null;
         model.setTouched(fieldSchema.FieldName, true);
@@ -65,7 +65,7 @@ export class RelationController {
       return existingArticles.map(article => article._ServerId).filter(id => id > 0);
     });
     const selectedArticles = await this.selectArticles(existingArticleIds, fieldSchema, true);
-    if (selectedArticles !== "CANCEL") {
+    if (selectedArticles !== CANCEL) {
       runInAction("selectRelations", () => {
         const relatedArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
         const newlyCreatedArticles = relatedArticles.filter(article => article._ServerId === null);
@@ -99,12 +99,12 @@ export class RelationController {
 
     QP8.openSelectWindow(options, this._hostUid, window.parent);
 
-    const selectedArticleIds = await new Promise<number[] | "CANCEL">(resolve => {
+    const selectedArticleIds = await new Promise<number[] | typeof CANCEL>(resolve => {
       this._resolvePromise = resolve;
     });
 
-    if (selectedArticleIds === "CANCEL") {
-      return "CANCEL";
+    if (selectedArticleIds === CANCEL) {
+      return CANCEL;
     }
 
     const articleToLoadIds = selectedArticleIds.filter(id => !existingArticleIds.includes(id));
@@ -225,3 +225,5 @@ export class RelationController {
     return await response.text();
   }
 }
+
+const CANCEL = Symbol();

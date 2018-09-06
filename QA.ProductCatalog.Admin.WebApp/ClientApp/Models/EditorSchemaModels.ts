@@ -89,6 +89,9 @@ export function isClassifierField(field: any): field is ClassifierFieldSchema {
 
 export interface FileFieldSchema extends PlainFieldSchema {
   readonly UseSiteLibrary: boolean;
+  readonly SubFolder: string;
+  readonly LibraryEntityId: number;
+  readonly LibraryParentEntityId: number;
 }
 
 export function isFileField(field: any): field is FileFieldSchema {

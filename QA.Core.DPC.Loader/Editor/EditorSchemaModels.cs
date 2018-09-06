@@ -220,6 +220,12 @@ namespace QA.Core.DPC.Loader.Editor
         /// Библиотека сайта
         /// </summary>
         public bool UseSiteLibrary { get; set; }
+
+        public string SubFolder { get; set; }
+
+        public int LibraryEntityId { get; set; }
+
+        public int LibraryParentEntityId { get; set; }
     }
 
     public sealed class EnumFieldSchema : PlainFieldSchema

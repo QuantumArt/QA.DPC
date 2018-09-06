@@ -10,8 +10,6 @@ import { consumer, inject } from "react-ioc";
 import { FileController } from "Services/FileController";
 import { action } from "mobx";
 
-// TODO: Интеграция с библиотекой QP
-
 @consumer
 @observer
 export class FileFieldEditor extends AbstractFieldEditor {
@@ -33,6 +31,12 @@ export class FileFieldEditor extends AbstractFieldEditor {
     if (fileName) {
       this._fileController.downloadFile(model, fieldSchema as FileFieldSchema);
     }
+  };
+
+  @action
+  selectFile = () => {
+    const { model, fieldSchema } = this.props;
+    this._fileController.selectFile(model, fieldSchema as FileFieldSchema);
   };
 
   renderField(model: ArticleObject, fieldSchema: FileFieldSchema) {
@@ -62,7 +66,11 @@ export class FileFieldEditor extends AbstractFieldEditor {
             title="Скачать"
             onClick={this.downloadFile}
           />
-          <button className="pt-button pt-icon-folder-close" title="Библиотека" />
+          <button
+            className="pt-button pt-icon-folder-close"
+            title="Библиотека"
+            onClick={this.selectFile}
+          />
         </div>
       </Col>
     );
