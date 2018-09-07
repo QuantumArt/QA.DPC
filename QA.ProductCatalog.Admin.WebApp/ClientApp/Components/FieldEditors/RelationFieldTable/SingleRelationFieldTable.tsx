@@ -8,6 +8,7 @@ import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTable } from "./AbstractRelationFieldTable";
+import { ArticleLink } from "Components/ArticleEditor/ArticleLink";
 
 @consumer
 @observer
@@ -38,7 +39,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
           <div className="relation-field-table">
             <div className="relation-field-table__row">
               <div key={-1} className="relation-field-table__cell">
-                {article._ServerId > 0 && `(${article._ServerId})`}
+                <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
               </div>
               {this._displayFields.map((displayField, i) => (
                 <div key={i} className="relation-field-table__cell">

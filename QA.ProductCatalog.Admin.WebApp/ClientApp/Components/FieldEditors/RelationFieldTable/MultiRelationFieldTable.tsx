@@ -11,6 +11,7 @@ import { asc } from "Utils/Array/Sort";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTable, RelationFieldTableProps } from "./AbstractRelationFieldTable";
+import { ArticleLink } from "Components/ArticleEditor/ArticleLink";
 
 @consumer
 @observer
@@ -69,7 +70,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
                 return (
                   <div key={article._ClientId} className="relation-field-table__row">
                     <div key={-1} className="relation-field-table__cell">
-                      {article._ServerId > 0 && `(${article._ServerId})`}
+                      <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
                     </div>
                     {this._displayFields.map((displayField, i) => (
                       <div key={i} className="relation-field-table__cell">

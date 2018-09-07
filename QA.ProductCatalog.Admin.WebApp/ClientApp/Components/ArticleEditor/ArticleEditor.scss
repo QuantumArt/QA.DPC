@@ -1,3 +1,5 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
 .article-editor__header {
   display: flex;
   margin-top: 5px;
@@ -17,4 +19,17 @@
 .article-editor__buttons {
   flex: none;
   margin-bottom: 10px;
+}
+
+.article-link {
+  .pt-button-text {
+    color: $dark-gray1 !important;
+  }
+}
+
+.article-editor__header {
+  .article-link {
+    position: relative;
+    left: -5px;
+  }
 }

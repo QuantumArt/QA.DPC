@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Menu, MenuItem, Intent, Popover, Position, Icon } from "@blueprintjs/core";
+import "./ArticleEditor.scss";
 
 interface ArticleMenuProps {
   small?: boolean;

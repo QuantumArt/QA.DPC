@@ -10,6 +10,7 @@ import { ArticleMenu } from "Components/ArticleEditor/ArticleMenu";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldAccordion } from "./AbstractRelationFieldAccordion";
+import { ArticleLink } from "Components/ArticleEditor/ArticleLink";
 
 @consumer
 @observer
@@ -132,7 +133,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
             </td>
             <td key={-2} className="relation-field-accordion__cell">
-              {hasServerId && `(${article._ServerId})`}
+              <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
             </td>
             {this._displayFields.map((displayField, i) => (
               <td key={i} className="relation-field-accordion__cell">

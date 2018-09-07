@@ -16,6 +16,7 @@ import {
   AbstractRelationFieldAccordion,
   RelationFieldAccordionProps
 } from "./AbstractRelationFieldAccordion";
+import { ArticleLink } from "Components/ArticleEditor/ArticleLink";
 
 interface MultiRelationFieldAccordionState {
   activeId: number | null;
@@ -176,7 +177,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
                     </td>
                     <td key={-2} className="relation-field-accordion__cell">
-                      {hasServerId && `(${article._ServerId})`}
+                      <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
                     </td>
                     {this._displayFields.map((displayField, i) => (
                       <td key={i} className="relation-field-accordion__cell">

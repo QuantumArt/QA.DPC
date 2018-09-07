@@ -1,3 +1,6 @@
+import "../../Scripts/pmrpc";
+import QP8 from "../../Scripts/qp/QP8BackendApi.Interaction";
+import qs from "qs";
 import { inject } from "react-ioc";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
@@ -15,6 +18,18 @@ export class ArticleController {
 
   private _query = document.location.search;
   private _rootUrl = document.head.getAttribute("root-url") || "";
+  private _hostUid = qs.parse(document.location.search).hostUID as string;
+  private _callbackUid = Math.random()
+    .toString(36)
+    .slice(2);
+
+  private _observer = new QP8.BackendEventObserver(this._callbackUid, (eventType, args) => {
+    console.log({ eventType, args });
+  });
+
+  public dispose() {
+    this._observer.dispose();
+  }
 
   public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
     await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);
@@ -53,5 +68,25 @@ export class ArticleController {
     const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
 
     this._dataMerger.mergeStore(dataSnapshot, strategy);
+  }
+
+  public editArticle(model: EntityObject, contentSchema: ContentSchema, isWindow = true) {
+    const articleOptions: QP8.ArticleFormState = {
+      // убираем кнопку Save в модальном окне
+      disabledActionCodes: isWindow ? ["update_article"] : []
+    };
+    const executeOptions: QP8.ExecuteActionOptions = {
+      isWindow,
+      actionCode: "edit_article",
+      entityTypeCode: "article",
+      parentEntityId: contentSchema.ContentId,
+      entityId: model._ServerId > 0 ? model._ServerId : 0,
+      callerCallback: this._callbackUid,
+      changeCurrentTab: false,
+      options: articleOptions
+    };
+    QP8.executeBackendAction(executeOptions, this._hostUid, window.parent);
+
+    // TODO: перезагрузка подграфа продукта после каждого сохранения
   }
 }

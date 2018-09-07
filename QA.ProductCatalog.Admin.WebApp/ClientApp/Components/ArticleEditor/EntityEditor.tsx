@@ -7,6 +7,7 @@ import { EditorController } from "Services/EditorController";
 import { ArticleController } from "Services/ArticleController";
 import { isString, isFunction } from "Utils/TypeChecks";
 import { ArticleMenu } from "./ArticleMenu";
+import { ArticleLink } from "./ArticleLink";
 import { ArticleEditor, ArticleEditorProps } from "./ArticleEditor";
 export { IGNORE, FieldsConfig, RelationsConfig } from "./ArticleEditor";
 import "./ArticleEditor.scss";
@@ -60,9 +61,16 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
     const headerNode =
       header === true ? (
         <Col key={1} md className="article-editor__header">
-          <div className="article-editor__title" title={contentSchema.ContentDescription}>
-            {contentSchema.ContentTitle || contentSchema.ContentName}
-            {hasServerId && `: (${model._ServerId})`} {this._titleField(model)}
+          <div
+            className="article-editor__title"
+            title={
+              contentSchema.ContentDescription ||
+              contentSchema.ContentTitle ||
+              contentSchema.ContentName
+            }
+          >
+            <ArticleLink model={model} contentSchema={contentSchema} />
+            {this._titleField(model)}
           </div>
           {buttons === true ? (
             <div className="article-editor__buttons">
