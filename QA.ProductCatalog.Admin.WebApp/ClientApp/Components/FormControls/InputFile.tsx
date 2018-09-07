@@ -30,13 +30,24 @@ export class InputFile extends ValidatableControl<InputHTMLAttributes<HTMLInputE
   };
 
   render() {
-    const { model, name, className, onFocus, onChange, onBlur, placeholder, ...props } = this.props;
+    const {
+      model,
+      name,
+      className,
+      readOnly,
+      onFocus,
+      onChange,
+      onBlur,
+      placeholder,
+      ...props
+    } = this.props;
     const fileName = model[name];
     return (
       <label className={cn("pt-file-input pt-fill editor-input-file", className)} title={fileName}>
         <input
           ref={this.inputRef}
-          type="file"
+          type={readOnly ? "text" : "file"}
+          readOnly={readOnly}
           onFocus={this.handleFocus}
           onChange={this.handleChange}
           onBlur={this.handleBlur}

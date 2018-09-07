@@ -10,6 +10,8 @@ import { consumer, inject } from "react-ioc";
 import { FileController } from "Services/FileController";
 import { action } from "mobx";
 
+// TODO: загрузка файлов на сервер
+
 @consumer
 @observer
 export class FileFieldEditor extends AbstractFieldEditor {
@@ -48,6 +50,7 @@ export class FileFieldEditor extends AbstractFieldEditor {
             model={model}
             name={fieldSchema.FieldName}
             disabled={fieldSchema.IsReadOnly}
+            readOnly={true}
             accept={fieldSchema.FieldType === FieldExactTypes.Image ? "image/*" : ""}
             className={cn({
               "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
