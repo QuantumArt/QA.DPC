@@ -9,6 +9,7 @@ import { ContentSchema } from "Models/EditorSchemaModels";
 import { EntitySnapshot, EntityObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { command } from "Utils/Command";
+import { newUid } from "Utils/Uid";
 
 export class ArticleController {
   @inject private _editorSettings: EditorSettings;
@@ -71,22 +72,37 @@ export class ArticleController {
   }
 
   public editArticle(model: EntityObject, contentSchema: ContentSchema, isWindow = true) {
+    const callbackUid = newUid();
+
     const articleOptions: QP8.ArticleFormState = {
       // убираем кнопку Save в модальном окне
       disabledActionCodes: isWindow ? ["update_article"] : []
     };
+
     const executeOptions: QP8.ExecuteActionOptions = {
       isWindow,
       actionCode: "edit_article",
       entityTypeCode: "article",
       parentEntityId: contentSchema.ContentId,
       entityId: model._ServerId > 0 ? model._ServerId : 0,
-      callerCallback: this._callbackUid,
+      callerCallback: callbackUid,
       changeCurrentTab: false,
       options: articleOptions
     };
+
     QP8.executeBackendAction(executeOptions, this._hostUid, window.parent);
 
-    // TODO: перезагрузка подграфа продукта после каждого сохранения
+    const observer = new QP8.BackendEventObserver(callbackUid, async (eventType, args) => {
+      if (eventType === QP8.BackendEventTypes.HostUnbinded) {
+        observer.dispose();
+      } else if (eventType === QP8.BackendEventTypes.ActionExecuted) {
+        if (args.actionCode === "update_article") {
+          await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);
+        } else if (args.actionCode === "update_article_and_up") {
+          observer.dispose();
+          await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);
+        }
+      }
+    });
   }
 }
