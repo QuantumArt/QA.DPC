@@ -94,16 +94,17 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
         [HttpGet("option/{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState,
+        public async Task<ActionResult> Get(int id, [FromQuery] string homeRegion, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState,
             string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
             var searchOptions = new SearchOptions
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
-                IndexName = ConfigurationOptions.GetIndexName(state, language)
+                IndexName = ConfigurationOptions.GetIndexName(state, language),
+                HomeRegion = homeRegion
             };
             var serviceIds = new int[] { };
-            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, countryCode, state, language);
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
             var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
@@ -125,16 +126,17 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string homeRegion, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
 
             var searchOptions = new SearchOptions
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
-                IndexName = ConfigurationOptions.GetIndexName(state, language)
+                IndexName = ConfigurationOptions.GetIndexName(state, language),
+                HomeRegion = homeRegion
             };
 
-            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, countryCode, state, language);
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
             var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
@@ -143,7 +145,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             result = result ?? await LoadProducts(id, serviceIds, searchOptions);
             result = result ?? await FillDefaultHomeRegion(searchOptions, Product);            
 
-            result = result ?? FilterServicesOnProduct(true);
+            result = result ?? FilterServicesOnProduct(true, null, searchOptions.HomeRegionData);
 
             LogStartImpact("MNR", id, serviceIds);
 
@@ -151,7 +153,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogEndImpact("MNR", id, serviceIds);
 
-            result = result ?? (html ? TestLayout(Product, serviceIds, state, language, country: countryCode) : Content(Product.ToString()));
+            result = result ?? (html ? TestLayout(Product, serviceIds, state, language, homeRegion: homeRegion, country: countryCode) : Content(Product.ToString()));
 
             if (!disableCache)
             {
