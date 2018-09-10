@@ -20,17 +20,6 @@ export class ArticleController {
   private _query = document.location.search;
   private _rootUrl = document.head.getAttribute("root-url") || "";
   private _hostUid = qs.parse(document.location.search).hostUID as string;
-  private _callbackUid = Math.random()
-    .toString(36)
-    .slice(2);
-
-  private _observer = new QP8.BackendEventObserver(this._callbackUid, (eventType, args) => {
-    console.log({ eventType, args });
-  });
-
-  public dispose() {
-    this._observer.dispose();
-  }
 
   public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
     await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);

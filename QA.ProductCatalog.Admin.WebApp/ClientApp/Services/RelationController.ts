@@ -17,6 +17,7 @@ import { ArticleObject, EntitySnapshot, EntityObject } from "Models/EditorDataMo
 import { EditorSettings } from "Models/EditorSettings";
 import { command } from "Utils/Command";
 import { isArray } from "Utils/TypeChecks";
+import { newUid } from "Utils/Uid";
 
 export class RelationController {
   @inject private _editorSettings: EditorSettings;
@@ -29,9 +30,7 @@ export class RelationController {
   private _rootUrl = document.head.getAttribute("root-url") || "";
   private _hostUid = qs.parse(document.location.search).hostUID as string;
   private _resolvePromise: (articleIds: number[] | typeof CANCEL) => void;
-  private _callbackUid = Math.random()
-    .toString(36)
-    .slice(2);
+  private _callbackUid = newUid();
 
   private _observer = new QP8.BackendEventObserver(this._callbackUid, (eventType, args) => {
     if (eventType === QP8.BackendEventTypes.EntitiesSelected && isArray(args.selectedEntityIDs)) {

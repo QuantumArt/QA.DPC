@@ -14,6 +14,7 @@ import { RelationController } from "Services/RelationController";
 import { Validator, Validate } from "mst-validation-mixin";
 import { isArray } from "Utils/TypeChecks";
 import { required } from "Utils/Validators";
+import { newUid } from "Utils/Uid";
 import "./FieldEditors.scss";
 
 export type FieldSelector = (model: ArticleObject) => any;
@@ -27,9 +28,7 @@ export interface FieldEditorProps {
 export abstract class AbstractFieldEditor<
   P extends FieldEditorProps = FieldEditorProps
 > extends Component<P> {
-  protected id = `_${Math.random()
-    .toString(36)
-    .slice(2)}`;
+  protected id = `_${newUid()}`;
 
   protected abstract renderField(model: ArticleObject, fieldSchema: FieldSchema): ReactNode;
 

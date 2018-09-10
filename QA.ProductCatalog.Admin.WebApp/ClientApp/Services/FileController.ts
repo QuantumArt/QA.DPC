@@ -4,13 +4,12 @@ import qs from "qs";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { ArticleObject } from "Models/EditorDataModels";
 import { untracked, runInAction } from "mobx";
+import { newUid } from "Utils/Uid";
 
 export class FileController {
   private _hostUid = qs.parse(document.location.search).hostUID as string;
   private _resolvePromise: (filePath: string | typeof CANCEL) => void;
-  private _callbackUid = Math.random()
-    .toString(36)
-    .slice(2);
+  private _callbackUid = newUid();
 
   private _observer = new QP8.BackendEventObserver(this._callbackUid, (eventType, args) => {
     if (eventType === QP8.BackendEventTypes.FileSelected && args.filePath) {
