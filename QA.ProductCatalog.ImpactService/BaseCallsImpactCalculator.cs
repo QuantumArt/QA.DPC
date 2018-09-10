@@ -71,8 +71,10 @@ namespace QA.ProductCatalog.ImpactService
                 
         public bool HasImpactForDirections(IEnumerable<JToken> parameters)
         {
-            var directionParameters = parameters.Where(n => n["Direction"] != null && n["Changed"] != null).ToArray();
-            return directionParameters?.Any() ?? false;
+            if (parameters == null)
+                return false;
+            
+            return parameters.Any(n => n["Direction"] != null && n["Changed"] != null);
         }
 
         public IEnumerable<int> GetPreCalcServiceIds(JObject product)

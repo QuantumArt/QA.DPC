@@ -694,10 +694,11 @@ namespace QA.ProductCatalog.ImpactService
             return tariff;
         }
 
-        public virtual IEnumerable<JToken> FilterServicesOnProduct(JObject product, IEnumerable<int> excludeIds = null)
+        public virtual IEnumerable<JToken> FilterServicesOnProduct(JObject product, IEnumerable<int> excludeIds = null, JObject homeRegionData = null)
         {
             var root = product.SelectToken(LinkName);
             if (root == null) yield break;
+            var homeRegion = homeRegionData?.SelectToken("Alias")?.ToString();
             foreach (var elem in (JArray)root)
             {
                 var hasModifier =
@@ -707,12 +708,20 @@ namespace QA.ProductCatalog.ImpactService
                 var isArchive = elem.SelectTokens("Service.Modifiers.[?(@.Alias)].Alias")
                     .Select(m => m.ToString())
                     .Contains("Archive");
-
+                
                 var serviceId = (int) elem.SelectToken("Service.Id");
                 var toExclude = excludeIds?.Contains(serviceId) ?? false;
 
                 if (hasModifier && !isArchive && !toExclude)
-                    yield return elem;
+                {
+                    var regionAliases = new HashSet<string>(elem.SelectTokens("Service.Regions.[?(@.Alias)].Alias").Select(m => m.ToString()));
+                    var satisfyRegion = string.IsNullOrEmpty(homeRegion) 
+                                        || !regionAliases.Any() 
+                                        || regionAliases.Contains(homeRegion);
+                        
+                     if (satisfyRegion) yield return elem;
+                }
+
             }
         }
 
