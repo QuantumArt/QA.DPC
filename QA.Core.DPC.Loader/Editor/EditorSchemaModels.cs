@@ -276,6 +276,11 @@ namespace QA.Core.DPC.Loader.Editor
         /// в строке таблици или в заголовке аккордеона
         /// </summary>
         public string[] DisplayFieldNames { get; set; } = new string[0];
+
+        /// <summary>
+        /// Список предзагруженных статей для выбора при редактировании поля связи
+        /// </summary>
+        public ArticleObject[] PreloadedArticles { get; set; } = new ArticleObject[0];
     }
 
     /// <summary>

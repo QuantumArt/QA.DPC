@@ -1,6 +1,9 @@
-﻿using QA.Core.DPC.QP.Services;
+﻿using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Services;
+using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
+using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
@@ -17,17 +20,26 @@ namespace QA.Core.DPC.Loader.Editor
     public class EditorSchemaService
     {
         private readonly DBConnector _dbConnector;
+        private readonly IProductService _productService;
+        private readonly IReadOnlyArticleService _articleService;
         private readonly ContentService _contentService;
         private readonly FieldService _fieldService;
         private readonly VirtualFieldContextService _virtualFieldContextService;
+        private readonly EditorDataService _editorDataService;
 
         public EditorSchemaService(
             IConnectionProvider connectionProvider,
+            IProductService productService,
+            IReadOnlyArticleService articleService,
+            EditorDataService editorDataService,
             ContentService contentService,
             FieldService fieldService,
             VirtualFieldContextService virtualFieldContextService)
         {
             _dbConnector = new DBConnector(connectionProvider.GetConnection());
+            _productService = productService;
+            _articleService = articleService;
+            _editorDataService = editorDataService;
             _contentService = contentService;
             _fieldService = fieldService;
             _virtualFieldContextService = virtualFieldContextService;
@@ -206,9 +218,9 @@ namespace QA.Core.DPC.Loader.Editor
             fieldSchema.FieldType = qpField.ExactType;
             fieldSchema.FieldDescription = IsHtmlWhiteSpace(qpField.Description) ? "" : qpField.Description;
 
-            if (field is BackwardRelationField backwardField && !IsHtmlWhiteSpace(backwardField.DisplayName))
+            if (!IsHtmlWhiteSpace(field?.FieldTitle))
             {
-                fieldSchema.FieldTitle = backwardField.DisplayName;
+                fieldSchema.FieldTitle = field.FieldTitle;
             }
             else if (!IsHtmlWhiteSpace(qpField.FriendlyName))
             {
@@ -246,6 +258,8 @@ namespace QA.Core.DPC.Loader.Editor
                 relationCondition = qpField.RelationCondition;
             }
 
+            ArticleObject[] preloadedArticles = PreloadArticles(entityField, relationCondition);
+
             string[] displayFieldNames = contentSchema.Fields.Values
                 .OfType<PlainFieldSchema>()
                 .Where(f => f.FieldType != FieldExactTypes.Textbox && f.FieldType != FieldExactTypes.VisualEdit)
@@ -265,7 +279,8 @@ namespace QA.Core.DPC.Loader.Editor
                     UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     RelationCondition = relationCondition,
-                    DisplayFieldNames = displayFieldNames
+                    DisplayFieldNames = displayFieldNames,
+                    PreloadedArticles = preloadedArticles,
                 };
             }
             if (qpField.ExactType == FieldExactTypes.M2MRelation
@@ -311,11 +326,34 @@ namespace QA.Core.DPC.Loader.Editor
                     RelationCondition = relationCondition,
                     DisplayFieldNames = displayFieldNames,
                     OrderByFieldName = orderByFieldName,
-                    MaxDataListItemCount = maxDataListItemCount
+                    MaxDataListItemCount = maxDataListItemCount,
+                    PreloadedArticles = preloadedArticles,
                 };
             }
 
             throw new NotSupportedException($"Связь типа {qpField.ExactType} не поддерживается");
+        }
+
+        // TODO: Оптимизация загрузки статей
+        private ArticleObject[] PreloadArticles(EntityField entityField, string relationCondition)
+        {
+            if (!entityField.PreloadArticles)
+            {
+                return new ArticleObject[0];
+            }
+
+            int[] articleIds = _articleService
+                .List(entityField.Content.ContentId, null, filter: relationCondition)
+                .Select(a => a.Id)
+                .ToArray();
+
+            Article[] articles = _productService.GetProductsByIds(entityField.Content, articleIds);
+
+            ArticleObject[] articleObjects = articles
+                .Select(a => _editorDataService.ConvertArticle(a, ArticleFilter.DefaultFilter))
+                .ToArray();
+
+            return articleObjects;
         }
 
         /// <exception cref="NotSupportedException" />
@@ -599,6 +637,7 @@ namespace QA.Core.DPC.Loader.Editor
                     {
                         ContentId = singleFieldSchema.RelatedContent.ContentId,
                     };
+                    copy.PreloadedArticles = new ArticleObject[0];
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
                 else if (fieldSchema is MultiRelationFieldSchema multiFieldSchema)
@@ -608,6 +647,7 @@ namespace QA.Core.DPC.Loader.Editor
                     {
                         ContentId = multiFieldSchema.RelatedContent.ContentId,
                     };
+                    copy.PreloadedArticles = new ArticleObject[0];
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
                 else if (!mergedContentSchema.Fields.ContainsKey(fieldSchema.FieldName))
