@@ -9,7 +9,7 @@ import { ContentSchema } from "Models/EditorSchemaModels";
 import { EntitySnapshot, EntityObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { command } from "Utils/Command";
-import { newUid } from "Utils/Uid";
+import { newUid, rootUrl } from "Utils/Common";
 
 export class ArticleController {
   @inject private _editorSettings: EditorSettings;
@@ -18,7 +18,6 @@ export class ArticleController {
   @inject private _dataMerger: DataMerger;
 
   private _query = document.location.search;
-  private _rootUrl = document.head.getAttribute("root-url") || "";
   private _hostUid = qs.parse(document.location.search).hostUID as string;
 
   public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
@@ -35,21 +34,18 @@ export class ArticleController {
     contentSchema: ContentSchema,
     strategy: MergeStrategy
   ) {
-    const response = await fetch(
-      `${this._rootUrl}/ProductEditor/LoadPartialProduct${this._query}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-          ContentPath: contentSchema.ContentPath,
-          ArticleIds: [model._ServerId]
-        })
-      }
-    );
+    const response = await fetch(`${rootUrl}/ProductEditor/LoadPartialProduct${this._query}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+        ContentPath: contentSchema.ContentPath,
+        ArticleIds: [model._ServerId]
+      })
+    });
     if (!response.ok) {
       throw new Error(await response.text());
     }

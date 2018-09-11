@@ -14,7 +14,7 @@ import { RelationController } from "Services/RelationController";
 import { Validator, Validate } from "mst-validation-mixin";
 import { isArray } from "Utils/TypeChecks";
 import { required } from "Utils/Validators";
-import { newUid } from "Utils/Uid";
+import { newUid } from "Utils/Common";
 import "./FieldEditors.scss";
 
 export type FieldSelector = (model: ArticleObject) => any;

@@ -17,7 +17,7 @@ import { ArticleObject, EntitySnapshot, EntityObject } from "Models/EditorDataMo
 import { EditorSettings } from "Models/EditorSettings";
 import { command } from "Utils/Command";
 import { isArray } from "Utils/TypeChecks";
-import { newUid } from "Utils/Uid";
+import { newUid, rootUrl } from "Utils/Common";
 
 export class RelationController {
   @inject private _editorSettings: EditorSettings;
@@ -27,7 +27,6 @@ export class RelationController {
   @inject private _dataContext: DataContext;
 
   private _query = document.location.search;
-  private _rootUrl = document.head.getAttribute("root-url") || "";
   private _hostUid = qs.parse(document.location.search).hostUID as string;
   private _resolvePromise: (articleIds: number[] | typeof CANCEL) => void;
   private _callbackUid = newUid();
@@ -126,21 +125,18 @@ export class RelationController {
 
   @command
   private async loadSelectedArticles(contentSchema: ContentSchema, articleToLoadIds: number[]) {
-    const response = await fetch(
-      `${this._rootUrl}/ProductEditor/LoadPartialProduct${this._query}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-          ContentPath: contentSchema.ContentPath,
-          ArticleIds: articleToLoadIds
-        })
-      }
-    );
+    const response = await fetch(`${rootUrl}/ProductEditor/LoadPartialProduct${this._query}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+        ContentPath: contentSchema.ContentPath,
+        ArticleIds: articleToLoadIds
+      })
+    });
     if (!response.ok) {
       throw new Error(await response.text());
     }
@@ -202,22 +198,19 @@ export class RelationController {
 
   @command
   private async loadProductRelationJson(model: ArticleObject, fieldSchema: RelationFieldSchema) {
-    const response = await fetch(
-      `${this._rootUrl}/ProductEditor/LoadProductRelation${this._query}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-          ContentPath: fieldSchema.ParentContent.ContentPath,
-          RelationFieldName: fieldSchema.FieldName,
-          ParentArticleId: model._ServerId
-        })
-      }
-    );
+    const response = await fetch(`${rootUrl}/ProductEditor/LoadProductRelation${this._query}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+        ContentPath: fieldSchema.ParentContent.ContentPath,
+        RelationFieldName: fieldSchema.FieldName,
+        ParentArticleId: model._ServerId
+      })
+    });
     if (!response.ok) {
       throw new Error(await response.text());
     }

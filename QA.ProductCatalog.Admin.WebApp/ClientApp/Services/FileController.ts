@@ -4,7 +4,7 @@ import qs from "qs";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { ArticleObject } from "Models/EditorDataModels";
 import { untracked, runInAction } from "mobx";
-import { newUid } from "Utils/Uid";
+import { newUid } from "Utils/Common";
 
 export class FileController {
   private _hostUid = qs.parse(document.location.search).hostUID as string;

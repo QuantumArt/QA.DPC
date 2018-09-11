@@ -9,6 +9,7 @@ import { DataValidator, ArticleErrors } from "Services/DataValidator";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { command } from "Utils/Command";
+import { rootUrl } from "Utils/Common";
 
 export class EditorController {
   @inject private _editorSettings: EditorSettings;
@@ -20,7 +21,6 @@ export class EditorController {
   @inject private _schemaContext: SchemaContext;
 
   private _query = document.location.search;
-  private _rootUrl = document.head.getAttribute("root-url") || "";
 
   @command
   public async initialize() {
@@ -28,7 +28,7 @@ export class EditorController {
 
     if (this._editorSettings.ArticleId > 0) {
       const response = await fetch(
-        `${this._rootUrl}/ProductEditor/GetEditorData${this._query}&productDefinitionId=${
+        `${rootUrl}/ProductEditor/GetEditorData${this._query}&productDefinitionId=${
           this._editorSettings.ProductDefinitionId
         }&articleId=${this._editorSettings.ArticleId}`
       );
@@ -57,7 +57,7 @@ export class EditorController {
 
   private async initSchema() {
     const response = await fetch(
-      `${this._rootUrl}/ProductEditor/GetEditorSchema${this._query}&productDefinitionId=${
+      `${rootUrl}/ProductEditor/GetEditorSchema${this._query}&productDefinitionId=${
         this._editorSettings.ProductDefinitionId
       }`
     );
@@ -80,21 +80,18 @@ export class EditorController {
 
     const partialProduct = this._dataSerializer.serialize(article, contentSchema);
 
-    const response = await fetch(
-      `${this._rootUrl}/ProductEditor/SavePartialProduct${this._query}`,
-      {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-          ContentPath: contentSchema.ContentPath,
-          PartialProduct: partialProduct
-        })
-      }
-    );
+    const response = await fetch(`${rootUrl}/ProductEditor/SavePartialProduct${this._query}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+        ContentPath: contentSchema.ContentPath,
+        PartialProduct: partialProduct
+      })
+    });
     if (response.status === 409) {
       const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
