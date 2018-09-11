@@ -42,6 +42,13 @@ else
     </div>
     @Html.HiddenFor(x => x.Field.FieldName);
   }
+
+  <div class="editor-label">
+    @Html.LabelFor(x => x.Field.FieldTitle)
+  </div>
+  <div class="editor-field">
+    @Html.EditorFor(x => x.Field.FieldTitle)
+  </div>
 }
 
 @if (Model.Field is Association)
@@ -98,12 +105,6 @@ else
   {
     var backwardField = (BackwardRelationField)Model.Field;
 
-    <div class="editor-label">
-      @Html.LabelFor(x => backwardField.DisplayName)
-    </div>
-    <div class="editor-field">
-      @Html.TextBox("Field.DisplayName", ((BackwardRelationField)Model.Field).DisplayName)
-    </div>
     <div class="display-label">
       Ссылается на данный контент из контента
     </div>

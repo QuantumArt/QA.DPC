@@ -24,6 +24,10 @@ namespace QA.Core.Models.Configuration
         [DisplayName("Имя поля")]
         public virtual string FieldName { get; set; }
 
+        [DisplayName("Имя поля для карточки")]
+        [DefaultValue(null)]
+        public virtual string FieldTitle { get; set; }
+
         public virtual int FieldId { get; set; }
 
         [DefaultValue(null)]

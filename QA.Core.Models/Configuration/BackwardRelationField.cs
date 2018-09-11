@@ -15,7 +15,11 @@ namespace QA.Core.Models.Configuration
 
 		[DisplayName("Имя поля для карточки")]
 		[DefaultValue(null)]
-		public string DisplayName { get; set; }
+		public string DisplayName
+        {
+            get { return FieldTitle; }
+            set { FieldTitle = value; }
+        }
 
         /// <summary>
         /// Имя группы для данной связи. Может быть несколько связей, которые могут потом объединяться в одну связь. 

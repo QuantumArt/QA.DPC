@@ -265,6 +265,7 @@ namespace QA.Core.DPC.Loader.Services
                     }
 
 					fieldToSave.FieldName = field.FieldName;
+                    fieldToSave.FieldTitle = field.FieldTitle;
 
                     fieldToSave.CustomProperties.Clear();
 
