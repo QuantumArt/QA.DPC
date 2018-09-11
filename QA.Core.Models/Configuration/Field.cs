@@ -175,6 +175,9 @@ namespace QA.Core.Models.Configuration
 	[ContentProperty("Content")]
 	public class EntityField : Association
 	{
+        [DefaultValue(false)]
+        public bool PreloadArticles { get; set; }
+
         [DefaultValue(null)]
         public string RelationCondition { get; set; }
 
@@ -210,6 +213,7 @@ namespace QA.Core.Models.Configuration
         internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
 			return base.RecursiveEquals(other, visitedContents)
+                && PreloadArticles == ((EntityField)other).PreloadArticles
                 && RelationCondition == ((EntityField)other).RelationCondition
                 && Content.RecursiveEquals(((EntityField)other).Content, visitedContents)
                 && (CloneDefinition == null
@@ -225,6 +229,8 @@ namespace QA.Core.Models.Configuration
 		internal override int GetRecurciveHashCode(ReferenceHashSet<Content> visitedContents)
 		{
 			int hash = base.GetHashCode();
+
+            hash = HashHelper.CombineHashCodes(hash, PreloadArticles.GetHashCode());
 
             if (RelationCondition != null)
             {

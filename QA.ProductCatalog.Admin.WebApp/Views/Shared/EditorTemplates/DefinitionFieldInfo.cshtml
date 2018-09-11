@@ -74,6 +74,13 @@ else
     var entity = (EntityField)Model.Field;
 
     <div class="editor-label">
+      @Html.LabelFor(x => entity.PreloadArticles)
+    </div>
+    <div class="editor-field">
+      @Html.CheckBoxFor(x => ((EntityField)Model.Field).PreloadArticles, new { Name = "Field.PreloadArticles" })
+    </div>
+
+    <div class="editor-label">
       @Html.LabelFor(x => entity.RelationCondition)
     </div>
     <div class="editor-field">

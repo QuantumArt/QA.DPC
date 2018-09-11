@@ -284,6 +284,7 @@ namespace QA.Core.DPC.Loader.Services
                         if (field is EntityField entityDef)
                         {
                             var entityToSave = (EntityField)fieldToSave;
+                            entityToSave.PreloadArticles = entityDef.PreloadArticles;
                             entityToSave.RelationCondition = entityDef.RelationCondition;
 
                             if (field is BackwardRelationField backwardDef)
