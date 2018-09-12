@@ -276,6 +276,7 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
                       {...props}
                       displayFields={[productRegionsField]}
                       filterItems={this.filterProductsByRegion}
+                      fieldOrders={["Type", "Regions", "Parameters"]}
                     />
                   )
                 }}

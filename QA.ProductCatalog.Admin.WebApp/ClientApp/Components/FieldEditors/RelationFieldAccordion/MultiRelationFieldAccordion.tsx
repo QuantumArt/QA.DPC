@@ -149,7 +149,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   }
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
-    const { fieldEditors, filterItems, children } = this.props;
+    const { fieldOrders, fieldEditors, filterItems, children } = this.props;
     const { activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     return list ? (
@@ -207,6 +207,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                         <EntityEditor
                           model={article}
                           contentSchema={fieldSchema.RelatedContent}
+                          fieldOrders={fieldOrders}
                           fieldEditors={fieldEditors}
                         >
                           {children}

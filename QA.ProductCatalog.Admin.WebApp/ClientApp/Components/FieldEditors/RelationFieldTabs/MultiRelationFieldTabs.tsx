@@ -175,6 +175,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const {
       skipOtherFields,
+      fieldOrders,
       fieldEditors,
       vertical,
       filterItems,
@@ -220,6 +221,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                         model={article}
                         contentSchema={fieldSchema.RelatedContent}
                         skipOtherFields={skipOtherFields}
+                        fieldOrders={fieldOrders}
                         fieldEditors={fieldEditors}
                         header
                         buttons={this._canEditRelation}

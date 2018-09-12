@@ -92,7 +92,14 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   }
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { skipOtherFields, fieldEditors, borderless, className, children } = this.props;
+    const {
+      skipOtherFields,
+      fieldOrders,
+      fieldEditors,
+      borderless,
+      className,
+      children
+    } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
     return isTouched && article ? (
@@ -106,6 +113,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           model={article}
           contentSchema={fieldSchema.RelatedContent}
           skipOtherFields={skipOtherFields}
+          fieldOrders={fieldOrders}
           fieldEditors={fieldEditors}
           header
           buttons={this._canEditRelation}

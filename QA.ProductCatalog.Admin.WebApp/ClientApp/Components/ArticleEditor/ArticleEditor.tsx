@@ -82,6 +82,7 @@ type RelationFieldEditor =
 export interface ArticleEditorProps {
   model: ArticleObject;
   contentSchema: ContentSchema;
+  fieldOrders?: string[];
   fieldEditors?: FieldsConfig;
   skipOtherFields?: boolean;
 }
@@ -103,13 +104,22 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
 
   @action
   private prepareFields() {
-    const { contentSchema, children } = this.props;
+    const { contentSchema, fieldOrders, children } = this.props;
     if (isFunction(children) && children.length === 0) {
       return;
     }
+    const fieldOrderByName = {};
+    if (fieldOrders) {
+      fieldOrders
+        .slice()
+        .reverse()
+        .forEach((fieldName, i) => {
+          fieldOrderByName[fieldName] = -i;
+        });
+    }
     // TODO: cache by contentSchema and memoize by props.fieldEditors
     Object.values(contentSchema.Fields)
-      .sort(asc(f => f.FieldOrder))
+      .sort(asc(field => fieldOrderByName[field.FieldName] || field.FieldOrder))
       .forEach(fieldSchema => {
         if (this.shouldIncludeField(fieldSchema)) {
           this.prepareFieldBlock(fieldSchema);

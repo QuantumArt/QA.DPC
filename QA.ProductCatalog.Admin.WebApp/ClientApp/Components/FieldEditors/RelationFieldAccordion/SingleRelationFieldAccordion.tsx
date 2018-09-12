@@ -112,7 +112,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   }
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { fieldEditors, children } = this.props;
+    const { fieldOrders, fieldEditors, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
     const hasServerId = article._ServerId > 0;
@@ -163,6 +163,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                 <EntityEditor
                   model={article}
                   contentSchema={fieldSchema.RelatedContent}
+                  fieldOrders={fieldOrders}
                   fieldEditors={fieldEditors}
                 >
                   {children}

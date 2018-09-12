@@ -17,6 +17,7 @@ import "./RelationFieldTabs.scss";
 export interface RelationFieldTabsProps extends FieldEditorProps {
   displayField?: string | FieldSelector;
   orderByField?: string | FieldSelector;
+  fieldOrders?: string[];
   fieldEditors?: FieldsConfig;
   skipOtherFields?: boolean;
   filterItems?: (item: EntityObject) => boolean;
