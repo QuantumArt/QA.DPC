@@ -805,7 +805,7 @@ FROM
                             var currentRes = localCache[localKey];
                             if (articleField != null)
                             {
-                                currentRes.Fields.Add(articleField.FieldName, articleField);
+                                currentRes.Fields[articleField.FieldName] = articleField;
                                 currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
                             }
                         }

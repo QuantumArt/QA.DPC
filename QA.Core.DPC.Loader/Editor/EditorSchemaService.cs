@@ -48,6 +48,11 @@ namespace QA.Core.DPC.Loader.Editor
         private class SchemaContext
         {
             /// <summary>
+            /// Настройки кеширования словарей
+            /// </summary>
+            public Dictionaries Dictionaries;
+
+            /// <summary>
             /// Cписок виртуальных полей которые надо игнорировать при создании схемы
             /// </summary>
             public List<Tuple<Content, Field>> IgnoredFields;
@@ -86,6 +91,7 @@ namespace QA.Core.DPC.Loader.Editor
 
             var context = new SchemaContext
             {
+                Dictionaries = content.Fields.OfType<Dictionaries>().SingleOrDefault(),
                 IgnoredFields = virtualFieldContext.IgnoredFields,
             };
 
@@ -258,7 +264,7 @@ namespace QA.Core.DPC.Loader.Editor
                 relationCondition = qpField.RelationCondition;
             }
 
-            ArticleObject[] preloadedArticles = PreloadArticles(entityField, relationCondition);
+            ArticleObject[] preloadedArticles = PreloadArticles(entityField, relationCondition, context);
 
             string[] displayFieldNames = contentSchema.Fields.Values
                 .OfType<PlainFieldSchema>()
@@ -334,20 +340,28 @@ namespace QA.Core.DPC.Loader.Editor
             throw new NotSupportedException($"Связь типа {qpField.ExactType} не поддерживается");
         }
 
-        // TODO: Оптимизация загрузки статей
-        private ArticleObject[] PreloadArticles(EntityField entityField, string relationCondition)
+        private ArticleObject[] PreloadArticles(
+            EntityField entityField, string relationCondition, SchemaContext context)
         {
             if (!entityField.PreloadArticles)
             {
                 return new ArticleObject[0];
             }
 
+            Content content = entityField.Content;
+            if (context.Dictionaries != null && !content.Fields.OfType<Dictionaries>().Any())
+            {
+                content = content.ShallowCopy();
+                content.Fields.Add(context.Dictionaries);
+            }
+
+            // TODO: вызов метода ArticleService, который возвращает только Article.Id
             int[] articleIds = _articleService
-                .List(entityField.Content.ContentId, null, filter: relationCondition)
+                .List(content.ContentId, null, filter: relationCondition)
                 .Select(a => a.Id)
                 .ToArray();
 
-            Article[] articles = _productService.GetProductsByIds(entityField.Content, articleIds);
+            Article[] articles = _productService.GetProductsByIds(content, articleIds);
 
             ArticleObject[] articleObjects = articles
                 .Select(a => _editorDataService.ConvertArticle(a, ArticleFilter.DefaultFilter))
