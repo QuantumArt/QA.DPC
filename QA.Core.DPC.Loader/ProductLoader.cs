@@ -117,9 +117,29 @@ namespace QA.Core.DPC.Loader
         public virtual Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
         {
             // TODO: профилирование и оптимизация GetProductsByIds
-            return articleIds
-                .Select(id => GetProductById(id, isLive, new ProductDefinition { StorageSchema = content }))
-                .ToArray();
+            var productDefinition = new ProductDefinition { StorageSchema = content };
+
+            using (new Qp8Bll.QPConnectionScope(_connectionString))
+            {
+                ArticleService.IsLive = isLive;
+
+                _cacheItemWatcher.TrackChanges();
+
+                var timer = new Stopwatch();
+
+                timer.Start();
+
+                ArticleService.LoadStructureCache();
+
+                timer.Stop();
+                _logger.Debug("LoadStructureCache took {0} secs", timer.Elapsed.TotalSeconds);
+
+                Article[] articles = articleIds
+                    .Select(id => GetProductById(id, productDefinition, timer, isLive))
+                    .ToArray();
+                
+                return articles;
+            }
         }
 
         /// <summary>
@@ -142,69 +162,73 @@ namespace QA.Core.DPC.Loader
                 timer.Stop();
                 _logger.Debug("LoadStructureCache took {0} secs", timer.Elapsed.TotalSeconds);
 
-                Article article = null;
-
-                if (productDefinition != null)
-                {
-                    var keyInCache = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(id, productDefinition.StorageSchema, isLive));
-
-                    article = (Article)_cacheProvider.Get(keyInCache);
-                }
-
-                if (article == null)
-                {
-                    timer.Reset();
-                    timer.Start();
-
-                    var counter = GetArticleCounter(id);
-
-                    var qpArticle = ReadArticles(new[]{id}, isLive).FirstOrDefault();
-
-                    if (qpArticle == null)
-                        return null;
-
-                    int.TryParse(qpArticle.FieldValues.Where(x => x.Field.IsClassifier).Select(x => x.Value).FirstOrDefault(),
-                        out var productTypeId);
-
-                    timer.Stop();
-                    _logger.Debug("Root article loading took {0} secs", timer.Elapsed.TotalSeconds);
-
-
-                    timer.Reset();
-                    timer.Start();
-
-                    if (productDefinition == null)
-                        productDefinition = GetProductDefinition(productTypeId, qpArticle.ContentId, isLive);
-
-                    timer.Stop();
-                    _logger.Debug("Product definition loading took {0} secs", timer.Elapsed.TotalSeconds);
-
-
-                    timer.Reset();
-                    timer.Start();
-
-                    article = GetProduct(qpArticle, productDefinition, isLive, counter);
-                    counter.LogCounter();
-
-                    timer.Stop();
-                    _logger.Debug("GetProduct took {0} secs", timer.Elapsed.TotalSeconds);
-                }
-
-                if (article.HasVirtualFields)
-                {
-                    timer.Reset();
-                    timer.Start();
-
-                    article = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
-                    
-                    timer.Stop();
-                    _logger.Debug("Virtual fields generating took {0} secs", timer.Elapsed.TotalSeconds);
-                }
-
-
+                Article article = GetProductById(id, productDefinition, timer, isLive);
 
                 return article;
             }
+        }
+
+        private Article GetProductById(int id, ProductDefinition productDefinition, Stopwatch timer, bool isLive)
+        {
+            Article article = null;
+
+            if (productDefinition != null)
+            {
+                var keyInCache = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(id, productDefinition.StorageSchema, isLive));
+
+                article = (Article)_cacheProvider.Get(keyInCache);
+            }
+
+            if (article == null)
+            {
+                timer.Reset();
+                timer.Start();
+
+                var counter = GetArticleCounter(id);
+
+                var qpArticle = ReadArticles(new[] { id }, isLive).FirstOrDefault();
+
+                if (qpArticle == null)
+                    return null;
+
+                timer.Stop();
+                _logger.Debug("Root article loading took {0} secs", timer.Elapsed.TotalSeconds);
+                
+                timer.Reset();
+                timer.Start();
+
+                if (productDefinition == null)
+                {
+                    Int32.TryParse(qpArticle.FieldValues.FirstOrDefault(x => x.Field.IsClassifier)?.Value, out var productTypeId);
+
+                    productDefinition = GetProductDefinition(productTypeId, qpArticle.ContentId, isLive);
+                }
+
+                timer.Stop();
+                _logger.Debug("Product definition loading took {0} secs", timer.Elapsed.TotalSeconds);
+                
+                timer.Reset();
+                timer.Start();
+
+                article = GetProduct(qpArticle, productDefinition, isLive, counter);
+                counter.LogCounter();
+
+                timer.Stop();
+                _logger.Debug("GetProduct took {0} secs", timer.Elapsed.TotalSeconds);
+            }
+
+            if (article.HasVirtualFields)
+            {
+                timer.Reset();
+                timer.Start();
+
+                article = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
+
+                timer.Stop();
+                _logger.Debug("Virtual fields generating took {0} secs", timer.Elapsed.TotalSeconds);
+            }
+
+            return article;
         }
 
         public virtual Article[] GetProductsByIds(int[] ids, bool isLive = false)
@@ -678,29 +702,28 @@ FROM
         /// <summary>
         /// Получение статьи и всех ее полей, описанных в структуре маппинга
         /// </summary>
-        private Article[] GetArticlesForQpArticles(Qp8Bll.Article[] articles, Content contentDef,
+        private Article[] GetArticlesForQpArticles(Qp8Bll.Article[] qpArticles, Content contentDef,
             Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter)
         {
-            if (articles == null || !articles.Any())
-                return new Article[] { };
-
+            if (qpArticles == null || !qpArticles.Any())
+            {
+                return new Article[0];
+            }
             if (contentDef == null)
             {
-                var idstr = String.Join(", ", articles.Select(n => n.Id.ToString()));
-                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_CONTENT_MAP_NOT_EXISTS, idstr));
+                string idStr = String.Join(", ", qpArticles.Select(n => n.Id.ToString()));
+                throw new Exception(String.Format(ProductLoaderResources.ERR_XML_CONTENT_MAP_NOT_EXISTS, idStr));
             }
 
-            var articleIds = articles.Select(n => n.Id).ToArray();
+            int[] articleIds = qpArticles.Select(n => n.Id).ToArray();
             counter.CheckHitArticlesLimit(articleIds);
 
-            articles = articles.Where(n => !isLive || n.Status.Name == ARTICLE_STATUS_PUBLISHED).ToArray();
+            qpArticles = qpArticles.Where(n => !isLive || n.Status.Name == ARTICLE_STATUS_PUBLISHED).ToArray();
             var result = new Dictionary<string, Article>();
 
-            if (articles.Any())
+            if (qpArticles.Any())
             {
-                var localKeys = articles.Select(n => n.Id)
-                    .Select(n => new ArticleShapedByDefinitionKey(n, contentDef, isLive));
-                
+                var localKeys = qpArticles.Select(a => new ArticleShapedByDefinitionKey(a.Id, contentDef, isLive));
                 
                 var localCacheMisses = new HashSet<ArticleShapedByDefinitionKey>();
                 
@@ -709,7 +732,7 @@ FROM
                     if (localCache.TryGetValue(localKey, out Article res))
                     {
                         _hits += 1;
-                        counter.CheckCacheArticlesLimit(new[] {localKey.ArticleId});
+                        counter.CheckCacheArticlesLimit(new[] { localKey.ArticleId });
                         result.Add(GetArticleKeyStringForCache(localKey), res);
                     }
                     else
@@ -719,43 +742,47 @@ FROM
                     }
                 }
                 
-                var initialArticles = articles.Select(n => new
+                var newArticlePairs = qpArticles.Select(a => new
                     {
-                        Article = n,
-                        LocalKey = new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)
+                        LocalKey = new ArticleShapedByDefinitionKey(a.Id, contentDef, isLive),
+                        QpArticle = a,
                     })
-                    .Where(n => localCacheMisses.Contains(n.LocalKey)).Select(n => new
+                    .Where(n => localCacheMisses.Contains(n.LocalKey)).Select(p => new
                     {
-                        n.LocalKey,
+                        p.LocalKey,
+                        p.QpArticle,
                         Article = new Article()
                         {
                             ContentId = contentDef.ContentId,
-                            Archived = n.Article.Archived,
-                            ContentDisplayName = n.Article.DisplayContentName,
+                            Archived = p.QpArticle.Archived,
+                            ContentDisplayName = p.QpArticle.DisplayContentName,
                             PublishingMode = contentDef.PublishingMode,
-                            ContentName = n.Article.Content.NetName,
-                            Created = n.Article.Created,
-                            Modified = n.Article.Modified,
-                            IsPublished = n.Article.Status.Name == ARTICLE_STATUS_PUBLISHED && !n.Article.Delayed,
-                            Splitted = n.Article.Splitted,
-                            Status = n.Article.Status.Name,
-                            Visible = n.Article.Visible,
-                            Id = n.Article.Id,
+                            ContentName = p.QpArticle.Content.NetName,
+                            Created = p.QpArticle.Created,
+                            Modified = p.QpArticle.Modified,
+                            IsPublished = p.QpArticle.Status.Name == ARTICLE_STATUS_PUBLISHED && !p.QpArticle.Delayed,
+                            Splitted = p.QpArticle.Splitted,
+                            Status = p.QpArticle.Status.Name,
+                            Visible = p.QpArticle.Visible,
+                            Id = p.QpArticle.Id,
                             HasVirtualFields = contentDef.Fields.Any(x => x is BaseVirtualField)
                         }
-                    }).ToArray();
+                    })
+                    .ToArray();
                 
                 //кладем в словарь Articles до а не после загрузки полей так как может быть цикл по данным одновременно с циклом по дефинишенам
                 //и иначе бы был stackoverflow на вызовах GetArticlesNotCached->GetArticlesField->GetArticlesNotCached->...
-                
-                foreach (var initialArticle in initialArticles)
+                foreach (var pair in newArticlePairs)
                 {
-                    localCache[initialArticle.LocalKey] = initialArticle.Article;
-                    var globalKey = GetArticleKeyStringForCache(initialArticle.LocalKey);
-                    result.Add(globalKey, initialArticle.Article);
+                    localCache[pair.LocalKey] = pair.Article;
+                    var globalKey = GetArticleKeyStringForCache(pair.LocalKey);
+                    result.Add(globalKey, pair.Article);
                 }
-                
-                
+
+                Qp8Bll.Article[] newQpArticles = newArticlePairs.Select(p => p.QpArticle).ToArray();
+
+                if (newQpArticles.Any())
+                {
                 //Заполнение Plain-полей по параметру LoadAllPlainFields="True"
                 if (contentDef.LoadAllPlainFields)
                 {
@@ -763,20 +790,19 @@ FROM
                     //Важно: также исключаются идентификаторы ExtensionField, т.к. в qp они также представлены как Plain, но обработаны должны быть иначе
                     var plainFieldsDefIds = contentDef.Fields.Where(x => x is PlainField || x is ExtensionField)
                         .Select(x => x.FieldId).ToList();
-                    var plainFieldsNotDefIds = articles.First().FieldValues.Where(x =>
+                    var plainFieldsNotDefIds = qpArticles.First().FieldValues.Where(x =>
                             x.Field.RelationType == Qp8Bll.RelationType.None
                             && !plainFieldsDefIds.Contains(x.Field.Id))
                         .Select(x => x.Field.Id)
                         .ToList(); //Список идентификаторов полей который не описаны в xml, но должны быть получены по LoadAllPlainFields="True"
-                    if (plainFieldsNotDefIds.Count > 0
-                    ) //Есть Plain поля не описанные в маппинге, но требуемые по аттрибуту LoadAllPlainFields="True"
+                    if (plainFieldsNotDefIds.Count > 0)
+                    //Есть Plain поля не описанные в маппинге, но требуемые по аттрибуту LoadAllPlainFields="True"
                     {
                         foreach (var fieldId in plainFieldsNotDefIds)
                         {
-                            var articleFields = GetArticleField(fieldId, articles, null, localCache, isLive, counter);
+                            var articleFields = GetArticleField(fieldId, newQpArticles, null, localCache, isLive, counter);
                             bool hasVirtualFields = CheckVirtualFields(articleFields);
-                            foreach (var localKey in articles.Select(n =>
-                                new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
+                            foreach (var localKey in newArticlePairs.Select(a => a.LocalKey))
                             {
                                 var articleField = articleFields[localKey.ArticleId];
                                 var currentRes = localCache[localKey];
@@ -793,23 +819,25 @@ FROM
                 //Заполнение полей из xaml-маппинга
                 foreach (var fieldDef in contentDef.Fields.Where(x => !(x is Dictionaries) && !(x is BaseVirtualField)))
                 {
-                    var articleFields = GetArticleField(fieldDef.FieldId, articles, contentDef, localCache, isLive, counter,
-                        fieldDef.FieldName);
+                    var articleFields = GetArticleField(
+                        fieldDef.FieldId, newQpArticles, contentDef, localCache,
+                        isLive, counter, fieldDef.FieldName);
+
                     var hasVirtualFields = CheckVirtualFields(articleFields);
                 
-                    foreach (var localKey in articles.Select(
-                        n => new ArticleShapedByDefinitionKey(n.Id, contentDef, isLive)))
+                    foreach (var localKey in newArticlePairs.Select(a => a.LocalKey))
                     {
                         if (articleFields.TryGetValue(localKey.ArticleId, out var articleField))
                         {
                             var currentRes = localCache[localKey];
                             if (articleField != null)
                             {
-                                currentRes.Fields[articleField.FieldName] = articleField;
+                                currentRes.Fields.Add(articleField.FieldName, articleField);
                                 currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
                             }
                         }
                     }
+                }
                 }
             }
 
