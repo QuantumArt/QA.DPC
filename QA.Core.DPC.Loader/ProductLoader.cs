@@ -783,28 +783,52 @@ FROM
 
                 if (newQpArticles.Any())
                 {
-                //Заполнение Plain-полей по параметру LoadAllPlainFields="True"
-                if (contentDef.LoadAllPlainFields)
-                {
-                    //Сбор идентификаторов PlainFields полей не описанных в маппинге, но требующихся для получения
-                    //Важно: также исключаются идентификаторы ExtensionField, т.к. в qp они также представлены как Plain, но обработаны должны быть иначе
-                    var plainFieldsDefIds = contentDef.Fields.Where(x => x is PlainField || x is ExtensionField)
-                        .Select(x => x.FieldId).ToList();
-                    var plainFieldsNotDefIds = qpArticles.First().FieldValues.Where(x =>
-                            x.Field.RelationType == Qp8Bll.RelationType.None
-                            && !plainFieldsDefIds.Contains(x.Field.Id))
-                        .Select(x => x.Field.Id)
-                        .ToList(); //Список идентификаторов полей который не описаны в xml, но должны быть получены по LoadAllPlainFields="True"
-                    if (plainFieldsNotDefIds.Count > 0)
-                    //Есть Plain поля не описанные в маппинге, но требуемые по аттрибуту LoadAllPlainFields="True"
+                    //Заполнение Plain-полей по параметру LoadAllPlainFields="True"
+                    if (contentDef.LoadAllPlainFields)
                     {
-                        foreach (var fieldId in plainFieldsNotDefIds)
+                        //Сбор идентификаторов PlainFields полей не описанных в маппинге, но требующихся для получения
+                        //Важно: также исключаются идентификаторы ExtensionField, т.к. в qp они также представлены как Plain, но обработаны должны быть иначе
+                        var plainFieldsDefIds = contentDef.Fields.Where(x => x is PlainField || x is ExtensionField)
+                            .Select(x => x.FieldId).ToList();
+                        var plainFieldsNotDefIds = qpArticles.First().FieldValues.Where(x =>
+                                x.Field.RelationType == Qp8Bll.RelationType.None
+                                && !plainFieldsDefIds.Contains(x.Field.Id))
+                            .Select(x => x.Field.Id)
+                            .ToList(); //Список идентификаторов полей который не описаны в xml, но должны быть получены по LoadAllPlainFields="True"
+                        if (plainFieldsNotDefIds.Count > 0)
+                        //Есть Plain поля не описанные в маппинге, но требуемые по аттрибуту LoadAllPlainFields="True"
                         {
-                            var articleFields = GetArticleField(fieldId, newQpArticles, null, localCache, isLive, counter);
-                            bool hasVirtualFields = CheckVirtualFields(articleFields);
-                            foreach (var localKey in newArticlePairs.Select(a => a.LocalKey))
+                            foreach (var fieldId in plainFieldsNotDefIds)
                             {
-                                var articleField = articleFields[localKey.ArticleId];
+                                var articleFields = GetArticleField(fieldId, newQpArticles, null, localCache, isLive, counter);
+                                bool hasVirtualFields = CheckVirtualFields(articleFields);
+                                foreach (var localKey in newArticlePairs.Select(a => a.LocalKey))
+                                {
+                                    var articleField = articleFields[localKey.ArticleId];
+                                    var currentRes = localCache[localKey];
+                                    if (articleField != null)
+                                    {
+                                        currentRes.Fields.Add(articleField.FieldName, articleField);
+                                        currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                
+                    //Заполнение полей из xaml-маппинга
+                    foreach (var fieldDef in contentDef.Fields.Where(x => !(x is Dictionaries) && !(x is BaseVirtualField)))
+                    {
+                        var articleFields = GetArticleField(
+                            fieldDef.FieldId, newQpArticles, contentDef, localCache,
+                            isLive, counter, fieldDef.FieldName);
+
+                        var hasVirtualFields = CheckVirtualFields(articleFields);
+                
+                        foreach (var localKey in newArticlePairs.Select(a => a.LocalKey))
+                        {
+                            if (articleFields.TryGetValue(localKey.ArticleId, out var articleField))
+                            {
                                 var currentRes = localCache[localKey];
                                 if (articleField != null)
                                 {
@@ -814,30 +838,6 @@ FROM
                             }
                         }
                     }
-                }
-                
-                //Заполнение полей из xaml-маппинга
-                foreach (var fieldDef in contentDef.Fields.Where(x => !(x is Dictionaries) && !(x is BaseVirtualField)))
-                {
-                    var articleFields = GetArticleField(
-                        fieldDef.FieldId, newQpArticles, contentDef, localCache,
-                        isLive, counter, fieldDef.FieldName);
-
-                    var hasVirtualFields = CheckVirtualFields(articleFields);
-                
-                    foreach (var localKey in newArticlePairs.Select(a => a.LocalKey))
-                    {
-                        if (articleFields.TryGetValue(localKey.ArticleId, out var articleField))
-                        {
-                            var currentRes = localCache[localKey];
-                            if (articleField != null)
-                            {
-                                currentRes.Fields.Add(articleField.FieldName, articleField);
-                                currentRes.HasVirtualFields = currentRes.HasVirtualFields || hasVirtualFields;
-                            }
-                        }
-                    }
-                }
                 }
             }
 
