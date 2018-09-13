@@ -8,33 +8,53 @@ namespace QA.ProductCatalog.Admin.WebApp.Binders
 	{
 		public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
-			var content = new Content
-			{
-				ContentName = bindingContext.ValueProvider.GetValue(bindingContext.ModelName + "." + "ContentName").AttemptedValue
-			};
+            var content = new Content();
 
-			var valueProviderResult = bindingContext.ValueProvider.GetValue(bindingContext.ModelName + ".CacheEnabled");
-
-			bool cacheEnabled = valueProviderResult != null && (bool) valueProviderResult.ConvertTo(typeof (bool));
-
-			TimeSpan? cachePeriod = null;
-
-			if (cacheEnabled)
-				cachePeriod = (TimeSpan) bindingContext.ValueProvider.GetValue(bindingContext.ModelName + ".CachePeriod").ConvertTo(typeof (TimeSpan));
-
-			XmlMappingBehavior.SetCachePeriod(content, cachePeriod);
-
-			var loadAllPlainFieldsVal = bindingContext.ValueProvider.GetValue(bindingContext.ModelName + "." + "LoadAllPlainFields");
-
-			if (loadAllPlainFieldsVal != null)
-				content.LoadAllPlainFields = (bool) loadAllPlainFieldsVal.ConvertTo(typeof (bool));
-
-			var publishingModeVal = bindingContext.ValueProvider.GetValue(bindingContext.ModelName + "." + "PublishingMode");
-
-			if (publishingModeVal != null)
-				content.PublishingMode = (PublishingMode) publishingModeVal.ConvertTo(typeof (PublishingMode));
+            if (TryGetString(bindingContext, nameof(Content.ContentName), out string contentName))
+            {
+                content.ContentName = contentName;
+            }
+            if (TryGetValue(bindingContext, "CacheEnabled", out bool cacheEnabled) && cacheEnabled)
+            {
+                if (TryGetValue(bindingContext, "CachePeriod", out TimeSpan cachePeriod))
+                {
+                    XmlMappingBehavior.SetCachePeriod(content, cachePeriod);
+                }
+            }
+            if (TryGetValue(bindingContext, nameof(Content.LoadAllPlainFields), out bool loadAllPlainFields))
+            {
+                content.LoadAllPlainFields = loadAllPlainFields;
+            }
+            if (TryGetValue(bindingContext, nameof(Content.PublishingMode), out PublishingMode publishingMode))
+            {
+                content.PublishingMode = publishingMode;
+            }
 
 			return content;
 		}
-	}
+
+        private bool TryGetValue<T>(ModelBindingContext bindingContext, string name, out T value)
+        {
+            var result = bindingContext.ValueProvider.GetValue($"{bindingContext.ModelName }.{name}");
+            if (result == null)
+            {
+                value = default(T);
+                return false;
+            }
+            value = (T)result.ConvertTo(typeof(T));
+            return true;
+        }
+
+        private bool TryGetString(ModelBindingContext bindingContext, string name, out string value)
+        {
+            var result = bindingContext.ValueProvider.GetValue($"{bindingContext.ModelName }.{name}");
+            if (result == null || String.IsNullOrWhiteSpace(result.AttemptedValue))
+            {
+                value = null;
+                return false;
+            }
+            value = result.AttemptedValue;
+            return true;
+        }
+    }
 }

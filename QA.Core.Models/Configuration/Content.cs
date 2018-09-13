@@ -39,7 +39,7 @@ namespace QA.Core.Models.Configuration
         [DisplayName("Поведение при публикации")]
         [DefaultValue(PublishingMode.Publish)]
         public PublishingMode PublishingMode { get; set; }
-
+        
         public List<Field> Fields { get; private set; }
 
         public Content()

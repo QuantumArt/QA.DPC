@@ -186,12 +186,24 @@ namespace QA.Core.Models.Configuration
         public string RelationCondition { get; set; }
 
         /// <summary>
-        /// опциональный дефинишен для клонирования, если null то используется Content
+        /// Опциональный дефинишен для клонирования, если null то используется Content
         /// </summary>
         [DefaultValue(null)]
         public Content CloneDefinition { get; set; }
+        
+        /// <summary>
+        /// Опциональная ссылка на Alias дефинишена для клонирования
+        /// </summary>
+        [DefaultValue(null)]
+        public string CloneDefinitionAlias { get; set; }
 
-		public Content Content { get; set; }
+        /// <summary>
+        /// SQL-условие для получения статьи-прототипа для клонирования
+        /// </summary>
+        [DefaultValue(null)]
+        public string ClonePrototypeCondition { get; set; }
+        
+        public Content Content { get; set; }
 
         protected override void DeepCopyMembers(Field field, ReferenceDictionary<object, object> visited)
         {
@@ -219,6 +231,8 @@ namespace QA.Core.Models.Configuration
 			return base.RecursiveEquals(other, visitedContents)
                 && PreloadArticles == ((EntityField)other).PreloadArticles
                 && RelationCondition == ((EntityField)other).RelationCondition
+                && CloneDefinitionAlias == ((EntityField)other).CloneDefinitionAlias
+                && ClonePrototypeCondition == ((EntityField)other).ClonePrototypeCondition
                 && Content.RecursiveEquals(((EntityField)other).Content, visitedContents)
                 && (CloneDefinition == null
                     ? ((EntityField)other).CloneDefinition == null
@@ -239,6 +253,14 @@ namespace QA.Core.Models.Configuration
             if (RelationCondition != null)
             {
                 hash = HashHelper.CombineHashCodes(hash, RelationCondition.GetHashCode());
+            }
+            if (CloneDefinitionAlias != null)
+            {
+                hash = HashHelper.CombineHashCodes(hash, CloneDefinitionAlias.GetHashCode());
+            }
+            if (ClonePrototypeCondition != null)
+            {
+                hash = HashHelper.CombineHashCodes(hash, ClonePrototypeCondition.GetHashCode());
             }
             if (Content != null)
             {
