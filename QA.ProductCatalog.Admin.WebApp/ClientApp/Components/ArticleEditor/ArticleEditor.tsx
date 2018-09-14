@@ -26,6 +26,7 @@ import {
   TextFieldEditor,
   ClassifierFieldEditor,
   EnumFieldEditor,
+  RelationFieldSelect,
   SingleRelationFieldTabs,
   MultiRelationFieldAccordion
 } from "Components/FieldEditors/FieldEditors";
@@ -191,9 +192,15 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
 
   private getDefaultFieldEditor(fieldSchema: FieldSchema): FieldEditor {
     if (isSingleRelationField(fieldSchema)) {
+      if (fieldSchema.PreloadedArticles.length > 0) {
+        return RelationFieldSelect;
+      }
       return SingleRelationFieldTabs;
     }
     if (isMultiRelationField(fieldSchema)) {
+      if (fieldSchema.PreloadedArticles.length > 0) {
+        return RelationFieldSelect;
+      }
       return MultiRelationFieldAccordion;
     }
     if (isExtensionField(fieldSchema)) {

@@ -3,7 +3,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import { RelationFieldTags, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
+import {
+  RelationFieldTags,
+  RelationFieldTabs,
+  RelationFieldTable
+} from "Components/FieldEditors/FieldEditors";
 import { FixConnectTariffEditor } from "./FixConnectTariffEditor";
 
 const App = () => (
@@ -12,11 +16,7 @@ const App = () => (
       settings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: props => <RelationFieldTags {...props} selectMultiple orderByField="Title" />,
-        ProductModifer: RelationFieldTagsEditor,
-        BaseParameter: RelationFieldTagsEditor,
-        Unit: RelationFieldTagsEditor,
-        Segment: RelationFieldTagsEditor,
-        TariffCategory: RelationFieldTagsEditor,
+        Advantage: RelationFieldTable,
         ProductParameter: ProductParameterEditor
       }}
     >
@@ -25,10 +25,6 @@ const App = () => (
       )}
     </ProductEditor>
   </LocaleContext.Provider>
-);
-
-const RelationFieldTagsEditor = props => (
-  <RelationFieldTags {...props} displayField="Title" orderByField="Title" />
 );
 
 const ProductParameterEditor = props => (

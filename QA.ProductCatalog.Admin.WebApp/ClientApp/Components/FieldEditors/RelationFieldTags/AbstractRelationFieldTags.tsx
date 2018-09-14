@@ -22,7 +22,6 @@ export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEdi
   RelationFieldTagsProps
 > {
   protected _displayField: FieldSelector;
-  protected _canEditRelation: boolean;
   protected _isHalfSize = false;
 
   constructor(props: RelationFieldTagsProps, context?: any) {

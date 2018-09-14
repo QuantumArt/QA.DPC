@@ -25,6 +25,7 @@ import { AbstractFieldEditor } from "./AbstractFieldEditor";
 import { Validate } from "mst-validation-mixin";
 export { FileFieldEditor } from "./FileFieldEditor";
 export { TextFieldEditor } from "./TextFieldEditor";
+export { RelationFieldSelect } from "./RelationFieldSelect/RelationFieldSelect";
 export {
   SingleRelationFieldAccordion,
   MultiRelationFieldAccordion,
