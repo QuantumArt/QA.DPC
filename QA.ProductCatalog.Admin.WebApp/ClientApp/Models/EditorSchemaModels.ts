@@ -1,4 +1,5 @@
 import { isObject, isInteger } from "Utils/TypeChecks";
+import { EntityObject } from "Models/EditorDataModels";
 
 export interface ContentSchema {
   readonly ContentId: number;
@@ -121,6 +122,7 @@ export interface RelationFieldSchema extends FieldSchema {
   readonly IsDpcBackwardField: boolean;
   readonly RelationCondition: string;
   readonly DisplayFieldNames: string[];
+  readonly PreloadedArticles: EntityObject[];
 }
 
 export function isRelationField(field: any): field is RelationFieldSchema {

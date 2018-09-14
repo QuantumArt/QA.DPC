@@ -17,6 +17,7 @@ export class DataNormalizer {
   private _objectSchemas: {
     [contentName: string]: schema.Object;
   } = {};
+  private _storeSchema: schema.Object;
 
   public initSchema(mergedSchemas: ContentSchemasById) {
     Object.values(mergedSchemas).forEach(content => {
@@ -27,6 +28,8 @@ export class DataNormalizer {
       );
       this._objectSchemas[content.ContentName] = new schema.Object({});
     });
+
+    this._storeSchema = new schema.Object({});
 
     Object.values(mergedSchemas).forEach(content => {
       const references = {};
@@ -45,6 +48,9 @@ export class DataNormalizer {
       });
       this._entitySchemas[content.ContentName].define(references);
       this._objectSchemas[content.ContentName].define(references);
+      this._storeSchema.define({
+        [content.ContentName]: [this._entitySchemas[content.ContentName]]
+      });
     });
   }
 
@@ -54,5 +60,11 @@ export class DataNormalizer {
 
   public normalizeAll(articleObjects: EntitySnapshot[], contentName: string): StoreSnapshot {
     return normalize(articleObjects, [this._entitySchemas[contentName]]).entities;
+  }
+
+  public normalizeStore(articleObjectsByContent: {
+    [contentName: string]: EntitySnapshot[];
+  }): StoreSnapshot {
+    return normalize(articleObjectsByContent, this._storeSchema).entities;
   }
 }

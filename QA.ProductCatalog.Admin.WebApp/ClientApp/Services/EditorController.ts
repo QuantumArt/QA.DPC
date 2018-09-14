@@ -1,5 +1,5 @@
 import { inject } from "react-ioc";
-import { EntitySnapshot, EntityObject } from "Models/EditorDataModels";
+import { EntityObject, StoreSnapshot, EntitySnapshot } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { DataSerializer, IdMapping } from "Services/DataSerializer";
@@ -10,9 +10,11 @@ import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { command } from "Utils/Command";
 import { rootUrl } from "Utils/Common";
+import { DataSchemaLinker } from "Services/DataSchemaLinker";
 
 export class EditorController {
   @inject private _editorSettings: EditorSettings;
+  @inject private _dataSchemaLinker: DataSchemaLinker;
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
   @inject private _dataMerger: DataMerger;
@@ -39,19 +41,37 @@ export class EditorController {
         await response.text()
       );
 
-      await initSchemaTask;
-      const contentName = this._schemaContext.rootSchema.ContentName;
+      const contentSchema = await initSchemaTask;
 
-      const flatObjectsByContent = this._dataNormalizer.normalize(nestedObjectTree, contentName);
+      const storeSnapshot = this._dataNormalizer.normalize(
+        nestedObjectTree,
+        contentSchema.ContentName
+      );
 
-      this._dataContext.initStore(flatObjectsByContent);
-      return this._dataContext.store[contentName].get(String(nestedObjectTree._ClientId));
+      this._dataSchemaLinker.addPreloadedArticlesToSnapshot(
+        storeSnapshot,
+        this._schemaContext.rootSchema
+      );
+
+      console.log(storeSnapshot);
+
+      this._dataContext.initStore(storeSnapshot);
+
+      this._dataSchemaLinker.linkPreloadedArticles(contentSchema);
+
+      return this._dataContext.store[contentSchema.ContentName].get(
+        String(nestedObjectTree._ClientId)
+      );
     } else {
-      await initSchemaTask;
-      const contentName = this._schemaContext.rootSchema.ContentName;
+      const contentSchema = await initSchemaTask;
 
-      this._dataContext.initStore({});
-      return this._dataContext.createArticle(contentName);
+      const storeSnapshot: StoreSnapshot = {};
+
+      this._dataSchemaLinker.addPreloadedArticlesToSnapshot(storeSnapshot, contentSchema);
+
+      this._dataContext.initStore(storeSnapshot);
+
+      return this._dataContext.createArticle(contentSchema.ContentName);
     }
   }
 
@@ -68,6 +88,8 @@ export class EditorController {
     this._schemaContext.initSchema(schema.EditorSchema, schema.MergedSchemas);
     this._dataContext.initSchema(this._schemaContext.contentSchemasById);
     this._dataNormalizer.initSchema(this._schemaContext.contentSchemasById);
+
+    return this._schemaContext.rootSchema;
   }
 
   @command
@@ -131,8 +153,7 @@ export class EditorController {
 
     this._dataSerializer.extendIdMappings(okResponse.IdMappings);
 
-    const dataTreeJson = JSON.stringify(okResponse.PartialProduct);
-    const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(dataTreeJson);
+    const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(okResponse.PartialProduct);
     const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
     this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
   }
