@@ -53,8 +53,6 @@ export class EditorController {
         this._schemaContext.rootSchema
       );
 
-      console.log(storeSnapshot);
-
       this._dataContext.initStore(storeSnapshot);
 
       this._dataSchemaLinker.linkPreloadedArticles(contentSchema);

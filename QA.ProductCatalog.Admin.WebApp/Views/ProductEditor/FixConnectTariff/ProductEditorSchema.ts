@@ -56,6 +56,10 @@ export interface Product extends EntityObject {
   EndDate: Date;
   /** Приоритет (популярность) */
   Priority: number;
+  /** Изображение в списке */
+  ListImage: string;
+  /** Порядок */
+  SortOrder: number;
 }
 
 export interface ProductModifer extends EntityObject {
@@ -73,8 +77,6 @@ export interface ProductParameter extends EntityObject {
   Title: string;
   /** Числовое значение */
   NumValue: number;
-  /** Текстовое значение */
-  Value: string;
   /** Единица измерения */
   Unit: Unit;
   /** Базовый параметр */
@@ -99,8 +101,6 @@ export interface LinkParameter extends EntityObject {
   Title: string;
   /** Числовое значение */
   NumValue: number;
-  /** Текстовое значение */
-  Value: string;
 }
 
 export interface MarketingProduct extends EntityObject {
@@ -123,7 +123,7 @@ export interface MarketingProduct extends EntityObject {
   Advantages: Advantage[];
   /** Модификаторы */
   Modifiers: ProductModifer[];
-  /** Маркетинговые предложения */
+  /** FixConnectActions */
   FixConnectActions: FixConnectAction[];
 }
 
