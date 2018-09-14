@@ -1,4 +1,4 @@
-import { isIsoDateString } from "Utils/TypeChecks";
+import { isIsoDateString, isString } from "Utils/TypeChecks";
 import { isEntityObject, ArticleObject, EntityObject } from "Models/EditorDataModels";
 import {
   ContentSchema,
@@ -32,7 +32,11 @@ export class DataSerializer {
    * клиентские отрицательные Id (если они определены).
    * Преобразует ISO Date strings в Unix time.
    */
-  public deserialize<T = any>(json: string): T {
+  public deserialize<T = any>(object: T): T;
+  public deserialize<T = any>(object: object): T;
+  public deserialize<T = any>(json: string): T;
+  public deserialize<T = any>(argument: any): T {
+    const json = isString(argument) ? argument : JSON.stringify(argument);
     return JSON.parse(json, (_key, value) => {
       if (isEntityObject(value)) {
         // @ts-ignore

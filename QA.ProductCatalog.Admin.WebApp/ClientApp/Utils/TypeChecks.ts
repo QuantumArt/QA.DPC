@@ -1,5 +1,7 @@
 import { isObservableArray } from "mobx";
 
+export type Mutable<T> = { [k in keyof T]: Mutable<T[k]> };
+
 export function isString(arg): arg is string {
   return typeof arg === "string";
 }
