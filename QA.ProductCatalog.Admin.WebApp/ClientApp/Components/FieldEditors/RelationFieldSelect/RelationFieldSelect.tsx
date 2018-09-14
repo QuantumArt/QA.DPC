@@ -1,5 +1,6 @@
 import React from "react";
 import { Col } from "react-flexbox-grid";
+import { Options } from "react-select";
 import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
 import cn from "classnames";
@@ -22,8 +23,9 @@ export interface RelationFieldSelectProps extends FieldEditorProps {
 @consumer
 @observer
 export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFieldSelectProps> {
-  readonly _options: { value: number; label: string }[];
-  readonly _multiple: boolean;
+  private readonly _displayField: FieldSelector;
+  private readonly _options: Options;
+  private readonly _multiple: boolean;
 
   constructor(props: RelationFieldSelectProps, context?: any) {
     super(props, context);
@@ -33,19 +35,27 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
         (() => "")
     } = this.props;
 
-    const getDisplayField = isString(displayField)
-      ? article => article[displayField]
-      : displayField;
+    this._displayField = isString(displayField) ? article => article[displayField] : displayField;
 
-    this._options = (fieldSchema as RelationFieldSchema).PreloadedArticles.map(article => {
-      const title = getDisplayField(article);
-      return {
-        value: article._ClientId,
-        label: title != null && !/^\s*$/.test(title) ? title : "..."
-      };
-    });
+    this._options = this.getOptions();
 
     this._multiple = isMultiRelationField(fieldSchema);
+  }
+
+  private getOptions() {
+    const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
+    let options = optionsCache.get(fieldSchema);
+    if (!options) {
+      options = fieldSchema.PreloadedArticles.map(article => {
+        const title = this._displayField(article);
+        return {
+          value: article._ClientId,
+          label: title != null && !/^\s*$/.test(title) ? title : "..."
+        };
+      });
+      optionsCache.set(fieldSchema, options);
+    }
+    return options;
   }
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
@@ -68,3 +78,5 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
     );
   }
 }
+
+const optionsCache = new WeakMap<RelationFieldSchema, Options>();
