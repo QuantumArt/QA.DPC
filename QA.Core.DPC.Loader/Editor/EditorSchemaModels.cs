@@ -278,6 +278,11 @@ namespace QA.Core.DPC.Loader.Editor
         public string[] DisplayFieldNames { get; set; } = new string[0];
 
         /// <summary>
+        /// Режим предзагрузки статей для выбора при редактировании поля связи
+        /// </summary>
+        public PreloadingMode PreloadingMode { get; set; }
+
+        /// <summary>
         /// Список предзагруженных статей для выбора при редактировании поля связи
         /// </summary>
         public ArticleObject[] PreloadedArticles { get; set; } = new ArticleObject[0];

@@ -286,6 +286,7 @@ namespace QA.Core.DPC.Loader.Editor
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     RelationCondition = relationCondition,
                     DisplayFieldNames = displayFieldNames,
+                    PreloadingMode = entityField.PreloadingMode,
                     PreloadedArticles = preloadedArticles,
                 };
             }
@@ -333,6 +334,7 @@ namespace QA.Core.DPC.Loader.Editor
                     DisplayFieldNames = displayFieldNames,
                     OrderByFieldName = orderByFieldName,
                     MaxDataListItemCount = maxDataListItemCount,
+                    PreloadingMode = entityField.PreloadingMode,
                     PreloadedArticles = preloadedArticles,
                 };
             }
@@ -343,7 +345,7 @@ namespace QA.Core.DPC.Loader.Editor
         private ArticleObject[] PreloadArticles(
             EntityField entityField, string relationCondition, SchemaContext context)
         {
-            if (!entityField.PreloadArticles)
+            if (entityField.PreloadingMode != PreloadingMode.Eager)
             {
                 return new ArticleObject[0];
             }

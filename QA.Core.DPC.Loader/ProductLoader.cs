@@ -116,8 +116,6 @@ namespace QA.Core.DPC.Loader
         /// </summary>
         public virtual Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
         {
-            
-
             using (new Qp8Bll.QPConnectionScope(_connectionString))
             {
                 ArticleService.IsLive = isLive;

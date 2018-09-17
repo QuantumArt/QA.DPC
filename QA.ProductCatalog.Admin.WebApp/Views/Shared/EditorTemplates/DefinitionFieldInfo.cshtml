@@ -81,10 +81,10 @@ else
     var entity = (EntityField)Model.Field;
 
     <div class="editor-label">
-      @Html.LabelFor(x => entity.PreloadArticles)
+      @Html.LabelFor(x => entity.PreloadingMode)
     </div>
     <div class="editor-field">
-      @Html.CheckBoxFor(x => entity.PreloadArticles, new { Name = "Field.PreloadArticles" })
+      @Html.EnumDropDownListFor(x => entity.PreloadingMode, new { Name = "Field.PreloadingMode" })
     </div>
 
     <div class="editor-label">

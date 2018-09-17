@@ -285,7 +285,7 @@ namespace QA.Core.DPC.Loader.Services
                         if (field is EntityField entityDef)
                         {
                             var entityToSave = (EntityField)fieldToSave;
-                            entityToSave.PreloadArticles = entityDef.PreloadArticles;
+                            entityToSave.PreloadingMode = entityDef.PreloadingMode;
                             entityToSave.RelationCondition = entityDef.RelationCondition;
                             entityToSave.CloneDefinitionAlias = entityDef.CloneDefinitionAlias;
                             entityToSave.ClonePrototypeCondition = entityDef.ClonePrototypeCondition;

@@ -146,8 +146,8 @@ namespace QA.Core.Models.Configuration
 		protected Association()
 		{
 			CloningMode = CloningMode.Ignore;
-
-			DeletingMode = DeletingMode.Keep;
+            UpdatingMode = UpdatingMode.Ignore;
+            DeletingMode = DeletingMode.Keep;
 		}
 
 		internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
@@ -179,8 +179,8 @@ namespace QA.Core.Models.Configuration
 	[ContentProperty("Content")]
 	public class EntityField : Association
 	{
-        [DefaultValue(false)]
-        public bool PreloadArticles { get; set; }
+        [DefaultValue(PreloadingMode.None)]
+        public PreloadingMode PreloadingMode { get; set; }
 
         [DefaultValue(null)]
         public string RelationCondition { get; set; }
@@ -204,6 +204,11 @@ namespace QA.Core.Models.Configuration
         public string ClonePrototypeCondition { get; set; }
         
         public Content Content { get; set; }
+
+        public EntityField()
+        {
+            PreloadingMode = PreloadingMode.None;
+        }
 
         protected override void DeepCopyMembers(Field field, ReferenceDictionary<object, object> visited)
         {
@@ -229,7 +234,7 @@ namespace QA.Core.Models.Configuration
         internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
 			return base.RecursiveEquals(other, visitedContents)
-                && PreloadArticles == ((EntityField)other).PreloadArticles
+                && PreloadingMode == ((EntityField)other).PreloadingMode
                 && RelationCondition == ((EntityField)other).RelationCondition
                 && CloneDefinitionAlias == ((EntityField)other).CloneDefinitionAlias
                 && ClonePrototypeCondition == ((EntityField)other).ClonePrototypeCondition
@@ -248,7 +253,7 @@ namespace QA.Core.Models.Configuration
 		{
 			int hash = base.GetHashCode();
 
-            hash = HashHelper.CombineHashCodes(hash, PreloadArticles.GetHashCode());
+            hash = HashHelper.CombineHashCodes(hash, PreloadingMode.GetHashCode());
 
             if (RelationCondition != null)
             {
