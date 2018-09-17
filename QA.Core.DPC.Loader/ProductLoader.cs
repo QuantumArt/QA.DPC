@@ -116,8 +116,7 @@ namespace QA.Core.DPC.Loader
         /// </summary>
         public virtual Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
         {
-            // TODO: профилирование и оптимизация GetProductsByIds
-            var productDefinition = new ProductDefinition { StorageSchema = content };
+            
 
             using (new Qp8Bll.QPConnectionScope(_connectionString))
             {
@@ -126,19 +125,80 @@ namespace QA.Core.DPC.Loader
                 _cacheItemWatcher.TrackChanges();
 
                 var timer = new Stopwatch();
-
                 timer.Start();
 
                 ArticleService.LoadStructureCache();
 
                 timer.Stop();
                 _logger.Debug("LoadStructureCache took {0} secs", timer.Elapsed.TotalSeconds);
-
-                Article[] articles = articleIds
-                    .Select(id => GetProductById(id, productDefinition, timer, isLive))
-                    .ToArray();
                 
-                return articles;
+                var articlesById = new Dictionary<int, Article>();
+                var missedArticleIds = new List<int>();
+
+                foreach (int id in articleIds)
+                {
+                    var keyInCache = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(id, content, isLive));
+                    var article = (Article)_cacheProvider.Get(keyInCache);
+
+                    if (article != null)
+                    {
+                        articlesById[id] = article;
+                    }
+                    else
+                    {
+                        articlesById[id] = null;
+                        missedArticleIds.Add(id);
+                    }
+                }
+
+                if (missedArticleIds.Any())
+                {
+                    _hits = _misses = 0;
+                    timer.Restart();
+
+                    var productDefinition = new ProductDefinition { StorageSchema = content };
+                    var loadedArticles = InitDictionaries(productDefinition, isLive, GetDictionaryCounter());
+
+                    timer.Stop();
+                    _logger.Info(
+                        $"InitDictionaries called with hits {_hits} misses {_misses}, took {timer.Elapsed.TotalSeconds} secs");
+
+                    timer.Restart();
+
+                    var qpArticles = ReadArticles(missedArticleIds.ToArray(), isLive)
+                        .Where(qpArticle => qpArticle != null)
+                        .ToArray();
+
+                    timer.Stop();
+                    _logger.Debug("Root articles loading took {0} secs", timer.Elapsed.TotalSeconds);
+
+                    _hits = _misses = 0;
+                    var counter = GetArticleCounter(content.ContentId);
+
+                    Article[] articles = GetArticlesForQpArticles(qpArticles, productDefinition.StorageSchema, loadedArticles, isLive, counter);
+
+                    counter.LogCounter();
+                    _logger.Info($"GetArticlesForQpArticles called with hits {_hits} misses {_misses}");
+
+                    timer.Restart();
+
+                    foreach (Article article in articles)
+                    {
+                        if (article.HasVirtualFields)
+                        {
+                            articlesById[article.Id] = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
+                        }
+                        else
+                        {
+                            articlesById[article.Id] = article;
+                        }
+                    }
+
+                    timer.Stop();
+                    _logger.Debug("Virtual fields generating took {0} secs", timer.Elapsed.TotalSeconds);
+                }
+
+                return articleIds.Select(id => articlesById[id]).ToArray();
             }
         }
 
@@ -162,75 +222,68 @@ namespace QA.Core.DPC.Loader
                 timer.Stop();
                 _logger.Debug("LoadStructureCache took {0} secs", timer.Elapsed.TotalSeconds);
 
-                Article article = GetProductById(id, productDefinition, timer, isLive);
+                Article article = null;
+
+                if (productDefinition != null)
+                {
+                    var keyInCache = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(id, productDefinition.StorageSchema, isLive));
+
+                    article = (Article)_cacheProvider.Get(keyInCache);
+                }
+
+                if (article == null)
+                {
+                    timer.Reset();
+                    timer.Start();
+
+                    var counter = GetArticleCounter(id);
+
+                    var qpArticle = ReadArticles(new[] { id }, isLive).FirstOrDefault();
+
+                    if (qpArticle == null)
+                        return null;
+
+                    timer.Stop();
+                    _logger.Debug("Root article loading took {0} secs", timer.Elapsed.TotalSeconds);
+
+                    timer.Reset();
+                    timer.Start();
+
+                    if (productDefinition == null)
+                    {
+                        Int32.TryParse(qpArticle.FieldValues.FirstOrDefault(x => x.Field.IsClassifier)?.Value, out var productTypeId);
+
+                        productDefinition = GetProductDefinition(productTypeId, qpArticle.ContentId, isLive);
+                    }
+
+                    timer.Stop();
+                    _logger.Debug("Product definition loading took {0} secs", timer.Elapsed.TotalSeconds);
+
+                    timer.Reset();
+                    timer.Start();
+
+                    article = GetProduct(qpArticle, productDefinition, isLive, counter);
+                    counter.LogCounter();
+
+                    timer.Stop();
+                    _logger.Debug("GetProduct took {0} secs", timer.Elapsed.TotalSeconds);
+                }
+
+                if (article.HasVirtualFields)
+                {
+                    timer.Reset();
+                    timer.Start();
+
+                    article = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
+
+                    timer.Stop();
+                    _logger.Debug("Virtual fields generating took {0} secs", timer.Elapsed.TotalSeconds);
+                }
 
                 return article;
             }
         }
-
-        private Article GetProductById(int id, ProductDefinition productDefinition, Stopwatch timer, bool isLive)
-        {
-            Article article = null;
-
-            if (productDefinition != null)
-            {
-                var keyInCache = GetArticleKeyStringForCache(new ArticleShapedByDefinitionKey(id, productDefinition.StorageSchema, isLive));
-
-                article = (Article)_cacheProvider.Get(keyInCache);
-            }
-
-            if (article == null)
-            {
-                timer.Reset();
-                timer.Start();
-
-                var counter = GetArticleCounter(id);
-
-                var qpArticle = ReadArticles(new[] { id }, isLive).FirstOrDefault();
-
-                if (qpArticle == null)
-                    return null;
-
-                timer.Stop();
-                _logger.Debug("Root article loading took {0} secs", timer.Elapsed.TotalSeconds);
-                
-                timer.Reset();
-                timer.Start();
-
-                if (productDefinition == null)
-                {
-                    Int32.TryParse(qpArticle.FieldValues.FirstOrDefault(x => x.Field.IsClassifier)?.Value, out var productTypeId);
-
-                    productDefinition = GetProductDefinition(productTypeId, qpArticle.ContentId, isLive);
-                }
-
-                timer.Stop();
-                _logger.Debug("Product definition loading took {0} secs", timer.Elapsed.TotalSeconds);
-                
-                timer.Reset();
-                timer.Start();
-
-                article = GetProduct(qpArticle, productDefinition, isLive, counter);
-                counter.LogCounter();
-
-                timer.Stop();
-                _logger.Debug("GetProduct took {0} secs", timer.Elapsed.TotalSeconds);
-            }
-
-            if (article.HasVirtualFields)
-            {
-                timer.Reset();
-                timer.Start();
-
-                article = GenerateArticleWithVirtualFields(article, productDefinition.StorageSchema);
-
-                timer.Stop();
-                _logger.Debug("Virtual fields generating took {0} secs", timer.Elapsed.TotalSeconds);
-            }
-
-            return article;
-        }
-
+        
         public virtual Article[] GetProductsByIds(int[] ids, bool isLive = false)
         {
             var dbConnector = new DBConnector(_connectionString);
