@@ -22,7 +22,6 @@ import {
 
 export interface RelationFieldSelectProps extends FieldEditorProps {
   displayField?: string | FieldSelector;
-  orderByField?: string | FieldSelector;
 }
 
 const optionsCache = new WeakMap<RelationFieldSchema, Options>();
@@ -37,7 +36,7 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
     this._multiple = isMultiRelationField(props.fieldSchema);
   }
 
-  private getOptions() {
+  private getOptions(): Options {
     const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
 
     let options = optionsCache.get(fieldSchema);
