@@ -11,7 +11,8 @@ import {
   ContentSchema,
   SingleRelationFieldSchema,
   MultiRelationFieldSchema,
-  RelationFieldSchema
+  RelationFieldSchema,
+  PreloadingState
 } from "Models/EditorSchemaModels";
 import { ArticleObject, EntitySnapshot, EntityObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
@@ -108,18 +109,18 @@ export class RelationController {
     const articleToLoadIds = selectedArticleIds.filter(id => !existingArticleIds.includes(id));
 
     if (articleToLoadIds.length === 0) {
-      return this.getSelectedArticles(contentSchema, selectedArticleIds);
+      return this.getLoadedArticles(contentSchema, selectedArticleIds);
     }
 
     await this.loadSelectedArticles(contentSchema, articleToLoadIds);
 
-    return this.getSelectedArticles(contentSchema, selectedArticleIds);
+    return this.getLoadedArticles(contentSchema, selectedArticleIds);
   }
 
-  private getSelectedArticles(contentSchema: ContentSchema, selectedArticleIds: number[]) {
+  private getLoadedArticles(contentSchema: ContentSchema, articleIds: number[]) {
     return untracked(() => {
       const contextArticles = this._dataContext.store[contentSchema.ContentName];
-      return selectedArticleIds.map(id => contextArticles.get(String(id)));
+      return articleIds.map(id => contextArticles.get(String(id)));
     });
   }
 
@@ -186,7 +187,7 @@ export class RelationController {
 
       const loadedArticleIds = dataTrees.map(article => article._ClientId);
 
-      const loadedArticles = this.getSelectedArticles(fieldSchema.RelatedContent, loadedArticleIds);
+      const loadedArticles = this.getLoadedArticles(fieldSchema.RelatedContent, loadedArticleIds);
 
       const relatedArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
 
@@ -209,6 +210,52 @@ export class RelationController {
         ContentPath: fieldSchema.ParentContent.ContentPath,
         RelationFieldName: fieldSchema.FieldName,
         ParentArticleId: model._ServerId
+      })
+    });
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    return await response.text();
+  }
+
+  public async preloadRelationArticles(fieldSchema: RelationFieldSchema) {
+    runInAction("preloadRelationArticles", () => {
+      fieldSchema.PreloadingState = PreloadingState.Loading;
+    });
+
+    const relationsJson = await this.preloadRelationArticlesJson(fieldSchema);
+
+    runInAction("preloadRelationArticles", () => {
+      const dataTrees = this._dataSerializer.deserialize<EntitySnapshot[]>(relationsJson);
+
+      const dataSnapshot = this._dataNormalizer.normalizeAll(
+        dataTrees,
+        fieldSchema.RelatedContent.ContentName
+      );
+
+      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.KeepTimestamp);
+
+      const loadedArticleIds = dataTrees.map(article => article._ClientId);
+
+      const loadedArticles = this.getLoadedArticles(fieldSchema.RelatedContent, loadedArticleIds);
+
+      fieldSchema.PreloadingState = PreloadingState.Done;
+      fieldSchema.PreloadedArticles = loadedArticles;
+    });
+  }
+
+  @command
+  private async preloadRelationArticlesJson(fieldSchema: RelationFieldSchema) {
+    const response = await fetch(`${rootUrl}/ProductEditor/PreloadRelationArticles${this._query}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+        ContentPath: fieldSchema.ParentContent.ContentPath,
+        RelationFieldName: fieldSchema.FieldName
       })
     });
     if (!response.ok) {

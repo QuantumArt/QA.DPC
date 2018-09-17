@@ -122,7 +122,9 @@ export interface RelationFieldSchema extends FieldSchema {
   readonly IsDpcBackwardField: boolean;
   readonly RelationCondition: string;
   readonly DisplayFieldNames: string[];
-  readonly PreloadedArticles: EntityObject[];
+  readonly PreloadingMode: PreloadingMode;
+  PreloadedArticles: ReadonlyArray<EntityObject>;
+  PreloadingState?: PreloadingState;
 }
 
 export function isRelationField(field: any): field is RelationFieldSchema {
@@ -138,6 +140,18 @@ export enum CloningMode {
 export enum UpdatingMode {
   Ignore = "Ignore",
   Update = "Update"
+}
+
+export enum PreloadingMode {
+  None = "None",
+  Eager = "Eager",
+  Lazy = "Lazy"
+}
+
+export enum PreloadingState {
+  NotStarted = "NotStarted",
+  Loading = "Loading",
+  Done = "Done"
 }
 
 export interface SingleRelationFieldSchema extends RelationFieldSchema {}

@@ -12,7 +12,8 @@ import {
   isExtensionField,
   isSingleRelationField,
   isMultiRelationField,
-  isRelationField
+  isRelationField,
+  PreloadingMode
 } from "Models/EditorSchemaModels";
 import {
   ExtensionFieldEditor,
@@ -192,13 +193,13 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
 
   private getDefaultFieldEditor(fieldSchema: FieldSchema): FieldEditor {
     if (isSingleRelationField(fieldSchema)) {
-      if (fieldSchema.PreloadedArticles.length > 0) {
+      if (fieldSchema.PreloadingMode !== PreloadingMode.None) {
         return RelationFieldSelect;
       }
       return SingleRelationFieldTabs;
     }
     if (isMultiRelationField(fieldSchema)) {
-      if (fieldSchema.PreloadedArticles.length > 0) {
+      if (fieldSchema.PreloadingMode !== PreloadingMode.None) {
         return RelationFieldSelect;
       }
       return MultiRelationFieldAccordion;

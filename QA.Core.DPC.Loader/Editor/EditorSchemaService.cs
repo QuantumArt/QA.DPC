@@ -3,7 +3,6 @@ using QA.Core.DPC.QP.Services;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
-using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
@@ -20,29 +19,26 @@ namespace QA.Core.DPC.Loader.Editor
     public class EditorSchemaService
     {
         private readonly DBConnector _dbConnector;
-        private readonly IProductService _productService;
         private readonly IReadOnlyArticleService _articleService;
         private readonly ContentService _contentService;
         private readonly FieldService _fieldService;
         private readonly VirtualFieldContextService _virtualFieldContextService;
-        private readonly EditorDataService _editorDataService;
+        private readonly EditorPreloadingService _editorPreloadingService;
 
         public EditorSchemaService(
             IConnectionProvider connectionProvider,
-            IProductService productService,
             IReadOnlyArticleService articleService,
-            EditorDataService editorDataService,
             ContentService contentService,
             FieldService fieldService,
-            VirtualFieldContextService virtualFieldContextService)
+            VirtualFieldContextService virtualFieldContextService,
+            EditorPreloadingService editorPreloadingService)
         {
             _dbConnector = new DBConnector(connectionProvider.GetConnection());
-            _productService = productService;
             _articleService = articleService;
-            _editorDataService = editorDataService;
             _contentService = contentService;
             _fieldService = fieldService;
             _virtualFieldContextService = virtualFieldContextService;
+            _editorPreloadingService = editorPreloadingService;
         }
 
         private class SchemaContext
@@ -252,19 +248,14 @@ namespace QA.Core.DPC.Loader.Editor
         {
             ContentSchema contentSchema = GetContentSchema(entityField.Content, context, path);
 
-            string relationCondition = null;
-            if (!String.IsNullOrWhiteSpace(entityField.RelationCondition))
-            {
-                relationCondition = entityField.RelationCondition;
-            } 
-            else if (!(entityField is BackwardRelationField)
-                && qpField.UseRelationCondition
-                && !String.IsNullOrWhiteSpace(qpField.RelationCondition))
-            {
-                relationCondition = qpField.RelationCondition;
-            }
+            string relationCondition = _editorPreloadingService.GetRelationCondition(entityField, qpField);
 
-            ArticleObject[] preloadedArticles = PreloadArticles(entityField, relationCondition, context);
+            ArticleObject[] preloadedArticles = new ArticleObject[0];
+            if (entityField.PreloadingMode == PreloadingMode.Eager)
+            {
+                preloadedArticles = _editorPreloadingService
+                    .PreloadRelationArticles(entityField, relationCondition, context.Dictionaries);
+            }
 
             string[] displayFieldNames = contentSchema.Fields.Values
                 .OfType<PlainFieldSchema>()
@@ -341,37 +332,7 @@ namespace QA.Core.DPC.Loader.Editor
 
             throw new NotSupportedException($"Связь типа {qpField.ExactType} не поддерживается");
         }
-
-        private ArticleObject[] PreloadArticles(
-            EntityField entityField, string relationCondition, SchemaContext context)
-        {
-            if (entityField.PreloadingMode != PreloadingMode.Eager)
-            {
-                return new ArticleObject[0];
-            }
-
-            Content content = entityField.Content;
-            if (context.Dictionaries != null && !content.Fields.OfType<Dictionaries>().Any())
-            {
-                content = content.ShallowCopy();
-                content.Fields.Add(context.Dictionaries);
-            }
-
-            // TODO: вызов метода ArticleService, который возвращает только Article.Id
-            int[] articleIds = _articleService
-                .List(content.ContentId, null, filter: relationCondition)
-                .Select(a => a.Id)
-                .ToArray();
-
-            Article[] articles = _productService.GetProductsByIds(content, articleIds);
-
-            ArticleObject[] articleObjects = articles
-                .Select(a => _editorDataService.ConvertArticle(a, ArticleFilter.DefaultFilter))
-                .ToArray();
-
-            return articleObjects;
-        }
-
+        
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
         private FieldSchema GetExtensionFieldSchema(

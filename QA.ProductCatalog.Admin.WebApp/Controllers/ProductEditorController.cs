@@ -34,6 +34,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly EditorSchemaService _editorSchemaService;
         private readonly EditorDataService _editorDataService;
         private readonly EditorPartialContentService _editorPartialContentService;
+        private readonly EditorPreloadingService _editorPreloadingService;
 
         public ProductEditorController(
             IContentDefinitionService contentDefinitionService,
@@ -43,7 +44,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IReadOnlyArticleService articleService,
             EditorSchemaService editorSchemaService,
             EditorDataService editorDataService,
-            EditorPartialContentService editorPartialContentService)
+            EditorPartialContentService editorPartialContentService,
+            EditorPreloadingService editorPreloadingService)
         {
             _contentDefinitionService = contentDefinitionService;
             _productService = productService;
@@ -53,6 +55,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorSchemaService = editorSchemaService;
             _editorDataService = editorDataService;
             _editorPartialContentService = editorPartialContentService;
+            _editorPreloadingService = editorPreloadingService;
         }
         
         /// <summary>
@@ -264,6 +267,36 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         /// <summary>
+        /// Загрузить все возможные статьи для связи продукта <see cref="LoadProductRelationRequest.RelationFieldName"/>
+        /// начиная с корневого контента, описанного путём <see cref="PartialProductRequest.ContentPath"/>
+        /// </summary>
+        /// <returns>JSON статей связи продукта</returns>
+        [HttpPost]
+        public ActionResult PreloadRelationArticles(
+             [ModelBinder(typeof(JsonModelBinder))] PreloadRelationArticlesRequest request, bool isLive = false)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Content rootContent = _contentDefinitionService
+                .GetDefinitionById(request.ProductDefinitionId, isLive);
+
+            Content relationContent = _editorPartialContentService
+                .FindContentByPath(rootContent, request.ContentPath);
+
+            EntityField relationField = (EntityField)relationContent.Fields
+                .Single(f => f.FieldName == request.RelationFieldName);
+
+            ArticleObject[] preloadedArticles = _editorPreloadingService.PreloadRelationArticles(relationField);
+
+            string relationJson = JsonConvert.SerializeObject(preloadedArticles);
+
+            return Content(relationJson, "application/json");
+        }
+
+        /// <summary>
         /// Сохранить часть продукта начиная с корневого контента,
         /// описанного путём <see cref="PartialProductRequest.ContentPath"/>.
         /// </summary>
@@ -416,6 +449,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             /// Id родительской статьи
             /// </summary>
             public int ParentArticleId { get; set; }
+        }
+
+        public class PreloadRelationArticlesRequest : PartialProductRequest
+        {
+            /// <summary>
+            /// Имя поля связи, которое необходимо загрузить
+            /// </summary>
+            [Required]
+            public string RelationFieldName { get; set; }
         }
 
         public class SavePartialProductRequest : PartialProductRequest

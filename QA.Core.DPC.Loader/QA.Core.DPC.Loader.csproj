@@ -303,6 +303,7 @@
     <Compile Include="Editor\EditorPartialContentService.cs" />
     <Compile Include="Editor\EditorDataModels.cs" />
     <Compile Include="Editor\EditorDataService.cs" />
+    <Compile Include="Editor\EditorPreloadingService.cs" />
     <Compile Include="Editor\EditorSchemaModels.cs" />
     <Compile Include="Editor\EditorSchemaService.cs" />
     <Compile Include="FakeProductLoader.cs" />
@@ -470,4 +471,3 @@
   </Target>
   -->
 </Project>
-

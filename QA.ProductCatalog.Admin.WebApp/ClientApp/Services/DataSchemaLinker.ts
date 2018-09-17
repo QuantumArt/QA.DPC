@@ -1,4 +1,5 @@
 import { inject } from "react-ioc";
+import { extendObservable } from "mobx";
 import { DataContext } from "Services/DataContext";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataSerializer } from "Services/DataSerializer";
@@ -6,7 +7,9 @@ import {
   ContentSchema,
   isExtensionField,
   isRelationField,
-  RelationFieldSchema
+  RelationFieldSchema,
+  PreloadingMode,
+  PreloadingState
 } from "Models/EditorSchemaModels";
 import { StoreSnapshot, EntitySnapshot } from "Models/EditorDataModels";
 import { Mutable } from "Utils/TypeChecks";
@@ -25,7 +28,7 @@ export class DataSchemaLinker {
     } = {};
 
     this.visitContentSchema(contentSchema, fieldSchema => {
-      if (fieldSchema.PreloadedArticles.length > 0) {
+      if (fieldSchema.PreloadingMode === PreloadingMode.Eager) {
         const contentName = fieldSchema.RelatedContent.ContentName;
         const objects = objectsByContent[contentName] || (objectsByContent[contentName] = []);
         const articleObjects = this._dataSerializer.deserialize<EntitySnapshot[]>(
@@ -53,13 +56,17 @@ export class DataSchemaLinker {
 
   public linkPreloadedArticles(contentSchema: ContentSchema) {
     this.visitContentSchema(contentSchema, fieldSchema => {
-      if (fieldSchema.PreloadedArticles.length > 0) {
+      if (fieldSchema.PreloadingMode === PreloadingMode.Eager) {
         const contentName = fieldSchema.RelatedContent.ContentName;
         const entitiesMap = this._dataContext.store[contentName];
-        // @ts-ignore
         fieldSchema.PreloadedArticles = fieldSchema.PreloadedArticles.map(article =>
           entitiesMap.get(String(article._ServerId))
         );
+      } else if (fieldSchema.PreloadingMode === PreloadingMode.Lazy) {
+        const properties = {
+          PreloadingState: PreloadingState.NotStarted
+        };
+        extendObservable(fieldSchema, properties, null, { deep: false });
       }
     });
   }
