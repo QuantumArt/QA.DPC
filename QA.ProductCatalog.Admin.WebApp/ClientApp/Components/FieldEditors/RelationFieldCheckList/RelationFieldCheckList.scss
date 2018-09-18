@@ -1,0 +1,17 @@
+.relation-field-check-list {
+  &--scroll {
+    border: 1px solid #ccc;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    overflow-y: auto;
+    max-height: 160px;
+  }
+
+  .pt-control {
+    margin: 0 !important;
+  }
+
+  &__cell {
+    cursor: pointer;
+  }
+}

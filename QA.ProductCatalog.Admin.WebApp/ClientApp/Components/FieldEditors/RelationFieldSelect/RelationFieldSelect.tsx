@@ -48,7 +48,7 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
     this._multiple = isMultiRelationField(props.fieldSchema);
   }
 
-  private getOptions(): Options {
+  private getCachedOptions(): Options {
     const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
 
     let options = optionsCache.get(fieldSchema);
@@ -81,7 +81,7 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
   }
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const options = this.getOptions();
+    const options = this.getCachedOptions();
 
     return (
       <Col xl md={6}>

@@ -29,7 +29,8 @@ import {
   EnumFieldEditor,
   RelationFieldSelect,
   SingleRelationFieldTabs,
-  MultiRelationFieldAccordion
+  MultiRelationFieldAccordion,
+  RelationFieldCheckList
 } from "Components/FieldEditors/FieldEditors";
 import { asc } from "Utils/Array/Sort";
 import { isFunction, isObject } from "Utils/TypeChecks";
@@ -200,7 +201,7 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
     }
     if (isMultiRelationField(fieldSchema)) {
       if (fieldSchema.PreloadingMode !== PreloadingMode.None) {
-        return RelationFieldSelect;
+        return RelationFieldCheckList;
       }
       return MultiRelationFieldAccordion;
     }
