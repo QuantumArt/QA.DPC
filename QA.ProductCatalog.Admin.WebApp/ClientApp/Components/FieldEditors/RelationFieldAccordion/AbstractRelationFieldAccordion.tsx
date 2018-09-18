@@ -35,10 +35,8 @@ export abstract class AbstractRelationFieldAccordion extends AbstractRelationFie
 
   constructor(props: RelationFieldAccordionProps, context?: any) {
     super(props, context);
-    const {
-      fieldSchema,
-      displayFields = (fieldSchema as RelationFieldSchema).DisplayFieldNames || []
-    } = this.props;
+    const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    const displayFields = props.displayFields || fieldSchema.DisplayFieldNames || [];
     this._displayFields = displayFields.map(
       field => (isString(field) ? article => article[field] : field)
     );

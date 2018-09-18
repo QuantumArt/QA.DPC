@@ -26,11 +26,9 @@ export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEdi
 
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
-    const {
-      fieldSchema,
-      displayField = (fieldSchema as RelationFieldSchema).RelatedContent.DisplayFieldName ||
-        (() => "")
-    } = this.props;
+    const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    const displayField =
+      props.displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
     this._displayField = isString(displayField) ? article => article[displayField] : displayField;
   }
 
