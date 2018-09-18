@@ -1,6 +1,6 @@
 import React from "react";
 import { Col } from "react-flexbox-grid";
-import { Options } from "react-select";
+import { Options, Option } from "react-select";
 import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
 import cn from "classnames";
@@ -10,7 +10,7 @@ import {
   PreloadingMode,
   PreloadingState
 } from "Models/EditorSchemaModels";
-import { ArticleObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isArray, isObject, isString } from "Utils/TypeChecks";
 import { Select } from "Components/FormControls/FormControls";
@@ -29,10 +29,22 @@ const optionsCache = new WeakMap<RelationFieldSchema, Options>();
 @consumer
 @observer
 export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFieldSelectProps> {
+  private readonly _getOption: (article: EntityObject) => Option;
   private readonly _multiple: boolean;
 
   constructor(props: RelationFieldSelectProps, context?: any) {
     super(props, context);
+    const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    const displayField =
+      props.displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
+    const getTitle = isString(displayField) ? article => article[displayField] : displayField;
+    this._getOption = article => {
+      const title = getTitle(article);
+      return {
+        value: article._ClientId,
+        label: title != null && !/^\s*$/.test(title) ? title : "..."
+      };
+    };
     this._multiple = isMultiRelationField(props.fieldSchema);
   }
 
@@ -44,19 +56,6 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
       return options;
     }
 
-    const displayField =
-      this.props.displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
-
-    const getTitle = isString(displayField) ? article => article[displayField] : displayField;
-
-    const getOption = article => {
-      const title = getTitle(article);
-      return {
-        value: article._ClientId,
-        label: title != null && !/^\s*$/.test(title) ? title : "..."
-      };
-    };
-
     if (
       fieldSchema.PreloadingMode === PreloadingMode.Lazy &&
       fieldSchema.PreloadingState !== PreloadingState.Done
@@ -67,15 +66,15 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
 
       const relation = this.props.model[fieldSchema.FieldName];
       if (isArray(relation)) {
-        return relation.map(getOption);
+        return relation.map(this._getOption);
       }
       if (isObject(relation)) {
-        return [getOption(relation)];
+        return [this._getOption(relation)];
       }
       return [];
     }
 
-    options = fieldSchema.PreloadedArticles.map(getOption);
+    options = fieldSchema.PreloadedArticles.map(this._getOption);
     optionsCache.set(fieldSchema, options);
 
     return options;

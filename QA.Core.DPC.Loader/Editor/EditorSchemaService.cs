@@ -614,7 +614,7 @@ namespace QA.Core.DPC.Loader.Editor
                     {
                         ContentId = singleFieldSchema.RelatedContent.ContentId,
                     };
-                    copy.PreloadedArticles = new ArticleObject[0];
+                    copy.ClearContextDependentProps();
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
                 else if (fieldSchema is MultiRelationFieldSchema multiFieldSchema)
@@ -624,7 +624,7 @@ namespace QA.Core.DPC.Loader.Editor
                     {
                         ContentId = multiFieldSchema.RelatedContent.ContentId,
                     };
-                    copy.PreloadedArticles = new ArticleObject[0];
+                    copy.ClearContextDependentProps();
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
                 else if (!mergedContentSchema.Fields.ContainsKey(fieldSchema.FieldName))

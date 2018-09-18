@@ -59,6 +59,7 @@ export class DataSchemaLinker {
       if (fieldSchema.PreloadingMode === PreloadingMode.Eager) {
         const contentName = fieldSchema.RelatedContent.ContentName;
         const entitiesMap = this._dataContext.store[contentName];
+        fieldSchema.PreloadingState = PreloadingState.Done;
         fieldSchema.PreloadedArticles = fieldSchema.PreloadedArticles.map(article =>
           entitiesMap.get(String(article._ServerId))
         );

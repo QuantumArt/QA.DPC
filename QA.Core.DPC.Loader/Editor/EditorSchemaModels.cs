@@ -175,11 +175,6 @@ namespace QA.Core.DPC.Loader.Editor
                 return types;
             }
         }
-
-        /// <summary>
-        /// Циклическая сылка на родительский контент. Заполняется на клиенте.
-        /// </summary>
-        public IContentSchema ParentContent => null;
     }
 
     /// <summary>
@@ -286,6 +281,20 @@ namespace QA.Core.DPC.Loader.Editor
         /// Список предзагруженных статей для выбора при редактировании поля связи
         /// </summary>
         public ArticleObject[] PreloadedArticles { get; set; } = new ArticleObject[0];
+
+        public bool ShouldSerializePreloadedArticles() => PreloadingMode != PreloadingMode.None;
+
+        /// <summary>
+        /// Очистить свойства, которые могут отличаться для одного и того же поля в разных узлах ProductDefiniton
+        /// </summary>
+        internal virtual void ClearContextDependentProps()
+        {
+            RelationCondition = null;
+            CloningMode = CloningMode.Ignore;
+            UpdatingMode = UpdatingMode.Ignore;
+            PreloadingMode = PreloadingMode.None;
+            PreloadedArticles = new ArticleObject[0];
+        }
     }
 
     /// <summary>

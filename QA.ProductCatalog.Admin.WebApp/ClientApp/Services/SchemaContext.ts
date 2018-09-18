@@ -66,7 +66,6 @@ function linkNestedSchemas(
         linkNestedSchemas(object[key], definitions, visited, lastContent);
       });
       if (isField(object)) {
-        // @ts-ignore
         object.ParentContent = lastContent;
       }
     }
@@ -107,7 +106,6 @@ function linkMergedSchemas(
         linkMergedSchemas(object[key], mergedSchemas, visited, lastContent);
       });
       if (isField(object)) {
-        // @ts-ignore
         object.ParentContent = lastContent;
       }
     }

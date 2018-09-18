@@ -31,7 +31,7 @@ export interface FieldSchema {
   readonly ViewInList: boolean;
   readonly DefaultValue?: any;
   readonly ClassNames: string[];
-  readonly ParentContent: ContentSchema;
+  ParentContent: ContentSchema;
 }
 
 export function isField(field: any): field is FieldSchema {
@@ -123,7 +123,7 @@ export interface RelationFieldSchema extends FieldSchema {
   readonly RelationCondition: string;
   readonly DisplayFieldNames: string[];
   readonly PreloadingMode: PreloadingMode;
-  PreloadedArticles: ReadonlyArray<EntityObject>;
+  PreloadedArticles?: ReadonlyArray<EntityObject>;
   PreloadingState?: PreloadingState;
 }
 
