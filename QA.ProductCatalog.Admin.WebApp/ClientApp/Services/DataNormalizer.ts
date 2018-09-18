@@ -26,10 +26,10 @@ export class DataNormalizer {
         {},
         options
       );
-      this._objectSchemas[content.ContentName] = new schema.Object({});
+      this._objectSchemas[content.ContentName] = new ObjectSchema({});
     });
 
-    this._storeSchema = new schema.Object({});
+    this._storeSchema = new ObjectSchema({});
 
     Object.values(mergedSchemas).forEach(content => {
       const references = {};
@@ -66,5 +66,27 @@ export class DataNormalizer {
     [contentName: string]: EntitySnapshot[];
   }): StoreSnapshot {
     return normalize(articleObjectsByContent, this._storeSchema).entities;
+  }
+}
+
+/**
+ * `schema.Object` that preserves `null` in property values
+ * https://github.com/paularmstrong/normalizr/issues/332
+ */
+class ObjectSchema extends schema.Object {
+  schema: object;
+
+  normalize(input, _parent, _key, visit, addEntity) {
+    const object = { ...input };
+    Object.keys(this.schema).forEach(key => {
+      const localSchema = this.schema[key];
+      const value = visit(input[key], input, key, localSchema, addEntity);
+      if (value === undefined) {
+        delete object[key];
+      } else {
+        object[key] = value;
+      }
+    });
+    return object;
   }
 }
