@@ -8,6 +8,7 @@ namespace QA.Core.DPC.Loader.Services
 		void LoadStructureCache();
 		Article Read(int articleId, bool excludeArchive = true);
         Article Read(int articleId, int contentId, bool excludeArchive = true);
+        IEnumerable<int> Ids(int contentId, int[] ids, bool excludeArchive = true, string filter = "");
         IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true, string filter = "");
 		string GetLinkedItems(int linkId, int id, bool excludeArchive = true);
 		string GetRelatedItems(int fieldId, int? id, bool excludeArchive = true);

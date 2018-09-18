@@ -70,10 +70,8 @@ namespace QA.Core.DPC.Loader.Editor
                 content.Fields.Add(dictionaries);
             }
 
-            // TODO: вызов метода ArticleService, который возвращает только Article.Id
             int[] articleIds = _articleService
-                .List(content.ContentId, null, filter: relationCondition)
-                .Select(a => a.Id)
+                .Ids(content.ContentId, null, filter: relationCondition)
                 .ToArray();
 
             Article[] articles = _productService.GetProductsByIds(content, articleIds);
