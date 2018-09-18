@@ -13,15 +13,20 @@ namespace QA.ProductCatalog.Infrastructure
         /// <returns></returns>
 		Article GetProductById(int id, bool isLive = false, ProductDefinition productDefinition = null);
         Article[] GetProductsByIds(int contentId, int[] ids, bool isLive = false);
-	    Article[] GetProductsByIds(int[] ids, bool isLive = false);
+        Article[] GetProductsByIds(int[] ids, bool isLive = false);
 
-		/// <summary>
-		/// Получение базовой информании о продуктах
-		/// </summary>
-		/// <param name="ids">Идентификаторы продуктов</param>
-		/// <param name="isLive"></param>
-		/// <returns></returns>
-		Article[] GetSimpleProductsByIds(int[] ids, bool isLive = false);
+        /// <summary>
+        /// Загрузить список статей <paramref name="articleIds"/> по описанию продукта <paramref name="content"/>
+        /// </summary>
+        Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false);
+
+        /// <summary>
+        /// Получение базовой информании о продуктах
+        /// </summary>
+        /// <param name="ids">Идентификаторы продуктов</param>
+        /// <param name="isLive"></param>
+        /// <returns></returns>
+        Article[] GetSimpleProductsByIds(int[] ids, bool isLive = false);
 
         /// <summary>
         /// Получение структуры данных на основе XML с мапингом данных из БД 

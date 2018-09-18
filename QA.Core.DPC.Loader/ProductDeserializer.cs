@@ -11,6 +11,7 @@ using Quantumart.QP8.BLL.Services.API;
 using Article = QA.Core.Models.Entities.Article;
 using Field = QA.Core.Models.Configuration.Field;
 using Quantumart.QPublishing.Database;
+using QA.Core.DPC.Loader.Editor;
 using System.Data.SqlClient;
 
 namespace QA.Core.DPC.Loader
@@ -79,7 +80,7 @@ namespace QA.Core.DPC.Loader
             if (productDataSource == null)
                 return null;
 
-            int id = productDataSource.GetInt("Id") ?? default(int);
+            int id = productDataSource.GetArticleId();
 
             context.TakeIntoAccount(id);
 
@@ -87,11 +88,12 @@ namespace QA.Core.DPC.Loader
 
             Article article = new Article
             {
+                Id = id,
+                ContentName = qpContent.NetName,
+                Modified = productDataSource.GetModified(),
                 ContentId = definition.ContentId,
                 ContentDisplayName = qpContent.Name,
                 PublishingMode = definition.PublishingMode,
-                ContentName = qpContent.NetName,
-                Id = id,
                 Visible = true
             };
 
@@ -191,17 +193,22 @@ namespace QA.Core.DPC.Loader
                     break;
 
                 case PlainFieldType.File:
-
-                    IProductDataSource fileContainer = productDataSource.GetContainer(plainFieldFromQP.Name);
-
-                    if (fileContainer != null)
+                    if (productDataSource is EditorJsonProductDataSource)
                     {
-                        string fileUrl = fileContainer.GetString("AbsoluteUrl");
-                        string fileName = Common.GetFileNameByUrl(connector, plainFieldFromQP.Id, fileUrl);
-
+                        string fileName = productDataSource.GetString(plainFieldFromQP.Name);
                         field.NativeValue = field.Value = fileName;
                     }
+                    else
+                    {
+                        IProductDataSource fileContainer = productDataSource.GetContainer(plainFieldFromQP.Name);
 
+                        if (fileContainer != null)
+                        {
+                            string fileUrl = fileContainer.GetString("AbsoluteUrl");
+                            string fileName = Common.GetFileNameByUrl(connector, plainFieldFromQP.Id, fileUrl);
+                            field.NativeValue = field.Value = fileName;
+                        }
+                    }
                     break;
 
                 case PlainFieldType.Boolean:
@@ -244,18 +251,24 @@ namespace QA.Core.DPC.Loader
 
                 extensionArticleField.Value = valueDef.ContentId.ToString();
                 extensionArticleField.SubContentId = valueDef.ContentId;
-                extensionArticleField.Item = DeserializeArticle(productDataSource, valueDef, connector, context);
 
-                var id = GetExstensionId(connector, valueDef.ContentId, fieldInDef.FieldId, extensionArticleField.Item.Id);
+                IProductDataSource extensionDataSource = productDataSource.GetExtensionContainer(fieldName, contentName);
 
-                if (id.HasValue)
+                extensionArticleField.Item = DeserializeArticle(extensionDataSource, valueDef, connector, context);
+
+                if (extensionArticleField.Item.Id == productDataSource.GetArticleId())
                 {
-                    extensionArticleField.Item.Id = id.Value;
-                }
-                else
-                {                    
-                    context.AddExtensionArticle(extensionArticleField.Item.Id, extensionArticleField.Item);
-                    extensionArticleField.Item.Id = default(int);
+                    var id = GetExstensionId(connector, valueDef.ContentId, fieldInDef.FieldId, extensionArticleField.Item.Id);
+
+                    if (id.HasValue)
+                    {
+                        extensionArticleField.Item.Id = id.Value;
+                    }
+                    else
+                    {
+                        context.AddExtensionArticle(extensionArticleField.Item.Id, extensionArticleField.Item);
+                        extensionArticleField.Item.Id = default(int);
+                    }
                 }
             }
 

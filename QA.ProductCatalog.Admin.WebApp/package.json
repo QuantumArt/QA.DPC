@@ -1,14 +1,117 @@
 {
+  "private": true,
   "name": "qa.productcatalog.admin.webapp",
   "version": "1.0.0",
   "description": "DPC Admin Web App",
   "scripts": {
-    "build-prod": "exit 0"
+    "build-dev": "webpack --mode development",
+    "build-prod": "webpack --mode production",
+    "webpack": "webpack --mode development --watch",
+    "webpack-analyze": "webpack --mode production --profile --json > stats.json && webpack-bundle-analyzer stats.json",
+    "test": "jest",
+    "precommit": "lint-staged"
   },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx,scss,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "browserslist": [
+    "last 2 versions",
+    "> 1%",
+    "ie 11",
+    "not ie 10"
+  ],
   "repository": {
     "type": "git",
     "url": "http://tfs01:8080/tfs/QuantumartCollection/_git/QA.DPC"
   },
-  "devDependencies": {},
-  "dependencies": {}
+  "devDependencies": {
+    "@types/classnames": "^2.2.3",
+    "@types/jest": "^23.3.1",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^9.6.5",
+    "@types/nprogress": "0.0.29",
+    "@types/qs": "^6.5.1",
+    "@types/react": "^16.3.18",
+    "@types/react-dom": "^16.0.5",
+    "@types/react-icons": "^2.2.5",
+    "@types/react-select": "^1.2.6",
+    "@types/react-text-mask": "^5.4.0",
+    "@types/react-textarea-autosize": "^4.3.2",
+    "@types/react-transition-group": "^2.0.10",
+    "@types/webpack-env": "^1.13.6",
+    "autoprefixer": "^8.3.0",
+    "clean-webpack-plugin": "^0.1.19",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
+    "glob": "^7.1.2",
+    "husky": "^0.14.3",
+    "jest": "^23.1.0",
+    "lint-staged": "^7.0.4",
+    "node-sass": "^4.8.3",
+    "postcss-loader": "^2.1.4",
+    "prettier": "^1.12.1",
+    "sass-loader": "^7.0.1",
+    "style-loader": "^0.20.3",
+    "ts-jest": "^23.1.4",
+    "ts-loader": "^4.5.0",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "typescript": "^3.0.1",
+    "url-loader": "^1.0.1",
+    "webpack": "^4.5.0",
+    "webpack-bundle-analyzer": "^2.13.1",
+    "webpack-cli": "^2.0.14"
+  },
+  "dependencies": {
+    "@blueprintjs/core": "^2.3.1",
+    "classnames": "^2.2.5",
+    "hoist-non-react-statics": "^2.5.5",
+    "json-schema-to-typescript": "^5.4.0",
+    "mobx": "^4.4.0",
+    "mobx-react": "^5.2.5",
+    "mobx-state-tree": "^3.2.4",
+    "moment": "^2.22.1",
+    "normalize.css": "^8.0.0",
+    "normalizr": "^3.2.4",
+    "nprogress": "^0.2.0",
+    "qs": "^6.5.2",
+    "react": "^16.3.1",
+    "react-datetime": "^2.14.0",
+    "react-dom": "^16.3.1",
+    "react-flexbox-grid": "^2.1.2",
+    "react-icons": "^2.2.7",
+    "react-ioc": "0.0.3",
+    "react-select": "^1.2.1",
+    "react-text-mask": "^5.4.1",
+    "react-textarea-autosize": "^6.1.0",
+    "react-transition-group": "^2.3.1",
+    "reflect-metadata": "^0.1.12",
+    "tslib": "^1.9.3"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.(jsx?|tsx?)$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.+|.+\\.(test|spec))\\.(jsx?|tsx?)$",
+    "moduleDirectories": [
+      "node_modules",
+      "ClientApp",
+      "ClientApp/Packages"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ],
+    "globals": {
+      "ts-jest": {
+        "skipBabel": true
+      }
+    }
+  }
 }

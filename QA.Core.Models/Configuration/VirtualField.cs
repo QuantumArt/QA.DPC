@@ -1,8 +1,9 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 
 namespace QA.Core.Models.Configuration
 {
-    public sealed class VirtualField : BaseVirtualField
+	public sealed class VirtualField : BaseVirtualField
 	{
 		public string Path { get; set; }
 
@@ -21,20 +22,20 @@ namespace QA.Core.Models.Configuration
 
 		public override int GetHashCode()
 		{
-			return HashHelper.CombineHashCodes(base.GetHashCode(), Path.GetHashCode(), (ObjectToRemovePath ?? string.Empty).GetHashCode(), Converter == null ? 0 : Converter.GetHashCode());
+            return HashHelper.CombineHashCodes(
+                base.GetHashCode(),
+                Path.GetHashCode(),
+                (ObjectToRemovePath ?? String.Empty).GetHashCode(),
+                Converter == null ? 0 : Converter.GetHashCode());
 		}
 
 		public override bool Equals(object obj)
 		{
-			if (!base.Equals(obj))
-				return false;
-
-			VirtualField otherVirtualField = obj as VirtualField;
-
-			if (otherVirtualField == null || otherVirtualField.Path != Path || otherVirtualField.ObjectToRemovePath != ObjectToRemovePath || otherVirtualField.Converter!=Converter)
-				return false;
-
-			return true;
+            return base.Equals(obj)
+                && obj is VirtualField otherVirtualField
+                && otherVirtualField.Path == Path
+                && otherVirtualField.ObjectToRemovePath == ObjectToRemovePath
+                && otherVirtualField.Converter == Converter;
 		}
 	}
 }

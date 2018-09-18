@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.Default.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -26,6 +27,8 @@
     <SccProvider>SAK</SccProvider>
     <WebGreaseLibPath>$(SolutionDir)\packages\WebGrease.1.5.2\lib</WebGreaseLibPath>
     <TargetFrameworkProfile />
+    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
+    <TypeScriptToolsVersion>2.5</TypeScriptToolsVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -58,7 +61,7 @@
       <HintPath>$(SolutionDir)packages\Unity.5.8.6\lib\net47\CommonServiceLocator.dll</HintPath>
     </Reference>
     <Reference Include="EFExtensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\EFExtensions.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\EFExtensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -80,7 +83,7 @@
       <HintPath>$(SolutionDir)packages\Flurl.Http.2.0.1\lib\net45\Flurl.Http.dll</HintPath>
     </Reference>
     <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\Irony.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\Irony.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
@@ -156,35 +159,35 @@
       <HintPath>$(SolutionDir)packages\Quantumart.3.1.3\lib\net471\Quantumart.QP8.Assembling.dll</HintPath>
     </Reference>
     <Reference Include="Quantumart.QP8.BLL, Version=2.8.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\Quantumart.QP8.BLL.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\Quantumart.QP8.BLL.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Configuration, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\Quantumart.QP8.Configuration.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\Quantumart.QP8.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Constants, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\Quantumart.QP8.Constants.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\Quantumart.QP8.Constants.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.DAL, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\Quantumart.QP8.DAL.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\Quantumart.QP8.DAL.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Merger, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\Quantumart.QP8.Merger.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\Quantumart.QP8.Merger.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Security, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\Quantumart.QP8.Security.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\Quantumart.QP8.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Utils, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\Quantumart.QP8.Utils.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\Quantumart.QP8.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Validators, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.3\lib\net471\Quantumart.QP8.Validators.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.8.4\lib\net471\Quantumart.QP8.Validators.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -283,6 +286,8 @@
     <Compile Include="App_Core\AppDataProductControlProvider.cs" />
     <Compile Include="App_Start\TaskContainerConfiguration.cs" />
     <Compile Include="Binders\ContentBinder.cs" />
+    <Compile Include="Binders\JsonModelBinder.cs" />
+    <Compile Include="Controllers\ProductEditorController.cs" />
     <Compile Include="Controllers\DefinitionEditorController.cs" />
     <Compile Include="Controllers\HighloadFrontController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
@@ -327,6 +332,8 @@
     <Compile Include="Models\DefinitionTreeNode.cs" />
     <Compile Include="Models\KendoGridFilter.cs" />
     <Compile Include="Models\KendoTreeNode.cs" />
+    <Compile Include="Models\ProductEditorSettingsModel.cs" />
+    <Compile Include="Models\ProductEditorSchemaModel.cs" />
     <Compile Include="Models\ProductState.cs" />
     <Compile Include="Models\SendProductModel.cs" />
     <Compile Include="Models\CustomActionTaskModel.cs" />
@@ -443,6 +450,9 @@
     <Content Include="Content\Site.css" />
     <Content Include="Content\XmlViewer.css" />
     <Content Include="Global.asax" />
+    <Content Include="package-lock.json">
+      <DependentUpon>package.json</DependentUpon>
+    </Content>
     <Content Include="Scripts\AutoUpdateStrategy.js" />
     <Content Include="Scripts\codemirror\addon\edit\closetag.js" />
     <Content Include="Scripts\codemirror\addon\edit\matchtags.js" />
@@ -491,6 +501,12 @@
       <TransformOnBuild>true</TransformOnBuild>
       <SubType>Designer</SubType>
     </Content>
+    <Content Include="Scripts\Bundles\**\*.*" />
+    <Content Include="Views\ProductEditor\ComponentLibrary.jsx" />
+    <Content Include="Views\ProductEditor\ProductEditorSchema.js" />
+    <Content Include="webpack.config.js" />
+    <Content Include="package.json" />
+    <Content Include=".editorconfig" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\localhost.pubxml" />
     <None Include="Properties\PublishProfiles\ms-dpcdvlp001.pubxml" />
@@ -500,6 +516,7 @@
     <Content Include="Scripts\Schedule.js" />
     <Content Include="Scripts\Tarantool.js" />
     <Content Include="Scripts\vanilla.helpers.js" />
+    <Content Include="Views\ProductEditor\TypeScriptSchema.js" />
     <Content Include="Views\ProductRelevance\Index.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -544,6 +561,12 @@
     <Content Include="Views\Shared\DisplayTemplates\Image.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SimpleLink.cshtml" />
     <Content Include="Views\Tarantool\Index.cshtml" />
+    <Content Include="Views\ProductEditor\TypeScriptSchema.cshtml" />
+    <Content Include="tsconfig.json" />
+    <Content Include="Views\ProductEditor\ComponentLibrary.cshtml" />
+    <Content Include="Views\ProductEditor\FixConnectTariff\FixConnectTariff.cshtml" />
+    <Content Include="Views\ProductEditor\ProductEditorSchema.cshtml" />
+    <Content Include="Views\ProductEditor\DefaultEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App_Data\controls\480.xaml">
@@ -579,6 +602,10 @@
     <ProjectReference Include="..\QA.Core.DocumentGenerator\QA.Core.DocumentGenerator.csproj">
       <Project>{7bf30688-370a-4290-89e4-ef9181d373e4}</Project>
       <Name>QA.Core.DocumentGenerator</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.API\QA.Core.DPC.API.csproj">
+      <Project>{F14BB090-9951-49BA-BE2B-80027F155D65}</Project>
+      <Name>QA.Core.DPC.API</Name>
     </ProjectReference>
     <ProjectReference Include="..\QA.Core.DPC.Notification\QA.Core.DPC.Notification.csproj">
       <Project>{d0e2cb2d-042a-4882-8e6d-bbb0966fb47b}</Project>
@@ -658,6 +685,21 @@
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ClientApp\" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="Scripts\qp\QP8BackendApi.Interaction.d.ts">
+      <DependentUpon>QP8BackendApi.Interaction.js</DependentUpon>
+    </TypeScriptCompile>
+    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\FixConnectTariff.tsx" />
+    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\FixConnectTariffEditor.tsx" />
+    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\ProductEditorSchema.ts" />
+    <TypeScriptCompile Include="Views\ProductEditor\DefaultEditor.tsx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
@@ -702,6 +744,7 @@
     <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
   <Target Name="MvcBuildViews" AfterTargets="AfterBuild" Condition="'$(MvcBuildViews)'=='true'">

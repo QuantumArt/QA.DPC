@@ -1,0 +1,64 @@
+.relation-field-tabs__controls {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  > .pt-button,
+  > .pt-button-group {
+    flex: none;
+  }
+
+  > .pt-button {
+    min-width: 110px;
+    justify-content: space-between;
+  }
+}
+
+.multi-relation-field-tabs {
+  &--empty,
+  &--hidden {
+    display: none !important;
+  }
+
+  &:not(.pt-vertical) > .pt-tab-list {
+    > .pt-tab {
+      max-width: 33%;
+    }
+  }
+
+  &.pt-vertical > .pt-tab-list {
+    > .pt-tab {
+      max-width: 33vw;
+    }
+
+    > .pt-tab-indicator-wrapper {
+      min-width: calc(100% - 20px);
+      min-height: 30px;
+    }
+  }
+
+  &--single.pt-vertical > .pt-tab-list {
+    > .pt-tab-indicator-wrapper {
+      min-width: 100%;
+    }
+  }
+}
+
+.multi-relation-field-tabs__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.single-relation-field-tabs {
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+
+  &--hidden {
+    display: none;
+  }
+
+  &--borderless {
+    border: none;
+  }
+}

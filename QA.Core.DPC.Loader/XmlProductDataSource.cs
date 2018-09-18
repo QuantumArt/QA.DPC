@@ -13,11 +13,12 @@ namespace QA.Core.DPC.Loader
 
         public XmlProductDataSource(XElement containerElement)
         {
-            if (containerElement == null)
-                throw new ArgumentNullException("containerElement");
-
-            _containerElement = containerElement;
+            _containerElement = containerElement ?? throw new ArgumentNullException("containerElement");
         }
+
+        public int GetArticleId() => GetInt(nameof(Article.Id)) ?? default(int);
+
+        public DateTime GetModified() => default(DateTime);
 
         public int? GetInt(string fieldName)
         {
@@ -53,12 +54,14 @@ namespace QA.Core.DPC.Loader
 
             return fieldElement == null ? null : fieldElement.Value;
         }
-
+        
         public IEnumerable<IProductDataSource> GetContainersCollection(string fieldName)
         {
             XElement fieldElement = _containerElement.Element(fieldName);
 
             return fieldElement == null ? null : fieldElement.Elements().Select(x => new XmlProductDataSource(x));
         }
+
+        public IProductDataSource GetExtensionContainer(string fieldName, string extensionContentName) => this;
     }
 }

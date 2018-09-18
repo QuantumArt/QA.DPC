@@ -111,6 +111,16 @@ namespace QA.Core.DPC.Loader
             }
         }
 
+        /// <summary>
+        /// Загрузить список статей <paramref name="articleIds"/> по описанию продукта <paramref name="content"/>
+        /// </summary>
+        public virtual Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
+        {
+            // TODO: профилирование и оптимизация GetProductsByIds
+            return articleIds
+                .Select(id => GetProductById(id, isLive, new ProductDefinition { StorageSchema = content }))
+                .ToArray();
+        }
 
         /// <summary>
         /// Получение структурированного продукта на основе XML с маппингом данных

@@ -15,7 +15,7 @@ namespace QA.Core.Models.Filters.Base
 
         protected override bool OnMatch(Article item)
         {
-            return _filters == null || !_filters.Any(f => !f.Matches(item));
+            return _filters == null || _filters.All(f => f.Matches(item));
         }
 
         #endregion

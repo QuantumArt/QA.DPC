@@ -1,0 +1,4 @@
+﻿// prettier-ignore
+**/ProductEditorSchema.ts
+**/ProductEditorMobxModel.ts
+**/ProductEditorNormalizrSchema.ts

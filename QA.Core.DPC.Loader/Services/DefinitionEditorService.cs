@@ -258,8 +258,11 @@ namespace QA.Core.DPC.Loader.Services
 
 				if (!doDelete)
 				{
-					if (parentContent.Fields.All(x => x.FieldId != fieldToSave.FieldId || (x is BaseVirtualField && fieldToSave is BaseVirtualField && x.FieldName != fieldToSave.FieldName)))
-						parentContent.Fields.Add(fieldToSave);
+                    if (parentContent.Fields.All(x => x.FieldId != fieldToSave.FieldId
+                        || (x is BaseVirtualField && fieldToSave is BaseVirtualField && x.FieldName != fieldToSave.FieldName)))
+                    {
+                        parentContent.Fields.Add(fieldToSave);
+                    }
 
 					fieldToSave.FieldName = field.FieldName;
 
@@ -270,40 +273,37 @@ namespace QA.Core.DPC.Loader.Services
                         fieldToSave.CustomProperties[customPropKv.Key] = customPropKv.Value;
                     }
 
-                    if (field is Association)
+                    if (field is Association assosiationDef)
 					{
-						var assosiationDef = (Association)field;
-
 						var assosiationToSave = (Association)fieldToSave;
 
 						assosiationToSave.CloningMode = assosiationDef.CloningMode;
-
 						assosiationToSave.DeletingMode = assosiationDef.DeletingMode;
-
                         assosiationToSave.UpdatingMode = assosiationDef.UpdatingMode;
 
-                        if (field is BackwardRelationField)
-						{
-							var backwardDef = (BackwardRelationField)field;
+                        if (field is EntityField entityDef)
+                        {
+                            var entityToSave = (EntityField)fieldToSave;
+                            entityToSave.RelationCondition = entityDef.RelationCondition;
 
-							var backwardToSave = (BackwardRelationField)fieldToSave;
-
-							backwardToSave.DisplayName = backwardDef.DisplayName;
-						}
+                            if (field is BackwardRelationField backwardDef)
+                            {
+                                var backwardToSave = (BackwardRelationField)fieldToSave;
+                                backwardToSave.DisplayName = backwardDef.DisplayName;
+                            }
+                        }
 					}
-					else if (field is Dictionaries)
-						((Dictionaries) fieldToSave).DefaultCachePeriod = ((Dictionaries) field).DefaultCachePeriod;
-					else if (field is VirtualField)
+					else if (field is Dictionaries dictionariesDef)
+                    {
+                        var dictionariasToSave = ((Dictionaries)fieldToSave);
+                        dictionariasToSave.DefaultCachePeriod = dictionariesDef.DefaultCachePeriod;
+                    }
+					else if (field is VirtualField virtFieldDef)
 					{
-						var virtFieldDef = (VirtualField)field;
-
 						var virtFieldToSave = (VirtualField)fieldToSave;
-
 						virtFieldToSave.Path = virtFieldDef.Path;
-
 						virtFieldToSave.ObjectToRemovePath = virtFieldDef.ObjectToRemovePath;
 					}
-
 				}
 
 				return doDelete ? null : fieldToSave;

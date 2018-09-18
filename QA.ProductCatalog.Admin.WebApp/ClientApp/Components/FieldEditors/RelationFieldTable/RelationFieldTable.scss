@@ -1,0 +1,46 @@
+.relation-field-table {
+  display: table;
+  width: 100%;
+  margin-top: 3px;
+}
+
+.relation-field-table__row {
+  display: table-row;
+
+  &:hover {
+    background-color: rgba(19, 124, 189, 0.15);
+  }
+}
+
+.relation-field-table__cell {
+  display: table-cell;
+  vertical-align: middle;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-right: 5px;
+  white-space: nowrap;
+  border-width: 0;
+
+  &:first-child {
+    padding-left: 2px;
+  }
+}
+
+.relation-field-table__controls {
+  display: table-cell;
+  vertical-align: middle;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-right: 1px;
+  width: 99%;
+  text-align: right;
+  border-width: 0;
+}
+
+// IE11 hack for removing white space after table
+@media all and (-ms-high-contrast: none) {
+  *::-ms-backdrop,
+  .relation-field-table {
+    line-height: 0.7;
+  }
+}

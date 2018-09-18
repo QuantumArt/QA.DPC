@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
@@ -41,6 +42,13 @@ namespace QA.Core.DPC.Loader
 	    public Article[] GetProductsByIds(int contentId, int[] ids, bool isLive = false)
         {
             throw new NotImplementedException();
+        }
+
+        public Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
+        {
+            return articleIds
+                .Select(id => GetProductById(id, isLive, new ProductDefinition { StorageSchema = content }))
+                .ToArray();
         }
 
         #endregion

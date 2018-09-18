@@ -1,0 +1,35 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.article-editor__header {
+  display: flex;
+  margin-top: 5px;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.article-editor__title {
+  font-size: 120%;
+  flex: 1 1 0%;
+  min-width: 200px;
+  margin-bottom: 10px;
+  margin-right: 20px;
+}
+
+.article-editor__buttons {
+  flex: none;
+  margin-bottom: 10px;
+}
+
+.article-link {
+  .pt-button-text {
+    color: $dark-gray1 !important;
+  }
+}
+
+.article-editor__header {
+  .article-link {
+    position: relative;
+    left: -5px;
+  }
+}

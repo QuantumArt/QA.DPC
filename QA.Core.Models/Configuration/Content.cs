@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Markup;
 using QA.Configuration;
+using QA.Core.Models.Tools;
 
 namespace QA.Core.Models.Configuration
 {
@@ -25,21 +26,21 @@ namespace QA.Core.Models.Configuration
     [TypeConverter(typeof(ContentTypeConverter))]
     public sealed class Content : AttachableConfigurableItem
     {
-		[DisplayName("Грузить все простые поля")]
-		[DefaultValue(true)]
+        [DisplayName("Грузить все простые поля")]
+        [DefaultValue(true)]
         public bool LoadAllPlainFields { get; set; }
-        
-		[DisplayName("Имя контента")]
-		[DefaultValue(null)]
-		public string ContentName { get; set; }
 
-		public int ContentId { get; set; }
+        [DisplayName("Имя контента")]
+        [DefaultValue(null)]
+        public string ContentName { get; set; }
 
-		[DisplayName("Поведение при публикации")]
-		[DefaultValue(PublishingMode.Publish)]
-		public PublishingMode PublishingMode { get; set; }
+        public int ContentId { get; set; }
 
-		public List<Field> Fields { get; private set; }
+        [DisplayName("Поведение при публикации")]
+        [DefaultValue(PublishingMode.Publish)]
+        public PublishingMode PublishingMode { get; set; }
+
+        public List<Field> Fields { get; private set; }
 
         public Content()
         {
@@ -47,19 +48,45 @@ namespace QA.Core.Models.Configuration
             LoadAllPlainFields = true;
         }
 
-        public override bool Equals(Object obj)
+        public Content ShallowCopy()
         {
-            var objAsContent = obj as Content;
+            var content = (Content)MemberwiseClone();
 
-			if (objAsContent == null)
-                return false;
+            content.Fields = Fields?.ToList();
 
-	        return RecursiveEquals(objAsContent, new List<Tuple<Content, Content>>());
+            return content;
+        }
+
+        public Content DeepCopy()
+        {
+            return DeepCopy(new ReferenceDictionary<object, object>());
+        }
+
+        internal Content DeepCopy(ReferenceDictionary<object, object> visited)
+        {
+            if (visited.TryGetValue(this, out object value))
+            {
+                return (Content)value;
+            }
+
+            var content = (Content)MemberwiseClone();
+
+            visited[this] = content;
+
+            content.Fields = Fields?.ConvertAll(field => field.DeepCopy(visited));
+            
+            return content;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Content content
+                && RecursiveEquals(content, new ReferenceDictionary<Content, Content>());
         }
 
         public override int GetHashCode()
         {
-			return GetRecurciveHashCode(new List<Content> ());
+            return GetRecurciveHashCode(new ReferenceHashSet<Content>());
         }
 
         public TimeSpan? GetCachePeriodForContent()
@@ -67,72 +94,82 @@ namespace QA.Core.Models.Configuration
             return XmlMappingBehavior.RetrieveCachePeriod(this);
         }
 
-		public Content[] GetChildContentsIncludingSelf()
-		{
-			var childContents = new List<Content>();
+        public Content[] GetChildContentsIncludingSelf()
+        {
+            var childContents = new List<Content>();
 
-			FillChildContents(childContents);
+            FillChildContents(childContents);
 
-			return childContents.Distinct().ToArray();
-		}
+            return childContents.Distinct().ToArray();
+        }
 
-		internal void FillChildContents(List<Content> parents)
-		{
-			if (parents.Contains(this))
-				return;
+        internal void FillChildContents(List<Content> parents)
+        {
+            if (parents.Contains(this))
+            {
+                return;
+            }
 
-			parents.Add(this);
+            parents.Add(this);
 
-			foreach (Field field in Fields)
-			{
-				field.FillChildContents(parents);
-			}
-		}
+            foreach (Field field in Fields)
+            {
+                field.FillChildContents(parents);
+            }
+        }
 
-		/// <summary>
-		/// хеш код по всей глубине контена с учетом того что могут быть циклы
-		/// </summary>
-		/// <param name="visitedContents">родительские контенты</param>
-		/// <returns></returns>
-		internal int GetRecurciveHashCode(List<Content> visitedContents)
-		{
-			if (visitedContents.Any(x => ReferenceEquals(x, this)))
-				return HashHelper.CombineHashCodes(ContentId.GetHashCode(), visitedContents.Count.GetHashCode());
+        /// <summary>
+        /// хеш код по всей глубине контена с учетом того что могут быть циклы
+        /// </summary>
+        /// <param name="visitedContents">родительские контенты</param>
+        internal int GetRecurciveHashCode(ReferenceHashSet<Content> visitedContents)
+        {
+            if (visitedContents.Contains(this))
+            {
+                return HashHelper.CombineHashCodes(ContentId.GetHashCode(), visitedContents.Count.GetHashCode());
+            }
 
-			visitedContents.Add(this);
+            visitedContents.Add(this);
 
-			int hash =  HashHelper.CombineHashCodes(PublishingMode.GetHashCode(), LoadAllPlainFields.GetHashCode());
-			
-			hash = HashHelper.CombineHashCodes(hash, ContentId.GetHashCode());
+            int hash = PublishingMode.GetHashCode();
+            hash = HashHelper.CombineHashCodes(hash, LoadAllPlainFields.GetHashCode());
+            hash = HashHelper.CombineHashCodes(hash, ContentId.GetHashCode());
 
-			return Fields.OrderBy(x => x.FieldId).Aggregate(hash, (current, field) => HashHelper.CombineHashCodes(current, field.GetRecurciveHashCode(visitedContents)));
-		}
+            foreach (Field field in Fields.OrderBy(x => x.FieldId))
+            {
+                int fieldHash = field.GetRecurciveHashCode(visitedContents);
+                hash = HashHelper.CombineHashCodes(hash, fieldHash);
+            }
 
-		/// <summary>
-		/// глубокое сравнение контентов с учетом циклов
-		/// </summary>
-		/// <param name="other"></param>
-		/// <param name="visitedContents">родительские контенты, Item1 текущего, Item2 - other</param>
-		/// <returns></returns>
-		internal bool RecursiveEquals(Content other, List<Tuple<Content,Content>> visitedContents)
-		{
-			if (ReferenceEquals(other, this))
-				return true;
+            return hash;
+        }
 
-			foreach (var visitedContent in visitedContents)
-			{
-				if (ReferenceEquals(visitedContent.Item1, this))
-					return ReferenceEquals(visitedContent.Item2, other);
-			}
+        /// <summary>
+        /// глубокое сравнение контентов с учетом циклов
+        /// </summary>
+        /// <param name="other"></param>
+        /// <param name="visitedContents">родительские контенты, Key текущего, Value - other</param>
+        /// <returns></returns>
+        internal bool RecursiveEquals(Content other, ReferenceDictionary<Content, Content> visitedContents)
+        {
+            if (ReferenceEquals(this, other))
+            {
+                return true;
+            }
 
-			visitedContents.Add(new Tuple<Content, Content>(this, other));
+            if (visitedContents.ContainsKey(this))
+            {
+                return ReferenceEquals(visitedContents[this], other);
+            }
 
-			return ContentId == other.ContentId
-			       && LoadAllPlainFields == other.LoadAllPlainFields
-			       && PublishingMode == other.PublishingMode
-			       && Fields.Count == other.Fields.Count
-			       && Fields.All(x => other.Fields.Any(y => y.FieldId == x.FieldId && x.RecursiveEquals(y, visitedContents)));
-		}
-	}
-   
+            visitedContents.Add(this, other);
+
+            return ContentId == other.ContentId
+                && LoadAllPlainFields == other.LoadAllPlainFields
+                && PublishingMode == other.PublishingMode
+                && Fields.Count == other.Fields.Count
+                && Fields.All(x => other.Fields
+                    .Any(y => y.FieldId == x.FieldId && x.RecursiveEquals(y, visitedContents)));
+        }
+    }
 }

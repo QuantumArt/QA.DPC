@@ -88,11 +88,20 @@ namespace QA.ProductCatalog.Validation.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Тарифное направление встречается больше одного раза в параметрах: {0}.
+        ///   Looks up a localized string similar to Тарифное направление встречается больше одного раза в параметрах продукта: {0}.
         /// </summary>
         internal static string DuplicateTariffsAreas {
             get {
                 return ResourceManager.GetString("DuplicateTariffsAreas", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Тарифное направление встречается больше одного раза в параметрах матрицы связей: {0}.
+        /// </summary>
+        internal static string DuplicateTariffsAreasMatrix {
+            get {
+                return ResourceManager.GetString("DuplicateTariffsAreasMatrix", resourceCulture);
             }
         }
         
