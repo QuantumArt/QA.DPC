@@ -18,6 +18,7 @@ interface EntityEditorProps {
   model: EntityObject;
   header?: ReactNode | boolean;
   buttons?: ReactNode | boolean;
+  className?: string;
   onRemove?: (article: EntityObject) => void;
   titleField?: string | ((article: EntityObject) => string);
   children?: RenderEntity | ReactNode;
@@ -52,7 +53,7 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
   };
 
   render() {
-    const { model, contentSchema, header, buttons, onRemove, children } = this.props;
+    const { model, contentSchema, header, buttons, className, onRemove, children } = this.props;
     if (isFunction(children) && children.length === 0) {
       return children(null, null);
     }
@@ -91,7 +92,7 @@ export class EntityEditor extends ArticleEditor<EntityEditorProps> {
         header || null
       );
     const fieldsNode = (
-      <Col key={2} md>
+      <Col key={2} md className={className}>
         <Row>{super.render()}</Row>
       </Col>
     );

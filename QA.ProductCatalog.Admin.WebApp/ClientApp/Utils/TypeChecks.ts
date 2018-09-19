@@ -53,6 +53,10 @@ export function isSingleKeyObject(arg): arg is Object {
   return count === 1;
 }
 
+export function isNullOrWhiteSpace(arg): arg is null | string {
+  return arg == null || (isString(arg) && /^\s*$/.test(arg));
+}
+
 // Примеры для проверки
 // 2018-03-12 10:46:32
 // 2018-03-12T10:46:32

@@ -12,7 +12,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { isArray, isObject, isString } from "Utils/TypeChecks";
+import { isArray, isObject, isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
 import { Select } from "Components/FormControls/FormControls";
 import {
   AbstractRelationFieldEditor,
@@ -42,7 +42,7 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
       const title = getTitle(article);
       return {
         value: article._ClientId,
-        label: title != null && !/^\s*$/.test(title) ? title : "..."
+        label: isNullOrWhiteSpace(title) ? "..." : title
       };
     };
     this._multiple = isMultiRelationField(props.fieldSchema);

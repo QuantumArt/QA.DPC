@@ -117,7 +117,7 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
         .slice()
         .reverse()
         .forEach((fieldName, i) => {
-          fieldOrderByName[fieldName] = -i;
+          fieldOrderByName[fieldName] = -(i + 1);
         });
     }
     // TODO: cache by contentSchema and memoize by props.fieldEditors
@@ -236,7 +236,7 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
   }
 
   render(): ReactNode {
-    const { model } = this.props;
+    const { model, fieldOrders } = this.props;
 
     return this._editorBlocks
       .map(({ fieldSchema, FieldEditor, contentsConfig }) => {
@@ -256,6 +256,7 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
             <ExtensionEditor
               key={fieldName + "_" + contentName}
               model={extensionModel}
+              fieldOrders={fieldOrders}
               contentSchema={extensionSchema}
               fieldEditors={extensionFields}
             />

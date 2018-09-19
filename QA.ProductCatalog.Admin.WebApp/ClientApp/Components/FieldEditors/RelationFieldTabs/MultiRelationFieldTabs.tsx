@@ -232,7 +232,10 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                     )
                   }
                 >
-                  <div className="multi-relation-field-tabs__title" title={title}>
+                  <div
+                    className="multi-relation-field-tabs__title"
+                    title={isString(title) ? title : ""}
+                  >
                     {title}
                   </div>
                 </Tab>

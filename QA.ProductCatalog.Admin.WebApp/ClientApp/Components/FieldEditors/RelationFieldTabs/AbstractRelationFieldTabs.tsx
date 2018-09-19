@@ -5,7 +5,7 @@ import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
-import { isString } from "Utils/TypeChecks";
+import { isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
 import { RenderEntity, FieldsConfig } from "Components/ArticleEditor/EntityEditor";
 import {
   AbstractRelationFieldEditor,
@@ -44,7 +44,7 @@ export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEdi
 
   protected getTitle(article: EntityObject) {
     const title = this._displayField(article);
-    return title != null && !/^\s*$/.test(title) ? title : "...";
+    return isNullOrWhiteSpace(title) ? "..." : title;
   }
 
   protected abstract renderControls(model: ArticleObject, fieldSchema: FieldSchema): ReactNode;

@@ -17,7 +17,7 @@ import { required } from "Utils/Validators";
 import { newUid } from "Utils/Common";
 import "./FieldEditors.scss";
 
-export type FieldSelector = (model: ArticleObject) => any;
+export type FieldSelector<T = ReactNode> = (model: ArticleObject) => T;
 
 export interface FieldEditorProps {
   model: ArticleObject;

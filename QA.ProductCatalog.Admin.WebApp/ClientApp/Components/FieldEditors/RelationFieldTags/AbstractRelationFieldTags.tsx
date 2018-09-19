@@ -3,7 +3,7 @@ import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { EntityObject } from "Models/EditorDataModels";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
-import { isString } from "Utils/TypeChecks";
+import { isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
@@ -34,7 +34,7 @@ export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEdi
 
   protected getTitle(article: EntityObject) {
     const title = this._displayField(article);
-    return title != null && !/^\s*$/.test(title) ? title : "...";
+    return isNullOrWhiteSpace(title) ? "..." : title;
   }
 
   render() {
