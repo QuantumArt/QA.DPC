@@ -3,12 +3,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import {
-  RelationFieldTags,
-  RelationFieldTabs,
-  RelationFieldTable
-} from "Components/FieldEditors/FieldEditors";
-import { FixConnectTariffEditor } from "./FixConnectTariffEditor";
+import { RelationFieldTags, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
+import { Layout } from "./Components/Layout";
+import { Product } from "./ProductEditorSchema";
+import { AdvantagesTable } from "./Components/AdvantagesTable";
+import "./FixConnectTariff.scss";
 
 const App = () => (
   <LocaleContext.Provider value="ru">
@@ -16,13 +15,11 @@ const App = () => (
       settings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: props => <RelationFieldTags {...props} selectMultiple orderByField="Title" />,
-        Advantage: RelationFieldTable,
+        Advantage: AdvantagesTable,
         ProductParameter: ProductParameterEditor
       }}
     >
-      {(model, contentSchema) => (
-        <FixConnectTariffEditor model={model} contentSchema={contentSchema} />
-      )}
+      {(model: Product, contentSchema) => <Layout model={model} contentSchema={contentSchema} />}
     </ProductEditor>
   </LocaleContext.Provider>
 );

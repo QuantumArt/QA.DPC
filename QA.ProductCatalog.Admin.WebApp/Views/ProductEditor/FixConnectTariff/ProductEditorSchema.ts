@@ -138,6 +138,9 @@ export interface TariffCategory extends EntityObject {
 
 export interface Advantage extends EntityObject {
   Title: string;
+  IsGift: boolean;
+  /** Изображение */
+  ImageSvg: string;
 }
 
 export interface Device extends ExtensionObject {

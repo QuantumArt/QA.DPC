@@ -8,7 +8,6 @@ import { EntityEditor, IGNORE } from "Components/ArticleEditor/EntityEditor";
 import {
   SingleRelationFieldTabs,
   MultiRelationFieldTabs,
-  MultiRelationFieldTable,
   MultiRelationFieldAccordion,
   SingleRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
@@ -17,13 +16,8 @@ import {
   RelationFieldSchema,
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
-import { EntityObject } from "Models/EditorDataModels";
-import { Product, FixConnectAction, DevicesForFixConnectAction } from "./ProductEditorSchema";
-
-interface FixConnectTariffEditorProps {
-  model: EntityObject;
-  contentSchema: ContentSchema;
-}
+import { Product, FixConnectAction, DevicesForFixConnectAction } from "../ProductEditorSchema";
+import { FederalTab } from "./FederalTab";
 
 const productRegionsField = (device: Product) =>
   device.Regions.map(region => region.Title).join(", ");
@@ -34,8 +28,13 @@ const actionTitleField = (action: FixConnectAction) =>
 const actionRegionsField = (action: FixConnectAction) =>
   action.Parent && action.Parent.Regions.map(region => region.Title).join(", ");
 
+interface LayoutProps {
+  model: Product;
+  contentSchema: ContentSchema;
+}
+
 @observer
-export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProps> {
+export class Layout extends Component<LayoutProps> {
   @observable private filterByRegions = false;
   @observable private activatedTabIds: TabId[] = ["federal"];
 
@@ -95,7 +94,10 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
   render() {
     return (
       <Tabs id="layout" large onChange={this.handleTabChange}>
-        <Tab id="federal" panel={this.renderFederal()}>
+        <Tab
+          id="federal"
+          panel={this.activatedTabIds.includes("federal") && <FederalTab {...this.props} />}
+        >
           <Icon icon="globe" iconSize={Icon.SIZE_LARGE} />
           <span>Общефедеральные характеристики</span>
         </Tab>
@@ -108,41 +110,6 @@ export class FixConnectTariffEditor extends Component<FixConnectTariffEditorProp
           <span>Оборудование</span>
         </Tab>
       </Tabs>
-    );
-  }
-
-  private renderFederal() {
-    if (!this.activatedTabIds.includes("federal")) {
-      return null;
-    }
-    const { model, contentSchema } = this.props;
-
-    return (
-      <EntityEditor
-        model={model}
-        contentSchema={contentSchema}
-        skipOtherFields
-        fieldEditors={{
-          MarketingProduct: props => (
-            <SingleRelationFieldTabs
-              borderless
-              fieldEditors={{
-                Type_Contents: {
-                  MarketingFixConnectTariff: {
-                    FixConnectActions: IGNORE as any,
-                    MarketingTvPackage: SingleRelationFieldTable,
-                    MarketingInternetTariff: SingleRelationFieldTable,
-                    MarketingPhoneTariff: SingleRelationFieldTable,
-                    BonusTVPackages: MultiRelationFieldTable,
-                    MarketingDevices: MultiRelationFieldTable
-                  }
-                }
-              }}
-              {...props}
-            />
-          )
-        }}
-      />
     );
   }
 

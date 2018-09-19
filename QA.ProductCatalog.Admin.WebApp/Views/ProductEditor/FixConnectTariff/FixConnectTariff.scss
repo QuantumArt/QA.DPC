@@ -1,0 +1,13 @@
+.advantages-table {
+  &__is-gift {
+    margin-left: 10px;
+
+    .pt-checkbox {
+      position: relative;
+      top: 3px;
+      display: inline-block;
+      margin: 0;
+      margin-left: 5px;
+    }
+  }
+}
