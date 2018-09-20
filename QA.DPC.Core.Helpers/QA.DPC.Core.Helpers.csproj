@@ -21,6 +21,7 @@
     <PackageReference Include="QA.Core" Version="3.3.1" />
     <PackageReference Include="Quantumart.QP8.BLL" Version="2.8.6" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="Unity.Abstractions" Version="3.3.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj" />

@@ -45,6 +45,7 @@
     <PackageReference Include="QA.Configuration" Version="1.0.2" />
     <PackageReference Include="Quantumart" Version="3.1.3" />
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
+    <PackageReference Include="Unity.Abstractions" Version="3.3.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj" />
