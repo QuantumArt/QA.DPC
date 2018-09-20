@@ -8,12 +8,12 @@ import {
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
 import { Product } from "../ProductEditorSchema";
 
-interface FederalProps {
+interface FederalTabProps {
   model: Product;
   contentSchema: ContentSchema;
 }
 
-export const FederalTab = ({ model, contentSchema }: FederalProps) => {
+export const FederalTab = ({ model, contentSchema }: FederalTabProps) => {
   const schema = (contentSchema.Fields.MarketingProduct as RelationFieldSchema).RelatedContent;
   return (
     <>

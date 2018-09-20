@@ -7,7 +7,6 @@ import { ExtensionEditor } from "Components/ArticleEditor/ArticleEditor";
 import { EntityEditor, IGNORE } from "Components/ArticleEditor/EntityEditor";
 import {
   SingleRelationFieldTabs,
-  MultiRelationFieldTabs,
   MultiRelationFieldAccordion,
   SingleRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
@@ -18,6 +17,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { Product, FixConnectAction, DevicesForFixConnectAction } from "../ProductEditorSchema";
 import { FederalTab } from "./FederalTab";
+import { DevicesTab } from "./DevicesTab";
 
 const productRegionsField = (device: Product) =>
   device.Regions.map(region => region.Title).join(", ");
@@ -28,13 +28,13 @@ const actionTitleField = (action: FixConnectAction) =>
 const actionRegionsField = (action: FixConnectAction) =>
   action.Parent && action.Parent.Regions.map(region => region.Title).join(", ");
 
-interface LayoutProps {
+interface EditorTabsProps {
   model: Product;
   contentSchema: ContentSchema;
 }
 
 @observer
-export class Layout extends Component<LayoutProps> {
+export class EditorTabs extends Component<EditorTabsProps> {
   @observable private filterByRegions = false;
   @observable private activatedTabIds: TabId[] = ["federal"];
 
@@ -105,7 +105,10 @@ export class Layout extends Component<LayoutProps> {
           <Icon icon="flag" iconSize={Icon.SIZE_LARGE} />
           <span>Региональные характеристики и действующие акции</span>
         </Tab>
-        <Tab id="devices" panel={this.renderDevices()}>
+        <Tab
+          id="devices"
+          panel={this.activatedTabIds.includes("devices") && <DevicesTab {...this.props} />}
+        >
           <Icon icon="projects" iconSize={Icon.SIZE_LARGE} />
           <span>Оборудование</span>
         </Tab>
@@ -214,45 +217,6 @@ export class Layout extends Component<LayoutProps> {
         ) : null}
       </>
     );
-  }
-
-  private renderDevices() {
-    if (!this.activatedTabIds.includes("devices")) {
-      return null;
-    }
-    const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
-
-    return extension ? (
-      <>
-        {this.renderFilter()}
-        <ExtensionEditor
-          model={extension}
-          contentSchema={extensionSchema}
-          skipOtherFields
-          fieldEditors={{
-            MarketingDevices: props => (
-              <MultiRelationFieldTabs
-                {...props}
-                vertical
-                className="container-xl"
-                displayField={"Title"}
-                skipOtherFields
-                fieldEditors={{
-                  Products: props => (
-                    <MultiRelationFieldAccordion
-                      {...props}
-                      displayFields={[productRegionsField]}
-                      filterItems={this.filterProductsByRegion}
-                      fieldOrders={["Type", "Regions", "Parameters"]}
-                    />
-                  )
-                }}
-              />
-            )
-          }}
-        />
-      </>
-    ) : null;
   }
 
   private renderFilter() {

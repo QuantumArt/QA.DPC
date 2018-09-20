@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
 import { RelationFieldTags, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
-import { Layout } from "./Components/Layout";
+import { EditorTabs } from "./Components/EditorTabs";
 import { Product } from "./ProductEditorSchema";
 import { AdvantagesTable } from "./Components/AdvantagesTable";
 import "./FixConnectTariff.scss";
@@ -19,7 +19,9 @@ const App = () => (
         ProductParameter: ProductParameterEditor
       }}
     >
-      {(model: Product, contentSchema) => <Layout model={model} contentSchema={contentSchema} />}
+      {(model: Product, contentSchema) => (
+        <EditorTabs model={model} contentSchema={contentSchema} />
+      )}
     </ProductEditor>
   </LocaleContext.Provider>
 );

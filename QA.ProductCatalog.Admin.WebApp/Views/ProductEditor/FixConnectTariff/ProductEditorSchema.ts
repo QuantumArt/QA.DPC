@@ -15,6 +15,7 @@ export interface ProductEntities {
   TariffCategory: TariffCategory;
   Advantage: Advantage;
   FixConnectAction: FixConnectAction;
+  DeviceOnTariffs: DeviceOnTariffs;
   DevicesForFixConnectAction: DevicesForFixConnectAction;
 }
 
@@ -70,6 +71,8 @@ export interface ProductModifer extends EntityObject {
 export interface BaseParameter extends EntityObject {
   /** Название */
   Title: string;
+  /** Псевдоним */
+  Alias: string;
 }
 
 export interface ProductParameter extends EntityObject {
@@ -88,19 +91,21 @@ export interface Unit extends EntityObject {
 }
 
 export interface ProductRelation extends EntityObject {
+  /** Название */
+  Title: string;
   /** Параметры */
   Parameters: LinkParameter[];
 }
 
 export interface LinkParameter extends EntityObject {
-  /** Единица измерения */
-  Unit: Unit;
-  /** Базовый параметр */
-  BaseParameter: BaseParameter;
   /** Название */
   Title: string;
   /** Числовое значение */
   NumValue: number;
+  /** Единица измерения */
+  Unit: Unit;
+  /** Базовый параметр */
+  BaseParameter: BaseParameter;
 }
 
 export interface MarketingProduct extends EntityObject {
@@ -114,6 +119,10 @@ export interface MarketingProduct extends EntityObject {
   Title: string;
   /** Продукты */
   Products: Product[];
+  /** Оборудование на тарифах */
+  DevicesOnTariffs: DeviceOnTariffs[];
+  /** Модификаторы */
+  Modifiers: ProductModifer[];
   Description: string;
   /** Порядок */
   SortOrder: number;
@@ -121,8 +130,6 @@ export interface MarketingProduct extends EntityObject {
   ArchiveDate: Date;
   /** Преимущества */
   Advantages: Advantage[];
-  /** Модификаторы */
-  Modifiers: ProductModifer[];
   /** FixConnectActions */
   FixConnectActions: FixConnectAction[];
 }
@@ -174,6 +181,14 @@ export interface PhoneTariff extends ExtensionObject {
 }
 
 export interface InternetTariff extends ExtensionObject {
+}
+
+export interface DeviceOnTariffs extends EntityObject {
+  /** Маркетинговые тарифы фиксированной связи */
+  MarketingTariffs: MarketingProduct[];
+  /** Города */
+  Cities: Region[];
+  Parent: ProductRelation;
 }
 
 export interface DevicesForFixConnectAction extends EntityObject {
