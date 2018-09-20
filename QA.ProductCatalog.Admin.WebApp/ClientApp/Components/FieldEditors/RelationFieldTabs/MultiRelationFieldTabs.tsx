@@ -39,15 +39,12 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
 
   constructor(props: RelationFieldTabsProps, context?: any) {
     super(props, context);
-    const {
-      model,
-      fieldSchema,
-      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName ||
-        ArticleObject._ServerId
-    } = props;
+    const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
+    const orderByField =
+      props.orderByField || fieldSchema.OrderByFieldName || ArticleObject._ServerId;
     this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
     untracked(() => {
-      const array = model[fieldSchema.FieldName] as EntityObject[];
+      const array = props.model[fieldSchema.FieldName] as EntityObject[];
       if (array.length > 0) {
         const firstArticle = array[0];
         this.state.activeId = firstArticle._ClientId;

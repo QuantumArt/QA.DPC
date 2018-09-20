@@ -139,6 +139,10 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
     model.setTouched(fieldSchema.FieldName, true);
   };
 
+  render() {
+    return this.getCachedOptions().length > 0 ? super.render() : null;
+  }
+
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const sortedOptions = this.getSortedOptions(model, fieldSchema);
     const relation = model[fieldSchema.FieldName] as EntityObject | EntityObject[];

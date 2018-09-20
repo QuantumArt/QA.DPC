@@ -80,6 +80,10 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
     return options;
   }
 
+  render() {
+    return this.getCachedOptions().length > 0 ? super.render() : null;
+  }
+
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const options = this.getCachedOptions();
 

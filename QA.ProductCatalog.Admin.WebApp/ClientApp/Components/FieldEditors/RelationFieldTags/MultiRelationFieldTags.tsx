@@ -28,11 +28,9 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
 
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
-    const {
-      fieldSchema,
-      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName ||
-        ArticleObject._ServerId
-    } = props;
+    const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
+    const orderByField =
+      props.orderByField || fieldSchema.OrderByFieldName || ArticleObject._ServerId;
     this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
   }
 
