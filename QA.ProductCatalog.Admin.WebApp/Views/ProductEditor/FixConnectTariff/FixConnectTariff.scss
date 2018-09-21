@@ -11,3 +11,11 @@
     }
   }
 }
+
+.products-accordion {
+  &__regions {
+    max-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
