@@ -184,7 +184,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   }
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
-    const { fieldOrders, fieldEditors, filterItems, children } = this.props;
+    const { columnProportions, fieldOrders, fieldEditors, filterItems, children } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     return isTouched && list ? (
@@ -221,7 +221,11 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
                     </td>
                     {this._displayFields.map((displayField, i) => (
-                      <td key={i} className="relation-field-accordion__cell">
+                      <td
+                        key={i}
+                        colSpan={columnProportions ? columnProportions[i] : 1}
+                        className="relation-field-accordion__cell"
+                      >
                         {displayField(article)}
                       </td>
                     ))}
@@ -242,7 +246,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       className={cn("relation-field-accordion__body", {
                         "relation-field-accordion__body--open": isOpen
                       })}
-                      colSpan={this._displayFields.length + 3}
+                      colSpan={this.getBodyColSpan()}
                     >
                       {touchedIds[article._ClientId] && (
                         <EntityEditor

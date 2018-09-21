@@ -112,7 +112,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   }
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { fieldOrders, fieldEditors, children } = this.props;
+    const { columnProportions, fieldOrders, fieldEditors, children } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
     const hasServerId = article._ServerId > 0;
@@ -136,7 +136,11 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
             </td>
             {this._displayFields.map((displayField, i) => (
-              <td key={i} className="relation-field-accordion__cell">
+              <td
+                key={i}
+                colSpan={columnProportions ? columnProportions[i] : 1}
+                className="relation-field-accordion__cell"
+              >
                 {displayField(article)}
               </td>
             ))}
@@ -157,7 +161,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               className={cn("relation-field-accordion__body", {
                 "relation-field-accordion__body--open": isOpen
               })}
-              colSpan={this._displayFields.length + 3}
+              colSpan={this.getBodyColSpan()}
             >
               {isTouched && (
                 <EntityEditor

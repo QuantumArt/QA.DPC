@@ -18,6 +18,7 @@ import "./RelationFieldAccordion.scss";
 
 export interface RelationFieldAccordionProps extends FieldEditorProps {
   displayFields?: (string | FieldSelector)[];
+  columnProportions?: number[];
   orderByField?: string | FieldSelector;
   fieldOrders?: string[];
   fieldEditors?: FieldsConfig;
@@ -44,6 +45,13 @@ export abstract class AbstractRelationFieldAccordion extends AbstractRelationFie
   }
 
   protected abstract renderControls(model: ArticleObject, fieldSchema: FieldSchema): ReactNode;
+
+  protected getBodyColSpan() {
+    const { columnProportions } = this.props;
+    return columnProportions
+      ? columnProportions.reduce((sum, n) => sum + n, 0) + 3
+      : this._displayFields.length + 3;
+  }
 
   render() {
     const { model, fieldSchema } = this.props;
