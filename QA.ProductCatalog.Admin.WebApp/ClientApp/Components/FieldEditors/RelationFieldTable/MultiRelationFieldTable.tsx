@@ -61,37 +61,39 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
         {this.renderValidation(model, fieldSchema)}
         {list && (
           <div className="relation-field-table">
-            {list
-              .slice()
-              .sort(asc(this._orderByField))
-              .map(article => {
-                return (
-                  <div key={article._ClientId} className="relation-field-table__row">
-                    <div key={-1} className="relation-field-table__cell">
-                      <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
-                    </div>
-                    {this._displayFields.map((displayField, i) => (
-                      <div key={i} className="relation-field-table__cell">
-                        {displayField(article)}
+            <div className="relation-field-table__table">
+              {list
+                .slice()
+                .sort(asc(this._orderByField))
+                .map(article => {
+                  return (
+                    <div key={article._ClientId} className="relation-field-table__row">
+                      <div key={-1} className="relation-field-table__cell">
+                        <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
                       </div>
-                    ))}
-                    <div key={-2} className="relation-field-table__controls">
-                      {this._canEditRelation && (
-                        <Button
-                          minimal
-                          small
-                          rightIcon="remove"
-                          intent={Intent.DANGER}
-                          title="Удалить связь"
-                          onClick={e => this.removeRelation(e, article)}
-                        >
-                          Удалить
-                        </Button>
-                      )}
+                      {this._displayFields.map((displayField, i) => (
+                        <div key={i} className="relation-field-table__cell">
+                          {displayField(article)}
+                        </div>
+                      ))}
+                      <div key={-2} className="relation-field-table__controls">
+                        {this._canEditRelation && (
+                          <Button
+                            minimal
+                            small
+                            rightIcon="remove"
+                            intent={Intent.DANGER}
+                            title="Удалить связь"
+                            onClick={e => this.removeRelation(e, article)}
+                          >
+                            Удалить
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+            </div>
           </div>
         )}
       </Col>

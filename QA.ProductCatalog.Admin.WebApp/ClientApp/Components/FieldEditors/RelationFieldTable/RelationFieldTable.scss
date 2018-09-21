@@ -1,4 +1,9 @@
 .relation-field-table {
+  overflow-y: auto;
+  max-height: 237px;
+}
+
+.relation-field-table__table {
   display: table;
   width: 100%;
   margin-top: 3px;

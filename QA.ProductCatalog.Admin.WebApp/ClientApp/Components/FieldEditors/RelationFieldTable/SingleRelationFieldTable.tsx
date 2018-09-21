@@ -37,28 +37,30 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
         {this.renderValidation(model, fieldSchema)}
         {article && (
           <div className="relation-field-table">
-            <div className="relation-field-table__row">
-              <div key={-1} className="relation-field-table__cell">
-                <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
-              </div>
-              {this._displayFields.map((displayField, i) => (
-                <div key={i} className="relation-field-table__cell">
-                  {displayField(article)}
+            <div className="relation-field-table__table">
+              <div className="relation-field-table__row">
+                <div key={-1} className="relation-field-table__cell">
+                  <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
                 </div>
-              ))}
-              <div key={-2} className="relation-field-table__controls">
-                {this._canEditRelation && (
-                  <Button
-                    minimal
-                    small
-                    rightIcon="remove"
-                    intent={Intent.DANGER}
-                    title="Удалить связь"
-                    onClick={this.removeRelation}
-                  >
-                    Удалить
-                  </Button>
-                )}
+                {this._displayFields.map((displayField, i) => (
+                  <div key={i} className="relation-field-table__cell">
+                    {displayField(article)}
+                  </div>
+                ))}
+                <div key={-2} className="relation-field-table__controls">
+                  {this._canEditRelation && (
+                    <Button
+                      minimal
+                      small
+                      rightIcon="remove"
+                      intent={Intent.DANGER}
+                      title="Удалить связь"
+                      onClick={this.removeRelation}
+                    >
+                      Удалить
+                    </Button>
+                  )}
+                </div>
               </div>
             </div>
           </div>

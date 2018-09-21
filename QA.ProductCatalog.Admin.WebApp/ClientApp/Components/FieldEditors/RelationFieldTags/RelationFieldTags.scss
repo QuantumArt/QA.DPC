@@ -1,5 +1,7 @@
 .relation-field-list__tags {
   line-height: 24px;
+  overflow-y: auto;
+  max-height: 194px;
 
   .pt-tag,
   .pt-button-group {
