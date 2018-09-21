@@ -6,6 +6,26 @@ $background: darken(#f5f8fa, 5%);
   table-layout: fixed;
   width: 100%;
   margin-top: 5px;
+
+  &--hidden {
+    display: none !important;
+  }
+}
+
+.relation-field-accordion__controls {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+  > .pt-button,
+  > .pt-button-group {
+    flex: none;
+  }
+
+  > .pt-button {
+    min-width: 110px;
+    justify-content: space-between;
+  }
 }
 
 .relation-field-accordion__header {

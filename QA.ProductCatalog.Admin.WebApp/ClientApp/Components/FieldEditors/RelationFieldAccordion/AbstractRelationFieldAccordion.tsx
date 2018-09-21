@@ -22,6 +22,7 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   fieldOrders?: string[];
   fieldEditors?: FieldsConfig;
   filterItems?: (item: EntityObject) => boolean;
+  collapsed?: boolean;
   children?: RenderEntity | ReactNode;
 }
 

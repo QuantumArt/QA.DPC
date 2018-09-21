@@ -3,7 +3,7 @@ import { consumer } from "react-ioc";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
-import { Icon } from "@blueprintjs/core";
+import { Icon, Button } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema, SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString } from "Utils/TypeChecks";
@@ -19,6 +19,8 @@ import {
 import { ArticleLink } from "Components/ArticleEditor/ArticleLink";
 
 interface MultiRelationFieldAccordionState {
+  isOpen: boolean;
+  isTouched: boolean;
   activeId: number | null;
   touchedIds: {
     [articleId: number]: boolean;
@@ -34,6 +36,8 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
 
   private _orderByField: FieldSelector;
   readonly state: MultiRelationFieldAccordionState = {
+    isOpen: !this.props.collapsed,
+    isTouched: !this.props.collapsed,
     activeId: null,
     touchedIds: {}
   };
@@ -52,6 +56,10 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     const contentName = (fieldSchema as MultiRelationFieldSchema).RelatedContent.ContentName;
     const article = this._dataContext.createArticle(contentName);
     this.toggleRelation(article);
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
     model[fieldSchema.FieldName].push(article);
     model.setTouched(fieldSchema.FieldName, true);
   };
@@ -61,7 +69,9 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     const { model, fieldSchema } = this.props;
     this.setState({
       activeId: null,
-      touchedIds: {}
+      touchedIds: {},
+      isOpen: false,
+      isTouched: false
     });
     model[fieldSchema.FieldName] = [];
     model.setTouched(fieldSchema.FieldName, true);
@@ -125,33 +135,66 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
 
   private selectRelations = async () => {
     const { model, fieldSchema } = this.props;
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
   private reloadRelations = async () => {
     const { model, fieldSchema } = this.props;
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
     await this._relationController.reloadRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
+  private toggleFieldEditor = () => {
+    const { isOpen } = this.state;
+    this.setState({
+      isOpen: !isOpen,
+      isTouched: true
+    });
+  };
+
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
+    const { isOpen } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
-      <RelationFieldMenu
-        onCreate={this._canEditRelation && this.createRelation}
-        onSelect={this._canEditRelation && this.selectRelations}
-        onClear={this._canEditRelation && !isEmpty && this.clearRelation}
-        onReload={model._ServerId > 0 && this.reloadRelations}
-      />
+      <div className="relation-field-tabs__controls">
+        <RelationFieldMenu
+          onCreate={this._canEditRelation && this.createRelation}
+          onSelect={this._canEditRelation && this.selectRelations}
+          onClear={this._canEditRelation && !isEmpty && this.clearRelation}
+          onReload={model._ServerId > 0 && this.reloadRelations}
+        />
+        <Button
+          small
+          disabled={isEmpty}
+          rightIcon={isOpen ? "chevron-up" : "chevron-down"}
+          onClick={this.toggleFieldEditor}
+        >
+          {isOpen ? "Свернуть" : "Развернуть"}
+        </Button>
+      </div>
     );
   }
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const { fieldOrders, fieldEditors, filterItems, children } = this.props;
-    const { activeId, touchedIds } = this.state;
+    const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
-    return list ? (
-      <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
+    return isTouched && list ? (
+      <table
+        className={cn("relation-field-accordion", {
+          "relation-field-accordion--hidden": !isOpen
+        })}
+        cellSpacing="0"
+        cellPadding="0"
+      >
         <tbody>
           {list
             .filter(filterItems)
