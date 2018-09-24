@@ -12,7 +12,7 @@ namespace QA.DPC.Core.Helpers
 {
     public interface IVersionedCacheProvider2 : IVersionedCacheProvider
     {
-        T GetOrAdd<T>(string key, string[] tags, TimeSpan expiration, Func<T> getData);
+        T GetOrAdd<T>(string key, string[] tags, TimeSpan expiration, Func<T> getData, bool slidingExpiration, CacheItemPriority priority);
 
         T GetOrAdd<T>(string key, TimeSpan expiration, Func<T> getData);
     }
@@ -53,17 +53,7 @@ namespace QA.DPC.Core.Helpers
         /// <param name="cacheTime">Время кеширования в секундах</param>
         public virtual void Set(string key, object data, int cacheTime)
         {
-            if (string.IsNullOrEmpty(key))
-            {
-                return;
-            }
-
-            var policy = new MemoryCacheEntryOptions
-            {
-                AbsoluteExpiration = DateTime.Now + TimeSpan.FromSeconds(cacheTime)
-            };
-
-            _cache.Set(key, data, policy);
+            Set(key, data, TimeSpan.FromSeconds(cacheTime));
         }
 
         /// <summary>
@@ -71,7 +61,7 @@ namespace QA.DPC.Core.Helpers
         /// </summary>
         /// <param name="key">Ключ</param>
         /// <param name="data">Данные</param>
-        /// <param name="expiration">Время кеширования (sliding expiration)</param>
+        /// <param name="expiration">Время кеширования</param>
         public virtual void Set(string key, object data, TimeSpan expiration)
         {
             if (string.IsNullOrEmpty(key))
@@ -79,10 +69,8 @@ namespace QA.DPC.Core.Helpers
                 return;
             }
 
-            var policy = new MemoryCacheEntryOptions
-            {
-                AbsoluteExpiration = DateTime.Now + expiration
-            };
+            var policy = new MemoryCacheEntryOptions();
+            policy.AbsoluteExpiration = DateTimeOffset.Now + expiration;
 
             _cache.Set(key, data, policy);
         }
@@ -131,19 +119,27 @@ namespace QA.DPC.Core.Helpers
 
         public void Add(object data, string key, string[] tags, TimeSpan expiration)
         {
-            var policy = new MemoryCacheEntryOptions
+            Add(data, key, tags, expiration, false, CacheItemPriority.Normal);
+        }
+
+        private void Add(object data, string key, string[] tags, TimeSpan expiration, bool useSlidingExpiration, CacheItemPriority priority)
+        {
+            var policy = new MemoryCacheEntryOptions {Priority = priority};
+            if (useSlidingExpiration)
             {
-                AbsoluteExpiration = DateTime.Now + expiration
-            };
+                policy.SlidingExpiration = expiration;
+            }
+            else
+            {
+                policy.AbsoluteExpiration = DateTimeOffset.Now + expiration;
+            }
+
 
             if (tags != null && tags.Length > 0)
             {
-                var now = DateTime.Now;
-                var tagExpiration = now.AddDays(10);
-
                 foreach (var item in tags)
                 {
-                    var src = AddTag(tagExpiration, item);
+                    var src = AddTag(item);
                     policy.AddExpirationToken(new CancellationChangeToken(src.Token));
                 }
             }
@@ -189,11 +185,11 @@ namespace QA.DPC.Core.Helpers
             var strkey = key as string;
             if (strkey != null)
             {
-                ((VersionedCacheCoreProvider)state).AddTag(DateTime.Now.AddDays(1), strkey);
+                ((VersionedCacheCoreProvider)state).AddTag(strkey);
             }
         }
 
-        private CancellationTokenSource AddTag(DateTime tagExpiration, string item)
+        private CancellationTokenSource AddTag(string item)
         {
             var result = _cache.Get(item) as CancellationTokenSource;
             if (result == null)
@@ -202,7 +198,7 @@ namespace QA.DPC.Core.Helpers
                 var options = new MemoryCacheEntryOptions()
                 {
                     Priority = CacheItemPriority.NeverRemove,
-                    AbsoluteExpiration = tagExpiration,
+                    AbsoluteExpiration = DateTimeOffset.MaxValue,
                 };
                 options.RegisterPostEvictionCallback(EvictionTagCallback, this);
                 _cache.Set(item, result, options);
@@ -220,7 +216,8 @@ namespace QA.DPC.Core.Helpers
             return GetOrAdd(key, null, expiration, getData);
         }
 
-        public T GetOrAdd<T>(string key, string[] tags, TimeSpan expiration, Func<T> getData)
+        public T GetOrAdd<T>(string key, string[] tags, TimeSpan expiration, Func<T> getData,
+            bool useSlidingExpiration = false, CacheItemPriority priority = CacheItemPriority.Normal)
         {
             object result = Get(key, tags);
 
@@ -252,7 +249,7 @@ namespace QA.DPC.Core.Helpers
 
                             if (result != null)
                             {
-                                Add(result, key, tags, expiration);
+                                Add(result, key, tags, expiration, useSlidingExpiration, priority);
                             }
                         }
                     }
