@@ -174,6 +174,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       skipOtherFields,
       fieldOrders,
       fieldEditors,
+      renderOnlyActiveTab,
       vertical,
       filterItems,
       className,
@@ -190,6 +191,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     }
     return (
       <Tabs
+        renderActiveTabPanelOnly={renderOnlyActiveTab}
         vertical={vertical}
         id={`${tabId}_${fieldSchema.FieldName}`}
         className={cn("multi-relation-field-tabs", className, {

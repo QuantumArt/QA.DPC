@@ -21,6 +21,7 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   fieldEditors?: FieldsConfig;
   skipOtherFields?: boolean;
   filterItems?: (item: EntityObject) => boolean;
+  renderOnlyActiveTab?: boolean;
   collapsed?: boolean;
   vertical?: boolean;
   className?: string;

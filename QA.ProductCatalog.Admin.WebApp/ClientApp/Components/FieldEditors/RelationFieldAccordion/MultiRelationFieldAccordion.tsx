@@ -184,7 +184,14 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   }
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
-    const { columnProportions, fieldOrders, fieldEditors, filterItems, children } = this.props;
+    const {
+      columnProportions,
+      fieldOrders,
+      fieldEditors,
+      filterItems,
+      renderOnlyActiveSection,
+      children
+    } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     return isTouched && list ? (
@@ -248,16 +255,17 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       })}
                       colSpan={this.getBodyColSpan()}
                     >
-                      {touchedIds[article._ClientId] && (
-                        <EntityEditor
-                          model={article}
-                          contentSchema={fieldSchema.RelatedContent}
-                          fieldOrders={fieldOrders}
-                          fieldEditors={fieldEditors}
-                        >
-                          {children}
-                        </EntityEditor>
-                      )}
+                      {(isOpen || !renderOnlyActiveSection) &&
+                        touchedIds[article._ClientId] && (
+                          <EntityEditor
+                            model={article}
+                            contentSchema={fieldSchema.RelatedContent}
+                            fieldOrders={fieldOrders}
+                            fieldEditors={fieldEditors}
+                          >
+                            {children}
+                          </EntityEditor>
+                        )}
                     </td>
                   </tr>
                 </Fragment>
