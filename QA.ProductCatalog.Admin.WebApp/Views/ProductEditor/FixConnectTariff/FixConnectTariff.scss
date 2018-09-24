@@ -12,6 +12,21 @@
   }
 }
 
+.devices-tab {
+  &__filter {
+    padding-top: 10px;
+
+    .pt-switch.pt-align-right.pt-large {
+      padding-left: 0;
+      padding-right: 32px;
+
+      .pt-control-indicator {
+        top: 6px;
+      }
+    }
+  }
+}
+
 .products-accordion {
   &__regions {
     max-height: 40px;
