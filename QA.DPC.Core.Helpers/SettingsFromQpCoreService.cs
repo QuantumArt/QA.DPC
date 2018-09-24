@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.Extensions.Caching.Memory;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL.Services.API;
@@ -25,7 +26,7 @@ namespace QA.DPC.Core.Helpers
 		{
 			const string key = "AllQpSettings";
 
-			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.DB }, _cacheTimeSpan, _dbService.GetAppSettings);
+			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.DB }, _cacheTimeSpan, _dbService.GetAppSettings, true, CacheItemPriority.NeverRemove);
 
 			return allSettings.ContainsKey(title) ? allSettings[title] : null;
 		}
