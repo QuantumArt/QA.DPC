@@ -3,11 +3,12 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import { MultiRelationFieldTags, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
+import { MultiRelationFieldTags } from "Components/FieldEditors/FieldEditors";
 import { EditorTabs } from "./Components/EditorTabs";
 import { Product } from "./ProductEditorSchema";
 import { AdvantagesTable } from "./Components/AdvantagesTable";
 import "./FixConnectTariff.scss";
+import { ParametersFieldSet } from "./Components/ParametersFieldSet";
 
 const App = () => (
   <LocaleContext.Provider value="ru">
@@ -15,8 +16,9 @@ const App = () => (
       settings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: props => <MultiRelationFieldTags {...props} orderByField="Title" />,
-        Advantage: AdvantagesTable,
-        ProductParameter: ProductParameterTabs
+        ProductParameter: props => <ParametersFieldSet {...props} fields={[]} />,
+        LinkParameter: props => <ParametersFieldSet {...props} fields={[]} />,
+        Advantage: AdvantagesTable
       }}
     >
       {(model: Product, contentSchema) => (
@@ -24,12 +26,6 @@ const App = () => (
       )}
     </ProductEditor>
   </LocaleContext.Provider>
-);
-
-const ProductParameterTabs = props => (
-  <RelationFieldTabs {...props} displayField="Title" orderByField="Title">
-    {(_headerNode, fieldsNode) => fieldsNode}
-  </RelationFieldTabs>
 );
 
 ReactDOM.render(<App />, document.getElementById("editor"));
