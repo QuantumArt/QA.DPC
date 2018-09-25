@@ -107,7 +107,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
         <>
           <div>Цена аренды:</div>
           <div>
-            {parameter.NumValue} {parameter.Unit.Title}
+            {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
           </div>
         </>
       )
@@ -122,7 +122,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
         <>
           <div>Цена продажи:</div>
           <div>
-            {parameter.NumValue} {parameter.Unit.Title}
+            {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
           </div>
         </>
       )
@@ -143,7 +143,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
         <>
           <div>Цена аренды:</div>
           <div>
-            {parameter.NumValue} {parameter.Unit.Title}
+            {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
           </div>
         </>
       )
@@ -160,7 +160,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
         <>
           <div>Цена продажи:</div>
           <div>
-            {parameter.NumValue} {parameter.Unit.Title}
+            {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
           </div>
         </>
       )
