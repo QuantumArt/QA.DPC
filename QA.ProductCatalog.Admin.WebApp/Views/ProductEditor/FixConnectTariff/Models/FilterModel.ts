@@ -1,12 +1,12 @@
 import { observable, action, computed } from "mobx";
 import { Product, DeviceOnTariffs } from "../ProductEditorSchema";
 
-export class DevicesFilterModel {
+export class FilterModel {
   @observable.ref public filterByTariffRegions = true;
   @observable.ref public filterByMarketingTariff = true;
   @observable.ref public selectedRegionIds: number[] = [];
 
-  constructor(private _fixTariff: Product) {}
+  constructor(private fixTariff: Product) {}
 
   @action
   public toggleFilterByTariffRegions = () => {
@@ -25,7 +25,7 @@ export class DevicesFilterModel {
 
   @computed
   private get fixTariffHasRegionId(): { [clientId: number]: true } {
-    return this._fixTariff.Regions.reduce((obj, region) => {
+    return this.fixTariff.Regions.reduce((obj, region) => {
       obj[region._ClientId] = true;
       return obj;
     }, {});
@@ -71,7 +71,7 @@ export class DevicesFilterModel {
     } = this;
     if (
       filterByMarketingTariff &&
-      !device.MarketingTariffs.includes(this._fixTariff.MarketingProduct)
+      !device.MarketingTariffs.includes(this.fixTariff.MarketingProduct)
     ) {
       return false;
     }

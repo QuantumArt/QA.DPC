@@ -3,19 +3,20 @@ import { observer } from "mobx-react";
 import { Col, Row } from "react-flexbox-grid";
 import { Switch, Alignment } from "@blueprintjs/core";
 import ReactSelect, { Options, Option } from "react-select";
-import { DevicesFilterModel } from "../Models/DevicesFilterModel";
+import { FilterModel } from "../Models/FilterModel";
 import { consumer, inject } from "react-ioc";
 import { DataContext } from "Services/DataContext";
 import { computed } from "mobx";
 import { Region } from "../ProductEditorSchema";
 
-interface DevicesFilterProps {
-  model: DevicesFilterModel;
+interface FilterBlockProps {
+  model: FilterModel;
+  byMarketingTariff?: boolean;
 }
 
 @consumer
 @observer
-export class DevicesFilter extends Component<DevicesFilterProps> {
+export class FilterBlock extends Component<FilterBlockProps> {
   @inject private _dataContext: DataContext;
 
   @computed
@@ -36,7 +37,7 @@ export class DevicesFilter extends Component<DevicesFilterProps> {
   };
 
   render() {
-    const { model } = this.props;
+    const { model, byMarketingTariff } = this.props;
     return (
       <Col md className="devices-filter">
         <Row>
@@ -51,7 +52,7 @@ export class DevicesFilter extends Component<DevicesFilterProps> {
               Фильтровать по регионам <br /> тарифа фиксированной связи
             </Switch>
           </Col>
-          <Col md={6}>
+          <Col md={6} mdOffset={byMarketingTariff ? 0 : 3}>
             <ReactSelect
               multi
               clearable
@@ -63,16 +64,18 @@ export class DevicesFilter extends Component<DevicesFilterProps> {
               onChange={this.handleRegionsFilterChange}
             />
           </Col>
-          <Col md={3}>
-            <Switch
-              large
-              alignIndicator={Alignment.RIGHT}
-              checked={model.filterByMarketingTariff}
-              onChange={model.toggleFilterByMarketingTariff}
-            >
-              Фильтровать по маркетинговому <br /> тарифу фиксированной связи
-            </Switch>
-          </Col>
+          {byMarketingTariff && (
+            <Col md={3}>
+              <Switch
+                large
+                alignIndicator={Alignment.RIGHT}
+                checked={model.filterByMarketingTariff}
+                onChange={model.toggleFilterByMarketingTariff}
+              >
+                Фильтровать по маркетинговому <br /> тарифу фиксированной связи
+              </Switch>
+            </Col>
+          )}
         </Row>
       </Col>
     );

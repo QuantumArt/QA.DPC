@@ -11,8 +11,8 @@ import {
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
 import { Product, DeviceOnTariffs } from "../ProductEditorSchema";
-import { DevicesFilterModel } from "../Models/DevicesFilterModel";
-import { DevicesFilter } from "./DevicesFilter";
+import { FilterModel } from "../Models/FilterModel";
+import { FilterBlock } from "./FilterBlock";
 
 interface DevicesTabProps {
   model: Product;
@@ -20,7 +20,7 @@ interface DevicesTabProps {
 }
 
 export class DevicesTab extends Component<DevicesTabProps> {
-  private filterModel = new DevicesFilterModel(this.props.model);
+  private filterModel = new FilterModel(this.props.model);
 
   private getMarketingFixConnectTariffProps() {
     const { model, contentSchema } = this.props;
@@ -36,7 +36,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
 
     return (
       <>
-        <DevicesFilter model={this.filterModel} />
+        <FilterBlock byMarketingTariff model={this.filterModel} />
         <ExtensionEditor
           model={extension}
           contentSchema={extensionSchema}

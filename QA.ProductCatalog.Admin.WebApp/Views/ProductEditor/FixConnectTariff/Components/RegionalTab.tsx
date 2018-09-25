@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { observer } from "mobx-react";
 import {
   ContentSchema,
   ExtensionFieldSchema,
@@ -7,8 +8,9 @@ import {
 import { Product } from "../ProductEditorSchema";
 import { EntityEditor, IGNORE } from "Components/ArticleEditor/EntityEditor";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
-import { observer } from "mobx-react";
 import { MultiRelationFieldAccordion } from "Components/FieldEditors/FieldEditors";
+import { FilterModel } from "../Models/FilterModel";
+import { FilterBlock } from "./FilterBlock";
 
 interface RegionalTabTabProps {
   model: Product;
@@ -17,6 +19,8 @@ interface RegionalTabTabProps {
 
 @observer
 export class RegionalTab extends Component<RegionalTabTabProps> {
+  private filterModel = new FilterModel(this.props.model);
+
   private getMarketingFixConnectTariffProps() {
     const { model, contentSchema } = this.props;
     const extension = model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
@@ -70,6 +74,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
             MarketingProduct: IGNORE
           }}
         />
+        <FilterBlock model={this.filterModel} />
         {this.renderInternet()}
         {this.renderPhone()}
       </>
@@ -89,7 +94,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
               <MultiRelationFieldAccordion
                 {...props}
                 displayFields={[this.renderRegions]}
-                // filterItems={this.filterProductsByRegion}
+                filterItems={this.filterModel.filterProducts}
               />
             )
           }}
@@ -111,7 +116,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
               <MultiRelationFieldAccordion
                 {...props}
                 displayFields={[this.renderRegions]}
-                // filterItems={this.filterProductsByRegion}
+                filterItems={this.filterModel.filterProducts}
               />
             )
           }}
