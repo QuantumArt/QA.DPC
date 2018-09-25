@@ -37,6 +37,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
     return (
       <>
         <FilterBlock byMarketingTariff model={this.filterModel} />
+        <hr />
         <ExtensionEditor
           model={extension}
           contentSchema={extensionSchema}

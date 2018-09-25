@@ -3,7 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import { RelationFieldTags, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
+import { MultiRelationFieldTags, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
 import { EditorTabs } from "./Components/EditorTabs";
 import { Product } from "./ProductEditorSchema";
 import { AdvantagesTable } from "./Components/AdvantagesTable";
@@ -14,9 +14,9 @@ const App = () => (
     <ProductEditor
       settings={window["ProductEditorSettings"]}
       relationEditors={{
-        Region: props => <RelationFieldTags {...props} selectMultiple orderByField="Title" />,
+        Region: props => <MultiRelationFieldTags {...props} orderByField="Title" />,
         Advantage: AdvantagesTable,
-        ProductParameter: ProductParameterEditor
+        ProductParameter: ProductParameterTabs
       }}
     >
       {(model: Product, contentSchema) => (
@@ -26,7 +26,7 @@ const App = () => (
   </LocaleContext.Provider>
 );
 
-const ProductParameterEditor = props => (
+const ProductParameterTabs = props => (
   <RelationFieldTabs {...props} displayField="Title" orderByField="Title">
     {(_headerNode, fieldsNode) => fieldsNode}
   </RelationFieldTabs>

@@ -74,7 +74,9 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
             MarketingProduct: IGNORE
           }}
         />
+        <hr />
         <FilterBlock model={this.filterModel} />
+        <hr />
         {this.renderInternet()}
         {this.renderPhone()}
       </>
