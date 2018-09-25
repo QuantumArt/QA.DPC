@@ -23,6 +23,7 @@ export interface FieldEditorProps {
   model: ArticleObject;
   fieldSchema: FieldSchema;
   validate?: Validator | Validator[];
+  readonly?: boolean;
 }
 
 export abstract class AbstractFieldEditor<
@@ -110,6 +111,7 @@ export abstract class AbstractRelationFieldEditor<
     super(props, context);
     const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
     this._canEditRelation = !(
+      props.readonly ||
       fieldSchema.IsReadOnly ||
       (fieldSchema.FieldType === FieldExactTypes.M2ORelation &&
         fieldSchema.UpdatingMode === UpdatingMode.Ignore)

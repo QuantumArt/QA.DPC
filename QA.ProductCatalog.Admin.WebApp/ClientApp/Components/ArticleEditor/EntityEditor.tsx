@@ -8,7 +8,7 @@ import { ArticleController } from "Services/ArticleController";
 import { isString, isFunction } from "Utils/TypeChecks";
 import { ArticleMenu } from "./ArticleMenu";
 import { ArticleLink } from "./ArticleLink";
-import { ArticleEditor, ArticleEditorProps } from "./ArticleEditor";
+import { AbstractEditor, ArticleEditorProps } from "./ArticleEditor";
 export { IGNORE, FieldsConfig, RelationsConfig } from "./ArticleEditor";
 import "./ArticleEditor.scss";
 
@@ -26,7 +26,7 @@ interface EntityEditorProps {
 
 @consumer
 @observer
-export class EntityEditor extends ArticleEditor<EntityEditorProps> {
+export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   @inject private _articleController: ArticleController;
   @inject private _editorController: EditorController;
   private _titleField: (model: EntityObject) => string;

@@ -96,7 +96,7 @@ interface ObjectEditorBlock {
   contentsConfig?: ContentsConfig;
 }
 
-export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps & P> {
+export abstract class AbstractEditor<P = {}> extends Component<ArticleEditorProps & P> {
   @inject private _relationsConfig: RelationsConfig;
   private _editorBlocks: ObjectEditorBlock[] = [];
 
@@ -271,4 +271,8 @@ export abstract class ArticleEditor<P = {}> extends Component<ArticleEditorProps
 
 @consumer
 @observer
-export class ExtensionEditor extends ArticleEditor<{ model: ExtensionObject }> {}
+export class ArticleEditor extends AbstractEditor<{ model: ArticleObject }> {}
+
+@consumer
+@observer
+export class ExtensionEditor extends AbstractEditor<{ model: ExtensionObject }> {}
