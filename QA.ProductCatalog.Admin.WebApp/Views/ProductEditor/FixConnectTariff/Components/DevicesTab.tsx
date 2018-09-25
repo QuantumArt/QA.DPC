@@ -1,9 +1,4 @@
 import React, { Component } from "react";
-import { observable, action, computed } from "mobx";
-import { observer } from "mobx-react";
-import { Col, Row } from "react-flexbox-grid";
-import { Switch, Alignment, TagInput, Button } from "@blueprintjs/core";
-import { normailzeSerachString } from "Utils/Common";
 import { ExtensionEditor } from "Components/ArticleEditor/ArticleEditor";
 import { IGNORE } from "Components/ArticleEditor/EntityEditor";
 import {
@@ -16,102 +11,16 @@ import {
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
 import { Product, DeviceOnTariffs } from "../ProductEditorSchema";
+import { DevicesFilterModel } from "../Models/DevicesFilterModel";
+import { DevicesFilter } from "./DevicesFilter";
 
 interface DevicesTabProps {
   model: Product;
   contentSchema: ContentSchema;
 }
 
-@observer
 export class DevicesTab extends Component<DevicesTabProps> {
-  @observable.ref private filterByTariffRegions = true;
-  @observable.ref private filterByMarketingTariff = true;
-  @observable.ref private regionsFilter: string[] = [];
-
-  @action
-  private toggleFilterByTariffRegions = () => {
-    this.filterByTariffRegions = !this.filterByTariffRegions;
-  };
-
-  @action
-  private toggleFilterByMarketingTariff = () => {
-    this.filterByMarketingTariff = !this.filterByMarketingTariff;
-  };
-
-  @action
-  private setRegionsFilter = (values: string[]) => {
-    this.regionsFilter = values;
-  };
-
-  @action
-  private clearRegionsFilter = () => {
-    if (this.regionsFilter.length > 0) {
-      this.regionsFilter = [];
-    }
-  };
-
-  @computed
-  private get fixTariffRegionIds(): { [clientId: number]: true } {
-    const fixTraiff = this.props.model as Product;
-    return fixTraiff.Regions.reduce((obj, region) => {
-      obj[region._ClientId] = true;
-      return obj;
-    }, {});
-  }
-
-  @computed
-  private get normalizedRegionsFilter() {
-    return this.regionsFilter.map(normailzeSerachString);
-  }
-
-  private filterProducts = (product: Product) => {
-    const { filterByTariffRegions, normalizedRegionsFilter, fixTariffRegionIds } = this;
-    if (
-      filterByTariffRegions &&
-      !product.getBaseValue("Regions").some(region => fixTariffRegionIds[region._ClientId])
-    ) {
-      return false;
-    }
-    if (
-      normalizedRegionsFilter.length > 0 &&
-      !product
-        .getBaseValue("Regions")
-        .some(region => normalizedRegionsFilter.includes(normailzeSerachString(region.Title)))
-    ) {
-      return false;
-    }
-    return true;
-  };
-
-  private filterDevicesOnTariffs = (device: DeviceOnTariffs) => {
-    const {
-      filterByTariffRegions,
-      filterByMarketingTariff,
-      normalizedRegionsFilter,
-      fixTariffRegionIds
-    } = this;
-    if (
-      filterByMarketingTariff &&
-      !device.MarketingTariffs.includes(this.props.model.MarketingProduct)
-    ) {
-      return false;
-    }
-    if (
-      filterByTariffRegions &&
-      !device.getBaseValue("Cities").some(region => fixTariffRegionIds[region._ClientId])
-    ) {
-      return false;
-    }
-    if (
-      normalizedRegionsFilter.length > 0 &&
-      !device
-        .getBaseValue("Cities")
-        .some(region => normalizedRegionsFilter.includes(normailzeSerachString(region.Title)))
-    ) {
-      return false;
-    }
-    return true;
-  };
+  private filterModel = new DevicesFilterModel(this.props.model);
 
   private getMarketingFixConnectTariffProps() {
     const { model, contentSchema } = this.props;
@@ -131,7 +40,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
 
     return (
       <>
-        {this.renderFilter()}
+        <DevicesFilter model={this.filterModel} />
         <ExtensionEditor
           model={extension}
           contentSchema={extensionSchema}
@@ -157,7 +66,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
                         this.renderRentPrice,
                         this.renderSalePrice
                       ]}
-                      filterItems={this.filterProducts}
+                      filterItems={this.filterModel.filterProducts}
                       fieldOrders={["Type", "Regions", "Parameters"]}
                     />
                   ),
@@ -171,7 +80,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
                         this.renderMatrixRentPrice,
                         this.renderMatrixSalePrice
                       ]}
-                      filterItems={this.filterDevicesOnTariffs}
+                      filterItems={this.filterModel.filterDevicesOnTariffs}
                       fieldOrders={["Type", "Regions", "Parameters"]}
                     />
                   )
@@ -181,54 +90,6 @@ export class DevicesTab extends Component<DevicesTabProps> {
           }}
         />
       </>
-    );
-  }
-
-  private renderFilter() {
-    return (
-      <Col md className="devices-tab__filter">
-        <Row>
-          <Col md={3}>
-            <Switch
-              large
-              alignIndicator={Alignment.RIGHT}
-              checked={this.filterByTariffRegions}
-              label=""
-              onChange={this.toggleFilterByTariffRegions}
-            >
-              Фильтровать по регионам <br /> тарифа фиксированной связи
-            </Switch>
-          </Col>
-          <Col md={6}>
-            <TagInput
-              fill
-              large
-              addOnBlur
-              inputValue=""
-              leftIcon="filter-list"
-              values={this.regionsFilter}
-              onChange={this.setRegionsFilter}
-              tagProps={{ minimal: true }}
-              inputProps={{ placeholder: "Фильтровать по регионам" }}
-              rightElement={
-                this.regionsFilter.length > 0 && (
-                  <Button minimal icon="cross" onClick={this.clearRegionsFilter} />
-                )
-              }
-            />
-          </Col>
-          <Col md={3}>
-            <Switch
-              large
-              alignIndicator={Alignment.RIGHT}
-              checked={this.filterByMarketingTariff}
-              onChange={this.toggleFilterByMarketingTariff}
-            >
-              Фильтровать по маркетинговому <br /> тарифу фиксированной связи
-            </Switch>
-          </Col>
-        </Row>
-      </Col>
     );
   }
 
