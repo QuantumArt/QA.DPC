@@ -49,7 +49,6 @@ export class DevicesTab extends Component<DevicesTabProps> {
                 vertical
                 readonly
                 renderOnlyActiveTab
-                className="container-xl"
                 displayField={"Title"}
                 fieldOrders={["Modifiers", "Products", "DevicesOnTariffs"]}
                 fieldEditors={{

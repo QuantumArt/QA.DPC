@@ -2,7 +2,7 @@ import React from "react";
 import { Col } from "react-flexbox-grid";
 import cn from "classnames";
 import { observer } from "mobx-react";
-import { EntityObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject } from "Models/EditorDataModels";
 import {
   EnumFieldSchema,
   PlainFieldSchema,
@@ -50,7 +50,7 @@ export {
 
 @observer
 export class StringFieldEditor extends AbstractFieldEditor {
-  renderValidation(model: EntityObject | ExtensionObject, fieldSchema: StringFieldSchema) {
+  renderValidation(model: ArticleObject, fieldSchema: StringFieldSchema) {
     return (
       <>
         <Validate
@@ -64,7 +64,7 @@ export class StringFieldEditor extends AbstractFieldEditor {
     );
   }
 
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: StringFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: StringFieldSchema) {
     return (
       <Col xl md={6}>
         <InputText
@@ -84,7 +84,7 @@ export class StringFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class NumericFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: NumericFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: NumericFieldSchema) {
     return (
       <Col xl={4} md={3}>
         <InputNumber
@@ -108,7 +108,7 @@ export class NumericFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class BooleanFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col md>
         <CheckBox
@@ -128,7 +128,7 @@ export class BooleanFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class DateFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
         <DatePicker
@@ -149,7 +149,7 @@ export class DateFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class TimeFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
         <DatePicker
@@ -170,7 +170,7 @@ export class TimeFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class DateTimeFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
         <DatePicker
@@ -190,7 +190,7 @@ export class DateTimeFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class ClassifierFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: ClassifierFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: ClassifierFieldSchema) {
     const value = model[fieldSchema.FieldName];
     const options = value ? [{ value, label: value }] : [];
     return (
@@ -214,7 +214,7 @@ export class ClassifierFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class EnumFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: EnumFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: EnumFieldSchema) {
     const options = fieldSchema.Items.map(item => ({ value: item.Value, label: item.Alias }));
     return fieldSchema.ShowAsRadioButtons ? (
       <Col md>
@@ -250,7 +250,7 @@ export class EnumFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class ExtensionFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: ExtensionFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: ExtensionFieldSchema) {
     const options = Object.values(fieldSchema.ExtensionContents).map(contentSchema => ({
       value: contentSchema.ContentName,
       label: contentSchema.ContentTitle || contentSchema.ContentName
