@@ -24,14 +24,10 @@ export class DevicesTab extends Component<DevicesTabProps> {
 
   private getMarketingFixConnectTariffProps() {
     const { model, contentSchema } = this.props;
-
-    const extension =
-      model.MarketingProduct && model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
-
+    const extension = model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
     const extensionSchema = ((contentSchema.Fields.MarketingProduct as RelationFieldSchema)
       .RelatedContent.Fields.Type as ExtensionFieldSchema).ExtensionContents
       .MarketingFixConnectTariff;
-
     return { extension, extensionSchema };
   }
 
@@ -50,6 +46,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
               <MultiRelationFieldTabs
                 {...props}
                 vertical
+                readonly
                 renderOnlyActiveTab
                 className="container-xl"
                 displayField={"Title"}
@@ -59,6 +56,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
                   Products: props => (
                     <MultiRelationFieldAccordion
                       {...props}
+                      readonly
                       renderOnlyActiveSection
                       columnProportions={[3, 1, 1]}
                       displayFields={[
@@ -73,6 +71,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
                   DevicesOnTariffs: props => (
                     <MultiRelationFieldAccordion
                       {...props}
+                      readonly
                       renderOnlyActiveSection
                       columnProportions={[3, 1, 1]}
                       displayFields={[
