@@ -58,7 +58,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const { model, fieldSchema } = this.props;
     const { touchedIds } = this.state;
     const contentName = (fieldSchema as MultiRelationFieldSchema).RelatedContent.ContentName;
-    const article = this._dataContext.createArticle(contentName);
+    const article = this._dataContext.createEntity(contentName);
     touchedIds[article._ClientId] = true;
     this.setState({
       activeId: article._ClientId,

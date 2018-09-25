@@ -69,7 +69,7 @@ export class EditorController {
 
       this._dataContext.initStore(storeSnapshot);
 
-      return this._dataContext.createArticle(contentSchema.ContentName);
+      return this._dataContext.createEntity(contentSchema.ContentName);
     }
   }
 

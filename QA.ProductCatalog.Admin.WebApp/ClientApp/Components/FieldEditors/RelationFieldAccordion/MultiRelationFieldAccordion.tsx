@@ -54,7 +54,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   private createRelation = () => {
     const { model, fieldSchema } = this.props;
     const contentName = (fieldSchema as MultiRelationFieldSchema).RelatedContent.ContentName;
-    const article = this._dataContext.createArticle(contentName);
+    const article = this._dataContext.createEntity(contentName);
     this.toggleRelation(article);
     this.setState({
       isOpen: true,

@@ -83,7 +83,9 @@ export class DataSerializer {
       const fieldSchema = contentSchema.Fields[fieldName];
       if (isSingleRelationField(fieldSchema)) {
         const relatedEntity = fieldValue as EntityObject;
-        if (fieldSchema.UpdatingMode === UpdatingMode.Ignore) {
+        if (relatedEntity._IsVirtual) {
+          snapshot[fieldName] = null;
+        } else if (fieldSchema.UpdatingMode === UpdatingMode.Ignore) {
           snapshot[fieldName] = { _ServerId: relatedEntity._ServerId };
         } else {
           snapshot[fieldName] = this.serialize(relatedEntity, fieldSchema.RelatedContent);
@@ -91,11 +93,13 @@ export class DataSerializer {
       } else if (isMultiRelationField(fieldSchema)) {
         const relatedCollection = fieldValue as EntityObject[];
         if (fieldSchema.UpdatingMode === UpdatingMode.Ignore) {
-          snapshot[fieldName] = relatedCollection.map(entity => ({ _ServerId: entity._ServerId }));
+          snapshot[fieldName] = relatedCollection
+            .filter(entity => !entity._IsVirtual)
+            .map(entity => ({ _ServerId: entity._ServerId }));
         } else {
-          snapshot[fieldName] = relatedCollection.map(entity =>
-            this.serialize(entity, fieldSchema.RelatedContent)
-          );
+          snapshot[fieldName] = relatedCollection
+            .filter(entity => !entity._IsVirtual)
+            .map(entity => this.serialize(entity, fieldSchema.RelatedContent));
         }
       } else if (isExtensionField(fieldSchema)) {
         const extensionFieldName = `${fieldName}${ArticleObject._Contents}`;

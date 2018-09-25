@@ -44,9 +44,13 @@ export class DataContext {
   }
 
   @action
-  public createArticle<T extends EntityObject = EntityObject>(contentName: string): T {
+  public createEntity<T extends EntityObject = EntityObject>(
+    contentName: string,
+    isVirtual = false
+  ): T {
     const article = this.getContentType(contentName).create({
       _ClientId: this._nextId,
+      _IsVirtual: isVirtual,
       ...this._defaultSnapshots[contentName]
     }) as T;
 
@@ -176,7 +180,8 @@ function compileStoreType(
         _ServerId: t.optional(t.number, getNextId),
         _ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
         _Modified: t.maybeNull(t.Date),
-        _IsExtension: t.optional(t.literal(false), false)
+        _IsExtension: t.optional(t.literal(false), false),
+        _IsVirtual: t.optional(t.boolean, false)
       };
       // заполняем поля модели объекта
       Object.values(content.Fields).forEach(field => visitField(field, fieldModels));

@@ -24,7 +24,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   private createRelation = () => {
     const { model, fieldSchema } = this.props;
     const contentName = (fieldSchema as SingleRelationFieldSchema).RelatedContent.ContentName;
-    const article = this._dataContext.createArticle(contentName);
+    const article = this._dataContext.createEntity(contentName);
     this.setState({
       isOpen: true,
       isTouched: true

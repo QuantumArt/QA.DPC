@@ -28,6 +28,7 @@ export class ArticleObject {
   static _Modified = "_Modified";
   static _IsExtension = "_IsExtension";
   static _Contents = "_Contents";
+  static _IsVirtual = "_IsVirtual";
 }
 
 export function isArticleObject(object: any): object is ArticleObject {
@@ -44,6 +45,8 @@ export interface EntityObject extends ArticleObject {
   readonly _ClientId: number;
   /** Признак того, что объект не является статьей-расшиернием */
   readonly _IsExtension: false;
+  /** Признак того, что объект не должен быть сохранен на сервере */
+  _IsVirtual: boolean;
 }
 
 export function isEntityObject(object: any): object is EntityObject {
@@ -99,6 +102,8 @@ export interface EntitySnapshot extends ArticleSnapshot {
   readonly _ClientId: number;
   /** Признак того, что объект не является статьей-расшиернием */
   readonly _IsExtension?: false;
+  /** Признак того, что объект не должен быть сохранен на сервере */
+  readonly _IsVirtual?: boolean;
 }
 
 export interface ExtensionSnapshot extends ArticleSnapshot {
