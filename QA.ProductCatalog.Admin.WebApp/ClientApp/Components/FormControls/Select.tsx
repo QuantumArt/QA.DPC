@@ -29,7 +29,17 @@ export class Select extends ValidatableControl<SelectProps> {
   }
 
   render() {
-    const { model, name, onFocus, onChange, onBlur, required, multiple, ...props } = this.props;
+    const {
+      model,
+      name,
+      onFocus,
+      onChange,
+      onBlur,
+      required,
+      multiple,
+      placeholder = "",
+      ...props
+    } = this.props;
     let value = model[name];
     if ((multiple || props.multi) && isObservableArray(value)) {
       if (isStateTreeNode(value)) {
@@ -48,6 +58,7 @@ export class Select extends ValidatableControl<SelectProps> {
         onFocus={this.handleFocus}
         onChange={this.handleChange}
         onBlur={this.handleBlur}
+        placeholder={placeholder}
         clearable={!required}
         multi={multiple}
         {...props}

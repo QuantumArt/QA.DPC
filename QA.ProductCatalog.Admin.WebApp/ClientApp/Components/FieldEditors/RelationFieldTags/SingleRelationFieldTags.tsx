@@ -42,6 +42,7 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
+    const { onClick } = this.props;
     const { isSelected } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
     return (
@@ -49,7 +50,8 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
         <RelationFieldMenu onSelect={this._canEditRelation && this.selectRelation} />
         {article && (
           <span
-            className={cn("pt-tag pt-minimal pt-interactive", {
+            className={cn("pt-tag pt-minimal", {
+              "pt-interactive": !!onClick,
               "pt-tag-removable": this._canEditRelation,
               "pt-intent-primary": isSelected
             })}

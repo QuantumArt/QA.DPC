@@ -80,6 +80,7 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   };
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
+    const { onClick } = this.props;
     const { selectedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
@@ -98,7 +99,8 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
                 {" "}
                 <span
                   onClick={e => this.toggleRelation(e, article)}
-                  className={cn("pt-tag pt-minimal pt-interactive", {
+                  className={cn("pt-tag pt-minimal", {
+                    "pt-interactive": !!onClick,
                     "pt-tag-removable": this._canEditRelation,
                     "pt-intent-primary": selectedIds[article._ClientId]
                   })}
