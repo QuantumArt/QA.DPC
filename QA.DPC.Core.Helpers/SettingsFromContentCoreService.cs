@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
@@ -37,7 +38,7 @@ namespace QA.DPC.Core.Helpers
         {
             var key = string.Format("GetSetting_{0}", title);
             return _cacheProvider.GetOrAdd(key, new[] {_settingsContentId.ToString()}, _cachePeriod,
-                () => GetSettingValue(title));
+                () => GetSettingValue(title), true, CacheItemPriority.NeverRemove);
         }
 
         private string GetSettingValue(string title)

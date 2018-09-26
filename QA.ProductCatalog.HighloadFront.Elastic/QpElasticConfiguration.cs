@@ -9,6 +9,7 @@ using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -18,7 +19,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly IContentProvider<HighloadApiUser> _userProvider;
         private readonly IContentProvider<HighloadApiLimit> _limitProvider;
         private readonly IVersionedCacheProvider2 _cacheProvider;
-        private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
+        private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(60);
         private readonly int _timeout = 5;
         private readonly ILogger _logger;
         private readonly DataOptions _options;
@@ -43,7 +44,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public IEnumerable<ElasticIndex> GetElasticIndices()
         {
-            return _cacheProvider.GetOrAdd("ElasticIndexes", _indexProvider.GetTags(), _cacheTimeSpan, _indexProvider.GetArticles);
+            return _cacheProvider.GetOrAdd("ElasticIndexes", _indexProvider.GetTags(), _cacheTimeSpan, _indexProvider.GetArticles, true, CacheItemPriority.NeverRemove);
         }
 
         public int GetElasticTimeout()
@@ -53,12 +54,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         protected IEnumerable<HighloadApiUser> GetHighloadApiUsers()
         {
-            return _cacheProvider.GetOrAdd("HighloadApiUsers", _userProvider.GetTags(), _cacheTimeSpan, _userProvider.GetArticles);
+            return _cacheProvider.GetOrAdd("HighloadApiUsers", _userProvider.GetTags(), _cacheTimeSpan, _userProvider.GetArticles, true, CacheItemPriority.NeverRemove);
         }
 
         protected IEnumerable<HighloadApiLimit> GetHighloadApiLimits()
         {
-            return _cacheProvider.GetOrAdd("HighloadApiLimits", _limitProvider.GetTags(), _cacheTimeSpan, _limitProvider.GetArticles);
+            return _cacheProvider.GetOrAdd("HighloadApiLimits", _limitProvider.GetTags(), _cacheTimeSpan, _limitProvider.GetArticles, true, CacheItemPriority.NeverRemove);
         }
 
         public Dictionary<string, IElasticClient> GetClientMap()
@@ -89,12 +90,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public IElasticClient GetElasticClient(string language, string state)
         {
-            return _cacheProvider.GetOrAdd("ElasticClients", _indexProvider.GetTags(), _cacheTimeSpan, GetClientMap)[GetElasticKey(language, state)];
+            return _cacheProvider.GetOrAdd("ElasticClients", _indexProvider.GetTags(), _cacheTimeSpan, GetClientMap, true, CacheItemPriority.NeverRemove)[GetElasticKey(language, state)];
         }
 
         public IndexOperationSyncer GetSyncer(string language, string state)
         {
-            return _cacheProvider.GetOrAdd("ElasticSyncers", _indexProvider.GetTags(), _cacheTimeSpan, GetSyncerMap)[GetElasticKey(language, state)];
+            return _cacheProvider.GetOrAdd("ElasticSyncers", _indexProvider.GetTags(), _cacheTimeSpan, GetSyncerMap, true, CacheItemPriority.NeverRemove)[GetElasticKey(language, state)];
         }
 
         public string GetReindexUrl(string language, string state)

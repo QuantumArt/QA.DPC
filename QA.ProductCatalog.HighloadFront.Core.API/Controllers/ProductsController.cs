@@ -119,12 +119,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private void LogElasticException(ElasticsearchClientException ex)
         {
-            var request = ex.Request.PostData != null
-                ? System.Text.Encoding.UTF8.GetString(ex.Request.PostData.WrittenBytes)
-                : "";
-            var str = $"Response Code: {ex.Response.HttpStatusCode}, Uri: {ex.Request.Uri}, Method: {ex.Request.Method}, Request: {request}";
-            _logger.ErrorException($"Elastic search error occurred: {str}", ex);
-           
+            _logger.ErrorException($"Elastic search error occurred. Debug Info: {ex.DebugInformation}", ex);
         }
     }
 }
