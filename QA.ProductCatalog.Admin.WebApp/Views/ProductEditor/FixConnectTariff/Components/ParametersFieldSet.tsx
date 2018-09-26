@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import { Intent } from "@blueprintjs/core";
 import { Col, Row } from "react-flexbox-grid";
 import { Options } from "react-select";
+import { asc } from "Utils/Array/Sort";
 import { InputNumber, Select } from "Components/FormControls/FormControls";
 import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
 import { RelationFieldSchema, NumericFieldSchema } from "Models/EditorSchemaModels";
@@ -58,43 +59,47 @@ export class ParametersFieldSet extends Component<ParametersFieldSetProps> {
     const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
     const numValueSchema = fieldSchema.RelatedContent.Fields.NumValue as NumericFieldSchema;
 
+    const parameters = this.getParameters();
     const options = this.getCachedOptions();
 
-    return this.getParameters().map(parameter => (
-      <Col md={12} key={parameter._ClientId} className="field-editor__block pt-form-group">
-        <Row>
-          <Col xl={2} md={3} className="field-editor__label">
-            <label
-              htmlFor={"p" + parameter._ClientId}
-              title={parameter.BaseParameter && parameter.BaseParameter.Alias}
-              className={cn("field-editor__label-text", {
-                "field-editor__label-text--edited": parameter.isEdited()
-              })}
-            >
-              {parameter.Title}
-            </label>
-          </Col>
-          <Col xl={2} md={3}>
-            <InputNumber
-              id={"p" + parameter._ClientId}
-              model={parameter}
-              name="NumValue"
-              isInteger={numValueSchema.IsInteger}
-              intent={parameter.isEdited("NumValue") ? Intent.PRIMARY : Intent.NONE}
-            />
-          </Col>
-          <Col xl={2} md={3}>
-            <Select
-              model={parameter}
-              name="Unit"
-              options={options}
-              className={cn({
-                "pt-intent-primary": parameter.isEdited("Unit")
-              })}
-            />
-          </Col>
-        </Row>
-      </Col>
-    ));
+    return parameters
+      .slice()
+      .sort(asc(p => p.Title))
+      .map(parameter => (
+        <Col md={12} key={parameter._ClientId} className="field-editor__block pt-form-group">
+          <Row>
+            <Col xl={2} md={3} className="field-editor__label">
+              <label
+                htmlFor={"p" + parameter._ClientId}
+                title={parameter.BaseParameter && parameter.BaseParameter.Alias}
+                className={cn("field-editor__label-text", {
+                  "field-editor__label-text--edited": parameter.isEdited()
+                })}
+              >
+                {parameter.Title}
+              </label>
+            </Col>
+            <Col xl={2} md={3}>
+              <InputNumber
+                id={"p" + parameter._ClientId}
+                model={parameter}
+                name="NumValue"
+                isInteger={numValueSchema.IsInteger}
+                intent={parameter.isEdited("NumValue") ? Intent.PRIMARY : Intent.NONE}
+              />
+            </Col>
+            <Col xl={2} md={3}>
+              <Select
+                model={parameter}
+                name="Unit"
+                options={options}
+                className={cn({
+                  "pt-intent-primary": parameter.isEdited("Unit")
+                })}
+              />
+            </Col>
+          </Row>
+        </Col>
+      ));
   }
 }

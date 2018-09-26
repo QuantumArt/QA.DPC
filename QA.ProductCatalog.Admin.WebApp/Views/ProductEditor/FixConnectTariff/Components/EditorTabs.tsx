@@ -66,6 +66,7 @@ export class EditorTabs extends Component<EditorTabsProps> {
 
   // TODO: FixConnectActions
   // TODO: ActionMarketingDevices
+  // @ts-ignore
   private renderActions() {
     if (!this.activatedTabIds.includes("regional")) {
       return null;

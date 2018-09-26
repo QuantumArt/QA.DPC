@@ -3,7 +3,8 @@ import { ExtensionEditor } from "Components/ArticleEditor/ArticleEditor";
 import { IGNORE } from "Components/ArticleEditor/EntityEditor";
 import {
   MultiRelationFieldTabs,
-  MultiRelationFieldAccordion
+  MultiRelationFieldAccordion,
+  MultiRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
 import {
   ContentSchema,
@@ -13,6 +14,7 @@ import {
 import { Product, DeviceOnTariffs } from "../ProductEditorSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
+import { ProductRelationFieldSet } from "./ProductRelationFieldSet";
 
 interface DevicesTabProps {
   model: Product;
@@ -65,7 +67,10 @@ export class DevicesTab extends Component<DevicesTabProps> {
                         this.renderSalePrice
                       ]}
                       filterItems={this.filterModel.filterProducts}
-                      fieldOrders={["Type", "Regions", "Parameters"]}
+                      fieldOrders={["Modifiers", "Regions", "Parameters"]}
+                      fieldEditors={{
+                        Type: IGNORE
+                      }}
                     />
                   ),
                   DevicesOnTariffs: props => (
@@ -80,7 +85,11 @@ export class DevicesTab extends Component<DevicesTabProps> {
                         this.renderMatrixSalePrice
                       ]}
                       filterItems={this.filterModel.filterDevicesOnTariffs}
-                      fieldOrders={["Type", "Regions", "Parameters"]}
+                      fieldOrders={["Cities", "Parent", "MarketingTariffs"]}
+                      fieldEditors={{
+                        Parent: ProductRelationFieldSet,
+                        MarketingTariffs: MultiRelationFieldTable
+                      }}
                     />
                   )
                 }}

@@ -97,6 +97,10 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
                 {...props}
                 displayFields={[this.renderRegions]}
                 filterItems={this.filterModel.filterProducts}
+                fieldOrders={["Modifiers", "Regions", "Parameters"]}
+                fieldEditors={{
+                  Type: IGNORE
+                }}
               />
             )
           }}
@@ -119,6 +123,10 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
                 {...props}
                 displayFields={[this.renderRegions]}
                 filterItems={this.filterModel.filterProducts}
+                fieldOrders={["Modifiers", "Regions", "Parameters"]}
+                fieldEditors={{
+                  Type: IGNORE
+                }}
               />
             )
           }}
