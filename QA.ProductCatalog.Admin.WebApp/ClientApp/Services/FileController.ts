@@ -23,23 +23,36 @@ export class FileController {
     this._observer.dispose();
   }
 
-  public async selectFile(model: ArticleObject, fieldSchema: FileFieldSchema) {
+  public async selectFile(
+    model: ArticleObject,
+    fieldSchema: FileFieldSchema,
+    customSubFolder?: string
+  ) {
+    const subFolder = ("/" + [fieldSchema.SubFolder, customSubFolder].join("/"))
+      .replace(/[\/\\]+/g, "\\")
+      .replace(/\\$/, "");
+
     const options: QP8.OpenFileLibraryOptions = {
+      subFolder,
       isImage: fieldSchema.FieldType === FieldExactTypes.Image,
       useSiteLibrary: fieldSchema.UseSiteLibrary,
-      subFolder: fieldSchema.SubFolder,
       libraryEntityId: fieldSchema.LibraryEntityId,
       libraryParentEntityId: fieldSchema.LibraryParentEntityId,
       callerCallback: this._callbackUid
     };
     QP8.openFileLibrary(options, this._hostUid, window.parent);
 
-    const filePath = await new Promise<string | typeof CANCEL>(resolve => {
+    const relativePath = await new Promise<string | typeof CANCEL>(resolve => {
       this._resolvePromise = resolve;
     });
-    if (filePath === CANCEL) {
+    if (relativePath === CANCEL) {
       return;
     }
+
+    const filePath = [customSubFolder, relativePath]
+      .join("/")
+      .replace(/[\/\\]+/g, "/")
+      .replace(/^\//, "");
 
     runInAction("selectFile", () => {
       model[fieldSchema.FieldName] = filePath;

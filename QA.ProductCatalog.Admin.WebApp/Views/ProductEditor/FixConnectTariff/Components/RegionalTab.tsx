@@ -7,11 +7,10 @@ import {
 } from "Models/EditorSchemaModels";
 import { Product } from "../ProductEditorSchema";
 import { EntityEditor, IGNORE } from "Components/ArticleEditor/EntityEditor";
-import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
-import { MultiRelationFieldAccordion } from "Components/FieldEditors/FieldEditors";
+import { ArticleEditor, FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
+import { MultiRelationFieldAccordion, FileFieldEditor } from "Components/FieldEditors/FieldEditors";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
-import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
 import { ParameterFields } from "./ParameterFields";
 
 interface RegionalTabTabProps {
@@ -58,6 +57,8 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           fieldEditors={{
             Type: IGNORE,
             MarketingProduct: IGNORE,
+            PDF: this.renderFixTariffsFile,
+            ListImage: this.renderFixTariffsFile,
             Parameters: this.renderFixConnectParameters
           }}
         />
@@ -109,6 +110,10 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       )
     );
   }
+
+  private renderFixTariffsFile = (props: FieldEditorProps) => (
+    <FileFieldEditor {...props} customSubFolder="fix_tariffs" />
+  );
 
   private renderInternetTariffs = (props: FieldEditorProps) => (
     <MultiRelationFieldAccordion
