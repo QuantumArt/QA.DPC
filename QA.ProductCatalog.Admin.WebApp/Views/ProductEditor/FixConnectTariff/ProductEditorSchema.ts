@@ -44,10 +44,10 @@ export interface Product extends EntityObject {
   };
   /** Параметры продукта */
   Parameters: ProductParameter[];
-  /** Описание */
-  Description: string;
   /** Акция фиксированной связи */
   ActionMarketingDevices: DevicesForFixConnectAction[];
+  /** Описание */
+  Description: string;
   /** Преимущества */
   Advantages: Advantage[];
   PDF: string;
@@ -88,6 +88,7 @@ export interface ProductParameter extends EntityObject {
 
 export interface Unit extends EntityObject {
   Title: string;
+  Alias: string;
 }
 
 export interface ProductRelation extends EntityObject {
@@ -117,12 +118,10 @@ export interface MarketingProduct extends EntityObject {
   };
   /** Название */
   Title: string;
-  /** Продукты */
+  /** Продукты, тип "Оборудование" */
   Products: Product[];
-  /** Оборудование на тарифах */
+  /** Матрица связей "Оборудование на тарифах" */
   DevicesOnTariffs: DeviceOnTariffs[];
-  /** Модификаторы */
-  Modifiers: ProductModifer[];
   Description: string;
   /** Порядок */
   SortOrder: number;
@@ -130,6 +129,8 @@ export interface MarketingProduct extends EntityObject {
   ArchiveDate: Date;
   /** Преимущества */
   Advantages: Advantage[];
+  /** Модификаторы */
+  Modifiers: ProductModifer[];
   /** FixConnectActions */
   FixConnectActions: FixConnectAction[];
 }

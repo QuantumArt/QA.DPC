@@ -140,17 +140,24 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   );
 
   private renderFixConnectParameters = (props: FieldEditorProps) => (
-    <ParameterFields {...props} fields={[{ Title: "Цена", Alias: "SubscriptionFee" }]} />
+    <ParameterFields
+      {...props}
+      fields={[{ Title: "Цена", Alias: "SubscriptionFee", Unit: "rub_month" }]}
+    />
   );
 
   private renderInternetParameters = (props: FieldEditorProps) => (
     <ParameterFields
       {...props}
       fields={[
-        { Title: "Включенный в тариф пакет трафика", Alias: "InternetPackage" },
-        { Title: "Стоимость трафика за 1 МБ при превышении лимита", Alias: "1MbOfInternetTraffic" },
-        { Title: "Скорость доступа", Alias: "MaxSpeed" },
-        { Title: "Скорость доступа ночью", Alias: "MaxSpeed" }
+        { Title: "Скорость доступа", Alias: "MaxSpeed", Unit: "mbit" },
+        { Title: "Скорость доступа ночью", Alias: "MaxSpeed", Unit: "mbit" },
+        { Title: "Включенный в тариф пакет трафика", Alias: "InternetPackage", Unit: "mb_month" },
+        {
+          Title: "Стоимость трафика за 1 МБ при превышении лимита",
+          Alias: "1MbOfInternetTraffic",
+          Unit: "rub_mb"
+        }
       ]}
     />
   );
@@ -159,12 +166,24 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
     <ParameterFields
       {...props}
       fields={[
-        { Title: "Включенный в АП пакет местных вызовов", Alias: "MinutesPackage" },
-        { Title: "Стоимость минуты ВЗ вызова на др. моб.", Alias: "OutgoingCalls" },
-        { Title: "Стоимость минуты ВЗ вызова на МТС", Alias: "OutgoingCalls" },
-        { Title: "Стоимость минуты ВЗ вызова на стационарные телефоны", Alias: "OutgoingCalls" },
-        { Title: "Стоимость минуты местного вызова", Alias: "OutgoingCalls" },
-        { Title: "Цена", Alias: "SubscriptionFee" }
+        { Title: "Цена", Alias: "SubscriptionFee", Unit: "rub_month" },
+        { Title: "Стоимость минуты местного вызова", Alias: "OutgoingCalls", Unit: "rub_minute" },
+        { Title: "Стоимость минуты ВЗ вызова на МТС", Alias: "OutgoingCalls", Unit: "rub_minute" },
+        {
+          Title: "Стоимость минуты ВЗ вызова на др. моб.",
+          Alias: "OutgoingCalls",
+          Unit: "rub_minute"
+        },
+        {
+          Title: "Стоимость минуты ВЗ вызова на стационарные телефоны",
+          Alias: "OutgoingCalls",
+          Unit: "rub_minute"
+        },
+        {
+          Title: "Включенный в АП пакет местных вызовов",
+          Alias: "MinutesPackage",
+          Unit: "minutes_call"
+        }
       ]}
     />
   );

@@ -26,6 +26,7 @@ type Parameter = ProductParameter | LinkParameter;
 interface ParameterField {
   Title: string;
   Alias: string;
+  Unit: string;
 }
 
 interface ParameterFieldsProps extends FieldEditorProps {
@@ -39,13 +40,19 @@ const weakCache = new WeakCache();
 export class ParameterFields extends Component<ParameterFieldsProps> {
   @inject private _dataContext: DataContext;
   @observable private isMounted = false;
-  private virtualParameters: Parameter[];
   private reactions: IReactionDisposer[] = [];
+  private fieldOrdersByTitile: { [title: string]: number } = {};
+  private virtualParameters: Parameter[];
 
   componentDidMount() {
     const { fields = [] } = this.props;
     const contentName = this.getContentName();
+    const unitsByAlias = this.getUnitsByAlias();
     const baseParametersByAlias = this.getBaseParametersByAlias();
+
+    fields.forEach((field, i) => {
+      this.fieldOrdersByTitile[field.Title] = i;
+    });
 
     runInAction("createParameters", () => {
       // create virtual paramters in store table
@@ -53,7 +60,8 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
         this._dataContext.createEntity(contentName, {
           _IsVirtual: true,
           Title: field.Title,
-          BaseParameter: baseParametersByAlias[field.Alias]
+          BaseParameter: baseParametersByAlias[field.Alias],
+          Unit: unitsByAlias[field.Unit]
         })
       );
     });
@@ -140,6 +148,24 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
   }
 
   // Unit.PreloadingMode должно быть PreloadingMode.Eager
+  private getUnitsByAlias(): { [alias: string]: Unit } {
+    const byAliasComputed = weakCache.getOrAdd(this._dataContext, () =>
+      computed(
+        () => {
+          const byAlias = {};
+          for (const entity of this._dataContext.store.Unit.values()) {
+            const unit = entity as Unit;
+            byAlias[unit.Alias] = unit;
+          }
+          return byAlias;
+        },
+        { keepAlive: true }
+      )
+    );
+    return byAliasComputed.get();
+  }
+
+  // Unit.PreloadingMode должно быть PreloadingMode.Eager
   private getCachedOptions(): Options {
     const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
     const unitFieldSchema = fieldSchema.RelatedContent.Fields.Unit as RelationFieldSchema;
@@ -157,6 +183,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
       return null;
     }
 
+    const fields = this.props.fields;
     const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
     const numValueSchema = fieldSchema.RelatedContent.Fields.NumValue as NumericFieldSchema;
 
@@ -165,7 +192,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
 
     return parameters
       .slice()
-      .sort(asc(p => p.Title))
+      .sort(fields ? asc(p => this.fieldOrdersByTitile[p.Title]) : asc(p => p.Title))
       .map(parameter => (
         <Col md={12} key={parameter._ClientId} className="field-editor__block pt-form-group">
           <Row>

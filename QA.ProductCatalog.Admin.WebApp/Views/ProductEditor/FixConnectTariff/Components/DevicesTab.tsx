@@ -140,8 +140,8 @@ export class DevicesTab extends Component<DevicesTabProps> {
     <ParameterFields
       {...props}
       fields={[
-        { Title: "Цена аренды", Alias: "RentPrice" },
-        { Title: "Цена продажи", Alias: "SalePrice" }
+        { Title: "Цена аренды", Alias: "RentPrice", Unit: "rub_month" },
+        { Title: "Цена продажи", Alias: "SalePrice", Unit: "rub" }
       ]}
     />
   );
