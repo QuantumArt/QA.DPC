@@ -11,6 +11,8 @@ import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { MultiRelationFieldAccordion } from "Components/FieldEditors/FieldEditors";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
+import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
+import { ParameterFields } from "./ParameterFields";
 
 interface RegionalTabTabProps {
   model: Product;
@@ -28,22 +30,6 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       .RelatedContent.Fields.Type as ExtensionFieldSchema).ExtensionContents
       .MarketingFixConnectTariff;
     return { extension, extensionSchema };
-  }
-
-  private getMarketingInternetTariffProps() {
-    const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
-    const internetTariff = extension.MarketingInternetTariff;
-    const contentSchema = (extensionSchema.Fields.MarketingInternetTariff as RelationFieldSchema)
-      .RelatedContent;
-    return { internetTariff, contentSchema };
-  }
-
-  private getMarketingPhoneTariffProps() {
-    const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
-    const phoneTariff = extension.MarketingPhoneTariff;
-    const contentSchema = (extensionSchema.Fields.MarketingPhoneTariff as RelationFieldSchema)
-      .RelatedContent;
-    return { phoneTariff, contentSchema };
   }
 
   render() {
@@ -71,20 +57,25 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           ]}
           fieldEditors={{
             Type: IGNORE,
-            MarketingProduct: IGNORE
+            MarketingProduct: IGNORE,
+            Parameters: this.renderFixConnectParameters
           }}
         />
         <hr />
         <FilterBlock model={this.filterModel} />
         <hr />
-        {this.renderInternet()}
-        {this.renderPhone()}
+        {this.renderMarketingInternetTariff()}
+        {this.renderMarketingPhoneTariff()}
       </>
     );
   }
 
-  private renderInternet() {
-    const { internetTariff, contentSchema } = this.getMarketingInternetTariffProps();
+  private renderMarketingInternetTariff() {
+    const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
+    const internetTariff = extension.MarketingInternetTariff;
+    const contentSchema = (extensionSchema.Fields.MarketingInternetTariff as RelationFieldSchema)
+      .RelatedContent;
+
     return (
       internetTariff && (
         <ArticleEditor
@@ -92,25 +83,19 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           contentSchema={contentSchema}
           skipOtherFields
           fieldEditors={{
-            Products: props => (
-              <MultiRelationFieldAccordion
-                {...props}
-                displayFields={[this.renderRegions]}
-                filterItems={this.filterModel.filterProducts}
-                fieldOrders={["Modifiers", "Regions", "Parameters"]}
-                fieldEditors={{
-                  Type: IGNORE
-                }}
-              />
-            )
+            Products: this.renderInternetTariffs
           }}
         />
       )
     );
   }
 
-  private renderPhone() {
-    const { phoneTariff, contentSchema } = this.getMarketingPhoneTariffProps();
+  private renderMarketingPhoneTariff() {
+    const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
+    const phoneTariff = extension.MarketingPhoneTariff;
+    const contentSchema = (extensionSchema.Fields.MarketingPhoneTariff as RelationFieldSchema)
+      .RelatedContent;
+
     return (
       phoneTariff && (
         <ArticleEditor
@@ -118,22 +103,71 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           contentSchema={contentSchema}
           skipOtherFields
           fieldEditors={{
-            Products: props => (
-              <MultiRelationFieldAccordion
-                {...props}
-                displayFields={[this.renderRegions]}
-                filterItems={this.filterModel.filterProducts}
-                fieldOrders={["Modifiers", "Regions", "Parameters"]}
-                fieldEditors={{
-                  Type: IGNORE
-                }}
-              />
-            )
+            Products: this.renderPhoneTariffs
           }}
         />
       )
     );
   }
+
+  private renderInternetTariffs = (props: FieldEditorProps) => (
+    <MultiRelationFieldAccordion
+      {...props}
+      // renderOnlyActiveSection
+      displayFields={[this.renderRegions]}
+      filterItems={this.filterModel.filterProducts}
+      fieldOrders={["Modifiers", "Regions", "Parameters"]}
+      fieldEditors={{
+        Type: IGNORE,
+        Parameters: this.renderInternetParameters
+      }}
+    />
+  );
+
+  private renderPhoneTariffs = (props: FieldEditorProps) => (
+    <MultiRelationFieldAccordion
+      {...props}
+      readonly
+      // renderOnlyActiveSection
+      displayFields={[this.renderRegions]}
+      filterItems={this.filterModel.filterProducts}
+      fieldOrders={["Modifiers", "Regions", "Parameters"]}
+      fieldEditors={{
+        Type: IGNORE,
+        Parameters: this.renderPhoneParameters
+      }}
+    />
+  );
+
+  private renderFixConnectParameters = (props: FieldEditorProps) => (
+    <ParameterFields {...props} fields={[{ Title: "Цена", Alias: "SubscriptionFee" }]} />
+  );
+
+  private renderInternetParameters = (props: FieldEditorProps) => (
+    <ParameterFields
+      {...props}
+      fields={[
+        { Title: "Включенный в тариф пакет трафика", Alias: "InternetPackage" },
+        { Title: "Стоимость трафика за 1 МБ при превышении лимита", Alias: "1MbOfInternetTraffic" },
+        { Title: "Скорость доступа", Alias: "MaxSpeed" },
+        { Title: "Скорость доступа ночью", Alias: "MaxSpeed" }
+      ]}
+    />
+  );
+
+  private renderPhoneParameters = (props: FieldEditorProps) => (
+    <ParameterFields
+      {...props}
+      fields={[
+        { Title: "Включенный в АП пакет местных вызовов", Alias: "MinutesPackage" },
+        { Title: "Стоимость минуты ВЗ вызова на др. моб.", Alias: "OutgoingCalls" },
+        { Title: "Стоимость минуты ВЗ вызова на МТС", Alias: "OutgoingCalls" },
+        { Title: "Стоимость минуты ВЗ вызова на стационарные телефоны", Alias: "OutgoingCalls" },
+        { Title: "Стоимость минуты местного вызова", Alias: "OutgoingCalls" },
+        { Title: "Цена", Alias: "SubscriptionFee" }
+      ]}
+    />
+  );
 
   private renderRegions = (device: Product) => (
     <div className="products-accordion__regions">

@@ -6,6 +6,7 @@ import {
   MultiRelationFieldAccordion,
   MultiRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
+import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
 import {
   ContentSchema,
   RelationFieldSchema,
@@ -15,7 +16,6 @@ import { Product, DeviceOnTariffs, ProductRelation } from "../ProductEditorSchem
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
-import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
 
 interface DevicesTabProps {
   model: Product;
@@ -68,7 +68,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
     <MultiRelationFieldAccordion
       {...props}
       readonly
-      renderOnlyActiveSection
+      // renderOnlyActiveSection
       columnProportions={[3, 1, 1]}
       displayFields={[this.renderRegions, this.renderRentPrice, this.renderSalePrice]}
       filterItems={this.filterModel.filterProducts}
@@ -84,7 +84,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
     <MultiRelationFieldAccordion
       {...props}
       readonly
-      renderOnlyActiveSection
+      // renderOnlyActiveSection
       columnProportions={[3, 1, 1]}
       displayFields={[
         this.renderMatrixRegions,

@@ -19,7 +19,7 @@ import { DataContext } from "Services/DataContext";
 import { InputNumber, Select } from "Components/FormControls/FormControls";
 import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
 import { RelationFieldSchema, NumericFieldSchema } from "Models/EditorSchemaModels";
-import { LinkParameter, ProductParameter, BaseParameter } from "../ProductEditorSchema";
+import { LinkParameter, ProductParameter, BaseParameter, Unit } from "../ProductEditorSchema";
 
 type Parameter = ProductParameter | LinkParameter;
 
@@ -145,9 +145,9 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     const unitFieldSchema = fieldSchema.RelatedContent.Fields.Unit as RelationFieldSchema;
 
     return weakCache.getOrAdd(fieldSchema, () =>
-      unitFieldSchema.PreloadedArticles.map((baseParamenter: BaseParameter) => ({
-        value: baseParamenter._ClientId,
-        label: baseParamenter.Title
+      unitFieldSchema.PreloadedArticles.map((unit: Unit) => ({
+        value: unit._ClientId,
+        label: unit.Title
       }))
     );
   }
