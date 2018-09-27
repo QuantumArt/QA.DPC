@@ -16,7 +16,7 @@ export class TextFieldEditor extends AbstractFieldEditor {
           id={this._id}
           model={model}
           name={fieldSchema.FieldName}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
             "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)

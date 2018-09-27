@@ -65,7 +65,7 @@ type FieldValue =
   | EntityObject
   | EntityObject[];
 
-interface FieldEditorProps {
+export interface FieldEditorProps {
   model: ArticleObject;
   fieldSchema: FieldSchema;
 }
@@ -73,7 +73,7 @@ interface FieldEditorProps {
 declare class FieldEditorComponent extends Component<FieldEditorProps> {}
 type FieldEditor = StatelessComponent<FieldEditorProps> | typeof FieldEditorComponent;
 
-interface RelationFieldEditorProps extends FieldEditorProps {
+export interface RelationFieldEditorProps extends FieldEditorProps {
   fieldSchema: RelationFieldSchema;
 }
 

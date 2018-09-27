@@ -17,7 +17,7 @@ import { WeakCache } from "Utils/WeakCache";
 import { asc } from "Utils/Array/Sort";
 import { DataContext } from "Services/DataContext";
 import { InputNumber, Select } from "Components/FormControls/FormControls";
-import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
+import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
 import { RelationFieldSchema, NumericFieldSchema } from "Models/EditorSchemaModels";
 import { LinkParameter, ProductParameter, BaseParameter, Unit } from "../ProductEditorSchema";
 

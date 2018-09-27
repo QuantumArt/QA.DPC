@@ -1,12 +1,15 @@
 import React, { Component } from "react";
-import { ExtensionEditor, ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
+import {
+  ExtensionEditor,
+  ArticleEditor,
+  FieldEditorProps
+} from "Components/ArticleEditor/ArticleEditor";
 import { IGNORE } from "Components/ArticleEditor/EntityEditor";
 import {
   MultiRelationFieldTabs,
   MultiRelationFieldAccordion,
   MultiRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
-import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
 import {
   ContentSchema,
   RelationFieldSchema,

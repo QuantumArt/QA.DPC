@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Checkbox, Button, Intent, Icon } from "@blueprintjs/core";
-import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
+import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
 import { MultiRelationFieldTable } from "Components/FieldEditors/FieldEditors";
 import { Advantage } from "../ProductEditorSchema";
 import { RelationFieldSchema, FileFieldSchema } from "Models/EditorSchemaModels";
