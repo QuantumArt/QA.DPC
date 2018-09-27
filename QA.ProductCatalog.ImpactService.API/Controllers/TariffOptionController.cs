@@ -95,7 +95,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while using Elastic Search: {ex.Message}";
-                Logger.LogError(1, ex, message);
+                LogException(ex, message, searchOptions);
                 result = BadRequest(message);
             }
             return result;

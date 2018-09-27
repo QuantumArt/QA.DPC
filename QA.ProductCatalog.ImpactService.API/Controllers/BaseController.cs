@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Elasticsearch.Net;
+using log4net.Core;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.ImpactService.API.Services;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
 {
@@ -54,7 +57,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(1, e, $"Exception occurs while using Elastic Search: {e.Message}. {addrString}");
+                var message = $"Exception occurs while using Elastic Search: {e.Message}. {addrString}";
+                LogException(e, message, searchOptions);
                 return defaultValue;
             }
 
@@ -71,7 +75,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             catch (Exception e)
             {
-                Logger.LogError(1, e, $"Exception occurs while using Elastic Search: {e.Message}. {addrString}");
+                var message = $"Exception occurs while using Elastic Search: {e.Message}. {addrString}";
+                LogException(e, message, options);
                 return false;
             }
         }
@@ -123,7 +128,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while using Elastic Search: {ex.Message}";
-                Logger.LogError(1, ex, $"{message}. {addrString}");
+                LogException(ex, message, searchOptions);
                 result = BadRequest(message);
             }
             return result;
@@ -277,7 +282,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while loading home region: {ex.Message}";
-                Logger.LogError(1, ex, message);
+                LogException(ex, message, searchOptions);
                 result = BadRequest(message);
             }
             return result;
@@ -301,10 +306,19 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while loading default home region: {ex.Message}";
-                Logger.LogError(1, ex, message);
+                LogException(ex, message, searchOptions);
                 result = BadRequest(message);
             }
             return result;
+        }
+
+        protected void LogException(Exception ex, string message, SearchOptions searchOptions)
+        {
+            var resultMessage = ex is ElasticsearchClientException elex ?
+                $"{message}. DebugInfo: {elex.DebugInformation}" :
+                $"{message}. Address: {searchOptions.BaseAddress}, Index: {searchOptions.IndexName}, Type: {searchOptions.TypeName}";
+
+            Logger.LogError(1, ex, resultMessage);
         }
     }
 }

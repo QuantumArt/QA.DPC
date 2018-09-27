@@ -57,7 +57,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while getting information for roaming country: {ex.Message}";
-                Logger.LogError(1, ex, $"{message}. Address: {searchOptions.BaseAddress}, Index: {searchOptions.IndexName}, Type: {searchOptions.TypeName}");
+                LogException(ex, message, searchOptions);
                 result = BadRequest(message);
             }
             searchOptions.TypeName = null;
