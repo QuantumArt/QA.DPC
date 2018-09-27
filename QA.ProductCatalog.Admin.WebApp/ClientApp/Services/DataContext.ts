@@ -1,5 +1,12 @@
 import { action } from "mobx";
-import { types as t, unprotect, IModelType, onPatch, ModelProperties } from "mobx-state-tree";
+import {
+  types as t,
+  unprotect,
+  IModelType,
+  onPatch,
+  ModelProperties,
+  getType
+} from "mobx-state-tree";
 import { validationMixin } from "mst-validation-mixin";
 import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
 import {
@@ -46,16 +53,22 @@ export class DataContext {
   @action
   public createEntity<T extends EntityObject = EntityObject>(
     contentName: string,
-    isVirtual = false
+    properties?: { [key: string]: any }
   ): T {
-    const article = this.getContentType(contentName).create({
+    const entity = this.getContentType(contentName).create({
       _ClientId: this._nextId,
-      _IsVirtual: isVirtual,
-      ...this._defaultSnapshots[contentName]
+      ...this._defaultSnapshots[contentName],
+      ...properties
     }) as T;
 
-    this.store[contentName].put(article);
-    return article;
+    this.store[contentName].put(entity);
+    return entity;
+  }
+
+  @action
+  public deleteEntity(entity: EntityObject) {
+    const contentName = getType(entity).name;
+    this.store[contentName].delete(String(entity._ClientId));
   }
 
   private getContentType(contentName: string): ModelType<EntitySnapshot, EntityObject> {

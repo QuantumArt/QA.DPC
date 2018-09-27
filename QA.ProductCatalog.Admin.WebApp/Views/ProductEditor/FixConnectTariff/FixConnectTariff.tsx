@@ -8,7 +8,7 @@ import { EditorTabs } from "./Components/EditorTabs";
 import { Product } from "./ProductEditorSchema";
 import { AdvantagesTable } from "./Components/AdvantagesTable";
 import "./FixConnectTariff.scss";
-import { ParametersFieldSet } from "./Components/ParametersFieldSet";
+import { ParameterFields } from "./Components/ParameterFields";
 
 const App = () => (
   <LocaleContext.Provider value="ru">
@@ -16,8 +16,8 @@ const App = () => (
       settings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: props => <MultiRelationFieldTags {...props} orderByField="Title" />,
-        ProductParameter: props => <ParametersFieldSet {...props} fields={[]} />,
-        LinkParameter: props => <ParametersFieldSet {...props} fields={[]} />,
+        ProductParameter: props => <ParameterFields {...props} />,
+        LinkParameter: props => <ParameterFields {...props} />,
         Advantage: AdvantagesTable
       }}
     >

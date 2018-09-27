@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ExtensionEditor } from "Components/ArticleEditor/ArticleEditor";
+import { ExtensionEditor, ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { IGNORE } from "Components/ArticleEditor/EntityEditor";
 import {
   MultiRelationFieldTabs,
@@ -11,10 +11,11 @@ import {
   RelationFieldSchema,
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
-import { Product, DeviceOnTariffs } from "../ProductEditorSchema";
+import { Product, DeviceOnTariffs, ProductRelation } from "../ProductEditorSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
-import { ProductRelationFieldSet } from "./ProductRelationFieldSet";
+import { ParameterFields } from "./ParameterFields";
+import { FieldEditorProps } from "Components/FieldEditors/AbstractFieldEditor";
 
 interface DevicesTabProps {
   model: Product;
@@ -24,17 +25,12 @@ interface DevicesTabProps {
 export class DevicesTab extends Component<DevicesTabProps> {
   private filterModel = new FilterModel(this.props.model);
 
-  private getMarketingFixConnectTariffProps() {
+  render() {
     const { model, contentSchema } = this.props;
     const extension = model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
     const extensionSchema = ((contentSchema.Fields.MarketingProduct as RelationFieldSchema)
       .RelatedContent.Fields.Type as ExtensionFieldSchema).ExtensionContents
       .MarketingFixConnectTariff;
-    return { extension, extensionSchema };
-  }
-
-  render() {
-    const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
 
     return (
       <>
@@ -45,61 +41,64 @@ export class DevicesTab extends Component<DevicesTabProps> {
           contentSchema={extensionSchema}
           skipOtherFields
           fieldEditors={{
-            MarketingDevices: props => (
-              <MultiRelationFieldTabs
-                {...props}
-                vertical
-                readonly
-                renderOnlyActiveTab
-                displayField={"Title"}
-                fieldOrders={["Modifiers", "Products", "DevicesOnTariffs"]}
-                fieldEditors={{
-                  Title: IGNORE,
-                  Products: props => (
-                    <MultiRelationFieldAccordion
-                      {...props}
-                      readonly
-                      renderOnlyActiveSection
-                      columnProportions={[3, 1, 1]}
-                      displayFields={[
-                        this.renderRegions,
-                        this.renderRentPrice,
-                        this.renderSalePrice
-                      ]}
-                      filterItems={this.filterModel.filterProducts}
-                      fieldOrders={["Modifiers", "Regions", "Parameters"]}
-                      fieldEditors={{
-                        Type: IGNORE
-                      }}
-                    />
-                  ),
-                  DevicesOnTariffs: props => (
-                    <MultiRelationFieldAccordion
-                      {...props}
-                      readonly
-                      renderOnlyActiveSection
-                      columnProportions={[3, 1, 1]}
-                      displayFields={[
-                        this.renderMatrixRegions,
-                        this.renderMatrixRentPrice,
-                        this.renderMatrixSalePrice
-                      ]}
-                      filterItems={this.filterModel.filterDevicesOnTariffs}
-                      fieldOrders={["Cities", "Parent", "MarketingTariffs"]}
-                      fieldEditors={{
-                        Parent: ProductRelationFieldSet,
-                        MarketingTariffs: MultiRelationFieldTable
-                      }}
-                    />
-                  )
-                }}
-              />
-            )
+            MarketingDevices: this.renderMarketingDevices
           }}
         />
       </>
     );
   }
+
+  private renderMarketingDevices = (props: FieldEditorProps) => (
+    <MultiRelationFieldTabs
+      {...props}
+      vertical
+      readonly
+      renderOnlyActiveTab
+      displayField={"Title"}
+      fieldOrders={["Modifiers", "Products", "DevicesOnTariffs"]}
+      fieldEditors={{
+        Title: IGNORE,
+        Products: this.renderDevices,
+        DevicesOnTariffs: this.renderDevicesOnTariffs
+      }}
+    />
+  );
+
+  private renderDevices = (props: FieldEditorProps) => (
+    <MultiRelationFieldAccordion
+      {...props}
+      readonly
+      renderOnlyActiveSection
+      columnProportions={[3, 1, 1]}
+      displayFields={[this.renderRegions, this.renderRentPrice, this.renderSalePrice]}
+      filterItems={this.filterModel.filterProducts}
+      fieldOrders={["Modifiers", "Regions", "Parameters"]}
+      fieldEditors={{
+        Type: IGNORE,
+        Parameters: this.renderParameters
+      }}
+    />
+  );
+
+  private renderDevicesOnTariffs = (props: FieldEditorProps) => (
+    <MultiRelationFieldAccordion
+      {...props}
+      readonly
+      renderOnlyActiveSection
+      columnProportions={[3, 1, 1]}
+      displayFields={[
+        this.renderMatrixRegions,
+        this.renderMatrixRentPrice,
+        this.renderMatrixSalePrice
+      ]}
+      filterItems={this.filterModel.filterDevicesOnTariffs}
+      fieldOrders={["Cities", "Parent", "MarketingTariffs"]}
+      fieldEditors={{
+        Parent: this.renderMatrixProductRelation,
+        MarketingTariffs: MultiRelationFieldTable
+      }}
+    />
+  );
 
   private renderRegions = (device: Product) => (
     <div className="products-accordion__regions">
@@ -137,6 +136,16 @@ export class DevicesTab extends Component<DevicesTabProps> {
     );
   };
 
+  private renderParameters = (props: FieldEditorProps) => (
+    <ParameterFields
+      {...props}
+      fields={[
+        { Title: "Цена аренды", Alias: "RentPrice" },
+        { Title: "Цена продажи", Alias: "SalePrice" }
+      ]}
+    />
+  );
+
   private renderMatrixRegions = (device: DeviceOnTariffs) => (
     <div className="products-accordion__regions">
       {device.Cities.map(region => region.Title).join(", ")}
@@ -171,6 +180,23 @@ export class DevicesTab extends Component<DevicesTabProps> {
             {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
           </div>
         </>
+      )
+    );
+  };
+
+  private renderMatrixProductRelation = ({ model, fieldSchema }: FieldEditorProps) => {
+    const contentSchema = (fieldSchema as RelationFieldSchema).RelatedContent;
+    const productRelation = model[fieldSchema.FieldName] as ProductRelation;
+    return (
+      productRelation && (
+        <ArticleEditor
+          model={productRelation}
+          contentSchema={contentSchema}
+          fieldOrders={["Title", "Parameters"]}
+          fieldEditors={{
+            Parameters: this.renderParameters
+          }}
+        />
       )
     );
   };
