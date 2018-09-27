@@ -33,7 +33,9 @@ interface ParameterFieldsProps extends FieldEditorProps {
   fields?: ParameterField[];
 }
 
-const weakCache = new WeakCache();
+const unitOptionsCache = new WeakCache();
+const unitByAliasCache = new WeakCache();
+const baseParamByAliasCache = new WeakCache();
 
 @consumer
 @observer
@@ -131,7 +133,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
 
   // BaseParameter.PreloadingMode должно быть PreloadingMode.Eager
   private getBaseParametersByAlias(): { [alias: string]: BaseParameter } {
-    const byAliasComputed = weakCache.getOrAdd(this._dataContext, () =>
+    const byAliasComputed = baseParamByAliasCache.getOrAdd(this._dataContext, () =>
       computed(
         () => {
           const byAlias = {};
@@ -149,7 +151,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
 
   // Unit.PreloadingMode должно быть PreloadingMode.Eager
   private getUnitsByAlias(): { [alias: string]: Unit } {
-    const byAliasComputed = weakCache.getOrAdd(this._dataContext, () =>
+    const byAliasComputed = unitByAliasCache.getOrAdd(this._dataContext, () =>
       computed(
         () => {
           const byAlias = {};
@@ -166,11 +168,11 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
   }
 
   // Unit.PreloadingMode должно быть PreloadingMode.Eager
-  private getCachedOptions(): Options {
+  private getUnitOptions(): Options {
     const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
     const unitFieldSchema = fieldSchema.RelatedContent.Fields.Unit as RelationFieldSchema;
 
-    return weakCache.getOrAdd(fieldSchema, () =>
+    return unitOptionsCache.getOrAdd(fieldSchema, () =>
       unitFieldSchema.PreloadedArticles.map((unit: Unit) => ({
         value: unit._ClientId,
         label: unit.Title
@@ -188,7 +190,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     const numValueSchema = fieldSchema.RelatedContent.Fields.NumValue as NumericFieldSchema;
 
     const parameters = this.getParameters();
-    const options = this.getCachedOptions();
+    const unitOptions = this.getUnitOptions();
 
     return parameters
       .slice()
@@ -198,7 +200,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
           <Row>
             <Col xl={2} md={3} className="field-editor__label">
               <label
-                htmlFor={"p" + parameter._ClientId}
+                htmlFor={"param_" + parameter._ClientId}
                 title={parameter.BaseParameter && parameter.BaseParameter.Alias}
                 className={cn("field-editor__label-text", {
                   "field-editor__label-text--edited": parameter.isEdited()
@@ -209,7 +211,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
             </Col>
             <Col xl={2} md={3}>
               <InputNumber
-                id={"p" + parameter._ClientId}
+                id={"param_" + parameter._ClientId}
                 model={parameter}
                 name="NumValue"
                 isInteger={numValueSchema.IsInteger}
@@ -220,7 +222,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
               <Select
                 model={parameter}
                 name="Unit"
-                options={options}
+                options={unitOptions}
                 className={cn({
                   "pt-intent-primary": parameter.isEdited("Unit")
                 })}
