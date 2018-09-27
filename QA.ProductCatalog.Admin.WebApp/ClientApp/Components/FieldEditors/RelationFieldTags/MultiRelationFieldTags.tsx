@@ -87,8 +87,8 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
     return (
       <Col md className="relation-field-list__tags">
         <RelationFieldMenu
-          onSelect={this._canEditRelation && this.selectRelations}
-          onClear={this._canEditRelation && !isEmpty && this.clearRelation}
+          onSelect={!this._readonly && this.selectRelations}
+          onClear={!this._readonly && !isEmpty && this.clearRelation}
         />
         {list &&
           list
@@ -101,12 +101,12 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
                   onClick={e => this.toggleRelation(e, article)}
                   className={cn("pt-tag pt-minimal", {
                     "pt-interactive": !!onClick,
-                    "pt-tag-removable": this._canEditRelation,
+                    "pt-tag-removable": !this._readonly,
                     "pt-intent-primary": selectedIds[article._ClientId]
                   })}
                 >
                   {this.getTitle(article)}
-                  {this._canEditRelation && (
+                  {!this._readonly && (
                     <button
                       className="pt-tag-remove"
                       title="Удалить"

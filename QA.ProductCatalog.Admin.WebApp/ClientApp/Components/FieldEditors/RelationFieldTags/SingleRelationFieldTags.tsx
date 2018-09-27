@@ -47,18 +47,18 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
     const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <Col md className="relation-field-list__tags">
-        <RelationFieldMenu onSelect={this._canEditRelation && this.selectRelation} />
+        <RelationFieldMenu onSelect={!this._readonly && this.selectRelation} />
         {article && (
           <span
             className={cn("pt-tag pt-minimal", {
               "pt-interactive": !!onClick,
-              "pt-tag-removable": this._canEditRelation,
+              "pt-tag-removable": !this._readonly,
               "pt-intent-primary": isSelected
             })}
             onClick={e => this.toggleRelation(e, article)}
           >
             {this.getTitle(article)}
-            {this._canEditRelation && (
+            {!this._readonly && (
               <button className="pt-tag-remove" title="Удалить" onClick={this.removeRelation} />
             )}
           </span>

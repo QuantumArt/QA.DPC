@@ -74,9 +74,9 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     return (
       <div className="relation-field-tabs__controls">
         <RelationFieldMenu
-          onCreate={this._canEditRelation && !article && this.createRelation}
-          onSelect={this._canEditRelation && this.selectRelation}
-          onClear={this._canEditRelation && !!article && this.removeRelation}
+          onCreate={!this._readonly && !article && this.createRelation}
+          onSelect={!this._readonly && this.selectRelation}
+          onClear={!this._readonly && !!article && this.removeRelation}
           onReload={model._ServerId > 0 && this.reloadRelation}
         />
         <Button
@@ -116,7 +116,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           fieldOrders={fieldOrders}
           fieldEditors={fieldEditors}
           header
-          buttons={this._canEditRelation}
+          buttons={!this._readonly}
           onRemove={this.removeRelation}
         >
           {children}

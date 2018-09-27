@@ -29,7 +29,8 @@ export interface FieldEditorProps {
 export abstract class AbstractFieldEditor<
   P extends FieldEditorProps = FieldEditorProps
 > extends Component<P> {
-  protected id = `_${newUid()}`;
+  protected _id = `_${newUid()}`;
+  protected _readonly = this.props.readonly || this.props.fieldSchema.IsReadOnly;
 
   protected abstract renderField(model: ArticleObject, fieldSchema: FieldSchema): ReactNode;
 
@@ -59,7 +60,7 @@ export abstract class AbstractFieldEditor<
   protected renderLabel(model: ArticleObject, fieldSchema: FieldSchema) {
     return (
       <label
-        htmlFor={this.id}
+        htmlFor={this._id}
         title={fieldSchema.FieldName}
         className={cn("field-editor__label-text", {
           "field-editor__label-text--edited": model.isEdited(fieldSchema.FieldName)
@@ -105,16 +106,13 @@ export abstract class AbstractRelationFieldEditor<
   P extends FieldEditorProps = FieldEditorProps
 > extends AbstractFieldEditor<P> {
   @inject protected _relationController: RelationController;
-  protected _canEditRelation: boolean;
 
   constructor(props: P, context?: any) {
     super(props, context);
     const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
-    this._canEditRelation = !(
-      props.readonly ||
-      fieldSchema.IsReadOnly ||
+    this._readonly =
+      this._readonly ||
       (fieldSchema.FieldType === FieldExactTypes.M2ORelation &&
-        fieldSchema.UpdatingMode === UpdatingMode.Ignore)
-    );
+        fieldSchema.UpdatingMode === UpdatingMode.Ignore);
   }
 }

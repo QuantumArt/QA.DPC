@@ -166,9 +166,9 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     return (
       <div className="relation-field-tabs__controls">
         <RelationFieldMenu
-          onCreate={this._canEditRelation && this.createRelation}
-          onSelect={this._canEditRelation && this.selectRelations}
-          onClear={this._canEditRelation && !isEmpty && this.clearRelation}
+          onCreate={!this._readonly && this.createRelation}
+          onSelect={!this._readonly && this.selectRelations}
+          onClear={!this._readonly && !isEmpty && this.clearRelation}
           onReload={model._ServerId > 0 && this.reloadRelations}
         />
         <Button

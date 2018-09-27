@@ -13,7 +13,7 @@ export class TextFieldEditor extends AbstractFieldEditor {
     return (
       <Col md>
         <TextArea
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           disabled={fieldSchema.IsReadOnly}

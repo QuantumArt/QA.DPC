@@ -103,9 +103,9 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <RelationFieldMenu
-        onCreate={this._canEditRelation && !article && this.createRelation}
-        onSelect={this._canEditRelation && this.selectRelation}
-        onClear={this._canEditRelation && !!article && this.removeRelation}
+        onCreate={!this._readonly && !article && this.createRelation}
+        onSelect={!this._readonly && this.selectRelation}
+        onClear={!this._readonly && !!article && this.removeRelation}
         onReload={model._ServerId > 0 && this.reloadRelation}
       />
     );

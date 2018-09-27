@@ -90,13 +90,13 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
     return (
       <Col xl md={6}>
         <Select
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           options={options}
           required={fieldSchema.IsRequired}
           multiple={this._multiple}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
             "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)

@@ -68,10 +68,10 @@ export class StringFieldEditor extends AbstractFieldEditor {
     return (
       <Col xl md={6}>
         <InputText
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
             "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
@@ -88,11 +88,11 @@ export class NumericFieldEditor extends AbstractFieldEditor {
     return (
       <Col xl={4} md={3}>
         <InputNumber
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           isInteger={fieldSchema.IsInteger}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           intent={
             model.hasVisibleErrors(fieldSchema.FieldName)
               ? Intent.DANGER
@@ -112,10 +112,10 @@ export class BooleanFieldEditor extends AbstractFieldEditor {
     return (
       <Col md>
         <CheckBox
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
             "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
@@ -132,11 +132,11 @@ export class DateFieldEditor extends AbstractFieldEditor {
     return (
       <Col xl={4} md={3}>
         <DatePicker
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           type="date"
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
             "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
@@ -153,11 +153,11 @@ export class TimeFieldEditor extends AbstractFieldEditor {
     return (
       <Col xl={4} md={3}>
         <DatePicker
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           type="time"
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
             "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
@@ -174,10 +174,10 @@ export class DateTimeFieldEditor extends AbstractFieldEditor {
     return (
       <Col xl={4} md={3}>
         <DatePicker
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
             "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
@@ -196,7 +196,7 @@ export class ClassifierFieldEditor extends AbstractFieldEditor {
     return (
       <Col xl md={6}>
         <Select
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           options={options}
@@ -222,7 +222,7 @@ export class EnumFieldEditor extends AbstractFieldEditor {
           model={model}
           name={fieldSchema.FieldName}
           options={options}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
             "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
@@ -232,12 +232,12 @@ export class EnumFieldEditor extends AbstractFieldEditor {
     ) : (
       <Col xl md={6}>
         <Select
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           options={options}
           required={fieldSchema.IsRequired}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
             "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
             "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
@@ -256,11 +256,11 @@ export class ExtensionFieldEditor extends AbstractFieldEditor {
       label: contentSchema.ContentTitle || contentSchema.ContentName
     }));
 
-    const disabled = fieldSchema.IsReadOnly || (!fieldSchema.Changeable && model._ServerId > 0);
+    const disabled = this._readonly || (!fieldSchema.Changeable && model._ServerId > 0);
     return (
       <Col xl md={6}>
         <Select
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           options={options}

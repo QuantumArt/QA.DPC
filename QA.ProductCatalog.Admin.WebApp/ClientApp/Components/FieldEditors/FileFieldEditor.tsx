@@ -37,8 +37,10 @@ export class FileFieldEditor extends AbstractFieldEditor {
 
   @action
   selectFile = () => {
-    const { model, fieldSchema } = this.props;
-    this._fileController.selectFile(model, fieldSchema as FileFieldSchema);
+    const { model, fieldSchema, readonly } = this.props;
+    if (!readonly) {
+      this._fileController.selectFile(model, fieldSchema as FileFieldSchema);
+    }
   };
 
   renderField(model: ArticleObject, fieldSchema: FileFieldSchema) {
@@ -46,10 +48,10 @@ export class FileFieldEditor extends AbstractFieldEditor {
       <Col xl md={6} className="file-field-editor">
         <div className="pt-control-group pt-fill">
           <InputFile
-            id={this.id}
+            id={this._id}
             model={model}
             name={fieldSchema.FieldName}
-            disabled={fieldSchema.IsReadOnly}
+            disabled={this._readonly}
             readOnly={true}
             accept={fieldSchema.FieldType === FieldExactTypes.Image ? "image/*" : ""}
             className={cn({

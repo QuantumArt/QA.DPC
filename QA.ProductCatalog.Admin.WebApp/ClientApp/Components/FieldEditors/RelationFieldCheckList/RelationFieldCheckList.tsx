@@ -125,6 +125,9 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
 
   @action
   toggleRelation = (article: EntityObject) => {
+    if (this._readonly) {
+      return;
+    }
     const { model, fieldSchema } = this.props;
     if (this._multiple) {
       const relation: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
@@ -162,11 +165,13 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
                     {this._multiple ? (
                       <Checkbox
                         checked={relation.includes(article)}
+                        disabled={this._readonly}
                         onChange={() => this.toggleRelation(article)}
                       />
                     ) : (
                       <Radio
                         checked={article === relation}
+                        disabled={this._readonly}
                         onChange={() => this.toggleRelation(article)}
                       />
                     )}
