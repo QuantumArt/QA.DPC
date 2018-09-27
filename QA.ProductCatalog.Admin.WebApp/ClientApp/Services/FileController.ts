@@ -56,6 +56,7 @@ export class FileController {
 
     runInAction("selectFile", () => {
       model[fieldSchema.FieldName] = filePath;
+      model.setTouched(fieldSchema.FieldName);
     });
   }
 
