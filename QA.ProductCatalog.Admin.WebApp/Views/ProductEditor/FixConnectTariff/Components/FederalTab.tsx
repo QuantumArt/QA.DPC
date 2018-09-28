@@ -1,6 +1,7 @@
 import React from "react";
 import { Callout, Intent } from "@blueprintjs/core";
-import { EntityEditor, IGNORE } from "Components/ArticleEditor/EntityEditor";
+import { IGNORE } from "Components/ArticleEditor/ArticleEditor";
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import {
   MultiRelationFieldTable,
   SingleRelationFieldTable

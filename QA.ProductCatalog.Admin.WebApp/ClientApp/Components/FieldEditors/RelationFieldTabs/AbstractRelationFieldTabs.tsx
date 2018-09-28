@@ -6,7 +6,7 @@ import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
-import { RenderEntity, FieldsConfig } from "Components/ArticleEditor/EntityEditor";
+import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
@@ -26,7 +26,6 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   vertical?: boolean;
   className?: string;
   borderless?: boolean;
-  children?: RenderEntity | ReactNode;
 }
 
 export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEditor<

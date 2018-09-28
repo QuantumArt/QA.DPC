@@ -1,7 +1,8 @@
 import React, { Component, ReactNode } from "react";
 import { provider, inject } from "react-ioc";
 import { Grid } from "react-flexbox-grid";
-import { EntityEditor, RelationsConfig } from "Components/ArticleEditor/EntityEditor";
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
+import { RelationsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { DataNormalizer } from "Services/DataNormalizer";

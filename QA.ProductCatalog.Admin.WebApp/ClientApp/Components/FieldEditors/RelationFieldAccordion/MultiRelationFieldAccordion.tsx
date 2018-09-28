@@ -189,8 +189,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
       fieldOrders,
       fieldEditors,
       filterItems,
-      renderOnlyActiveSection,
-      children
+      renderOnlyActiveSection
     } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
@@ -262,9 +261,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                             contentSchema={fieldSchema.RelatedContent}
                             fieldOrders={fieldOrders}
                             fieldEditors={fieldEditors}
-                          >
-                            {children}
-                          </EntityEditor>
+                          />
                         )}
                     </td>
                   </tr>

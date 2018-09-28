@@ -1,12 +1,12 @@
 import React, { Component } from "react";
+import ReactSelect, { Options, Option } from "react-select";
+import { consumer, inject } from "react-ioc";
+import { computed } from "mobx";
 import { observer } from "mobx-react";
 import { Col, Row } from "react-flexbox-grid";
 import { Switch, Alignment } from "@blueprintjs/core";
-import ReactSelect, { Options, Option } from "react-select";
-import { FilterModel } from "../Models/FilterModel";
-import { consumer, inject } from "react-ioc";
 import { DataContext } from "Services/DataContext";
-import { computed } from "mobx";
+import { FilterModel } from "../Models/FilterModel";
 import { Region } from "../ProductEditorSchema";
 
 interface FilterBlockProps {

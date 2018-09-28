@@ -8,7 +8,7 @@ import { DataContext } from "Services/DataContext";
 import { EditorController } from "Services/EditorController";
 import { ArticleController } from "Services/ArticleController";
 import { isString } from "Utils/TypeChecks";
-import { RenderEntity, FieldsConfig } from "Components/ArticleEditor/EntityEditor";
+import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
@@ -25,7 +25,6 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
   renderOnlyActiveSection?: boolean;
   collapsed?: boolean;
-  children?: RenderEntity | ReactNode;
 }
 
 export abstract class AbstractRelationFieldAccordion extends AbstractRelationFieldEditor<

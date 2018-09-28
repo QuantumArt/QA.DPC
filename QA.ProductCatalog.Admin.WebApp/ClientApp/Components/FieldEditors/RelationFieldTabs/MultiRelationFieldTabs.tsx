@@ -177,8 +177,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       renderOnlyActiveTab,
       vertical,
       filterItems,
-      className,
-      children
+      className
     } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
@@ -225,9 +224,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                         header
                         buttons={!this._readonly}
                         onRemove={this.removeRelation}
-                      >
-                        {children}
-                      </EntityEditor>
+                      />
                     )
                   }
                 >

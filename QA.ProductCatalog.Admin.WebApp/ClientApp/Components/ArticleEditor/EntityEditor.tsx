@@ -5,23 +5,19 @@ import { observer } from "mobx-react";
 import { EntityObject } from "Models/EditorDataModels";
 import { EditorController } from "Services/EditorController";
 import { ArticleController } from "Services/ArticleController";
-import { isString, isFunction } from "Utils/TypeChecks";
+import { isString } from "Utils/TypeChecks";
 import { ArticleMenu } from "./ArticleMenu";
 import { ArticleLink } from "./ArticleLink";
 import { AbstractEditor, ArticleEditorProps } from "./ArticleEditor";
-export { IGNORE, FieldsConfig, RelationsConfig } from "./ArticleEditor";
 import "./ArticleEditor.scss";
 
-export type RenderEntity = (headerNode: ReactNode, fieldsNode: ReactNode) => ReactNode;
-
-interface EntityEditorProps {
+interface EntityEditorProps extends ArticleEditorProps {
   model: EntityObject;
   header?: ReactNode | boolean;
   buttons?: ReactNode | boolean;
   className?: string;
-  onRemove?: (article: EntityObject) => void;
   titleField?: string | ((article: EntityObject) => string);
-  children?: RenderEntity | ReactNode;
+  onRemove?: (article: EntityObject) => void;
 }
 
 @consumer
@@ -31,7 +27,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   @inject private _editorController: EditorController;
   private _titleField: (model: EntityObject) => string;
 
-  constructor(props: ArticleEditorProps & EntityEditorProps, context?: any) {
+  constructor(props: EntityEditorProps, context?: any) {
     super(props, context);
     const { contentSchema, titleField = contentSchema.DisplayFieldName || (() => "") } = this.props;
     this._titleField = isString(titleField) ? article => article[titleField] : titleField;
@@ -53,49 +49,57 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   };
 
   render() {
-    const { model, contentSchema, header, buttons, className, onRemove, children } = this.props;
-    if (isFunction(children) && children.length === 0) {
-      return children(null, null);
-    }
+    const { className } = this.props;
+    return (
+      <>
+        {this.renderHeader()}
+        <Col key={2} md className={className}>
+          <Row>{super.render()}</Row>
+        </Col>
+      </>
+    );
+  }
+
+  private renderHeader() {
+    const { model, contentSchema, header } = this.props;
+
+    return header === true ? (
+      <Col key={1} md className="article-editor__header">
+        <div
+          className="article-editor__title"
+          title={
+            contentSchema.ContentDescription ||
+            contentSchema.ContentTitle ||
+            contentSchema.ContentName
+          }
+        >
+          <ArticleLink model={model} contentSchema={contentSchema} />
+          {this._titleField(model)}
+        </div>
+        {this.renderButtons()}
+      </Col>
+    ) : (
+      header || null
+    );
+  }
+
+  private renderButtons() {
+    const { model, buttons, onRemove } = this.props;
     const hasServerId = model._ServerId > 0;
 
-    const headerNode =
-      header === true ? (
-        <Col key={1} md className="article-editor__header">
-          <div
-            className="article-editor__title"
-            title={
-              contentSchema.ContentDescription ||
-              contentSchema.ContentTitle ||
-              contentSchema.ContentName
-            }
-          >
-            <ArticleLink model={model} contentSchema={contentSchema} />
-            {this._titleField(model)}
-          </div>
-          {buttons === true ? (
-            <div className="article-editor__buttons">
-              <ArticleMenu
-                onSave={this.savePartialProduct}
-                onRemove={onRemove && (() => onRemove(model))}
-                onRefresh={hasServerId && this.refreshEntity}
-                onReload={hasServerId && this.reloadEntity}
-                onClone={() => {}} // TODO: clone PartialProduct
-                onPublish={() => {}} // TODO: publish PartialProduct
-              />
-            </div>
-          ) : (
-            buttons || null
-          )}
-        </Col>
-      ) : (
-        header || null
-      );
-    const fieldsNode = (
-      <Col key={2} md className={className}>
-        <Row>{super.render()}</Row>
-      </Col>
+    return buttons === true ? (
+      <div className="article-editor__buttons">
+        <ArticleMenu
+          onSave={this.savePartialProduct}
+          onRemove={onRemove && (() => onRemove(model))}
+          onRefresh={hasServerId && this.refreshEntity}
+          onReload={hasServerId && this.reloadEntity}
+          onClone={() => {}} // TODO: clone PartialProduct
+          onPublish={() => {}} // TODO: publish PartialProduct
+        />
+      </div>
+    ) : (
+      buttons || null
     );
-    return isFunction(children) ? children(headerNode, fieldsNode) : [headerNode, fieldsNode];
   }
 }

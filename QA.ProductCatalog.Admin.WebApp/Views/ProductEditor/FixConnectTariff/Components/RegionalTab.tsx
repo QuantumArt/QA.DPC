@@ -5,10 +5,10 @@ import {
   ExtensionFieldSchema,
   RelationFieldSchema
 } from "Models/EditorSchemaModels";
-import { Product } from "../ProductEditorSchema";
-import { EntityEditor, IGNORE } from "Components/ArticleEditor/EntityEditor";
-import { ArticleEditor, FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
+import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import { MultiRelationFieldAccordion, FileFieldEditor } from "Components/FieldEditors/FieldEditors";
+import { Product } from "../ProductEditorSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";

@@ -2,7 +2,7 @@ import React, { Component, StatelessComponent, ReactNode } from "react";
 import { consumer, inject } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { ArticleObject, EntityObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import {
   ContentSchema,
   FieldSchema,
@@ -96,7 +96,7 @@ interface ObjectEditorBlock {
   contentsConfig?: ContentsConfig;
 }
 
-export abstract class AbstractEditor<P = {}> extends Component<ArticleEditorProps & P> {
+export abstract class AbstractEditor<P extends ArticleEditorProps> extends Component<P> {
   @inject private _relationsConfig: RelationsConfig;
   private _editorBlocks: ObjectEditorBlock[] = [];
 
@@ -253,7 +253,7 @@ export abstract class AbstractEditor<P = {}> extends Component<ArticleEditorProp
           ];
           const extensionFields = contentsConfig && contentsConfig[contentName];
           return (
-            <ExtensionEditor
+            <ArticleEditor
               key={fieldName + "_" + contentName}
               model={extensionModel}
               fieldOrders={fieldOrders}
@@ -271,8 +271,4 @@ export abstract class AbstractEditor<P = {}> extends Component<ArticleEditorProp
 
 @consumer
 @observer
-export class ArticleEditor extends AbstractEditor<{ model: ArticleObject }> {}
-
-@consumer
-@observer
-export class ExtensionEditor extends AbstractEditor<{ model: ExtensionObject }> {}
+export class ArticleEditor extends AbstractEditor<ArticleEditorProps> {}
