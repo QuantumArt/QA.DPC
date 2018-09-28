@@ -288,6 +288,22 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return result;
         }
 
+                
+        protected async Task<string> GetDefaultRegionAliasForMnr(SearchOptions searchOptions)
+        {
+            var result = "";
+            try
+            {
+                result = await SearchRepo.GetDefaultRegionAliasForMnr(searchOptions);
+            }
+            catch (Exception ex)
+            {
+                var message = $"Exception occurs while loading default region for MNR: {ex.Message}";
+                LogException(ex, message, searchOptions);
+            }
+            return result;
+        }
+        
         protected async Task<ActionResult> FillDefaultHomeRegion(SearchOptions searchOptions, JObject product)
         {
             ActionResult result = null;
