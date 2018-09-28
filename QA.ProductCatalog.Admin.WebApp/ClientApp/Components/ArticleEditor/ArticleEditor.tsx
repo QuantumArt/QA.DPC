@@ -44,7 +44,7 @@ export interface FieldsConfig {
   [fieldName: string]: typeof IGNORE | FieldValue | FieldEditor | ContentsConfig;
 }
 
-export interface ContentsConfig {
+interface ContentsConfig {
   [contentName: string]: FieldsConfig;
 }
 
@@ -73,7 +73,7 @@ export interface FieldEditorProps {
 declare class FieldEditorComponent extends Component<FieldEditorProps> {}
 type FieldEditor = StatelessComponent<FieldEditorProps> | typeof FieldEditorComponent;
 
-export interface RelationFieldEditorProps extends FieldEditorProps {
+interface RelationFieldEditorProps extends FieldEditorProps {
   fieldSchema: RelationFieldSchema;
 }
 

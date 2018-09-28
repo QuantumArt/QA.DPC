@@ -42,8 +42,10 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           contentSchema={contentSchema}
           titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
           fieldOrders={[
+            // поля статьи расширения
             "Type",
             "TitleForSite",
+            // поля основной статьи
             "Description",
             "Modifiers",
             "Regions",

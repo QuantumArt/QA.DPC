@@ -27,12 +27,14 @@ export const FederalTab = ({ model, contentSchema }: FederalTabProps) => {
         header
         buttons
         fieldOrders={[
+          // поля основной статьи
           "Title",
           "Description",
           "Modifiers",
           "Advantages",
           "SortOrder",
           "ArchiveDate",
+          // поля статьи расширения
           "Type",
           "TitleForSite",
           "Segment",
@@ -42,6 +44,7 @@ export const FederalTab = ({ model, contentSchema }: FederalTabProps) => {
           "MarketingTvPackage",
           "BonusTVPackages",
           "MarketingDevices",
+          // поля основной статьи
           "FixConnectActions"
         ]}
         fieldEditors={{
