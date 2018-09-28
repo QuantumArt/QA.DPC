@@ -14,10 +14,6 @@ import { AbstractRelationFieldTags } from "./AbstractRelationFieldTags";
 export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   protected _isHalfSize = true;
 
-  readonly state = {
-    isSelected: false
-  };
-
   @action
   private removeRelation = (e: any) => {
     e.stopPropagation();
@@ -27,23 +23,12 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
     model.setTouched(fieldSchema.FieldName, true);
   };
 
-  private toggleRelation(e: any, article: EntityObject) {
-    const { onClick } = this.props;
-    if (onClick) {
-      const { isSelected } = this.state;
-      this.setState({ isSelected: !isSelected });
-      onClick(e, article);
-    }
-  }
-
   private selectRelation = async () => {
     const { model, fieldSchema } = this.props;
     await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { onClick } = this.props;
-    const { isSelected } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <Col md className="relation-field-list__tags">
@@ -51,11 +36,8 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
         {article && (
           <span
             className={cn("pt-tag pt-minimal", {
-              "pt-interactive": !!onClick,
-              "pt-tag-removable": !this._readonly,
-              "pt-intent-primary": isSelected
+              "pt-tag-removable": !this._readonly
             })}
-            onClick={e => this.toggleRelation(e, article)}
           >
             {this.getTitle(article)}
             {!this._readonly && (

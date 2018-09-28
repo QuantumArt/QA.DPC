@@ -1,4 +1,4 @@
-import React, { MouseEvent } from "react";
+import React from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { EntityObject } from "Models/EditorDataModels";
@@ -14,8 +14,6 @@ import "./RelationFieldTags.scss";
 export interface RelationFieldTagsProps extends FieldEditorProps {
   displayField?: string | FieldSelector;
   orderByField?: string | FieldSelector;
-  selectMultiple?: boolean;
-  onClick?: (e: MouseEvent<HTMLElement>, article: EntityObject) => void;
 }
 
 export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEditor<

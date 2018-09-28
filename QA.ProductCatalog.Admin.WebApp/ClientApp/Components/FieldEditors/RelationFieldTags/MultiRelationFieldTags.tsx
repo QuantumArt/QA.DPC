@@ -12,19 +12,10 @@ import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTags, RelationFieldTagsProps } from "./AbstractRelationFieldTags";
 
-interface MultiRelationFieldTagsState {
-  selectedIds: {
-    [articleId: number]: boolean;
-  };
-}
-
 @consumer
 @observer
 export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   private _orderByField: FieldSelector;
-  readonly state: MultiRelationFieldTagsState = {
-    selectedIds: {}
-  };
 
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
@@ -46,31 +37,10 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   private removeRelation(e: any, article: EntityObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
-    const { selectedIds } = this.state;
-    delete selectedIds[article._ClientId];
-    this.setState({ selectedIds });
     const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
     if (array) {
       array.remove(article);
       model.setTouched(fieldSchema.FieldName, true);
-    }
-  }
-
-  private toggleRelation(e: any, article: EntityObject) {
-    const { selectMultiple, onClick } = this.props;
-    if (onClick) {
-      let { selectedIds } = this.state;
-      if (selectedIds[article._ClientId]) {
-        delete selectedIds[article._ClientId];
-      } else {
-        if (selectMultiple) {
-          selectedIds[article._ClientId] = true;
-        } else {
-          selectedIds = { [article._ClientId]: true };
-        }
-      }
-      this.setState({ selectedIds });
-      onClick(e, article);
     }
   }
 
@@ -80,8 +50,6 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   };
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
-    const { onClick } = this.props;
-    const { selectedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
@@ -98,11 +66,8 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
               <Fragment key={article._ClientId}>
                 {" "}
                 <span
-                  onClick={e => this.toggleRelation(e, article)}
                   className={cn("pt-tag pt-minimal", {
-                    "pt-interactive": !!onClick,
-                    "pt-tag-removable": !this._readonly,
-                    "pt-intent-primary": selectedIds[article._ClientId]
+                    "pt-tag-removable": !this._readonly
                   })}
                 >
                   {this.getTitle(article)}
