@@ -13,17 +13,29 @@ import "./ArticleEditor.scss";
 
 interface EntityEditorProps extends ArticleEditorProps {
   model: EntityObject;
-  header?: ReactNode | boolean;
-  buttons?: ReactNode | boolean;
   className?: string;
   titleField?: string | ((article: EntityObject) => string);
+  withHeader?: ReactNode | boolean;
   onRemove?: (article: EntityObject) => void;
   onClone?: (article: EntityObject) => void;
+  // allowed actions
+  canSaveEntity?: boolean;
+  canRefreshEntity?: boolean;
+  canReloadEntity?: boolean;
+  canRemoveEntity?: boolean;
+  canPublishEntity?: boolean;
+  canCloneEntity?: boolean;
 }
 
 @consumer
 @observer
 export class EntityEditor extends AbstractEditor<EntityEditorProps> {
+  static defaultProps = {
+    canSaveEntity: true,
+    canRefreshEntity: true,
+    canReloadEntity: true
+  };
+
   @inject private _articleController: ArticleController;
   @inject private _editorController: EditorController;
   private _titleField: (model: EntityObject) => string;
@@ -49,6 +61,28 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     await this._articleController.reloadEntity(model, contentSchema);
   };
 
+  private removeEntity = () => {
+    const { model, onRemove } = this.props;
+    if (onRemove) {
+      onRemove(model);
+    } else if (DEBUG) {
+      console.warn("EntityEditor `onRemove` is not defined");
+    }
+  };
+
+  private cloneEntity = () => {
+    const { model, onClone } = this.props;
+    if (onClone) {
+      onClone(model);
+    } else if (DEBUG) {
+      console.warn("EntityEditor `onClone` is not defined");
+    }
+  };
+
+  private publishEntity = () => {
+    alert("TODO: публикация");
+  };
+
   render() {
     const { className } = this.props;
     return (
@@ -62,9 +96,9 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   }
 
   private renderHeader() {
-    const { model, contentSchema, header } = this.props;
+    const { model, contentSchema, withHeader } = this.props;
 
-    return header === true ? (
+    return withHeader === true ? (
       <Col key={1} md className="article-editor__header">
         <div
           className="article-editor__title"
@@ -80,27 +114,33 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
         {this.renderButtons()}
       </Col>
     ) : (
-      header || null
+      withHeader || null
     );
   }
 
   private renderButtons() {
-    const { model, buttons, onRemove, onClone } = this.props;
+    const {
+      model,
+      canSaveEntity,
+      canRefreshEntity,
+      canReloadEntity,
+      canRemoveEntity,
+      canPublishEntity,
+      canCloneEntity
+    } = this.props;
     const hasServerId = model._ServerId > 0;
 
-    return buttons === true ? (
+    return (
       <div className="article-editor__buttons">
         <ArticleMenu
-          onSave={this.savePartialProduct}
-          onRemove={onRemove && (() => onRemove(model))}
-          onClone={onClone && (() => onClone(model))}
-          onRefresh={hasServerId && this.refreshEntity}
-          onReload={hasServerId && this.reloadEntity}
-          onPublish={() => {}} // TODO: publish PartialProduct
+          onSave={canSaveEntity && this.savePartialProduct}
+          onRemove={canRemoveEntity && this.removeEntity}
+          onRefresh={canRefreshEntity && hasServerId && this.refreshEntity}
+          onReload={canReloadEntity && hasServerId && this.reloadEntity}
+          onPublish={canPublishEntity && hasServerId && this.publishEntity}
+          onClone={canCloneEntity && hasServerId && this.cloneEntity}
         />
       </div>
-    ) : (
-      buttons || null
     );
   }
 }

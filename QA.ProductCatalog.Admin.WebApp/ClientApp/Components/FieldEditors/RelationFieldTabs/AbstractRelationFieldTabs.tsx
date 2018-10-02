@@ -27,11 +27,30 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   vertical?: boolean;
   className?: string;
   borderless?: boolean;
+  // allowed actions
+  canCreateEntity?: boolean;
+  canSaveEntity?: boolean;
+  canRefreshEntity?: boolean;
+  canReloadEntity?: boolean;
+  canRemoveEntity?: boolean;
+  canPublishEntity?: boolean;
+  canCloneEntity?: boolean;
+  canClonePrototype?: boolean;
+  canSelectRelation?: boolean;
+  canClearRelation?: boolean;
+  canReloadRelation?: boolean;
 }
 
 export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEditor<
   RelationFieldTabsProps
 > {
+  static defaultProps = {
+    canSaveEntity: true,
+    canRefreshEntity: true,
+    canReloadEntity: true,
+    canReloadRelation: true
+  };
+
   @inject protected _dataContext: DataContext;
   @inject protected _cloneController: CloneController;
   protected _displayField: FieldSelector;

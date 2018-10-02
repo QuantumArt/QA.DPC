@@ -51,7 +51,8 @@ export class CloneController {
       const relation = parent[fieldSchema.FieldName];
       if (isMultiRelationField(fieldSchema) && isArray(relation)) {
         relation.push(dataTree._ClientId);
-        parent.setTouched(fieldSchema.FieldName, true);
+        // parent.setTouched(fieldSchema.FieldName) — не нужен,
+        // так как клонированный продукт уже сохранен на сервере
       }
     });
   }

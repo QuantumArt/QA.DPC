@@ -25,11 +25,10 @@ const App = () => (
     >
       {(model, contentSchema) => (
         <EntityEditor
+          withHeader
           model={model}
           contentSchema={contentSchema}
           titleField={p => p.MarketingProduct && p.MarketingProduct.Title}
-          header
-          buttons
         />
       )}
     </ProductEditor>

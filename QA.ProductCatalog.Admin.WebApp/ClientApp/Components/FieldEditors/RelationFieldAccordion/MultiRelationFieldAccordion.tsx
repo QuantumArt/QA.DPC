@@ -31,6 +31,7 @@ interface MultiRelationFieldAccordionState {
 @observer
 export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion {
   static defaultProps = {
+    ...AbstractRelationFieldAccordion.defaultProps,
     filterItems: () => true
   };
 
@@ -123,6 +124,11 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
   }
 
+  private publishEntity = (e: any, _entity: EntityObject) => {
+    e.stopPropagation();
+    alert("TODO: публикация");
+  };
+
   private handleToggle(e: any, article: EntityObject) {
     // нажали на элемент находящийся внутри <button>
     if (e.target.closest("button")) return;
@@ -167,16 +173,17 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   };
 
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
+    const { canCreateEntity, canSelectRelation, canClearRelation, canReloadRelation } = this.props;
     const { isOpen } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
       <div className="relation-field-tabs__controls">
         <RelationFieldMenu
-          onCreate={!this._readonly && this.createRelation}
-          onSelect={!this._readonly && this.selectRelations}
-          onClear={!this._readonly && !isEmpty && this.clearRelation}
-          onReload={model._ServerId > 0 && this.reloadRelations}
+          onCreate={canCreateEntity && !this._readonly && this.createRelation}
+          onSelect={canSelectRelation && !this._readonly && this.selectRelations}
+          onClear={canClearRelation && !this._readonly && !isEmpty && this.clearRelation}
+          onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelations}
         />
         <Button
           small
@@ -196,7 +203,13 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
       fieldOrders,
       fieldEditors,
       filterItems,
-      renderOnlyActiveSection
+      renderOnlyActiveSection,
+      canSaveEntity,
+      canRefreshEntity,
+      canReloadEntity,
+      canRemoveEntity,
+      canPublishEntity,
+      canCloneEntity
     } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
@@ -245,12 +258,24 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                     <td key={-3} className="relation-field-accordion__controls">
                       <ArticleMenu
                         small
-                        onSave={e => this.savePartialProduct(e, article)}
-                        onRemove={e => this.removeRelation(e, article)}
-                        onRefresh={hasServerId && (e => this.refreshEntity(e, article))}
-                        onReload={hasServerId && (e => this.reloadEntity(e, article))}
-                        onClone={hasServerId && (e => this.cloneRelation(e, article))}
-                        onPublish={hasServerId && (() => {})} // TODO: publish PartialProduct
+                        onSave={canSaveEntity && (e => this.savePartialProduct(e, article))}
+                        onRemove={
+                          canRemoveEntity &&
+                          !this._readonly &&
+                          (e => this.removeRelation(e, article))
+                        }
+                        onRefresh={
+                          canRefreshEntity && hasServerId && (e => this.refreshEntity(e, article))
+                        }
+                        onReload={
+                          canReloadEntity && hasServerId && (e => this.reloadEntity(e, article))
+                        }
+                        onClone={
+                          canCloneEntity && hasServerId && (e => this.cloneRelation(e, article))
+                        }
+                        onPublish={
+                          canPublishEntity && hasServerId && (e => this.publishEntity(e, article))
+                        }
                       />
                     </td>
                   </tr>

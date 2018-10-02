@@ -26,6 +26,7 @@ interface MultiRelationFieldTabsState {
 @observer
 export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   static defaultProps = {
+    ...AbstractRelationFieldTabs.defaultProps,
     filterItems: () => true
   };
 
@@ -149,16 +150,17 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   renderControls(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
+    const { canCreateEntity, canSelectRelation, canClearRelation, canReloadRelation } = this.props;
     const { isOpen } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
       <div className="relation-field-tabs__controls">
         <RelationFieldMenu
-          onCreate={!this._readonly && this.createRelation}
-          onSelect={!this._readonly && this.selectRelations}
-          onClear={!this._readonly && !isEmpty && this.clearRelation}
-          onReload={model._ServerId > 0 && this.reloadRelations}
+          onCreate={canCreateEntity && !this._readonly && this.createRelation}
+          onSelect={canSelectRelation && !this._readonly && this.selectRelations}
+          onClear={canClearRelation && !this._readonly && !isEmpty && this.clearRelation}
+          onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelations}
         />
         <Button
           small
@@ -183,7 +185,13 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       renderOnlyActiveTab,
       vertical,
       filterItems,
-      className
+      className,
+      canSaveEntity,
+      canRefreshEntity,
+      canReloadEntity,
+      canRemoveEntity,
+      canPublishEntity,
+      canCloneEntity
     } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
@@ -227,10 +235,15 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                         skipOtherFields={skipOtherFields}
                         fieldOrders={fieldOrders}
                         fieldEditors={fieldEditors}
-                        header
-                        buttons={!this._readonly}
+                        withHeader
                         onClone={this.cloneRelation}
                         onRemove={this.removeRelation}
+                        canSaveEntity={canSaveEntity}
+                        canRefreshEntity={canRefreshEntity}
+                        canReloadEntity={canReloadEntity}
+                        canRemoveEntity={!this._readonly && canRemoveEntity}
+                        canPublishEntity={canPublishEntity}
+                        canCloneEntity={canCloneEntity}
                       />
                     )
                   }

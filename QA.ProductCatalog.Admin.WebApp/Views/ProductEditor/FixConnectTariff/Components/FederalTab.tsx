@@ -22,10 +22,9 @@ export const FederalTab = ({ model, contentSchema }: FederalTabProps) => {
         Изменения, сделанные в общефедеральных характеристиках повлияют на тарифы во всех регионах
       </Callout>
       <EntityEditor
+        withHeader
         model={model.MarketingProduct}
         contentSchema={schema}
-        header
-        buttons
         fieldOrders={[
           // поля основной статьи
           "Title",

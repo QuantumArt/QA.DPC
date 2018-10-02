@@ -26,11 +26,30 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
   renderOnlyActiveSection?: boolean;
   collapsed?: boolean;
+  // allowed actions
+  canCreateEntity?: boolean;
+  canSaveEntity?: boolean;
+  canRefreshEntity?: boolean;
+  canReloadEntity?: boolean;
+  canRemoveEntity?: boolean;
+  canPublishEntity?: boolean;
+  canCloneEntity?: boolean;
+  canClonePrototype?: boolean;
+  canSelectRelation?: boolean;
+  canClearRelation?: boolean;
+  canReloadRelation?: boolean;
 }
 
 export abstract class AbstractRelationFieldAccordion extends AbstractRelationFieldEditor<
   RelationFieldAccordionProps
 > {
+  static defaultProps = {
+    canSaveEntity: true,
+    canRefreshEntity: true,
+    canReloadEntity: true,
+    canReloadRelation: true
+  };
+
   @inject protected _dataContext: DataContext;
   @inject protected _articleController: ArticleController;
   @inject protected _cloneController: CloneController;

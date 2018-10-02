@@ -78,6 +78,11 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     }
   };
 
+  private publishEntity = (e: any) => {
+    e.stopPropagation();
+    alert("TODO: публикация");
+  };
+
   private toggleRelation = (e: any) => {
     // нажали на элемент находящийся внутри <button>
     if (e.target.closest("button")) return;
@@ -109,19 +114,30 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   }
 
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
+    const { canCreateEntity, canSelectRelation, canClearRelation, canReloadRelation } = this.props;
     const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <RelationFieldMenu
-        onCreate={!this._readonly && !article && this.createRelation}
-        onSelect={!this._readonly && this.selectRelation}
-        onClear={!this._readonly && !!article && this.removeRelation}
-        onReload={model._ServerId > 0 && this.reloadRelation}
+        onCreate={canCreateEntity && !this._readonly && !article && this.createRelation}
+        onSelect={canSelectRelation && !this._readonly && this.selectRelation}
+        onClear={canClearRelation && !this._readonly && !!article && this.removeRelation}
+        onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelation}
       />
     );
   }
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { columnProportions, fieldOrders, fieldEditors } = this.props;
+    const {
+      columnProportions,
+      fieldOrders,
+      fieldEditors,
+      canSaveEntity,
+      canRefreshEntity,
+      canReloadEntity,
+      canRemoveEntity,
+      canPublishEntity,
+      canCloneEntity
+    } = this.props;
     const { isOpen, isTouched } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
     const hasServerId = article._ServerId > 0;
@@ -156,12 +172,12 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
             <td key={-3} className="relation-field-accordion__controls">
               <ArticleMenu
                 small
-                onSave={this.savePartialProduct}
-                onRemove={this.removeRelation}
-                onRefresh={hasServerId && this.refreshEntity}
-                onReload={hasServerId && this.reloadEntity}
-                onClone={hasServerId && this.cloneRelation}
-                onPublish={() => {}} // TODO: publish PartialProduct
+                onSave={canSaveEntity && this.savePartialProduct}
+                onRemove={canRemoveEntity && !this._readonly && this.removeRelation}
+                onRefresh={canRefreshEntity && hasServerId && this.refreshEntity}
+                onReload={canReloadEntity && hasServerId && this.reloadEntity}
+                onClone={canCloneEntity && hasServerId && this.cloneRelation}
+                onPublish={canPublishEntity && hasServerId && this.publishEntity}
               />
             </td>
           </tr>

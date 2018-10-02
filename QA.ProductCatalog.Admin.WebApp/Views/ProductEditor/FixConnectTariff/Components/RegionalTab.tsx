@@ -36,8 +36,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
     return (
       <>
         <EntityEditor
-          header
-          buttons
+          withHeader
           model={model}
           contentSchema={contentSchema}
           titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
