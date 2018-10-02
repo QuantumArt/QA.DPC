@@ -82,7 +82,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 catch (Exception ex)
                 {
                     var message = $"Exception occurs while merging scale and tariff: {ex.Message}";
-                    Logger.LogError(1, ex, message);
+                    LogException(ex, message, searchOptions);
                     result = BadRequest(message);
                 }
 
@@ -103,7 +103,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while getting scales: {ex.Message}";
-                Logger.LogError(1, ex, message);
+                LogException(ex, message, searchOptions);
                 return BadRequest(message);
             }
 
