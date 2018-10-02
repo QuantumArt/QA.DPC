@@ -51,8 +51,10 @@ export class DevicesTab extends Component<DevicesTabProps> {
     <MultiRelationFieldTabs
       {...props}
       vertical
-      readonly
       renderOnlyActiveTab
+      canPublishEntity
+      canSaveEntity={false}
+      canRefreshEntity={false}
       displayField={"Title"}
       fieldOrders={["Modifiers", "Products", "DevicesOnTariffs"]}
       fieldEditors={{
@@ -66,8 +68,9 @@ export class DevicesTab extends Component<DevicesTabProps> {
   private renderDevices = (props: FieldEditorProps) => (
     <MultiRelationFieldAccordion
       {...props}
-      readonly
       // renderOnlyActiveSection
+      canCloneEntity
+      canPublishEntity
       columnProportions={[3, 1, 1]}
       displayFields={[this.renderRegions, this.renderRentPrice, this.renderSalePrice]}
       filterItems={this.filterModel.filterProducts}
@@ -82,8 +85,9 @@ export class DevicesTab extends Component<DevicesTabProps> {
   private renderDevicesOnTariffs = (props: FieldEditorProps) => (
     <MultiRelationFieldAccordion
       {...props}
-      readonly
       // renderOnlyActiveSection
+      canCloneEntity
+      canPublishEntity
       columnProportions={[3, 1, 1]}
       displayFields={[
         this.renderMatrixRegions,

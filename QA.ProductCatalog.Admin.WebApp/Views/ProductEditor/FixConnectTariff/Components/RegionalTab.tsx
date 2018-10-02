@@ -37,6 +37,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       <>
         <EntityEditor
           withHeader
+          canPublishEntity
           model={model}
           contentSchema={contentSchema}
           titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
@@ -120,6 +121,8 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
     <MultiRelationFieldAccordion
       {...props}
       // renderOnlyActiveSection
+      canCloneEntity
+      canPublishEntity
       displayFields={[this.renderRegions]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
@@ -133,8 +136,9 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   private renderPhoneTariffs = (props: FieldEditorProps) => (
     <MultiRelationFieldAccordion
       {...props}
-      readonly
       // renderOnlyActiveSection
+      canCloneEntity
+      canPublishEntity
       displayFields={[this.renderRegions]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
