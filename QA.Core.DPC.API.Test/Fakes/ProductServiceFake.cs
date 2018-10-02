@@ -11,6 +11,7 @@ namespace QA.Core.DPC.API.Test.Fakes
 		public Article Product { get; set; }
 
 		#region IProductService implementation
+
 		public Article GetProductById(int id, bool isLive = false, ProductDefinition productDefinition = null)
 		{
 			return Product;
@@ -26,7 +27,12 @@ namespace QA.Core.DPC.API.Test.Fakes
 			throw new NotImplementedException();
 		}
 
-		public ProductDefinition GetProductDefinition(int productTypeId, bool isLive = false)
+        public Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ProductDefinition GetProductDefinition(int productTypeId, bool isLive = false)
 		{
 			throw new NotImplementedException();
 		}
@@ -45,6 +51,7 @@ namespace QA.Core.DPC.API.Test.Fakes
 		{
 			throw new NotImplementedException();
 		}
+
 		#endregion
 	}
 }

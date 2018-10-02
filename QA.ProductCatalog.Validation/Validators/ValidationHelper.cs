@@ -7,6 +7,7 @@ using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.Constants;
@@ -161,52 +162,86 @@ namespace QA.ProductCatalog.Validation.Validators
                                                                 .RelatedItems.FirstOrDefault())
                                                    .ToArray();
             var productRelationsContentId = GetSettingValue(SettingsTitles.PRODUCT_RELATIONS_CONTENT_ID);
-            var relationMatrixElements = articleService.List(productRelationsContentId, relationMatrixList, true);
-
-            foreach (var item in relationMatrixElements)
+            var relationMatrixElements = articleService.List(productRelationsContentId, relationMatrixList, true).ToArray();
+            if (relationMatrixElements.Any())
             {
-                GetParametersListFromRelationMatrix(articleService, item, fieldProductParametersName);
-            }
-        }
+                var contentId = relationMatrixElements.First()
+                    .FieldValues
+                    .Where(a => a.Field.Name == fieldProductParametersName)
+                    .Select(s => s.Field.RelateToContentId ?? 0)
+                    .Single();
 
-        public void GetParametersListFromRelationMatrix(ArticleService articleService, Article article, string parametersFieldName)
-        {
-            var contentId = article.FieldValues.Where(a => a.Field.Name == parametersFieldName).Select(s => s.Field.ContentId).Single();
+                var matrixElems = relationMatrixElements.ToDictionary(
+                    k => k.Id,
+                    v => v.FieldValues
+                        .Where(a => a.Field.Name == fieldProductParametersName)
+                        .SelectMany(r => r.RelatedItems)
+                        .ToArray()
+                );
+                var matrixElemsParamsIds = matrixElems.SelectMany(n => n.Value).Distinct().ToArray();
+                var parametersDict = GetParameters(articleService, contentId, matrixElemsParamsIds, "c.BaseParameter is not null")
+                    .ToDictionary(n => n.Id, m => m);
 
-            //получение спиcка параметров
-            var parametersList =
-                article.FieldValues.Single(a => a.Field.Name == parametersFieldName).Value
-                    .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(int.Parse).ToArray();
-
-            CheckTariffAreaDuplicateExist(articleService, contentId, parametersList, parametersFieldName);
-        }
-
-        public void CheckTariffAreaDuplicateExist(ArticleService articleService, int contentId, int[] parametersList, string parametersFieldName)
-        {
-            Lookup<int, int[]> tariffAreaLists = (Lookup<int, int[]>)articleService.List(contentId, parametersList, true).Where(w => !w.Archived)
-                .ToLookup(s => s.Id, s => s.FieldValues
-                    .Where(w => GetListOfParametersNames().Contains(w.Field.Name))
-                    .SelectMany(r => r.RelatedItems).ToArray());
-
-            var resultIds = new List<int>();
-            for (int i = 0; i < tariffAreaLists.Count; i++)
-            {
-                for (int j = i + 1; j < tariffAreaLists.Count; j++)
+                foreach (var item in matrixElems)
                 {
-                    var element1 = tariffAreaLists.ElementAtOrDefault(i);
-                    var element2 = tariffAreaLists.ElementAtOrDefault(j);
-                    if (element1 != null && element2 != null && element1.SelectMany(s => s).Any() && element1.SelectMany(s => s).SequenceEqual(element2.SelectMany(s1 => s1)))
+                    var parameters = item.Value
+                        .Select(n => parametersDict.ContainsKey(n) ? parametersDict[n] : null)
+                        .Where(n => n != null)
+                        .ToArray();
+                    if (parameters.Any())
                     {
-                        resultIds.Add(element1.Key);
-                        resultIds.Add(element2.Key);
+                        CheckTariffAreaDuplicateExist(parameters, fieldProductParametersName, true);                       
                     }
                 }
             }
+        }
+
+
+        public int[] GetParameterTariffDirectionIds(Article article, HashSet<string> names)
+        {
+            return article.FieldValues
+                .Where(w => names.Contains(w.Field.Name))
+                .SelectMany(r => r.RelatedItems)
+                .OrderBy(n => n)
+                .ToArray();
+        }
+
+        public IEnumerable<Article> GetParameters(ArticleService articleService, int contentId, int[] parametersList, string filter = "")
+        {
+            return articleService.List(contentId, parametersList, true, filter);
+        }
+        
+        public void CheckTariffAreaDuplicateExist(IEnumerable<Article> parameters, string parametersFieldName, bool isMatrix = false)
+        {
+            var resultIds = new List<int>();
+            var names = new HashSet<string>(GetListOfParametersNames());
+            var tariffDirections = parameters.ToDictionary(
+                    k => k.Id, 
+                    s => string.Join(",", GetParameterTariffDirectionIds(s, names))
+                );
+            
+            var checkedDirections = new Dictionary<string, int>();
+            foreach (var tariffDirection in tariffDirections)
+            {
+                if (!checkedDirections.ContainsKey(tariffDirection.Value))
+                {
+                    checkedDirections.Add(tariffDirection.Value, tariffDirection.Key);
+                }
+                else
+                {
+                    resultIds.Add(tariffDirection.Key);
+                    resultIds.Add(checkedDirections[tariffDirection.Value]);
+                }
+                
+            }
+            
             if (resultIds.Any())
             {
+                var errorMessage = isMatrix
+                    ? RemoteValidationMessages.DuplicateTariffsAreasMatrix
+                    : RemoteValidationMessages.DuplicateTariffsAreas;
                 Result.AddModelError(GetPropertyName(parametersFieldName),
-                        string.Format(RemoteValidationMessages.DuplicateTariffsAreas, String.Join(", ", resultIds.Distinct())));
+                        string.Format(errorMessage, String.Join(", ", resultIds.Distinct())));
             }
         }
 

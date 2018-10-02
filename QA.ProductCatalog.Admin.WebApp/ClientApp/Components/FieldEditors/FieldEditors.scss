@@ -1,0 +1,53 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
+.field-editor__block {
+  min-height: 30px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.field-editor__label {
+  line-height: 30px;
+  min-width: 196px;
+
+  .field-editor__label-text {
+    display: inline-block;
+    line-height: 18px;
+
+    &--edited {
+      color: $blue2;
+      text-shadow: 0 0 0 $blue2;
+    }
+  }
+
+  &--small {
+    line-height: 24px;
+  }
+
+  .pt-icon {
+    position: relative;
+    top: 2px;
+    zoom: 0.9;
+    color: #5c7080;
+    cursor: help;
+  }
+}
+
+.field-editor__label-required {
+  font-weight: bold;
+  color: $red2;
+}
+
+.file-field-editor {
+  .pt-icon-media::before {
+    color: $blue2;
+  }
+
+  .pt-icon-cloud-download::before {
+    color: $green2;
+  }
+
+  .pt-icon-folder-close::before {
+    color: $orange2;
+  }
+}

@@ -1,0 +1,135 @@
+@startuml DataTransformations
+
+cloud Backend {
+  rectangle EditorController {
+    card GetDefinition [
+      1. Получаем
+      ProductDefinition
+      из DPC
+    ]
+  }
+
+  rectangle ProductLoader {
+    card LoadArticles [
+      2a. Загружаем
+      статьи из DPC
+    ]
+  }
+
+  GetDefinition ..> LoadArticles: Product\nDefinition
+
+  rectangle EditorDataService {
+    card ConvertArticles [
+      3a. Преобразуем статьи
+      в формат редактора
+    ]
+  }
+
+  LoadArticles ==> ConvertArticles: DPC.Articles
+
+  rectangle EditorSchemaService {
+    card GetPlainFields [
+      2. Обогащаем схему из QP:
+      - LoadAllPlainFields
+      - названия полей
+      - правила валидации
+      - пути в дереве контентов
+    ]
+
+    card MergeSchema [
+      3. Объединяем
+      схемы одинаковых
+      контентов
+    ]
+
+    GetPlainFields ..> MergeSchema: Editor\nSchema
+  }
+
+  GetDefinition ..> GetPlainFields: Product\nDefinition
+}
+
+cloud Frontend {
+  rectangle DataSerializer {
+    card MapClientId [
+      4a. Проставляем
+      <b>_ClientId
+    ]
+  }
+
+  rectangle DataNormalizer {
+    card NormalizrSchema [
+      4. Строим схему
+      <b>Normalizr
+    ]
+
+    card NormalizeArticles [
+      5a. Нормализуем вложенные
+      объекты статей
+    ]
+
+    NormalizrSchema ..> NormalizeArticles: <b>Normalizr\nScnema
+  }
+
+  rectangle DataContext {
+    card MobxSchema [
+      5. Строим схему
+      <b>MobX State Tree
+    ]
+
+    card DefaultValues [
+      6. Строим значения
+      по-умолчанию для
+      каждого контента
+    ]
+
+    card InitStore [
+      6a. Заполняем хранилище
+      данных из нормализованного
+      представления
+    ]
+
+    MobxSchema ..> InitStore: <b>MobX\nSchema
+  }
+
+  rectangle SchemaContext {
+    card LinkSchema [
+      7. Линкуем <b>$ref
+      ссылки в схеме
+    ]
+  }
+
+  artifact <ProductEditor/> {
+    card RootContent [
+      8. Получаем схему
+      и данные корневого
+      контента
+    ]
+  }
+
+  artifact <ArticleEditor/> {
+    rectangle EditorForm [
+      9. Строим форму
+      редактирования по
+      схеме и данным
+    ]
+
+    control Recursion [
+      Рекурсивно по
+      полям связей
+    ]
+  }
+
+  LinkSchema ..> RootContent: Content\nSchema
+  NormalizeArticles ==> InitStore: Flat\nArticle\nObjects
+  InitStore ==> RootContent: Observable\nArticle\nObjects
+  RootContent ==> EditorForm: Schema\n&\nData
+}
+
+GetPlainFields ..> LinkSchema: Editor\nSchema
+MergeSchema ..> NormalizrSchema: Merged\nSchema
+MergeSchema ..> MobxSchema: Merged\nSchema
+MergeSchema ..> DefaultValues: Merged\nSchema
+ConvertArticles ==> MapClientId: Nested\nArticle\nObjects
+MapClientId ==> NormalizeArticles: Nested\nArticle\nObjects
+
+@enduml

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
+using QA.Core.DPC.API.Update;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
@@ -78,6 +79,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             container.RegisterType<IRegionService, RegionService>();
 
 	        container.RegisterType<INotesService, NotesFromContentService>();
+            container.RegisterType<IProductUpdateService, ProductUpdateService>();
 
             //container.RegisterType<IRegionTagReplaceService, RegionTagReplaceService>();
 

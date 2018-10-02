@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
@@ -34,6 +35,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private ILogger Logger { get; }
 
+        static ElasticProductStore()
+        {
+            ServicePointManager.DefaultConnectionLimit = ConnectionConfiguration.DefaultConnectionLimit;
+        }
+        
         public ElasticProductStore(IElasticConfiguration config, IOptions<SonicElasticStoreOptions> optionsAccessor, ILogger logger)
         {
             Configuration = config;

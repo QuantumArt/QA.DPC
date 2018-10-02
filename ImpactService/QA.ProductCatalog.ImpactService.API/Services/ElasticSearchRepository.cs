@@ -40,7 +40,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var ids = string.Join(", ", productIds.Select(n => $@"""{n.ToString()}""").ToArray());
             var fieldsFilter = (onlyModified) ? @"""_source"": [""UpdateDate""]," : "";
-            var query = $@"{{ {fieldsFilter} ""query"" : {{ ""ids"" : {{ ""values"" : [{ids}] }}}}}}";
+            var query = $@"{{ {fieldsFilter} ""size"" : 500, ""query"" : {{ ""ids"" : {{ ""values"" : [{ids}] }}}}}}";
             return query;
         }
 
@@ -53,6 +53,12 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             return $@"{{ ""query"" : {{ ""term"" : {{ ""Alias"" : ""{regionAlias}"" }}}}}}";
         }
+        
+        private string GetDefaultRegionForMnrQuery()
+        {
+            return $@"{{ ""_source"": [""Alias""], ""query"" : {{ ""term"" : {{ ""IsDefaultForMnr"": ""true"" }}}}}}";
+        }
+
 
         private string GetMrQuery(string[] regionAliases)
         {
@@ -91,6 +97,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                     ""_source"": {{
                         ""include"": [
                             ""ServicesOnRoamingScale.Service.MarketingProduct.Title"",
+                            ""ServicesOnRoamingScale.Service.Regions.Alias"",
                             ""ServicesOnRoamingScale.Service.Id"",
                             ""Id""
                         ]
@@ -163,10 +170,16 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             if (countryObj == null)
                 throw new Exception($"Roaming scale for country with code '{code}' not found");
             var result = new List<int> {int.Parse(countryObj["Id"].ToString())};
-            result.AddRange(countryObj
-                .SelectTokens($"ServicesOnRoamingScale.[?(@.Service)].Service.Id")
-                .Select(n => int.Parse(n.ToString()))
-            );
+            var services = countryObj.SelectTokens($"ServicesOnRoamingScale.[?(@.Service)].Service").ToArray();
+            var servicesWithAliases = services
+                .Select(service => new
+                {
+                    service, aliases = new HashSet<string>(service.SelectTokens("Regions.[?(@.Alias)].Alias").Select(n => n.ToString()))
+                }).ToArray();
+            
+            result.AddRange(servicesWithAliases
+                .Where(n => n.aliases.Contains(options.HomeRegion))
+                .Select(n => (int) n.service.SelectToken("Id")));
             return result.ToArray();
         }
 
@@ -237,6 +250,15 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             var homeRegionIdToken = JObject.Parse(regionResult)
                 .SelectTokens(_sourceQuery)?.FirstOrDefault();
             return (JObject)homeRegionIdToken;
+        }
+
+        public async Task<string> GetDefaultRegionAliasForMnr(SearchOptions options)
+        {
+            var newOptions = options.Clone();
+            newOptions.TypeName = "Region";
+            var regionResult = await GetContent(GetDefaultRegionForMnrQuery(), newOptions);
+            return JObject.Parse(regionResult)
+                .SelectTokens(_sourceQuery)?.FirstOrDefault()?.SelectToken("Alias")?.ToString();
         }
 
         private static string GetTagValue(int homeRegionId, JToken tag)

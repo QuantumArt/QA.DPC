@@ -1,6 +1,6 @@
 ﻿namespace QA.Core.Models.Configuration
 {
-    public class VirtualMultiEntityField : VirtualEntityField
+	public class VirtualMultiEntityField : VirtualEntityField
 	{
 		public string Path{ get; set; }
 		
@@ -11,15 +11,9 @@
 
 		public override bool Equals(object obj)
 		{
-			if (!base.Equals(obj))
-				return false;
-
-			var otherVirtualField = obj as VirtualMultiEntityField;
-
-			if (otherVirtualField == null)
-				return false;
-
-			return otherVirtualField.Path == Path;
+            return base.Equals(obj)
+                && obj is VirtualMultiEntityField otherVirtualField
+                && otherVirtualField.Path == Path;
 		}
 	}
 }

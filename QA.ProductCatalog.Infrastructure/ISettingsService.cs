@@ -44,7 +44,8 @@
         TARIFF_RELATION_FIELD_NAME, //Название поля услуги, связывающего её с продуктами
         SERVICES_ON_TARIFF_CONTENT_ID, //Идентификатор контента "Услуги на тарифе"
         PRODUCTS_PARAMETERS_CONTENT_ID, //Идентификатор контента "Параметры продуктов"
-        MODIFIER_DATA_OPTION_ID, //Идентификатора модификатора "Дата-Опция"
+        MODIFIER_DATA_OPTION_ID, //Идентификатор модификатора "Дата-Опция"
+        MODIFIER_GET_COUNTRIES_FROM_ZONE, // Идентификатор модификатора "Получать данные стран из зоны"        
         SERVICE_FIELD_NAME, //Имя поля Услуг в контенте "Услуги на тарифе"
         FIELD_PARENT_NAME,
         //Имена полей, образующих тарифное направление

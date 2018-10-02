@@ -1,0 +1,113 @@
+$border: 1px solid #ccc;
+$background: darken(#f5f8fa, 5%);
+
+.relation-field-accordion {
+  display: table;
+  table-layout: fixed;
+  width: 100%;
+  margin-top: 5px;
+}
+
+.relation-field-accordion__header {
+  display: table-row;
+  background-color: $background;
+  cursor: pointer;
+
+  &:hover {
+    background-color: rgba(19, 124, 189, 0.15);
+  }
+
+  &:first-child {
+    .relation-field-accordion__expander {
+      border-top: $border;
+      border-top-left-radius: 5px;
+    }
+
+    .relation-field-accordion__cell {
+      border-top: $border;
+    }
+
+    .relation-field-accordion__controls {
+      border-top: $border;
+      border-top-right-radius: 5px;
+    }
+  }
+
+  &:nth-last-child(2) {
+    > .relation-field-accordion__expander {
+      border-bottom-left-radius: 5px;
+    }
+
+    > .relation-field-accordion__controls {
+      border-bottom-right-radius: 5px;
+    }
+  }
+
+  &--open {
+    > .relation-field-accordion__expander {
+      border-bottom-left-radius: 0 !important;
+    }
+
+    > .relation-field-accordion__controls {
+      border-bottom-right-radius: 0 !important;
+    }
+  }
+}
+
+.relation-field-accordion__expander {
+  display: table-cell;
+  vertical-align: middle;
+  width: 30px;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-bottom: 2px;
+  padding-right: 5px;
+  border-left: $border;
+  border-bottom: $border;
+}
+
+.relation-field-accordion__cell {
+  display: table-cell;
+  vertical-align: middle;
+  width: 100%;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-right: 5px;
+  border-bottom: $border;
+
+  &:nth-child(2) {
+    width: 95px;
+  }
+}
+
+.relation-field-accordion__controls {
+  display: table-cell;
+  vertical-align: middle;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-right: 2px;
+  width: 100px;
+  text-align: right;
+  border-right: $border;
+  border-bottom: $border;
+}
+
+.relation-field-accordion__main {
+  display: table-row;
+
+  &:last-child > .relation-field-accordion__body {
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+}
+
+.relation-field-accordion__body {
+  display: none;
+  border-left: $border;
+  border-right: $border;
+
+  &--open {
+    display: table-cell;
+    border-bottom: $border;
+  }
+}

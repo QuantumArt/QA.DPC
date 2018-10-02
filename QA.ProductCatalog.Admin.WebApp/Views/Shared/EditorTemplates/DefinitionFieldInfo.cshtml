@@ -7,140 +7,157 @@
 
 @if (Model.Field is Dictionaries)
 {
-	<div class="editor-label">
-		@Html.LabelFor(x => ((Dictionaries)x.Field).DefaultCachePeriod)
-	</div>
-	<div class="editor-field">
-		@Html.TextBox("Field.DefaultCachePeriod", ((Dictionaries)Model.Field).DefaultCachePeriod)
-	</div>
+  <div class="editor-label">
+    @Html.LabelFor(x => ((Dictionaries)x.Field).DefaultCachePeriod)
+  </div>
+  <div class="editor-field">
+    @Html.TextBox("Field.DefaultCachePeriod", ((Dictionaries)Model.Field).DefaultCachePeriod)
+  </div>
 }
 else
 {
-	if (!(Model.Field is BaseVirtualField))
-	{
-		<div class="display-label">
-			@Html.LabelFor(x => x.Field.FieldId)
-		</div>
-		<div class="display-field">
-			@Html.DisplayFor(x => x.Field.FieldId)
-		</div>
-	}
+  if (!(Model.Field is BaseVirtualField))
+  {
+    <div class="display-label">
+      @Html.LabelFor(x => x.Field.FieldId)
+    </div>
+    <div class="display-field">
+      @Html.DisplayFor(x => x.Field.FieldId)
+    </div>
+  }
 
-	<div class="editor-label">
-		@Html.LabelFor(x => x.Field.FieldName)
-	</div>
-	if (!(Model.Field is BaseVirtualField))
-	{
-		<div class="editor-field">
-			@Html.EditorFor(x => x.Field.FieldName)
-		</div>
-	}
-	else
-	{
-		<div class="display-field">
-			@Html.DisplayFor(x => x.Field.FieldName)
-		</div>
-		@Html.HiddenFor(x => x.Field.FieldName);
-	}
+  <div class="editor-label">
+    @Html.LabelFor(x => x.Field.FieldName)
+  </div>
+  if (!(Model.Field is BaseVirtualField))
+  {
+    <div class="editor-field">
+      @Html.EditorFor(x => x.Field.FieldName)
+    </div>
+  }
+  else
+  {
+    <div class="display-field">
+      @Html.DisplayFor(x => x.Field.FieldName)
+    </div>
+    @Html.HiddenFor(x => x.Field.FieldName);
+  }
 }
 
 @if (Model.Field is Association)
 {
-	var association = (Association)Model.Field;
+  var association = (Association)Model.Field;
 
-	<div class="editor-label">
-		@Html.LabelFor(x => association.CloningMode)
-	</div>
-	<div class="editor-field">
-		@Html.EnumDropDownListFor(x => ((Association)Model.Field).CloningMode, new { Name = "Field.CloningMode" })
-	</div>
+  <div class="editor-label">
+    @Html.LabelFor(x => association.CloningMode)
+  </div>
+  <div class="editor-field">
+    @Html.EnumDropDownListFor(x => ((Association)Model.Field).CloningMode, new { Name = "Field.CloningMode" })
+  </div>
 
-	<div class="editor-label">
-		@Html.LabelFor(x => association.DeletingMode)
-	</div>
-	<div class="editor-field">
-		@Html.EnumDropDownListFor(x => ((Association)Model.Field).DeletingMode, new { Name = "Field.DeletingMode" })
-	</div>
+  <div class="editor-label">
+    @Html.LabelFor(x => association.DeletingMode)
+  </div>
+  <div class="editor-field">
+    @Html.EnumDropDownListFor(x => ((Association)Model.Field).DeletingMode, new { Name = "Field.DeletingMode" })
+  </div>
+
+  <div class="editor-label">
+    @Html.LabelFor(x => association.UpdatingMode)
+  </div>
+  <div class="editor-field">
+    @Html.EnumDropDownListFor(x => ((Association)Model.Field).UpdatingMode, new { Name = "Field.UpdatingMode" })
+  </div>
+
+  if (Model.Field is EntityField)
+  {
+    var entity = (EntityField)Model.Field;
 
     <div class="editor-label">
-        @Html.LabelFor(x => association.UpdatingMode)
+      @Html.LabelFor(x => entity.RelationCondition)
     </div>
     <div class="editor-field">
-        @Html.EnumDropDownListFor(x => ((Association)Model.Field).UpdatingMode, new { Name = "Field.UpdatingMode" })
+      @Html.TextAreaFor(x => ((EntityField)Model.Field).RelationCondition, new
+      {
+        Cols = 80,
+        Rows = 2,
+        Name = "Field.RelationCondition",
+        Style = "resize: none; font-family: monospace"
+      })
     </div>
+  }
 
-    if (Model.Field is BackwardRelationField)
-    {
-        var backwardField = (BackwardRelationField)Model.Field;
+  if (Model.Field is BackwardRelationField)
+  {
+    var backwardField = (BackwardRelationField)Model.Field;
 
-		<div class="editor-label">
-			@Html.LabelFor(x => backwardField.DisplayName)
-		</div>
-		<div class="editor-field">
-			@Html.TextBox("Field.DisplayName", ((BackwardRelationField)Model.Field).DisplayName)
-		</div>
-		<div class="display-label">
-			Ссылается на данный контент из контента
-		</div>
-		<div class="display-field">
-			@backwardField.Content.ContentName @backwardField.Content.ContentId
-		</div>
-	}
-	else
-		if (Model.Field is EntityField && ((EntityField)Model.Field).Content != null)
-		{
-			<div class="display-label">
-				Ссылается на контент
-			</div>
-			<div class="display-field">
-				@(((EntityField)Model.Field).Content.ContentName + " " + ((EntityField)Model.Field).Content.ContentId)
-			</div>
-		}
-		else if (Model.Field is ExtensionField)
-		{
-			<div class="display-label">
-				<span class="EditorNote">Поле является классификатором</span>
-			</div>
-		}
+    <div class="editor-label">
+      @Html.LabelFor(x => backwardField.DisplayName)
+    </div>
+    <div class="editor-field">
+      @Html.TextBox("Field.DisplayName", ((BackwardRelationField)Model.Field).DisplayName)
+    </div>
+    <div class="display-label">
+      Ссылается на данный контент из контента
+    </div>
+    <div class="display-field">
+      @backwardField.Content.ContentName @backwardField.Content.ContentId
+    </div>
+  }
+  else if (Model.Field is EntityField && ((EntityField)Model.Field).Content != null)
+  {
+    <div class="display-label">
+      Ссылается на контент
+    </div>
+    <div class="display-field">
+      @(((EntityField)Model.Field).Content.ContentName + " " + ((EntityField)Model.Field).Content.ContentId)
+    </div>
+  }
+  else if (Model.Field is ExtensionField)
+  {
+    <div class="display-label">
+      <span class="EditorNote">Поле является классификатором</span>
+    </div>
+  }
 }
 else if (Model.Field is VirtualField || Model.Field is VirtualMultiEntityField)
 {
-	<div class="editor-label">
-		Путь
-	</div>
-	<div class="editor-field">
-		@Html.TextBox("Field.Path", Model.Field is VirtualField ? ((VirtualField)Model.Field).Path : ((VirtualMultiEntityField)Model.Field).Path, new { @class = "text-box single-line" })
-	</div>
-	if (Model.Field is VirtualField)
-	{
-		<div class="editor-label">
-			Путь по которому надо удалить поле (имеет смысл только если отличается от пути)
-		</div>
-		<div class="editor-field">
-			@Html.TextBox("Field.ObjectToRemovePath", ((VirtualField)Model.Field).ObjectToRemovePath, new { @class = "text-box single-line" })
-		</div>
-		<div class="display-label">
-			Конвертер
-		</div>
-		<div class="display-field">
-			@(((VirtualField)Model.Field).Converter)
-		</div>
-	}
+  <div class="editor-label">
+    Путь
+  </div>
+  <div class="editor-field">
+    @Html.TextBox("Field.Path", Model.Field is VirtualField ? ((VirtualField)Model.Field).Path : ((VirtualMultiEntityField)Model.Field).Path, new { @class = "text-box single-line" })
+  </div>
+  if (Model.Field is VirtualField)
+  {
+    <div class="editor-label">
+      Путь по которому надо удалить поле (имеет смысл только если отличается от пути)
+    </div>
+    <div class="editor-field">
+      @Html.TextBox("Field.ObjectToRemovePath", ((VirtualField)Model.Field).ObjectToRemovePath, new { @class = "text-box single-line" })
+    </div>
+    <div class="display-label">
+      Конвертер
+    </div>
+    <div class="display-field">
+      @(((VirtualField)Model.Field).Converter)
+    </div>
+  }
 }
 else if (Model.Field is PlainField)
 {
-	<div class="editor-label">
-		Не оборачивать в CDATA
-	</div>
-    <div class="editor-field">
-        @Html.CheckBox("skipcdata", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName))
-    </div>
-    <div class="editor-label">
-        Загружать как поле типа Image
-    </div>
-    <div class="editor-field">
-        @Html.CheckBox("loadlikeimage", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage))
-    </div>        
+  <div class="editor-label">
+    Не оборачивать в CDATA
+  </div>
+  <div class="editor-field">
+    @Html.CheckBox("skipcdata", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName))
+  </div>
+  <div class="editor-label">
+    Загружать как поле типа Image
+  </div>
+  <div class="editor-field">
+    @Html.CheckBox("loadlikeimage", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage))
+  </div>
 }
 
 

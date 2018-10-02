@@ -139,8 +139,11 @@
     <value>Продукт содержит регионы из продуктов: {0}</value>
   </data>
   <data name="DuplicateTariffsAreas" xml:space="preserve">
-    <value>Тарифное направление встречается больше одного раза в параметрах: {0}</value>
+    <value>Тарифное направление встречается больше одного раза в параметрах продукта: {0}</value>
   </data>
+  <data name="DuplicateTariffsAreasMatrix" xml:space="preserve">
+    <value>Тарифное направление встречается больше одного раза в параметрах матрицы связей: {0}</value>
+  </data>  
   <data name="DuplicateRelationsProducts" xml:space="preserve">
     <value>Встречается дублирование связей с продуктами: {0} </value>
   </data>

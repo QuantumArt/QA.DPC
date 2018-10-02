@@ -25,18 +25,24 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
         [HttpGet("country/{countryCode}")]
-        public async Task<ActionResult> Get(string countryCode, [FromQuery] bool isB2C = true, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
+        public async Task<ActionResult> Get(string countryCode, [FromQuery] string homeRegion, [FromQuery] bool isB2C = true, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
         {
 
             var searchOptions = new SearchOptions
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
-                IndexName = ConfigurationOptions.GetIndexName(state, language)
+                IndexName = ConfigurationOptions.GetIndexName(state, language),
+                HomeRegion = homeRegion
             };
 
             ActionResult result = null;
             JObject json = new JObject();
             int[] ids = { 0 };
+            
+            if (string.IsNullOrEmpty(searchOptions.HomeRegion))
+            {
+                searchOptions.HomeRegion = await GetDefaultRegionAliasForMnr(searchOptions);                
+            }
 
             try
             {
@@ -53,16 +59,19 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
                 searchOptions.TypeName = "RoamingScale";
                 ids = await SearchRepo.GetRoamingScaleForCountry(countryCode, isB2C, searchOptions);
+                searchOptions.TypeName = null;
             }
             catch (Exception ex)
             {
                 var message = $"Exception occurs while getting information for roaming country: {ex.Message}";
-                Logger.LogError(1, ex, $"{message}. Address: {searchOptions.BaseAddress}, Index: {searchOptions.IndexName}, Type: {searchOptions.TypeName}");
+                LogException(ex, message, searchOptions);
                 result = BadRequest(message);
             }
-            searchOptions.TypeName = null;
+
+            result = await FillHomeRegion(searchOptions);
             result = result ?? await LoadProducts(ids[0], ids.Skip(1).ToArray(), searchOptions, true);
-            result = result ?? FilterServicesOnProduct(true);
+            result = result ?? FilterServicesOnProduct(true, null, searchOptions.HomeRegionData);
+            
             if (result != null)
                 return result;
 
@@ -94,16 +103,23 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
         [HttpGet("option/{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState,
+        public async Task<ActionResult> Get(int id, [FromQuery] string homeRegion, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState,
             string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
             var searchOptions = new SearchOptions
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
-                IndexName = ConfigurationOptions.GetIndexName(state, language)
+                IndexName = ConfigurationOptions.GetIndexName(state, language),
+                HomeRegion = homeRegion
             };
+            
+            if (string.IsNullOrEmpty(searchOptions.HomeRegion))
+            {
+                searchOptions.HomeRegion = await GetDefaultRegionAliasForMnr(searchOptions);                
+            }
+            
             var serviceIds = new int[] { };
-            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, countryCode, state, language);
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
             var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
@@ -125,16 +141,22 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
+        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string homeRegion, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
         {
 
             var searchOptions = new SearchOptions
             {
                 BaseAddress = ConfigurationOptions.ElasticBaseAddress,
-                IndexName = ConfigurationOptions.GetIndexName(state, language)
+                IndexName = ConfigurationOptions.GetIndexName(state, language),
+                HomeRegion = homeRegion
             };
+            
+            if (string.IsNullOrEmpty(searchOptions.HomeRegion))
+            {
+                searchOptions.HomeRegion = await GetDefaultRegionAliasForMnr(searchOptions);                
+            }
 
-            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, countryCode, state, language);
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
             var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
@@ -142,8 +164,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             result = await FillHomeRegion(searchOptions);
             result = result ?? await LoadProducts(id, serviceIds, searchOptions);
             result = result ?? await FillDefaultHomeRegion(searchOptions, Product);            
-
-            result = result ?? FilterServicesOnProduct(true);
+            result = result ?? FilterServicesOnProduct(true, null, searchOptions.HomeRegionData);
 
             LogStartImpact("MNR", id, serviceIds);
 
@@ -151,7 +172,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogEndImpact("MNR", id, serviceIds);
 
-            result = result ?? (html ? TestLayout(Product, serviceIds, state, language, country: countryCode) : Content(Product.ToString()));
+            result = result ?? (html ? TestLayout(Product, serviceIds, state, language, homeRegion: homeRegion, country: countryCode) : Content(Product.ToString()));
 
             if (!disableCache)
             {
