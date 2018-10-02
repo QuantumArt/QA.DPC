@@ -116,6 +116,13 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     await this._articleController.reloadEntity(article, contentSchema);
   }
 
+  private async cloneRelation(e: any, entity: EntityObject) {
+    e.stopPropagation();
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
+    await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+  }
+
   private handleToggle(e: any, article: EntityObject) {
     // нажали на элемент находящийся внутри <button>
     if (e.target.closest("button")) return;
@@ -242,8 +249,8 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                         onRemove={e => this.removeRelation(e, article)}
                         onRefresh={hasServerId && (e => this.refreshEntity(e, article))}
                         onReload={hasServerId && (e => this.reloadEntity(e, article))}
-                        onClone={() => {}} // TODO: clone PartialProduct
-                        onPublish={() => {}} // TODO: publish PartialProduct
+                        onClone={hasServerId && (e => this.cloneRelation(e, article))}
+                        onPublish={hasServerId && (() => {})} // TODO: publish PartialProduct
                       />
                     </td>
                   </tr>

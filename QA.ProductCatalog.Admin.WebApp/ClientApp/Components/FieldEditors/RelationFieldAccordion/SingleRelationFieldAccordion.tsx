@@ -1,6 +1,6 @@
 import React from "react";
 import { consumer } from "react-ioc";
-import { action } from "mobx";
+import { action, untracked } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Icon } from "@blueprintjs/core";
@@ -99,6 +99,15 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     await this._relationController.reloadRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
+  private async cloneRelation() {
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    if (entity) {
+      await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+    }
+  }
+
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const article: EntityObject = model[fieldSchema.FieldName];
     return (
@@ -151,7 +160,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                 onRemove={this.removeRelation}
                 onRefresh={hasServerId && this.refreshEntity}
                 onReload={hasServerId && this.reloadEntity}
-                onClone={() => {}} // TODO: clone PartialProduct
+                onClone={hasServerId && this.cloneRelation}
                 onPublish={() => {}} // TODO: publish PartialProduct
               />
             </td>

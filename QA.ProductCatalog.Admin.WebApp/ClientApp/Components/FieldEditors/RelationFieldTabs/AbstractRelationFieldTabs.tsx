@@ -6,6 +6,7 @@ import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
+import { CloneController } from "Services/CloneController";
 import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import {
   AbstractRelationFieldEditor,
@@ -32,6 +33,7 @@ export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEdi
   RelationFieldTabsProps
 > {
   @inject protected _dataContext: DataContext;
+  @inject protected _cloneController: CloneController;
   protected _displayField: FieldSelector;
 
   constructor(props: RelationFieldTabsProps, context?: any) {

@@ -1,6 +1,6 @@
 import React from "react";
 import { consumer } from "react-ioc";
-import { action } from "mobx";
+import { action, untracked } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button } from "@blueprintjs/core";
@@ -68,6 +68,15 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     await this._relationController.reloadRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
+  private async cloneRelation() {
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    if (entity) {
+      await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+    }
+  }
+
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const { isOpen } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
@@ -111,6 +120,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           header
           buttons={!this._readonly}
           onRemove={this.removeRelation}
+          onClone={this.cloneRelation}
         />
       </div>
     ) : null;

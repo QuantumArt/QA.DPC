@@ -18,6 +18,7 @@ interface EntityEditorProps extends ArticleEditorProps {
   className?: string;
   titleField?: string | ((article: EntityObject) => string);
   onRemove?: (article: EntityObject) => void;
+  onClone?: (article: EntityObject) => void;
 }
 
 @consumer
@@ -84,7 +85,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   }
 
   private renderButtons() {
-    const { model, buttons, onRemove } = this.props;
+    const { model, buttons, onRemove, onClone } = this.props;
     const hasServerId = model._ServerId > 0;
 
     return buttons === true ? (
@@ -92,9 +93,9 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
         <ArticleMenu
           onSave={this.savePartialProduct}
           onRemove={onRemove && (() => onRemove(model))}
+          onClone={onClone && (() => onClone(model))}
           onRefresh={hasServerId && this.refreshEntity}
           onReload={hasServerId && this.reloadEntity}
-          onClone={() => {}} // TODO: clone PartialProduct
           onPublish={() => {}} // TODO: publish PartialProduct
         />
       </div>

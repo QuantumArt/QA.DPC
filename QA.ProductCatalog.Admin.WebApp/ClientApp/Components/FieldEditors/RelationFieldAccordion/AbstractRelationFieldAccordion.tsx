@@ -7,6 +7,7 @@ import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { EditorController } from "Services/EditorController";
 import { ArticleController } from "Services/ArticleController";
+import { CloneController } from "Services/CloneController";
 import { isString } from "Utils/TypeChecks";
 import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import {
@@ -32,6 +33,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractRelationFie
 > {
   @inject protected _dataContext: DataContext;
   @inject protected _articleController: ArticleController;
+  @inject protected _cloneController: CloneController;
   @inject protected _editorController: EditorController;
   protected _displayFields: FieldSelector[];
 

@@ -39,7 +39,7 @@ export const ArticleMenu = ({
         <MenuItem
           labelElement={<Icon icon="duplicate" />}
           intent={Intent.SUCCESS}
-          onClick={onPublish}
+          onClick={onClone}
           text="Клонировать"
           title="Клонировать текущую статью"
         />

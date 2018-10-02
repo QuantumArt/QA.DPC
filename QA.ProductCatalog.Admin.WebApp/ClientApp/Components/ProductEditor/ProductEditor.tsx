@@ -16,6 +16,7 @@ import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { isFunction } from "Utils/TypeChecks";
 import { EditorSettings } from "Models/EditorSettings";
+import { CloneController } from "Services/CloneController";
 import { FileController } from "Services/FileController";
 import { DataSchemaLinker } from "Services/DataSchemaLinker";
 
@@ -36,6 +37,7 @@ interface ProductEditorProps {
   DataValidator,
   DataSchemaLinker,
   ArticleController,
+  CloneController,
   EditorController,
   FileController,
   RelationController,

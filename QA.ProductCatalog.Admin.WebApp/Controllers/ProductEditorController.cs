@@ -20,6 +20,7 @@ using System.Web.Mvc;
 using QA.Core.Web;
 using Quantumart.QP8.BLL.Services.API.Models;
 using QA.Core.DPC.API.Update;
+using QA.Core.ProductCatalog.Actions;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -31,6 +32,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IProductUpdateService _productUpdateService;
         private readonly JsonProductService _jsonProductService;
         private readonly IReadOnlyArticleService _articleService;
+        private readonly IUserProvider _userProvider;
+        private readonly CloneBatchAction _cloneBatchAction;
         private readonly EditorSchemaService _editorSchemaService;
         private readonly EditorDataService _editorDataService;
         private readonly EditorPartialContentService _editorPartialContentService;
@@ -42,6 +45,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IProductUpdateService productUpdateService,
             JsonProductService jsonProductService,
             IReadOnlyArticleService articleService,
+            IUserProvider userProvider,
+            CloneBatchAction cloneBatchAction,
             EditorSchemaService editorSchemaService,
             EditorDataService editorDataService,
             EditorPartialContentService editorPartialContentService,
@@ -52,6 +57,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _productUpdateService = productUpdateService;
             _jsonProductService = jsonProductService;
             _articleService = articleService;
+            _userProvider = userProvider;
+            _cloneBatchAction = cloneBatchAction;
             _editorSchemaService = editorSchemaService;
             _editorDataService = editorDataService;
             _editorPartialContentService = editorPartialContentService;
@@ -362,6 +369,43 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
         }
         
+        [HttpPost]
+        public ActionResult ClonePartialProduct(
+            [ModelBinder(typeof(JsonModelBinder))] ClonePartialProductRequest request,
+            string backend_sid, string customerCode, bool isLive = false)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Content rootContent = _contentDefinitionService
+                .GetDefinitionById(request.ProductDefinitionId, isLive);
+
+            Content partialContent = _editorPartialContentService
+                .FindContentByPath(rootContent, request.ContentPath);
+
+            var actionContext = new ActionContext
+            {
+                BackendSid = Guid.TryParse(backend_sid, out Guid backendSid) ? backendSid : Guid.Empty,
+                CustomerCode = customerCode,
+                ContentId = partialContent.ContentId,
+                ContentItemIds = new[] { request.CloneArticleId },
+                UserId = _userProvider.GetUserId(),
+                UserName = _userProvider.GetUserName()
+            };
+
+            _cloneBatchAction.Process(actionContext);
+
+            int clonedProdictId = _cloneBatchAction.Ids.First();
+
+            ArticleObject articleObject = LoadProductGraph(partialContent, clonedProdictId, isLive);
+
+            string productJson = JsonConvert.SerializeObject(articleObject);
+
+            return Content(productJson, "application/json");
+        }
+
         private ArticleObject LoadProductGraph(Content content, int articleId, bool isLive)
         {
             var productDefinition = new ProductDefinition { StorageSchema = content };
@@ -467,6 +511,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             /// </summary>
             [Required]
             public JObject PartialProduct { get; set; }
+        }
+
+        public class ClonePartialProductRequest : PartialProductRequest
+        {
+            /// <summary>
+            /// Id статьи для клонирования
+            /// </summary>
+            public int CloneArticleId { get; set; }
         }
 
         #endregion

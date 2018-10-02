@@ -107,6 +107,12 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     }
   };
 
+  private async cloneRelation(entity: EntityObject) {
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
+    await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+  }
+
   private selectRelations = async () => {
     const { model, fieldSchema } = this.props;
     this.setState({
@@ -223,6 +229,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                         fieldEditors={fieldEditors}
                         header
                         buttons={!this._readonly}
+                        onClone={this.cloneRelation}
                         onRemove={this.removeRelation}
                       />
                     )
