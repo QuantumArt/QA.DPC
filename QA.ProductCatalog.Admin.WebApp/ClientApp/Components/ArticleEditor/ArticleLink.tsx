@@ -23,7 +23,7 @@ export class ArticleLink extends Component<ArticleLinkProps> {
     if (e.nativeEvent.which === 2) {
       e.preventDefault();
       const { model, contentSchema } = this.props;
-      this._articleController.editArticle(model, contentSchema, false);
+      this._articleController.editEntity(model, contentSchema, false);
     }
   };
 
@@ -31,7 +31,7 @@ export class ArticleLink extends Component<ArticleLinkProps> {
   private handleClick = e => {
     e.preventDefault();
     const { model, contentSchema } = this.props;
-    this._articleController.editArticle(model, contentSchema, true);
+    this._articleController.editEntity(model, contentSchema, true);
   };
 
   render() {

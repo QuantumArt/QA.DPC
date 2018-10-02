@@ -182,6 +182,10 @@ namespace QA.Core.Models.Configuration
         [DefaultValue(PreloadingMode.None)]
         public PreloadingMode PreloadingMode { get; set; }
 
+        /// <summary>
+        /// SQL-условие для фильтрации списка статей, доступных для выбора
+        /// (заменяет <see cref="Quantumart.QP8.BLL.Field.RelationCondition"/>)
+        /// </summary>
         [DefaultValue(null)]
         public string RelationCondition { get; set; }
 
@@ -191,12 +195,6 @@ namespace QA.Core.Models.Configuration
         [DefaultValue(null)]
         public Content CloneDefinition { get; set; }
         
-        /// <summary>
-        /// Опциональная ссылка на Alias дефинишена для клонирования
-        /// </summary>
-        [DefaultValue(null)]
-        public string CloneDefinitionAlias { get; set; }
-
         /// <summary>
         /// SQL-условие для получения статьи-прототипа для клонирования
         /// </summary>
@@ -236,7 +234,6 @@ namespace QA.Core.Models.Configuration
 			return base.RecursiveEquals(other, visitedContents)
                 && PreloadingMode == ((EntityField)other).PreloadingMode
                 && RelationCondition == ((EntityField)other).RelationCondition
-                && CloneDefinitionAlias == ((EntityField)other).CloneDefinitionAlias
                 && ClonePrototypeCondition == ((EntityField)other).ClonePrototypeCondition
                 && Content.RecursiveEquals(((EntityField)other).Content, visitedContents)
                 && (CloneDefinition == null
@@ -258,10 +255,6 @@ namespace QA.Core.Models.Configuration
             if (RelationCondition != null)
             {
                 hash = HashHelper.CombineHashCodes(hash, RelationCondition.GetHashCode());
-            }
-            if (CloneDefinitionAlias != null)
-            {
-                hash = HashHelper.CombineHashCodes(hash, CloneDefinitionAlias.GetHashCode());
             }
             if (ClonePrototypeCondition != null)
             {

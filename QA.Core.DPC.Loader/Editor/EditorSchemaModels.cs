@@ -247,11 +247,6 @@ namespace QA.Core.DPC.Loader.Editor
         public IContentSchema RelatedContent { get; set; }
 
         /// <summary>
-        /// Поведение поля связи при клонировании родительской статьи
-        /// </summary>
-        public CloningMode CloningMode { get; set; }
-
-        /// <summary>
         /// Следует ли обновлять связанные статьи при рекурсивном обновлении связей
         /// </summary>
         public UpdatingMode UpdatingMode { get; set; }
@@ -290,7 +285,6 @@ namespace QA.Core.DPC.Loader.Editor
         internal virtual void ClearContextDependentProps()
         {
             RelationCondition = null;
-            CloningMode = CloningMode.Ignore;
             UpdatingMode = UpdatingMode.Ignore;
             PreloadingMode = PreloadingMode.None;
             PreloadedArticles = new ArticleObject[0];

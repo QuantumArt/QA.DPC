@@ -117,11 +117,10 @@ interface StringEnumItem {
 
 export interface RelationFieldSchema extends FieldSchema {
   readonly RelatedContent: ContentSchema;
-  readonly CloningMode: CloningMode;
-  readonly UpdatingMode: UpdatingMode;
   readonly IsDpcBackwardField: boolean;
   readonly RelationCondition: string;
   readonly DisplayFieldNames: string[];
+  readonly UpdatingMode: UpdatingMode;
   readonly PreloadingMode: PreloadingMode;
   PreloadedArticles?: ReadonlyArray<EntityObject>;
   PreloadingState?: PreloadingState;
@@ -129,12 +128,6 @@ export interface RelationFieldSchema extends FieldSchema {
 
 export function isRelationField(field: any): field is RelationFieldSchema {
   return isField(field) && field.ClassNames.includes("RelationFieldSchema");
-}
-
-export enum CloningMode {
-  Ignore = "Ignore",
-  UseExisting = "UseExisting",
-  Copy = "Copy"
 }
 
 export enum UpdatingMode {

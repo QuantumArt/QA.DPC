@@ -56,7 +56,7 @@ export class ArticleController {
     this._dataMerger.mergeStore(dataSnapshot, strategy);
   }
 
-  public editArticle(model: EntityObject, contentSchema: ContentSchema, isWindow = true) {
+  public editEntity(model: EntityObject, contentSchema: ContentSchema, isWindow = true) {
     const callbackUid = newUid();
 
     const articleOptions: QP8.ArticleFormState = {
