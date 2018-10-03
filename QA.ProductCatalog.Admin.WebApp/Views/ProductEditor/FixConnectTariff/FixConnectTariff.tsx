@@ -1,14 +1,17 @@
 ﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
+import { command } from "Utils/Command";
 import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
 import { MultiRelationFieldTags } from "Components/FieldEditors/FieldEditors";
 import { EditorTabs } from "./Components/EditorTabs";
 import { Product } from "./ProductEditorSchema";
 import { AdvantagesTable } from "./Components/AdvantagesTable";
-import "./FixConnectTariff.scss";
 import { ParameterFields } from "./Components/ParameterFields";
+import "./FixConnectTariff.scss";
+
+command.alertErrors = true;
 
 const App = () => (
   <LocaleContext.Provider value="ru">

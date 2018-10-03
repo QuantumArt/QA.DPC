@@ -13,6 +13,7 @@ const commandState = observable({
 interface CommandDecorator {
   (target: Object, key: string, descriptor: PropertyDescriptor): PropertyDescriptor;
   readonly isRunning: boolean;
+  alertErrors: boolean;
 }
 
 function commandDecorator(target: Object, key: string, descriptor: PropertyDescriptor) {
@@ -40,6 +41,9 @@ function commandDecorator(target: Object, key: string, descriptor: PropertyDescr
       NProgress.done();
     }
     if (error instanceof Error) {
+      if (command.alertErrors) {
+        alert("Произошла ошибка");
+      }
       throw error;
     }
   });
@@ -64,8 +68,14 @@ function commandDecorator(target: Object, key: string, descriptor: PropertyDescr
   };
 }
 
-Object.defineProperty(commandDecorator, "isRunning", {
-  get: () => commandState.isRunning
+Object.defineProperties(commandDecorator, {
+  alertErrors: {
+    value: false,
+    writable: true
+  },
+  isRunning: {
+    get: () => commandState.isRunning
+  }
 });
 
 /**
