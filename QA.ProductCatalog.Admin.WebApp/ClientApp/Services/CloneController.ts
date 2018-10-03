@@ -6,6 +6,7 @@ import { isArray } from "Utils/TypeChecks";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataMerger, MergeStrategy } from "Services/DataMerger";
+import { DataContext } from "Services/DataContext";
 import { RelationFieldSchema, isMultiRelationField } from "Models/EditorSchemaModels";
 import { EntitySnapshot, EntityObject, ArticleObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
@@ -15,6 +16,7 @@ export class CloneController {
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
   @inject private _dataMerger: DataMerger;
+  @inject private _dataContext: DataContext;
 
   private _query = document.location.search;
 
@@ -23,7 +25,7 @@ export class CloneController {
     parent: ArticleObject,
     fieldSchema: RelationFieldSchema,
     entity: EntityObject
-  ) {
+  ): Promise<EntityObject> {
     const contentSchema = fieldSchema.RelatedContent;
 
     const response = await fetch(`${rootUrl}/ProductEditor/ClonePartialProduct${this._query}`, {
@@ -45,7 +47,7 @@ export class CloneController {
 
     const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
 
-    runInAction("cloneRelatedEntity", () => {
+    return runInAction("cloneRelatedEntity", () => {
       this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
 
       const relation = parent[fieldSchema.FieldName];
@@ -54,6 +56,7 @@ export class CloneController {
         // parent.setTouched(fieldSchema.FieldName) — не нужен,
         // так как клонированный продукт уже сохранен на сервере
       }
+      return this._dataContext.store[contentSchema.ContentName].get(String(dataTree._ClientId));
     });
   }
 }

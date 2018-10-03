@@ -57,10 +57,6 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     const contentName = (fieldSchema as MultiRelationFieldSchema).RelatedContent.ContentName;
     const article = this._dataContext.createEntity(contentName);
     this.toggleRelation(article);
-    this.setState({
-      isOpen: true,
-      isTouched: true
-    });
     model[fieldSchema.FieldName].push(article);
     model.setTouched(fieldSchema.FieldName, true);
   };
@@ -120,8 +116,12 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   private async cloneRelation(e: any, entity: EntityObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
-    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
-    await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+    const clone = await this._cloneController.cloneRelatedEntity(
+      model,
+      fieldSchema as MultiRelationFieldSchema,
+      entity
+    );
+    this.toggleRelation(clone);
   }
 
   private publishEntity = (e: any, _entity: EntityObject) => {
@@ -139,10 +139,19 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   private toggleRelation(article: EntityObject) {
     const { activeId, touchedIds } = this.state;
     if (activeId === article._ClientId) {
-      this.setState({ activeId: null });
+      this.setState({
+        activeId: null,
+        isOpen: true,
+        isTouched: true
+      });
     } else {
       touchedIds[article._ClientId] = true;
-      this.setState({ activeId: article._ClientId, touchedIds });
+      this.setState({
+        activeId: article._ClientId,
+        touchedIds,
+        isOpen: true,
+        isTouched: true
+      });
     }
   }
 

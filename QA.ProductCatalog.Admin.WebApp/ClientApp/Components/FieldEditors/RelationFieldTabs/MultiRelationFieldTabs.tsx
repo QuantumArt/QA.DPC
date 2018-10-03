@@ -110,8 +110,20 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
 
   private async cloneRelation(entity: EntityObject) {
     const { model, fieldSchema } = this.props;
-    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
-    await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+    const clone = await this._cloneController.cloneRelatedEntity(
+      model,
+      fieldSchema as MultiRelationFieldSchema,
+      entity
+    );
+
+    const { touchedIds } = this.state;
+    touchedIds[clone._ClientId] = true;
+    this.setState({
+      activeId: clone._ClientId,
+      touchedIds,
+      isOpen: true,
+      isTouched: true
+    });
   }
 
   private selectRelations = async () => {
