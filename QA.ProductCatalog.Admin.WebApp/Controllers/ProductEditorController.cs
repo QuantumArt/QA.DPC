@@ -383,8 +383,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .GetDefinitionById(request.ProductDefinitionId, isLive);
 
             Content partialContent = _editorPartialContentService
-                .FindContentByPath(rootContent, request.ContentPath);
-
+                .FindContentByPath(rootContent, request.ContentPath, forClone: true);
+            
             var actionContext = new ActionContext
             {
                 BackendSid = Guid.TryParse(backend_sid, out Guid backendSid) ? backendSid : Guid.Empty,
@@ -394,6 +394,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 UserId = _userProvider.GetUserId(),
                 UserName = _userProvider.GetUserName()
             };
+
+            _cloneBatchAction.ContentDefinitionFallback = partialContent.DeepCopy();
 
             _cloneBatchAction.Process(actionContext);
 

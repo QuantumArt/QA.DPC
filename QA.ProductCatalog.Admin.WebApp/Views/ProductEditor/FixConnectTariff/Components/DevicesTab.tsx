@@ -52,7 +52,6 @@ export class DevicesTab extends Component<DevicesTabProps> {
       {...props}
       vertical
       renderOnlyActiveTab
-      canPublishEntity
       canSaveEntity={false}
       canRefreshEntity={false}
       displayField={"Title"}
@@ -98,7 +97,8 @@ export class DevicesTab extends Component<DevicesTabProps> {
       fieldOrders={["Cities", "Parent", "MarketingTariffs"]}
       fieldEditors={{
         Parent: this.renderMatrixProductRelation,
-        MarketingTariffs: MultiRelationFieldTable
+        MarketingTariffs: MultiRelationFieldTable,
+        MarketingDevice: IGNORE
       }}
     />
   );

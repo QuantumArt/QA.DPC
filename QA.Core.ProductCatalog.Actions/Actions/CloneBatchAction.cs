@@ -18,16 +18,27 @@ namespace QA.Core.ProductCatalog.Actions
 		private const string FieldIdParameterKey = "FieldId";
 		private const string ArticleIdParameterKey = "ArticleId";
 
-		private ICacheItemWatcher _cacheItemWatcher;
-		public List<int> Ids { get; private set; }
+        private readonly IContentDefinitionService _definitionService;
+        private readonly ICacheItemWatcher _cacheItemWatcher;
 
-        public CloneBatchAction(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, ICacheItemWatcher cacheItemWatcher)
+        public Models.Configuration.Content ContentDefinitionFallback { get; set; }
+
+		public List<int> Ids { get; } = new List<int>();
+
+        public CloneBatchAction(
+            IArticleService articleService,
+            IFieldService fieldService,
+            IProductService productService,
+            ILogger logger,
+            Func<ITransaction> createTransaction,
+            IContentDefinitionService definitionService,
+            ICacheItemWatcher cacheItemWatcher)
 			: base(articleService, fieldService, productService, logger, createTransaction)
 		{
-			_cacheItemWatcher = cacheItemWatcher;
-			Ids = new List<int>();
+            _definitionService = definitionService;
+            _cacheItemWatcher = cacheItemWatcher;
 		}
-
+        
 		#region Overrides
 		protected override void OnStartProcess()
 		{
@@ -46,16 +57,33 @@ namespace QA.Core.ProductCatalog.Actions
 
 			if (Filter(article))
 			{
-				if (!ArticleService.CheckRelationSecurity(article.ContentId, new int[] { productId }, false)[productId])
-					throw new ProductException(productId, "Операция недопустима из-за недостаточных прав доступа по связям");
+				if (!ArticleService.CheckRelationSecurity(article.ContentId, new[] { productId }, false)[productId])
+                {
+                    throw new ProductException(productId,
+                        "Операция недопустима из-за недостаточных прав доступа по связям");
+                }
 
-				var definition = Productservice.GetProductDefinition(0, article.ContentId);
-				UpdateDefinition(article, definition, actionParameters);
+                var contentDefinition = _definitionService
+                    .TryGetDefinitionForContent(0, article.ContentId) ?? ContentDefinitionFallback;
 
-				var dictionary = GetProductsToBeProcessed<CloningMode>(article, definition, ef => ef.CloningMode, CloningMode.Copy, Filter, true);
-				var missedAggArticles = PrepareProducts(dictionary, clearFieldIds);
-				MapProducts(dictionary[productId], dictionary);
-				int id = SaveProducts(productId, dictionary, missedAggArticles);
+                if (contentDefinition == null)
+                {
+                    throw new ProductException(productId, $"Не найден ProductDefinition contentId={article.ContentId}");
+                }
+
+                var productDefinition = new ProductDefinition { StorageSchema = contentDefinition };
+
+                UpdateDefinition(article, productDefinition, actionParameters);
+
+				var productsById = GetProductsToBeProcessed(
+                    article, productDefinition, ef => ef.CloningMode, CloningMode.Copy, Filter, excludeArchive: true);
+
+				var missedAggArticles = PrepareProducts(productsById, clearFieldIds);
+
+				MapProducts(productsById[productId], productsById);
+
+				int id = SaveProducts(productId, productsById, missedAggArticles);
+
 				Ids.Add(id);
 			}
 		}

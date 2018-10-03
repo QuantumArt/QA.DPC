@@ -190,6 +190,8 @@ export interface DeviceOnTariffs extends EntityObject {
   /** Города */
   Cities: Region[];
   Parent: ProductRelation;
+  /** Маркетинговое устройство */
+  MarketingDevice: MarketingProduct;
 }
 
 export interface DevicesForFixConnectAction extends EntityObject {
