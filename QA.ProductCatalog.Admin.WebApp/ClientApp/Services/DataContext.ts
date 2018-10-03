@@ -10,8 +10,8 @@ import {
 import { validationMixin } from "mst-validation-mixin";
 import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
 import {
-  StoreObject,
-  StoreSnapshot,
+  TablesObject,
+  TablesSnapshot,
   EntityObject,
   EntitySnapshot,
   ArticleObject
@@ -30,24 +30,24 @@ import {
 
 type ModelType<S, T> = IModelType<ModelProperties, any, S, S, T>;
 
-export class DataContext {
+export class DataContext<TTables extends TablesObject = TablesObject> {
   private _nextId = -1;
   private _defaultSnapshots: DefaultSnapshots = null;
-  private _storeType: ModelType<StoreSnapshot, StoreObject> = null;
-  public store: StoreObject = null;
+  private _tablesType: ModelType<TablesSnapshot, TablesObject> = null;
+  public tables: TTables = null;
 
   public initSchema(mergedSchemas: ContentSchemasById) {
-    this._storeType = compileStoreType(mergedSchemas, () => this._nextId--);
+    this._tablesType = compileTablesType(mergedSchemas, () => this._nextId--);
     this._defaultSnapshots = compileDefaultSnapshots(mergedSchemas);
   }
 
-  public initStore(storeSnapshot: StoreSnapshot) {
-    this.store = this._storeType.create(storeSnapshot);
+  public initTables(tablesSnapshot: TablesSnapshot) {
+    this.tables = this._tablesType.create(tablesSnapshot) as TTables;
     if (DEBUG) {
-      onPatch(this.store, patch => console.log(patch));
+      onPatch(this.tables, patch => console.log(patch));
     }
     // разрешаем изменения моделей из других сервисов и компонентов
-    unprotect(this.store);
+    unprotect(this.tables);
   }
 
   @action
@@ -61,20 +61,20 @@ export class DataContext {
       ...properties
     }) as T;
 
-    this.store[contentName].put(entity);
+    this.tables[contentName].put(entity);
     return entity;
   }
 
   @action
   public deleteEntity(entity: EntityObject) {
     const contentName = getType(entity).name;
-    this.store[contentName].delete(String(entity._ClientId));
+    this.tables[contentName].delete(String(entity._ClientId));
   }
 
   private getContentType(contentName: string): ModelType<EntitySnapshot, EntityObject> {
-    const optionalType = this._storeType.properties[contentName];
+    const optionalType = this._tablesType.properties[contentName];
     if (!optionalType) {
-      throw new TypeError(`Content "${contentName}" is not defined in this Store schema`);
+      throw new TypeError(`Content "${contentName}" is not defined in this Tables schema`);
     }
     // @ts-ignore
     return optionalType.type.subType;
@@ -85,7 +85,7 @@ export class DataContext {
  * Компилирует MobX-модели из нормализованных схем контентов
  * @example
  *
- * interface Store {
+ * interface Tables {
  *   Product: Map<string, Product>;
  *   Region: Map<string, Region>;
  * }
@@ -100,7 +100,7 @@ export class DataContext {
  *   Parent: Region;
  * }
  */
-function compileStoreType(
+function compileTablesType(
   mergedSchemas: { [name: string]: ContentSchema },
   getNextId: () => number
 ) {

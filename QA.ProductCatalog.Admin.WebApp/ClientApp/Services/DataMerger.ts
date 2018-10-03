@@ -2,7 +2,7 @@ import { inject } from "react-ioc";
 import { action, comparer } from "mobx";
 import { getSnapshot } from "mobx-state-tree";
 import {
-  StoreSnapshot,
+  TablesSnapshot,
   ArticleSnapshot,
   ArticleObject,
   isExtensionDictionary
@@ -23,9 +23,9 @@ export enum MergeStrategy {
 export class DataMerger {
   @inject private _dataContext: DataContext;
 
-  public storeHasConflicts(storeSnapshot: StoreSnapshot) {
-    for (const [contentName, articlesById] of Object.entries(storeSnapshot)) {
-      const collection = this._dataContext.store[contentName];
+  public tablesHasConflicts(tablesSnapshot: TablesSnapshot) {
+    for (const [contentName, articlesById] of Object.entries(tablesSnapshot)) {
+      const collection = this._dataContext.tables[contentName];
       for (const [id, articleSnapshot] of Object.entries(articlesById)) {
         const article = collection.get(id);
         if (article && this.articleHasConfilcts(article, articleSnapshot)) {
@@ -60,9 +60,9 @@ export class DataMerger {
   }
 
   @action
-  public mergeStore(snapshot: StoreSnapshot, strategy: MergeStrategy) {
+  public mergeTables(snapshot: TablesSnapshot, strategy: MergeStrategy) {
     Object.entries(snapshot).forEach(([contentName, articlesById]) => {
-      const collection = this._dataContext.store[contentName];
+      const collection = this._dataContext.tables[contentName];
       if (collection) {
         Object.entries(articlesById).forEach(([id, articleSnapshot]) => {
           const article = collection.get(id);

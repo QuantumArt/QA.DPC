@@ -1,5 +1,5 @@
 import { inject } from "react-ioc";
-import { EntityObject, StoreSnapshot, EntitySnapshot } from "Models/EditorDataModels";
+import { EntityObject, TablesSnapshot, EntitySnapshot } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { DataSerializer, IdMapping } from "Services/DataSerializer";
@@ -43,31 +43,31 @@ export class EditorController {
 
       const contentSchema = await initSchemaTask;
 
-      const storeSnapshot = this._dataNormalizer.normalize(
+      const tablesSnapshot = this._dataNormalizer.normalize(
         nestedObjectTree,
         contentSchema.ContentName
       );
 
       this._dataSchemaLinker.addPreloadedArticlesToSnapshot(
-        storeSnapshot,
+        tablesSnapshot,
         this._schemaContext.rootSchema
       );
 
-      this._dataContext.initStore(storeSnapshot);
+      this._dataContext.initTables(tablesSnapshot);
 
       this._dataSchemaLinker.linkPreloadedArticles(contentSchema);
 
-      return this._dataContext.store[contentSchema.ContentName].get(
+      return this._dataContext.tables[contentSchema.ContentName].get(
         String(nestedObjectTree._ClientId)
       );
     } else {
       const contentSchema = await initSchemaTask;
 
-      const storeSnapshot: StoreSnapshot = {};
+      const teblesSnapshot: TablesSnapshot = {};
 
-      this._dataSchemaLinker.addPreloadedArticlesToSnapshot(storeSnapshot, contentSchema);
+      this._dataSchemaLinker.addPreloadedArticlesToSnapshot(teblesSnapshot, contentSchema);
 
-      this._dataContext.initStore(storeSnapshot);
+      this._dataContext.initTables(teblesSnapshot);
 
       return this._dataContext.createEntity(contentSchema.ContentName);
     }
@@ -116,21 +116,21 @@ export class EditorController {
       const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
 
-      if (this._dataMerger.storeHasConflicts(dataSnapshot)) {
+      if (this._dataMerger.tablesHasConflicts(dataSnapshot)) {
         // TODO: React confirm dialog
         const serverWins = window.confirm(
           `Данные на сервере были изменены другим пользователем.\n` +
             `Применить изменения с сервера?`
         );
         if (serverWins) {
-          this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+          this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
         } else {
-          this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ClientWins);
+          this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ClientWins);
         }
         // TODO: React alert dialog
         window.alert(`Пожалуйста, проверьте корректность данных и сохраните статью снова.`);
       } else {
-        this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ClientWins);
+        this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ClientWins);
         // TODO: React alert dialog
         window.alert(
           `Данные на сервере были изменены другим пользователем.\n` +
@@ -153,7 +153,7 @@ export class EditorController {
 
     const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(okResponse.PartialProduct);
     const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
-    this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+    this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
   }
 
   private getErrorMessage(articleErrors: ArticleErrors[]) {

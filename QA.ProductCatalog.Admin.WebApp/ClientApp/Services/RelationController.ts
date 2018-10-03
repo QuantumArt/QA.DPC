@@ -119,7 +119,7 @@ export class RelationController {
 
   private getLoadedArticles(contentSchema: ContentSchema, articleIds: number[]) {
     return untracked(() => {
-      const contextArticles = this._dataContext.store[contentSchema.ContentName];
+      const contextArticles = this._dataContext.tables[contentSchema.ContentName];
       return articleIds.map(id => contextArticles.get(String(id)));
     });
   }
@@ -145,7 +145,7 @@ export class RelationController {
 
     const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
 
-    this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.KeepTimestamp);
+    this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.KeepTimestamp);
   }
 
   public async reloadRelation(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
@@ -160,9 +160,9 @@ export class RelationController {
           fieldSchema.RelatedContent.ContentName
         );
 
-        this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.Overwrite);
+        this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Overwrite);
 
-        const collection = this._dataContext.store[fieldSchema.RelatedContent.ContentName];
+        const collection = this._dataContext.tables[fieldSchema.RelatedContent.ContentName];
 
         model[fieldSchema.FieldName] = collection.get(String(dataTree._ClientId)) || null;
       } else {
@@ -183,7 +183,7 @@ export class RelationController {
         fieldSchema.RelatedContent.ContentName
       );
 
-      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.Overwrite);
+      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Overwrite);
 
       const loadedArticleIds = dataTrees.map(article => article._ClientId);
 
@@ -233,7 +233,7 @@ export class RelationController {
         fieldSchema.RelatedContent.ContentName
       );
 
-      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.KeepTimestamp);
+      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.KeepTimestamp);
 
       const loadedArticleIds = dataTrees.map(article => article._ClientId);
 

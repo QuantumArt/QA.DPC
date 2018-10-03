@@ -1,22 +1,23 @@
-import { EntityObject, ExtensionObject } from "Models/EditorDataModels";
+import { IMSTMap } from "mobx-state-tree";
+import { EntityObject, ExtensionObject, TablesObject } from "Models/EditorDataModels";
 
 /** Типизация хранилища данных */
-export interface ProductEntities {
-  Region: Region;
-  Product: Product;
-  ProductModifer: ProductModifer;
-  BaseParameter: BaseParameter;
-  ProductParameter: ProductParameter;
-  Unit: Unit;
-  ProductRelation: ProductRelation;
-  LinkParameter: LinkParameter;
-  MarketingProduct: MarketingProduct;
-  Segment: Segment;
-  TariffCategory: TariffCategory;
-  Advantage: Advantage;
-  FixConnectAction: FixConnectAction;
-  DeviceOnTariffs: DeviceOnTariffs;
-  DevicesForFixConnectAction: DevicesForFixConnectAction;
+export interface Tables extends TablesObject {
+  Region: IMSTMap<any, any, Region>;
+  Product: IMSTMap<any, any, Product>;
+  ProductModifer: IMSTMap<any, any, ProductModifer>;
+  BaseParameter: IMSTMap<any, any, BaseParameter>;
+  ProductParameter: IMSTMap<any, any, ProductParameter>;
+  Unit: IMSTMap<any, any, Unit>;
+  ProductRelation: IMSTMap<any, any, ProductRelation>;
+  LinkParameter: IMSTMap<any, any, LinkParameter>;
+  MarketingProduct: IMSTMap<any, any, MarketingProduct>;
+  Segment: IMSTMap<any, any, Segment>;
+  TariffCategory: IMSTMap<any, any, TariffCategory>;
+  Advantage: IMSTMap<any, any, Advantage>;
+  FixConnectAction: IMSTMap<any, any, FixConnectAction>;
+  DeviceOnTariffs: IMSTMap<any, any, DeviceOnTariffs>;
+  DevicesForFixConnectAction: IMSTMap<any, any, DevicesForFixConnectAction>;
 }
 
 export interface Region extends EntityObject {

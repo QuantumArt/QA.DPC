@@ -53,7 +53,7 @@ export class ArticleController {
 
     const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
 
-    this._dataMerger.mergeStore(dataSnapshot, strategy);
+    this._dataMerger.mergeTables(dataSnapshot, strategy);
   }
 
   public editEntity(model: EntityObject, contentSchema: ContentSchema, isWindow = true) {

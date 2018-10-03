@@ -2,7 +2,7 @@ import { IMSTMap, IStateTreeNode } from "mobx-state-tree";
 import { isObject, isString } from "Utils/TypeChecks";
 import { ValidatableObject } from "mst-validation-mixin";
 
-export interface StoreObject {
+export interface TablesObject {
   readonly [contentName: string]: IMSTMap<any, any, EntityObject>;
 }
 
@@ -75,7 +75,7 @@ export function isExtensionDictionary(object: any): object is ExtensionObject {
   return isObject(object) && Object.values(object).every(isExtensionObject);
 }
 
-export interface StoreSnapshot {
+export interface TablesSnapshot {
   readonly [contentName: string]: {
     readonly [articleId: string]: EntitySnapshot;
   };

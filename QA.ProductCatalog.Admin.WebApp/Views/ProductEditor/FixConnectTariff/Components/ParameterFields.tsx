@@ -19,7 +19,13 @@ import { DataContext } from "Services/DataContext";
 import { InputNumber, Select } from "Components/FormControls/FormControls";
 import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
 import { RelationFieldSchema, NumericFieldSchema } from "Models/EditorSchemaModels";
-import { LinkParameter, ProductParameter, BaseParameter, Unit } from "../ProductEditorSchema";
+import {
+  Tables,
+  LinkParameter,
+  ProductParameter,
+  BaseParameter,
+  Unit
+} from "../ProductEditorSchema";
 
 type Parameter = ProductParameter | LinkParameter;
 
@@ -40,7 +46,7 @@ const baseParamByAliasCache = new WeakCache();
 @consumer
 @observer
 export class ParameterFields extends Component<ParameterFieldsProps> {
-  @inject private _dataContext: DataContext;
+  @inject private _dataContext: DataContext<Tables>;
   @observable private isMounted = false;
   private reactions: IReactionDisposer[] = [];
   private fieldOrdersByTitile: { [title: string]: number } = {};
@@ -57,7 +63,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     });
 
     runInAction("createParameters", () => {
-      // create virtual paramters in store table
+      // create virtual paramters in context table
       this.virtualParameters = fields.map(field =>
         this._dataContext.createEntity(contentName, {
           _IsVirtual: true,
@@ -112,7 +118,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
         // remove virtual parameters from entity field
         parameters.replace(parameters.filter(parameter => !parameter._IsVirtual));
       }
-      // remove virtual parameters from store table
+      // remove virtual parameters from context table
       this.virtualParameters.forEach(virtual => {
         if (virtual._IsVirtual) {
           this._dataContext.deleteEntity(virtual);
@@ -137,8 +143,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
       computed(
         () => {
           const byAlias = {};
-          for (const entity of this._dataContext.store.BaseParameter.values()) {
-            const baseParameter = entity as BaseParameter;
+          for (const baseParameter of this._dataContext.tables.BaseParameter.values()) {
             byAlias[baseParameter.Alias] = baseParameter;
           }
           return byAlias;
@@ -155,8 +160,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
       computed(
         () => {
           const byAlias = {};
-          for (const entity of this._dataContext.store.Unit.values()) {
-            const unit = entity as Unit;
+          for (const unit of this._dataContext.tables.Unit.values()) {
             byAlias[unit.Alias] = unit;
           }
           return byAlias;

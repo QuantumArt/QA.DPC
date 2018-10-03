@@ -11,7 +11,7 @@ import {
   PreloadingMode,
   PreloadingState
 } from "Models/EditorSchemaModels";
-import { StoreSnapshot, EntitySnapshot } from "Models/EditorDataModels";
+import { TablesSnapshot, EntitySnapshot } from "Models/EditorDataModels";
 import { Mutable } from "Utils/TypeChecks";
 
 export class DataSchemaLinker {
@@ -20,7 +20,7 @@ export class DataSchemaLinker {
   @inject private _dataSerializer: DataSerializer;
 
   public addPreloadedArticlesToSnapshot(
-    storeSnapshot: Mutable<StoreSnapshot>,
+    tablesSnapshot: Mutable<TablesSnapshot>,
     contentSchema: ContentSchema
   ) {
     const objectsByContent: {
@@ -38,10 +38,10 @@ export class DataSchemaLinker {
       }
     });
 
-    const preloadedStoreSnapshot = this._dataNormalizer.normalizeStore(objectsByContent);
+    const preloadedTablesSnapshot = this._dataNormalizer.normalizeTables(objectsByContent);
 
-    Object.entries(preloadedStoreSnapshot).forEach(([contentName, preloadedArticlesById]) => {
-      const articlesById = storeSnapshot[contentName];
+    Object.entries(preloadedTablesSnapshot).forEach(([contentName, preloadedArticlesById]) => {
+      const articlesById = tablesSnapshot[contentName];
       if (articlesById) {
         Object.entries(preloadedArticlesById).forEach(([id, article]) => {
           if (!articlesById[id]) {
@@ -49,7 +49,7 @@ export class DataSchemaLinker {
           }
         });
       } else {
-        storeSnapshot[contentName] = preloadedArticlesById;
+        tablesSnapshot[contentName] = preloadedArticlesById;
       }
     });
   }
@@ -58,7 +58,7 @@ export class DataSchemaLinker {
     this.visitContentSchema(contentSchema, fieldSchema => {
       if (fieldSchema.PreloadingMode === PreloadingMode.Eager) {
         const contentName = fieldSchema.RelatedContent.ContentName;
-        const entitiesMap = this._dataContext.store[contentName];
+        const entitiesMap = this._dataContext.tables[contentName];
         fieldSchema.PreloadingState = PreloadingState.Done;
         fieldSchema.PreloadedArticles = fieldSchema.PreloadedArticles.map(article =>
           entitiesMap.get(String(article._ServerId))

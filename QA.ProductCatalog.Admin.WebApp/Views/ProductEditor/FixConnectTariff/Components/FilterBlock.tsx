@@ -7,7 +7,7 @@ import { Col, Row } from "react-flexbox-grid";
 import { Switch, Alignment } from "@blueprintjs/core";
 import { DataContext } from "Services/DataContext";
 import { FilterModel } from "../Models/FilterModel";
-import { Region } from "../ProductEditorSchema";
+import { Tables } from "../ProductEditorSchema";
 
 interface FilterBlockProps {
   model: FilterModel;
@@ -17,13 +17,12 @@ interface FilterBlockProps {
 @consumer
 @observer
 export class FilterBlock extends Component<FilterBlockProps> {
-  @inject private _dataContext: DataContext;
+  @inject private _dataContext: DataContext<Tables>;
 
   @computed
   private get options() {
     const options: Options<number> = [];
-    for (const entity of this._dataContext.store.Region.values()) {
-      const region = entity as Region;
+    for (const region of this._dataContext.tables.Region.values()) {
       options.push({
         value: region._ClientId,
         label: region.Title

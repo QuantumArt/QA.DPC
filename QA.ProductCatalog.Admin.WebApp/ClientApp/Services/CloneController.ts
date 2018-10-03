@@ -52,10 +52,10 @@ export class CloneController {
     return runInAction("cloneRelatedEntity", () => {
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
 
-      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
 
       const cloneId = String(dataTree._ClientId);
-      const clonedEntity = this._dataContext.store[contentSchema.ContentName].get(cloneId);
+      const clonedEntity = this._dataContext.tables[contentSchema.ContentName].get(cloneId);
 
       const relation = parent[fieldSchema.FieldName];
       if (isMultiRelationField(fieldSchema) && isArray(relation)) {
@@ -98,10 +98,10 @@ export class CloneController {
     return runInAction("cloneProductPrototype", () => {
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
 
-      this._dataMerger.mergeStore(dataSnapshot, MergeStrategy.ServerWins);
+      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
 
       const cloneId = String(dataTree._ClientId);
-      const clonedEntity = this._dataContext.store[contentSchema.ContentName].get(cloneId);
+      const clonedEntity = this._dataContext.tables[contentSchema.ContentName].get(cloneId);
 
       const relation = parent[fieldSchema.FieldName];
       if (isMultiRelationField(fieldSchema) && isArray(relation)) {

@@ -12,9 +12,7 @@ import { ArticleObject } from "Models/EditorDataModels";
 
 const dataInterfaces = compileEditorDataInterfaces(
   // @ts-ignore
-  window.mergedSchema,
-  // @ts-ignore
-  window.editorSchema
+  window.mergedSchema
 );
 
 download("ProductEditorSchema.ts", dataInterfaces);
@@ -25,10 +23,9 @@ document.querySelector("#typeScriptCode").innerText = dataInterfaces;
 /**
  * Преобразовать JSON схемы в интерфейсы TypeScript (для объектов данных)
  * @param {{ [name: string]: ContentSchema }} mergedSchemas
- * @param {{ Content: any; Definitions: { [name: string]: any } }} editorSchema
  * @returns {string} Код TypeScript
  */
-function compileEditorDataInterfaces(mergedSchemas, editorSchema) {
+function compileEditorDataInterfaces(mergedSchemas) {
   const getFields = content => mergedSchemas[content.ContentId].Fields;
   const getName = content => mergedSchemas[content.ContentId].ContentName;
 
@@ -46,12 +43,13 @@ function compileEditorDataInterfaces(mergedSchemas, editorSchema) {
   const print = func => func();
 
   // prettier-ignore
-  return `import { EntityObject, ExtensionObject } from "Models/EditorDataModels";
+  return `import { IMSTMap } from "mobx-state-tree";
+import { EntityObject, ExtensionObject, TablesObject } from "Models/EditorDataModels";
 
 /** Типизация хранилища данных */
-export interface ${getRootName(editorSchema)}Entities {${
+export interface Tables extends TablesObject {${
   forEach(mergedSchemas, content => !content.ForExtension, content => `
-  ${getName(content)}: ${getName(content)};`)}
+  ${getName(content)}: IMSTMap<any, any, ${getName(content)}>;`)}
 }
 ${forEach(mergedSchemas, content => `
 export interface ${getName(content)} extends ${
@@ -109,12 +107,4 @@ export interface ${getName(content)} extends ${
   })};`)}
 }
 `)}`;
-}
-
-function getRootName(editorSchema) {
-  const refRegex = /\{\s*"?\$ref"?:\s*"#\/Definitions\/([A-Za-z0-9]+)"\s*}/gm;
-  return (
-    editorSchema.Content.ContentName ||
-    refRegex.exec(JSON.stringify(editorSchema.Content))[1]
-  );
 }

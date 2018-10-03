@@ -1,6 +1,6 @@
 import { normalize, schema } from "normalizr";
 import { deepMerge } from "Utils/DeepMerge";
-import { ArticleObject, StoreSnapshot, EntitySnapshot } from "Models/EditorDataModels";
+import { ArticleObject, TablesSnapshot, EntitySnapshot } from "Models/EditorDataModels";
 import {
   ContentSchemasById,
   isSingleRelationField,
@@ -17,7 +17,7 @@ export class DataNormalizer {
   private _objectSchemas: {
     [contentName: string]: schema.Object;
   } = {};
-  private _storeSchema: schema.Object;
+  private _tablesSchema: schema.Object;
 
   public initSchema(mergedSchemas: ContentSchemasById) {
     Object.values(mergedSchemas).forEach(content => {
@@ -29,7 +29,7 @@ export class DataNormalizer {
       this._objectSchemas[content.ContentName] = new ObjectSchema({});
     });
 
-    this._storeSchema = new ObjectSchema({});
+    this._tablesSchema = new ObjectSchema({});
 
     Object.values(mergedSchemas).forEach(content => {
       const references = {};
@@ -48,24 +48,24 @@ export class DataNormalizer {
       });
       this._entitySchemas[content.ContentName].define(references);
       this._objectSchemas[content.ContentName].define(references);
-      this._storeSchema.define({
+      this._tablesSchema.define({
         [content.ContentName]: [this._entitySchemas[content.ContentName]]
       });
     });
   }
 
-  public normalize(articleObject: EntitySnapshot, contentName: string): StoreSnapshot {
+  public normalize(articleObject: EntitySnapshot, contentName: string): TablesSnapshot {
     return normalize(articleObject, this._entitySchemas[contentName]).entities;
   }
 
-  public normalizeAll(articleObjects: EntitySnapshot[], contentName: string): StoreSnapshot {
+  public normalizeAll(articleObjects: EntitySnapshot[], contentName: string): TablesSnapshot {
     return normalize(articleObjects, [this._entitySchemas[contentName]]).entities;
   }
 
-  public normalizeStore(articleObjectsByContent: {
+  public normalizeTables(articleObjectsByContent: {
     [contentName: string]: EntitySnapshot[];
-  }): StoreSnapshot {
-    return normalize(articleObjectsByContent, this._storeSchema).entities;
+  }): TablesSnapshot {
+    return normalize(articleObjectsByContent, this._tablesSchema).entities;
   }
 }
 
