@@ -123,6 +123,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       // renderOnlyActiveSection
       canCloneEntity
       canPublishEntity
+      canClonePrototype
       displayFields={[this.renderRegions]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
@@ -139,6 +140,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       // renderOnlyActiveSection
       canCloneEntity
       canPublishEntity
+      canClonePrototype
       displayFields={[this.renderRegions]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}

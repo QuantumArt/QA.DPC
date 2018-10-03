@@ -33,6 +33,18 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     model.setTouched(fieldSchema.FieldName, true);
   };
 
+  private clonePrototype = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._cloneController.cloneProductPrototype(
+      model,
+      fieldSchema as SingleRelationFieldSchema
+    );
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
+  };
+
   @action
   private removeRelation = (e: any) => {
     e.stopPropagation();
@@ -114,7 +126,13 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   }
 
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { canCreateEntity, canSelectRelation, canClearRelation, canReloadRelation } = this.props;
+    const {
+      canCreateEntity,
+      canSelectRelation,
+      canClearRelation,
+      canReloadRelation,
+      canClonePrototype
+    } = this.props;
     const article: EntityObject = model[fieldSchema.FieldName];
     return (
       <RelationFieldMenu
@@ -122,6 +140,9 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
         onSelect={canSelectRelation && !this._readonly && this.selectRelation}
         onClear={canClearRelation && !this._readonly && !!article && this.removeRelation}
         onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelation}
+        onClonePrototype={
+          canClonePrototype && model._ServerId > 0 && !article && this.clonePrototype
+        }
       />
     );
   }

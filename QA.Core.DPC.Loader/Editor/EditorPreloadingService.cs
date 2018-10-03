@@ -71,7 +71,7 @@ namespace QA.Core.DPC.Loader.Editor
             }
 
             int[] articleIds = _articleService
-                .Ids(content.ContentId, null, filter: relationCondition)
+                .Ids(content.ContentId, null, filter: relationCondition ?? "")
                 .ToArray();
 
             Article[] articles = _productService.GetProductsByIds(content, articleIds);

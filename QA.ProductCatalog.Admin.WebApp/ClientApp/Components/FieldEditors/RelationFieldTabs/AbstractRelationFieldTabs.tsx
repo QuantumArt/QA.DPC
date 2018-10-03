@@ -29,13 +29,13 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   borderless?: boolean;
   // allowed actions
   canCreateEntity?: boolean;
+  canClonePrototype?: boolean;
   canSaveEntity?: boolean;
   canRefreshEntity?: boolean;
   canReloadEntity?: boolean;
   canRemoveEntity?: boolean;
   canPublishEntity?: boolean;
   canCloneEntity?: boolean;
-  canClonePrototype?: boolean;
   canSelectRelation?: boolean;
   canClearRelation?: boolean;
   canReloadRelation?: boolean;

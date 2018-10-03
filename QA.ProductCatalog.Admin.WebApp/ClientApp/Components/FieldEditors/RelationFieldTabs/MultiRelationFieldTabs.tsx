@@ -71,6 +71,22 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     model.setTouched(fieldSchema.FieldName, true);
   };
 
+  private clonePrototype = async () => {
+    const { model, fieldSchema } = this.props;
+    const clone = await this._cloneController.cloneProductPrototype(
+      model,
+      fieldSchema as MultiRelationFieldSchema
+    );
+    const { touchedIds } = this.state;
+    touchedIds[clone._ClientId] = true;
+    this.setState({
+      activeId: clone._ClientId,
+      touchedIds,
+      isOpen: true,
+      isTouched: true
+    });
+  };
+
   @action
   private clearRelation = () => {
     const { model, fieldSchema } = this.props;
@@ -162,7 +178,13 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   renderControls(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
-    const { canCreateEntity, canSelectRelation, canClearRelation, canReloadRelation } = this.props;
+    const {
+      canCreateEntity,
+      canSelectRelation,
+      canClearRelation,
+      canReloadRelation,
+      canClonePrototype
+    } = this.props;
     const { isOpen } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
@@ -173,6 +195,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
           onSelect={canSelectRelation && !this._readonly && this.selectRelations}
           onClear={canClearRelation && !this._readonly && !isEmpty && this.clearRelation}
           onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelations}
+          onClonePrototype={canClonePrototype && model._ServerId > 0 && this.clonePrototype}
         />
         <Button
           small

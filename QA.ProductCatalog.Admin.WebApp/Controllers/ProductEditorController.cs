@@ -21,6 +21,7 @@ using QA.Core.Web;
 using Quantumart.QP8.BLL.Services.API.Models;
 using QA.Core.DPC.API.Update;
 using QA.Core.ProductCatalog.Actions;
+using QA.Core.ProductCatalog.Actions.Services;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -32,6 +33,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IProductUpdateService _productUpdateService;
         private readonly JsonProductService _jsonProductService;
         private readonly IReadOnlyArticleService _articleService;
+        private readonly IFieldService _fieldService;
         private readonly IUserProvider _userProvider;
         private readonly CloneBatchAction _cloneBatchAction;
         private readonly EditorSchemaService _editorSchemaService;
@@ -45,6 +47,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IProductUpdateService productUpdateService,
             JsonProductService jsonProductService,
             IReadOnlyArticleService articleService,
+            IFieldService fieldService,
             IUserProvider userProvider,
             CloneBatchAction cloneBatchAction,
             EditorSchemaService editorSchemaService,
@@ -57,6 +60,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _productUpdateService = productUpdateService;
             _jsonProductService = jsonProductService;
             _articleService = articleService;
+            _fieldService = fieldService;
             _userProvider = userProvider;
             _cloneBatchAction = cloneBatchAction;
             _editorSchemaService = editorSchemaService;
@@ -408,6 +412,74 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Content(productJson, "application/json");
         }
 
+        [HttpPost]
+        public ActionResult ClonePartialProductPrototype(
+            [ModelBinder(typeof(JsonModelBinder))] ClonePartialProductPrototypeRequest request,
+            string backend_sid, string customerCode, bool isLive = false)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Content rootContent = _contentDefinitionService
+                .GetDefinitionById(request.ProductDefinitionId, isLive);
+
+            Content relationContent = _editorPartialContentService
+                .FindContentByPath(rootContent, request.ContentPath);
+
+            EntityField relationField = (EntityField)relationContent.Fields
+                .Single(f => f.FieldName == request.RelationFieldName);
+
+            Content partialContent = relationField.CloneDefinition ?? relationField.Content;
+
+            var field = _fieldService.Read(relationField.FieldId);
+
+            int backwardFieldId = relationField is BackwardRelationField
+                ? relationField.FieldId
+                : field.BackRelationId.Value;
+            
+            int cloneArticleId = 0;
+            if (!String.IsNullOrWhiteSpace(relationField.ClonePrototypeCondition))
+            {
+                cloneArticleId = _articleService
+                    .Ids(partialContent.ContentId, null, filter: relationField.ClonePrototypeCondition)
+                    .FirstOrDefault();
+            }
+            if (cloneArticleId == 0)
+            {
+                throw new InvalidOperationException(
+                    $"Невозможно определить прототип для создания продукта contentId={partialContent.ContentId}");
+            }
+            
+            var actionContext = new ActionContext
+            {
+                BackendSid = Guid.TryParse(backend_sid, out Guid backendSid) ? backendSid : Guid.Empty,
+                CustomerCode = customerCode,
+                ContentId = partialContent.ContentId,
+                ContentItemIds = new[] { cloneArticleId },
+                UserId = _userProvider.GetUserId(),
+                UserName = _userProvider.GetUserName(),
+                Parameters = new Dictionary<string, string>
+                {
+                    ["FieldId"] = backwardFieldId.ToString(),
+                    ["ArticleId"] = request.ParentArticleId.ToString(),
+                }
+            };
+
+            _cloneBatchAction.ContentDefinitionFallback = partialContent.DeepCopy();
+
+            _cloneBatchAction.Process(actionContext);
+
+            int clonedProdictId = _cloneBatchAction.Ids.First();
+
+            ArticleObject articleObject = LoadProductGraph(partialContent, clonedProdictId, isLive);
+
+            string productJson = JsonConvert.SerializeObject(articleObject);
+
+            return Content(productJson, "application/json");
+        }
+
         private ArticleObject LoadProductGraph(Content content, int articleId, bool isLive)
         {
             var productDefinition = new ProductDefinition { StorageSchema = content };
@@ -523,6 +595,20 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             public int CloneArticleId { get; set; }
         }
 
+        public class ClonePartialProductPrototypeRequest : PartialProductRequest
+        {
+            /// <summary>
+            /// Имя поля связи, которое необходимо загрузить
+            /// </summary>
+            [Required]
+            public string RelationFieldName { get; set; }
+
+            /// <summary>
+            /// Id родительской статьи
+            /// </summary>
+            public int ParentArticleId { get; set; }
+        }
+        
         #endregion
     }
 }

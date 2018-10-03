@@ -61,6 +61,15 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     model.setTouched(fieldSchema.FieldName, true);
   };
 
+  private clonePrototype = async () => {
+    const { model, fieldSchema } = this.props;
+    const clone = await this._cloneController.cloneProductPrototype(
+      model,
+      fieldSchema as MultiRelationFieldSchema
+    );
+    this.toggleRelation(clone);
+  };
+
   @action
   private clearRelation = () => {
     const { model, fieldSchema } = this.props;
@@ -182,7 +191,13 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   };
 
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { canCreateEntity, canSelectRelation, canClearRelation, canReloadRelation } = this.props;
+    const {
+      canCreateEntity,
+      canClonePrototype,
+      canSelectRelation,
+      canClearRelation,
+      canReloadRelation
+    } = this.props;
     const { isOpen } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
@@ -193,6 +208,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
           onSelect={canSelectRelation && !this._readonly && this.selectRelations}
           onClear={canClearRelation && !this._readonly && !isEmpty && this.clearRelation}
           onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelations}
+          onClonePrototype={canClonePrototype && model._ServerId > 0 && this.clonePrototype}
         />
         <Button
           small

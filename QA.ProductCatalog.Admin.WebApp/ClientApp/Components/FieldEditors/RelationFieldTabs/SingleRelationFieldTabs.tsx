@@ -31,6 +31,18 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     model.setTouched(fieldSchema.FieldName, true);
   };
 
+  private clonePrototype = async () => {
+    const { model, fieldSchema } = this.props;
+    await this._cloneController.cloneProductPrototype(
+      model,
+      fieldSchema as SingleRelationFieldSchema
+    );
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
+  };
+
   @action
   private removeRelation = () => {
     const { model, fieldSchema } = this.props;
@@ -78,7 +90,13 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   }
 
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { canCreateEntity, canSelectRelation, canClearRelation, canReloadRelation } = this.props;
+    const {
+      canCreateEntity,
+      canSelectRelation,
+      canClearRelation,
+      canReloadRelation,
+      canClonePrototype
+    } = this.props;
     const { isOpen } = this.state;
     const article: EntityObject = model[fieldSchema.FieldName];
     return (
@@ -88,6 +106,9 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           onSelect={canSelectRelation && !this._readonly && this.selectRelation}
           onClear={canClearRelation && !this._readonly && !!article && this.removeRelation}
           onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelation}
+          onClonePrototype={
+            canClonePrototype && model._ServerId > 0 && !article && this.clonePrototype
+          }
         />
         <Button
           small

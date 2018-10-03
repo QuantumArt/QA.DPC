@@ -70,6 +70,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
       // renderOnlyActiveSection
       canCloneEntity
       canPublishEntity
+      canClonePrototype
       columnProportions={[3, 1, 1]}
       displayFields={[this.renderRegions, this.renderRentPrice, this.renderSalePrice]}
       filterItems={this.filterModel.filterProducts}
@@ -87,6 +88,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
       // renderOnlyActiveSection
       canCloneEntity
       canPublishEntity
+      canClonePrototype
       columnProportions={[3, 1, 1]}
       displayFields={[
         this.renderMatrixRegions,
