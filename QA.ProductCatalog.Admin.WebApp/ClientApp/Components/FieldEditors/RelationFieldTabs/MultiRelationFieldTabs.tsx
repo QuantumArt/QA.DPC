@@ -87,33 +87,41 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
 
   @action
   private detachEntity = (entity: EntityObject) => {
-    this.deactivateEntity(entity);
     const { model, fieldSchema } = this.props;
+    const nextEntity = this.getNextEntity(entity);
     const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
     if (array) {
       array.remove(entity);
       model.setTouched(fieldSchema.FieldName, true);
     }
+    this.deactivateEntity(entity, nextEntity);
   };
 
+  @action
   private removeEntity = async (entity: EntityObject) => {
-    this.deactivateEntity(entity);
     const { model, fieldSchema } = this.props;
     const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
+    const nextEntity = this.getNextEntity(entity);
     await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+    this.deactivateEntity(entity, nextEntity);
   };
 
-  private deactivateEntity(entity: EntityObject) {
+  private getNextEntity(entity: EntityObject) {
     const { model, fieldSchema } = this.props;
-    const array = untracked(() => model[fieldSchema.FieldName]) as EntityObject[];
+    return untracked(() => {
+      const array = model[fieldSchema.FieldName] as EntityObject[];
+      const index = array.indexOf(entity);
+      return index > 0 ? array[index - 1] : array.length > 1 ? array[1] : null;
+    });
+  }
+
+  private deactivateEntity(entity: EntityObject, nextEntity?: EntityObject) {
     const { activeId, touchedIds } = this.state;
     delete touchedIds[entity._ClientId];
     if (activeId === entity._ClientId) {
-      const index = array.indexOf(entity);
-      const nextArticle = index > 0 ? array[index - 1] : array.length > 1 ? array[1] : null;
-      if (nextArticle) {
-        touchedIds[nextArticle._ClientId] = true;
-        this.setState({ activeId: nextArticle._ClientId, touchedIds });
+      if (nextEntity) {
+        touchedIds[nextEntity._ClientId] = true;
+        this.setState({ activeId: nextEntity._ClientId, touchedIds });
       } else {
         this.setState({ activeId: null, touchedIds });
       }

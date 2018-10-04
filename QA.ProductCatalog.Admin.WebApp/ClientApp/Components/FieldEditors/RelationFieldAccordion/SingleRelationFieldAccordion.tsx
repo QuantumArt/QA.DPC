@@ -47,12 +47,12 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   private detachEntity = (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
+    model[fieldSchema.FieldName] = null;
+    model.setTouched(fieldSchema.FieldName, true);
     this.setState({
       isOpen: false,
       isTouched: false
     });
-    model[fieldSchema.FieldName] = null;
-    model.setTouched(fieldSchema.FieldName, true);
   };
 
   private removeEntity = async (e: any) => {
@@ -60,13 +60,13 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const { model, fieldSchema } = this.props;
     const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
     const entity = untracked(() => model[fieldSchema.FieldName]);
+    if (entity) {
+      await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+    }
     this.setState({
       isOpen: false,
       isTouched: false
     });
-    if (entity) {
-      await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
-    }
   };
 
   private cloneEntity = async (e: any) => {

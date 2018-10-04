@@ -71,21 +71,21 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   @action
   private detachEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
-    this.deactivateEntity(entity);
     const { model, fieldSchema } = this.props;
     const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
     if (array) {
       array.remove(entity);
       model.setTouched(fieldSchema.FieldName, true);
     }
+    this.deactivateEntity(entity);
   }
 
   private async removeEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
-    this.deactivateEntity(entity);
     const { model, fieldSchema } = this.props;
     const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
     await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+    this.deactivateEntity(entity);
   }
 
   private deactivateEntity(entity: EntityObject) {
