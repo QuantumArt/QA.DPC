@@ -25,7 +25,7 @@ export abstract class AbstractRelationFieldTable extends AbstractRelationFieldEd
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
     const displayFields = props.displayFields || fieldSchema.DisplayFieldNames || [];
     this._displayFields = displayFields.map(
-      field => (isString(field) ? article => article[field] : field)
+      field => (isString(field) ? entity => entity[field] : field)
     );
   }
 

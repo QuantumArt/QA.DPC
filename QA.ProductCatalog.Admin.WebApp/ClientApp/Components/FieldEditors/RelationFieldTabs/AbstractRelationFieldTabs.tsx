@@ -28,12 +28,12 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   className?: string;
   borderless?: boolean;
   // allowed actions
-  canCreateEntity?: boolean;
   canClonePrototype?: boolean;
+  canCreateEntity?: boolean;
   canSaveEntity?: boolean;
   canRefreshEntity?: boolean;
   canReloadEntity?: boolean;
-  canRemoveEntity?: boolean;
+  canDetachEntity?: boolean;
   canPublishEntity?: boolean;
   canCloneEntity?: boolean;
   canSelectRelation?: boolean;
@@ -60,11 +60,11 @@ export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEdi
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
     const displayField =
       props.displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
-    this._displayField = isString(displayField) ? article => article[displayField] : displayField;
+    this._displayField = isString(displayField) ? entity => entity[displayField] : displayField;
   }
 
-  protected getTitle(article: EntityObject) {
-    const title = this._displayField(article);
+  protected getTitle(entity: EntityObject) {
+    const title = this._displayField(entity);
     return isNullOrWhiteSpace(title) ? "..." : title;
   }
 

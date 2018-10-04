@@ -26,7 +26,7 @@ export interface RelationFieldCheckListProps extends FieldEditorProps {
 }
 
 interface Option {
-  article: EntityObject;
+  entity: EntityObject;
   fields: string[];
 }
 
@@ -37,7 +37,7 @@ const optionsCache = new WeakMap<RelationFieldSchema, Option[]>();
 export class RelationFieldCheckList extends AbstractRelationFieldEditor<
   RelationFieldCheckListProps
 > {
-  private readonly _getOption: (article: EntityObject) => Option;
+  private readonly _getOption: (entity: EntityObject) => Option;
   private readonly _multiple: boolean;
   private _baseRelation: EntityObject | EntityObject[];
   private _cachedOptions: Option[];
@@ -48,11 +48,11 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
     const displayFields = props.displayFields || fieldSchema.DisplayFieldNames || [];
     const fieldSelectors = displayFields.map(
-      field => (isString(field) ? article => article[field] : field)
+      field => (isString(field) ? entity => entity[field] : field)
     );
-    this._getOption = article => ({
-      article,
-      fields: fieldSelectors.map(field => field(article))
+    this._getOption = entity => ({
+      entity,
+      fields: fieldSelectors.map(field => field(entity))
     });
     this._multiple = isMultiRelationField(props.fieldSchema);
   }
@@ -102,7 +102,7 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
       if (isArray(baseRelation)) {
         const notSelectedOptons: Option[] = [];
         cachedOptions.forEach(option => {
-          if (baseRelation.includes(option.article)) {
+          if (baseRelation.includes(option.entity)) {
             this._sortedOptions.push(option);
           } else {
             notSelectedOptons.push(option);
@@ -111,7 +111,7 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
         this._sortedOptions.push(...notSelectedOptons);
       } else if (isObject(baseRelation)) {
         cachedOptions.forEach(option => {
-          if (baseRelation === option.article) {
+          if (baseRelation === option.entity) {
             this._sortedOptions.unshift(option);
           } else {
             this._sortedOptions.push(option);
@@ -124,20 +124,20 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
   }
 
   @action
-  toggleRelation = (article: EntityObject) => {
+  toggleEntity = (entity: EntityObject) => {
     if (this._readonly) {
       return;
     }
     const { model, fieldSchema } = this.props;
     if (this._multiple) {
       const relation: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
-      if (relation.includes(article)) {
-        relation.remove(article);
+      if (relation.includes(entity)) {
+        relation.remove(entity);
       } else {
-        relation.push(article);
+        relation.push(entity);
       }
-    } else if (model[fieldSchema.FieldName] !== article) {
-      model[fieldSchema.FieldName] = article;
+    } else if (model[fieldSchema.FieldName] !== entity) {
+      model[fieldSchema.FieldName] = entity;
     }
     model.setTouched(fieldSchema.FieldName, true);
   };
@@ -159,20 +159,20 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
         >
           <table>
             <tbody>
-              {sortedOptions.map(({ article, fields }) => (
-                <tr key={article._ClientId}>
+              {sortedOptions.map(({ entity, fields }) => (
+                <tr key={entity._ClientId}>
                   <td key={-1}>
                     {this._multiple ? (
                       <Checkbox
-                        checked={relation.includes(article)}
+                        checked={relation.includes(entity)}
                         disabled={this._readonly}
-                        onChange={() => this.toggleRelation(article)}
+                        onChange={() => this.toggleEntity(entity)}
                       />
                     ) : (
                       <Radio
-                        checked={article === relation}
+                        checked={entity === relation}
                         disabled={this._readonly}
-                        onChange={() => this.toggleRelation(article)}
+                        onChange={() => this.toggleEntity(entity)}
                       />
                     )}
                   </td>
@@ -180,7 +180,7 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
                     <td
                       key={i}
                       className="relation-field-check-list__cell"
-                      onClick={() => this.toggleRelation(article)}
+                      onClick={() => this.toggleEntity(entity)}
                     >
                       {field}
                     </td>

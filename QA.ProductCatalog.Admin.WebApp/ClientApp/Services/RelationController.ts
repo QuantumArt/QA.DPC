@@ -69,9 +69,7 @@ export class RelationController {
         const relatedArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
         const newlyCreatedArticles = relatedArticles.filter(article => article._ServerId === null);
 
-        relatedArticles.clear();
-        relatedArticles.push(...selectedArticles);
-        relatedArticles.push(...newlyCreatedArticles);
+        relatedArticles.replace([...selectedArticles, ...newlyCreatedArticles]);
         model.setTouched(fieldSchema.FieldName, true);
       });
     }
@@ -191,8 +189,7 @@ export class RelationController {
 
       const relatedArticles: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
 
-      relatedArticles.clear();
-      relatedArticles.push(...loadedArticles);
+      relatedArticles.replace(loadedArticles);
       model.setChanged(fieldSchema.FieldName, false);
     });
   }

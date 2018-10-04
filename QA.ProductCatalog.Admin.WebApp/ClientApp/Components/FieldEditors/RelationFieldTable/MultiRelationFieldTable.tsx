@@ -11,7 +11,7 @@ import { asc } from "Utils/Array/Sort";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { FieldSelector } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTable, RelationFieldTableProps } from "./AbstractRelationFieldTable";
-import { ArticleLink } from "Components/ArticleEditor/ArticleLink";
+import { EntityLink } from "Components/ArticleEditor/EntityLink";
 
 @consumer
 @observer
@@ -23,26 +23,26 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
     const orderByField =
       props.orderByField || fieldSchema.OrderByFieldName || ArticleObject._ServerId;
-    this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
+    this._orderByField = isString(orderByField) ? entity => entity[orderByField] : orderByField;
   }
 
   @action
-  private clearRelation = () => {
-    const { model, fieldSchema } = this.props;
-    model[fieldSchema.FieldName] = [];
-    model.setTouched(fieldSchema.FieldName, true);
-  };
-
-  @action
-  private removeRelation(e: any, article: EntityObject) {
+  private detachEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
     if (array) {
-      array.remove(article);
+      array.remove(entity);
       model.setTouched(fieldSchema.FieldName, true);
     }
   }
+
+  @action
+  private clearRelations = () => {
+    const { model, fieldSchema } = this.props;
+    model[fieldSchema.FieldName] = [];
+    model.setTouched(fieldSchema.FieldName, true);
+  };
 
   private selectRelations = async () => {
     const { model, fieldSchema } = this.props;
@@ -56,7 +56,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
       <Col md>
         <RelationFieldMenu
           onSelect={!this._readonly && this.selectRelations}
-          onClear={!this._readonly && !isEmpty && this.clearRelation}
+          onClear={!this._readonly && !isEmpty && this.clearRelations}
         />
         {this.renderValidation(model, fieldSchema)}
         {list && (
@@ -65,15 +65,15 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
               {list
                 .slice()
                 .sort(asc(this._orderByField))
-                .map(article => {
+                .map(entity => {
                   return (
-                    <div key={article._ClientId} className="relation-field-table__row">
+                    <div key={entity._ClientId} className="relation-field-table__row">
                       <div key={-1} className="relation-field-table__cell">
-                        <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
+                        <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />
                       </div>
                       {this._displayFields.map((displayField, i) => (
                         <div key={i} className="relation-field-table__cell">
-                          {displayField(article)}
+                          {displayField(entity)}
                         </div>
                       ))}
                       <div key={-2} className="relation-field-table__controls">
@@ -83,10 +83,10 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
                             small
                             rightIcon="remove"
                             intent={Intent.DANGER}
-                            title="Удалить связь"
-                            onClick={e => this.removeRelation(e, article)}
+                            title="Удалить связь с текущей статьей"
+                            onClick={e => this.detachEntity(e, entity)}
                           >
-                            Удалить
+                            Отвязать
                           </Button>
                         )}
                       </div>

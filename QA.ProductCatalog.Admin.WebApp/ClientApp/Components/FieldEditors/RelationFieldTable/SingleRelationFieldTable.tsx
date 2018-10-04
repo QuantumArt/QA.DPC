@@ -8,13 +8,13 @@ import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTable } from "./AbstractRelationFieldTable";
-import { ArticleLink } from "Components/ArticleEditor/ArticleLink";
+import { EntityLink } from "Components/ArticleEditor/EntityLink";
 
 @consumer
 @observer
 export class SingleRelationFieldTable extends AbstractRelationFieldTable {
   @action
-  private removeRelation = (e: any) => {
+  private detachEntity = (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     model[fieldSchema.FieldName] = null;
@@ -27,24 +27,24 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const article: EntityObject = model[fieldSchema.FieldName];
+    const entity: EntityObject = model[fieldSchema.FieldName];
     return (
       <Col md>
         <RelationFieldMenu
           onSelect={!this._readonly && this.selectRelation}
-          onClear={!this._readonly && !!article && this.removeRelation}
+          onClear={!this._readonly && !!entity && this.detachEntity}
         />
         {this.renderValidation(model, fieldSchema)}
-        {article && (
+        {entity && (
           <div className="relation-field-table">
             <div className="relation-field-table__table">
               <div className="relation-field-table__row">
                 <div key={-1} className="relation-field-table__cell">
-                  <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
+                  <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />
                 </div>
                 {this._displayFields.map((displayField, i) => (
                   <div key={i} className="relation-field-table__cell">
-                    {displayField(article)}
+                    {displayField(entity)}
                   </div>
                 ))}
                 <div key={-2} className="relation-field-table__controls">
@@ -54,10 +54,10 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
                       small
                       rightIcon="remove"
                       intent={Intent.DANGER}
-                      title="Удалить связь"
-                      onClick={this.removeRelation}
+                      title="Удалить связь с текущей статьей"
+                      onClick={this.detachEntity}
                     >
-                      Удалить
+                      Отвязать
                     </Button>
                   )}
                 </div>

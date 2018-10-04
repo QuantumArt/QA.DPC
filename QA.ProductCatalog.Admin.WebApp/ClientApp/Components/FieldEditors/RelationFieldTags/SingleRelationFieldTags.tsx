@@ -15,7 +15,7 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   protected _isHalfSize = true;
 
   @action
-  private removeRelation = (e: any) => {
+  private detachEntity = (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     this.setState({ isSelected: false });
@@ -29,19 +29,19 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const article: EntityObject = model[fieldSchema.FieldName];
+    const entity: EntityObject = model[fieldSchema.FieldName];
     return (
       <Col md className="relation-field-list__tags">
         <RelationFieldMenu onSelect={!this._readonly && this.selectRelation} />
-        {article && (
+        {entity && (
           <span
             className={cn("pt-tag pt-minimal", {
               "pt-tag-removable": !this._readonly
             })}
           >
-            {this.getTitle(article)}
+            {this.getTitle(entity)}
             {!this._readonly && (
-              <button className="pt-tag-remove" title="Удалить" onClick={this.removeRelation} />
+              <button className="pt-tag-remove" title="Отвязать" onClick={this.detachEntity} />
             )}
           </span>
         )}

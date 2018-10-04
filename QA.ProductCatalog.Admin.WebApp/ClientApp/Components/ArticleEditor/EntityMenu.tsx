@@ -2,9 +2,10 @@ import React from "react";
 import { Button, Menu, MenuItem, Intent, Popover, Position, Icon } from "@blueprintjs/core";
 import "./ArticleEditor.scss";
 
-interface ArticleMenuProps {
+interface EntityMenuProps {
   small?: boolean;
   onSave?: (e: any) => void;
+  onDetach?: (e: any) => void;
   onRemove?: (e: any) => void;
   onRefresh?: (e: any) => void;
   onReload?: (e: any) => void;
@@ -12,15 +13,16 @@ interface ArticleMenuProps {
   onPublish?: (e: any) => void;
 }
 
-export const ArticleMenu = ({
+export const EntityMenu = ({
   small,
   onSave,
+  onDetach,
   onRemove,
   onRefresh,
   onReload,
   onClone,
   onPublish
-}: ArticleMenuProps) => (
+}: EntityMenuProps) => (
   <Popover position={Position.BOTTOM_RIGHT} usePortal={false}>
     <Button minimal small={small} icon="caret-down" intent={Intent.PRIMARY}>
       Действия
@@ -64,11 +66,20 @@ export const ArticleMenu = ({
       )}
       {onRemove && (
         <MenuItem
-          labelElement={<Icon icon="remove" />}
+          labelElement={<Icon icon="delete" />}
           intent={Intent.DANGER}
           onClick={onRemove}
           text="Удалить"
           title="Удалить (архивировать) текущую статью"
+        />
+      )}
+      {onDetach && (
+        <MenuItem
+          labelElement={<Icon icon="remove" />}
+          intent={Intent.DANGER}
+          onClick={onDetach}
+          text="Отвязать"
+          title="Удалить связь с текущей статьей"
         />
       )}
       {onPublish && (

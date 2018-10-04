@@ -6,11 +6,11 @@ import cn from "classnames";
 import { Icon } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { ArticleMenu } from "Components/ArticleEditor/ArticleMenu";
+import { EntityMenu } from "Components/ArticleEditor/EntityMenu";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldAccordion } from "./AbstractRelationFieldAccordion";
-import { ArticleLink } from "Components/ArticleEditor/ArticleLink";
+import { EntityLink } from "Components/ArticleEditor/EntityLink";
 
 @consumer
 @observer
@@ -18,19 +18,6 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   readonly state = {
     isOpen: false,
     isTouched: false
-  };
-
-  @action
-  private createRelation = () => {
-    const { model, fieldSchema } = this.props;
-    const contentName = (fieldSchema as SingleRelationFieldSchema).RelatedContent.ContentName;
-    const article = this._dataContext.createEntity(contentName);
-    this.setState({
-      isOpen: true,
-      isTouched: true
-    });
-    model[fieldSchema.FieldName] = article;
-    model.setTouched(fieldSchema.FieldName, true);
   };
 
   private clonePrototype = async () => {
@@ -46,7 +33,20 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   };
 
   @action
-  private removeRelation = (e: any) => {
+  private createEntity = () => {
+    const { model, fieldSchema } = this.props;
+    const contentName = (fieldSchema as SingleRelationFieldSchema).RelatedContent.ContentName;
+    const entity = this._dataContext.createEntity(contentName);
+    this.setState({
+      isOpen: true,
+      isTouched: true
+    });
+    model[fieldSchema.FieldName] = entity;
+    model.setTouched(fieldSchema.FieldName, true);
+  };
+
+  @action
+  private detachEntity = (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     this.setState({
@@ -58,13 +58,13 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
   };
 
   @action
-  private savePartialProduct = async (e: any) => {
+  private saveEntity = async (e: any) => {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
-    const article: EntityObject = model[fieldSchema.FieldName];
-    if (article) {
-      await this._editorController.savePartialProduct(article, contentSchema);
+    const entity: EntityObject = model[fieldSchema.FieldName];
+    if (entity) {
+      await this._editorController.savePartialProduct(entity, contentSchema);
     }
   };
 
@@ -73,9 +73,9 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
-    const article: EntityObject = model[fieldSchema.FieldName];
-    if (article) {
-      await this._articleController.refreshEntity(article, contentSchema);
+    const entity: EntityObject = model[fieldSchema.FieldName];
+    if (entity) {
+      await this._articleController.refreshEntity(entity, contentSchema);
     }
   };
 
@@ -84,11 +84,20 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
-    const article: EntityObject = model[fieldSchema.FieldName];
-    if (article) {
-      await this._articleController.reloadEntity(article, contentSchema);
+    const entity: EntityObject = model[fieldSchema.FieldName];
+    if (entity) {
+      await this._articleController.reloadEntity(entity, contentSchema);
     }
   };
+
+  private async cloneEntity() {
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    if (entity) {
+      await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+    }
+  }
 
   private publishEntity = (e: any) => {
     e.stopPropagation();
@@ -116,15 +125,6 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     await this._relationController.reloadRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
-  private async cloneRelation() {
-    const { model, fieldSchema } = this.props;
-    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
-    const entity = untracked(() => model[fieldSchema.FieldName]);
-    if (entity) {
-      await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
-    }
-  }
-
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const {
       canCreateEntity,
@@ -133,15 +133,15 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
       canReloadRelation,
       canClonePrototype
     } = this.props;
-    const article: EntityObject = model[fieldSchema.FieldName];
+    const entity: EntityObject = model[fieldSchema.FieldName];
     return (
       <RelationFieldMenu
-        onCreate={canCreateEntity && !this._readonly && !article && this.createRelation}
+        onCreate={canCreateEntity && !this._readonly && !entity && this.createEntity}
         onSelect={canSelectRelation && !this._readonly && this.selectRelation}
-        onClear={canClearRelation && !this._readonly && !!article && this.removeRelation}
+        onClear={canClearRelation && !this._readonly && !!entity && this.detachEntity}
         onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelation}
         onClonePrototype={
-          canClonePrototype && model._ServerId > 0 && !article && this.clonePrototype
+          canClonePrototype && model._ServerId > 0 && !entity && this.clonePrototype
         }
       />
     );
@@ -155,14 +155,14 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
       canSaveEntity,
       canRefreshEntity,
       canReloadEntity,
-      canRemoveEntity,
+      canDetachEntity,
       canPublishEntity,
       canCloneEntity
     } = this.props;
     const { isOpen, isTouched } = this.state;
-    const article: EntityObject = model[fieldSchema.FieldName];
-    const hasServerId = article._ServerId > 0;
-    return article ? (
+    const entity: EntityObject = model[fieldSchema.FieldName];
+    const hasServerId = entity._ServerId > 0;
+    return entity ? (
       <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
         <tbody>
           <tr
@@ -179,7 +179,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
             </td>
             <td key={-2} className="relation-field-accordion__cell">
-              <ArticleLink model={article} contentSchema={fieldSchema.RelatedContent} />
+              <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />
             </td>
             {this._displayFields.map((displayField, i) => (
               <td
@@ -187,17 +187,17 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                 colSpan={columnProportions ? columnProportions[i] : 1}
                 className="relation-field-accordion__cell"
               >
-                {displayField(article)}
+                {displayField(entity)}
               </td>
             ))}
             <td key={-3} className="relation-field-accordion__controls">
-              <ArticleMenu
+              <EntityMenu
                 small
-                onSave={canSaveEntity && this.savePartialProduct}
-                onRemove={canRemoveEntity && !this._readonly && this.removeRelation}
+                onSave={canSaveEntity && this.saveEntity}
+                onDetach={canDetachEntity && !this._readonly && this.detachEntity}
                 onRefresh={canRefreshEntity && hasServerId && this.refreshEntity}
                 onReload={canReloadEntity && hasServerId && this.reloadEntity}
-                onClone={canCloneEntity && hasServerId && this.cloneRelation}
+                onClone={canCloneEntity && hasServerId && this.cloneEntity}
                 onPublish={canPublishEntity && hasServerId && this.publishEntity}
               />
             </td>
@@ -211,7 +211,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
             >
               {isTouched && (
                 <EntityEditor
-                  model={article}
+                  model={entity}
                   contentSchema={fieldSchema.RelatedContent}
                   fieldOrders={fieldOrders}
                   fieldEditors={fieldEditors}

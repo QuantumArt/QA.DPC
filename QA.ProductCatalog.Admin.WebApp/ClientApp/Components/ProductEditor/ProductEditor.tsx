@@ -20,7 +20,7 @@ import { CloneController } from "Services/CloneController";
 import { FileController } from "Services/FileController";
 import { DataSchemaLinker } from "Services/DataSchemaLinker";
 
-type RenderEditor = (article: EntityObject, contentSchema: ContentSchema) => ReactNode;
+type RenderEditor = (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
 
 interface ProductEditorProps {
   settings: EditorSettings;
@@ -50,7 +50,7 @@ export class ProductEditor extends Component<ProductEditorProps> {
   @inject private _editorController: EditorController;
   @inject private _schemaContext: SchemaContext;
   readonly state = {
-    article: null
+    entity: null
   };
 
   constructor(props: ProductEditorProps, context?: any) {
@@ -62,14 +62,14 @@ export class ProductEditor extends Component<ProductEditorProps> {
   }
 
   async componentDidMount() {
-    const article = await this._editorController.initialize();
-    this.setState({ article });
+    const entity = await this._editorController.initialize();
+    this.setState({ entity });
   }
 
   render() {
     const { children } = this.props;
-    const { article } = this.state;
-    if (!article) {
+    const { entity } = this.state;
+    if (!entity) {
       return null;
     }
 
@@ -77,9 +77,9 @@ export class ProductEditor extends Component<ProductEditorProps> {
     return (
       <Grid fluid>
         {isFunction(children) ? (
-          children(article, contentSchema)
+          children(entity, contentSchema)
         ) : (
-          <EntityEditor model={article} contentSchema={contentSchema} />
+          <EntityEditor model={entity} contentSchema={contentSchema} />
         )}
       </Grid>
     );

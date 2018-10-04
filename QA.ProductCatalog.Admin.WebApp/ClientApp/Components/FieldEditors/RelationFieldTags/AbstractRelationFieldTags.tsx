@@ -27,11 +27,11 @@ export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEdi
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
     const displayField =
       props.displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
-    this._displayField = isString(displayField) ? article => article[displayField] : displayField;
+    this._displayField = isString(displayField) ? entity => entity[displayField] : displayField;
   }
 
-  protected getTitle(article: EntityObject) {
-    const title = this._displayField(article);
+  protected getTitle(entity: EntityObject) {
+    const title = this._displayField(entity);
     return isNullOrWhiteSpace(title) ? "..." : title;
   }
 

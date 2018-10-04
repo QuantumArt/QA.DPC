@@ -6,22 +6,24 @@ import { EntityObject } from "Models/EditorDataModels";
 import { EditorController } from "Services/EditorController";
 import { ArticleController } from "Services/ArticleController";
 import { isString } from "Utils/TypeChecks";
-import { ArticleMenu } from "./ArticleMenu";
-import { ArticleLink } from "./ArticleLink";
+import { EntityMenu } from "./EntityMenu";
+import { EntityLink } from "./EntityLink";
 import { AbstractEditor, ArticleEditorProps } from "./ArticleEditor";
 import "./ArticleEditor.scss";
 
 interface EntityEditorProps extends ArticleEditorProps {
   model: EntityObject;
   className?: string;
-  titleField?: string | ((article: EntityObject) => string);
+  titleField?: string | ((entity: EntityObject) => string);
   withHeader?: ReactNode | boolean;
-  onRemove?: (article: EntityObject) => void;
-  onClone?: (article: EntityObject) => void;
+  onRemove?: (entity: EntityObject) => void;
+  onDetach?: (entity: EntityObject) => void;
+  onClone?: (entity: EntityObject) => void;
   // allowed actions
   canSaveEntity?: boolean;
   canRefreshEntity?: boolean;
   canReloadEntity?: boolean;
+  canDetachEntity?: boolean;
   canRemoveEntity?: boolean;
   canPublishEntity?: boolean;
   canCloneEntity?: boolean;
@@ -43,7 +45,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   constructor(props: EntityEditorProps, context?: any) {
     super(props, context);
     const { contentSchema, titleField = contentSchema.DisplayFieldName || (() => "") } = this.props;
-    this._titleField = isString(titleField) ? article => article[titleField] : titleField;
+    this._titleField = isString(titleField) ? entity => entity[titleField] : titleField;
   }
 
   private savePartialProduct = async () => {
@@ -59,6 +61,15 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   private reloadEntity = async () => {
     const { model, contentSchema } = this.props;
     await this._articleController.reloadEntity(model, contentSchema);
+  };
+
+  private detachEntity = () => {
+    const { model, onDetach } = this.props;
+    if (onDetach) {
+      onDetach(model);
+    } else if (DEBUG) {
+      console.warn("EntityEditor `onDetach` is not defined");
+    }
   };
 
   private removeEntity = () => {
@@ -99,16 +110,16 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     const { model, contentSchema, withHeader } = this.props;
 
     return withHeader === true ? (
-      <Col key={1} md className="article-editor__header">
+      <Col key={1} md className="entity-editor__header">
         <div
-          className="article-editor__title"
+          className="entity-editor__title"
           title={
             contentSchema.ContentDescription ||
             contentSchema.ContentTitle ||
             contentSchema.ContentName
           }
         >
-          <ArticleLink model={model} contentSchema={contentSchema} />
+          <EntityLink model={model} contentSchema={contentSchema} />
           {this._titleField(model)}
         </div>
         {this.renderButtons()}
@@ -124,6 +135,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
       canSaveEntity,
       canRefreshEntity,
       canReloadEntity,
+      canDetachEntity,
       canRemoveEntity,
       canPublishEntity,
       canCloneEntity
@@ -131,9 +143,10 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     const hasServerId = model._ServerId > 0;
 
     return (
-      <div className="article-editor__buttons">
-        <ArticleMenu
+      <div className="entity-editor__buttons">
+        <EntityMenu
           onSave={canSaveEntity && this.savePartialProduct}
+          onDetach={canDetachEntity && this.detachEntity}
           onRemove={canRemoveEntity && this.removeEntity}
           onRefresh={canRefreshEntity && hasServerId && this.refreshEntity}
           onReload={canReloadEntity && hasServerId && this.reloadEntity}

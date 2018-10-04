@@ -29,7 +29,7 @@ const optionsCache = new WeakMap<RelationFieldSchema, Options>();
 @consumer
 @observer
 export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFieldSelectProps> {
-  private readonly _getOption: (article: EntityObject) => Option;
+  private readonly _getOption: (entity: EntityObject) => Option;
   private readonly _multiple: boolean;
 
   constructor(props: RelationFieldSelectProps, context?: any) {
@@ -37,11 +37,11 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
     const displayField =
       props.displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
-    const getTitle = isString(displayField) ? article => article[displayField] : displayField;
-    this._getOption = article => {
-      const title = getTitle(article);
+    const getTitle = isString(displayField) ? entity => entity[displayField] : displayField;
+    this._getOption = entity => {
+      const title = getTitle(entity);
       return {
-        value: article._ClientId,
+        value: entity._ClientId,
         label: isNullOrWhiteSpace(title) ? "..." : title
       };
     };

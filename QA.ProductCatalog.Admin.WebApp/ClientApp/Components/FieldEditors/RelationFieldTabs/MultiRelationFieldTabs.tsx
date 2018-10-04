@@ -43,7 +43,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
     const orderByField =
       props.orderByField || fieldSchema.OrderByFieldName || ArticleObject._ServerId;
-    this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
+    this._orderByField = isString(orderByField) ? entity => entity[orderByField] : orderByField;
     untracked(() => {
       const array = props.model[fieldSchema.FieldName] as EntityObject[];
       if (array.length > 0) {
@@ -53,23 +53,6 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       }
     });
   }
-
-  @action
-  private createRelation = () => {
-    const { model, fieldSchema } = this.props;
-    const { touchedIds } = this.state;
-    const contentName = (fieldSchema as MultiRelationFieldSchema).RelatedContent.ContentName;
-    const article = this._dataContext.createEntity(contentName);
-    touchedIds[article._ClientId] = true;
-    this.setState({
-      activeId: article._ClientId,
-      touchedIds,
-      isOpen: true,
-      isTouched: true
-    });
-    model[fieldSchema.FieldName].push(article);
-    model.setTouched(fieldSchema.FieldName, true);
-  };
 
   private clonePrototype = async () => {
     const { model, fieldSchema } = this.props;
@@ -88,26 +71,30 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   @action
-  private clearRelation = () => {
+  private createEntity = () => {
     const { model, fieldSchema } = this.props;
+    const { touchedIds } = this.state;
+    const contentName = (fieldSchema as MultiRelationFieldSchema).RelatedContent.ContentName;
+    const entity = this._dataContext.createEntity(contentName);
+    touchedIds[entity._ClientId] = true;
     this.setState({
-      activeId: null,
-      touchedIds: {},
-      isOpen: false,
-      isTouched: false
+      activeId: entity._ClientId,
+      touchedIds,
+      isOpen: true,
+      isTouched: true
     });
-    model[fieldSchema.FieldName] = [];
+    model[fieldSchema.FieldName].push(entity);
     model.setTouched(fieldSchema.FieldName, true);
   };
 
   @action
-  private removeRelation = (article: EntityObject) => {
+  private detachEntity = (entity: EntityObject) => {
     const { model, fieldSchema } = this.props;
     const { activeId, touchedIds } = this.state;
     const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
-    delete touchedIds[article._ClientId];
-    if (activeId === article._ClientId) {
-      const index = array.indexOf(article);
+    delete touchedIds[entity._ClientId];
+    if (activeId === entity._ClientId) {
+      const index = array.indexOf(entity);
       const nextArticle = index > 0 ? array[index - 1] : array.length > 1 ? array[1] : null;
       if (nextArticle) {
         touchedIds[nextArticle._ClientId] = true;
@@ -119,12 +106,12 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       this.setState({ touchedIds });
     }
     if (array) {
-      array.remove(article);
+      array.remove(entity);
       model.setTouched(fieldSchema.FieldName, true);
     }
   };
 
-  private async cloneRelation(entity: EntityObject) {
+  private async cloneEntity(entity: EntityObject) {
     const { model, fieldSchema } = this.props;
     const clone = await this._cloneController.cloneRelatedEntity(
       model,
@@ -141,6 +128,19 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       isTouched: true
     });
   }
+
+  @action
+  private clearRelations = () => {
+    const { model, fieldSchema } = this.props;
+    this.setState({
+      activeId: null,
+      touchedIds: {},
+      isOpen: false,
+      isTouched: false
+    });
+    model[fieldSchema.FieldName] = [];
+    model.setTouched(fieldSchema.FieldName, true);
+  };
 
   private selectRelations = async () => {
     const { model, fieldSchema } = this.props;
@@ -160,20 +160,20 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     await this._relationController.reloadRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
+  private toggleRelation = () => {
+    const { isOpen } = this.state;
+    this.setState({
+      isOpen: !isOpen,
+      isTouched: true
+    });
+  };
+
   private handleTabChange = (newTabId: number, _prevTabId: number, _e: any) => {
     const { touchedIds } = this.state;
     touchedIds[newTabId] = true;
     this.setState({
       activeId: newTabId,
       touchedIds
-    });
-  };
-
-  private toggleFieldEditor = () => {
-    const { isOpen } = this.state;
-    this.setState({
-      isOpen: !isOpen,
-      isTouched: true
     });
   };
 
@@ -191,9 +191,9 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     return (
       <div className="relation-field-tabs__controls">
         <RelationFieldMenu
-          onCreate={canCreateEntity && !this._readonly && this.createRelation}
+          onCreate={canCreateEntity && !this._readonly && this.createEntity}
           onSelect={canSelectRelation && !this._readonly && this.selectRelations}
-          onClear={canClearRelation && !this._readonly && !isEmpty && this.clearRelation}
+          onClear={canClearRelation && !this._readonly && !isEmpty && this.clearRelations}
           onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelations}
           onClonePrototype={canClonePrototype && model._ServerId > 0 && this.clonePrototype}
         />
@@ -201,7 +201,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
           small
           disabled={isEmpty}
           rightIcon={isOpen ? "chevron-up" : "chevron-down"}
-          onClick={this.toggleFieldEditor}
+          onClick={this.toggleRelation}
         >
           {isOpen ? "Свернуть" : "Развернуть"}
         </Button>
@@ -224,7 +224,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       canSaveEntity,
       canRefreshEntity,
       canReloadEntity,
-      canRemoveEntity,
+      canDetachEntity,
       canPublishEntity,
       canCloneEntity
     } = this.props;
@@ -256,27 +256,27 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
           list
             .filter(filterItems)
             .sort(asc(this._orderByField))
-            .map(article => {
-              const title = this.getTitle(article);
+            .map(entity => {
+              const title = this.getTitle(entity);
               return (
                 <Tab
-                  key={article._ClientId}
-                  id={article._ClientId}
+                  key={entity._ClientId}
+                  id={entity._ClientId}
                   panel={
-                    touchedIds[article._ClientId] && (
+                    touchedIds[entity._ClientId] && (
                       <EntityEditor
-                        model={article}
+                        model={entity}
                         contentSchema={fieldSchema.RelatedContent}
                         skipOtherFields={skipOtherFields}
                         fieldOrders={fieldOrders}
                         fieldEditors={fieldEditors}
                         withHeader
-                        onClone={this.cloneRelation}
-                        onRemove={this.removeRelation}
+                        onClone={this.cloneEntity}
+                        onDetach={this.detachEntity}
                         canSaveEntity={canSaveEntity}
                         canRefreshEntity={canRefreshEntity}
                         canReloadEntity={canReloadEntity}
-                        canRemoveEntity={!this._readonly && canRemoveEntity}
+                        canDetachEntity={!this._readonly && canDetachEntity}
                         canPublishEntity={canPublishEntity}
                         canCloneEntity={canCloneEntity}
                       />

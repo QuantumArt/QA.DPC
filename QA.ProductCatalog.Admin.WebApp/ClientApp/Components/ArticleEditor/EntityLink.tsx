@@ -8,14 +8,14 @@ import { Icon, Button, Intent } from "@blueprintjs/core";
 import { action } from "mobx";
 import "./ArticleEditor.scss";
 
-interface ArticleLinkProps {
+interface EntityLinkProps {
   model: EntityObject;
   contentSchema: ContentSchema;
 }
 
 @consumer
 @observer
-export class ArticleLink extends Component<ArticleLinkProps> {
+export class EntityLink extends Component<EntityLinkProps> {
   @inject private _articleController: ArticleController;
 
   @action
@@ -41,7 +41,7 @@ export class ArticleLink extends Component<ArticleLinkProps> {
         <Button
           minimal
           small
-          className="article-link"
+          className="entity-link"
           rightIcon={<Icon icon="manually-entered-data" title={null} />}
           intent={Intent.PRIMARY}
           title="Редактировать статью"

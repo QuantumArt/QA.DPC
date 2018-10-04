@@ -27,14 +27,14 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   renderOnlyActiveSection?: boolean;
   collapsed?: boolean;
   // allowed actions
-  canCreateEntity?: boolean;
   canClonePrototype?: boolean;
+  canCreateEntity?: boolean;
+  canCloneEntity?: boolean;
   canSaveEntity?: boolean;
   canRefreshEntity?: boolean;
   canReloadEntity?: boolean;
-  canRemoveEntity?: boolean;
+  canDetachEntity?: boolean;
   canPublishEntity?: boolean;
-  canCloneEntity?: boolean;
   canSelectRelation?: boolean;
   canClearRelation?: boolean;
   canReloadRelation?: boolean;
@@ -61,7 +61,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractRelationFie
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
     const displayFields = props.displayFields || fieldSchema.DisplayFieldNames || [];
     this._displayFields = displayFields.map(
-      field => (isString(field) ? article => article[field] : field)
+      field => (isString(field) ? entity => entity[field] : field)
     );
   }
 
