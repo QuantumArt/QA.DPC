@@ -21,15 +21,15 @@ export class ArticleController {
   private _hostUid = qs.parse(document.location.search).hostUID as string;
 
   public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
-    await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);
+    await this.loadEntity(model, contentSchema, MergeStrategy.ServerWins);
   }
 
   public async reloadEntity(model: EntityObject, contentSchema: ContentSchema) {
-    await this.loadArticle(model, contentSchema, MergeStrategy.Overwrite);
+    await this.loadEntity(model, contentSchema, MergeStrategy.Overwrite);
   }
 
   @command
-  private async loadArticle(
+  private async loadEntity(
     model: EntityObject,
     contentSchema: ContentSchema,
     strategy: MergeStrategy
@@ -82,10 +82,10 @@ export class ArticleController {
         observer.dispose();
       } else if (eventType === QP8.BackendEventTypes.ActionExecuted) {
         if (args.actionCode === "update_article") {
-          await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);
+          await this.loadEntity(model, contentSchema, MergeStrategy.ServerWins);
         } else if (args.actionCode === "update_article_and_up") {
           observer.dispose();
-          await this.loadArticle(model, contentSchema, MergeStrategy.ServerWins);
+          await this.loadEntity(model, contentSchema, MergeStrategy.ServerWins);
         }
       }
     });

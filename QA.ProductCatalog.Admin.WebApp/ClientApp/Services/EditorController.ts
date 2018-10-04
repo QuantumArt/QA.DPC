@@ -91,14 +91,14 @@ export class EditorController {
   }
 
   @command
-  public async savePartialProduct(article: EntityObject, contentSchema: ContentSchema) {
-    const errors = this._dataValidator.validate(article, contentSchema);
+  public async savePartialProduct(entity: EntityObject, contentSchema: ContentSchema) {
+    const errors = this._dataValidator.validate(entity, contentSchema);
     if (errors.length > 0) {
       window.alert(this.getErrorMessage(errors));
       return;
     }
 
-    const partialProduct = this._dataSerializer.serialize(article, contentSchema);
+    const partialProduct = this._dataSerializer.serialize(entity, contentSchema);
 
     const response = await fetch(`${rootUrl}/ProductEditor/SavePartialProduct${this._query}`, {
       method: "POST",
