@@ -9,6 +9,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using QA.ProductCatalog.ImpactService.API.Helpers;
 using QA.ProductCatalog.ImpactService.API.Services;
 using ILogger = Microsoft.Extensions.Logging.ILogger;
 
@@ -49,14 +50,14 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         {
             var addrString = GetAddressString(searchOptions);
             var productIds = string.Join(", ", ids);
-            Logger.LogTrace($"Check last updated for: {productIds}. {addrString}");
+            Log(LogLevel.Trace, "Check last updated for: {productIds}", searchOptions, productIds);
             try
             {
                 return await SearchRepo.GetLastUpdated(ids, searchOptions, defaultValue);
             }
             catch (Exception e)
             {
-                var message = $"Exception occurs while using Elastic Search: {e.Message}. {addrString}";
+                var message = $"Exception occurs while using Elastic Search: {e.Message}";
                 LogException(e, message, searchOptions);
                 return defaultValue;
             }
@@ -67,14 +68,14 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         {
             if (string.IsNullOrEmpty(region) || string.IsNullOrEmpty(homeRegion)) return false;
             var addrString = GetAddressString(options);
-            Logger.LogTrace($"Check for common macroregion: {region}, {homeRegion}. {addrString}");
+            Log(LogLevel.Trace, "Check for common macroregion for region {region} and home region {homeRegion}", options, region, homeRegion);
             try
             {
                 return await SearchRepo.IsOneMacroRegion(new[] { region, homeRegion }, options);
             }
             catch (Exception e)
             {
-                var message = $"Exception occurs while using Elastic Search: {e.Message}. {addrString}";
+                var message = $"Exception occurs while using Elastic Search: {e.Message}";
                 LogException(e, message, options);
                 return false;
             }
@@ -83,23 +84,23 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         protected async Task<ActionResult> LoadProducts(int id, int[] serviceIds, SearchOptions searchOptions, bool loadServicesSilently = false)
         {
             ActionResult result = null;
-            var addrString = GetAddressString(searchOptions);
             try
             {
                 var services = string.Join(", ", serviceIds);
-                Logger.LogTrace($"Start loading product {id} with services {services}. {addrString}");
+                var message = "Start loading product {id} with services {services}";
+                Log(LogLevel.Trace, message, searchOptions, id, services);
 
                 var allProductIds = new[] { id }.Union(serviceIds).ToArray();
                 var results = await SearchRepo.GetProducts(allProductIds, searchOptions);
-
-                Logger.LogTrace($"End loading product {id} with services {services}. {addrString}");
+                message = "End loading product {id} with services {services}";
+                Log(LogLevel.Trace, message, searchOptions, id, services);
 
                 Product = results.FirstOrDefault(n => (int) n["Id"] == id);
                 if (Product == null)
                 {
-                    var message = $"Product {id} is not found";
-                    Logger.LogError($"{message}. {addrString}");
-                    result = NotFound(message);
+                    message = "Product {0} is not found";
+                    Log(LogLevel.Error, message, searchOptions, id);
+                    result = NotFound(String.Format(message, id));
                 }
                 else
                 {
@@ -110,9 +111,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                         if (service == null)
                         {
                             if (loadServicesSilently) continue;
-                            var message = $"Service {serviceId} is not found";
-                            Logger.LogError($"{message}. {addrString}");
-                            result = NotFound(message);
+                            message = $"Service {0} is not found";
+                            Log(LogLevel.Error, message, searchOptions, id);
+                            result = NotFound(String.Format(message, id));
                         }
                         else
                         {
@@ -135,7 +136,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         private static string GetAddressString(SearchOptions searchOptions)
         {
-            return $"Address: {searchOptions.BaseAddress}, Index: {searchOptions.IndexName}";
+            return "Address: {address}, Index: {index}";
         }
 
         protected virtual ActionResult CalculateImpact(JObject homeRegionData)
@@ -147,7 +148,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while calculating impact: {ex.Message}";
-                Logger.LogError(1, ex, message);
+                LogException(ex, message, null);
                 return BadRequest(message);
             }
             return null;
@@ -216,19 +217,20 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected async Task<ActionResult> GetCachedResult(string cacheKey, SearchOptions searchOptions)
         {
-            Logger.LogTrace($"Cache key : {cacheKey}");
+            Log(LogLevel.Trace, "Cache key: {key}", searchOptions, cacheKey);
 
             CacheEntry cacheEntry;
             if (!Cache.TryGetValue(cacheKey, out cacheEntry)) return null;
-            Logger.LogTrace("Cache hit");
+            
+            Log(LogLevel.Trace, "Cache hit", searchOptions);
 
             var storageDate = await GetLastUpdated(cacheEntry.Ids, searchOptions, cacheEntry.LastModified);
-            Logger.LogTrace($"LastUpdated with: {storageDate}");
+            Log(LogLevel.Trace, "LastUpdated with: {date}", searchOptions, storageDate);
 
             var invalidate = DateTimeOffset.Compare(storageDate, cacheEntry.LastModified) > 0;
             if (invalidate)
             {
-                Logger.LogTrace($"Invalidated for: {cacheEntry.LastModified}");
+                Log(LogLevel.Trace, "Invalidated for: {date}", searchOptions, cacheEntry.LastModified);
                 return null;
             }
             else
@@ -240,13 +242,13 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         protected void LogEndImpact(string code, int id, int[] serviceIds)
         {
             var services = string.Join(", ", serviceIds);
-            Logger.LogTrace($"End calculating {code} impact for product {id} and services {services}");
+            Log(LogLevel.Trace, "End calculating {code} impact for product {id} and services {services}", null, code, id, services);
         }
-
+ 
         protected void LogStartImpact(string code, int id, int[] serviceIds)
         {
             var services = string.Join(", ", serviceIds);
-            Logger.LogTrace($"Start calculating {code} impact for product {id} and services {services}");
+            Log(LogLevel.Trace, "Start calculating {code} impact for product {id} and services {services}", null, code, id, services);
         }
 
         protected ActionResult FilterServicesOnProduct(bool saveInProduct = false, IEnumerable<int> excludeIds = null, JObject homeRegionData = null)
@@ -262,7 +264,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while filtering services: {ex.Message}";
-                Logger.LogError(1, ex, message);
+                LogException(ex, message, null);
                 return BadRequest(message);
             }
             return null;
@@ -327,13 +329,41 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return result;
         }
 
-        protected void LogException(Exception ex, string message, SearchOptions searchOptions)
+        protected void Log(LogLevel level, string message, SearchOptions searchOptions, params object[] args)
         {
-            var resultMessage = ex is ElasticsearchClientException elex ?
-                $"{message}. DebugInfo: {elex.DebugInformation}" :
-                $"{message}. Address: {searchOptions.BaseAddress}, Index: {searchOptions.IndexName}, Type: {searchOptions.TypeName}";
+            LogExtra(level, message, searchOptions, null, null, args);
+        }
 
-            Logger.LogError(1, ex, resultMessage);
+        private void LogExtra(LogLevel level, string message, SearchOptions searchOptions, Dictionary<string, object> extra, Exception ex, params object[] args)
+        {
+            
+            var evt = new CustomLogEvent(message, args);
+            if (extra != null)
+            {
+                foreach (var item in extra)
+                {
+                    evt.AddProp(item.Key, item.Value);
+                }
+            }
+
+            if (searchOptions != null)
+            {
+                evt.AddProp("address", searchOptions.BaseAddress);
+                evt.AddProp("index", searchOptions.IndexName);
+            }
+            
+            Logger.Log(level, default(EventId), evt, ex, CustomLogEvent.Formatter);
+        }
+
+        protected void LogException(Exception ex, string message, SearchOptions searchOptions, params object[] args)
+        {
+            var extra = new Dictionary<string, object>();
+            if (ex is ElasticsearchClientException elex)
+            {
+                extra.Add("extra", elex.DebugInformation);
+            }
+
+            LogExtra(LogLevel.Error, message, searchOptions, extra, ex, args);
         }
     }
 }
