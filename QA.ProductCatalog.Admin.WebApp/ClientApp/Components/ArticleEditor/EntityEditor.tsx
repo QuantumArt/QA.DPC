@@ -3,8 +3,8 @@ import { Col, Row } from "react-flexbox-grid";
 import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { EntityObject } from "Models/EditorDataModels";
-import { EditorController } from "Services/EditorController";
-import { ArticleController } from "Services/ArticleController";
+import { ProductController } from "Services/ProductController";
+import { EntityController } from "Services/EntityController";
 import { isString } from "Utils/TypeChecks";
 import { EntityMenu } from "./EntityMenu";
 import { EntityLink } from "./EntityLink";
@@ -38,8 +38,8 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     canReloadEntity: true
   };
 
-  @inject private _articleController: ArticleController;
-  @inject private _editorController: EditorController;
+  @inject private _entityController: EntityController;
+  @inject private _productController: ProductController;
   private _titleField: (model: EntityObject) => string;
 
   constructor(props: EntityEditorProps, context?: any) {
@@ -50,17 +50,17 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
 
   private savePartialProduct = async () => {
     const { model, contentSchema } = this.props;
-    await this._editorController.savePartialProduct(model, contentSchema);
+    await this._productController.savePartialProduct(model, contentSchema);
   };
 
   private refreshEntity = async () => {
     const { model, contentSchema } = this.props;
-    await this._articleController.refreshEntity(model, contentSchema);
+    await this._entityController.refreshEntity(model, contentSchema);
   };
 
   private reloadEntity = async () => {
     const { model, contentSchema } = this.props;
-    await this._articleController.reloadEntity(model, contentSchema);
+    await this._entityController.reloadEntity(model, contentSchema);
   };
 
   private detachEntity = () => {

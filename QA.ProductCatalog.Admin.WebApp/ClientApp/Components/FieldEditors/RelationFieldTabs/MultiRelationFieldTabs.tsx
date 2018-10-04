@@ -102,7 +102,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     const { model, fieldSchema } = this.props;
     const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
     const nextEntity = this.getNextEntity(entity);
-    await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+    await this._entityController.removeRelatedEntity(model, relationFieldSchema, entity);
     this.deactivateEntity(entity, nextEntity);
   };
 

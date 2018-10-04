@@ -12,7 +12,7 @@ import { command } from "Utils/Command";
 import { rootUrl } from "Utils/Common";
 import { DataSchemaLinker } from "Services/DataSchemaLinker";
 
-export class EditorController {
+export class ProductController {
   @inject private _editorSettings: EditorSettings;
   @inject private _dataSchemaLinker: DataSchemaLinker;
   @inject private _dataSerializer: DataSerializer;

@@ -61,7 +61,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
     const entity = untracked(() => model[fieldSchema.FieldName]);
     if (entity) {
-      await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+      await this._entityController.removeRelatedEntity(model, relationFieldSchema, entity);
     }
     this.setState({
       isOpen: false,
@@ -86,7 +86,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
     const entity: EntityObject = model[fieldSchema.FieldName];
     if (entity) {
-      await this._editorController.savePartialProduct(entity, contentSchema);
+      await this._productController.savePartialProduct(entity, contentSchema);
     }
   };
 
@@ -97,7 +97,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
     const entity: EntityObject = model[fieldSchema.FieldName];
     if (entity) {
-      await this._articleController.refreshEntity(entity, contentSchema);
+      await this._entityController.refreshEntity(entity, contentSchema);
     }
   };
 
@@ -108,7 +108,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
     const entity: EntityObject = model[fieldSchema.FieldName];
     if (entity) {
-      await this._articleController.reloadEntity(entity, contentSchema);
+      await this._entityController.reloadEntity(entity, contentSchema);
     }
   };
 

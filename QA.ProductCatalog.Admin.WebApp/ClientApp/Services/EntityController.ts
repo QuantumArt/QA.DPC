@@ -1,5 +1,5 @@
-import "../../Scripts/pmrpc";
-import QP8 from "../../Scripts/qp/QP8BackendApi.Interaction";
+import "Scripts/pmrpc";
+import QP8 from "Scripts/qp/QP8BackendApi.Interaction";
 import qs from "qs";
 import { inject } from "react-ioc";
 import { isObservableArray, runInAction } from "mobx";
@@ -17,7 +17,7 @@ import { EditorSettings } from "Models/EditorSettings";
 import { command } from "Utils/Command";
 import { newUid, rootUrl } from "Utils/Common";
 
-export class ArticleController {
+export class EntityController {
   @inject private _editorSettings: EditorSettings;
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;

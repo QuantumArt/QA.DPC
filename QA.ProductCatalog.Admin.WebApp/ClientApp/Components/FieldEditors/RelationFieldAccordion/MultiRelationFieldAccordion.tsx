@@ -84,7 +84,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
     const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
-    await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+    await this._entityController.removeRelatedEntity(model, relationFieldSchema, entity);
     this.deactivateEntity(entity);
   }
 
@@ -102,21 +102,21 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     e.stopPropagation();
     const { fieldSchema } = this.props;
     const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
-    await this._editorController.savePartialProduct(entity, contentSchema);
+    await this._productController.savePartialProduct(entity, contentSchema);
   }
 
   private async refreshEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
     const { fieldSchema } = this.props;
     const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
-    await this._articleController.refreshEntity(entity, contentSchema);
+    await this._entityController.refreshEntity(entity, contentSchema);
   }
 
   private async reloadEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
     const { fieldSchema } = this.props;
     const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
-    await this._articleController.reloadEntity(entity, contentSchema);
+    await this._entityController.reloadEntity(entity, contentSchema);
   }
 
   private async cloneEntity(e: any, entity: EntityObject) {

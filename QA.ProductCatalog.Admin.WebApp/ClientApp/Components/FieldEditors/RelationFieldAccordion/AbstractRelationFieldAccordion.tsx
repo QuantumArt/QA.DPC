@@ -5,8 +5,8 @@ import cn from "classnames";
 import { RelationFieldSchema, FieldSchema } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
-import { EditorController } from "Services/EditorController";
-import { ArticleController } from "Services/ArticleController";
+import { ProductController } from "Services/ProductController";
+import { EntityController } from "Services/EntityController";
 import { CloneController } from "Services/CloneController";
 import { isString } from "Utils/TypeChecks";
 import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
@@ -52,9 +52,9 @@ export abstract class AbstractRelationFieldAccordion extends AbstractRelationFie
   };
 
   @inject protected _dataContext: DataContext;
-  @inject protected _articleController: ArticleController;
+  @inject protected _entityController: EntityController;
   @inject protected _cloneController: CloneController;
-  @inject protected _editorController: EditorController;
+  @inject protected _productController: ProductController;
   protected _displayFields: FieldSelector[];
 
   constructor(props: RelationFieldAccordionProps, context?: any) {

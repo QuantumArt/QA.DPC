@@ -3,7 +3,7 @@ import { consumer, inject } from "react-ioc";
 import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { observer } from "mobx-react";
-import { ArticleController } from "Services/ArticleController";
+import { EntityController } from "Services/EntityController";
 import { Icon, Button, Intent } from "@blueprintjs/core";
 import { action } from "mobx";
 import "./ArticleEditor.scss";
@@ -16,14 +16,14 @@ interface EntityLinkProps {
 @consumer
 @observer
 export class EntityLink extends Component<EntityLinkProps> {
-  @inject private _articleController: ArticleController;
+  @inject private _entityController: EntityController;
 
   @action
   private handleMouseDown = e => {
     if (e.nativeEvent.which === 2) {
       e.preventDefault();
       const { model, contentSchema } = this.props;
-      this._articleController.editEntity(model, contentSchema, false);
+      this._entityController.editEntity(model, contentSchema, false);
     }
   };
 
@@ -31,7 +31,7 @@ export class EntityLink extends Component<EntityLinkProps> {
   private handleClick = e => {
     e.preventDefault();
     const { model, contentSchema } = this.props;
-    this._articleController.editEntity(model, contentSchema, true);
+    this._entityController.editEntity(model, contentSchema, true);
   };
 
   render() {

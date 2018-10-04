@@ -55,7 +55,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   private removeEntity = async (entity: EntityObject) => {
     const { model, fieldSchema } = this.props;
     const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
-    await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+    await this._entityController.removeRelatedEntity(model, relationFieldSchema, entity);
     this.setState({
       isOpen: false,
       isTouched: false

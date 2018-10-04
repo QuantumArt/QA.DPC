@@ -7,7 +7,7 @@ import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
 import { CloneController } from "Services/CloneController";
-import { ArticleController } from "Services/ArticleController";
+import { EntityController } from "Services/EntityController";
 import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import {
   AbstractRelationFieldEditor,
@@ -55,7 +55,7 @@ export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEdi
 
   @inject protected _dataContext: DataContext;
   @inject protected _cloneController: CloneController;
-  @inject protected _articleController: ArticleController;
+  @inject protected _entityController: EntityController;
   protected _displayField: FieldSelector;
 
   constructor(props: RelationFieldTabsProps, context?: any) {

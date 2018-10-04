@@ -9,9 +9,9 @@ import { DataNormalizer } from "Services/DataNormalizer";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataMerger } from "Services/DataMerger";
 import { DataValidator } from "Services/DataValidator";
-import { ArticleController } from "Services/ArticleController";
+import { EntityController } from "Services/EntityController";
 import { RelationController } from "Services/RelationController";
-import { EditorController } from "Services/EditorController";
+import { ProductController } from "Services/ProductController";
 import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { isFunction } from "Utils/TypeChecks";
@@ -36,9 +36,9 @@ interface ProductEditorProps {
   DataMerger,
   DataValidator,
   DataSchemaLinker,
-  ArticleController,
+  EntityController,
   CloneController,
-  EditorController,
+  ProductController,
   FileController,
   RelationController,
   RelationsConfig,
@@ -47,7 +47,7 @@ interface ProductEditorProps {
 export class ProductEditor extends Component<ProductEditorProps> {
   @inject private _editorSettings: EditorSettings;
   @inject private _relationsConfig: RelationsConfig;
-  @inject private _editorController: EditorController;
+  @inject private _productController: ProductController;
   @inject private _schemaContext: SchemaContext;
   readonly state = {
     entity: null
@@ -62,7 +62,7 @@ export class ProductEditor extends Component<ProductEditorProps> {
   }
 
   async componentDidMount() {
-    const entity = await this._editorController.initialize();
+    const entity = await this._productController.initialize();
     this.setState({ entity });
   }
 

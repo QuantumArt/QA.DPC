@@ -1,7 +1,7 @@
 @startuml DataTransformations
 
 cloud Backend {
-  rectangle EditorController {
+  rectangle ProductController {
     card GetDefinition [
       1. Получаем
       ProductDefinition
