@@ -2,11 +2,17 @@ import "../../Scripts/pmrpc";
 import QP8 from "../../Scripts/qp/QP8BackendApi.Interaction";
 import qs from "qs";
 import { inject } from "react-ioc";
+import { isObservableArray, runInAction } from "mobx";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataMerger, MergeStrategy } from "Services/DataMerger";
-import { ContentSchema } from "Models/EditorSchemaModels";
-import { EntitySnapshot, EntityObject } from "Models/EditorDataModels";
+import {
+  ContentSchema,
+  RelationFieldSchema,
+  isMultiRelationField,
+  isSingleRelationField
+} from "Models/EditorSchemaModels";
+import { EntitySnapshot, EntityObject, ArticleObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
 import { command } from "Utils/Command";
 import { newUid, rootUrl } from "Utils/Common";
@@ -87,6 +93,46 @@ export class ArticleController {
           observer.dispose();
           await this.loadEntity(model, contentSchema, MergeStrategy.ServerWins);
         }
+      }
+    });
+  }
+
+  @command
+  public async removeRelatedEntity(
+    parent: ArticleObject,
+    fieldSchema: RelationFieldSchema,
+    entity: EntityObject
+  ) {
+    const contentSchema = fieldSchema.RelatedContent;
+
+    const response = await fetch(`${rootUrl}/ProductEditor/RemovePartialProduct${this._query}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+        ContentPath: contentSchema.ContentPath,
+        RemoveArticleId: entity._ServerId
+      })
+    });
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+
+    return runInAction("removeRelatedEntity", () => {
+      const relation = parent[fieldSchema.FieldName];
+      const wasRelationChanged = parent.isChanged(fieldSchema.FieldName);
+      if (isMultiRelationField(fieldSchema) && isObservableArray(relation)) {
+        relation.remove(entity);
+      } else if (isSingleRelationField(fieldSchema) && !relation) {
+        parent[fieldSchema.FieldName] = null;
+      }
+      // продукт уже удален на сервере, поэтому считаем,
+      // что связь уже синхронизирована с бекэндом
+      if (!wasRelationChanged) {
+        parent.setChanged(fieldSchema.FieldName, false);
       }
     });
   }

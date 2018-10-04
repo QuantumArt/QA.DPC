@@ -22,10 +22,8 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
 
   private clonePrototype = async () => {
     const { model, fieldSchema } = this.props;
-    await this._cloneController.cloneProductPrototype(
-      model,
-      fieldSchema as SingleRelationFieldSchema
-    );
+    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    await this._cloneController.cloneProductPrototype(model, relationFieldSchema);
     this.setState({
       isOpen: true,
       isTouched: true
@@ -55,6 +53,30 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     });
     model[fieldSchema.FieldName] = null;
     model.setTouched(fieldSchema.FieldName, true);
+  };
+
+  private removeEntity = async (e: any) => {
+    e.stopPropagation();
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    this.setState({
+      isOpen: false,
+      isTouched: false
+    });
+    if (entity) {
+      await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+    }
+  };
+
+  private cloneEntity = async (e: any) => {
+    e.stopPropagation();
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    if (entity) {
+      await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+    }
   };
 
   @action
@@ -89,15 +111,6 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
       await this._articleController.reloadEntity(entity, contentSchema);
     }
   };
-
-  private async cloneEntity() {
-    const { model, fieldSchema } = this.props;
-    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
-    const entity = untracked(() => model[fieldSchema.FieldName]);
-    if (entity) {
-      await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
-    }
-  }
 
   private publishEntity = (e: any) => {
     e.stopPropagation();
@@ -156,6 +169,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
       canRefreshEntity,
       canReloadEntity,
       canDetachEntity,
+      canRemoveEntity,
       canPublishEntity,
       canCloneEntity
     } = this.props;
@@ -195,6 +209,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
                 small
                 onSave={canSaveEntity && this.saveEntity}
                 onDetach={canDetachEntity && !this._readonly && this.detachEntity}
+                onRemove={canRemoveEntity && hasServerId && this.removeEntity}
                 onRefresh={canRefreshEntity && hasServerId && this.refreshEntity}
                 onReload={canReloadEntity && hasServerId && this.reloadEntity}
                 onClone={canCloneEntity && hasServerId && this.cloneEntity}

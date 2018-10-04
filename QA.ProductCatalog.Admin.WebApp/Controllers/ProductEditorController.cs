@@ -34,8 +34,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly JsonProductService _jsonProductService;
         private readonly IReadOnlyArticleService _articleService;
         private readonly IFieldService _fieldService;
-        private readonly IUserProvider _userProvider;
         private readonly CloneBatchAction _cloneBatchAction;
+        private readonly DeleteAction _deleteAction;
         private readonly EditorSchemaService _editorSchemaService;
         private readonly EditorDataService _editorDataService;
         private readonly EditorPartialContentService _editorPartialContentService;
@@ -48,8 +48,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             JsonProductService jsonProductService,
             IReadOnlyArticleService articleService,
             IFieldService fieldService,
-            IUserProvider userProvider,
             CloneBatchAction cloneBatchAction,
+            DeleteAction deleteAction,
             EditorSchemaService editorSchemaService,
             EditorDataService editorDataService,
             EditorPartialContentService editorPartialContentService,
@@ -61,8 +61,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _jsonProductService = jsonProductService;
             _articleService = articleService;
             _fieldService = fieldService;
-            _userProvider = userProvider;
             _cloneBatchAction = cloneBatchAction;
+            _deleteAction = deleteAction;
             _editorSchemaService = editorSchemaService;
             _editorDataService = editorDataService;
             _editorPartialContentService = editorPartialContentService;
@@ -375,8 +375,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         
         [HttpPost]
         public ActionResult ClonePartialProduct(
-            [ModelBinder(typeof(JsonModelBinder))] ClonePartialProductRequest request,
-            string backend_sid, string customerCode, bool isLive = false)
+            [ModelBinder(typeof(JsonModelBinder))] ClonePartialProductRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
@@ -387,23 +386,20 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .GetDefinitionById(request.ProductDefinitionId, isLive);
 
             Content partialContent = _editorPartialContentService
-                .FindContentByPath(rootContent, request.ContentPath, forClone: true);
-            
-            var actionContext = new ActionContext
+                .FindContentByPath(rootContent, request.ContentPath);
+
+            Content cloneContent = _contentDefinitionService
+                .TryGetDefinitionForContent(0, partialContent.ContentId);
+
+            if (cloneContent == null)
             {
-                BackendSid = Guid.TryParse(backend_sid, out Guid backendSid) ? backendSid : Guid.Empty,
-                CustomerCode = customerCode,
-                ContentId = partialContent.ContentId,
-                ContentItemIds = new[] { request.CloneArticleId },
-                UserId = _userProvider.GetUserId(),
-                UserName = _userProvider.GetUserName()
-            };
+                cloneContent = _editorPartialContentService
+                    .FindContentByPath(rootContent, request.ContentPath, forClone: true);
+            }
 
-            _cloneBatchAction.ContentDefinitionFallback = partialContent.DeepCopy();
-
-            _cloneBatchAction.Process(actionContext);
-
-            int clonedProdictId = _cloneBatchAction.Ids.First();
+            int clonedProdictId = _cloneBatchAction
+                .CloneProduct(request.CloneArticleId, cloneContent.DeepCopy(), null)
+                .Value;
 
             ArticleObject articleObject = LoadProductGraph(partialContent, clonedProdictId, isLive);
 
@@ -414,8 +410,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         [HttpPost]
         public ActionResult ClonePartialProductPrototype(
-            [ModelBinder(typeof(JsonModelBinder))] ClonePartialProductPrototypeRequest request,
-            string backend_sid, string customerCode, bool isLive = false)
+            [ModelBinder(typeof(JsonModelBinder))] ClonePartialProductPrototypeRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
@@ -431,53 +426,70 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             EntityField relationField = (EntityField)relationContent.Fields
                 .Single(f => f.FieldName == request.RelationFieldName);
 
-            Content partialContent = relationField.CloneDefinition ?? relationField.Content;
-
-            var field = _fieldService.Read(relationField.FieldId);
+            Content cloneContent = _contentDefinitionService
+                .TryGetDefinitionForContent(0, relationField.Content.ContentId)
+                ?? relationField.CloneDefinition
+                ?? relationField.Content;
+            
+            var qpFiels = _fieldService.Read(relationField.FieldId);
 
             int backwardFieldId = relationField is BackwardRelationField
                 ? relationField.FieldId
-                : field.BackRelationId.Value;
+                : qpFiels.BackRelationId.Value;
             
-            int cloneArticleId = 0;
+            int clonePrototypeId = 0;
             if (!String.IsNullOrWhiteSpace(relationField.ClonePrototypeCondition))
             {
-                cloneArticleId = _articleService
-                    .Ids(partialContent.ContentId, null, filter: relationField.ClonePrototypeCondition)
+                clonePrototypeId = _articleService
+                    .Ids(relationField.Content.ContentId, null, filter: relationField.ClonePrototypeCondition)
                     .FirstOrDefault();
             }
-            if (cloneArticleId == 0)
+            if (clonePrototypeId == 0)
             {
                 throw new InvalidOperationException(
-                    $"Невозможно определить прототип для создания продукта contentId={partialContent.ContentId}");
+                    $"Невозможно определить прототип для создания продукта contentId={relationField.Content.ContentId}");
             }
             
-            var actionContext = new ActionContext
-            {
-                BackendSid = Guid.TryParse(backend_sid, out Guid backendSid) ? backendSid : Guid.Empty,
-                CustomerCode = customerCode,
-                ContentId = partialContent.ContentId,
-                ContentItemIds = new[] { cloneArticleId },
-                UserId = _userProvider.GetUserId(),
-                UserName = _userProvider.GetUserName(),
-                Parameters = new Dictionary<string, string>
+            int clonedProdictId = _cloneBatchAction
+                .CloneProduct(clonePrototypeId, cloneContent.DeepCopy(), new Dictionary<string, string>
                 {
                     ["FieldId"] = backwardFieldId.ToString(),
                     ["ArticleId"] = request.ParentArticleId.ToString(),
-                }
-            };
+                })
+                .Value;
 
-            _cloneBatchAction.ContentDefinitionFallback = partialContent.DeepCopy();
-
-            _cloneBatchAction.Process(actionContext);
-
-            int clonedProdictId = _cloneBatchAction.Ids.First();
-
-            ArticleObject articleObject = LoadProductGraph(partialContent, clonedProdictId, isLive);
+            ArticleObject articleObject = LoadProductGraph(relationField.Content, clonedProdictId, isLive);
 
             string productJson = JsonConvert.SerializeObject(articleObject);
 
             return Content(productJson, "application/json");
+        }
+
+        [HttpPost]
+        public ActionResult RemovePartialProduct(
+            [ModelBinder(typeof(JsonModelBinder))] RemovePartialProductRequest request, bool isLive = false)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Content rootContent = _contentDefinitionService
+                .GetDefinitionById(request.ProductDefinitionId, isLive);
+
+            Content partialContent = _editorPartialContentService
+                .FindContentByPath(rootContent, request.ContentPath);
+
+            var productDefinition = new ProductDefinition { StorageSchema = partialContent };
+
+            var qpArticle = _articleService.Read(request.RemoveArticleId);
+
+            if (qpArticle != null)
+            {
+                _deleteAction.DeleteProduct(qpArticle, productDefinition);
+            }
+
+            return new HttpStatusCodeResult(HttpStatusCode.NoContent);
         }
 
         private ArticleObject LoadProductGraph(Content content, int articleId, bool isLive)
@@ -590,7 +602,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         public class ClonePartialProductRequest : PartialProductRequest
         {
             /// <summary>
-            /// Id статьи для клонирования
+            /// Id корневой статьи для клонирования
             /// </summary>
             public int CloneArticleId { get; set; }
         }
@@ -608,7 +620,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             /// </summary>
             public int ParentArticleId { get; set; }
         }
-        
+
+        public class RemovePartialProductRequest : PartialProductRequest
+        {
+            /// <summary>
+            /// Id корневой статьи для удаления
+            /// </summary>
+            public int RemoveArticleId { get; set; }
+        }
+
         #endregion
     }
 }

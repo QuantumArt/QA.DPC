@@ -69,6 +69,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
       {...props}
       // renderOnlyActiveSection
       canCloneEntity
+      canRemoveEntity
       canPublishEntity
       canClonePrototype
       columnProportions={[3, 1, 1]}
@@ -87,6 +88,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
       {...props}
       // renderOnlyActiveSection
       canCloneEntity
+      canRemoveEntity
       canPublishEntity
       canClonePrototype
       columnProportions={[3, 1, 1]}

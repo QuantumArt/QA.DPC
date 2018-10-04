@@ -1,8 +1,7 @@
 import { inject } from "react-ioc";
-import { runInAction } from "mobx";
+import { runInAction, isObservableArray } from "mobx";
 import { command } from "Utils/Command";
 import { rootUrl } from "Utils/Common";
-import { isArray } from "Utils/TypeChecks";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataMerger, MergeStrategy } from "Services/DataMerger";
@@ -58,10 +57,14 @@ export class CloneController {
       const clonedEntity = this._dataContext.tables[contentSchema.ContentName].get(cloneId);
 
       const relation = parent[fieldSchema.FieldName];
-      if (isMultiRelationField(fieldSchema) && isArray(relation)) {
+      const wasRelationChanged = parent.isChanged(fieldSchema.FieldName);
+      if (isMultiRelationField(fieldSchema) && isObservableArray(relation)) {
         relation.push(clonedEntity);
-        // parent.setTouched(fieldSchema.FieldName) — не нужен,
-        // так как клонированный продукт уже сохранен на сервере
+        // клонированный продукт уже сохранен на сервере,
+        // поэтому считаем, что связь уже синхронизирована с бекэндом
+        if (!wasRelationChanged) {
+          parent.setChanged(fieldSchema.FieldName, false);
+        }
       }
       return clonedEntity;
     });
@@ -104,12 +107,16 @@ export class CloneController {
       const clonedEntity = this._dataContext.tables[contentSchema.ContentName].get(cloneId);
 
       const relation = parent[fieldSchema.FieldName];
-      if (isMultiRelationField(fieldSchema) && isArray(relation)) {
+      const wasRelationChanged = parent.isChanged(fieldSchema.FieldName);
+      if (isMultiRelationField(fieldSchema) && isObservableArray(relation)) {
         relation.push(clonedEntity);
-        // parent.setTouched(fieldSchema.FieldName) — не нужен,
-        // так как клонированный продукт уже сохранен на сервере
       } else if (isSingleRelationField(fieldSchema) && !relation) {
         parent[fieldSchema.FieldName] = clonedEntity;
+      }
+      // клонированный продукт уже сохранен на сервере,
+      // поэтому считаем, что связь уже синхронизирована с бекэндом
+      if (!wasRelationChanged) {
+        parent.setChanged(fieldSchema.FieldName, false);
       }
       return clonedEntity;
     });

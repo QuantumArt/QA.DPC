@@ -122,6 +122,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       {...props}
       // renderOnlyActiveSection
       canCloneEntity
+      canRemoveEntity
       canPublishEntity
       canClonePrototype
       displayFields={[this.renderRegions]}
@@ -139,6 +140,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       {...props}
       // renderOnlyActiveSection
       canCloneEntity
+      canRemoveEntity
       canPublishEntity
       canClonePrototype
       displayFields={[this.renderRegions]}

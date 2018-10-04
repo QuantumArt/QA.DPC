@@ -56,10 +56,8 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
 
   private clonePrototype = async () => {
     const { model, fieldSchema } = this.props;
-    const clone = await this._cloneController.cloneProductPrototype(
-      model,
-      fieldSchema as MultiRelationFieldSchema
-    );
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
+    const clone = await this._cloneController.cloneProductPrototype(model, relationFieldSchema);
     const { touchedIds } = this.state;
     touchedIds[clone._ClientId] = true;
     this.setState({
@@ -89,9 +87,26 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
 
   @action
   private detachEntity = (entity: EntityObject) => {
+    this.deactivateEntity(entity);
     const { model, fieldSchema } = this.props;
-    const { activeId, touchedIds } = this.state;
     const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
+    if (array) {
+      array.remove(entity);
+      model.setTouched(fieldSchema.FieldName, true);
+    }
+  };
+
+  private removeEntity = async (entity: EntityObject) => {
+    this.deactivateEntity(entity);
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
+    await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+  };
+
+  private deactivateEntity(entity: EntityObject) {
+    const { model, fieldSchema } = this.props;
+    const array = untracked(() => model[fieldSchema.FieldName]) as EntityObject[];
+    const { activeId, touchedIds } = this.state;
     delete touchedIds[entity._ClientId];
     if (activeId === entity._ClientId) {
       const index = array.indexOf(entity);
@@ -105,17 +120,14 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     } else {
       this.setState({ touchedIds });
     }
-    if (array) {
-      array.remove(entity);
-      model.setTouched(fieldSchema.FieldName, true);
-    }
-  };
+  }
 
   private async cloneEntity(entity: EntityObject) {
     const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
     const clone = await this._cloneController.cloneRelatedEntity(
       model,
-      fieldSchema as MultiRelationFieldSchema,
+      relationFieldSchema,
       entity
     );
 
@@ -225,6 +237,7 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       canRefreshEntity,
       canReloadEntity,
       canDetachEntity,
+      canRemoveEntity,
       canPublishEntity,
       canCloneEntity
     } = this.props;
@@ -273,10 +286,12 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
                         withHeader
                         onClone={this.cloneEntity}
                         onDetach={this.detachEntity}
+                        onRemove={this.removeEntity}
                         canSaveEntity={canSaveEntity}
                         canRefreshEntity={canRefreshEntity}
                         canReloadEntity={canReloadEntity}
                         canDetachEntity={!this._readonly && canDetachEntity}
+                        canRemoveEntity={canRemoveEntity}
                         canPublishEntity={canPublishEntity}
                         canCloneEntity={canCloneEntity}
                       />

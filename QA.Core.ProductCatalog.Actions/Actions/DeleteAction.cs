@@ -34,9 +34,18 @@ namespace QA.Core.ProductCatalog.Actions
 
             DeleteProduct(product, definition, doNotSendNotifications, true, channels);
 		}
-		#endregion
+        #endregion
 
-	    public void DeleteProduct(Quantumart.QP8.BLL.Article product, ProductDefinition definition, bool doNotSendNotifications, bool checkRootArticlePermissions, string[] channels)
+        public void DeleteProduct(Quantumart.QP8.BLL.Article product, ProductDefinition definition)
+        {
+            using (var transaction = CreateTransaction())
+            {
+                DeleteProduct(product, definition, true, false, null);
+                transaction.Commit();
+            }
+        }
+        
+        public void DeleteProduct(Quantumart.QP8.BLL.Article product, ProductDefinition definition, bool doNotSendNotifications, bool checkRootArticlePermissions, string[] channels)
 	    {
             Dictionary<int, Product<DeletingMode>> dictionary;
             Article[] products;            

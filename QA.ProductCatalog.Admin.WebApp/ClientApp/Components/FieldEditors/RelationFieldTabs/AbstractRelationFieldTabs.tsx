@@ -7,6 +7,7 @@ import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 import { isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
 import { CloneController } from "Services/CloneController";
+import { ArticleController } from "Services/ArticleController";
 import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import {
   AbstractRelationFieldEditor,
@@ -34,6 +35,7 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   canRefreshEntity?: boolean;
   canReloadEntity?: boolean;
   canDetachEntity?: boolean;
+  canRemoveEntity?: boolean;
   canPublishEntity?: boolean;
   canCloneEntity?: boolean;
   canSelectRelation?: boolean;
@@ -53,6 +55,7 @@ export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEdi
 
   @inject protected _dataContext: DataContext;
   @inject protected _cloneController: CloneController;
+  @inject protected _articleController: ArticleController;
   protected _displayField: FieldSelector;
 
   constructor(props: RelationFieldTabsProps, context?: any) {

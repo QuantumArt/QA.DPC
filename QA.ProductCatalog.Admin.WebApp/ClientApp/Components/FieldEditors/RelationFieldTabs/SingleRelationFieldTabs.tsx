@@ -1,6 +1,6 @@
 import React from "react";
 import { consumer } from "react-ioc";
-import { action, untracked } from "mobx";
+import { action } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button } from "@blueprintjs/core";
@@ -20,10 +20,8 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
 
   private clonePrototype = async () => {
     const { model, fieldSchema } = this.props;
-    await this._cloneController.cloneProductPrototype(
-      model,
-      fieldSchema as SingleRelationFieldSchema
-    );
+    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    await this._cloneController.cloneProductPrototype(model, relationFieldSchema);
     this.setState({
       isOpen: true,
       isTouched: true
@@ -44,24 +42,33 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   @action
-  private detachEntity = () => {
-    const { model, fieldSchema } = this.props;
+  private detachEntity = (_entity: EntityObject) => {
     this.setState({
       isOpen: false,
       isTouched: false
     });
+    const { model, fieldSchema } = this.props;
     model[fieldSchema.FieldName] = null;
     model.setTouched(fieldSchema.FieldName, true);
   };
 
-  private async cloneEntity() {
+  private removeEntity = async (entity: EntityObject) => {
+    this.setState({
+      isOpen: false,
+      isTouched: false
+    });
     const { model, fieldSchema } = this.props;
     const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
-    const entity = untracked(() => model[fieldSchema.FieldName]);
+    await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+  };
+
+  private cloneEntity = async (entity: EntityObject) => {
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
     if (entity) {
       await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
     }
-  }
+  };
 
   private toggleRelation = () => {
     const { isOpen } = this.state;
@@ -133,6 +140,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
       canRefreshEntity,
       canReloadEntity,
       canDetachEntity,
+      canRemoveEntity,
       canPublishEntity,
       canCloneEntity
     } = this.props;
@@ -154,10 +162,12 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
           fieldEditors={fieldEditors}
           onDetach={this.detachEntity}
           onClone={this.cloneEntity}
+          onRemove={this.removeEntity}
           canSaveEntity={canSaveEntity}
           canRefreshEntity={canRefreshEntity}
           canReloadEntity={canReloadEntity}
           canDetachEntity={!this._readonly && canDetachEntity}
+          canRemoveEntity={canRemoveEntity}
           canPublishEntity={canPublishEntity}
           canCloneEntity={canCloneEntity}
         />

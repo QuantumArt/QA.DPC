@@ -147,7 +147,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
         <EntityMenu
           onSave={canSaveEntity && this.savePartialProduct}
           onDetach={canDetachEntity && this.detachEntity}
-          onRemove={canRemoveEntity && this.removeEntity}
+          onRemove={canRemoveEntity && hasServerId && this.removeEntity}
           onRefresh={canRefreshEntity && hasServerId && this.refreshEntity}
           onReload={canReloadEntity && hasServerId && this.reloadEntity}
           onPublish={canPublishEntity && hasServerId && this.publishEntity}

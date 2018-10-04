@@ -21,8 +21,6 @@ namespace QA.Core.ProductCatalog.Actions
         private readonly IContentDefinitionService _definitionService;
         private readonly ICacheItemWatcher _cacheItemWatcher;
 
-        public Models.Configuration.Content ContentDefinitionFallback { get; set; }
-
 		public List<int> Ids { get; } = new List<int>();
 
         public CloneBatchAction(
@@ -47,49 +45,72 @@ namespace QA.Core.ProductCatalog.Actions
 
 		protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
 		{
-            var clearFieldIds = actionParameters.GetClearFieldIds();
+            int? clonedProductId = CloneProductImpl(productId, null, actionParameters);
 
-            _cacheItemWatcher.TrackChanges();
-
-			ArticleService.LoadStructureCache();
-
-			var article = ArticleService.Read(productId);
-
-			if (Filter(article))
-			{
-				if (!ArticleService.CheckRelationSecurity(article.ContentId, new[] { productId }, false)[productId])
-                {
-                    throw new ProductException(productId,
-                        "Операция недопустима из-за недостаточных прав доступа по связям");
-                }
-
-                var contentDefinition = _definitionService
-                    .TryGetDefinitionForContent(0, article.ContentId) ?? ContentDefinitionFallback;
-
-                if (contentDefinition == null)
-                {
-                    throw new ProductException(productId, $"Не найден ProductDefinition contentId={article.ContentId}");
-                }
-
-                var productDefinition = new ProductDefinition { StorageSchema = contentDefinition };
-
-                UpdateDefinition(article, productDefinition, actionParameters);
-
-				var productsById = GetProductsToBeProcessed(
-                    article, productDefinition, ef => ef.CloningMode, CloningMode.Copy, Filter, excludeArchive: true);
-
-				var missedAggArticles = PrepareProducts(productsById, clearFieldIds);
-
-				MapProducts(productsById[productId], productsById);
-
-				int id = SaveProducts(productId, productsById, missedAggArticles);
-
-				Ids.Add(id);
-			}
-		}
+            if (clonedProductId != null)
+            {
+                Ids.Add(clonedProductId.Value);
+            }
+        }
 		#endregion		
 
-		#region Private methods
+        public int? CloneProduct(
+            int productId, Models.Configuration.Content contentDefinition, Dictionary<string, string> actionParameters)
+        {
+            using (var transaction = CreateTransaction())
+            {
+                int? clonedProductId = CloneProductImpl(productId, contentDefinition, actionParameters);
+                transaction.Commit();
+                return clonedProductId;
+            }
+        }
+
+        #region Private methods
+        private int? CloneProductImpl(
+            int productId, Models.Configuration.Content contentDefinition, Dictionary<string, string> actionParameters)
+        {
+            _cacheItemWatcher.TrackChanges();
+
+            ArticleService.LoadStructureCache();
+
+            var article = ArticleService.Read(productId);
+
+            if (!Filter(article))
+            {
+                return null;
+            }
+
+            if (!ArticleService.CheckRelationSecurity(article.ContentId, new[] { productId }, false)[productId])
+            {
+                throw new ProductException(productId,
+                    "Операция недопустима из-за недостаточных прав доступа по связям");
+            }
+
+            if (contentDefinition == null)
+            {
+                contentDefinition = _definitionService.GetDefinitionForContent(0, article.ContentId);
+            }
+            if (actionParameters == null)
+            {
+                actionParameters = new Dictionary<string, string>();
+            }
+
+            var productDefinition = new ProductDefinition { StorageSchema = contentDefinition };
+
+            UpdateDefinition(article, productDefinition, actionParameters);
+
+            var productsById = GetProductsToBeProcessed(
+                article, productDefinition, ef => ef.CloningMode, CloningMode.Copy, Filter, excludeArchive: true);
+
+            var clearFieldIds = actionParameters.GetClearFieldIds();
+
+            var missedAggArticles = PrepareProducts(productsById, clearFieldIds);
+
+            MapProducts(productsById[productId], productsById);
+
+            return SaveProducts(productId, productsById, missedAggArticles);
+        }
+        
 		private static bool Filter(Article article)
 		{
 			return !article.Archived;

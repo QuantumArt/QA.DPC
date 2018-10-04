@@ -53,10 +53,8 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
 
   private clonePrototype = async () => {
     const { model, fieldSchema } = this.props;
-    const clone = await this._cloneController.cloneProductPrototype(
-      model,
-      fieldSchema as MultiRelationFieldSchema
-    );
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
+    const clone = await this._cloneController.cloneProductPrototype(model, relationFieldSchema);
     this.toggleEntity(clone);
   };
 
@@ -73,18 +71,30 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   @action
   private detachEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
+    this.deactivateEntity(entity);
     const { model, fieldSchema } = this.props;
+    const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
+    if (array) {
+      array.remove(entity);
+      model.setTouched(fieldSchema.FieldName, true);
+    }
+  }
+
+  private async removeEntity(e: any, entity: EntityObject) {
+    e.stopPropagation();
+    this.deactivateEntity(entity);
+    const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
+    await this._articleController.removeRelatedEntity(model, relationFieldSchema, entity);
+  }
+
+  private deactivateEntity(entity: EntityObject) {
     const { activeId, touchedIds } = this.state;
     delete touchedIds[entity._ClientId];
     if (activeId === entity._ClientId) {
       this.setState({ activeId: null, touchedIds });
     } else {
       this.setState({ touchedIds });
-    }
-    const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
-    if (array) {
-      array.remove(entity);
-      model.setTouched(fieldSchema.FieldName, true);
     }
   }
 
@@ -112,9 +122,10 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
   private async cloneEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
     const clone = await this._cloneController.cloneRelatedEntity(
       model,
-      fieldSchema as MultiRelationFieldSchema,
+      relationFieldSchema,
       entity
     );
     this.toggleEntity(clone);
@@ -233,6 +244,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
       canRefreshEntity,
       canReloadEntity,
       canDetachEntity,
+      canRemoveEntity,
       canPublishEntity,
       canCloneEntity
     } = this.props;
@@ -286,6 +298,9 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                         onSave={canSaveEntity && (e => this.saveEntity(e, entity))}
                         onDetach={
                           canDetachEntity && !this._readonly && (e => this.detachEntity(e, entity))
+                        }
+                        onRemove={
+                          canRemoveEntity && hasServerId && (e => this.removeEntity(e, entity))
                         }
                         onRefresh={
                           canRefreshEntity && hasServerId && (e => this.refreshEntity(e, entity))

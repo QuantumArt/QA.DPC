@@ -34,6 +34,7 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   canRefreshEntity?: boolean;
   canReloadEntity?: boolean;
   canDetachEntity?: boolean;
+  canRemoveEntity?: boolean;
   canPublishEntity?: boolean;
   canSelectRelation?: boolean;
   canClearRelation?: boolean;
