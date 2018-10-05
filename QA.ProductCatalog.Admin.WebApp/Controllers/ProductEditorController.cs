@@ -367,15 +367,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             Content partialContent = _editorPartialContentService
                 .FindContentByPath(rootContent, request.ContentPath);
 
-            Content cloneContent = _contentDefinitionService
-                .TryGetDefinitionForContent(0, partialContent.ContentId);
-
-            if (cloneContent == null)
-            {
-                cloneContent = _editorPartialContentService
-                    .FindContentByPath(rootContent, request.ContentPath, forClone: true);
-            }
-
+            Content cloneContent = _editorPartialContentService
+                .FindContentByPath(rootContent, request.ContentPath, forClone: true);
+            
             int clonedProdictId = _cloneBatchAction
                 .CloneProduct(request.CloneArticleId, cloneContent.DeepCopy(), null)
                 .Value;
@@ -405,10 +399,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             EntityField relationField = (EntityField)relationContent.Fields
                 .Single(f => f.FieldName == request.RelationFieldName);
 
-            Content cloneContent = _contentDefinitionService
-                .TryGetDefinitionForContent(0, relationField.Content.ContentId)
-                ?? relationField.CloneDefinition
-                ?? relationField.Content;
+            Content cloneContent = relationField.CloneDefinition ?? relationField.Content;
             
             var qpFiels = _fieldService.Read(relationField.FieldId);
 

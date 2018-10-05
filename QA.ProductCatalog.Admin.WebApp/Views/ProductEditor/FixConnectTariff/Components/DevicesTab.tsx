@@ -78,6 +78,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
+        MarketingProduct: IGNORE,
         Parameters: this.renderParameters
       }}
     />
@@ -100,9 +101,9 @@ export class DevicesTab extends Component<DevicesTabProps> {
       filterItems={this.filterModel.filterDevicesOnTariffs}
       fieldOrders={["Cities", "Parent", "MarketingTariffs"]}
       fieldEditors={{
+        MarketingDevice: IGNORE,
         Parent: this.renderMatrixProductRelation,
-        MarketingTariffs: MultiRelationFieldTable,
-        MarketingDevice: IGNORE
+        MarketingTariffs: MultiRelationFieldTable
       }}
     />
   );

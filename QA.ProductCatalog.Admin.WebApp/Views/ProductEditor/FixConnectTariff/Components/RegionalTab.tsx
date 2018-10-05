@@ -130,6 +130,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
+        MarketingProduct: IGNORE,
         Parameters: this.renderInternetParameters
       }}
     />
@@ -148,6 +149,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
+        MarketingProduct: IGNORE,
         Parameters: this.renderPhoneParameters
       }}
     />
