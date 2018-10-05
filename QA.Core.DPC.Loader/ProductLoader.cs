@@ -805,6 +805,7 @@ FROM
                         Article = new Article()
                         {
                             ContentId = contentDef.ContentId,
+                            IsReadOnly = contentDef.IsReadOnly,
                             Archived = p.QpArticle.Archived,
                             ContentDisplayName = p.QpArticle.DisplayContentName,
                             PublishingMode = contentDef.PublishingMode,

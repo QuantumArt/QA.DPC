@@ -120,7 +120,7 @@ function compileTablesType(
         // для каждого контента-расширения создаем словарь его полей
         const extFieldModels = {
           _ServerId: t.optional(t.number, getNextId),
-          _ContentName: t.optional(t.literal(extName), extName),
+          _Content: t.optional(t.literal(extName), extName),
           _Modified: t.maybeNull(t.Date),
           _IsExtension: t.optional(t.literal(true), true)
         };
@@ -191,7 +191,7 @@ function compileTablesType(
       const fieldModels = {
         _ClientId: t.identifierNumber,
         _ServerId: t.optional(t.number, getNextId),
-        _ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
+        _Content: t.optional(t.literal(content.ContentName), content.ContentName),
         _Modified: t.maybeNull(t.Date),
         _IsExtension: t.optional(t.literal(false), false),
         _IsVirtual: t.optional(t.boolean, false)

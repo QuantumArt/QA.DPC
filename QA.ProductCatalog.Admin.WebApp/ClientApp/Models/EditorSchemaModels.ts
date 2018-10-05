@@ -8,6 +8,8 @@ export interface ContentSchema {
   readonly ContentTitle?: string;
   readonly ContentDescription?: string;
   readonly DisplayFieldName?: string;
+  /** Используется только для чтения */
+  readonly IsReadOnly: boolean;
   /** Используется только в качестве расширения */
   readonly ForExtension: boolean;
   readonly Fields: {

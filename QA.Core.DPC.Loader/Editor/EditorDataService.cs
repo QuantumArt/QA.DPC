@@ -67,17 +67,25 @@ namespace QA.Core.DPC.Loader.Editor
                 return null;
             }
 
-            DateTime modified = article.Modified == default(DateTime) ? article.Created : article.Modified;
-
             var dict = new ArticleObject
             {
                 [ArticleObject._ServerId] = article.Id,
-                [ArticleObject._ContentName] = article.ContentName,
-                [ArticleObject._Modified] = modified,
-                [ArticleObject._IsExtension] = forExtension,
+                [ArticleObject._Content] = article.ContentName,
             };
 
-            foreach (ArticleField field in article.Fields.Values)
+            if (forExtension)
+            {
+                dict[ArticleObject._IsExtension] = true;
+            }
+
+            if (!article.IsReadOnly)
+            {
+                dict[ArticleObject._Modified] = article.Modified == default(DateTime)
+                    ? article.Created
+                    : article.Modified;
+            }
+            
+            foreach (ArticleField field in article)
             {
                 if (context.ShouldIncludeField(field))
                 {

@@ -65,6 +65,11 @@ namespace QA.Core.DPC.Loader.Editor
         public string DisplayFieldName { get; set; }
 
         /// <summary>
+        /// Используется только для чтения
+        /// </summary>
+        public bool IsReadOnly { get; set; }
+
+        /// <summary>
         /// Используется только в качестве расширения
         /// </summary>
         public bool ForExtension { get; set; }

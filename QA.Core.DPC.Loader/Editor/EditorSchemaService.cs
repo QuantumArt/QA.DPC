@@ -1,8 +1,6 @@
 ﻿using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Models;
 using QA.Core.Models.Configuration;
-using QA.Core.Models.Entities;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
@@ -92,7 +90,7 @@ namespace QA.Core.DPC.Loader.Editor
             };
 
             ContentSchema contentSchema = GetContentSchema(content, context, "");
-
+            
             ProductSchema productSchema = GetProductSchema(contentSchema, context);
 
             return productSchema;
@@ -185,6 +183,7 @@ namespace QA.Core.DPC.Loader.Editor
                 ContentName = String.IsNullOrWhiteSpace(qpContent.NetName) ? "" : qpContent.NetName,
                 ContentTitle = IsHtmlWhiteSpace(qpContent.Name) ? "" : qpContent.Name,
                 ContentDescription = IsHtmlWhiteSpace(qpContent.Description) ? "" : qpContent.Description,
+                IsReadOnly = content.IsReadOnly,
             };
         }
 
@@ -512,7 +511,7 @@ namespace QA.Core.DPC.Loader.Editor
             return String.IsNullOrEmpty(str)
                 || String.IsNullOrWhiteSpace(WebUtility.HtmlDecode(str));
         }
-
+        
         /// <summary>
         /// Генерация словаря с объединенными схемами для каждого <see cref="ContentSchema.ContentId"/> из продукта
         /// </summary>
@@ -565,6 +564,12 @@ namespace QA.Core.DPC.Loader.Editor
         {
             ContentSchema mergedContentSchema = schemasByContentId[contentSchema.ContentId];
 
+            if (!contentSchema.IsReadOnly)
+            {
+                // Один и тот же контент может использоваться для чтения и для изменения
+                // в разных частях схемы. В этом случае считаем, что контент не является ReadOnly.
+                mergedContentSchema.IsReadOnly = false;
+            }
             if (!contentSchema.ForExtension)
             {
                 // Один и тот же контент может использоваться как Extension и как Relation

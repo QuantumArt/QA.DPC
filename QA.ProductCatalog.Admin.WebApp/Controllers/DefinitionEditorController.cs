@@ -255,6 +255,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			}
 			else
 			{
+                contentToSave.IsReadOnly = defInfo.Content.IsReadOnly;
 				contentToSave.LoadAllPlainFields = defInfo.Content.LoadAllPlainFields;
 				contentToSave.PublishingMode = defInfo.Content.PublishingMode;
 

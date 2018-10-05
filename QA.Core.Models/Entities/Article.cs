@@ -27,6 +27,8 @@ namespace QA.Core.Models.Entities
 
         public bool IsPublished { get; set; }
 
+        public bool IsReadOnly { get; set; }
+
         [DefaultValue(false)]
         public bool Splitted { get; set; }
 

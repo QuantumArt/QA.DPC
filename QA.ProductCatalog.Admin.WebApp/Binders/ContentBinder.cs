@@ -21,6 +21,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Binders
                     XmlMappingBehavior.SetCachePeriod(content, cachePeriod);
                 }
             }
+            if (TryGetValue(bindingContext, nameof(Content.IsReadOnly), out bool isReadOnly))
+            {
+                content.IsReadOnly = isReadOnly;
+            }
             if (TryGetValue(bindingContext, nameof(Content.LoadAllPlainFields), out bool loadAllPlainFields))
             {
                 content.LoadAllPlainFields = loadAllPlainFields;

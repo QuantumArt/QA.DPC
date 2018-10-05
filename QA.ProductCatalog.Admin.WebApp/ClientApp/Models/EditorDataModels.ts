@@ -12,9 +12,9 @@ export interface ArticleObject
     IStateTreeNode<ArticleSnapshot, ArticleSnapshot> {
   [field: string]: any;
   /** Серверный Id статьи, полученный при сохранении в БД */
-  _ServerId: number;
+  _ServerId?: number;
   /** .NET-название контента статьи `Quantumart.QP8.BLL.Content.NetName` */
-  readonly _ContentName: string;
+  readonly _Content: string;
   /** Дата создания или последнего изменения статьи `QA.Core.Models.Entities.Article.Modified` */
   _Modified?: Date;
   /** Признак того, что объект является статьей-расшиернием */
@@ -24,7 +24,7 @@ export interface ArticleObject
 export class ArticleObject {
   static _ClientId = "_ClientId";
   static _ServerId = "_ServerId";
-  static _ContentName = "_ContentName";
+  static _Content = "_Content";
   static _Modified = "_Modified";
   static _IsExtension = "_IsExtension";
   static _Contents = "_Contents";
@@ -32,7 +32,7 @@ export class ArticleObject {
 }
 
 export function isArticleObject(object: any): object is ArticleObject {
-  return isObject(object) && isString(object._ContentName);
+  return isObject(object) && isString(object._Content);
 }
 
 /** Объект, содержащий поля нормальной статьи */
@@ -84,7 +84,7 @@ export interface TablesSnapshot {
 export interface ArticleSnapshot {
   readonly [field: string]: any;
   /** .NET-название контента статьи `Quantumart.QP8.BLL.Content.NetName` */
-  readonly _ContentName?: string;
+  readonly _Content?: string;
   /** Серверный Id статьи, полученный при сохранении в БД */
   readonly _ServerId?: number;
   /** Дата создания или последнего изменения статьи `QA.Core.Models.Entities.Article.Modified` */

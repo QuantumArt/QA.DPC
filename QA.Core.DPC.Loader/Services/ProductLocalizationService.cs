@@ -121,6 +121,7 @@ namespace QA.Core.DPC.Loader.Services
                 ContentDisplayName = article.ContentDisplayName,
                 Created = article.Created,
                 IsPublished = article.IsPublished,
+                IsReadOnly = article.IsReadOnly,
                 HasVirtualFields = article.HasVirtualFields,
                 Modified = article.Modified,
                 PublishingMode = article.PublishingMode,

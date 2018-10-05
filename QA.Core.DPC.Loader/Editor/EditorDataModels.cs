@@ -21,7 +21,7 @@ namespace QA.Core.DPC.Loader.Editor
         /// <summary>
         /// Имя поля для .NET-названия контента статьи <see cref="Quantumart.QP8.BLL.Content.NetName" />.
         /// </summary>
-        internal const string _ContentName = "_ContentName";
+        internal const string _Content = "_Content";
         /// <summary>
         /// Имя поля для даты создания или последнего изменения статьи <see cref="Models.Entities.Article.Modified"/>.
         /// </summary>
@@ -30,6 +30,10 @@ namespace QA.Core.DPC.Loader.Editor
         /// Признак того, что объект является статьей-расшиернием
         /// </summary>
         internal const string _IsExtension = "_IsExtension";
+        /// <summary>
+        /// Признак того, что объект не должен быть сохранен на сервере
+        /// </summary>
+        internal const string _IsVirtual = "_IsVirtual";
         /// <summary>
         /// Имя поля для словаря, группирующего поля расширений по имени контента-расширения.
         /// </summary>

@@ -54,6 +54,13 @@
 @if (!Model.IsFromDictionaries)
 {
   <div class="editor-label">
+    @Html.LabelFor(x => x.Content.IsReadOnly)
+  </div>
+  <div class="editor-field">
+    @Html.EditorFor(x => x.Content.IsReadOnly)
+  </div>
+
+  <div class="editor-label">
     @Html.LabelFor(x => x.Content.LoadAllPlainFields)
   </div>
   <div class="editor-field">
