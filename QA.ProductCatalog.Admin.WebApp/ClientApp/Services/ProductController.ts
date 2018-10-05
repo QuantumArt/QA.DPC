@@ -168,7 +168,7 @@ export class ProductController {
           (articleError.FieldErrors.length > 0
             ? `${articleError.FieldErrors.map(
                 fieldError => `${fieldError.Name}: ${fieldError.Messages.join(", ")}`
-              )}\n`
+              ).join("\n")}\n`
             : ``)
       )
       .join("\n");

@@ -202,6 +202,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
                 title={parameter.BaseParameter && parameter.BaseParameter.Alias}
                 className={cn("field-editor__label-text", {
                   "field-editor__label-text--edited": parameter.isEdited()
+                  // "field-editor__label-text--invalid": parameter.hasVisibleErrors()
                 })}
               >
                 {parameter.Title}
@@ -227,6 +228,12 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
               />
             </Col>
           </Row>
+          {/* <Row>
+            <Col xl={2} md={3} className="field-editor__label" />
+            <Col md>
+              <Validate model={parameter} name={} rules={} errorClassName="pt-form-helper-text" />
+            </Col>
+          </Row> */}
         </Col>
       ));
   }

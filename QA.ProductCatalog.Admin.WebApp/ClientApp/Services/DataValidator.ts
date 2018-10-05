@@ -86,6 +86,7 @@ export class DataValidator {
       ContentName: contentSchema.ContentName,
       ArticleErrors: [],
       FieldErrors: Object.entries(article.getAllErrors()).map(([fieldName, messages]) => {
+        article.setTouched(fieldName, true);
         const fieldSchema = contentSchema.Fields[fieldName];
         return {
           Name: fieldSchema.FieldTitle || fieldSchema.FieldName,
