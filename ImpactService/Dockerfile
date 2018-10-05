@@ -10,6 +10,10 @@ RUN dotnet publish /app/QA.ProductCatalog.ImpactService.API/QA.ProductCatalog.Im
 
 # Build runtime image
 FROM microsoft/dotnet:2.1-runtime
+ARG service_name=dpc_impact
+ARG service_version=0.1.1
+ENV SERVICE_NAME=${service_name}
+ENV SERVICE_VERSION=${service_version}
 WORKDIR /app
 COPY --from=build-env /app/QA.ProductCatalog.ImpactService.API/out .
 ENTRYPOINT ["dotnet", "QA.ProductCatalog.ImpactService.API.dll"]
