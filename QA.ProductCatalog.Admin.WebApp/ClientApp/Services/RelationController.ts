@@ -143,7 +143,7 @@ export class RelationController {
 
     const dataSnapshot = this._dataNormalizer.normalizeAll(dataTrees, contentSchema.ContentName);
 
-    this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.KeepTimestamp);
+    this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Refresh);
   }
 
   public async reloadRelation(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
@@ -230,7 +230,7 @@ export class RelationController {
         fieldSchema.RelatedContent.ContentName
       );
 
-      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.KeepTimestamp);
+      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Refresh);
 
       const loadedArticleIds = dataTrees.map(article => article._ClientId);
 

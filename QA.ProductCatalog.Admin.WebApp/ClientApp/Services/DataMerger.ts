@@ -1,17 +1,20 @@
 import { inject } from "react-ioc";
 import { action, comparer } from "mobx";
-import { getSnapshot } from "mobx-state-tree";
+import { getSnapshot, isStateTreeNode } from "mobx-state-tree";
+import { isArray } from "Utils/TypeChecks";
 import {
   TablesSnapshot,
   ArticleSnapshot,
   ArticleObject,
-  isExtensionDictionary
+  isExtensionDictionary,
+  isEntityObject,
+  EntityObject
 } from "Models/EditorDataModels";
 import { DataContext } from "Services/DataContext";
 
 export enum MergeStrategy {
   /** Обновить только неизмененные поля. Не менять поле `_Modified`. */
-  KeepTimestamp = 1,
+  Refresh = 1,
   /** Обновить только неизмененные поля. Обновить поле `_Modified`. */
   ClientWins = 2,
   /** Перезаписать поля статей, которые были изменены на сервере. Обновить поле `_Modified`. */
@@ -78,15 +81,15 @@ export class DataMerger {
 
   @action
   public mergeArticle(article: ArticleObject, snapshot: ArticleSnapshot, strategy: MergeStrategy) {
-    const oldSnapshot = getSnapshot<ArticleSnapshot>(article);
+    const articleSnapshot = getSnapshot<ArticleSnapshot>(article);
 
     Object.entries(snapshot).forEach(([name, fieldSnapshot]) => {
       const fieldValue = article[name];
 
       if (name === ArticleObject._Modified) {
-        if (oldSnapshot._Modified !== snapshot._Modified) {
+        if (snapshot._Modified && articleSnapshot._Modified !== snapshot._Modified) {
           switch (strategy) {
-            case MergeStrategy.KeepTimestamp:
+            case MergeStrategy.Refresh:
               break;
             case MergeStrategy.ClientWins:
             case MergeStrategy.ServerWins:
@@ -101,28 +104,47 @@ export class DataMerger {
         Object.entries(fieldSnapshot).forEach(([contentName, extensionSnapshot]) => {
           this.mergeArticle(fieldValue[contentName], extensionSnapshot, strategy);
         });
-      } else if (comparer.structural(oldSnapshot[name], fieldSnapshot)) {
+      } else if (comparer.structural(articleSnapshot[name], fieldSnapshot)) {
         article.setChanged(name, false);
-      } else if (article.isEdited(name)) {
+      } else if (!article.isEdited(name)) {
+        this.setProperty(article, name, fieldSnapshot);
+      } else {
         switch (strategy) {
-          case MergeStrategy.KeepTimestamp:
+          case MergeStrategy.Refresh:
           case MergeStrategy.ClientWins:
             break;
           case MergeStrategy.ServerWins:
-            if (oldSnapshot._Modified < snapshot._Modified) {
-              this.setProperty(article, name, fieldSnapshot);
+            if (snapshot._Modified || !articleSnapshot._Modified) {
+              const baseValueSnapshot = this.getBaseValueSnapshot(article, name);
+              if (!comparer.structural(baseValueSnapshot, fieldSnapshot)) {
+                this.setProperty(article, name, fieldSnapshot);
+              }
             }
             break;
           case MergeStrategy.Overwrite:
-            this.setProperty(article, name, fieldSnapshot);
+            if (snapshot._Modified || !articleSnapshot._Modified) {
+              this.setProperty(article, name, fieldSnapshot);
+            }
             break;
           default:
             throw new Error("Uncovered MergeStrategy");
         }
-      } else {
-        this.setProperty(article, name, fieldSnapshot);
       }
     });
+  }
+
+  private getBaseValueSnapshot(article: ArticleObject, name: string) {
+    const baseValue = article.getBaseValue(name);
+    if (isStateTreeNode(baseValue)) {
+      return getSnapshot(baseValue);
+    }
+    if (isArray(baseValue) && isEntityObject(baseValue[0])) {
+      return (baseValue as EntityObject[]).map(entity => entity._ClientId);
+    }
+    if (baseValue instanceof Date) {
+      return Number(baseValue);
+    }
+    return baseValue;
   }
 
   private setProperty(article: ArticleObject, name: string, value: any) {

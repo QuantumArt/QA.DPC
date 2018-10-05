@@ -27,7 +27,7 @@ export class EntityController {
   private _hostUid = qs.parse(document.location.search).hostUID as string;
 
   public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
-    await this.loadEntity(model, contentSchema, MergeStrategy.ServerWins);
+    await this.loadEntity(model, contentSchema, MergeStrategy.Refresh);
   }
 
   public async reloadEntity(model: EntityObject, contentSchema: ContentSchema) {

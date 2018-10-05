@@ -51,7 +51,7 @@ export class CloneController {
     return runInAction("cloneRelatedEntity", () => {
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
 
-      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
+      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Refresh);
 
       const cloneId = String(dataTree._ClientId);
       const clonedEntity = this._dataContext.tables[contentSchema.ContentName].get(cloneId);
@@ -101,7 +101,7 @@ export class CloneController {
     return runInAction("cloneProductPrototype", () => {
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
 
-      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
+      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Refresh);
 
       const cloneId = String(dataTree._ClientId);
       const clonedEntity = this._dataContext.tables[contentSchema.ContentName].get(cloneId);
