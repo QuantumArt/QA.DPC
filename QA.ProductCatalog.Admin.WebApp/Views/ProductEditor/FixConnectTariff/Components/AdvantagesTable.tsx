@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Checkbox, Button, Intent, Icon } from "@blueprintjs/core";
 import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
 import { MultiRelationFieldTable } from "Components/FieldEditors/FieldEditors";
-import { Advantage } from "../ProductEditorSchema";
+import { Advantage } from "../TypeScriptSchema";
 import { RelationFieldSchema, FileFieldSchema } from "Models/EditorSchemaModels";
 import { consumer, inject } from "react-ioc";
 import { FileController } from "Services/FileController";

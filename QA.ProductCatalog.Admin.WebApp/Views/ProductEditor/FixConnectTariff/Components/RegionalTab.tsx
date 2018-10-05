@@ -8,7 +8,7 @@ import {
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import { MultiRelationFieldAccordion, FileFieldEditor } from "Components/FieldEditors/FieldEditors";
-import { Product } from "../ProductEditorSchema";
+import { Product } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
@@ -24,7 +24,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
 
   private getMarketingFixConnectTariffProps() {
     const { model, contentSchema } = this.props;
-    const extension = model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
+    const extension = model.MarketingProduct.Type_Extension.MarketingFixConnectTariff;
     const extensionSchema = ((contentSchema.Fields.MarketingProduct as RelationFieldSchema)
       .RelatedContent.Fields.Type as ExtensionFieldSchema).ExtensionContents
       .MarketingFixConnectTariff;

@@ -72,7 +72,7 @@ export class DataValidator {
           });
         }
       } else if (isExtensionField(fieldSchema)) {
-        const extensionFieldName = `${fieldName}${ArticleObject._Contents}`;
+        const extensionFieldName = `${fieldName}${ArticleObject._Extension}`;
         const extensionArticle = article[extensionFieldName][fieldValue] as ArticleObject;
         const extensionContentSchema = fieldSchema.ExtensionContents[fieldValue];
         this.validateArticle(extensionArticle, extensionContentSchema);

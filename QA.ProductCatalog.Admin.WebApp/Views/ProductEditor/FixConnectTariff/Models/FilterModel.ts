@@ -1,5 +1,5 @@
 import { observable, action, computed } from "mobx";
-import { Product, DeviceOnTariffs } from "../ProductEditorSchema";
+import { Product, DeviceOnTariffs } from "../TypeScriptSchema";
 
 export class FilterModel {
   @observable.ref public filterByTariffRegions = true;

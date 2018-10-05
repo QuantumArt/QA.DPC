@@ -9,7 +9,7 @@ import {
   SingleRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
-import { Product, FixConnectAction, DevicesForFixConnectAction } from "../ProductEditorSchema";
+import { Product, FixConnectAction, DevicesForFixConnectAction } from "../TypeScriptSchema";
 import { FederalTab } from "./FederalTab";
 import { DevicesTab } from "./DevicesTab";
 import { RegionalTab } from "./RegionalTab";

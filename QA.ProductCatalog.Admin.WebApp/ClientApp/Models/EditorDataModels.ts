@@ -27,7 +27,7 @@ export class ArticleObject {
   static _Content = "_Content";
   static _Modified = "_Modified";
   static _IsExtension = "_IsExtension";
-  static _Contents = "_Contents";
+  static _Extension = "_Extension";
   static _IsVirtual = "_IsVirtual";
 }
 
@@ -65,7 +65,7 @@ export function isExtensionObject(object: any): object is ExtensionObject {
 
 /**
  * Словарь, содержащий отображение названий контентов на статьи-расширения.
- * Используется в полях вида `Type_Contents`.
+ * Используется в полях вида `Type_Extension`.
  */
 export interface ExtensionDictionary {
   [contentName: string]: ExtensionObject;

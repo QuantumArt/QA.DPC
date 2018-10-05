@@ -102,7 +102,7 @@ export class DataSerializer {
             .map(entity => this.serialize(entity, fieldSchema.RelatedContent));
         }
       } else if (isExtensionField(fieldSchema)) {
-        const extensionFieldName = `${fieldName}${ArticleObject._Contents}`;
+        const extensionFieldName = `${fieldName}${ArticleObject._Extension}`;
         const extensionArticle = article[extensionFieldName][fieldValue] as ArticleObject;
         const extensionContentSchema = fieldSchema.ExtensionContents[fieldValue];
         snapshot[fieldName] = fieldValue;

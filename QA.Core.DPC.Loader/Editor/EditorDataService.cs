@@ -138,7 +138,7 @@ namespace QA.Core.DPC.Loader.Editor
             Article article = field.Item;
 
             dict[field.FieldName] = article.ContentName;
-            dict[ArticleObject._Contents(field.FieldName)] = new ExtensionFieldObject
+            dict[ArticleObject._Extension(field.FieldName)] = new ExtensionFieldObject
             {
                 [article.ContentName] = ConvertArticle(article, context, forExtension: true)
             };

@@ -63,7 +63,8 @@ export abstract class AbstractFieldEditor<
         htmlFor={this._id}
         title={fieldSchema.FieldName}
         className={cn("field-editor__label-text", {
-          "field-editor__label-text--edited": model.isEdited(fieldSchema.FieldName)
+          "field-editor__label-text--edited": model.isEdited(fieldSchema.FieldName),
+          "field-editor__label-text--invalid": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
         {fieldSchema.IsRequired && <span className="field-editor__label-required">*&nbsp;</span>}

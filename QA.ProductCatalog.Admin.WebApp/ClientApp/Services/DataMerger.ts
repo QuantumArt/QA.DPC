@@ -45,7 +45,7 @@ export class DataMerger {
     for (const [name, fieldSnapshot] of Object.entries(snapshot)) {
       const fieldValue = article[name];
 
-      if (name.endsWith(ArticleObject._Contents) && isExtensionDictionary(fieldValue)) {
+      if (name.endsWith(ArticleObject._Extension) && isExtensionDictionary(fieldValue)) {
         for (const [contentName, extensionSnapshot] of Object.entries(fieldSnapshot)) {
           if (this.articleHasConfilcts(fieldValue[contentName], extensionSnapshot)) {
             return true;
@@ -100,7 +100,7 @@ export class DataMerger {
               throw new Error("Uncovered MergeStrategy");
           }
         }
-      } else if (name.endsWith(ArticleObject._Contents) && isExtensionDictionary(fieldValue)) {
+      } else if (name.endsWith(ArticleObject._Extension) && isExtensionDictionary(fieldValue)) {
         Object.entries(fieldSnapshot).forEach(([contentName, extensionSnapshot]) => {
           this.mergeArticle(fieldValue[contentName], extensionSnapshot, strategy);
         });

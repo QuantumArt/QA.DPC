@@ -39,7 +39,7 @@ export class DataNormalizer {
           Object.values(field.ExtensionContents).forEach(extContent => {
             extReferences[extContent.ContentName] = this._objectSchemas[extContent.ContentName];
           });
-          references[`${field.FieldName}${ArticleObject._Contents}`] = extReferences;
+          references[`${field.FieldName}${ArticleObject._Extension}`] = extReferences;
         } else if (isSingleRelationField(field)) {
           references[field.FieldName] = this._entitySchemas[field.RelatedContent.ContentName];
         } else if (isMultiRelationField(field)) {

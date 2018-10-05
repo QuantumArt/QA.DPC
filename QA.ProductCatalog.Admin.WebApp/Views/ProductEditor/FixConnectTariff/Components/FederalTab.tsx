@@ -7,7 +7,7 @@ import {
   SingleRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
-import { Product } from "../ProductEditorSchema";
+import { Product } from "../TypeScriptSchema";
 
 interface FederalTabProps {
   model: Product;
@@ -49,7 +49,7 @@ export const FederalTab = ({ model, contentSchema }: FederalTabProps) => {
         fieldEditors={{
           FixConnectActions: IGNORE,
           Type: IGNORE,
-          Type_Contents: {
+          Type_Extension: {
             MarketingFixConnectTariff: {
               MarketingTvPackage: SingleRelationFieldTable,
               MarketingInternetTariff: SingleRelationFieldTable,

@@ -11,7 +11,7 @@ import {
   RelationFieldSchema,
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
-import { Product, DeviceOnTariffs, ProductRelation } from "../ProductEditorSchema";
+import { Product, DeviceOnTariffs, ProductRelation } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
@@ -26,7 +26,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
 
   render() {
     const { model, contentSchema } = this.props;
-    const extension = model.MarketingProduct.Type_Contents.MarketingFixConnectTariff;
+    const extension = model.MarketingProduct.Type_Extension.MarketingFixConnectTariff;
     const extensionSchema = ((contentSchema.Fields.MarketingProduct as RelationFieldSchema)
       .RelatedContent.Fields.Type as ExtensionFieldSchema).ExtensionContents
       .MarketingFixConnectTariff;

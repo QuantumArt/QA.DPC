@@ -134,7 +134,7 @@ function compileTablesType(
       });
       // создаем анонимную модель словаря контентов-расширений
       // prettier-ignore
-      fieldModels[`${field.FieldName}${ArticleObject._Contents}`] = t.optional(
+      fieldModels[`${field.FieldName}${ArticleObject._Extension}`] = t.optional(
         t.model(extContentModels), {}
       );
     } else if (isSingleRelationField(field)) {
@@ -226,7 +226,7 @@ interface DefaultSnapshots {
  * {
  *   Product: {
  *     Type: "InternetTariff",
- *     Type_Contents: {
+ *     Type_Extension: {
  *       InternetTariff: {
  *         Description: "Тариф интернет"
  *       }
@@ -261,7 +261,7 @@ function compileDefaultSnapshots(mergedSchemas: { [name: string]: ContentSchema 
       });
       // запоминаем объект со со снапшотами контентов-расширений, если они определены
       if (Object.keys(extContentSnapshots).length > 0) {
-        fieldValues[`${field.FieldName}${ArticleObject._Contents}`] = extContentSnapshots;
+        fieldValues[`${field.FieldName}${ArticleObject._Extension}`] = extContentSnapshots;
       }
     } else if (isPlainField(field)) {
       switch (field.FieldType) {

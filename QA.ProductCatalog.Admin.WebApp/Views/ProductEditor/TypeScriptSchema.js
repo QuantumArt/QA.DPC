@@ -43,13 +43,16 @@ function compileEditorDataInterfaces(mergedSchemas) {
   const print = func => func();
 
   // prettier-ignore
-  return `import { IMSTMap } from "mobx-state-tree";
+  return `import { IMSTArray, IMSTMap } from "mobx-state-tree";
 import { EntityObject, ExtensionObject, TablesObject } from "Models/EditorDataModels";
+
+type IArray<T> = IMSTArray<any, any, T>;
+type IMap<T> = IMSTMap<any, any, T>;
 
 /** Типизация хранилища данных */
 export interface Tables extends TablesObject {${
   forEach(mergedSchemas, content => !content.ForExtension, content => `
-  ${getName(content)}: IMSTMap<any, any, ${getName(content)}>;`)}
+  ${getName(content)}: IMap<${getName(content)}>;`)}
 }
 ${forEach(mergedSchemas, content => `
 export interface ${getName(content)} extends ${
@@ -62,7 +65,7 @@ export interface ${getName(content)} extends ${
     if (isExtensionField(field)) {
       return `${forEach(field.ExtensionContents, content => `
     | "${getName(content)}"`)};
-  ${field.FieldName}${ArticleObject._Contents}: {${forEach(field.ExtensionContents, content => `
+  ${field.FieldName}${ArticleObject._Extension}: {${forEach(field.ExtensionContents, content => `
     ${getName(content)}: ${getName(content)};`)}
   }`;
     }
@@ -72,7 +75,7 @@ export interface ${getName(content)} extends ${
     }
 
     if (isMultiRelationField(field)) {
-      return `${getName(field.RelatedContent)}[]`;
+      return `IArray<${getName(field.RelatedContent)}>`;
     }
 
     if (isEnumField(field)) {

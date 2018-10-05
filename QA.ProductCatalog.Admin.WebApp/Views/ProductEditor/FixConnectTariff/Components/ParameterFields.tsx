@@ -19,13 +19,7 @@ import { DataContext } from "Services/DataContext";
 import { InputNumber, Select } from "Components/FormControls/FormControls";
 import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
 import { RelationFieldSchema, NumericFieldSchema } from "Models/EditorSchemaModels";
-import {
-  Tables,
-  LinkParameter,
-  ProductParameter,
-  BaseParameter,
-  Unit
-} from "../ProductEditorSchema";
+import { Tables, LinkParameter, ProductParameter, BaseParameter, Unit } from "../TypeScriptSchema";
 
 type Parameter = ProductParameter | LinkParameter;
 

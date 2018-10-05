@@ -7,7 +7,7 @@ import { Col, Row } from "react-flexbox-grid";
 import { Switch, Alignment } from "@blueprintjs/core";
 import { DataContext } from "Services/DataContext";
 import { FilterModel } from "../Models/FilterModel";
-import { Tables } from "../ProductEditorSchema";
+import { Tables } from "../TypeScriptSchema";
 
 interface FilterBlockProps {
   model: FilterModel;

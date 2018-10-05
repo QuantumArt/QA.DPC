@@ -1,52 +1,55 @@
-import { IMSTMap } from "mobx-state-tree";
+import { IMSTArray, IMSTMap } from "mobx-state-tree";
 import { EntityObject, ExtensionObject, TablesObject } from "Models/EditorDataModels";
+
+type IArray<T> = IMSTArray<any, any, T>;
+type IMap<T> = IMSTMap<any, any, T>;
 
 /** Типизация хранилища данных */
 export interface Tables extends TablesObject {
-  Region: IMSTMap<any, any, Region>;
-  Product: IMSTMap<any, any, Product>;
-  ProductModifer: IMSTMap<any, any, ProductModifer>;
-  BaseParameter: IMSTMap<any, any, BaseParameter>;
-  ProductParameter: IMSTMap<any, any, ProductParameter>;
-  Unit: IMSTMap<any, any, Unit>;
-  ProductRelation: IMSTMap<any, any, ProductRelation>;
-  LinkParameter: IMSTMap<any, any, LinkParameter>;
-  MarketingProduct: IMSTMap<any, any, MarketingProduct>;
-  Segment: IMSTMap<any, any, Segment>;
-  TariffCategory: IMSTMap<any, any, TariffCategory>;
-  Advantage: IMSTMap<any, any, Advantage>;
-  FixConnectAction: IMSTMap<any, any, FixConnectAction>;
-  DeviceOnTariffs: IMSTMap<any, any, DeviceOnTariffs>;
-  DevicesForFixConnectAction: IMSTMap<any, any, DevicesForFixConnectAction>;
+  Region: IMap<Region>;
+  Product: IMap<Product>;
+  ProductModifer: IMap<ProductModifer>;
+  BaseParameter: IMap<BaseParameter>;
+  ProductParameter: IMap<ProductParameter>;
+  Unit: IMap<Unit>;
+  ProductRelation: IMap<ProductRelation>;
+  LinkParameter: IMap<LinkParameter>;
+  MarketingProduct: IMap<MarketingProduct>;
+  Segment: IMap<Segment>;
+  TariffCategory: IMap<TariffCategory>;
+  Advantage: IMap<Advantage>;
+  FixConnectAction: IMap<FixConnectAction>;
+  DeviceOnTariffs: IMap<DeviceOnTariffs>;
+  DevicesForFixConnectAction: IMap<DevicesForFixConnectAction>;
 }
 
 export interface Region extends EntityObject {
-  Title: string;
+  readonly Title: string;
 }
 
 export interface Product extends EntityObject {
   /** Маркетинговый продукт */
   MarketingProduct: MarketingProduct;
   /** Регионы */
-  Regions: Region[];
+  Regions: IArray<Region>;
   /** Модификаторы */
-  Modifiers: ProductModifer[];
+  Modifiers: IArray<ProductModifer>;
   /** Тип */
   Type: "Device" | "PhoneTariff" | "InternetTariff" | "FixConnectTariff";
-  Type_Contents: {
+  Type_Extension: {
     Device: Device;
     PhoneTariff: PhoneTariff;
     InternetTariff: InternetTariff;
     FixConnectTariff: FixConnectTariff;
   };
   /** Параметры продукта */
-  Parameters: ProductParameter[];
+  Parameters: IArray<ProductParameter>;
   /** Акция фиксированной связи */
-  ActionMarketingDevices: DevicesForFixConnectAction[];
+  ActionMarketingDevices: IArray<DevicesForFixConnectAction>;
   /** Описание */
   Description: string;
   /** Преимущества */
-  Advantages: Advantage[];
+  Advantages: IArray<Advantage>;
   PDF: string;
   /** Дата начала публикации */
   StartDate: Date;
@@ -62,14 +65,14 @@ export interface Product extends EntityObject {
 
 export interface ProductModifer extends EntityObject {
   /** Название */
-  Title: string;
+  readonly Title: string;
 }
 
 export interface BaseParameter extends EntityObject {
   /** Название */
-  Title: string;
+  readonly Title: string;
   /** Псевдоним */
-  Alias: string;
+  readonly Alias: string;
 }
 
 export interface ProductParameter extends EntityObject {
@@ -84,15 +87,15 @@ export interface ProductParameter extends EntityObject {
 }
 
 export interface Unit extends EntityObject {
-  Title: string;
-  Alias: string;
+  readonly Title: string;
+  readonly Alias: string;
 }
 
 export interface ProductRelation extends EntityObject {
   /** Название */
   Title: string;
   /** Параметры */
-  Parameters: LinkParameter[];
+  Parameters: IArray<LinkParameter>;
 }
 
 export interface LinkParameter extends EntityObject {
@@ -109,42 +112,42 @@ export interface LinkParameter extends EntityObject {
 export interface MarketingProduct extends EntityObject {
   /** Тип */
   Type: "MarketingFixConnectTariff";
-  Type_Contents: {
+  Type_Extension: {
     MarketingFixConnectTariff: MarketingFixConnectTariff;
   };
   /** Название */
   Title: string;
   /** Продукты, тип "Оборудование" */
-  Products: Product[];
+  Products: IArray<Product>;
   /** Матрица связей "Оборудование на тарифах" */
-  DevicesOnTariffs: DeviceOnTariffs[];
+  DevicesOnTariffs: IArray<DeviceOnTariffs>;
   Description: string;
   /** Порядок */
   SortOrder: number;
   /** Дата закрытия продукта (Архив) */
   ArchiveDate: Date;
   /** Преимущества */
-  Advantages: Advantage[];
+  Advantages: IArray<Advantage>;
   /** Модификаторы */
-  Modifiers: ProductModifer[];
+  Modifiers: IArray<ProductModifer>;
   /** FixConnectActions */
-  FixConnectActions: FixConnectAction[];
+  FixConnectActions: IArray<FixConnectAction>;
 }
 
 export interface Segment extends EntityObject {
-  Title: string;
+  readonly Title: string;
 }
 
 export interface TariffCategory extends EntityObject {
   /** Название */
-  Title: string;
+  readonly Title: string;
 }
 
 export interface Advantage extends EntityObject {
-  Title: string;
-  IsGift: boolean;
+  readonly Title: string;
+  readonly IsGift: boolean;
   /** Изображение */
-  ImageSvg: string;
+  readonly ImageSvg: string;
 }
 
 export interface Device extends ExtensionObject {}
@@ -161,10 +164,10 @@ export interface MarketingFixConnectTariff extends ExtensionObject {
   MarketingTvPackage: MarketingProduct;
   MarketingInternetTariff: MarketingProduct;
   MarketingPhoneTariff: MarketingProduct;
-  MarketingDevices: MarketingProduct[];
+  MarketingDevices: IArray<MarketingProduct>;
   /** Тип предложения (Категория тарифа) */
   Category: TariffCategory;
-  BonusTVPackages: MarketingProduct[];
+  BonusTVPackages: IArray<MarketingProduct>;
   Segment: Segment;
   TitleForSite: string;
 }
@@ -179,9 +182,9 @@ export interface InternetTariff extends ExtensionObject {}
 
 export interface DeviceOnTariffs extends EntityObject {
   /** Маркетинговые тарифы фиксированной связи */
-  MarketingTariffs: MarketingProduct[];
+  MarketingTariffs: IArray<MarketingProduct>;
   /** Города */
-  Cities: Region[];
+  Cities: IArray<Region>;
   Parent: ProductRelation;
   /** Маркетинговое устройство */
   MarketingDevice: MarketingProduct;

@@ -41,14 +41,14 @@ export class RelationsConfig {
 }
 
 export interface FieldsConfig {
-  [fieldName: string]: typeof IGNORE | FieldValue | FieldEditor | ContentsConfig;
+  [fieldName: string]: typeof IGNORE | FieldValue | FieldEditor | ExtensionConfig;
 }
 
-interface ContentsConfig {
+interface ExtensionConfig {
   [contentName: string]: FieldsConfig;
 }
 
-function isContentsConfig(field: any): field is ContentsConfig {
+function isContentsConfig(field: any): field is ExtensionConfig {
   return isObject(field) && Object.values(field).every(isObject);
 }
 
@@ -93,7 +93,7 @@ export interface ArticleEditorProps {
 interface ObjectEditorBlock {
   fieldSchema: FieldSchema;
   FieldEditor?: FieldEditor;
-  contentsConfig?: ContentsConfig;
+  contentsConfig?: ExtensionConfig;
 }
 
 export abstract class AbstractEditor<P extends ArticleEditorProps> extends Component<P> {
@@ -183,7 +183,7 @@ export abstract class AbstractEditor<P extends ArticleEditorProps> extends Compo
 
   private prepareContentsBlock(fieldSchema: ExtensionFieldSchema) {
     const { fieldEditors } = this.props;
-    const contentsConfig = fieldEditors && fieldEditors[`${fieldSchema.FieldName}_Contents`];
+    const contentsConfig = fieldEditors && fieldEditors[`${fieldSchema.FieldName}_Extension`];
 
     if (isContentsConfig(contentsConfig)) {
       this._editorBlocks.push({ fieldSchema, contentsConfig });
@@ -247,7 +247,7 @@ export abstract class AbstractEditor<P extends ArticleEditorProps> extends Compo
 
         const contentName: string = model[fieldName];
         if (contentName) {
-          const extensionModel = model[`${fieldName}${ArticleObject._Contents}`][contentName];
+          const extensionModel = model[`${fieldName}${ArticleObject._Extension}`][contentName];
           const extensionSchema = (fieldSchema as ExtensionFieldSchema).ExtensionContents[
             contentName
           ];

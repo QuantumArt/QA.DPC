@@ -37,7 +37,7 @@ namespace QA.Core.DPC.Loader.Editor
         /// <summary>
         /// Имя поля для словаря, группирующего поля расширений по имени контента-расширения.
         /// </summary>
-        internal static string _Contents(string prop) => $"{prop}_Contents";
+        internal static string _Extension(string prop) => $"{prop}_Extension";
     }
     
     /// <summary>
