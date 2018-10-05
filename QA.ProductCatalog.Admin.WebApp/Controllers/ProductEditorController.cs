@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Editor;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Models;
@@ -31,7 +30,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IContentDefinitionService _contentDefinitionService;
         private readonly IProductService _productService;
         private readonly IProductUpdateService _productUpdateService;
-        private readonly JsonProductService _jsonProductService;
         private readonly IReadOnlyArticleService _articleService;
         private readonly IFieldService _fieldService;
         private readonly CloneBatchAction _cloneBatchAction;
@@ -45,7 +43,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IContentDefinitionService contentDefinitionService,
             IProductService productService,
             IProductUpdateService productUpdateService,
-            JsonProductService jsonProductService,
             IReadOnlyArticleService articleService,
             IFieldService fieldService,
             CloneBatchAction cloneBatchAction,
@@ -58,7 +55,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _contentDefinitionService = contentDefinitionService;
             _productService = productService;
             _productUpdateService = productUpdateService;
-            _jsonProductService = jsonProductService;
             _articleService = articleService;
             _fieldService = fieldService;
             _cloneBatchAction = cloneBatchAction;
@@ -110,30 +106,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return _contentDefinitionService
                 .GetEditorDefinition(productTypeId, qpArticle.ContentId, isLive);
         }
-
-        /// <summary>
-        /// Построить TypeScript-описание продукта.
-        /// </summary>
-        /// <param name="content_item_id">Id описания продукта</param>
-        [HttpGet, RequireCustomAction]
-        public ViewResult TypeScriptSchema(int content_item_id, bool isLive = false)
-        {
-            Content rootContent = _contentDefinitionService.GetDefinitionById(content_item_id, isLive);
-
-            string jsonSchema = _jsonProductService.GetEditorJsonSchemaString(rootContent);
-
-            return View(new ProductEditorSchemaModel
-            {
-                JsonSchema = jsonSchema,
-            });
-        }
-
+        
         /// <summary>
         /// Построить TypeScript-описание схемы для редактора продукта.
         /// </summary>
         /// <param name="content_item_id">Id описания продукта</param>
         [HttpGet, RequireCustomAction]
-        public ViewResult ProductEditorSchema(int content_item_id, bool isLive = false)
+        public ViewResult TypeScriptSchema(int content_item_id, bool isLive = false)
         {
             Content rootContent = _contentDefinitionService.GetDefinitionById(content_item_id, isLive);
 

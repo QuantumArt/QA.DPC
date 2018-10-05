@@ -11,7 +11,8 @@
 <body>
   <pre><code id="typeScriptCode">Loading...</code></pre>
   <script type="text/javascript">
-      window.jsonSchema = @Html.Raw(Model.JsonSchema);
+      window.editorSchema = @Html.Raw(Model.EditorSchema);
+      window.mergedSchema = @Html.Raw(Model.MergedSchema);
   </script>
   <script src="~/Scripts/Bundles/ProductEditor/TypeScriptSchema.js"></script>
 </body>
