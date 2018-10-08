@@ -250,6 +250,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
     const list: EntityObject[] = model[fieldSchema.FieldName];
+    const contentSchema = fieldSchema.RelatedContent;
     return isTouched && list ? (
       <table
         className={cn("relation-field-accordion", {
@@ -269,7 +270,9 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                 <Fragment key={entity._ClientId}>
                   <tr
                     className={cn("relation-field-accordion__header", {
-                      "relation-field-accordion__header--open": isOpen
+                      "relation-field-accordion__header--open": isOpen,
+                      "relation-field-accordion__header--edited": contentSchema.isEdited(entity),
+                      "relation-field-accordion__header--invalid": contentSchema.hasErrors(entity)
                     })}
                     onClick={e => this.handleToggle(e, entity)}
                   >
@@ -281,7 +284,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
                       <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
                     </td>
                     <td key={-2} className="relation-field-accordion__cell">
-                      <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />
+                      <EntityLink model={entity} contentSchema={contentSchema} />
                     </td>
                     {this._displayFields.map((displayField, i) => (
                       <td

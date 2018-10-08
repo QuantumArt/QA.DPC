@@ -1,5 +1,5 @@
 import { isObject, isInteger } from "Utils/TypeChecks";
-import { EntityObject } from "Models/EditorDataModels";
+import { EntityObject, ArticleObject } from "Models/EditorDataModels";
 
 export interface ContentSchema {
   readonly ContentId: number;
@@ -15,6 +15,12 @@ export interface ContentSchema {
   readonly Fields: {
     readonly [name: string]: FieldSchema;
   };
+
+  isEdited(article: ArticleObject): boolean;
+  isTouched(article: ArticleObject): boolean;
+  isChanged(article: ArticleObject): boolean;
+  hasErrors(article: ArticleObject): boolean;
+  hasVisibleErrors(article: ArticleObject): boolean;
 }
 
 export function isContent(content: any): content is ContentSchema {

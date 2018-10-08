@@ -176,12 +176,15 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     const { isOpen, isTouched } = this.state;
     const entity: EntityObject = model[fieldSchema.FieldName];
     const hasServerId = entity._ServerId > 0;
+    const contentSchema = fieldSchema.RelatedContent;
     return entity ? (
       <table className="relation-field-accordion" cellSpacing="0" cellPadding="0">
         <tbody>
           <tr
             className={cn("relation-field-accordion__header", {
-              "relation-field-accordion__header--open": isOpen
+              "relation-field-accordion__header--open": isOpen,
+              "relation-field-accordion__header--edited": contentSchema.isEdited(entity),
+              "relation-field-accordion__header--invalid": contentSchema.hasErrors(entity)
             })}
             onClick={this.toggleRelation}
           >
@@ -193,7 +196,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
             </td>
             <td key={-2} className="relation-field-accordion__cell">
-              <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />
+              <EntityLink model={entity} contentSchema={contentSchema} />
             </td>
             {this._displayFields.map((displayField, i) => (
               <td

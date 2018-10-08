@@ -1,5 +1,7 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
 $border: 1px solid #ccc;
-$background: darken(#f5f8fa, 5%);
+$background: darken($light-gray5, 5%);
 
 .relation-field-accordion {
   display: table;
@@ -35,7 +37,15 @@ $background: darken(#f5f8fa, 5%);
   cursor: pointer;
 
   &:hover {
-    background-color: rgba(19, 124, 189, 0.15);
+    background-color: rgba($blue3, 0.15);
+  }
+
+  &--edited {
+    background-color: rgba($blue3, 0.25) !important;
+  }
+
+  &--invalid {
+    background-color: rgba($red3, 0.2) !important;
   }
 
   &:first-child {

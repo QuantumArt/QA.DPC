@@ -3,9 +3,15 @@ import {
   EditorSchema,
   ContentSchemasById,
   isContent,
-  isField
+  isField,
+  isRelationField,
+  isExtensionField,
+  isSingleRelationField,
+  isMultiRelationField,
+  UpdatingMode
 } from "Models/EditorSchemaModels";
 import { isObject, isInteger, isSingleKeyObject } from "Utils/TypeChecks";
+import { ArticleObject } from "Models/EditorDataModels";
 
 export class SchemaContext {
   /** Схема корневого контента */
@@ -23,6 +29,14 @@ export class SchemaContext {
 
     linkNestedSchemas(editorSchema, definitions, new Set(), null);
     this.rootSchema = editorSchema.Content;
+
+    visitContentSchema(this.rootSchema, contentSchema => {
+      contentSchema.isEdited = compileRecursivePredicate(contentSchema, "isEdited");
+      contentSchema.isTouched = compileRecursivePredicate(contentSchema, "isTouched");
+      contentSchema.isChanged = compileRecursivePredicate(contentSchema, "isChanged");
+      contentSchema.hasErrors = compileRecursivePredicate(contentSchema, "hasErrors");
+      contentSchema.hasVisibleErrors = compileRecursivePredicate(contentSchema, "hasVisibleErrors");
+    });
 
     const mergedSchemasRef = { mergedSchemas };
     linkMergedSchemas(mergedSchemasRef, mergedSchemas, new Set(), null);
@@ -116,4 +130,59 @@ function resolveContentIdRef(object: any, mergedSchemas: ContentSchemasById) {
   return isSingleKeyObject(object) && isInteger(object.ContentId)
     ? mergedSchemas[object.ContentId]
     : object;
+}
+
+function visitContentSchema(
+  contentSchema: ContentSchema,
+  action: (contentSchema: ContentSchema) => void,
+  visited = new Set<ContentSchema>()
+) {
+  if (visited.has(contentSchema)) {
+    return;
+  }
+  visited.add(contentSchema);
+  action(contentSchema);
+
+  Object.values(contentSchema.Fields).forEach(fieldSchema => {
+    if (isRelationField(fieldSchema)) {
+      visitContentSchema(fieldSchema.RelatedContent, action, visited);
+    } else if (isExtensionField(fieldSchema)) {
+      Object.values(fieldSchema.ExtensionContents).forEach(extensionSchema => {
+        visitContentSchema(extensionSchema, action, visited);
+      });
+    }
+  });
+}
+
+function compileRecursivePredicate(contentSchema: ContentSchema, funcName: string) {
+  return Function(
+    "article",
+    `
+    var fields = this.Fields;
+    return article.${funcName}() ||
+      ${Object.values(contentSchema.Fields)
+        .filter(
+          fieldSchema =>
+            (isRelationField(fieldSchema) && fieldSchema.UpdatingMode === UpdatingMode.Update) ||
+            isExtensionField(fieldSchema)
+        )
+        .map(fieldSchema => {
+          const name = fieldSchema.FieldName;
+          if (isSingleRelationField(fieldSchema)) {
+            return `
+            article.${name} && fields.${name}.RelatedContent.${funcName}(article.${name})`;
+          }
+          if (isMultiRelationField(fieldSchema)) {
+            return `
+            article.${name} && article.${name}.some(function(item) {
+              return fields.${name}.RelatedContent.${funcName}(item);
+            })`;
+          }
+          return `
+          article.${name} && fields.${name}.ExtensionContents[article.${name}]
+            .${funcName}(article.${name}_Extension[article.${name}])`;
+        })
+        .join(" ||")}
+      false;`
+  ) as (article: ArticleObject) => boolean;
 }

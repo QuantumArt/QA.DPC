@@ -27,7 +27,7 @@ export class DataSchemaLinker {
       [contentName: string]: EntitySnapshot[];
     } = {};
 
-    this.visitContentSchema(contentSchema, fieldSchema => {
+    this.visitRelationFields(contentSchema, fieldSchema => {
       if (fieldSchema.PreloadingMode === PreloadingMode.Eager) {
         const contentName = fieldSchema.RelatedContent.ContentName;
         const objects = objectsByContent[contentName] || (objectsByContent[contentName] = []);
@@ -55,7 +55,7 @@ export class DataSchemaLinker {
   }
 
   public linkPreloadedArticles(contentSchema: ContentSchema) {
-    this.visitContentSchema(contentSchema, fieldSchema => {
+    this.visitRelationFields(contentSchema, fieldSchema => {
       if (fieldSchema.PreloadingMode === PreloadingMode.Eager) {
         const contentName = fieldSchema.RelatedContent.ContentName;
         const entitiesMap = this._dataContext.tables[contentName];
@@ -72,7 +72,7 @@ export class DataSchemaLinker {
     });
   }
 
-  private visitContentSchema(
+  private visitRelationFields(
     contentSchema: ContentSchema,
     action: (fieldSchema: RelationFieldSchema) => void,
     visited = new Set<ContentSchema>()
@@ -84,10 +84,10 @@ export class DataSchemaLinker {
     Object.values(contentSchema.Fields).forEach(fieldSchema => {
       if (isRelationField(fieldSchema)) {
         action(fieldSchema);
-        this.visitContentSchema(fieldSchema.RelatedContent, action, visited);
+        this.visitRelationFields(fieldSchema.RelatedContent, action, visited);
       } else if (isExtensionField(fieldSchema)) {
         Object.values(fieldSchema.ExtensionContents).forEach(extensionSchema => {
-          this.visitContentSchema(extensionSchema, action, visited);
+          this.visitRelationFields(extensionSchema, action, visited);
         });
       }
     });
