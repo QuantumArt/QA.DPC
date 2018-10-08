@@ -74,18 +74,18 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             try
             {
 
-                Logger.LogTrace($"Checking for default service");
+                Log(LogLevel.Trace, "(Checking for default service", searchOptions);
                 var defaultServiceId = GetDefaultServiceId();
                 if (defaultServiceId == 0) return null;
 
-                Logger.LogTrace($"Start loading default service {defaultServiceId}");
+                Log(LogLevel.Trace, "Start loading default service {id}", searchOptions, defaultServiceId);
                 var results = await SearchRepo.GetProducts(new[] { defaultServiceId }, searchOptions);
-                Logger.LogTrace($"End loading default service {defaultServiceId}");
+                Log(LogLevel.Trace, "End loading default service {id}", searchOptions, defaultServiceId);
 
                 if (results.Length == 0)
                 {
                     var message = $"Service {defaultServiceId} is not found";
-                    Logger.LogError(message);
+                    LogException(null, message, searchOptions);
                     return NotFound(message);
                 }
 

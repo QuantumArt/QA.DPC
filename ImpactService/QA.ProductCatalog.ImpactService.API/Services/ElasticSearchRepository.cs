@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Elasticsearch.Net;
+using Microsoft.Extensions.Logging;
 using Nest;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QA.Core.Logger;
-using QA.ProductCatalog.HighloadFront.Elastic;
+using QA.ProductCatalog.ImpactService.API.Helpers;
 
 namespace QA.ProductCatalog.ImpactService.API.Services
 {
@@ -24,9 +24,9 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return new Regex($@"[<\[]replacement[>\]]tag={tag}[<\[]/replacement[>\]]");
         }
 
-        public ElasticSearchRepository(ILogger logger)
+        public ElasticSearchRepository(ILoggerFactory factory)
         {
-            _logger = logger;
+            _logger = factory.CreateLogger(this.GetType());
         }
 
         public async Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options, DateTimeOffset defaultValue)
@@ -277,7 +277,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         private IElasticClient GetElasticClient(SearchOptions options)
         {
-            return QpElasticConfiguration.GetElasticClient(options.IndexName, options.BaseAddress, _logger, false, _timeout);
+            return ElasticConfiguration.GetElasticClient(options.IndexName, options.BaseAddress, _logger, false, _timeout);
         }
 
 
@@ -285,19 +285,19 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var client = GetElasticClient(options);
 
-            ElasticsearchResponse<Stream> response; 
+            ElasticsearchResponse<string> response; 
             if (options.TypeName == null)
             {
-                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, json);
+                response = await client.LowLevel.SearchAsync<string>(client.ConnectionSettings.DefaultIndex, json);
             }
             else
             {
-                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, options.TypeName, json);
+                response = await client.LowLevel.SearchAsync<string>(client.ConnectionSettings.DefaultIndex, options.TypeName, json);
             }
 
             if (response.Success)
             {
-                return await new StreamReader(response.Body).ReadToEndAsync();
+                return response.Body;
             }
 
             return string.Empty;
