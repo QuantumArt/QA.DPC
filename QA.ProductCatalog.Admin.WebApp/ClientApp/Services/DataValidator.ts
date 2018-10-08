@@ -18,14 +18,14 @@ export interface ArticleErrors {
 }
 
 export class DataValidator {
-  private _isChanged: boolean;
+  private _isEdited: boolean;
   private _errors: ArticleErrors[];
 
   public validate(article: ArticleObject, contentSchema: ContentSchema) {
-    this._isChanged = false;
+    this._isEdited = false;
     this._errors = [];
     this.validateArticle(article, contentSchema);
-    if (!this._isChanged && this._errors.length === 0) {
+    if (!this._isEdited && this._errors.length === 0) {
       this._errors.push({
         ServerId: article._ServerId,
         ContentName: contentSchema.ContentName,
@@ -37,8 +37,8 @@ export class DataValidator {
   }
 
   private validateArticle(article: ArticleObject, contentSchema: ContentSchema) {
-    if (article.isChanged()) {
-      this._isChanged = true;
+    if (article.isEdited()) {
+      this._isEdited = true;
     }
     if (article.hasErrors()) {
       this.addFieldErrors(article, contentSchema);
