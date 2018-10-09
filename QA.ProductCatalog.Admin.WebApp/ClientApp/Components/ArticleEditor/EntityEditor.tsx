@@ -10,15 +10,13 @@ import { EntityMenu } from "./EntityMenu";
 import { EntityLink } from "./EntityLink";
 import { AbstractEditor, ArticleEditorProps } from "./ArticleEditor";
 import "./ArticleEditor.scss";
+import { action } from "mobx";
 
 interface EntityEditorProps extends ArticleEditorProps {
   model: EntityObject;
   className?: string;
   titleField?: string | ((entity: EntityObject) => string);
   withHeader?: ReactNode | boolean;
-  onRemove?: (entity: EntityObject) => void;
-  onDetach?: (entity: EntityObject) => void;
-  onClone?: (entity: EntityObject) => void;
   // allowed actions
   canSaveEntity?: boolean;
   canRefreshEntity?: boolean;
@@ -27,7 +25,16 @@ interface EntityEditorProps extends ArticleEditorProps {
   canRemoveEntity?: boolean;
   canPublishEntity?: boolean;
   canCloneEntity?: boolean;
+  onSaveEntity?(entity: EntityObject, saveEntity: () => Promise<void>): void;
+  onRefreshEntity?(entity: EntityObject, refreshEntity: () => Promise<void>): void;
+  onReloadEntity?(entity: EntityObject, reloadEntity: () => Promise<void>): void;
+  onPublishEntity?(entity: EntityObject, publishEntity: () => Promise<void>): void;
+  onRemoveEntity?(entity: EntityObject): void;
+  onDetachEntity?(entity: EntityObject): void;
+  onCloneEntity?(entity: EntityObject): void;
 }
+
+const defaultEntityHandler = (_entity, action) => action();
 
 @consumer
 @observer
@@ -35,7 +42,11 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   static defaultProps = {
     canSaveEntity: true,
     canRefreshEntity: true,
-    canReloadEntity: true
+    canReloadEntity: true,
+    onSaveEntity: defaultEntityHandler,
+    onRefreshEntity: defaultEntityHandler,
+    onReloadEntity: defaultEntityHandler,
+    onPublishEntity: defaultEntityHandler
   };
 
   @inject private _entityController: EntityController;
@@ -48,50 +59,71 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     this._titleField = isString(titleField) ? entity => entity[titleField] : titleField;
   }
 
-  private savePartialProduct = async () => {
-    const { model, contentSchema } = this.props;
-    await this._productController.savePartialProduct(model, contentSchema);
+  private saveEntity = () => {
+    const { model, contentSchema, onSaveEntity } = this.props;
+    onSaveEntity(
+      model,
+      action("saveEntity", async () => {
+        await this._productController.savePartialProduct(model, contentSchema);
+      })
+    );
   };
 
-  private refreshEntity = async () => {
-    const { model, contentSchema } = this.props;
-    await this._entityController.refreshEntity(model, contentSchema);
+  private refreshEntity = () => {
+    const { model, contentSchema, onRefreshEntity } = this.props;
+    onRefreshEntity(
+      model,
+      action("refreshEntity", async () => {
+        await this._entityController.refreshEntity(model, contentSchema);
+      })
+    );
   };
 
   private reloadEntity = async () => {
-    const { model, contentSchema } = this.props;
-    await this._entityController.reloadEntity(model, contentSchema);
+    const { model, contentSchema, onReloadEntity } = this.props;
+    onReloadEntity(
+      model,
+      action("reloadEntity", async () => {
+        await this._entityController.reloadEntity(model, contentSchema);
+      })
+    );
+  };
+
+  private publishEntity = () => {
+    const { model, onPublishEntity } = this.props;
+    onPublishEntity(
+      model,
+      action("publishEntity", async () => {
+        alert("TODO: публикация");
+      })
+    );
   };
 
   private detachEntity = () => {
-    const { model, onDetach } = this.props;
-    if (onDetach) {
-      onDetach(model);
+    const { model, onDetachEntity } = this.props;
+    if (onDetachEntity) {
+      onDetachEntity(model);
     } else if (DEBUG) {
       console.warn("EntityEditor `onDetach` is not defined");
     }
   };
 
   private removeEntity = () => {
-    const { model, onRemove } = this.props;
-    if (onRemove) {
-      onRemove(model);
+    const { model, onRemoveEntity } = this.props;
+    if (onRemoveEntity) {
+      onRemoveEntity(model);
     } else if (DEBUG) {
       console.warn("EntityEditor `onRemove` is not defined");
     }
   };
 
   private cloneEntity = () => {
-    const { model, onClone } = this.props;
-    if (onClone) {
-      onClone(model);
+    const { model, onCloneEntity } = this.props;
+    if (onCloneEntity) {
+      onCloneEntity(model);
     } else if (DEBUG) {
       console.warn("EntityEditor `onClone` is not defined");
     }
-  };
-
-  private publishEntity = () => {
-    alert("TODO: публикация");
   };
 
   render() {
@@ -145,7 +177,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     return (
       <div className="entity-editor__buttons">
         <EntityMenu
-          onSave={canSaveEntity && this.savePartialProduct}
+          onSave={canSaveEntity && this.saveEntity}
           onDetach={canDetachEntity && this.detachEntity}
           onRemove={canRemoveEntity && hasServerId && this.removeEntity}
           onRefresh={canRefreshEntity && hasServerId && this.refreshEntity}

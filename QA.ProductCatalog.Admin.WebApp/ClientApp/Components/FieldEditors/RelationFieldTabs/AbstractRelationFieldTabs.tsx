@@ -41,7 +41,22 @@ export interface RelationFieldTabsProps extends FieldEditorProps {
   canSelectRelation?: boolean;
   canClearRelation?: boolean;
   canReloadRelation?: boolean;
+  onCreateEntity?(createEntity: () => EntityObject): void;
+  onClonePrototype?(clonePrototype: () => Promise<EntityObject>): void;
+  onCloneEntity?(entity: EntityObject, cloneEntity: () => Promise<EntityObject>): void;
+  onSaveEntity?(entity: EntityObject, saveEntity: () => Promise<void>): void;
+  onRefreshEntity?(entity: EntityObject, refreshEntity: () => Promise<void>): void;
+  onReloadEntity?(entity: EntityObject, reloadEntity: () => Promise<void>): void;
+  onPublishEntity?(entity: EntityObject, publishEntity: () => Promise<void>): void;
+  onRemoveEntity?(entity: EntityObject, removeEntity: () => Promise<void>): void;
+  onDetachEntity?(entity: EntityObject, detachEntity: () => void): void;
+  onSelectRelation?(selectRelation: () => Promise<void>): void;
+  onReloadRelation?(relaoadRelation: () => Promise<void>): void;
+  onClearRelation?(clearRelation: () => void): void;
 }
+
+const defaultRelationHandler = action => action();
+const defaultEntityHandler = (_entity, action) => action();
 
 export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEditor<
   RelationFieldTabsProps
@@ -50,7 +65,15 @@ export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEdi
     canSaveEntity: true,
     canRefreshEntity: true,
     canReloadEntity: true,
-    canReloadRelation: true
+    canReloadRelation: true,
+    onClonePrototype: defaultRelationHandler,
+    onCreateEntity: defaultRelationHandler,
+    onCloneEntity: defaultEntityHandler,
+    onRemoveEntity: defaultEntityHandler,
+    onDetachEntity: defaultEntityHandler,
+    onSelectRelation: defaultRelationHandler,
+    onReloadRelation: defaultRelationHandler,
+    onClearRelation: defaultRelationHandler
   };
 
   @inject protected _dataContext: DataContext;

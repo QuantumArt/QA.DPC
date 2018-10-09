@@ -20,104 +20,183 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
     isTouched: false
   };
 
-  private clonePrototype = async () => {
-    const { model, fieldSchema } = this.props;
-    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
-    await this._cloneController.cloneProductPrototype(model, relationFieldSchema);
-    this.setState({
-      isOpen: true,
-      isTouched: true
-    });
+  private clonePrototype = () => {
+    const { model, fieldSchema, onClonePrototype } = this.props;
+    onClonePrototype(
+      action("clonePrototype", async () => {
+        const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+        const clone = await this._cloneController.cloneProductPrototype(model, relationFieldSchema);
+        this.setState({
+          isOpen: true,
+          isTouched: true
+        });
+        return clone;
+      })
+    );
   };
 
-  @action
   private createEntity = () => {
-    const { model, fieldSchema } = this.props;
+    const { model, fieldSchema, onCreateEntity } = this.props;
     const contentName = (fieldSchema as SingleRelationFieldSchema).RelatedContent.ContentName;
-    const entity = this._dataContext.createEntity(contentName);
-    this.setState({
-      isOpen: true,
-      isTouched: true
-    });
-    model[fieldSchema.FieldName] = entity;
-    model.setTouched(fieldSchema.FieldName, true);
+    onCreateEntity(
+      action("createEntity", () => {
+        const entity = this._dataContext.createEntity(contentName);
+        model[fieldSchema.FieldName] = entity;
+        model.setTouched(fieldSchema.FieldName, true);
+        this.setState({
+          isOpen: true,
+          isTouched: true
+        });
+        return entity;
+      })
+    );
   };
 
-  @action
   private detachEntity = (e: any) => {
     e.stopPropagation();
-    const { model, fieldSchema } = this.props;
-    model[fieldSchema.FieldName] = null;
-    model.setTouched(fieldSchema.FieldName, true);
-    this.setState({
-      isOpen: false,
-      isTouched: false
-    });
+    const { model, fieldSchema, onDetachEntity } = this.props;
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    onDetachEntity(
+      entity,
+      action("detachEntity", () => {
+        model[fieldSchema.FieldName] = null;
+        model.setTouched(fieldSchema.FieldName, true);
+        this.setState({
+          isOpen: false,
+          isTouched: false
+        });
+      })
+    );
   };
 
-  private removeEntity = async (e: any) => {
+  private removeEntity = (e: any) => {
     e.stopPropagation();
-    const { model, fieldSchema } = this.props;
+    const { model, fieldSchema, onRemoveEntity } = this.props;
     const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
     const entity = untracked(() => model[fieldSchema.FieldName]);
-    if (entity) {
-      await this._entityController.removeRelatedEntity(model, relationFieldSchema, entity);
-    }
-    this.setState({
-      isOpen: false,
-      isTouched: false
-    });
+    onRemoveEntity(
+      entity,
+      action("removeEntity", async () => {
+        await this._entityController.removeRelatedEntity(model, relationFieldSchema, entity);
+        this.setState({
+          isOpen: false,
+          isTouched: false
+        });
+      })
+    );
   };
 
-  private cloneEntity = async (e: any) => {
+  private cloneEntity = (e: any) => {
     e.stopPropagation();
-    const { model, fieldSchema } = this.props;
+    const { model, fieldSchema, onCloneEntity } = this.props;
     const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
     const entity = untracked(() => model[fieldSchema.FieldName]);
-    if (entity) {
-      await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
-    }
+    onCloneEntity(
+      entity,
+      action("cloneEntity", async () => {
+        return await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+      })
+    );
   };
 
-  @action
-  private saveEntity = async (e: any) => {
+  private saveEntity = (e: any) => {
     e.stopPropagation();
-    const { model, fieldSchema } = this.props;
+    const { model, fieldSchema, onSaveEntity } = this.props;
     const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
-    const entity: EntityObject = model[fieldSchema.FieldName];
-    if (entity) {
-      await this._productController.savePartialProduct(entity, contentSchema);
-    }
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    onSaveEntity(
+      entity,
+      action("saveEntity", async () => {
+        await this._productController.savePartialProduct(entity, contentSchema);
+      })
+    );
   };
 
-  @action
-  private refreshEntity = async (e: any) => {
+  private refreshEntity = (e: any) => {
     e.stopPropagation();
-    const { model, fieldSchema } = this.props;
+    const { model, fieldSchema, onRefreshEntity } = this.props;
     const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
-    const entity: EntityObject = model[fieldSchema.FieldName];
-    if (entity) {
-      await this._entityController.refreshEntity(entity, contentSchema);
-    }
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    onRefreshEntity(
+      entity,
+      action("refreshEntity", async () => {
+        await this._entityController.refreshEntity(entity, contentSchema);
+      })
+    );
   };
 
-  @action
-  private reloadEntity = async (e: any) => {
+  private reloadEntity = (e: any) => {
     e.stopPropagation();
-    const { model, fieldSchema } = this.props;
+    const { model, fieldSchema, onReloadEntity } = this.props;
     const contentSchema = (fieldSchema as SingleRelationFieldSchema).RelatedContent;
-    const entity: EntityObject = model[fieldSchema.FieldName];
-    if (entity) {
-      await this._entityController.reloadEntity(entity, contentSchema);
-    }
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    onReloadEntity(
+      entity,
+      action("reloadEntity", async () => {
+        await this._entityController.reloadEntity(entity, contentSchema);
+      })
+    );
   };
 
   private publishEntity = (e: any) => {
     e.stopPropagation();
-    alert("TODO: публикация");
+    const { model, fieldSchema, onPublishEntity } = this.props;
+    const entity = untracked(() => model[fieldSchema.FieldName]);
+    onPublishEntity(
+      entity,
+      action("publishEntity", async () => {
+        alert("TODO: публикация");
+      })
+    );
   };
 
-  private toggleRelation = (e: any) => {
+  private selectRelation = () => {
+    const { model, fieldSchema, onSelectRelation } = this.props;
+    onSelectRelation(
+      action("selectRelation", async () => {
+        this.setState({
+          isOpen: true,
+          isTouched: true
+        });
+        await this._relationController.selectRelation(
+          model,
+          fieldSchema as SingleRelationFieldSchema
+        );
+      })
+    );
+  };
+
+  private clearRelation = () => {
+    const { model, fieldSchema, onClearRelation } = this.props;
+    onClearRelation(
+      action("clearRelation", () => {
+        model[fieldSchema.FieldName] = null;
+        model.setTouched(fieldSchema.FieldName, true);
+        this.setState({
+          isOpen: false,
+          isTouched: false
+        });
+      })
+    );
+  };
+
+  private reloadRelation = () => {
+    const { model, fieldSchema, onReloadRelation } = this.props;
+    onReloadRelation(
+      action("reloadRelation", async () => {
+        this.setState({
+          isOpen: true,
+          isTouched: true
+        });
+        await this._relationController.reloadRelation(
+          model,
+          fieldSchema as SingleRelationFieldSchema
+        );
+      })
+    );
+  };
+
+  private toggleEditor = (e: any) => {
     // нажали на элемент находящийся внутри <button>
     if (e.target.closest("button")) return;
 
@@ -126,16 +205,6 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
       isOpen: !isOpen,
       isTouched: true
     });
-  };
-
-  private selectRelation = async () => {
-    const { model, fieldSchema } = this.props;
-    await this._relationController.selectRelation(model, fieldSchema as SingleRelationFieldSchema);
-  };
-
-  private reloadRelation = async () => {
-    const { model, fieldSchema } = this.props;
-    await this._relationController.reloadRelation(model, fieldSchema as SingleRelationFieldSchema);
   };
 
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
@@ -151,7 +220,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
       <RelationFieldMenu
         onCreate={canCreateEntity && !this._readonly && !entity && this.createEntity}
         onSelect={canSelectRelation && !this._readonly && this.selectRelation}
-        onClear={canClearRelation && !this._readonly && !!entity && this.detachEntity}
+        onClear={canClearRelation && !this._readonly && !!entity && this.clearRelation}
         onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelation}
         onClonePrototype={
           canClonePrototype && model._ServerId > 0 && !entity && this.clonePrototype
@@ -186,7 +255,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
               "relation-field-accordion__header--edited": contentSchema.isEdited(entity),
               "relation-field-accordion__header--invalid": contentSchema.hasErrors(entity)
             })}
-            onClick={this.toggleRelation}
+            onClick={this.toggleEditor}
           >
             <td
               key={-1}

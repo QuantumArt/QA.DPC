@@ -51,99 +51,182 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     this._orderByField = isString(orderByField) ? entity => entity[orderByField] : orderByField;
   }
 
-  private clonePrototype = async () => {
-    const { model, fieldSchema } = this.props;
+  private clonePrototype = () => {
+    const { model, fieldSchema, onClonePrototype } = this.props;
     const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
-    const clone = await this._cloneController.cloneProductPrototype(model, relationFieldSchema);
-    this.toggleEntity(clone);
+    onClonePrototype(
+      action("clonePrototype", async () => {
+        const clone = await this._cloneController.cloneProductPrototype(model, relationFieldSchema);
+        this.toggleScreen(clone);
+        return clone;
+      })
+    );
   };
 
-  @action
   private createEntity = () => {
-    const { model, fieldSchema } = this.props;
+    const { model, fieldSchema, onCreateEntity } = this.props;
     const contentName = (fieldSchema as MultiRelationFieldSchema).RelatedContent.ContentName;
-    const entity = this._dataContext.createEntity(contentName);
-    this.toggleEntity(entity);
-    model[fieldSchema.FieldName].push(entity);
-    model.setTouched(fieldSchema.FieldName, true);
+    onCreateEntity(
+      action("createEntity", () => {
+        const entity = this._dataContext.createEntity(contentName);
+        model[fieldSchema.FieldName].push(entity);
+        model.setTouched(fieldSchema.FieldName, true);
+        this.toggleScreen(entity);
+        return entity;
+      })
+    );
   };
 
-  @action
   private detachEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
-    const { model, fieldSchema } = this.props;
-    const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
-    if (array) {
-      array.remove(entity);
-      model.setTouched(fieldSchema.FieldName, true);
-    }
-    this.deactivateEntity(entity);
-  }
-
-  private async removeEntity(e: any, entity: EntityObject) {
-    e.stopPropagation();
-    const { model, fieldSchema } = this.props;
-    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
-    await this._entityController.removeRelatedEntity(model, relationFieldSchema, entity);
-    this.deactivateEntity(entity);
-  }
-
-  private deactivateEntity(entity: EntityObject) {
-    const { activeId, touchedIds } = this.state;
-    delete touchedIds[entity._ClientId];
-    if (activeId === entity._ClientId) {
-      this.setState({ activeId: null, touchedIds });
-    } else {
-      this.setState({ touchedIds });
-    }
-  }
-
-  private async saveEntity(e: any, entity: EntityObject) {
-    e.stopPropagation();
-    const { fieldSchema } = this.props;
-    const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
-    await this._productController.savePartialProduct(entity, contentSchema);
-  }
-
-  private async refreshEntity(e: any, entity: EntityObject) {
-    e.stopPropagation();
-    const { fieldSchema } = this.props;
-    const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
-    await this._entityController.refreshEntity(entity, contentSchema);
-  }
-
-  private async reloadEntity(e: any, entity: EntityObject) {
-    e.stopPropagation();
-    const { fieldSchema } = this.props;
-    const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
-    await this._entityController.reloadEntity(entity, contentSchema);
-  }
-
-  private async cloneEntity(e: any, entity: EntityObject) {
-    e.stopPropagation();
-    const { model, fieldSchema } = this.props;
-    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
-    const clone = await this._cloneController.cloneRelatedEntity(
-      model,
-      relationFieldSchema,
-      entity
+    const { model, fieldSchema, onDetachEntity } = this.props;
+    onDetachEntity(
+      entity,
+      action("detachEntity", () => {
+        const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
+        if (array) {
+          array.remove(entity);
+          model.setTouched(fieldSchema.FieldName, true);
+        }
+        this.deactivateScreen(entity);
+      })
     );
-    this.toggleEntity(clone);
   }
 
-  private publishEntity = (e: any, _entity: EntityObject) => {
+  private removeEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
-    alert("TODO: публикация");
+    const { model, fieldSchema, onRemoveEntity } = this.props;
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
+    onRemoveEntity(
+      entity,
+      action("removeEntity", async () => {
+        await this._entityController.removeRelatedEntity(model, relationFieldSchema, entity);
+        this.deactivateScreen(entity);
+      })
+    );
+  }
+
+  private saveEntity(e: any, entity: EntityObject) {
+    e.stopPropagation();
+    const { fieldSchema, onSaveEntity } = this.props;
+    const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
+    onSaveEntity(
+      entity,
+      action("saveEntity", async () => {
+        await this._productController.savePartialProduct(entity, contentSchema);
+      })
+    );
+  }
+
+  private refreshEntity(e: any, entity: EntityObject) {
+    e.stopPropagation();
+    const { fieldSchema, onRefreshEntity } = this.props;
+    const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
+    onRefreshEntity(
+      entity,
+      action("refreshEntity", async () => {
+        await this._entityController.refreshEntity(entity, contentSchema);
+      })
+    );
+  }
+
+  private reloadEntity(e: any, entity: EntityObject) {
+    e.stopPropagation();
+    const { fieldSchema, onReloadEntity } = this.props;
+    const contentSchema = (fieldSchema as MultiRelationFieldSchema).RelatedContent;
+    onReloadEntity(
+      entity,
+      action("reloadEntity", async () => {
+        await this._entityController.reloadEntity(entity, contentSchema);
+      })
+    );
+  }
+
+  private cloneEntity(e: any, entity: EntityObject) {
+    e.stopPropagation();
+    const { model, fieldSchema, onCloneEntity } = this.props;
+    const relationFieldSchema = fieldSchema as MultiRelationFieldSchema;
+    onCloneEntity(
+      entity,
+      action("cloneEntity", async () => {
+        const clone = await this._cloneController.cloneRelatedEntity(
+          model,
+          relationFieldSchema,
+          entity
+        );
+        this.toggleScreen(clone);
+        return clone;
+      })
+    );
+  }
+
+  private publishEntity = (e: any, entity: EntityObject) => {
+    e.stopPropagation();
+    const { onPublishEntity } = this.props;
+    onPublishEntity(
+      entity,
+      action("publishEntity", async () => {
+        alert("TODO: публикация");
+      })
+    );
+  };
+
+  private clearRelations = () => {
+    const { model, fieldSchema, onClearRelation } = this.props;
+    onClearRelation(
+      action("clearRelations", () => {
+        model[fieldSchema.FieldName] = [];
+        model.setTouched(fieldSchema.FieldName, true);
+        this.setState({
+          activeId: null,
+          touchedIds: {},
+          isOpen: false,
+          isTouched: false
+        });
+      })
+    );
+  };
+
+  private selectRelations = () => {
+    const { model, fieldSchema, onSelectRelation } = this.props;
+    onSelectRelation(
+      action("selectRelations", async () => {
+        this.setState({
+          isOpen: true,
+          isTouched: true
+        });
+        await this._relationController.selectRelations(
+          model,
+          fieldSchema as MultiRelationFieldSchema
+        );
+      })
+    );
+  };
+
+  private reloadRelations = () => {
+    const { model, fieldSchema, onReloadRelation } = this.props;
+    onReloadRelation(
+      action("reloadRelations", async () => {
+        this.setState({
+          isOpen: true,
+          isTouched: true
+        });
+        await this._relationController.reloadRelations(
+          model,
+          fieldSchema as MultiRelationFieldSchema
+        );
+      })
+    );
   };
 
   private handleToggle(e: any, entity: EntityObject) {
     // нажали на элемент находящийся внутри <button>
     if (e.target.closest("button")) return;
 
-    this.toggleEntity(entity);
+    this.toggleScreen(entity);
   }
 
-  private toggleEntity(entity: EntityObject) {
+  private toggleScreen(entity: EntityObject) {
     const { activeId, touchedIds } = this.state;
     if (activeId === entity._ClientId) {
       this.setState({
@@ -162,38 +245,17 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     }
   }
 
-  @action
-  private clearRelations = () => {
-    const { model, fieldSchema } = this.props;
-    this.setState({
-      activeId: null,
-      touchedIds: {},
-      isOpen: false,
-      isTouched: false
-    });
-    model[fieldSchema.FieldName] = [];
-    model.setTouched(fieldSchema.FieldName, true);
-  };
+  private deactivateScreen(entity: EntityObject) {
+    const { activeId, touchedIds } = this.state;
+    delete touchedIds[entity._ClientId];
+    if (activeId === entity._ClientId) {
+      this.setState({ activeId: null, touchedIds });
+    } else {
+      this.setState({ touchedIds });
+    }
+  }
 
-  private selectRelations = async () => {
-    const { model, fieldSchema } = this.props;
-    this.setState({
-      isOpen: true,
-      isTouched: true
-    });
-    await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
-  };
-
-  private reloadRelations = async () => {
-    const { model, fieldSchema } = this.props;
-    this.setState({
-      isOpen: true,
-      isTouched: true
-    });
-    await this._relationController.reloadRelations(model, fieldSchema as MultiRelationFieldSchema);
-  };
-
-  private toggleRelations = () => {
+  private toggleEditor = () => {
     const { isOpen } = this.state;
     this.setState({
       isOpen: !isOpen,
@@ -225,7 +287,7 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
           small
           disabled={isEmpty}
           rightIcon={isOpen ? "chevron-up" : "chevron-down"}
-          onClick={this.toggleRelations}
+          onClick={this.toggleEditor}
         >
           {isOpen ? "Свернуть" : "Развернуть"}
         </Button>

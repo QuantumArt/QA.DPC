@@ -33,13 +33,28 @@ export interface RelationFieldAccordionProps extends FieldEditorProps {
   canSaveEntity?: boolean;
   canRefreshEntity?: boolean;
   canReloadEntity?: boolean;
-  canDetachEntity?: boolean;
   canRemoveEntity?: boolean;
   canPublishEntity?: boolean;
+  canDetachEntity?: boolean;
   canSelectRelation?: boolean;
-  canClearRelation?: boolean;
   canReloadRelation?: boolean;
+  canClearRelation?: boolean;
+  onCreateEntity?(createEntity: () => EntityObject): void;
+  onClonePrototype?(clonePrototype: () => Promise<EntityObject>): void;
+  onCloneEntity?(entity: EntityObject, cloneEntity: () => Promise<EntityObject>): void;
+  onSaveEntity?(entity: EntityObject, saveEntity: () => Promise<void>): void;
+  onRefreshEntity?(entity: EntityObject, refreshEntity: () => Promise<void>): void;
+  onReloadEntity?(entity: EntityObject, reloadEntity: () => Promise<void>): void;
+  onRemoveEntity?(entity: EntityObject, removeEntity: () => Promise<void>): void;
+  onPublishEntity?(entity: EntityObject, publishEntity: () => Promise<void>): void;
+  onDetachEntity?(entity: EntityObject, detachEntity: () => void): void;
+  onSelectRelation?(selectRelation: () => Promise<void>): void;
+  onReloadRelation?(relaoadRelation: () => Promise<void>): void;
+  onClearRelation?(clearRelation: () => void): void;
 }
+
+const defaultRelationHandler = action => action();
+const defaultEntityHandler = (_entity, action) => action();
 
 export abstract class AbstractRelationFieldAccordion extends AbstractRelationFieldEditor<
   RelationFieldAccordionProps
@@ -48,7 +63,19 @@ export abstract class AbstractRelationFieldAccordion extends AbstractRelationFie
     canSaveEntity: true,
     canRefreshEntity: true,
     canReloadEntity: true,
-    canReloadRelation: true
+    canReloadRelation: true,
+    onClonePrototype: defaultRelationHandler,
+    onCreateEntity: defaultRelationHandler,
+    onCloneEntity: defaultEntityHandler,
+    onSaveEntity: defaultEntityHandler,
+    onRefreshEntity: defaultEntityHandler,
+    onReloadEntity: defaultEntityHandler,
+    onRemoveEntity: defaultEntityHandler,
+    onPublishEntity: defaultEntityHandler,
+    onDetachEntity: defaultEntityHandler,
+    onSelectRelation: defaultRelationHandler,
+    onReloadRelation: defaultRelationHandler,
+    onClearRelation: defaultRelationHandler
   };
 
   @inject protected _dataContext: DataContext;
