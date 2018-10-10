@@ -17,11 +17,10 @@ namespace QA.ProductCatalog.ImpactService.API
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.ClearProviders();
-                    logging.SetMinimumLevel(LogLevel.Trace);                    
-
+                    logging.SetMinimumLevel(LogLevel.Trace);
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));                    
                     if (hostingContext.HostingEnvironment.IsDevelopment())
                     {
-                        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                         logging.AddConsole();
                         logging.AddDebug();
                     }

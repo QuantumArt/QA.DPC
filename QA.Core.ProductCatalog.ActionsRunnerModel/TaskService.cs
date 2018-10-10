@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web.Configuration;
 using System.Linq.Expressions;
 using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
 
@@ -18,14 +16,14 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
         {
             get
             {
-                int p;
-
-                if (Int32.TryParse(WebConfigurationManager.AppSettings["TaskRunnerMaxMessageLength"], out p))
-                {
-
-                    return p;
-
-                }  //if
+//                int p;
+//
+//                if (Int32.TryParse(WebConfigurationManager.AppSettings["TaskRunnerMaxMessageLength"], out p))
+//                {
+//
+//                    return p;
+//
+//                }  //if
 
                 return 1024000;
             }
@@ -35,13 +33,13 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
         {
             get
             {
-                int p;
-                
-                if(Int32.TryParse(WebConfigurationManager.AppSettings["TaskRunnerCommandTimeout"], out p)) {
-                
-                    return p;
-
-                }  //if
+//                int p;
+//                
+//                if(Int32.TryParse(WebConfigurationManager.AppSettings["TaskRunnerCommandTimeout"], out p)) {
+//                
+//                    return p;
+//
+//                }  //if
 
                 return null;
             }

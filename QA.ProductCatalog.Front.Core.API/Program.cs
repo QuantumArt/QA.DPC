@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 using NLog.Web;
 
 namespace QA.ProductCatalog.Front.Core.API
@@ -13,6 +15,18 @@ namespace QA.ProductCatalog.Front.Core.API
 
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    logging.ClearProviders();
+                    logging.SetMinimumLevel(LogLevel.Trace);
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    if (hostingContext.HostingEnvironment.IsDevelopment())
+                    {
+                        logging.AddConsole();
+                        logging.AddDebug();
+                    }
+                })
+
                 .UseStartup<Startup>()
                 .UseNLog()
                 .Build();
