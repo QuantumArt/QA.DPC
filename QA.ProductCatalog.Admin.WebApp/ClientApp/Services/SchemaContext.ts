@@ -12,6 +12,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { isObject, isInteger, isSingleKeyObject } from "Utils/TypeChecks";
 import { ArticleObject } from "Models/EditorDataModels";
+import { ComputedCache } from "Utils/WeakCache";
 
 export class SchemaContext {
   /** Схема корневого контента */
@@ -30,14 +31,6 @@ export class SchemaContext {
     linkNestedSchemas(editorSchema, definitions, new Set(), null);
     this.rootSchema = editorSchema.Content;
 
-    visitContentSchema(this.rootSchema, contentSchema => {
-      contentSchema.isEdited = compileRecursivePredicate(contentSchema, "isEdited");
-      contentSchema.isTouched = compileRecursivePredicate(contentSchema, "isTouched");
-      contentSchema.isChanged = compileRecursivePredicate(contentSchema, "isChanged");
-      contentSchema.hasErrors = compileRecursivePredicate(contentSchema, "hasErrors");
-      contentSchema.hasVisibleErrors = compileRecursivePredicate(contentSchema, "hasVisibleErrors");
-    });
-
     const mergedSchemasRef = { mergedSchemas };
     linkMergedSchemas(mergedSchemasRef, mergedSchemas, new Set(), null);
     this.contentSchemasById = mergedSchemasRef.mergedSchemas;
@@ -46,6 +39,33 @@ export class SchemaContext {
       obj[contentSchema.ContentName] = contentSchema;
       return obj;
     }, {});
+
+    visitContentSchema(this.rootSchema, contentSchema => {
+      const isEditedCache = new ComputedCache();
+      const isEdited = compileRecursivePredicate(contentSchema, "isEdited");
+      contentSchema.isEdited = (article: ArticleObject) =>
+        isEditedCache.getOrAdd(article, () => isEdited(contentSchema, article));
+
+      const isTouchedCache = new ComputedCache();
+      const isTouched = compileRecursivePredicate(contentSchema, "isTouched");
+      contentSchema.isTouched = (article: ArticleObject) =>
+        isTouchedCache.getOrAdd(article, () => isTouched(contentSchema, article));
+
+      const isChangedCache = new ComputedCache();
+      const isChanged = compileRecursivePredicate(contentSchema, "isChanged");
+      contentSchema.isChanged = (article: ArticleObject) =>
+        isChangedCache.getOrAdd(article, () => isChanged(contentSchema, article));
+
+      const hasErrorsCache = new ComputedCache();
+      const hasErrors = compileRecursivePredicate(contentSchema, "hasErrors");
+      contentSchema.hasErrors = (article: ArticleObject) =>
+        hasErrorsCache.getOrAdd(article, () => hasErrors(contentSchema, article));
+
+      const hasVisibleErrorsCache = new ComputedCache();
+      const hasVisibleErrors = compileRecursivePredicate(contentSchema, "hasVisibleErrors");
+      contentSchema.hasVisibleErrors = (article: ArticleObject) =>
+        hasVisibleErrorsCache.getOrAdd(article, () => hasVisibleErrors(contentSchema, article));
+    });
   }
 }
 
@@ -154,35 +174,55 @@ function visitContentSchema(
   });
 }
 
-function compileRecursivePredicate(contentSchema: ContentSchema, funcName: string) {
+/**
+ * Компилирует булевскую функцию для интерфейса `ContentSchema` на основе обхода полей схемы
+ * @example
+ * function isChanged(contentSchema, article) {
+ *   var fields = contentSchema.Fields;
+ *   return (
+ *     article.isChanged() ||
+ *     (article.Type &&
+ *       fields.Type.ExtensionContents[article.Type].isChanged(
+ *         article.Type_Extension[article.Type]
+ *       )) ||
+ *     (article.Parameters &&
+ *       article.Parameters.some(function(item) {
+ *         return fields.Parameters.RelatedContent.isChanged(item);
+ *       }))
+ *   );
+ * }
+ */
+function compileRecursivePredicate(
+  contentSchema: ContentSchema,
+  funcName: string
+): (contentSchema: ContentSchema, article: ArticleObject) => boolean {
+  const complexFields = Object.values(contentSchema.Fields).filter(
+    fieldSchema =>
+      (isRelationField(fieldSchema) && fieldSchema.UpdatingMode === UpdatingMode.Update) ||
+      isExtensionField(fieldSchema)
+  );
   return Function(
+    "contentSchema",
     "article",
     `
-    var fields = this.Fields;
-    return article.${funcName}() ||
-      ${Object.values(contentSchema.Fields)
-        .filter(
-          fieldSchema =>
-            (isRelationField(fieldSchema) && fieldSchema.UpdatingMode === UpdatingMode.Update) ||
-            isExtensionField(fieldSchema)
-        )
-        .map(fieldSchema => {
-          const name = fieldSchema.FieldName;
-          if (isSingleRelationField(fieldSchema)) {
-            return `
+    var fields = contentSchema.Fields;
+    return article.${funcName}()${complexFields
+      .map(fieldSchema => {
+        const name = fieldSchema.FieldName;
+        if (isSingleRelationField(fieldSchema)) {
+          return ` ||
             article.${name} && fields.${name}.RelatedContent.${funcName}(article.${name})`;
-          }
-          if (isMultiRelationField(fieldSchema)) {
-            return `
+        }
+        if (isMultiRelationField(fieldSchema)) {
+          return ` ||
             article.${name} && article.${name}.some(function(item) {
               return fields.${name}.RelatedContent.${funcName}(item);
             })`;
-          }
-          return `
-          article.${name} && fields.${name}.ExtensionContents[article.${name}]
-            .${funcName}(article.${name}_Extension[article.${name}])`;
-        })
-        .join(" ||")}
-      false;`
-  ) as (article: ArticleObject) => boolean;
+        }
+        return ` ||
+            article.${name} && fields.${name}.ExtensionContents[article.${name}]
+              .${funcName}(article.${name}_Extension[article.${name}])`;
+      })
+      .join("")};`
+  ) as any;
 }

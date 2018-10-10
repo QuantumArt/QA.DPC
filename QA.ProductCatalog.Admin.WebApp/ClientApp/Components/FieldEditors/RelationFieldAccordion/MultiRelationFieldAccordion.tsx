@@ -1,6 +1,6 @@
-import React, { Fragment } from "react";
+import React, { Fragment, ReactNode } from "react";
 import { consumer } from "react-ioc";
-import { action, IObservableArray } from "mobx";
+import { action, IObservableArray, computed } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Icon, Button } from "@blueprintjs/core";
@@ -17,6 +17,7 @@ import {
   RelationFieldAccordionProps
 } from "./AbstractRelationFieldAccordion";
 import { EntityLink } from "Components/ArticleEditor/EntityLink";
+import { ComputedCache } from "Utils/WeakCache";
 
 interface MultiRelationFieldAccordionState {
   isOpen: boolean;
@@ -42,6 +43,13 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     activeId: null,
     touchedIds: {}
   };
+
+  @computed
+  private get dataSource() {
+    const { model, fieldSchema, filterItems } = this.props;
+    const array: EntityObject[] = model[fieldSchema.FieldName];
+    return array && array.filter(filterItems).sort(asc(this._orderByField));
+  }
 
   constructor(props: RelationFieldAccordionProps, context?: any) {
     super(props, context);
@@ -295,12 +303,12 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
     );
   }
 
-  renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
+  private _displayFieldsNodeCache = new ComputedCache<EntityObject, ReactNode>();
+
+  renderField(_model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const {
-      columnProportions,
       fieldOrders,
       fieldEditors,
-      filterItems,
       renderOnlyActiveSection,
       canSaveEntity,
       canRefreshEntity,
@@ -311,9 +319,9 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
       canCloneEntity
     } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
-    const list: EntityObject[] = model[fieldSchema.FieldName];
+    const dataSource = this.dataSource;
     const contentSchema = fieldSchema.RelatedContent;
-    return isTouched && list ? (
+    return isTouched && dataSource ? (
       <table
         className={cn("relation-field-accordion", {
           "relation-field-accordion--hidden": !isOpen
@@ -322,87 +330,84 @@ export class MultiRelationFieldAccordion extends AbstractRelationFieldAccordion 
         cellPadding="0"
       >
         <tbody>
-          {list
-            .filter(filterItems)
-            .sort(asc(this._orderByField))
-            .map(entity => {
-              const isOpen = entity._ClientId === activeId;
-              const hasServerId = entity._ServerId > 0;
-              return (
-                <Fragment key={entity._ClientId}>
-                  <tr
-                    className={cn("relation-field-accordion__header", {
-                      "relation-field-accordion__header--open": isOpen,
-                      "relation-field-accordion__header--edited": contentSchema.isEdited(entity),
-                      "relation-field-accordion__header--invalid": contentSchema.hasErrors(entity)
-                    })}
-                    onClick={e => this.handleToggle(e, entity)}
+          {dataSource.map(entity => {
+            const isOpen = entity._ClientId === activeId;
+            const hasServerId = entity._ServerId > 0;
+            return (
+              <Fragment key={entity._ClientId}>
+                <tr
+                  className={cn("relation-field-accordion__header", {
+                    "relation-field-accordion__header--open": isOpen,
+                    "relation-field-accordion__header--edited": contentSchema.isEdited(entity),
+                    "relation-field-accordion__header--invalid": contentSchema.hasErrors(entity)
+                  })}
+                  onClick={e => this.handleToggle(e, entity)}
+                >
+                  <td
+                    key={-1}
+                    className="relation-field-accordion__expander"
+                    title={isOpen ? "Свернуть" : "Развернуть"}
                   >
-                    <td
-                      key={-1}
-                      className="relation-field-accordion__expander"
-                      title={isOpen ? "Свернуть" : "Развернуть"}
-                    >
-                      <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
-                    </td>
-                    <td key={-2} className="relation-field-accordion__cell">
-                      <EntityLink model={entity} contentSchema={contentSchema} />
-                    </td>
-                    {this._displayFields.map((displayField, i) => (
+                    <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
+                  </td>
+                  <td key={-2} className="relation-field-accordion__cell">
+                    <EntityLink model={entity} contentSchema={contentSchema} />
+                  </td>
+                  {this._displayFieldsNodeCache.getOrAdd(entity, () =>
+                    this._displayFields.map((displayField, i) => (
                       <td
                         key={i}
-                        colSpan={columnProportions ? columnProportions[i] : 1}
+                        colSpan={this._columnProportions ? this._columnProportions[i] : 1}
                         className="relation-field-accordion__cell"
                       >
                         {displayField(entity)}
                       </td>
-                    ))}
-                    <td key={-3} className="relation-field-accordion__controls">
-                      <EntityMenu
-                        small
-                        onSave={canSaveEntity && (e => this.saveEntity(e, entity))}
-                        onDetach={
-                          canDetachEntity && !this._readonly && (e => this.detachEntity(e, entity))
-                        }
-                        onRemove={
-                          canRemoveEntity && hasServerId && (e => this.removeEntity(e, entity))
-                        }
-                        onRefresh={
-                          canRefreshEntity && hasServerId && (e => this.refreshEntity(e, entity))
-                        }
-                        onReload={
-                          canReloadEntity && hasServerId && (e => this.reloadEntity(e, entity))
-                        }
-                        onClone={
-                          canCloneEntity && hasServerId && (e => this.cloneEntity(e, entity))
-                        }
-                        onPublish={
-                          canPublishEntity && hasServerId && (e => this.publishEntity(e, entity))
-                        }
-                      />
-                    </td>
-                  </tr>
-                  <tr className="relation-field-accordion__main">
-                    <td
-                      className={cn("relation-field-accordion__body", {
-                        "relation-field-accordion__body--open": isOpen
-                      })}
-                      colSpan={this.getBodyColSpan()}
-                    >
-                      {(isOpen || !renderOnlyActiveSection) &&
-                        touchedIds[entity._ClientId] && (
-                          <EntityEditor
-                            model={entity}
-                            contentSchema={fieldSchema.RelatedContent}
-                            fieldOrders={fieldOrders}
-                            fieldEditors={fieldEditors}
-                          />
-                        )}
-                    </td>
-                  </tr>
-                </Fragment>
-              );
-            })}
+                    ))
+                  )}
+                  <td key={-3} className="relation-field-accordion__controls">
+                    <EntityMenu
+                      small
+                      onSave={canSaveEntity && (e => this.saveEntity(e, entity))}
+                      onDetach={
+                        canDetachEntity && !this._readonly && (e => this.detachEntity(e, entity))
+                      }
+                      onRemove={
+                        canRemoveEntity && hasServerId && (e => this.removeEntity(e, entity))
+                      }
+                      onRefresh={
+                        canRefreshEntity && hasServerId && (e => this.refreshEntity(e, entity))
+                      }
+                      onReload={
+                        canReloadEntity && hasServerId && (e => this.reloadEntity(e, entity))
+                      }
+                      onClone={canCloneEntity && hasServerId && (e => this.cloneEntity(e, entity))}
+                      onPublish={
+                        canPublishEntity && hasServerId && (e => this.publishEntity(e, entity))
+                      }
+                    />
+                  </td>
+                </tr>
+                <tr className="relation-field-accordion__main">
+                  <td
+                    className={cn("relation-field-accordion__body", {
+                      "relation-field-accordion__body--open": isOpen
+                    })}
+                    colSpan={this.getBodyColSpan()}
+                  >
+                    {(isOpen || !renderOnlyActiveSection) &&
+                      touchedIds[entity._ClientId] && (
+                        <EntityEditor
+                          model={entity}
+                          contentSchema={fieldSchema.RelatedContent}
+                          fieldOrders={fieldOrders}
+                          fieldEditors={fieldEditors}
+                        />
+                      )}
+                  </td>
+                </tr>
+              </Fragment>
+            );
+          })}
         </tbody>
       </table>
     ) : null;

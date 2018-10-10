@@ -83,6 +83,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractRelationFie
   @inject protected _cloneController: CloneController;
   @inject protected _productController: ProductController;
   protected _displayFields: FieldSelector[];
+  protected _columnProportions?: number[];
 
   constructor(props: RelationFieldAccordionProps, context?: any) {
     super(props, context);
@@ -91,6 +92,7 @@ export abstract class AbstractRelationFieldAccordion extends AbstractRelationFie
     this._displayFields = displayFields.map(
       field => (isString(field) ? entity => entity[field] : field)
     );
+    this._columnProportions = props.columnProportions;
   }
 
   protected abstract renderControls(model: ArticleObject, fieldSchema: FieldSchema): ReactNode;

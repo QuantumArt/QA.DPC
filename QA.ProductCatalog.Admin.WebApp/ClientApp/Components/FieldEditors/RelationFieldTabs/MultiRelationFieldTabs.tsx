@@ -1,6 +1,6 @@
 import React from "react";
 import { consumer } from "react-ioc";
-import { action, untracked, IObservableArray } from "mobx";
+import { action, untracked, IObservableArray, computed } from "mobx";
 import { observer } from "mobx-react";
 import cn from "classnames";
 import { Button, Tab, Tabs } from "@blueprintjs/core";
@@ -37,6 +37,13 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
     activeId: null,
     touchedIds: {}
   };
+
+  @computed
+  private get dataSource() {
+    const { model, fieldSchema, filterItems } = this.props;
+    const array: EntityObject[] = model[fieldSchema.FieldName];
+    return array && array.filter(filterItems).sort(asc(this._orderByField));
+  }
 
   constructor(props: RelationFieldTabsProps, context?: any) {
     super(props, context);
@@ -280,7 +287,6 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       fieldEditors,
       renderOnlyActiveTab,
       vertical,
-      filterItems,
       className,
       onSaveEntity,
       onRefreshEntity,
@@ -295,9 +301,9 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
       canCloneEntity
     } = this.props;
     const { isOpen, isTouched, activeId, touchedIds } = this.state;
-    const list: EntityObject[] = model[fieldSchema.FieldName];
-    const isEmpty = !list || list.length === 0;
-    const isSingle = list && list.length === 1;
+    const dataSource = this.dataSource;
+    const isEmpty = !dataSource || dataSource.length === 0;
+    const isSingle = dataSource && dataSource.length === 1;
     let tabId = MultiRelationFieldTabs._tabIdsByModel.get(model);
     if (!tabId) {
       tabId = MultiRelationFieldTabs._nextTabId++;
@@ -318,52 +324,49 @@ export class MultiRelationFieldTabs extends AbstractRelationFieldTabs {
         onChange={this.handleTabChange}
       >
         {isTouched &&
-          list &&
-          list
-            .filter(filterItems)
-            .sort(asc(this._orderByField))
-            .map(entity => {
-              const title = this.getTitle(entity);
-              return (
-                <Tab
-                  key={entity._ClientId}
-                  id={entity._ClientId}
-                  panel={
-                    touchedIds[entity._ClientId] && (
-                      <EntityEditor
-                        model={entity}
-                        contentSchema={fieldSchema.RelatedContent}
-                        skipOtherFields={skipOtherFields}
-                        fieldOrders={fieldOrders}
-                        fieldEditors={fieldEditors}
-                        withHeader
-                        onSaveEntity={onSaveEntity}
-                        onRefreshEntity={onRefreshEntity}
-                        onReloadEntity={onReloadEntity}
-                        onPublishEntity={onPublishEntity}
-                        onCloneEntity={this.cloneEntity}
-                        onDetachEntity={this.detachEntity}
-                        onRemoveEntity={this.removeEntity}
-                        canSaveEntity={canSaveEntity}
-                        canRefreshEntity={canRefreshEntity}
-                        canReloadEntity={canReloadEntity}
-                        canDetachEntity={!this._readonly && canDetachEntity}
-                        canRemoveEntity={canRemoveEntity}
-                        canPublishEntity={canPublishEntity}
-                        canCloneEntity={canCloneEntity}
-                      />
-                    )
-                  }
+          dataSource &&
+          dataSource.map(entity => {
+            const title = this.getTitle(entity);
+            return (
+              <Tab
+                key={entity._ClientId}
+                id={entity._ClientId}
+                panel={
+                  touchedIds[entity._ClientId] && (
+                    <EntityEditor
+                      model={entity}
+                      contentSchema={fieldSchema.RelatedContent}
+                      skipOtherFields={skipOtherFields}
+                      fieldOrders={fieldOrders}
+                      fieldEditors={fieldEditors}
+                      withHeader
+                      onSaveEntity={onSaveEntity}
+                      onRefreshEntity={onRefreshEntity}
+                      onReloadEntity={onReloadEntity}
+                      onPublishEntity={onPublishEntity}
+                      onCloneEntity={this.cloneEntity}
+                      onDetachEntity={this.detachEntity}
+                      onRemoveEntity={this.removeEntity}
+                      canSaveEntity={canSaveEntity}
+                      canRefreshEntity={canRefreshEntity}
+                      canReloadEntity={canReloadEntity}
+                      canDetachEntity={!this._readonly && canDetachEntity}
+                      canRemoveEntity={canRemoveEntity}
+                      canPublishEntity={canPublishEntity}
+                      canCloneEntity={canCloneEntity}
+                    />
+                  )
+                }
+              >
+                <div
+                  className="multi-relation-field-tabs__title"
+                  title={isString(title) ? title : ""}
                 >
-                  <div
-                    className="multi-relation-field-tabs__title"
-                    title={isString(title) ? title : ""}
-                  >
-                    {title}
-                  </div>
-                </Tab>
-              );
-            })}
+                  {title}
+                </div>
+              </Tab>
+            );
+          })}
       </Tabs>
     );
   }

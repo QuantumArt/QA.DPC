@@ -231,7 +231,6 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const {
-      columnProportions,
       fieldOrders,
       fieldEditors,
       canSaveEntity,
@@ -270,7 +269,7 @@ export class SingleRelationFieldAccordion extends AbstractRelationFieldAccordion
             {this._displayFields.map((displayField, i) => (
               <td
                 key={i}
-                colSpan={columnProportions ? columnProportions[i] : 1}
+                colSpan={this._columnProportions ? this._columnProportions[i] : 1}
                 className="relation-field-accordion__cell"
               >
                 {displayField(entity)}
