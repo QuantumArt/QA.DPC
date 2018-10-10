@@ -1,19 +1,12 @@
 import React, { Component } from "react";
 import cn from "classnames";
 import { consumer, inject } from "react-ioc";
-import {
-  observable,
-  computed,
-  runInAction,
-  autorun,
-  IObservableArray,
-  IReactionDisposer
-} from "mobx";
+import { observable, runInAction, autorun, IObservableArray, IReactionDisposer } from "mobx";
 import { observer } from "mobx-react";
 import { Intent } from "@blueprintjs/core";
 import { Col, Row } from "react-flexbox-grid";
 import { Options } from "react-select";
-import { WeakCache } from "Utils/WeakCache";
+import { WeakCache, ComputedCache } from "Utils/WeakCache";
 import { asc } from "Utils/Array/Sort";
 import { DataContext } from "Services/DataContext";
 import { InputNumber, Select } from "Components/FormControls/FormControls";
@@ -34,8 +27,8 @@ interface ParameterFieldsProps extends FieldEditorProps {
 }
 
 const unitOptionsCache = new WeakCache();
-const unitByAliasCache = new WeakCache();
-const baseParamByAliasCache = new WeakCache();
+const unitByAliasCache = new ComputedCache();
+const baseParamByAliasCache = new ComputedCache();
 
 @consumer
 @observer
@@ -133,36 +126,24 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
 
   // BaseParameter.PreloadingMode должно быть PreloadingMode.Eager
   private getBaseParametersByAlias(): { [alias: string]: BaseParameter } {
-    const byAliasComputed = baseParamByAliasCache.getOrAdd(this._dataContext, () =>
-      computed(
-        () => {
-          const byAlias = {};
-          for (const baseParameter of this._dataContext.tables.BaseParameter.values()) {
-            byAlias[baseParameter.Alias] = baseParameter;
-          }
-          return byAlias;
-        },
-        { keepAlive: true }
-      )
-    );
-    return byAliasComputed.get();
+    return baseParamByAliasCache.getOrAdd(this._dataContext, { keepAlive: true }, () => {
+      const byAlias = {};
+      for (const baseParameter of this._dataContext.tables.BaseParameter.values()) {
+        byAlias[baseParameter.Alias] = baseParameter;
+      }
+      return byAlias;
+    });
   }
 
   // Unit.PreloadingMode должно быть PreloadingMode.Eager
   private getUnitsByAlias(): { [alias: string]: Unit } {
-    const byAliasComputed = unitByAliasCache.getOrAdd(this._dataContext, () =>
-      computed(
-        () => {
-          const byAlias = {};
-          for (const unit of this._dataContext.tables.Unit.values()) {
-            byAlias[unit.Alias] = unit;
-          }
-          return byAlias;
-        },
-        { keepAlive: true }
-      )
-    );
-    return byAliasComputed.get();
+    return unitByAliasCache.getOrAdd(this._dataContext, { keepAlive: true }, () => {
+      const byAlias = {};
+      for (const unit of this._dataContext.tables.Unit.values()) {
+        byAlias[unit.Alias] = unit;
+      }
+      return byAlias;
+    });
   }
 
   // Unit.PreloadingMode должно быть PreloadingMode.Eager
