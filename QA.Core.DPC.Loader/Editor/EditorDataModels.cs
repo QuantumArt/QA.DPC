@@ -19,10 +19,6 @@ namespace QA.Core.DPC.Loader.Editor
         /// </summary>
         internal const string _ServerId = "_ServerId";
         /// <summary>
-        /// Имя поля для .NET-названия контента статьи <see cref="Quantumart.QP8.BLL.Content.NetName" />.
-        /// </summary>
-        internal const string _Content = "_Content";
-        /// <summary>
         /// Имя поля для даты создания или последнего изменения статьи <see cref="Models.Entities.Article.Modified"/>.
         /// </summary>
         internal const string _Modified = "_Modified";

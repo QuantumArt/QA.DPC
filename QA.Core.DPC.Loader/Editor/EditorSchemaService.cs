@@ -1,6 +1,7 @@
 ﻿using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Configuration;
+using QA.Core.Models.Entities;
 using Quantumart.QP8.BLL.Services.API;
 using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
@@ -67,6 +68,11 @@ namespace QA.Core.DPC.Loader.Editor
             /// </summary>
             public Dictionary<ContentSchema, string> DefinitionNamesBySchema
                 = new Dictionary<ContentSchema, string>();
+
+            /// <summary>
+            /// Предзагружаемые статьи, уже посещенные в <see cref="EditorDataService.ConvertArticle"/>
+            /// </summary>
+            public HashSet<Article> VisitedPreloadedArticles = new HashSet<Article>();
         }
         
         /// <summary>
@@ -252,8 +258,11 @@ namespace QA.Core.DPC.Loader.Editor
             ArticleObject[] preloadedArticles = new ArticleObject[0];
             if (entityField.PreloadingMode == PreloadingMode.Eager)
             {
-                preloadedArticles = _editorPreloadingService
-                    .PreloadRelationArticles(entityField, relationCondition, context.Dictionaries);
+                preloadedArticles = _editorPreloadingService.PreloadRelationArticles(
+                    entityField,
+                    relationCondition,
+                    context.VisitedPreloadedArticles,
+                    context.Dictionaries);
             }
 
             string[] displayFieldNames = contentSchema.Fields.Values

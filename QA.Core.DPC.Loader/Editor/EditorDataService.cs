@@ -3,6 +3,7 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using Quantumart.QP8.BLL.Services.API;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace QA.Core.DPC.Loader.Editor
@@ -19,6 +20,8 @@ namespace QA.Core.DPC.Loader.Editor
         private class ArticleContext
         {
             public IArticleFilter Filter;
+
+            public HashSet<Article> Visited;
 
             public bool ShouldIncludeArticle(Article article)
             {
@@ -48,13 +51,17 @@ namespace QA.Core.DPC.Loader.Editor
         /// </summary>
         /// <exception cref="InvalidOperationException" />
         /// <exception cref="NotSupportedException" />
-        public ArticleObject ConvertArticle(Article article, IArticleFilter filter)
+        public ArticleObject ConvertArticle(Article article, IArticleFilter filter, HashSet<Article> visited)
         {
+            if (filter == null) throw new ArgumentNullException(nameof(filter));
+            if (visited == null) throw new ArgumentNullException(nameof(visited));
+
             _contentService.LoadStructureCache();
 
             return ConvertArticle(article, new ArticleContext
             {
                 Filter = filter,
+                Visited = visited,
             });
         }
 
@@ -66,16 +73,23 @@ namespace QA.Core.DPC.Loader.Editor
             {
                 return null;
             }
-
+            
             var dict = new ArticleObject
             {
                 [ArticleObject._ServerId] = article.Id,
-                [ArticleObject._Content] = article.ContentName,
             };
 
             if (forExtension)
             {
                 dict[ArticleObject._IsExtension] = true;
+            }
+            else if (context.Visited.Contains(article))
+            {
+                return dict;
+            }
+            else
+            {
+                context.Visited.Add(article);
             }
 
             if (!article.IsReadOnly)

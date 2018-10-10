@@ -5,7 +5,8 @@ import {
   IModelType,
   onPatch,
   ModelProperties,
-  getType
+  getType,
+  getSnapshot
 } from "mobx-state-tree";
 import { validationMixin } from "mst-validation-mixin";
 import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
@@ -43,11 +44,21 @@ export class DataContext<TTables extends TablesObject = TablesObject> {
 
   public initTables(tablesSnapshot: TablesSnapshot) {
     this.tables = this._tablesType.create(tablesSnapshot) as TTables;
-    if (DEBUG) {
-      onPatch(this.tables, patch => console.log(patch));
-    }
+
     // разрешаем изменения моделей из других сервисов и компонентов
     unprotect(this.tables);
+
+    if (DEBUG) {
+      // отладочный вывод в консоль
+      const tables = this.tables;
+      class SnapshotView {
+        get snapshot() {
+          console.log("oops...");
+          return getSnapshot(tables);
+        }
+      }
+      onPatch(this.tables, patch => console.log(patch, new SnapshotView()));
+    }
   }
 
   @action
@@ -120,7 +131,6 @@ function compileTablesType(
         // для каждого контента-расширения создаем словарь его полей
         const extFieldModels = {
           _ServerId: t.optional(t.number, getNextId),
-          _Content: t.optional(t.literal(extName), extName),
           _Modified: t.maybeNull(t.Date),
           _IsExtension: t.optional(t.literal(true), true)
         };
@@ -191,7 +201,6 @@ function compileTablesType(
       const fieldModels = {
         _ClientId: t.identifierNumber,
         _ServerId: t.optional(t.number, getNextId),
-        _Content: t.optional(t.literal(content.ContentName), content.ContentName),
         _Modified: t.maybeNull(t.Date),
         _IsExtension: t.optional(t.literal(false), false),
         _IsVirtual: t.optional(t.boolean, false)

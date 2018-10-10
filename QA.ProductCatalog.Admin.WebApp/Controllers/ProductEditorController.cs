@@ -211,8 +211,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             
             IArticleFilter filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
+            var visited = new HashSet<Article>();
+
             ArticleObject[] articleObjects = articles
-                .Select(article => _editorDataService.ConvertArticle(article, filter))
+                .Select(article => _editorDataService.ConvertArticle(article, filter, visited))
                 .ToArray();
 
             string productsJson = JsonConvert.SerializeObject(articleObjects);
@@ -279,7 +281,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             EntityField relationField = (EntityField)relationContent.Fields
                 .Single(f => f.FieldName == request.RelationFieldName);
 
-            ArticleObject[] preloadedArticles = _editorPreloadingService.PreloadRelationArticles(relationField);
+            ArticleObject[] preloadedArticles = _editorPreloadingService
+                .PreloadRelationArticles(relationField, new HashSet<Article>());
 
             string relationJson = JsonConvert.SerializeObject(preloadedArticles);
 
@@ -475,7 +478,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             IArticleFilter filter = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
-            ArticleObject articleObject = _editorDataService.ConvertArticle(article, filter);
+            ArticleObject articleObject = _editorDataService.ConvertArticle(article, filter, new HashSet<Article>());
 
             return articleObject;
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Models;
@@ -45,19 +46,26 @@ namespace QA.Core.DPC.Loader.Editor
         }
 
         /// <exception cref="InvalidOperationException"/>
-        public ArticleObject[] PreloadRelationArticles(EntityField entityField, Dictionaries dictionaries = null)
+        public ArticleObject[] PreloadRelationArticles(
+            EntityField entityField, HashSet<Article> visited, Dictionaries dictionaries = null)
         {
+            if (entityField == null) throw new ArgumentNullException(nameof(entityField));
+            if (visited == null) throw new ArgumentNullException(nameof(visited));
+
             QP8BLL.Field qpField = _fieldService.Read(entityField.FieldId);
 
             string relationCondition = GetRelationCondition(entityField, qpField);
 
-            return PreloadRelationArticles(entityField, relationCondition, dictionaries);
+            return PreloadRelationArticles(entityField, relationCondition, visited, dictionaries);
         }
 
         /// <exception cref="InvalidOperationException"/>
         public ArticleObject[] PreloadRelationArticles(
-            EntityField entityField, string relationCondition, Dictionaries dictionaries = null)
+            EntityField entityField, string relationCondition,
+            HashSet<Article> visited, Dictionaries dictionaries = null)
         {
+            if (entityField == null) throw new ArgumentNullException(nameof(entityField));
+            if (visited == null) throw new ArgumentNullException(nameof(visited));
             if (entityField.PreloadingMode == PreloadingMode.None)
             {
                 throw new InvalidOperationException($"Preloading for EntityField ({entityField.FieldId}) is disabled");
@@ -77,7 +85,7 @@ namespace QA.Core.DPC.Loader.Editor
             Article[] articles = _productService.GetProductsByIds(content, articleIds);
 
             ArticleObject[] articleObjects = articles
-                .Select(a => _editorDataService.ConvertArticle(a, ArticleFilter.DefaultFilter))
+                .Select(a => _editorDataService.ConvertArticle(a, ArticleFilter.DefaultFilter, visited))
                 .ToArray();
 
             return articleObjects;
