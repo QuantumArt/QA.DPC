@@ -527,8 +527,6 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Scripts\Bundles\**\*.*" />
-    <Content Include="Views\ProductEditor\ComponentLibrary.jsx" />
-    <Content Include="Views\ProductEditor\TypeScriptSchema.js" />
     <Content Include="webpack.config.js" />
     <Content Include="package.json" />
     <Content Include=".editorconfig" />
@@ -718,8 +716,6 @@
     <TypeScriptCompile Include="Scripts\qp\QP8BackendApi.Interaction.d.ts">
       <DependentUpon>QP8BackendApi.Interaction.js</DependentUpon>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\FixConnectTariff.tsx" />
-    <TypeScriptCompile Include="Views\ProductEditor\DefaultEditor.tsx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />

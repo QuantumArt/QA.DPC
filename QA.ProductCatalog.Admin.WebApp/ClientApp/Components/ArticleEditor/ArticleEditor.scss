@@ -24,6 +24,7 @@
 .entity-link {
   .pt-button-text {
     color: $dark-gray1 !important;
+    user-select: auto;
   }
 }
 

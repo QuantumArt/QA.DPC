@@ -53,11 +53,15 @@ export class DataContext<TTables extends TablesObject = TablesObject> {
       const tables = this.tables;
       class SnapshotView {
         get snapshot() {
-          console.log("oops...");
           return getSnapshot(tables);
         }
       }
-      onPatch(this.tables, patch => console.log(patch, new SnapshotView()));
+      const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+      if (isChrome) {
+        onPatch(this.tables, patch => console.log(patch, new SnapshotView()));
+      } else {
+        onPatch(this.tables, patch => console.log(patch));
+      }
     }
   }
 

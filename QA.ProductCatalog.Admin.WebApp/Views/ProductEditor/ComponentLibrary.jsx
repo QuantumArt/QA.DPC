@@ -63,7 +63,7 @@ class App extends React.Component {
           <br />
           <Localize
             load={lang =>
-              import(/* webpackChunkName: "i18n-" */ `./Foo.${lang}.jsx`)
+              import(/* webpackChunkName: "i18n-" */ `./ComponentLibrary.${lang}.jsx`)
             }
           >
             {tran => (
@@ -95,7 +95,9 @@ class App extends React.Component {
   }
 }
 
-@localize(lang => import(/* webpackChunkName: "i18n-" */ `./Bar.${lang}.jsx`))
+@localize(lang =>
+  import(/* webpackChunkName: "i18n-" */ `./ComponentLibrary.${lang}.jsx`)
+)
 class LocalizedComponent extends React.Component {
   render() {
     /** @type {TranslateFunction} */
@@ -172,7 +174,7 @@ const category = Category.create({
 
 unprotect(category);
 
-configure({ enforceActions: false });
+configure({ enforceActions: "never" });
 
 article.Category = category;
 
