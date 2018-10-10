@@ -313,7 +313,7 @@ namespace QA.Core.DPC.Loader
                                 && a.RelatedItems.Intersect(typesIds).Any()));
                     }
 
-                    definitions = definitions.ToArray();
+                    definitions = definitions.OrderBy(n => n.Id).ToArray();
 
                     Article definition;
 
