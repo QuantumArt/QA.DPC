@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { consumer, inject } from "react-ioc";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import { ExtensionEditor } from "Components/ArticleEditor/ExtensionEditor";
 import {
@@ -13,6 +14,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { Product, DeviceOnTariffs, ProductRelation } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
+import { ProductValidator } from "../Services/ProductValidator";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 
@@ -21,7 +23,9 @@ interface DevicesTabProps {
   contentSchema: ContentSchema;
 }
 
+@consumer
 export class DevicesTab extends Component<DevicesTabProps> {
+  @inject private productValidator: ProductValidator;
   private filterModel = new FilterModel(this.props.model);
 
   render() {
@@ -81,8 +85,26 @@ export class DevicesTab extends Component<DevicesTabProps> {
         MarketingProduct: IGNORE,
         Parameters: this.renderParameters
       }}
+      onSaveEntity={this.saveDevice}
+      onCloneEntity={this.cloneDevice}
+      onClonePrototype={this.createDevice}
     />
   );
+
+  private saveDevice = async (device: Product, saveEntity: () => Promise<void>) => {
+    this.productValidator.validateProduct(device);
+    await saveEntity();
+  };
+
+  private cloneDevice = async (_internetTariff: Product, cloneEntity: () => Promise<Product>) => {
+    const clonedDevice = await cloneEntity();
+    this.productValidator.validateProduct(clonedDevice);
+  };
+
+  private createDevice = async (clonePrototype: () => Promise<Product>) => {
+    const clonedDevice = await clonePrototype();
+    this.productValidator.validateProduct(clonedDevice);
+  };
 
   private renderDevicesOnTariffs = (props: FieldEditorProps) => (
     <MultiRelationFieldAccordion

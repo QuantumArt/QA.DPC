@@ -92,7 +92,7 @@ export class ProductController {
 
   @command
   public async savePartialProduct(entity: EntityObject, contentSchema: ContentSchema) {
-    const errors = this._dataValidator.validate(entity, contentSchema);
+    const errors = this._dataValidator.collectErrors(entity, contentSchema);
     if (errors.length > 0) {
       window.alert(this.getErrorMessage(errors));
       return;

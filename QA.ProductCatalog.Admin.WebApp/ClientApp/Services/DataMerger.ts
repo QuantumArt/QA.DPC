@@ -81,6 +81,8 @@ export class DataMerger {
 
   @action
   public mergeArticle(article: ArticleObject, snapshot: ArticleSnapshot, strategy: MergeStrategy) {
+    article.clearErrors();
+
     const articleSnapshot = getSnapshot<ArticleSnapshot>(article);
 
     Object.entries(snapshot).forEach(([name, fieldSnapshot]) => {

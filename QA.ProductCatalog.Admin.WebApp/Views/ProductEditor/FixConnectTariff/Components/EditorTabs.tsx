@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { provider } from "react-ioc";
 import { observable, action } from "mobx";
 import { observer } from "mobx-react";
 import { Tabs, Tab, Icon, TabId } from "@blueprintjs/core";
@@ -10,6 +11,7 @@ import {
 } from "Components/FieldEditors/FieldEditors";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
 import { Product, FixConnectAction, DevicesForFixConnectAction } from "../TypeScriptSchema";
+import { ProductValidator } from "../Services/ProductValidator";
 import { FederalTab } from "./FederalTab";
 import { DevicesTab } from "./DevicesTab";
 import { RegionalTab } from "./RegionalTab";
@@ -25,6 +27,7 @@ interface EditorTabsProps {
   contentSchema: ContentSchema;
 }
 
+@provider(ProductValidator)
 @observer
 export class EditorTabs extends Component<EditorTabsProps> {
   @observable private activatedTabIds: TabId[] = ["federal"];

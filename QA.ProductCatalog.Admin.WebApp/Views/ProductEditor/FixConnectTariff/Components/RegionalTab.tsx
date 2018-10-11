@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
 import {
   ContentSchema,
@@ -10,6 +11,7 @@ import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEdito
 import { MultiRelationFieldAccordion, FileFieldEditor } from "Components/FieldEditors/FieldEditors";
 import { Product } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
+import { ProductValidator } from "../Services/ProductValidator";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 
@@ -18,8 +20,10 @@ interface RegionalTabTabProps {
   contentSchema: ContentSchema;
 }
 
+@consumer
 @observer
 export class RegionalTab extends Component<RegionalTabTabProps> {
+  @inject private productValidator: ProductValidator;
   private filterModel = new FilterModel(this.props.model);
 
   private getMarketingFixConnectTariffProps() {
@@ -133,8 +137,29 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         MarketingProduct: IGNORE,
         Parameters: this.renderInternetParameters
       }}
+      onSaveEntity={this.saveInternetTariff}
+      onCloneEntity={this.cloneInternetTariff}
+      onClonePrototype={this.createInternetTariff}
     />
   );
+
+  private saveInternetTariff = async (internetTariff: Product, saveEntity: () => Promise<void>) => {
+    this.productValidator.validateProduct(internetTariff);
+    await saveEntity();
+  };
+
+  private cloneInternetTariff = async (
+    _internetTariff: Product,
+    cloneEntity: () => Promise<Product>
+  ) => {
+    const clonedTariff = await cloneEntity();
+    this.productValidator.validateProduct(clonedTariff);
+  };
+
+  private createInternetTariff = async (clonePrototype: () => Promise<Product>) => {
+    const clonedTariff = await clonePrototype();
+    this.productValidator.validateProduct(clonedTariff);
+  };
 
   private renderPhoneTariffs = (props: FieldEditorProps) => (
     <MultiRelationFieldAccordion
@@ -152,8 +177,26 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         MarketingProduct: IGNORE,
         Parameters: this.renderPhoneParameters
       }}
+      onSaveEntity={this.savePhoneTariff}
+      onCloneEntity={this.clonePhoneTaridd}
+      onClonePrototype={this.createPhoneTariff}
     />
   );
+
+  private savePhoneTariff = async (phoneTariff: Product, saveEntity: () => Promise<void>) => {
+    this.productValidator.validateProduct(phoneTariff);
+    await saveEntity();
+  };
+
+  private clonePhoneTaridd = async (_phoneTariff: Product, cloneEntity: () => Promise<Product>) => {
+    const clonedTariff = await cloneEntity();
+    this.productValidator.validateProduct(clonedTariff);
+  };
+
+  private createPhoneTariff = async (clonePrototype: () => Promise<Product>) => {
+    const clonedTariff = await clonePrototype();
+    this.productValidator.validateProduct(clonedTariff);
+  };
 
   private renderFixConnectParameters = (props: FieldEditorProps) => (
     <ParameterFields

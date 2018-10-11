@@ -21,10 +21,10 @@ export class DataValidator {
   private _isEdited: boolean;
   private _errors: ArticleErrors[];
 
-  public validate(article: ArticleObject, contentSchema: ContentSchema) {
+  public collectErrors(article: ArticleObject, contentSchema: ContentSchema) {
     this._isEdited = false;
     this._errors = [];
-    this.validateArticle(article, contentSchema);
+    this.visitArticle(article, contentSchema);
     if (!this._isEdited && this._errors.length === 0) {
       this._errors.push({
         ServerId: article._ServerId,
@@ -36,7 +36,7 @@ export class DataValidator {
     return this._errors;
   }
 
-  private validateArticle(article: ArticleObject, contentSchema: ContentSchema) {
+  private visitArticle(article: ArticleObject, contentSchema: ContentSchema) {
     if (article.isEdited()) {
       this._isEdited = true;
     }
@@ -54,7 +54,7 @@ export class DataValidator {
       if (isSingleRelationField(fieldSchema)) {
         const relatedEntity = fieldValue as EntityObject;
         if (fieldSchema.UpdatingMode === UpdatingMode.Update) {
-          this.validateArticle(relatedEntity, fieldSchema.RelatedContent);
+          this.visitArticle(relatedEntity, fieldSchema.RelatedContent);
         } else if (relatedEntity._ServerId < 0) {
           this.addNotSavedRelationError(relatedEntity, fieldSchema.RelatedContent);
         }
@@ -62,7 +62,7 @@ export class DataValidator {
         const relatedCollection = fieldValue as EntityObject[];
         if (fieldSchema.UpdatingMode === UpdatingMode.Update) {
           relatedCollection.forEach(entity =>
-            this.validateArticle(entity, fieldSchema.RelatedContent)
+            this.visitArticle(entity, fieldSchema.RelatedContent)
           );
         } else {
           relatedCollection.forEach(entity => {
@@ -75,7 +75,7 @@ export class DataValidator {
         const extensionFieldName = `${fieldName}${ArticleObject._Extension}`;
         const extensionArticle = article[extensionFieldName][fieldValue] as ArticleObject;
         const extensionContentSchema = fieldSchema.ExtensionContents[fieldValue];
-        this.validateArticle(extensionArticle, extensionContentSchema);
+        this.visitArticle(extensionArticle, extensionContentSchema);
       }
     }
   }

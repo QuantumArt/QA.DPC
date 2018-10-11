@@ -80,7 +80,7 @@
     "react-datetime": "^2.14.0",
     "react-dom": "^16.3.1",
     "react-flexbox-grid": "^2.1.2",
-    "react-ioc": "0.0.3",
+    "react-ioc": "0.0.4",
     "react-select": "^1.2.1",
     "react-text-mask": "^5.4.1",
     "react-textarea-autosize": "^6.1.0",
