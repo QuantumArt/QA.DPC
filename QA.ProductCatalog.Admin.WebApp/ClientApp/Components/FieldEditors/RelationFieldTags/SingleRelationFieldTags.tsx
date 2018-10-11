@@ -35,13 +35,13 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
         <RelationFieldMenu onSelect={!this._readonly && this.selectRelation} />
         {entity && (
           <span
-            className={cn("pt-tag pt-minimal", {
-              "pt-tag-removable": !this._readonly
+            className={cn("bp3-tag bp3-minimal", {
+              "bp3-tag-removable": !this._readonly
             })}
           >
             {this.getTitle(entity)}
             {!this._readonly && (
-              <button className="pt-tag-remove" title="Отвязать" onClick={this.detachEntity} />
+              <button className="bp3-tag-remove" title="Отвязать" onClick={this.detachEntity} />
             )}
           </span>
         )}

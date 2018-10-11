@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { consumer, inject } from "react-ioc";
+import { Divider } from "@blueprintjs/core";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import { ExtensionEditor } from "Components/ArticleEditor/ExtensionEditor";
 import {
@@ -38,7 +39,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
     return (
       <>
         <FilterBlock byMarketingTariff model={this.filterModel} />
-        <hr />
+        <Divider />
         <ExtensionEditor
           model={extension}
           contentSchema={extensionSchema}

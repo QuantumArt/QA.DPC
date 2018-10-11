@@ -49,7 +49,7 @@ export class FileFieldEditor extends AbstractFieldEditor<FileFieldEditorProps> {
   renderField(model: ArticleObject, fieldSchema: FileFieldSchema) {
     return (
       <Col xl md={6} className="file-field-editor">
-        <div className="pt-control-group pt-fill">
+        <div className="bp3-control-group bp3-fill">
           <InputFile
             id={this._id}
             model={model}
@@ -59,24 +59,24 @@ export class FileFieldEditor extends AbstractFieldEditor<FileFieldEditorProps> {
             readOnly={true}
             accept={fieldSchema.FieldType === FieldExactTypes.Image ? "image/*" : ""}
             className={cn({
-              "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-              "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+              "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+              "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
             })}
           />
           {fieldSchema.FieldType === FieldExactTypes.Image && (
             <button
-              className="pt-button pt-icon-media"
+              className="bp3-button bp3-icon-media"
               title="Просмотр"
               onClick={this.previewImage}
             />
           )}
           <button
-            className="pt-button pt-icon-cloud-download"
+            className="bp3-button bp3-icon-cloud-download"
             title="Скачать"
             onClick={this.downloadFile}
           />
           <button
-            className="pt-button pt-icon-folder-close"
+            className="bp3-button bp3-icon-folder-close"
             title="Библиотека"
             onClick={this.selectFile}
           />

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
+import { Divider } from "@blueprintjs/core";
 import {
   ContentSchema,
   ExtensionFieldSchema,
@@ -68,9 +69,9 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
             Parameters: this.renderFixConnectParameters
           }}
         />
-        <hr />
+        <Divider />
         <FilterBlock model={this.filterModel} />
-        <hr />
+        <Divider />
         {this.renderMarketingInternetTariff()}
         {this.renderMarketingPhoneTariff()}
       </>

@@ -101,8 +101,8 @@ export abstract class AbstractRelationFieldTabs extends AbstractRelationFieldEdi
     return (
       <Col
         md={12}
-        className={cn("field-editor__block pt-form-group", {
-          "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+        className={cn("field-editor__block bp3-form-group", {
+          "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
         <Row>

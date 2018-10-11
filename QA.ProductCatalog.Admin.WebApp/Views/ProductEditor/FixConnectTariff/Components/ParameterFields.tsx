@@ -175,7 +175,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
       .slice()
       .sort(fields ? asc(p => this.fieldOrdersByTitile[p.Title]) : asc(p => p.Title))
       .map(parameter => (
-        <Col md={12} key={parameter._ClientId} className="field-editor__block pt-form-group">
+        <Col md={12} key={parameter._ClientId} className="field-editor__block bp3-form-group">
           <Row>
             <Col xl={2} md={3} className="field-editor__label">
               <label
@@ -204,7 +204,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
                 name="Unit"
                 options={unitOptions}
                 className={cn({
-                  "pt-intent-primary": parameter.isEdited("Unit")
+                  "bp3-intent-primary": parameter.isEdited("Unit")
                 })}
               />
             </Col>
@@ -212,7 +212,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
           {/* <Row>
             <Col xl={2} md={3} className="field-editor__label" />
             <Col md>
-              <Validate model={parameter} name={} rules={} errorClassName="pt-form-helper-text" />
+              <Validate model={parameter} name={} rules={} errorClassName="bp3-form-helper-text" />
             </Col>
           </Row> */}
         </Col>

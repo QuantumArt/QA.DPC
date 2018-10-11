@@ -66,14 +66,14 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
               <Fragment key={entity._ClientId}>
                 {" "}
                 <span
-                  className={cn("pt-tag pt-minimal", {
-                    "pt-tag-removable": !this._readonly
+                  className={cn("bp3-tag bp3-minimal", {
+                    "bp3-tag-removable": !this._readonly
                   })}
                 >
                   {this.getTitle(entity)}
                   {!this._readonly && (
                     <button
-                      className="pt-tag-remove"
+                      className="bp3-tag-remove"
                       title="Отвязать"
                       onClick={e => this.detachEntity(e, entity)}
                     />

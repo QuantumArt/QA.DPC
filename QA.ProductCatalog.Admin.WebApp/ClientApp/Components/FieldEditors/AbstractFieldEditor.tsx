@@ -51,7 +51,7 @@ export abstract class AbstractFieldEditor<
       <Validate
         model={model}
         name={fieldSchema.FieldName}
-        errorClassName="pt-form-helper-text"
+        errorClassName="bp3-form-helper-text"
         rules={rules}
       />
     );
@@ -84,8 +84,8 @@ export abstract class AbstractFieldEditor<
       <Col
         xl={6}
         md={12}
-        className={cn("field-editor__block pt-form-group", {
-          "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+        className={cn("field-editor__block bp3-form-group", {
+          "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
         <Row>

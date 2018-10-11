@@ -3,12 +3,12 @@
   justify-content: space-between;
   flex-wrap: wrap;
 
-  > .pt-button,
-  > .pt-button-group {
+  > .bp3-button,
+  > .bp3-button-group {
     flex: none;
   }
 
-  > .pt-button {
+  > .bp3-button {
     min-width: 110px;
     justify-content: space-between;
   }
@@ -20,25 +20,25 @@
     display: none !important;
   }
 
-  &:not(.pt-vertical) > .pt-tab-list {
-    > .pt-tab {
+  &:not(.bp3-vertical) > .bp3-tab-list {
+    > .bp3-tab {
       max-width: 33%;
     }
   }
 
-  &.pt-vertical > .pt-tab-list {
-    > .pt-tab {
+  &.bp3-vertical > .bp3-tab-list {
+    > .bp3-tab {
       max-width: 33vw;
     }
 
-    > .pt-tab-indicator-wrapper {
+    > .bp3-tab-indicator-wrapper {
       min-width: calc(100% - 20px);
       min-height: 30px;
     }
   }
 
-  &--single.pt-vertical > .pt-tab-list {
-    > .pt-tab-indicator-wrapper {
+  &--single.bp3-vertical > .bp3-tab-list {
+    > .bp3-tab-indicator-wrapper {
       min-width: 100%;
     }
   }

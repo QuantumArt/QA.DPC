@@ -33,7 +33,7 @@
     line-height: 24px;
   }
 
-  .pt-icon {
+  .bp3-icon {
     position: relative;
     top: 2px;
     zoom: 0.9;
@@ -48,15 +48,15 @@
 }
 
 .file-field-editor {
-  .pt-icon-media::before {
+  .bp3-icon-media::before {
     color: $blue2;
   }
 
-  .pt-icon-cloud-download::before {
+  .bp3-icon-cloud-download::before {
     color: $green2;
   }
 
-  .pt-icon-folder-close::before {
+  .bp3-icon-folder-close::before {
     color: $orange2;
   }
 }

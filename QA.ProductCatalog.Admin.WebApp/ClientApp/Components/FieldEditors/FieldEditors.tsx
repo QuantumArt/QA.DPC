@@ -73,8 +73,8 @@ export class StringFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -117,8 +117,8 @@ export class BooleanFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -138,8 +138,8 @@ export class DateFieldEditor extends AbstractFieldEditor {
           type="date"
           disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -159,8 +159,8 @@ export class TimeFieldEditor extends AbstractFieldEditor {
           type="time"
           disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -179,8 +179,8 @@ export class DateTimeFieldEditor extends AbstractFieldEditor {
           name={fieldSchema.FieldName}
           disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -203,8 +203,8 @@ export class ClassifierFieldEditor extends AbstractFieldEditor {
           required
           disabled
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -224,8 +224,8 @@ export class EnumFieldEditor extends AbstractFieldEditor {
           options={options}
           disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -239,8 +239,8 @@ export class EnumFieldEditor extends AbstractFieldEditor {
           required={fieldSchema.IsRequired}
           disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -267,8 +267,8 @@ export class ExtensionFieldEditor extends AbstractFieldEditor {
           required={fieldSchema.IsRequired}
           disabled={disabled}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>

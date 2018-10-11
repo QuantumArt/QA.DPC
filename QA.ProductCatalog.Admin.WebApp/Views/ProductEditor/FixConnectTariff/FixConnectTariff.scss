@@ -2,9 +2,7 @@
   &__is-gift {
     margin-left: 10px;
 
-    .pt-checkbox {
-      position: relative;
-      top: 3px;
+    .bp3-checkbox {
       display: inline-block;
       margin: 0;
       margin-left: 5px;
@@ -15,11 +13,8 @@
 .devices-filter {
   padding-top: 10px;
 
-  .pt-switch.pt-align-right.pt-large {
-    padding-left: 0;
-    padding-right: 32px;
-
-    .pt-control-indicator {
+  .bp3-switch.bp3-align-right.bp3-large {
+    .bp3-control-indicator {
       top: 6px;
     }
   }
@@ -35,4 +30,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
+}
+
+.bp3-divider {
+  margin: 0;
 }

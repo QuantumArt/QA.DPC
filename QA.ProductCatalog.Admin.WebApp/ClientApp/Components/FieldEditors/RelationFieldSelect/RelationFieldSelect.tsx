@@ -98,8 +98,8 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
           multiple={this._multiple}
           disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
