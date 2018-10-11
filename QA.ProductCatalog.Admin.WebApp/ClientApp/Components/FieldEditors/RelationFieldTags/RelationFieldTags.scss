@@ -1,10 +1,15 @@
 .relation-field-list__tags {
   line-height: 24px;
-  overflow-y: auto;
   max-height: 194px;
+  overflow-y: auto;
 
-  .bp3-tag,
   .bp3-button-group {
+    font-size: 14px;
+    vertical-align: middle;
+  }
+
+  .bp3-tag {
+    line-height: 16px;
     font-size: 14px;
     vertical-align: middle;
   }

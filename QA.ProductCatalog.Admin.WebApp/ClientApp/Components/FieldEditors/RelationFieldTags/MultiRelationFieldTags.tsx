@@ -3,7 +3,6 @@ import { Col } from "react-flexbox-grid";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
-import cn from "classnames";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { asc } from "Utils/Array/Sort";
@@ -65,11 +64,7 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
             .map(entity => (
               <Fragment key={entity._ClientId}>
                 {" "}
-                <span
-                  className={cn("bp3-tag bp3-minimal", {
-                    "bp3-tag-removable": !this._readonly
-                  })}
-                >
+                <span className="bp3-tag bp3-minimal">
                   {this.getTitle(entity)}
                   {!this._readonly && (
                     <button

@@ -3,7 +3,6 @@ import { Col } from "react-flexbox-grid";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
-import cn from "classnames";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
@@ -34,11 +33,7 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
       <Col md className="relation-field-list__tags">
         <RelationFieldMenu onSelect={!this._readonly && this.selectRelation} />
         {entity && (
-          <span
-            className={cn("bp3-tag bp3-minimal", {
-              "bp3-tag-removable": !this._readonly
-            })}
-          >
+          <span className="bp3-tag bp3-minimal">
             {this.getTitle(entity)}
             {!this._readonly && (
               <button className="bp3-tag-remove" title="Отвязать" onClick={this.detachEntity} />
