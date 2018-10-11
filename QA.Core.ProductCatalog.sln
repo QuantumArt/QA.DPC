@@ -88,11 +88,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QA.Scheduler.Core", "QA.Sch
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImpactService", "ImpactService", "{5F3FA71D-494E-445E-B5AB-823BBDD911FD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.ProductCatalog.ImpactService", "QA.ProductCatalog.ImpactService\QA.ProductCatalog.ImpactService.csproj", "{4DC1E99B-52AC-4FBD-B8BB-486998FBA45D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.ProductCatalog.ImpactService", "ImpactService\QA.ProductCatalog.ImpactService\QA.ProductCatalog.ImpactService.csproj", "{4DC1E99B-52AC-4FBD-B8BB-486998FBA45D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.ProductCatalog.ImpactService.Tests", "QA.ProductCatalog.ImpactService.Tests\QA.ProductCatalog.ImpactService.Tests.csproj", "{DEEDCDEE-A343-4B63-8905-3A549F505002}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.ProductCatalog.ImpactService.Tests", "ImpactService\QA.ProductCatalog.ImpactService.Tests\QA.ProductCatalog.ImpactService.Tests.csproj", "{DEEDCDEE-A343-4B63-8905-3A549F505002}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.ProductCatalog.ImpactService.API", "QA.ProductCatalog.ImpactService.API\QA.ProductCatalog.ImpactService.API.csproj", "{BDA5817B-BE73-4FC3-9B64-E85599BF7E51}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.ProductCatalog.ImpactService.API", "ImpactService\QA.ProductCatalog.ImpactService.API\QA.ProductCatalog.ImpactService.API.csproj", "{BDA5817B-BE73-4FC3-9B64-E85599BF7E51}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QA.DPC.Core.Helpers", "QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj", "{E5F24ED1-7228-4E08-9B2B-C33F37955D75}"
 EndProject

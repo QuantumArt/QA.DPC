@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
   </PropertyGroup>
 
@@ -16,13 +16,13 @@
     <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>
   
-  <ItemGroup>   
-    <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />   
-    <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Elastic\QA.ProductCatalog.HighloadFront.Elastic.csproj" />
+  <ItemGroup>
     <ProjectReference Include="..\QA.ProductCatalog.ImpactService\QA.ProductCatalog.ImpactService.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Elasticsearch.Net" Version="5.6.4" />
+    <PackageReference Include="Nest" Version="5.6.3" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />

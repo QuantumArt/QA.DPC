@@ -192,7 +192,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while calculating impact: {ex.Message}";
-                Logger.LogError(1, ex, message);
+                LogException(ex, message, null);
                 return BadRequest(message);
             }
             return null;
@@ -207,7 +207,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             catch (Exception ex)
             {
                 var message = $"Exception occurs while calculating option: {ex.Message}";
-                Logger.LogError(1, ex, message);
+                LogException(ex, message, null);
                 return BadRequest(message);
             }
             return null;
