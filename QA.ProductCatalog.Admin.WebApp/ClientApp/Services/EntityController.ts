@@ -103,6 +103,10 @@ export class EntityController {
     fieldSchema: RelationFieldSchema,
     entity: EntityObject
   ) {
+    if (!window.confirm(`Вы действительно хотите удалить статью ${entity._ServerId} ?`)) {
+      return;
+    }
+
     const contentSchema = fieldSchema.RelatedContent;
 
     const response = await fetch(`${rootUrl}/ProductEditor/RemovePartialProduct${this._query}`, {
