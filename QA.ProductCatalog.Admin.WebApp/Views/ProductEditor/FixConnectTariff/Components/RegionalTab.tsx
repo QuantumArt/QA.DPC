@@ -64,6 +64,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
             PDF: this.renderFixTariffsFile,
             ListImage: this.renderFixTariffsFile,
             Parameters: this.renderFixConnectParameters
+            // TODO: validate Regions and Parameters
           }}
         />
         <Divider />
@@ -122,7 +123,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   private renderInternetTariffs = (props: FieldEditorProps) => (
     <RelationFieldAccordion
       {...props}
-      // renderOnlyActiveSection
+      renderOnlyActiveSection
       canCloneEntity
       canRemoveEntity
       canPublishEntity
@@ -162,7 +163,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   private renderPhoneTariffs = (props: FieldEditorProps) => (
     <RelationFieldAccordion
       {...props}
-      // renderOnlyActiveSection
+      renderOnlyActiveSection
       canCloneEntity
       canRemoveEntity
       canPublishEntity

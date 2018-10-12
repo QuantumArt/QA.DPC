@@ -41,7 +41,7 @@ $background: darken($light-gray5, 5%);
   }
 
   &--edited {
-    background-color: rgba($blue3, 0.25) !important;
+    background-color: rgba($blue3, 0.3) !important;
   }
 
   &--invalid {
@@ -141,4 +141,8 @@ $background: darken($light-gray5, 5%);
     display: table-cell;
     border-bottom: $border;
   }
+}
+
+.relation-field-accordion__link {
+  margin-left: 7px;
 }

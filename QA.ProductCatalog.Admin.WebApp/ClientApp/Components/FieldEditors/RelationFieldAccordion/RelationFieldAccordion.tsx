@@ -421,7 +421,13 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                     <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
                   </td>
                   <td key={-2} className="relation-field-accordion__cell">
-                    <EntityLink model={entity} contentSchema={contentSchema} />
+                    {isOpen ? (
+                      <EntityLink model={entity} contentSchema={contentSchema} />
+                    ) : (
+                      hasServerId && (
+                        <span className="relation-field-accordion__link">{entity._ServerId}</span>
+                      )
+                    )}
                   </td>
                   {this._displayFieldsNodeCache.getOrAdd(entity, () =>
                     this._displayFields.map((displayField, i) => (
@@ -435,26 +441,30 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                     ))
                   )}
                   <td key={-3} className="relation-field-accordion__controls">
-                    <EntityMenu
-                      small
-                      onSave={canSaveEntity && (e => this.saveEntity(e, entity))}
-                      onDetach={
-                        canDetachEntity && !this._readonly && (e => this.detachEntity(e, entity))
-                      }
-                      onRemove={
-                        canRemoveEntity && hasServerId && (e => this.removeEntity(e, entity))
-                      }
-                      onRefresh={
-                        canRefreshEntity && hasServerId && (e => this.refreshEntity(e, entity))
-                      }
-                      onReload={
-                        canReloadEntity && hasServerId && (e => this.reloadEntity(e, entity))
-                      }
-                      onClone={canCloneEntity && hasServerId && (e => this.cloneEntity(e, entity))}
-                      onPublish={
-                        canPublishEntity && hasServerId && (e => this.publishEntity(e, entity))
-                      }
-                    />
+                    {isOpen && (
+                      <EntityMenu
+                        small
+                        onSave={canSaveEntity && (e => this.saveEntity(e, entity))}
+                        onDetach={
+                          canDetachEntity && !this._readonly && (e => this.detachEntity(e, entity))
+                        }
+                        onRemove={
+                          canRemoveEntity && hasServerId && (e => this.removeEntity(e, entity))
+                        }
+                        onRefresh={
+                          canRefreshEntity && hasServerId && (e => this.refreshEntity(e, entity))
+                        }
+                        onReload={
+                          canReloadEntity && hasServerId && (e => this.reloadEntity(e, entity))
+                        }
+                        onClone={
+                          canCloneEntity && hasServerId && (e => this.cloneEntity(e, entity))
+                        }
+                        onPublish={
+                          canPublishEntity && hasServerId && (e => this.publishEntity(e, entity))
+                        }
+                      />
+                    )}
                   </td>
                 </tr>
                 <tr className="relation-field-accordion__main">

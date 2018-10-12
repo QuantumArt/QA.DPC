@@ -69,7 +69,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
   private renderDevices = (props: FieldEditorProps) => (
     <RelationFieldAccordion
       {...props}
-      // renderOnlyActiveSection
+      renderOnlyActiveSection
       canCloneEntity
       canRemoveEntity
       canPublishEntity
@@ -107,7 +107,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
   private renderDevicesOnTariffs = (props: FieldEditorProps) => (
     <RelationFieldAccordion
       {...props}
-      // renderOnlyActiveSection
+      renderOnlyActiveSection
       canCloneEntity
       canRemoveEntity
       canPublishEntity

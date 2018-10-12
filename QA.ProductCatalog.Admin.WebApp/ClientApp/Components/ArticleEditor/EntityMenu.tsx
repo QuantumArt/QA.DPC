@@ -23,7 +23,7 @@ export const EntityMenu = ({
   onClone,
   onPublish
 }: EntityMenuProps) => (
-  <Popover position={Position.BOTTOM_RIGHT} usePortal={false}>
+  <Popover position={Position.BOTTOM_RIGHT} usePortal={false} interactionKind="hover">
     <Button minimal small={small} icon="caret-down" intent={Intent.PRIMARY}>
       Действия
     </Button>
