@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import cn from "classnames";
 import { consumer, inject } from "react-ioc";
 import { observable, runInAction, autorun, IObservableArray, IReactionDisposer } from "mobx";
@@ -12,14 +12,22 @@ import { DataContext } from "Services/DataContext";
 import { InputNumber, Select } from "Components/FormControls/FormControls";
 import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
 import { RelationFieldSchema, NumericFieldSchema } from "Models/EditorSchemaModels";
-import { Tables, LinkParameter, ProductParameter, BaseParameter, Unit } from "../TypeScriptSchema";
+import {
+  Tables,
+  LinkParameter,
+  ProductParameter,
+  BaseParameter,
+  Unit,
+  BaseParameterModifier
+} from "../TypeScriptSchema";
 
 type Parameter = ProductParameter | LinkParameter;
 
 interface ParameterField {
   Title: string;
-  Alias: string;
   Unit: string;
+  BaseParam: string;
+  BaseParamModifiers?: string[];
 }
 
 interface ParameterFieldsProps extends FieldEditorProps {
@@ -28,7 +36,8 @@ interface ParameterFieldsProps extends FieldEditorProps {
 
 const unitOptionsCache = new WeakCache();
 const unitByAliasCache = new ComputedCache();
-const baseParamByAliasCache = new ComputedCache();
+const baseParamsByAliasCache = new ComputedCache();
+const baseParamModifiersByAliasCache = new ComputedCache();
 
 @consumer
 @observer
@@ -43,7 +52,8 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     const { fields = [] } = this.props;
     const contentName = this.getContentName();
     const unitsByAlias = this.getUnitsByAlias();
-    const baseParametersByAlias = this.getBaseParametersByAlias();
+    const baseParamsByAlias = this.getBaseParamsByAlias();
+    const baseParamModifiersByAlias = this.getBaseParameterModifiersByAlias();
 
     fields.forEach((field, i) => {
       this.fieldOrdersByTitile[field.Title] = i;
@@ -55,8 +65,11 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
         this._dataContext.createEntity(contentName, {
           _IsVirtual: true,
           Title: field.Title,
-          BaseParameter: baseParametersByAlias[field.Alias],
-          Unit: unitsByAlias[field.Unit]
+          Unit: unitsByAlias[field.Unit],
+          BaseParameter: baseParamsByAlias[field.BaseParam],
+          BaseParameterModifiers:
+            field.BaseParamModifiers &&
+            field.BaseParamModifiers.map(alias => baseParamModifiersByAlias[alias])
         })
       );
     });
@@ -70,6 +83,12 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
         );
         if (parametersToAdd.length > 0) {
           runInAction("addParameters", () => {
+            parametersToAdd.forEach(parameter => {
+              parameter.restoreBaseValues();
+              parameter.setUntouched();
+              // @ts-ignore
+              parameter.clearErrors();
+            });
             parameters.push(...parametersToAdd);
           });
         }
@@ -125,11 +144,22 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
   }
 
   // BaseParameter.PreloadingMode должно быть PreloadingMode.Eager
-  private getBaseParametersByAlias(): { [alias: string]: BaseParameter } {
-    return baseParamByAliasCache.getOrAdd(this._dataContext, { keepAlive: true }, () => {
+  private getBaseParamsByAlias(): { [alias: string]: BaseParameter } {
+    return baseParamsByAliasCache.getOrAdd(this._dataContext, { keepAlive: true }, () => {
       const byAlias = {};
       for (const baseParameter of this._dataContext.tables.BaseParameter.values()) {
         byAlias[baseParameter.Alias] = baseParameter;
+      }
+      return byAlias;
+    });
+  }
+
+  // BaseParameterModifiers.PreloadingMode должно быть PreloadingMode.Eager
+  private getBaseParameterModifiersByAlias(): { [alias: string]: BaseParameterModifier } {
+    return baseParamModifiersByAliasCache.getOrAdd(this._dataContext, { keepAlive: true }, () => {
+      const byAlias = {};
+      for (const modifier of this._dataContext.tables.BaseParameterModifier.values()) {
+        byAlias[modifier.Alias] = modifier;
       }
       return byAlias;
     });
@@ -171,51 +201,65 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     const parameters = this.getParameters();
     const unitOptions = this.getUnitOptions();
 
-    return parameters
-      .slice()
-      .sort(fields ? asc(p => this.fieldOrdersByTitile[p.Title]) : asc(p => p.Title))
-      .map(parameter => (
-        <Col md={12} key={parameter._ClientId} className="field-editor__block bp3-form-group">
-          <Row>
-            <Col xl={2} md={3} className="field-editor__label">
-              <label
-                htmlFor={"param_" + parameter._ClientId}
-                title={parameter.BaseParameter && parameter.BaseParameter.Alias}
-                className={cn("field-editor__label-text", {
-                  "field-editor__label-text--edited": parameter.isEdited()
-                  // "field-editor__label-text--invalid": parameter.hasVisibleErrors()
-                })}
-              >
-                {parameter.Title}
-              </label>
+    return (
+      <Fragment>
+        {parameters
+          .slice()
+          .sort(fields ? asc(p => this.fieldOrdersByTitile[p.Title]) : asc(p => p.Title))
+          .map(parameter => (
+            <Col
+              md={12}
+              key={parameter._ClientId}
+              className={cn("field-editor__block bp3-form-group", {
+                "bp3-intent-danger": parameter.hasVisibleErrors("BaseParameter")
+              })}
+            >
+              <Row>
+                <Col xl={2} md={3} className="field-editor__label">
+                  <label
+                    htmlFor={"param_" + parameter._ClientId}
+                    title={parameter.BaseParameter && parameter.BaseParameter.Alias}
+                    className={cn("field-editor__label-text", {
+                      "field-editor__label-text--edited": parameter.isEdited(),
+                      "field-editor__label-text--invalid": parameter.hasVisibleErrors()
+                    })}
+                  >
+                    {parameter.Title}
+                  </label>
+                </Col>
+                <Col xl={2} md={3}>
+                  <InputNumber
+                    id={"param_" + parameter._ClientId}
+                    model={parameter}
+                    name="NumValue"
+                    isInteger={numValueSchema.IsInteger}
+                    intent={parameter.isEdited("NumValue") ? Intent.PRIMARY : Intent.NONE}
+                  />
+                </Col>
+                <Col xl={2} md={3}>
+                  <Select
+                    model={parameter}
+                    name="Unit"
+                    options={unitOptions}
+                    className={cn({
+                      "bp3-intent-primary": parameter.isEdited("Unit")
+                    })}
+                  />
+                </Col>
+              </Row>
+              <Row>
+                <Col xl={2} md={3} className="field-editor__label" />
+                <Col md>
+                  {parameter.hasVisibleErrors("BaseParameter") && (
+                    <span className="bp3-form-helper-text">
+                      {parameter.getVisibleErrors("BaseParameter")}
+                    </span>
+                  )}
+                </Col>
+              </Row>
             </Col>
-            <Col xl={2} md={3}>
-              <InputNumber
-                id={"param_" + parameter._ClientId}
-                model={parameter}
-                name="NumValue"
-                isInteger={numValueSchema.IsInteger}
-                intent={parameter.isEdited("NumValue") ? Intent.PRIMARY : Intent.NONE}
-              />
-            </Col>
-            <Col xl={2} md={3}>
-              <Select
-                model={parameter}
-                name="Unit"
-                options={unitOptions}
-                className={cn({
-                  "bp3-intent-primary": parameter.isEdited("Unit")
-                })}
-              />
-            </Col>
-          </Row>
-          {/* <Row>
-            <Col xl={2} md={3} className="field-editor__label" />
-            <Col md>
-              <Validate model={parameter} name={} rules={} errorClassName="bp3-form-helper-text" />
-            </Col>
-          </Row> */}
-        </Col>
-      ));
+          ))}
+      </Fragment>
+    );
   }
 }

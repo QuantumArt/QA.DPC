@@ -14,7 +14,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { Product, DeviceOnTariffs, ProductRelation } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
-import { validateProduct } from "../Utils/Validators";
+import { validateProduct, validateDeviceOnTariffs } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 
@@ -94,7 +94,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
     await saveEntity();
   };
 
-  private cloneDevice = async (_internetTariff: Product, cloneEntity: () => Promise<Product>) => {
+  private cloneDevice = async (_device: Product, cloneEntity: () => Promise<Product>) => {
     const clonedDevice = await cloneEntity();
     validateProduct(clonedDevice);
   };
@@ -125,8 +125,32 @@ export class DevicesTab extends Component<DevicesTabProps> {
         Parent: this.renderMatrixProductRelation,
         MarketingTariffs: MultiRelationFieldTable
       }}
+      onSaveEntity={this.saveDeviceOnTariffs}
+      onCloneEntity={this.cloneDeviceOnTariffs}
+      onClonePrototype={this.createDeviceOnTariffs}
     />
   );
+
+  private saveDeviceOnTariffs = async (
+    device: DeviceOnTariffs,
+    saveEntity: () => Promise<void>
+  ) => {
+    validateDeviceOnTariffs(device);
+    await saveEntity();
+  };
+
+  private cloneDeviceOnTariffs = async (
+    _device: DeviceOnTariffs,
+    cloneEntity: () => Promise<DeviceOnTariffs>
+  ) => {
+    const clonedDevice = await cloneEntity();
+    validateDeviceOnTariffs(clonedDevice);
+  };
+
+  private createDeviceOnTariffs = async (clonePrototype: () => Promise<DeviceOnTariffs>) => {
+    const clonedDevice = await clonePrototype();
+    validateDeviceOnTariffs(clonedDevice);
+  };
 
   private renderRegions = (device: Product) => (
     <div className="products-accordion__regions">
@@ -168,8 +192,8 @@ export class DevicesTab extends Component<DevicesTabProps> {
     <ParameterFields
       {...props}
       fields={[
-        { Title: "Цена аренды", Alias: "RentPrice", Unit: "rub_month" },
-        { Title: "Цена продажи", Alias: "SalePrice", Unit: "rub" }
+        { Title: "Цена аренды", Unit: "rub_month", BaseParam: "RentPrice" },
+        { Title: "Цена продажи", Unit: "rub", BaseParam: "SalePrice" }
       ]}
     />
   );

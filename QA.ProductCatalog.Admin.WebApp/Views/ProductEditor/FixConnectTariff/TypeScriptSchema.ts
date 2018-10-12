@@ -10,6 +10,7 @@ export interface Tables extends TablesObject {
   Product: IMap<Product>;
   ProductModifer: IMap<ProductModifer>;
   BaseParameter: IMap<BaseParameter>;
+  BaseParameterModifier: IMap<BaseParameterModifier>;
   ProductParameter: IMap<ProductParameter>;
   Unit: IMap<Unit>;
   ProductRelation: IMap<ProductRelation>;
@@ -69,8 +70,11 @@ export interface ProductModifer extends EntityObject {
 }
 
 export interface BaseParameter extends EntityObject {
-  /** Название */
-  readonly Title: string;
+  /** Псевдоним */
+  readonly Alias: string;
+}
+
+export interface BaseParameterModifier extends EntityObject {
   /** Псевдоним */
   readonly Alias: string;
 }
@@ -84,6 +88,8 @@ export interface ProductParameter extends EntityObject {
   Unit: Unit;
   /** Базовый параметр */
   BaseParameter: BaseParameter;
+  /** Модификаторы базового параметра */
+  BaseParameterModifiers: IArray<BaseParameterModifier>;
 }
 
 export interface Unit extends EntityObject {

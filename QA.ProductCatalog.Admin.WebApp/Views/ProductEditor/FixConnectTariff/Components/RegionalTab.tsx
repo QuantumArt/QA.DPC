@@ -199,7 +199,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   private renderFixConnectParameters = (props: FieldEditorProps) => (
     <ParameterFields
       {...props}
-      fields={[{ Title: "Цена", Alias: "SubscriptionFee", Unit: "rub_month" }]}
+      fields={[{ Title: "Цена", Unit: "rub_month", BaseParam: "SubscriptionFee" }]}
     />
   );
 
@@ -207,13 +207,23 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
     <ParameterFields
       {...props}
       fields={[
-        { Title: "Скорость доступа", Alias: "MaxSpeed", Unit: "mbit" },
-        { Title: "Скорость доступа ночью", Alias: "MaxSpeed", Unit: "mbit" },
-        { Title: "Включенный в тариф пакет трафика", Alias: "InternetPackage", Unit: "mb_month" },
+        { Title: "Скорость доступа", Unit: "mbit", BaseParam: "MaxSpeed" },
+        {
+          Title: "Скорость доступа ночью",
+          Unit: "mbit",
+          BaseParam: "MaxSpeed",
+          BaseParamModifiers: ["Night"]
+        },
+        {
+          Title: "Включенный в тариф пакет трафика",
+          Unit: "mb_month",
+          BaseParam: "InternetPackage",
+          BaseParamModifiers: ["IncludedInSubscriptionFee"]
+        },
         {
           Title: "Стоимость трафика за 1 МБ при превышении лимита",
-          Alias: "1MbOfInternetTraffic",
-          Unit: "rub_mb"
+          Unit: "rub_mb",
+          BaseParam: "1MbOfInternetTraffic"
         }
       ]}
     />
@@ -223,23 +233,36 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
     <ParameterFields
       {...props}
       fields={[
-        { Title: "Цена", Alias: "SubscriptionFee", Unit: "rub_month" },
-        { Title: "Стоимость минуты местного вызова", Alias: "OutgoingCalls", Unit: "rub_minute" },
-        { Title: "Стоимость минуты ВЗ вызова на МТС", Alias: "OutgoingCalls", Unit: "rub_minute" },
+        { Title: "Цена", Unit: "rub_month", BaseParam: "SubscriptionFee" },
+        {
+          Title: "Стоимость минуты местного вызова",
+          Unit: "rub_minute",
+          BaseParam: "OutgoingCalls",
+          BaseParamModifiers: ["ToLocalCalls"]
+        },
+        {
+          Title: "Стоимость минуты ВЗ вызова на МТС",
+          Unit: "rub_minute",
+          BaseParam: "OutgoingCalls",
+          BaseParamModifiers: ["MTS"]
+        },
         {
           Title: "Стоимость минуты ВЗ вызова на др. моб.",
-          Alias: "OutgoingCalls",
-          Unit: "rub_minute"
+          Unit: "rub_minute",
+          BaseParam: "OutgoingCalls",
+          BaseParamModifiers: ["ExceptMTS", "LowerBound"]
         },
         {
           Title: "Стоимость минуты ВЗ вызова на стационарные телефоны",
-          Alias: "OutgoingCalls",
-          Unit: "rub_minute"
+          Unit: "rub_minute",
+          BaseParam: "OutgoingCalls",
+          BaseParamModifiers: ["CityOnly"]
         },
         {
           Title: "Включенный в АП пакет местных вызовов",
-          Alias: "MinutesPackage",
-          Unit: "minutes_call"
+          Unit: "minutes_call",
+          BaseParam: "MinutesPackage",
+          BaseParamModifiers: ["IncludedInSubscriptionFee"]
         }
       ]}
     />
