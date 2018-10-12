@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { Divider } from "@blueprintjs/core";
 import {
@@ -12,7 +11,7 @@ import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEdito
 import { MultiRelationFieldAccordion, FileFieldEditor } from "Components/FieldEditors/FieldEditors";
 import { Product } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
-import { ProductValidator } from "../Services/ProductValidator";
+import { validateProduct } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 
@@ -21,10 +20,8 @@ interface RegionalTabTabProps {
   contentSchema: ContentSchema;
 }
 
-@consumer
 @observer
 export class RegionalTab extends Component<RegionalTabTabProps> {
-  @inject private productValidator: ProductValidator;
   private filterModel = new FilterModel(this.props.model);
 
   private getMarketingFixConnectTariffProps() {
@@ -145,7 +142,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   );
 
   private saveInternetTariff = async (internetTariff: Product, saveEntity: () => Promise<void>) => {
-    this.productValidator.validateProduct(internetTariff);
+    validateProduct(internetTariff);
     await saveEntity();
   };
 
@@ -154,12 +151,12 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
     cloneEntity: () => Promise<Product>
   ) => {
     const clonedTariff = await cloneEntity();
-    this.productValidator.validateProduct(clonedTariff);
+    validateProduct(clonedTariff);
   };
 
   private createInternetTariff = async (clonePrototype: () => Promise<Product>) => {
     const clonedTariff = await clonePrototype();
-    this.productValidator.validateProduct(clonedTariff);
+    validateProduct(clonedTariff);
   };
 
   private renderPhoneTariffs = (props: FieldEditorProps) => (
@@ -185,18 +182,18 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   );
 
   private savePhoneTariff = async (phoneTariff: Product, saveEntity: () => Promise<void>) => {
-    this.productValidator.validateProduct(phoneTariff);
+    validateProduct(phoneTariff);
     await saveEntity();
   };
 
   private clonePhoneTaridd = async (_phoneTariff: Product, cloneEntity: () => Promise<Product>) => {
     const clonedTariff = await cloneEntity();
-    this.productValidator.validateProduct(clonedTariff);
+    validateProduct(clonedTariff);
   };
 
   private createPhoneTariff = async (clonePrototype: () => Promise<Product>) => {
     const clonedTariff = await clonePrototype();
-    this.productValidator.validateProduct(clonedTariff);
+    validateProduct(clonedTariff);
   };
 
   private renderFixConnectParameters = (props: FieldEditorProps) => (

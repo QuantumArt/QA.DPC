@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { consumer, inject } from "react-ioc";
 import { Divider } from "@blueprintjs/core";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import { ExtensionEditor } from "Components/ArticleEditor/ExtensionEditor";
@@ -15,7 +14,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { Product, DeviceOnTariffs, ProductRelation } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
-import { ProductValidator } from "../Services/ProductValidator";
+import { validateProduct } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 
@@ -24,9 +23,7 @@ interface DevicesTabProps {
   contentSchema: ContentSchema;
 }
 
-@consumer
 export class DevicesTab extends Component<DevicesTabProps> {
-  @inject private productValidator: ProductValidator;
   private filterModel = new FilterModel(this.props.model);
 
   render() {
@@ -93,18 +90,18 @@ export class DevicesTab extends Component<DevicesTabProps> {
   );
 
   private saveDevice = async (device: Product, saveEntity: () => Promise<void>) => {
-    this.productValidator.validateProduct(device);
+    validateProduct(device);
     await saveEntity();
   };
 
   private cloneDevice = async (_internetTariff: Product, cloneEntity: () => Promise<Product>) => {
     const clonedDevice = await cloneEntity();
-    this.productValidator.validateProduct(clonedDevice);
+    validateProduct(clonedDevice);
   };
 
   private createDevice = async (clonePrototype: () => Promise<Product>) => {
     const clonedDevice = await clonePrototype();
-    this.productValidator.validateProduct(clonedDevice);
+    validateProduct(clonedDevice);
   };
 
   private renderDevicesOnTariffs = (props: FieldEditorProps) => (
