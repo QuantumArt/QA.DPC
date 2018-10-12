@@ -3,8 +3,8 @@ import { Divider } from "@blueprintjs/core";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import { ExtensionEditor } from "Components/ArticleEditor/ExtensionEditor";
 import {
-  MultiRelationFieldTabs,
-  MultiRelationFieldAccordion,
+  RelationFieldTabs,
+  RelationFieldAccordion,
   MultiRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
 import {
@@ -50,7 +50,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
   }
 
   private renderMarketingDevices = (props: FieldEditorProps) => (
-    <MultiRelationFieldTabs
+    <RelationFieldTabs
       {...props}
       vertical
       renderOnlyActiveTab
@@ -67,7 +67,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
   );
 
   private renderDevices = (props: FieldEditorProps) => (
-    <MultiRelationFieldAccordion
+    <RelationFieldAccordion
       {...props}
       // renderOnlyActiveSection
       canCloneEntity
@@ -105,7 +105,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
   };
 
   private renderDevicesOnTariffs = (props: FieldEditorProps) => (
-    <MultiRelationFieldAccordion
+    <RelationFieldAccordion
       {...props}
       // renderOnlyActiveSection
       canCloneEntity

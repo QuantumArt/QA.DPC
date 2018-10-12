@@ -1,29 +1,64 @@
 import React from "react";
-import { consumer } from "react-ioc";
+import cn from "classnames";
+import { consumer, inject } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import cn from "classnames";
+import { Col, Row } from "react-flexbox-grid";
 import { Button } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
+import { DataContext } from "Services/DataContext";
+import { CloneController } from "Services/CloneController";
+import { EntityController } from "Services/EntityController";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
-import { AbstractRelationFieldTabs } from "./AbstractRelationFieldTabs";
+import {
+  AbstractRelationFieldEditor,
+  ExpandableFieldEditorProps
+} from "Components/FieldEditors/AbstractFieldEditor";
+import "./RelationFieldForm.scss";
+
+interface RelationFieldFormProps extends ExpandableFieldEditorProps {
+  collapsed?: boolean;
+  className?: string;
+  borderless?: boolean;
+}
+
+const defaultRelationHandler = action => action();
+const defaultEntityHandler = (_entity, action) => action();
 
 @consumer
 @observer
-export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
+export class RelationFieldForm extends AbstractRelationFieldEditor<RelationFieldFormProps> {
+  static defaultProps = {
+    canSaveEntity: true,
+    canRefreshEntity: true,
+    canReloadEntity: true,
+    canReloadRelation: true,
+    onClonePrototype: defaultRelationHandler,
+    onCreateEntity: defaultRelationHandler,
+    onCloneEntity: defaultEntityHandler,
+    onRemoveEntity: defaultEntityHandler,
+    onDetachEntity: defaultEntityHandler,
+    onSelectRelation: defaultRelationHandler,
+    onReloadRelation: defaultRelationHandler,
+    onClearRelation: defaultRelationHandler
+  };
+
+  @inject private _dataContext: DataContext;
+  @inject private _cloneController: CloneController;
+  @inject private _entityController: EntityController;
+
   readonly state = {
     isOpen: !this.props.collapsed,
     isTouched: !this.props.collapsed
   };
 
   private clonePrototype = () => {
-    const { model, fieldSchema, onClonePrototype } = this.props;
-    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    const { model, fieldSchema, onClonePrototype } = this.props as PrivateProps;
     onClonePrototype(
       action("clonePrototype", async () => {
-        const clone = await this._cloneController.cloneProductPrototype(model, relationFieldSchema);
+        const clone = await this._cloneController.cloneProductPrototype(model, fieldSchema);
         this.setState({
           isOpen: true,
           isTouched: true
@@ -34,8 +69,8 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   private createEntity = () => {
-    const { model, fieldSchema, onCreateEntity } = this.props;
-    const contentName = (fieldSchema as SingleRelationFieldSchema).RelatedContent.ContentName;
+    const { model, fieldSchema, onCreateEntity } = this.props as PrivateProps;
+    const contentName = fieldSchema.RelatedContent.ContentName;
     onCreateEntity(
       action("createEntity", () => {
         const entity = this._dataContext.createEntity(contentName);
@@ -52,7 +87,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   private detachEntity = (entity: EntityObject) => {
-    const { model, fieldSchema, onDetachEntity } = this.props;
+    const { model, fieldSchema, onDetachEntity } = this.props as PrivateProps;
     onDetachEntity(
       entity,
       action("detachEntity", () => {
@@ -67,12 +102,11 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   private removeEntity = (entity: EntityObject) => {
-    const { model, fieldSchema, onRemoveEntity } = this.props;
-    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    const { model, fieldSchema, onRemoveEntity } = this.props as PrivateProps;
     onRemoveEntity(
       entity,
       action("removeEntity", async () => {
-        await this._entityController.removeRelatedEntity(model, relationFieldSchema, entity);
+        await this._entityController.removeRelatedEntity(model, fieldSchema, entity);
         this.setState({
           isOpen: false,
           isTouched: false
@@ -82,12 +116,11 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   private cloneEntity = (entity: EntityObject) => {
-    const { model, fieldSchema, onCloneEntity } = this.props;
-    const relationFieldSchema = fieldSchema as SingleRelationFieldSchema;
+    const { model, fieldSchema, onCloneEntity } = this.props as PrivateProps;
     onCloneEntity(
       entity,
       action("cloneEntity", async () => {
-        return await this._cloneController.cloneRelatedEntity(model, relationFieldSchema, entity);
+        return await this._cloneController.cloneRelatedEntity(model, fieldSchema, entity);
       })
     );
   };
@@ -107,33 +140,27 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
   };
 
   private selectRelation = () => {
-    const { model, fieldSchema, onSelectRelation } = this.props;
+    const { model, fieldSchema, onSelectRelation } = this.props as PrivateProps;
     onSelectRelation(
       action("selectRelation", async () => {
         this.setState({
           isOpen: true,
           isTouched: true
         });
-        await this._relationController.selectRelation(
-          model,
-          fieldSchema as SingleRelationFieldSchema
-        );
+        await this._relationController.selectRelation(model, fieldSchema);
       })
     );
   };
 
   private reloadRelation = () => {
-    const { model, fieldSchema, onReloadRelation } = this.props;
+    const { model, fieldSchema, onReloadRelation } = this.props as PrivateProps;
     onReloadRelation(
       action("reloadRelation", async () => {
         this.setState({
           isOpen: true,
           isTouched: true
         });
-        await this._relationController.reloadRelation(
-          model,
-          fieldSchema as SingleRelationFieldSchema
-        );
+        await this._relationController.reloadRelation(model, fieldSchema);
       })
     );
   };
@@ -146,6 +173,31 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     });
   };
 
+  render() {
+    const { model, fieldSchema } = this.props as PrivateProps;
+    return (
+      <Col
+        md={12}
+        className={cn("field-editor__block bp3-form-group", {
+          "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+        })}
+      >
+        <Row>
+          <Col xl={2} md={3} className="field-editor__label field-editor__label--small">
+            {this.renderLabel(model, fieldSchema)}
+          </Col>
+          <Col md>
+            {this.renderControls(model, fieldSchema)}
+            {this.renderValidation(model, fieldSchema)}
+          </Col>
+        </Row>
+        <Row>
+          <Col md>{this.renderField(model, fieldSchema)}</Col>
+        </Row>
+      </Col>
+    );
+  }
+
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const {
       canCreateEntity,
@@ -157,7 +209,7 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     const { isOpen } = this.state;
     const entity: EntityObject = model[fieldSchema.FieldName];
     return (
-      <div className="relation-field-tabs__controls">
+      <div className="relation-field-form__controls">
         <RelationFieldMenu
           onCreate={canCreateEntity && !this._readonly && !entity && this.createEntity}
           onSelect={canSelectRelation && !this._readonly && this.selectRelation}
@@ -202,9 +254,9 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
     const entity: EntityObject = model[fieldSchema.FieldName];
     return isTouched && entity ? (
       <div
-        className={cn("single-relation-field-tabs", className, {
-          "single-relation-field-tabs--hidden": !isOpen,
-          "single-relation-field-tabs--borderless": borderless
+        className={cn("relation-field-form", className, {
+          "relation-field-form--hidden": !isOpen,
+          "relation-field-form--borderless": borderless
         })}
       >
         <EntityEditor
@@ -232,4 +284,8 @@ export class SingleRelationFieldTabs extends AbstractRelationFieldTabs {
       </div>
     ) : null;
   }
+}
+
+interface PrivateProps extends RelationFieldFormProps {
+  fieldSchema: SingleRelationFieldSchema;
 }

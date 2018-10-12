@@ -3,15 +3,16 @@ import { Col, Row } from "react-flexbox-grid";
 import { inject } from "react-ioc";
 import cn from "classnames";
 import { Icon } from "@blueprintjs/core";
-import { ArticleObject } from "Models/EditorDataModels";
+import { Validator, Validate } from "mst-validation-mixin";
+import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import {
   FieldSchema,
   RelationFieldSchema,
   UpdatingMode,
   FieldExactTypes
 } from "Models/EditorSchemaModels";
+import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { RelationController } from "Services/RelationController";
-import { Validator, Validate } from "mst-validation-mixin";
 import { isArray } from "Utils/TypeChecks";
 import { required } from "Utils/Validators";
 import { newUid } from "Utils/Common";
@@ -116,4 +117,36 @@ export abstract class AbstractRelationFieldEditor<
       (fieldSchema.FieldType === FieldExactTypes.M2ORelation &&
         fieldSchema.UpdatingMode === UpdatingMode.Ignore);
   }
+}
+
+export interface ExpandableFieldEditorProps extends FieldEditorProps {
+  // ArticleEditor props
+  fieldOrders?: string[];
+  fieldEditors?: FieldsConfig;
+  skipOtherFields?: boolean;
+  // allowed actions
+  canClonePrototype?: boolean;
+  canCreateEntity?: boolean;
+  canSaveEntity?: boolean;
+  canRefreshEntity?: boolean;
+  canReloadEntity?: boolean;
+  canDetachEntity?: boolean;
+  canRemoveEntity?: boolean;
+  canPublishEntity?: boolean;
+  canCloneEntity?: boolean;
+  canSelectRelation?: boolean;
+  canClearRelation?: boolean;
+  canReloadRelation?: boolean;
+  onCreateEntity?(createEntity: () => EntityObject): void;
+  onClonePrototype?(clonePrototype: () => Promise<EntityObject>): void;
+  onCloneEntity?(entity: EntityObject, cloneEntity: () => Promise<EntityObject>): void;
+  onSaveEntity?(entity: EntityObject, saveEntity: () => Promise<void>): void;
+  onRefreshEntity?(entity: EntityObject, refreshEntity: () => Promise<void>): void;
+  onReloadEntity?(entity: EntityObject, reloadEntity: () => Promise<void>): void;
+  onPublishEntity?(entity: EntityObject, publishEntity: () => Promise<void>): void;
+  onRemoveEntity?(entity: EntityObject, removeEntity: () => Promise<void>): void;
+  onDetachEntity?(entity: EntityObject, detachEntity: () => void): void;
+  onSelectRelation?(selectRelation: () => Promise<void>): void;
+  onReloadRelation?(relaoadRelation: () => Promise<void>): void;
+  onClearRelation?(clearRelation: () => void): void;
 }

@@ -27,11 +27,9 @@ export { FileFieldEditor } from "./FileFieldEditor";
 export { TextFieldEditor } from "./TextFieldEditor";
 export { RelationFieldCheckList } from "./RelationFieldCheckList/RelationFieldCheckList";
 export { RelationFieldSelect } from "./RelationFieldSelect/RelationFieldSelect";
-export {
-  SingleRelationFieldAccordion,
-  MultiRelationFieldAccordion,
-  RelationFieldAccordion
-} from "./RelationFieldAccordion/RelationFieldAccordion";
+export { RelationFieldForm } from "./RelationFieldForm/RelationFieldForm";
+export { RelationFieldTabs } from "./RelationFieldTabs/RelationFieldTabs";
+export { RelationFieldAccordion } from "./RelationFieldAccordion/RelationFieldAccordion";
 export {
   SingleRelationFieldTags,
   MultiRelationFieldTags,
@@ -42,11 +40,6 @@ export {
   MultiRelationFieldTable,
   RelationFieldTable
 } from "./RelationFieldTable/RelationFieldTable";
-export {
-  SingleRelationFieldTabs,
-  MultiRelationFieldTabs,
-  RelationFieldTabs
-} from "./RelationFieldTabs/RelationFieldTabs";
 
 @observer
 export class StringFieldEditor extends AbstractFieldEditor {

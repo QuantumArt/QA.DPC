@@ -28,9 +28,9 @@ import {
   ClassifierFieldEditor,
   EnumFieldEditor,
   RelationFieldSelect,
-  SingleRelationFieldTabs,
-  MultiRelationFieldAccordion,
-  RelationFieldCheckList
+  RelationFieldAccordion,
+  RelationFieldCheckList,
+  RelationFieldForm
 } from "Components/FieldEditors/FieldEditors";
 import { asc } from "Utils/Array/Sort";
 import { isFunction, isObject } from "Utils/TypeChecks";
@@ -197,13 +197,13 @@ export abstract class AbstractEditor<P extends ArticleEditorProps> extends Compo
       if (fieldSchema.PreloadingMode !== PreloadingMode.None) {
         return RelationFieldSelect;
       }
-      return SingleRelationFieldTabs;
+      return RelationFieldForm;
     }
     if (isMultiRelationField(fieldSchema)) {
       if (fieldSchema.PreloadingMode !== PreloadingMode.None) {
         return RelationFieldCheckList;
       }
-      return MultiRelationFieldAccordion;
+      return RelationFieldAccordion;
     }
     if (isExtensionField(fieldSchema)) {
       return ExtensionFieldEditor;

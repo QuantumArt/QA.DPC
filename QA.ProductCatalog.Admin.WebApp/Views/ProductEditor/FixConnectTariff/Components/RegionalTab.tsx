@@ -8,7 +8,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
-import { MultiRelationFieldAccordion, FileFieldEditor } from "Components/FieldEditors/FieldEditors";
+import { RelationFieldAccordion, FileFieldEditor } from "Components/FieldEditors/FieldEditors";
 import { Product } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { validateProduct } from "../Utils/Validators";
@@ -120,7 +120,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   );
 
   private renderInternetTariffs = (props: FieldEditorProps) => (
-    <MultiRelationFieldAccordion
+    <RelationFieldAccordion
       {...props}
       // renderOnlyActiveSection
       canCloneEntity
@@ -160,7 +160,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   };
 
   private renderPhoneTariffs = (props: FieldEditorProps) => (
-    <MultiRelationFieldAccordion
+    <RelationFieldAccordion
       {...props}
       // renderOnlyActiveSection
       canCloneEntity

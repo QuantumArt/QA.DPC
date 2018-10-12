@@ -1,0 +1,29 @@
+.relation-field-form {
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+
+  &--hidden {
+    display: none;
+  }
+
+  &--borderless {
+    border: none;
+  }
+
+  &__controls {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    > .bp3-button,
+    > .bp3-button-group {
+      flex: none;
+    }
+
+    > .bp3-button {
+      min-width: 110px;
+      justify-content: space-between;
+    }
+  }
+}

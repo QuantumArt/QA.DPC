@@ -4,8 +4,8 @@ import { observer } from "mobx-react";
 import { Tabs, Tab, Icon, TabId } from "@blueprintjs/core";
 import { ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import {
-  SingleRelationFieldTabs,
-  MultiRelationFieldAccordion,
+  RelationFieldForm,
+  RelationFieldAccordion,
   SingleRelationFieldTable
 } from "Components/FieldEditors/FieldEditors";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
@@ -82,18 +82,18 @@ export class EditorTabs extends Component<EditorTabsProps> {
         skipOtherFields
         fieldEditors={{
           FixConnectActions: props => (
-            <MultiRelationFieldAccordion
+            <RelationFieldAccordion
               {...props}
               displayFields={[actionTitleField, actionRegionsField]}
               // filterItems={this.filterActionsByRegion}
               fieldEditors={{
                 Parent: props => (
-                  <SingleRelationFieldTabs
+                  <RelationFieldForm
                     {...props}
                     fieldEditors={{
                       MarketingProduct: SingleRelationFieldTable,
                       ActionMarketingDevices: props => (
-                        <MultiRelationFieldAccordion
+                        <RelationFieldAccordion
                           {...props}
                           displayFields={[
                             (actionDevice: DevicesForFixConnectAction) =>

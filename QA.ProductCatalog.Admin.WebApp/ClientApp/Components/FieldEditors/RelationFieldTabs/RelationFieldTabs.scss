@@ -1,23 +1,28 @@
-.relation-field-tabs__controls {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-
-  > .bp3-button,
-  > .bp3-button-group {
-    flex: none;
-  }
-
-  > .bp3-button {
-    min-width: 110px;
-    justify-content: space-between;
-  }
-}
-
-.multi-relation-field-tabs {
+.relation-field-tabs {
   &--empty,
   &--hidden {
     display: none !important;
+  }
+
+  &__controls {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+
+    > .bp3-button,
+    > .bp3-button-group {
+      flex: none;
+    }
+
+    > .bp3-button {
+      min-width: 110px;
+      justify-content: space-between;
+    }
+  }
+
+  &__title {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &:not(.bp3-vertical) > .bp3-tab-list {
@@ -41,24 +46,5 @@
     > .bp3-tab-indicator-wrapper {
       min-width: 100%;
     }
-  }
-}
-
-.multi-relation-field-tabs__title {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.single-relation-field-tabs {
-  margin-top: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-
-  &--hidden {
-    display: none;
-  }
-
-  &--borderless {
-    border: none;
   }
 }
