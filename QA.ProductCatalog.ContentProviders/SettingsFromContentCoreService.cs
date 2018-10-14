@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Linq;
+using System.Data;
+using System.Runtime.InteropServices;
 using Microsoft.Extensions.Caching.Memory;
-using QA.Core.DPC.Loader;
-using QA.Core.DPC.Loader.Services;
+using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
-using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Services.API;
+using Quantumart.QPublishing.Database;
 
-namespace QA.DPC.Core.Helpers
+namespace QA.ProductCatalog.ContentProviders
 {
 
     public class SettingsFromContentCoreService : SettingsServiceBase
     {
         private readonly IVersionedCacheProvider2 _cacheProvider;
 
-        private readonly IReadOnlyArticleService _articleService;
-        
         private readonly int _settingsContentId;
 
         public SettingsFromContentCoreService(IVersionedCacheProvider2 cacheProvider, 
@@ -43,21 +40,15 @@ namespace QA.DPC.Core.Helpers
 
         private string GetSettingValue(string title)
         {
-            using (new QPConnectionScope(_connectionString))
-            {
-                var articleService = new ArticleService(_connectionString, 1);
+            var cnn = new DBConnector(_connectionString);
+            var keycolumn = FIELD_NAME_TITLE;
+            var valuecolumn = FIELD_NAME_VALUE;
+            var keyvalue = title.Replace("'", "''");
+            var query = $"select [{valuecolumn}] from content_{_settingsContentId}_united" +
+                        $" where archive = 0 and visible = 1 and [{keycolumn}] = '{keyvalue}'";
+            var data = cnn.GetData(query);
+            return data.Rows.Count > 0 ? data.Rows[0][valuecolumn].ToString() : null;
 
-                var list = articleService.List(_settingsContentId, null).Where(x => !x.Archived && x.Visible);
-
-                var res = list
-                    .Where(x => x.FieldValues.Any(a => a.Field.Name == FIELD_NAME_TITLE && a.Value == title))
-                    .Select(x =>
-                        x.FieldValues.Where(a => a.Field.Name == FIELD_NAME_VALUE).Select(a => a.Value)
-                            .FirstOrDefault())
-                    .FirstOrDefault();
-
-                return res;
-            }
         }
     }
 }

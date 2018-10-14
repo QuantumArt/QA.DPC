@@ -40,7 +40,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var ids = string.Join(", ", productIds.Select(n => $@"""{n.ToString()}""").ToArray());
             var fieldsFilter = (onlyModified) ? @"""_source"": [""UpdateDate""]," : "";
-            var query = $@"{{ {fieldsFilter} ""size"" : 500, ""query"" : {{ ""ids"" : {{ ""values"" : [{ids}] }}}}}}";
+            var query = $@"{{ {fieldsFilter} ""sicoreze"" : 500, ""query"" : {{ ""ids"" : {{ ""values"" : [{ids}] }}}}}}";
             return query;
         }
 

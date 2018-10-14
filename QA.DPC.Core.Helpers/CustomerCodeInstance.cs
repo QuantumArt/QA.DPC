@@ -1,9 +1,6 @@
 using System;
 using QA.Core;
 using QA.Core.Cache;
-using QA.Core.Data;
-using QA.Core.DPC.Loader;
-using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
@@ -22,7 +19,7 @@ namespace QA.DPC.Core.Helpers
 
         public CustomerCodeInstance(IConnectionProvider connectionProvider, ILogger logger)
         {
-            CacheProvider = new VersionedCacheCoreProvider(logger);
+            CacheProvider = new VersionedCacheProviderBase(logger);
             Invalidator = new DpcContentInvalidator(CacheProvider, logger);
 
             if (!String.IsNullOrEmpty(connectionProvider.GetConnection()))

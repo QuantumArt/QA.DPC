@@ -1,4 +1,4 @@
-﻿namespace QA.Core.DPC.Loader
+﻿namespace QA.Core.DPC.QP.Cache
 {
     public static class CacheTags
     {

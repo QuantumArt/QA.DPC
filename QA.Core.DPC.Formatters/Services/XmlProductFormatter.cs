@@ -9,6 +9,7 @@ using QA.Core.Models.Configuration;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader.Services;
 using System.Xml.XPath;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Formatters.Services
 {

@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using QA.Core.Extensions;
 using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;

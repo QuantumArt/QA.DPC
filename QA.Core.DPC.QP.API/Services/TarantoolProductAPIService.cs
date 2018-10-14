@@ -6,6 +6,8 @@ using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Globalization;
 using System.Linq;
+using QA.ProductCatalog.ContentProviders;
+using IStatusProvider = QA.ProductCatalog.Infrastructure.IStatusProvider;
 
 namespace QA.Core.DPC.QP.API.Services
 {
@@ -214,7 +216,7 @@ namespace QA.Core.DPC.QP.API.Services
 
                     if (dt.HasValue)
                     {
-                        field.Value = dt.Value.ToString(CultureInfo.InvariantCulture);
+                        field.Value = dt.Value.ToString(CultureInfo.CurrentCulture);
 
                         field.NativeValue = dt;
                     }

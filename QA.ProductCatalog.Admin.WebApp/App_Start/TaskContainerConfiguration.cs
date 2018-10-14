@@ -1,6 +1,7 @@
 ﻿using System;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Admin.WebApp.Core.Adapters;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Unity;
 using Unity.Extension;

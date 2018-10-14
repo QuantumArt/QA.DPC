@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Services

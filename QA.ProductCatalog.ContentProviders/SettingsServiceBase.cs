@@ -3,11 +3,9 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using QA.Core.DPC.QP.Services;
-using QA.ProductCatalog.Infrastructure;
-using Quantumart.QP8.BLL;
 using QA.Core.Web;
 
-namespace QA.Core.DPC.Loader
+namespace QA.ProductCatalog.ContentProviders
 {
     public abstract class SettingsServiceBase : ISettingsService
 	{
@@ -21,9 +19,14 @@ namespace QA.Core.DPC.Loader
 			_connectionString = connectionProvider.GetConnection();
 		}
 
-		public string GetSetting(SettingsTitles title)
+		public string GetSetting(Infrastructure.SettingsTitles title)
 		{
 			return GetSetting(title.ToString());
+		}
+
+		public string GetSetting(SettingsTitles title)
+		{
+			throw new System.NotImplementedException();
 		}
 
 		public abstract string GetSetting(string title);
@@ -55,10 +58,8 @@ namespace QA.Core.DPC.Loader
 		private string GetActionCodeInternal(string name)
 		{
 			string sql = @"select  top 1 [CODE], [NAME],[ID] from backend_action where name like @name";
-			using (var cs = new QPConnectionScope(_connectionString))
+			using (var con = new SqlConnection(_connectionString))
 			{
-				SqlConnection con = cs.DbConnection;
-
 				if (con.State != ConnectionState.Open)
 					con.Open();
 				var codes = new List<string>();

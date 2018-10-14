@@ -2,7 +2,7 @@
 using System.Linq;
 using QA.Core.Logger;
 
-namespace QA.Core.DPC.Loader
+namespace QA.Core.DPC.QP.Cache
 {
     public class DpcContentInvalidator : IContentInvalidator 
     {

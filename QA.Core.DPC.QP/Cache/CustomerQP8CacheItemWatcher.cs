@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 

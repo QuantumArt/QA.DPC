@@ -10,7 +10,7 @@ using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {

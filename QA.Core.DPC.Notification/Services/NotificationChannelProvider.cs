@@ -1,5 +1,6 @@
-﻿using QA.Core.DPC.QP.Services;
-using QA.ProductCatalog.Infrastructure;
+﻿using QA.Core.Cache;
+using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Notification.Services
 {
@@ -54,7 +55,7 @@ namespace QA.Core.DPC.Notification.Services
 	            l.VISIBLE = 1";
         #endregion
 
-        public NotificationChannelProvider(ISettingsService settingsService, IConnectionProvider connectionProvider, IVersionedCacheProvider cacheProvider)
+        public NotificationChannelProvider(ISettingsService settingsService, IConnectionProvider connectionProvider, IVersionedCacheProvider2 cacheProvider)
 			: base(settingsService, connectionProvider, cacheProvider)
 		{
 		}

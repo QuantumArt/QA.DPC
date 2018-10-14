@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -27,12 +27,13 @@
       <Project>{56e7fb60-0511-4bc7-9091-99c91d4ca5f7}</Project>
       <Name>QA.Core.ProductCatalog.ActionsRunnerModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj">
+    <ProjectReference Include="..\QA.ProductCatalog.ContentProviders\QA.ProductCatalog.ContentProviders.csproj">
       <Project>{5AF860A1-97A7-4C36-9496-21054975E226}</Project>
       <Name>QA.ProductCatalog.Infrastructure</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="QA.Core" Version="3.4.0" />
+    <PackageReference Include="QA.Core.Cache" Version="3.5.0-beta4" />
+    <PackageReference Include="QA.Core.Logger" Version="3.5.0-beta4" />    
   </ItemGroup>
 </Project>

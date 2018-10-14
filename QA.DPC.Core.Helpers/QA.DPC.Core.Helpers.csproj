@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugType>full</DebugType>
@@ -14,20 +14,18 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Routing.Abstractions" Version="2.1.1" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="2.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.1" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.1.1" />
     <PackageReference Include="NLog" Version="4.5.10" />
-    <PackageReference Include="NLog.Extended" Version="4.5.10" />
-    <PackageReference Include="QA.Core" Version="3.4.0" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="2.9.0-beta2" />
+    <PackageReference Include="QA.Core.Cache" Version="3.5.0-beta4" />
+    <PackageReference Include="QA.Core.Logger" Version="3.5.0-beta4" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Unity.Abstractions" Version="3.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj" />
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunner\QA.Core.ProductCatalog.ActionsRunner.csproj" />
-    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.ContentProviders\QA.ProductCatalog.ContentProviders.csproj" />
   </ItemGroup>
 </Project>

@@ -12,6 +12,7 @@ using Quantumart.QPublishing.Info;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
+using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Content = QA.Core.Models.Configuration.Content;
 

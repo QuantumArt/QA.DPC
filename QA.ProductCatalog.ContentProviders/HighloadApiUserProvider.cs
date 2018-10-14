@@ -1,6 +1,7 @@
 ﻿using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.Infrastructure;
 
-namespace QA.ProductCatalog.Infrastructure
+namespace QA.ProductCatalog.ContentProviders
 {
 	public class HighloadApiUserProvider : ContentProviderBase<HighloadApiUser>
 	{

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
   </PropertyGroup>
 
@@ -25,7 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Autofac" Version="4.8.1" />
-    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.2.2" />
+    <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.0" />
     <PackageReference Include="Elasticsearch.Net" Version="5.6.4" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.3.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.6" />
@@ -43,22 +43,14 @@
     <PackageReference Include="NLog.Extensions.Logging" Version="1.3.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.7.0" />
     <PackageReference Include="QA.Configuration" Version="1.0.2" />
-    <PackageReference Include="Quantumart" Version="3.2.2" />
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
     <PackageReference Include="Unity.Abstractions" Version="3.3.1" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj" />
-    <ProjectReference Include="..\QA.Core.DPC.Notification\QA.Core.DPC.Notification.csproj" />
-    <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj" />
-    <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunner\QA.Core.ProductCatalog.ActionsRunner.csproj" />
-    <ProjectReference Include="..\QA.DPC.Core.Helpers\QA.DPC.Core.Helpers.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.HighloadFront.Elastic\QA.ProductCatalog.HighloadFront.Elastic.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.HighloadFront\QA.ProductCatalog.HighloadFront.csproj" />
-    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.ServiceModel" />
   </ItemGroup>
 </Project>

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Nest;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.HighloadFront.Options;
-using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {

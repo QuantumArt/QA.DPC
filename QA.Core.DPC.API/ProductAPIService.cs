@@ -4,6 +4,7 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.API

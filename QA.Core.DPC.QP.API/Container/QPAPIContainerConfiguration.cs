@@ -3,6 +3,7 @@ using QA.Core.DPC.QP.API.Services;
 using QA.ProductCatalog.Infrastructure;
 using Unity;
 using Unity.Extension;
+using IStatusProvider = QA.ProductCatalog.ContentProviders.IStatusProvider;
 
 namespace QA.Core.DPC.QP.API.Container
 {

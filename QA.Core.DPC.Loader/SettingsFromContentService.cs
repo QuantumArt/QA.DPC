@@ -4,6 +4,7 @@ using QA.Core.Cache;
 using Quantumart.QP8.BLL;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Loader
 {

@@ -5,7 +5,7 @@ using Nest;
 using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Options;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 using System;
 using System.Collections.Generic;
 using System.Linq;

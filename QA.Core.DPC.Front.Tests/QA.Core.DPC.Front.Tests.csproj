@@ -25,7 +25,7 @@
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="EntityFramework" Version="6.1.3" />
+    <PackageReference Include="EntityFramework" Version="6.2.0" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Data\product.json" />

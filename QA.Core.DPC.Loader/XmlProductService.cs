@@ -7,6 +7,7 @@ using System.Xml.Linq;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.Models.Entities;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QPublishing.Database;

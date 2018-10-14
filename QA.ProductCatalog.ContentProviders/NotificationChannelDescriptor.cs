@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace QA.ProductCatalog.Infrastructure
+namespace QA.ProductCatalog.ContentProviders
 {
     public class NotificationChannelDescriptor
     {

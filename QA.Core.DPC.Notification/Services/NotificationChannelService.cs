@@ -1,7 +1,7 @@
-﻿using QA.ProductCatalog.Infrastructure;
-using System;
+﻿using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Notification.Services
 {

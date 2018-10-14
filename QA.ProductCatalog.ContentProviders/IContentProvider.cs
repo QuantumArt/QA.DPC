@@ -1,5 +1,5 @@
 ﻿
-namespace QA.ProductCatalog.Infrastructure
+namespace QA.ProductCatalog.ContentProviders
 {
 	public interface IContentProvider<TModel>
 		where TModel : class

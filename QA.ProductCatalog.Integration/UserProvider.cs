@@ -3,6 +3,7 @@ using System.Web;
 using QA.Core.Web;
 using System.Data;
 using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.ContentProviders;
 using Quantumart.QPublishing.Database;
 using Quantumart.QPublishing.OnScreen;
 

@@ -10,13 +10,16 @@ using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
-using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
+using QA.ProductCatalog.Infrastructure;
 using Unity;
 using Unity.Injection;
 using Unity.Lifetime;
+using IStatusProvider = QA.ProductCatalog.ContentProviders.IStatusProvider;
+using IUserProvider = QA.ProductCatalog.ContentProviders.IUserProvider;
+using NotificationChannel = QA.ProductCatalog.ContentProviders.NotificationChannel;
 
 namespace QA.Core.DPC
 {
@@ -40,7 +43,7 @@ namespace QA.Core.DPC
 		{
             unityContainer.AddNewExtension<QPContainerConfiguration>();
            
-            unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
+            unityContainer.RegisterType<QA.ProductCatalog.ContentProviders.IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			unityContainer.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
 			unityContainer.RegisterType<IServiceFactory, ServiceFactory>();
 			unityContainer.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));

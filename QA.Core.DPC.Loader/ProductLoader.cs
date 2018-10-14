@@ -23,8 +23,10 @@ using Qp8Bll = Quantumart.QP8.BLL;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
+using QA.ProductCatalog.ContentProviders;
 using QP8.Infrastructure.Extensions;
 using Quantumart.QP8.Constants;
 

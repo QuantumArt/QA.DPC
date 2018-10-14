@@ -1,6 +1,6 @@
 ﻿using QA.Core.DPC.QP.Services;
 
-namespace QA.ProductCatalog.Infrastructure
+namespace QA.ProductCatalog.ContentProviders
 {
 	public class HighloadApiLimitProvider : ContentProviderBase<HighloadApiLimit>
 	{

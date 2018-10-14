@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using QA.Core.Cache;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;

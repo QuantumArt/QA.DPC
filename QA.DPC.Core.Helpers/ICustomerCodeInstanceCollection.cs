@@ -1,6 +1,6 @@
 ﻿using System;
 using QA.Core.DPC.QP.Services;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.DPC.Core.Helpers
 {

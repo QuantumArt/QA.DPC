@@ -1,15 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using QA.Core.DPC.Loader;
+using QA.Core.Cache;
+using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
-using Quantumart.QP8.BLL.Services.API;
+using Quantumart.QPublishing.Database;
 
-
-namespace QA.DPC.Core.Helpers
+namespace QA.ProductCatalog.ContentProviders
 {
 	public class SettingsFromQpCoreService : SettingsServiceBase
 	{
-		private readonly DbService _dbService;
 		private readonly IVersionedCacheProvider2 _cacheProvider;
 
 		private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
@@ -18,7 +20,6 @@ namespace QA.DPC.Core.Helpers
             : base(connectionProvider)
 		{
 
-            _dbService = new DbService(_connectionString, 1);
 			_cacheProvider = cacheProvider;
 		}
 
@@ -26,9 +27,18 @@ namespace QA.DPC.Core.Helpers
 		{
 			const string key = "AllQpSettings";
 
-			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.DB }, _cacheTimeSpan, _dbService.GetAppSettings, true, CacheItemPriority.NeverRemove);
+			var allSettings = _cacheProvider.GetOrAdd(key, new[] { CacheTags.QP8.DB }, _cacheTimeSpan, GetAppSettings, true, CacheItemPriority.NeverRemove);
 
 			return allSettings.ContainsKey(title) ? allSettings[title] : null;
+		}
+
+		private Dictionary<string, string> GetAppSettings()
+		{
+			var cnn = new DBConnector(_connectionString);
+			var query = "select * from db";
+			return cnn.GetRealData(query).AsEnumerable()
+				.ToDictionary(n => n["key"].ToString(), m => m["value"].ToString()
+				);
 		}
 	}
 }

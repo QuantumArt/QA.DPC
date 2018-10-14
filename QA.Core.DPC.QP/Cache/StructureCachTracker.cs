@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using QA.Core.Data;
+using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
-using Quantumart.QP8.BLL;
 
-namespace QA.Core.DPC.Loader.Services
+namespace QA.Core.DPC.QP.Cache
 {
     public class StructureCacheTracker : CacheItemTracker
 	{
@@ -19,10 +18,8 @@ namespace QA.Core.DPC.Loader.Services
 
 		protected override void OnTrackChanges(List<TableModification> changes)
 		{
-			using (var cs = new QPConnectionScope(_qpConnectionString))
+			using (var con = new SqlConnection(_qpConnectionString))
 			{
-				var con = cs.DbConnection;
-
 				if (con.State != ConnectionState.Open)
 					con.Open();
 

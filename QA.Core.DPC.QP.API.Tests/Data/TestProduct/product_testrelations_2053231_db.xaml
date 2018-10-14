@@ -1,4 +1,4 @@
-﻿<Article ContentDisplayName="Тестовый продукт" ContentId="904" ContentName="TestProduct" Created="2017-08-14T19:05:53.397" Id="2053231" IsPublished="True" Modified="2017-08-16T19:36:15.567" PublishingMode="Publish" Status="Published" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<Article ContentDisplayName="Тестовый продукт" ContentId="904" ContentName="TestProduct" Created="2017-08-14T19:05:54.037" Id="2053231" IsPublished="True" Modified="2017-08-16T19:36:16.01" PublishingMode="Publish" Status="Published" Visible="True" xmlns="clr-namespace:QA.Core.Models.Entities;assembly=QA.Core.Models" xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Article.Fields>
         <ExtensionArticleField SubContentId="{x:Null}" x:Key="Type" ContentId="904" FieldDisplayName="Type" FieldId="5185" FieldName="Type" Value="907">
             <ExtensionArticleField.CustomProperties>

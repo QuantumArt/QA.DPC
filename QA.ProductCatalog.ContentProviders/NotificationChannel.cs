@@ -1,7 +1,7 @@
-﻿
-using System.Globalization;
+﻿using System.Globalization;
 using System.Xml.XPath;
-namespace QA.ProductCatalog.Infrastructure
+
+namespace QA.ProductCatalog.ContentProviders
 {
 	public class NotificationChannel
 	{

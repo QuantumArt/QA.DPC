@@ -6,6 +6,8 @@ using QA.Core.Web;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using System;
+using QA.Core.DPC.QP.Cache;
+using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;
 using Unity.Lifetime;
@@ -32,7 +34,7 @@ namespace QA.Core.ProductCatalog.Actions.Container
 				.RegisterType<IContentInvalidator, DpcContentInvalidator>()
 				.RegisterType<ISettingsService, SettingsFromContentService>()
 				.RegisterType<IUserProvider, AlwaysAdminUserProvider>()
-                .RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, Container.Resolve<IContentInvalidator>()))
+                .RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, Container.Resolve<IContentInvalidator>(), Container.Resolve<ILogger>()))
 				.RegisterType<IQPNotificationService, QPNotificationService>()
 				.RegisterType<IRegionTagReplaceService, RegionTagService>()
 				.RegisterType<IRegionService, RegionService>();

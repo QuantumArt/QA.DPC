@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Models.Configuration;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Formatters.Services
 {

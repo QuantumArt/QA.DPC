@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Exceptions;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract

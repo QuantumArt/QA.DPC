@@ -17,11 +17,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="netstandard" />
+    <Reference Include="QA.ProductCatalog.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\QA.Core.DPC.QP.Autopublish\bin\Debug\QA.ProductCatalog.Infrastructure.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.ContentProviders\QA.ProductCatalog.ContentProviders.csproj" />
+    
   </ItemGroup>
 </Project>
 

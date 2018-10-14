@@ -13,6 +13,7 @@ using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;
 using Unity.Injection;
