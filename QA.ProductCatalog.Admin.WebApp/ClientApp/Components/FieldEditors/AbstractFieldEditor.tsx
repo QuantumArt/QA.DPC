@@ -60,16 +60,16 @@ export abstract class AbstractFieldEditor<
 
   protected renderLabel(model: ArticleObject, fieldSchema: FieldSchema) {
     return (
-      <label
-        htmlFor={this._id}
-        title={fieldSchema.FieldName}
-        className={cn("field-editor__label-text", {
-          "field-editor__label-text--edited": model.isEdited(fieldSchema.FieldName),
-          "field-editor__label-text--invalid": model.hasVisibleErrors(fieldSchema.FieldName)
-        })}
-      >
+      <label htmlFor={this._id} title={fieldSchema.FieldName}>
         {fieldSchema.IsRequired && <span className="field-editor__label-required">*&nbsp;</span>}
-        {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+        <span
+          className={cn("field-editor__label-text", {
+            "field-editor__label-text--edited": model.isEdited(fieldSchema.FieldName),
+            "field-editor__label-text--invalid": model.hasVisibleErrors(fieldSchema.FieldName)
+          })}
+        >
+          {fieldSchema.FieldTitle || fieldSchema.FieldName}:
+        </span>
         {fieldSchema.FieldDescription && (
           <>
             &nbsp;<Icon icon="help" title={fieldSchema.FieldDescription} />

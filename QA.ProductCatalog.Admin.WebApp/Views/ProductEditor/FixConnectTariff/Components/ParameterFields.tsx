@@ -197,7 +197,6 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
   }
 
   render() {
-    console.log("render");
     if (!this.isMounted) {
       return null;
     }

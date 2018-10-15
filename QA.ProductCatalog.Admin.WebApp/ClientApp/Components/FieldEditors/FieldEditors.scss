@@ -10,10 +10,12 @@
   line-height: 30px;
   min-width: 196px;
 
-  .field-editor__label-text {
+  > label {
     display: inline-block;
     line-height: 18px;
+  }
 
+  .field-editor__label-text {
     &--edited {
       color: $blue2;
       text-shadow: 0 0 0 $blue2;
@@ -35,7 +37,7 @@
 
   .bp3-icon {
     position: relative;
-    top: 2px;
+    top: 3px;
     zoom: 0.9;
     color: #5c7080;
     cursor: help;

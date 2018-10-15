@@ -35,12 +35,15 @@ export class ParameterBlock extends Component<ParameterBlockProps> {
             <label
               htmlFor={"param_" + parameter._ClientId}
               title={parameter.BaseParameter && parameter.BaseParameter.Alias}
-              className={cn("field-editor__label-text", {
-                "field-editor__label-text--edited": parameter.isEdited(),
-                "field-editor__label-text--invalid": parameter.hasVisibleErrors()
-              })}
             >
-              {parameter.Title}
+              <span
+                className={cn("field-editor__label-text", {
+                  "field-editor__label-text--edited": parameter.isEdited(),
+                  "field-editor__label-text--invalid": parameter.hasVisibleErrors()
+                })}
+              >
+                {parameter.Title}:
+              </span>
             </label>
           </Col>
           <Col xl={2} md={3}>
