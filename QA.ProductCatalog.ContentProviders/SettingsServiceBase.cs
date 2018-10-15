@@ -19,14 +19,9 @@ namespace QA.ProductCatalog.ContentProviders
 			_connectionString = connectionProvider.GetConnection();
 		}
 
-		public string GetSetting(Infrastructure.SettingsTitles title)
-		{
-			return GetSetting(title.ToString());
-		}
-
 		public string GetSetting(SettingsTitles title)
 		{
-			throw new System.NotImplementedException();
+			return GetSetting(title.ToString());
 		}
 
 		public abstract string GetSetting(string title);

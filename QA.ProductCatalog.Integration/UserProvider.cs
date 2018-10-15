@@ -1,4 +1,5 @@
-﻿using QA.ProductCatalog.Infrastructure;
+﻿using System;
+using QA.ProductCatalog.Infrastructure;
 using System.Web;
 using QA.Core.Web;
 using System.Data;
@@ -58,9 +59,11 @@ namespace QA.ProductCatalog.Integration
                 }
 
 				if (!string.IsNullOrEmpty(newSid) && newSid != sid || userid == 0)
-                {
-					userid = new QScreen(new DBConnector(_connectionString)).AuthenticateForCustomTab();
+				{
+					var backendSid = (HttpContext.Current.Request["backend_sid"] ?? String.Empty).Replace("'", "''");	     
+	                userid = new QScreen(new DBConnector(_connectionString)).AuthenticateForCustomTab(backendSid);
 					HttpContext.Current.Session[QPUserIdKey] = userid;
+           
                 }
 
 				if (userid != 0)
@@ -71,7 +74,7 @@ namespace QA.ProductCatalog.Integration
             }
             return 0;
         }
-
+	    
         public string GetUserName()
         {
             int userId = GetUserId();

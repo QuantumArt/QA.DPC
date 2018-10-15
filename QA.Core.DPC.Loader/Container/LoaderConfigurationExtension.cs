@@ -140,6 +140,8 @@ namespace QA.Core.DPC.Loader.Container
 
                 var logger = container.Resolve<ILogger>();
                 var cacheProvider = new VersionedCustomerCacheProvider(currentCode);
+                var newCacheProvider = new VersionedCacheProviderBase(logger);
+                
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var connectionProvider = new ExplicitConnectionProvider(connectionString);
                 var tracker = new StructureCacheTracker(connectionProvider);
@@ -147,6 +149,7 @@ namespace QA.Core.DPC.Loader.Container
 
                 context.Register<ICacheProvider>(currentCode, cacheProvider);
                 context.Register<IVersionedCacheProvider>(currentCode, cacheProvider);
+                context.Register<IVersionedCacheProvider2>(currentCode, newCacheProvider);                
                 context.Register<IContentInvalidator>(currentCode, invalidator);
                 context.Register<ICacheItemWatcher>(currentCode, watcher);
 
@@ -155,6 +158,7 @@ namespace QA.Core.DPC.Loader.Container
             })
             .For<ICacheProvider>(defaultCode)
             .For<IVersionedCacheProvider>(defaultCode)
+            .For<IVersionedCacheProvider2>(defaultCode)
             .For<IContentInvalidator>(defaultCode)
             .For<ICacheItemWatcher>(defaultCode);
         }
