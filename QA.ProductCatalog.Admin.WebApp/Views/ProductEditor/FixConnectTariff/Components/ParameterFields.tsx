@@ -1,15 +1,11 @@
-import React, { Component, Fragment } from "react";
-import cn from "classnames";
+import React, { Component } from "react";
 import { consumer, inject } from "react-ioc";
 import { observable, runInAction, autorun, IObservableArray, IReactionDisposer } from "mobx";
 import { observer } from "mobx-react";
-import { Intent } from "@blueprintjs/core";
-import { Col, Row } from "react-flexbox-grid";
 import { Options } from "react-select";
 import { WeakCache, ComputedCache } from "Utils/WeakCache";
 import { asc } from "Utils/Array/Sort";
 import { DataContext } from "Services/DataContext";
-import { InputNumber, Select } from "Components/FormControls/FormControls";
 import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
 import { RelationFieldSchema, NumericFieldSchema } from "Models/EditorSchemaModels";
 import {
@@ -20,6 +16,7 @@ import {
   Unit,
   BaseParameterModifier
 } from "../TypeScriptSchema";
+import { ParameterBlock } from "./ParameterBlock";
 
 type Parameter = ProductParameter | LinkParameter;
 
@@ -81,8 +78,8 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
         const parametersToAdd = this.virtualParameters.filter(
           virtual => !parameters.some(parameter => parameter.Title === virtual.Title)
         );
-        if (parametersToAdd.length > 0) {
-          runInAction("addParameters", () => {
+        runInAction("addParameters", () => {
+          if (parametersToAdd.length > 0) {
             parametersToAdd.forEach(parameter => {
               parameter.restoreBaseValues();
               parameter.setUntouched();
@@ -90,8 +87,12 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
               parameter.clearErrors();
             });
             parameters.push(...parametersToAdd);
+          }
+          parameters.forEach(parameter => {
+            // @ts-ignore
+            parameter.setTouched("BaseParameter");
           });
-        }
+        });
       })
     );
 
@@ -115,16 +116,22 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     });
   }
 
-  componentWillUnmount() {
+  async componentWillUnmount() {
     this.reactions.forEach(disposer => disposer());
 
-    runInAction("componentWillUnmount", () => {
+    // remove virtual parameters from entity field
+    runInAction("removeParameters", () => {
       const parameters = this.getParameters();
       if (parameters.some(parameter => parameter._IsVirtual)) {
-        // remove virtual parameters from entity field
         parameters.replace(parameters.filter(parameter => !parameter._IsVirtual));
       }
-      // remove virtual parameters from context table
+    });
+
+    // wait until all <ParameterBlock> are unmounted
+    await Promise.resolve();
+
+    // remove virtual parameters from context table
+    runInAction("deleteParameters", () => {
       this.virtualParameters.forEach(virtual => {
         if (virtual._IsVirtual) {
           this._dataContext.deleteEntity(virtual);
@@ -190,6 +197,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
   }
 
   render() {
+    console.log("render");
     if (!this.isMounted) {
       return null;
     }
@@ -201,65 +209,17 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     const parameters = this.getParameters();
     const unitOptions = this.getUnitOptions();
 
-    return (
-      <Fragment>
-        {parameters
-          .slice()
-          .sort(fields ? asc(p => this.fieldOrdersByTitile[p.Title]) : asc(p => p.Title))
-          .map(parameter => (
-            <Col
-              md={12}
-              key={parameter._ClientId}
-              className={cn("field-editor__block bp3-form-group", {
-                "bp3-intent-danger": parameter.hasVisibleErrors("BaseParameter")
-              })}
-            >
-              <Row>
-                <Col xl={2} md={3} className="field-editor__label">
-                  <label
-                    htmlFor={"param_" + parameter._ClientId}
-                    title={parameter.BaseParameter && parameter.BaseParameter.Alias}
-                    className={cn("field-editor__label-text", {
-                      "field-editor__label-text--edited": parameter.isEdited(),
-                      "field-editor__label-text--invalid": parameter.hasVisibleErrors()
-                    })}
-                  >
-                    {parameter.Title}
-                  </label>
-                </Col>
-                <Col xl={2} md={3}>
-                  <InputNumber
-                    id={"param_" + parameter._ClientId}
-                    model={parameter}
-                    name="NumValue"
-                    isInteger={numValueSchema.IsInteger}
-                    intent={parameter.isEdited("NumValue") ? Intent.PRIMARY : Intent.NONE}
-                  />
-                </Col>
-                <Col xl={2} md={3}>
-                  <Select
-                    model={parameter}
-                    name="Unit"
-                    options={unitOptions}
-                    className={cn({
-                      "bp3-intent-primary": parameter.isEdited("Unit")
-                    })}
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col xl={2} md={3} className="field-editor__label" />
-                <Col md>
-                  {parameter.hasVisibleErrors("BaseParameter") && (
-                    <span className="bp3-form-helper-text">
-                      {parameter.getVisibleErrors("BaseParameter")}
-                    </span>
-                  )}
-                </Col>
-              </Row>
-            </Col>
-          ))}
-      </Fragment>
-    );
+    return parameters
+      .slice()
+      .sort(fields ? asc(p => this.fieldOrdersByTitile[p.Title]) : asc(p => p.Title))
+      .map(parameter => (
+        <ParameterBlock
+          key={parameter._ClientId}
+          parameter={parameter}
+          allParameters={parameters}
+          numValueSchema={numValueSchema}
+          unitOptions={unitOptions}
+        />
+      ));
   }
 }

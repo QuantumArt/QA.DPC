@@ -5,7 +5,8 @@ import { ExtensionEditor } from "Components/ArticleEditor/ExtensionEditor";
 import {
   RelationFieldTabs,
   RelationFieldAccordion,
-  MultiRelationFieldTable
+  MultiRelationFieldTable,
+  MultiRelationFieldTags
 } from "Components/FieldEditors/FieldEditors";
 import {
   ContentSchema,
@@ -14,7 +15,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { Product, DeviceOnTariffs, ProductRelation } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
-import { validateProduct, validateDeviceOnTariffs } from "../Utils/Validators";
+import { hasUniqueRegions } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 
@@ -53,7 +54,6 @@ export class DevicesTab extends Component<DevicesTabProps> {
     <RelationFieldTabs
       {...props}
       vertical
-      renderOnlyActiveTab
       canSaveEntity={false}
       canRefreshEntity={false}
       displayField={"Title"}
@@ -69,52 +69,34 @@ export class DevicesTab extends Component<DevicesTabProps> {
   private renderDevices = (props: FieldEditorProps) => (
     <RelationFieldAccordion
       {...props}
-      renderOnlyActiveSection
       canCloneEntity
       canRemoveEntity
       canPublishEntity
       canClonePrototype
       columnProportions={[3, 1, 1]}
-      displayFields={[this.renderRegions, this.renderRentPrice, this.renderSalePrice]}
+      displayFields={[this.renderTableRegions, this.renderRentPrice, this.renderSalePrice]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
         MarketingProduct: IGNORE,
-        Parameters: this.renderParameters
+        Parameters: this.renderParameters,
+        Regions: this.renderFormRegions
       }}
-      onSaveEntity={this.saveDevice}
-      onCloneEntity={this.cloneDevice}
-      onClonePrototype={this.createDevice}
+      onShowEntity={product => product.setTouched("Regions")}
     />
   );
-
-  private saveDevice = async (device: Product, saveEntity: () => Promise<void>) => {
-    validateProduct(device);
-    await saveEntity();
-  };
-
-  private cloneDevice = async (_device: Product, cloneEntity: () => Promise<Product>) => {
-    const clonedDevice = await cloneEntity();
-    validateProduct(clonedDevice);
-  };
-
-  private createDevice = async (clonePrototype: () => Promise<Product>) => {
-    const clonedDevice = await clonePrototype();
-    validateProduct(clonedDevice);
-  };
 
   private renderDevicesOnTariffs = (props: FieldEditorProps) => (
     <RelationFieldAccordion
       {...props}
-      renderOnlyActiveSection
       canCloneEntity
       canRemoveEntity
       canPublishEntity
       canClonePrototype
       columnProportions={[3, 1, 1]}
       displayFields={[
-        this.renderMatrixRegions,
+        this.renderMatrixTableRegions,
         this.renderMatrixRentPrice,
         this.renderMatrixSalePrice
       ]}
@@ -125,38 +107,25 @@ export class DevicesTab extends Component<DevicesTabProps> {
         Parent: this.renderMatrixProductRelation,
         MarketingTariffs: MultiRelationFieldTable
       }}
-      onSaveEntity={this.saveDeviceOnTariffs}
-      onCloneEntity={this.cloneDeviceOnTariffs}
-      onClonePrototype={this.createDeviceOnTariffs}
     />
   );
 
-  private saveDeviceOnTariffs = async (
-    device: DeviceOnTariffs,
-    saveEntity: () => Promise<void>
-  ) => {
-    validateDeviceOnTariffs(device);
-    await saveEntity();
-  };
-
-  private cloneDeviceOnTariffs = async (
-    _device: DeviceOnTariffs,
-    cloneEntity: () => Promise<DeviceOnTariffs>
-  ) => {
-    const clonedDevice = await cloneEntity();
-    validateDeviceOnTariffs(clonedDevice);
-  };
-
-  private createDeviceOnTariffs = async (clonePrototype: () => Promise<DeviceOnTariffs>) => {
-    const clonedDevice = await clonePrototype();
-    validateDeviceOnTariffs(clonedDevice);
-  };
-
-  private renderRegions = (device: Product) => (
+  private renderTableRegions = (device: Product) => (
     <div className="products-accordion__regions">
       {device.Regions.map(region => region.Title).join(", ")}
     </div>
   );
+
+  private renderFormRegions = (props: FieldEditorProps) => {
+    const product = props.model as Product;
+    return (
+      <MultiRelationFieldTags
+        {...props}
+        orderByField="Title"
+        validate={hasUniqueRegions(product)}
+      />
+    );
+  };
 
   private renderRentPrice = (device: Product) => {
     const parameter = device.Parameters.find(parameter => parameter.Title === "Цена аренды");
@@ -198,7 +167,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
     />
   );
 
-  private renderMatrixRegions = (device: DeviceOnTariffs) => (
+  private renderMatrixTableRegions = (device: DeviceOnTariffs) => (
     <div className="products-accordion__regions">
       {device.Cities.map(region => region.Title).join(", ")}
     </div>

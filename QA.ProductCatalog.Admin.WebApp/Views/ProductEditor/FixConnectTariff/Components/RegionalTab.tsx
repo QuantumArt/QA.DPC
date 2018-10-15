@@ -8,10 +8,14 @@ import {
 } from "Models/EditorSchemaModels";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
-import { RelationFieldAccordion, FileFieldEditor } from "Components/FieldEditors/FieldEditors";
+import {
+  RelationFieldAccordion,
+  FileFieldEditor,
+  MultiRelationFieldTags
+} from "Components/FieldEditors/FieldEditors";
 import { Product } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
-import { validateProduct } from "../Utils/Validators";
+import { hasUniqueRegions } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 
@@ -123,78 +127,58 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   private renderInternetTariffs = (props: FieldEditorProps) => (
     <RelationFieldAccordion
       {...props}
-      renderOnlyActiveSection
       canCloneEntity
       canRemoveEntity
       canPublishEntity
       canClonePrototype
-      displayFields={[this.renderRegions]}
+      displayFields={[this.renderTableRegions]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
         MarketingProduct: IGNORE,
-        Parameters: this.renderInternetParameters
+        Parameters: this.renderInternetParameters,
+        Regions: this.renderFormRegions
       }}
-      onSaveEntity={this.saveInternetTariff}
-      onCloneEntity={this.cloneInternetTariff}
-      onClonePrototype={this.createInternetTariff}
+      onShowEntity={product => product.setTouched("Regions")}
     />
   );
-
-  private saveInternetTariff = async (internetTariff: Product, saveEntity: () => Promise<void>) => {
-    validateProduct(internetTariff);
-    await saveEntity();
-  };
-
-  private cloneInternetTariff = async (
-    _internetTariff: Product,
-    cloneEntity: () => Promise<Product>
-  ) => {
-    const clonedTariff = await cloneEntity();
-    validateProduct(clonedTariff);
-  };
-
-  private createInternetTariff = async (clonePrototype: () => Promise<Product>) => {
-    const clonedTariff = await clonePrototype();
-    validateProduct(clonedTariff);
-  };
 
   private renderPhoneTariffs = (props: FieldEditorProps) => (
     <RelationFieldAccordion
       {...props}
-      renderOnlyActiveSection
       canCloneEntity
       canRemoveEntity
       canPublishEntity
       canClonePrototype
-      displayFields={[this.renderRegions]}
+      displayFields={[this.renderTableRegions]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
         MarketingProduct: IGNORE,
-        Parameters: this.renderPhoneParameters
+        Parameters: this.renderPhoneParameters,
+        Regions: this.renderFormRegions
       }}
-      onSaveEntity={this.savePhoneTariff}
-      onCloneEntity={this.clonePhoneTaridd}
-      onClonePrototype={this.createPhoneTariff}
+      onShowEntity={product => product.setTouched("Regions")}
     />
   );
 
-  private savePhoneTariff = async (phoneTariff: Product, saveEntity: () => Promise<void>) => {
-    validateProduct(phoneTariff);
-    await saveEntity();
-  };
+  private renderTableRegions = (device: Product) => (
+    <div className="products-accordion__regions">
+      {device.Regions.map(region => region.Title).join(", ")}
+    </div>
+  );
 
-  private clonePhoneTaridd = async (_phoneTariff: Product, cloneEntity: () => Promise<Product>) => {
-    const clonedTariff = await cloneEntity();
-    validateProduct(clonedTariff);
-  };
-
-  private createPhoneTariff = async (clonePrototype: () => Promise<Product>) => {
-    const clonedTariff = await clonePrototype();
-    validateProduct(clonedTariff);
+  private renderFormRegions = (props: FieldEditorProps) => {
+    const product = props.model as Product;
+    return (
+      <MultiRelationFieldTags
+        {...props}
+        orderByField="Title"
+        validate={hasUniqueRegions(product)}
+      />
+    );
   };
 
   private renderFixConnectParameters = (props: FieldEditorProps) => (
@@ -267,11 +251,5 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         }
       ]}
     />
-  );
-
-  private renderRegions = (device: Product) => (
-    <div className="products-accordion__regions">
-      {device.Regions.map(region => region.Title).join(", ")}
-    </div>
   );
 }

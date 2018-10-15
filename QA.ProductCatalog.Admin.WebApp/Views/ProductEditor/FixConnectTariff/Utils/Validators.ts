@@ -1,10 +1,6 @@
-import { Product, DeviceOnTariffs } from "../TypeScriptSchema";
+import { Product, ProductParameter, LinkParameter } from "../TypeScriptSchema";
 
-export function validateProduct(product: Product) {
-  product.clearErrors();
-  // @ts-ignore
-  product.Type_Extension[product.Type].clearErrors();
-
+export const hasUniqueRegions = (product: Product) => () => {
   const productsWithSameRegions = product.MarketingProduct.Products.filter(
     otherProduct =>
       otherProduct !== product &&
@@ -12,54 +8,40 @@ export function validateProduct(product: Product) {
   );
 
   if (productsWithSameRegions.length > 0) {
-    const productIds = productsWithSameRegions.map(product => product._ServerId || 0).join(", ");
-    const message = `Продукт содержит регионы из продуктов: ${productIds}`;
-    product.setTouched("Regions", true);
-    product.addErrors("Regions", message);
+    const productIds = productsWithSameRegions.map(product => product._ServerId || 0);
+    return `Продукт содержит регионы из продуктов: ${productIds.join(", ")}`;
   }
+  return undefined;
+};
 
-  product.Parameters.forEach(param => {
-    param.clearErrors();
+type Parameter = ProductParameter | LinkParameter;
 
-    const paramsWithSameTariffDirection = product.Parameters.filter(
-      otherParam =>
-        otherParam !== param &&
-        otherParam.BaseParameter === param.BaseParameter &&
-        setEquals(param.BaseParameterModifiers, otherParam.BaseParameterModifiers)
-    );
+export const hasUniqueTariffDirection = (
+  parameter: Parameter,
+  allParameters: Parameter[]
+) => () => {
+  const paramsWithSameTariffDirection = allParameters.filter(
+    otherParameter =>
+      otherParameter !== parameter &&
+      otherParameter.BaseParameter === parameter.BaseParameter &&
+      setEquals(parameter.BaseParameterModifiers, otherParameter.BaseParameterModifiers)
+  );
 
-    if (paramsWithSameTariffDirection.length > 0) {
-      const titles = paramsWithSameTariffDirection.map(param => `[${param.Title}]`).join(", ");
-      const message = `Тарифное направление совпадает с ${titles}`;
-      param.setTouched("BaseParameter", true);
-      param.addErrors("BaseParameter", message);
-    }
-  });
-}
-
-export function validateDeviceOnTariffs(device: DeviceOnTariffs) {
-  device.clearErrors();
-  device.Parent.clearErrors();
-
-  device.Parent.Parameters.forEach(param => {
-    param.clearErrors();
-
-    const paramsWithSameTariffDirection = device.Parent.Parameters.filter(
-      otherParam =>
-        otherParam !== param &&
-        otherParam.BaseParameter === param.BaseParameter &&
-        setEquals(param.BaseParameterModifiers, otherParam.BaseParameterModifiers)
-    );
-
-    if (paramsWithSameTariffDirection.length > 0) {
-      const titles = paramsWithSameTariffDirection.map(param => `[${param.Title}]`).join(", ");
-      const message = `Тарифное направление совпадает с ${titles}`;
-      param.setTouched("BaseParameter", true);
-      param.addErrors("BaseParameter", message);
-    }
-  });
-}
+  if (paramsWithSameTariffDirection.length > 0) {
+    const titles = paramsWithSameTariffDirection.map(param => `[${param.Title}]`);
+    return `Тарифное направление совпадает с ${titles.join(", ")}`;
+  }
+  return undefined;
+};
 
 function setEquals(first: any[], second: any[]) {
-  return first.every(el => second.includes(el)) && second.every(el => first.includes(el));
+  if (first === second) {
+    return true;
+  }
+  return (
+    first &&
+    second &&
+    first.every(el => second.includes(el)) &&
+    second.every(el => first.includes(el))
+  );
 }
