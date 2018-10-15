@@ -7,6 +7,16 @@ import { Grid, Row, Col } from "react-flexbox-grid";
 import { types as t, unprotect } from "mobx-state-tree";
 import { toJS, configure } from "mobx";
 import { observer } from "mobx-react";
+import { validationMixin, Validate } from "mst-validation-mixin";
+import {
+  LocaleContext,
+  Localize,
+  Translate,
+  localize,
+  id,
+  fallback,
+  TranslateFunction
+} from "react-lazy-i18n";
 import {
   InputText,
   InputNumber,
@@ -19,16 +29,6 @@ import {
   RadioGroup
 } from "Components/FormControls/FormControls";
 import { required, pattern, maxCount } from "Utils/Validators";
-import { validationMixin, Validate } from "mst-validation-mixin";
-import {
-  LocaleContext,
-  Localize,
-  Translate,
-  localize,
-  id,
-  fallback,
-  TranslateFunction
-} from "react-lazy-i18n";
 
 class App extends React.Component {
   state = { lang: "eng" };

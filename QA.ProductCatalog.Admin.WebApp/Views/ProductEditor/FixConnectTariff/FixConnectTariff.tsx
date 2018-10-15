@@ -1,8 +1,8 @@
 ﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
+import { LocaleContext } from "react-lazy-i18n";
 import { command } from "Utils/Command";
-import { LocaleContext } from "Packages/react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
 import { MultiRelationFieldTags } from "Components/FieldEditors/FieldEditors";
 import { EditorTabs } from "./Components/EditorTabs";

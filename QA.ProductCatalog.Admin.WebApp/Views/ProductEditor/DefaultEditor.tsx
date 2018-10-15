@@ -1,7 +1,7 @@
 ﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
-import { LocaleContext } from "Packages/react-lazy-i18n";
+import { LocaleContext } from "react-lazy-i18n";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
 import { RelationFieldTags } from "Components/FieldEditors/FieldEditors";
