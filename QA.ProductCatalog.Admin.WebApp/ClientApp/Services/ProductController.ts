@@ -5,7 +5,7 @@ import { EditorSettings } from "Models/EditorSettings";
 import { DataSerializer, IdMapping } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataMerger, MergeStrategy } from "Services/DataMerger";
-import { DataValidator, ArticleErrors } from "Services/DataValidator";
+import { DataValidator } from "Services/DataValidator";
 import { DataContext } from "Services/DataContext";
 import { SchemaContext } from "Services/SchemaContext";
 import { command } from "Utils/Command";
@@ -92,9 +92,10 @@ export class ProductController {
 
   @command
   public async savePartialProduct(entity: EntityObject, contentSchema: ContentSchema) {
-    const errors = this._dataValidator.collectErrors(entity, contentSchema);
+    const errors = this._dataValidator.collectErrors(entity, contentSchema, true);
     if (errors.length > 0) {
-      window.alert(this.getErrorMessage(errors));
+      // TODO: React alert dialog
+      window.alert(this._dataValidator.getErrorMessage(errors));
       return;
     }
 
@@ -154,23 +155,5 @@ export class ProductController {
     const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(okResponse.PartialProduct);
     const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
     this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
-  }
-
-  private getErrorMessage(articleErrors: ArticleErrors[]) {
-    return articleErrors
-      .slice(0, 3)
-      .map(
-        articleError =>
-          `${articleError.ContentName}: ${articleError.ServerId}\n` +
-          (articleError.ArticleErrors.length > 0
-            ? `${articleError.ArticleErrors.join(", ")}\n`
-            : ``) +
-          (articleError.FieldErrors.length > 0
-            ? `${articleError.FieldErrors.map(
-                fieldError => `${fieldError.Name}: ${fieldError.Messages.join(", ")}`
-              ).join("\n")}\n`
-            : ``)
-      )
-      .join("\n");
   }
 }

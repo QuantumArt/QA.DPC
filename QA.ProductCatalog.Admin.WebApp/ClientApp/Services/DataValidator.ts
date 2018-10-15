@@ -21,11 +21,15 @@ export class DataValidator {
   private _isEdited: boolean;
   private _errors: ArticleErrors[];
 
-  public collectErrors(article: ArticleObject, contentSchema: ContentSchema) {
+  public collectErrors(
+    article: ArticleObject,
+    contentSchema: ContentSchema,
+    reuqireChanges: boolean
+  ) {
     this._isEdited = false;
     this._errors = [];
     this.visitArticle(article, contentSchema);
-    if (!this._isEdited && this._errors.length === 0) {
+    if (reuqireChanges && !this._isEdited && this._errors.length === 0) {
       this._errors.push({
         ServerId: article._ServerId,
         ContentName: contentSchema.ContentName,
@@ -103,5 +107,23 @@ export class DataValidator {
       ArticleErrors: ["Новая зависимая статья не была сохранена на сервере"],
       FieldErrors: []
     });
+  }
+
+  public getErrorMessage(articleErrors: ArticleErrors[]) {
+    return articleErrors
+      .slice(0, 3)
+      .map(
+        articleError =>
+          `${articleError.ContentName}: ${articleError.ServerId}\n` +
+          (articleError.ArticleErrors.length > 0
+            ? `${articleError.ArticleErrors.join(", ")}\n`
+            : ``) +
+          (articleError.FieldErrors.length > 0
+            ? `${articleError.FieldErrors.map(
+                fieldError => `${fieldError.Name}: ${fieldError.Messages.join(", ")}`
+              ).join("\n")}\n`
+            : ``)
+      )
+      .join("\n");
   }
 }

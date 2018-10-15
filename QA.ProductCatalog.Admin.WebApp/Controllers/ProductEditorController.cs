@@ -21,6 +21,7 @@ using Quantumart.QP8.BLL.Services.API.Models;
 using QA.Core.DPC.API.Update;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Services;
+using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -34,6 +35,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly IFieldService _fieldService;
         private readonly CloneBatchAction _cloneBatchAction;
         private readonly DeleteAction _deleteAction;
+        private readonly PublishAction _publishAction;
         private readonly EditorSchemaService _editorSchemaService;
         private readonly EditorDataService _editorDataService;
         private readonly EditorPartialContentService _editorPartialContentService;
@@ -47,6 +49,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             IFieldService fieldService,
             CloneBatchAction cloneBatchAction,
             DeleteAction deleteAction,
+            PublishAction publishAction,
             EditorSchemaService editorSchemaService,
             EditorDataService editorDataService,
             EditorPartialContentService editorPartialContentService,
@@ -59,6 +62,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _fieldService = fieldService;
             _cloneBatchAction = cloneBatchAction;
             _deleteAction = deleteAction;
+            _publishAction = publishAction;
             _editorSchemaService = editorSchemaService;
             _editorDataService = editorDataService;
             _editorPartialContentService = editorPartialContentService;
@@ -184,7 +188,31 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             string dataJson = JsonConvert.SerializeObject(articleObject);
 
             return Content(dataJson, "application/json");
-        } 
+        }
+
+        [HttpPost]
+        public ActionResult PublishProduct(int articleId)
+        {
+            try
+            {
+                _publishAction.PublishProduct(articleId, null);
+            }
+            catch (ProductException exception)
+            {
+                string errorJson = JsonConvert.SerializeObject(new
+                {
+                    exception.ProductId,
+                    exception.Message,
+                });
+
+                Response.ContentType = "application/json";
+                Response.Write(errorJson);
+
+                return new HttpStatusCodeResult(HttpStatusCode.InternalServerError);
+            }
+
+            return new HttpStatusCodeResult(HttpStatusCode.NoContent);
+        }
 
         /// <summary>
         /// Загрузить часть продукта начиная с корневого контента,
@@ -464,7 +492,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             return new HttpStatusCodeResult(HttpStatusCode.NoContent);
         }
-
+        
         private ArticleObject LoadProductGraph(Content content, int articleId, bool isLive)
         {
             var productDefinition = new ProductDefinition { StorageSchema = content };

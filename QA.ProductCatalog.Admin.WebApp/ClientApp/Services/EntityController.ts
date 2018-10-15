@@ -103,6 +103,7 @@ export class EntityController {
     fieldSchema: RelationFieldSchema,
     entity: EntityObject
   ) {
+    // TODO: React confirm dialog
     if (!window.confirm(`Вы действительно хотите удалить статью ${entity._ServerId} ?`)) {
       return;
     }

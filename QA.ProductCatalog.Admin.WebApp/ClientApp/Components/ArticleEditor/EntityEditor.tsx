@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import { EntityObject } from "Models/EditorDataModels";
 import { ProductController } from "Services/ProductController";
 import { EntityController } from "Services/EntityController";
+import { PublicationController } from "Services/PublicationController";
 import { isString } from "Utils/TypeChecks";
 import { EntityMenu } from "./EntityMenu";
 import { EntityLink } from "./EntityLink";
@@ -53,6 +54,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
 
   @inject private _entityController: EntityController;
   @inject private _productController: ProductController;
+  @inject private _publicationController: PublicationController;
   private _titleField: (model: EntityObject) => string;
 
   constructor(props: EntityEditorProps, context?: any) {
@@ -92,11 +94,11 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   };
 
   private publishEntity = () => {
-    const { model, onPublishEntity } = this.props;
+    const { model, contentSchema, onPublishEntity } = this.props;
     onPublishEntity(
       model,
       action("publishEntity", async () => {
-        alert("TODO: публикация");
+        await this._publicationController.publishEntity(model, contentSchema);
       })
     );
   };

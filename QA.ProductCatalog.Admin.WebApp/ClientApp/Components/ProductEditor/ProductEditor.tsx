@@ -18,6 +18,7 @@ import { isFunction } from "Utils/TypeChecks";
 import { EditorSettings } from "Models/EditorSettings";
 import { CloneController } from "Services/CloneController";
 import { FileController } from "Services/FileController";
+import { PublicationController } from "Services/PublicationController";
 import { DataSchemaLinker } from "Services/DataSchemaLinker";
 
 type RenderEditor = (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
@@ -41,6 +42,7 @@ interface ProductEditorProps {
   ProductController,
   FileController,
   RelationController,
+  PublicationController,
   RelationsConfig,
   EditorSettings
 )

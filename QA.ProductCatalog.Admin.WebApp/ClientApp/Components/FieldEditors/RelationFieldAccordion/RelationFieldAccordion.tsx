@@ -14,6 +14,7 @@ import { DataContext } from "Services/DataContext";
 import { ProductController } from "Services/ProductController";
 import { EntityController } from "Services/EntityController";
 import { CloneController } from "Services/CloneController";
+import { PublicationController } from "Services/PublicationController";
 import { EntityMenu } from "Components/ArticleEditor/EntityMenu";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
@@ -70,6 +71,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
   @inject private _dataContext: DataContext;
   @inject private _entityController: EntityController;
   @inject private _cloneController: CloneController;
+  @inject private _publicationController: PublicationController;
   @inject private _productController: ProductController;
   private _columnProportions?: number[];
   private _displayFields: FieldSelector[];
@@ -208,11 +210,11 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
 
   private publishEntity = (e: any, entity: EntityObject) => {
     e.stopPropagation();
-    const { onPublishEntity } = this.props;
+    const { fieldSchema, onPublishEntity } = this.props as PrivateProps;
     onPublishEntity(
       entity,
       action("publishEntity", async () => {
-        alert("TODO: публикация");
+        await this._publicationController.publishEntity(entity, fieldSchema.RelatedContent);
       })
     );
   };
