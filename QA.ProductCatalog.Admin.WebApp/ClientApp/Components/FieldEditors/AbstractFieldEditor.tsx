@@ -137,6 +137,8 @@ export interface ExpandableFieldEditorProps extends FieldEditorProps {
   canSelectRelation?: boolean;
   canClearRelation?: boolean;
   canReloadRelation?: boolean;
+  onShowEntity?(entity: EntityObject): void;
+  onHideEntity?(entity: EntityObject): void;
   onCreateEntity?(createEntity: () => EntityObject): void;
   onClonePrototype?(clonePrototype: () => Promise<EntityObject>): void;
   onCloneEntity?(entity: EntityObject, cloneEntity: () => Promise<EntityObject>): void;

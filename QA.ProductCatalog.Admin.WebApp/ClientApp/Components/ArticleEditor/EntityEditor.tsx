@@ -32,6 +32,8 @@ interface EntityEditorProps extends ArticleEditorProps {
   onRemoveEntity?(entity: EntityObject): void;
   onDetachEntity?(entity: EntityObject): void;
   onCloneEntity?(entity: EntityObject): void;
+  onShowEntity?(entity: EntityObject): void;
+  onHideEntity?(entity: EntityObject): void;
 }
 
 const defaultEntityHandler = (_entity, action) => action();
@@ -125,6 +127,20 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
       console.warn("EntityEditor `onClone` is not defined");
     }
   };
+
+  componentDidMount() {
+    const { model, onShowEntity } = this.props;
+    if (onShowEntity) {
+      onShowEntity(model);
+    }
+  }
+
+  componentWillUnmount() {
+    const { model, onHideEntity } = this.props;
+    if (onHideEntity) {
+      onHideEntity(model);
+    }
+  }
 
   render() {
     const { className } = this.props;

@@ -25,7 +25,6 @@ interface RelationFieldTabsProps extends ExpandableFieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
   displayField?: string | FieldSelector;
   orderByField?: string | FieldSelector;
-  renderOnlyActiveTab?: boolean;
   collapsed?: boolean;
   vertical?: boolean;
   className?: string;
@@ -36,9 +35,6 @@ interface RelationFieldTabsState {
   isOpen: boolean;
   isTouched: boolean;
   activeId: number | null;
-  touchedIds: {
-    [articleId: number]: boolean;
-  };
 }
 
 const defaultRelationHandler = action => action();
@@ -72,8 +68,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
   readonly state: RelationFieldTabsState = {
     isOpen: !this.props.collapsed,
     isTouched: !this.props.collapsed,
-    activeId: null,
-    touchedIds: {}
+    activeId: null
   };
 
   @computed
@@ -100,7 +95,6 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
       if (array.length > 0) {
         const firstArticle = array[0];
         this.state.activeId = firstArticle._ClientId;
-        this.state.touchedIds[firstArticle._ClientId] = true;
       }
     });
   }
@@ -110,11 +104,8 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
     onClonePrototype(
       action("clonePrototype", async () => {
         const clone = await this._cloneController.cloneProductPrototype(model, fieldSchema);
-        const { touchedIds } = this.state;
-        touchedIds[clone._ClientId] = true;
         this.setState({
           activeId: clone._ClientId,
-          touchedIds,
           isOpen: true,
           isTouched: true
         });
@@ -131,11 +122,8 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
         const entity = this._dataContext.createEntity(contentName);
         model[fieldSchema.FieldName].push(entity);
         model.setTouched(fieldSchema.FieldName, true);
-        const { touchedIds } = this.state;
-        touchedIds[entity._ClientId] = true;
         this.setState({
           activeId: entity._ClientId,
-          touchedIds,
           isOpen: true,
           isTouched: true
         });
@@ -179,11 +167,8 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
       action("cloneEntity", async () => {
         const clone = await this._cloneController.cloneRelatedEntity(model, fieldSchema, entity);
 
-        const { touchedIds } = this.state;
-        touchedIds[clone._ClientId] = true;
         this.setState({
           activeId: clone._ClientId,
-          touchedIds,
           isOpen: true,
           isTouched: true
         });
@@ -201,7 +186,6 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
         model.setTouched(fieldSchema.FieldName, true);
         this.setState({
           activeId: null,
-          touchedIds: {},
           isOpen: false,
           isTouched: false
         });
@@ -245,17 +229,13 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
   }
 
   private deactivateTab(entity: EntityObject, nextEntity?: EntityObject) {
-    const { activeId, touchedIds } = this.state;
-    delete touchedIds[entity._ClientId];
+    const { activeId } = this.state;
     if (activeId === entity._ClientId) {
       if (nextEntity) {
-        touchedIds[nextEntity._ClientId] = true;
-        this.setState({ activeId: nextEntity._ClientId, touchedIds });
+        this.setState({ activeId: nextEntity._ClientId });
       } else {
-        this.setState({ activeId: null, touchedIds });
+        this.setState({ activeId: null });
       }
-    } else {
-      this.setState({ touchedIds });
     }
   }
 
@@ -268,11 +248,8 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
   };
 
   private handleTabChange = (newTabId: number, _prevTabId: number, _e: any) => {
-    const { touchedIds } = this.state;
-    touchedIds[newTabId] = true;
     this.setState({
-      activeId: newTabId,
-      touchedIds
+      activeId: newTabId
     });
   };
 
@@ -346,9 +323,10 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
       skipOtherFields,
       fieldOrders,
       fieldEditors,
-      renderOnlyActiveTab,
       vertical,
       className,
+      onShowEntity,
+      onHideEntity,
       onSaveEntity,
       onRefreshEntity,
       onReloadEntity,
@@ -361,7 +339,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
       canPublishEntity,
       canCloneEntity
     } = this.props;
-    const { isOpen, isTouched, activeId, touchedIds } = this.state;
+    const { isOpen, isTouched, activeId } = this.state;
     const dataSource = this.dataSource;
     const isEmpty = !dataSource || dataSource.length === 0;
     const isSingle = dataSource && dataSource.length === 1;
@@ -372,7 +350,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
     }
     return (
       <Tabs
-        renderActiveTabPanelOnly={renderOnlyActiveTab}
+        renderActiveTabPanelOnly
         vertical={vertical}
         id={`${tabId}_${fieldSchema.FieldName}`}
         className={cn("relation-field-tabs", className, {
@@ -393,7 +371,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
                 key={entity._ClientId}
                 id={entity._ClientId}
                 panel={
-                  touchedIds[entity._ClientId] && (
+                  activeId === entity._ClientId && (
                     <EntityEditor
                       model={entity}
                       contentSchema={fieldSchema.RelatedContent}
@@ -401,6 +379,8 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
                       fieldOrders={fieldOrders}
                       fieldEditors={fieldEditors}
                       withHeader
+                      onShowEntity={onShowEntity}
+                      onHideEntity={onHideEntity}
                       onSaveEntity={onSaveEntity}
                       onRefreshEntity={onRefreshEntity}
                       onReloadEntity={onReloadEntity}

@@ -30,7 +30,6 @@ export interface RelationFieldAccordionProps extends ExpandableFieldEditorProps 
   columnProportions?: number[];
   displayFields?: (string | FieldSelector)[];
   orderByField?: string | FieldSelector;
-  renderOnlyActiveSection?: boolean;
   collapsed?: boolean;
 }
 
@@ -38,9 +37,6 @@ interface RelationFieldAccordionState {
   isOpen: boolean;
   isTouched: boolean;
   activeId: number | null;
-  touchedIds: {
-    [articleId: number]: boolean;
-  };
 }
 
 const defaultRelationHandler = action => action();
@@ -82,8 +78,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
   readonly state: RelationFieldAccordionState = {
     isOpen: !this.props.collapsed,
     isTouched: !this.props.collapsed,
-    activeId: null,
-    touchedIds: {}
+    activeId: null
   };
 
   @computed
@@ -230,7 +225,6 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
         model.setTouched(fieldSchema.FieldName, true);
         this.setState({
           activeId: null,
-          touchedIds: {},
           isOpen: false,
           isTouched: false
         });
@@ -272,7 +266,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
   }
 
   private toggleScreen(entity: EntityObject) {
-    const { activeId, touchedIds } = this.state;
+    const { activeId } = this.state;
     if (activeId === entity._ClientId) {
       this.setState({
         activeId: null,
@@ -280,10 +274,8 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
         isTouched: true
       });
     } else {
-      touchedIds[entity._ClientId] = true;
       this.setState({
         activeId: entity._ClientId,
-        touchedIds,
         isOpen: true,
         isTouched: true
       });
@@ -291,12 +283,9 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
   }
 
   private deactivateScreen(entity: EntityObject) {
-    const { activeId, touchedIds } = this.state;
-    delete touchedIds[entity._ClientId];
+    const { activeId } = this.state;
     if (activeId === entity._ClientId) {
-      this.setState({ activeId: null, touchedIds });
-    } else {
-      this.setState({ touchedIds });
+      this.setState({ activeId: null });
     }
   }
 
@@ -379,7 +368,8 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
       fieldOrders,
       fieldEditors,
       skipOtherFields,
-      renderOnlyActiveSection,
+      onShowEntity,
+      onHideEntity,
       canSaveEntity,
       canRefreshEntity,
       canReloadEntity,
@@ -388,7 +378,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
       canPublishEntity,
       canCloneEntity
     } = this.props;
-    const { isOpen, isTouched, activeId, touchedIds } = this.state;
+    const { isOpen, isTouched, activeId } = this.state;
     const dataSource = this.dataSource;
     const contentSchema = fieldSchema.RelatedContent;
     return isTouched && dataSource ? (
@@ -420,7 +410,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                     <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
                   </td>
                   {this._displayFieldsNodeCache.getOrAdd(entity, () => (
-                    <Fragment>
+                    <>
                       <td key={-1} className="relation-field-accordion__cell">
                         <EntityLink model={entity} contentSchema={contentSchema} />
                       </td>
@@ -433,7 +423,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                           {displayField(entity)}
                         </td>
                       ))}
-                    </Fragment>
+                    </>
                   ))}
                   <td className="relation-field-accordion__controls">
                     {isOpen && (
@@ -469,16 +459,17 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                     })}
                     colSpan={this.getBodyColSpan()}
                   >
-                    {(isOpen || !renderOnlyActiveSection) &&
-                      touchedIds[entity._ClientId] && (
-                        <EntityEditor
-                          model={entity}
-                          contentSchema={fieldSchema.RelatedContent}
-                          fieldOrders={fieldOrders}
-                          fieldEditors={fieldEditors}
-                          skipOtherFields={skipOtherFields}
-                        />
-                      )}
+                    {isOpen && (
+                      <EntityEditor
+                        model={entity}
+                        contentSchema={fieldSchema.RelatedContent}
+                        fieldOrders={fieldOrders}
+                        fieldEditors={fieldEditors}
+                        skipOtherFields={skipOtherFields}
+                        onShowEntity={onShowEntity}
+                        onHideEntity={onHideEntity}
+                      />
+                    )}
                   </td>
                 </tr>
               </Fragment>
