@@ -67,8 +67,8 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
             MarketingProduct: IGNORE,
             PDF: this.renderFixTariffsFile,
             ListImage: this.renderFixTariffsFile,
-            Parameters: this.renderFixConnectParameters
-            // TODO: validate Regions and Parameters
+            Parameters: this.renderFixConnectParameters,
+            Regions: this.renderFormRegions
           }}
         />
         <Divider />

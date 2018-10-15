@@ -47,6 +47,7 @@ export const FederalTab = ({ model, contentSchema }: FederalTabProps) => {
           "FixConnectActions"
         ]}
         fieldEditors={{
+          Products: IGNORE,
           FixConnectActions: IGNORE,
           Type: IGNORE,
           Type_Extension: {
