@@ -221,7 +221,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
     const { model, fieldSchema, onClearRelation } = this.props;
     onClearRelation(
       action("clearRelations", () => {
-        model[fieldSchema.FieldName] = [];
+        model[fieldSchema.FieldName].replace([]);
         model.setTouched(fieldSchema.FieldName, true);
         this.setState({
           activeId: null,

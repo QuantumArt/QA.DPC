@@ -40,7 +40,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
   @action
   private clearRelations = () => {
     const { model, fieldSchema } = this.props;
-    model[fieldSchema.FieldName] = [];
+    model[fieldSchema.FieldName].replace([]);
     model.setTouched(fieldSchema.FieldName, true);
   };
 

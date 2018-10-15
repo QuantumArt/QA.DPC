@@ -39,7 +39,7 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   private clearRelations = () => {
     const { model, fieldSchema } = this.props;
     this.setState({ selectedIds: {} });
-    model[fieldSchema.FieldName] = [];
+    model[fieldSchema.FieldName].replace([]);
     model.setTouched(fieldSchema.FieldName, true);
   };
 

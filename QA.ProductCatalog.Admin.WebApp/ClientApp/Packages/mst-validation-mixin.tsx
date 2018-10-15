@@ -105,22 +105,26 @@ export const validationMixin = (self: Object) => {
     return fieldState;
   };
 
-  const handleFieldChange = (name: string, value: any, isCollectionChange = false) => {
+  const handleFieldChange = (
+    name: string,
+    oldValue: any,
+    isCollectionChange = isObservableArray(oldValue) || isObservableMap(oldValue)
+  ) => {
     const fieldState = getOrAddFieldState(name);
     if (!fieldState.isChanged) {
       fieldState.isChanged = true;
 
       if (isCollectionChange) {
-        if (isStateTreeNode(value)) {
+        if (isStateTreeNode(oldValue)) {
           // @ts-ignore
-          const elementType = getChildType(value);
+          const elementType = getChildType(oldValue);
           if (isReferenceType(elementType)) {
-            if (isObservableArray(value)) {
-              fieldState.baseValue = getSnapshot(value).map(id =>
+            if (isObservableArray(oldValue)) {
+              fieldState.baseValue = getSnapshot(oldValue).map(id =>
                 resolveIdentifier(elementType, self, id)
               );
-            } else if (isObservableMap(value)) {
-              const mapSnapshot = getSnapshot(value);
+            } else if (isObservableMap(oldValue)) {
+              const mapSnapshot = getSnapshot(oldValue);
               fieldState.baseValue = new Map(
                 Object.keys(mapSnapshot).map(
                   key =>
@@ -130,15 +134,15 @@ export const validationMixin = (self: Object) => {
             }
           } else {
             // this cloned node is detached and can be used only for restore base value
-            fieldState.baseValue = clone(value);
+            fieldState.baseValue = clone(oldValue);
           }
-        } else if (isObservableArray(value)) {
-          fieldState.baseValue = observable.array(value.peek());
-        } else if (isObservableMap(value)) {
-          fieldState.baseValue = observable.map(value.entries());
+        } else if (isObservableArray(oldValue)) {
+          fieldState.baseValue = observable.array(oldValue.peek());
+        } else if (isObservableMap(oldValue)) {
+          fieldState.baseValue = observable.map(oldValue.entries());
         }
       } else {
-        fieldState.baseValue = value;
+        fieldState.baseValue = oldValue;
       }
     }
     if (fieldState.errors.length > 0) {
@@ -269,8 +273,7 @@ export const validationMixin = (self: Object) => {
       setChanged(name: string, isChanged = true) {
         if (isChanged) {
           const oldValue = self[name];
-          const isCollectionChange = isObservableArray(oldValue) || isObservableMap(oldValue);
-          handleFieldChange(name, oldValue, isCollectionChange);
+          handleFieldChange(name, oldValue);
         } else {
           const fieldState = fields.get(name);
           if (fieldState) {

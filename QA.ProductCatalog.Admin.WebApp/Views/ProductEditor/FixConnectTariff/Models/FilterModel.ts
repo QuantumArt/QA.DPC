@@ -71,7 +71,7 @@ export class FilterModel {
     } = this;
     if (
       filterByMarketingTariff &&
-      !device.MarketingTariffs.includes(this.fixTariff.MarketingProduct)
+      !device.getBaseValue("MarketingTariffs").includes(this.fixTariff.MarketingProduct)
     ) {
       return false;
     }
