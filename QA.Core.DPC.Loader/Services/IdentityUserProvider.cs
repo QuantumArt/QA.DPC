@@ -1,6 +1,5 @@
 ﻿using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Services
 {
@@ -15,12 +14,12 @@ namespace QA.Core.ProductCatalog.Actions.Services
 
         public int GetUserId()
         {
-            return _identityProvider.Identity.UserId;
+            return _identityProvider.Identity?.UserId ?? 1;
         }
 
         public string GetUserName()
         {
-            return _identityProvider.Identity.Name;
+            return _identityProvider.Identity?.Name ?? "admin";
         }
     }
 }

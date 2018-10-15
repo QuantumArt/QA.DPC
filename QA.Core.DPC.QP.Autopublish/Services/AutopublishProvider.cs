@@ -8,7 +8,6 @@ using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using QA.ProductCatalog.ContentProviders;
-using IStatusProvider = QA.ProductCatalog.Infrastructure.IStatusProvider;
 
 namespace QA.Core.DPC.QP.Autopublish.Services
 {

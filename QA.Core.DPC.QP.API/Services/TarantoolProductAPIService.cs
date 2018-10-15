@@ -7,7 +7,7 @@ using System;
 using System.Globalization;
 using System.Linq;
 using QA.ProductCatalog.ContentProviders;
-using IStatusProvider = QA.ProductCatalog.Infrastructure.IStatusProvider;
+using IStatusProvider = QA.ProductCatalog.ContentProviders.IStatusProvider;
 
 namespace QA.Core.DPC.QP.API.Services
 {
