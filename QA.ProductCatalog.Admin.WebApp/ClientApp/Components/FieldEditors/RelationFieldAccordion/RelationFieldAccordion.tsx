@@ -414,33 +414,28 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                   onClick={e => this.handleToggle(e, entity)}
                 >
                   <td
-                    key={-1}
                     className="relation-field-accordion__expander"
                     title={isOpen ? "Свернуть" : "Развернуть"}
                   >
                     <Icon icon={isOpen ? "caret-down" : "caret-right"} title={false} />
                   </td>
-                  <td key={-2} className="relation-field-accordion__cell">
-                    {isOpen ? (
-                      <EntityLink model={entity} contentSchema={contentSchema} />
-                    ) : (
-                      hasServerId && (
-                        <span className="relation-field-accordion__link">{entity._ServerId}</span>
-                      )
-                    )}
-                  </td>
-                  {this._displayFieldsNodeCache.getOrAdd(entity, () =>
-                    this._displayFields.map((displayField, i) => (
-                      <td
-                        key={i}
-                        colSpan={this._columnProportions ? this._columnProportions[i] : 1}
-                        className="relation-field-accordion__cell"
-                      >
-                        {displayField(entity)}
+                  {this._displayFieldsNodeCache.getOrAdd(entity, () => (
+                    <Fragment>
+                      <td key={-1} className="relation-field-accordion__cell">
+                        <EntityLink model={entity} contentSchema={contentSchema} />
                       </td>
-                    ))
-                  )}
-                  <td key={-3} className="relation-field-accordion__controls">
+                      {this._displayFields.map((displayField, i) => (
+                        <td
+                          key={i}
+                          colSpan={this._columnProportions ? this._columnProportions[i] : 1}
+                          className="relation-field-accordion__cell"
+                        >
+                          {displayField(entity)}
+                        </td>
+                      ))}
+                    </Fragment>
+                  ))}
+                  <td className="relation-field-accordion__controls">
                     {isOpen && (
                       <EntityMenu
                         small
