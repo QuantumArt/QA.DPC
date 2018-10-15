@@ -43,7 +43,11 @@ function compileEditorDataInterfaces(mergedSchemas) {
   const print = func => func();
 
   // prettier-ignore
-  return `import { IMSTArray, IMSTMap } from "mobx-state-tree";
+  return `/**
+ * DO NOT MODIFY THIS FILE BECAUSE IT WAS GENERATED AUTOMATICALLY
+ * @see ProductEditorControllser.TypeScriptSchema()
+ */
+import { IMSTArray, IMSTMap } from "mobx-state-tree";
 import { EntityObject, ExtensionObject, TablesObject } from "Models/EditorDataModels";
 
 type IArray<T> = IMSTArray<any, any, T>;
