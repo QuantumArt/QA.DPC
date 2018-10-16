@@ -1,4 +1,9 @@
-import { Product, ProductParameter, LinkParameter } from "../TypeScriptSchema";
+import {
+  Product,
+  ProductParameter,
+  LinkParameter,
+  DevicesForFixConnectAction
+} from "../TypeScriptSchema";
 
 export const hasUniqueRegions = (product: Product) => () => {
   const productsWithSameRegions = product.MarketingProduct.Products.filter(
@@ -10,6 +15,18 @@ export const hasUniqueRegions = (product: Product) => () => {
   if (productsWithSameRegions.length > 0) {
     const productIds = productsWithSameRegions.map(product => product._ServerId || 0);
     return `Продукт содержит регионы из продуктов: ${productIds.join(", ")}`;
+  }
+  return undefined;
+};
+
+export const hasUniqueMarketingDevice = (device: DevicesForFixConnectAction) => () => {
+  const devicesWithSameMarketing = device.FixConnectAction.ActionMarketingDevices.filter(
+    otherDevice => otherDevice !== device && otherDevice.MarketingDevice === device.MarketingDevice
+  );
+
+  if (devicesWithSameMarketing.length > 0) {
+    const titles = devicesWithSameMarketing.map(devices => `[${devices.Parent.Title}]`);
+    return `Маркетинговое оборудование совпадает с ${titles.join(", ")}`;
   }
   return undefined;
 };

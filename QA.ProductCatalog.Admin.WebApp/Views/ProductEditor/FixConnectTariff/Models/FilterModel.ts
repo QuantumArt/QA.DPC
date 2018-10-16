@@ -1,5 +1,5 @@
 import { observable, action, computed } from "mobx";
-import { Product, DeviceOnTariffs } from "../TypeScriptSchema";
+import { Product, DeviceOnTariffs, FixConnectAction } from "../TypeScriptSchema";
 
 export class FilterModel {
   @observable.ref public filterByTariffRegions = true;
@@ -55,6 +55,28 @@ export class FilterModel {
     if (
       selectedRegionIds.length > 0 &&
       !product.getBaseValue("Regions").some(region => hasSelectedRegionId[region._ClientId])
+    ) {
+      return false;
+    }
+    return true;
+  };
+
+  public filterActions = (action: FixConnectAction) => {
+    const {
+      filterByTariffRegions,
+      fixTariffHasRegionId,
+      selectedRegionIds,
+      hasSelectedRegionId
+    } = this;
+    if (
+      filterByTariffRegions &&
+      !action.Parent.getBaseValue("Regions").some(region => fixTariffHasRegionId[region._ClientId])
+    ) {
+      return false;
+    }
+    if (
+      selectedRegionIds.length > 0 &&
+      !action.Parent.getBaseValue("Regions").some(region => hasSelectedRegionId[region._ClientId])
     ) {
       return false;
     }

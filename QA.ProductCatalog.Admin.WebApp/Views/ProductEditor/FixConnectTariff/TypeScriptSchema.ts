@@ -49,7 +49,7 @@ export interface Product extends EntityObject {
   };
   /** Параметры продукта */
   Parameters: IArray<ProductParameter>;
-  /** Акция фиксированной связи */
+  /** Акционное оборудование */
   ActionMarketingDevices: IArray<DevicesForFixConnectAction>;
   /** Описание */
   Description: string;
@@ -140,7 +140,7 @@ export interface MarketingProduct extends EntityObject {
   Advantages: IArray<Advantage>;
   /** Модификаторы */
   Modifiers: IArray<ProductModifer>;
-  /** FixConnectActions */
+  /** Акции фиксированной связи */
   FixConnectActions: IArray<FixConnectAction>;
 }
 
@@ -164,6 +164,8 @@ export interface Device extends ExtensionObject {}
 
 export interface FixConnectAction extends EntityObject {
   Parent: Product;
+  /** Маркетинговые тарифы фиксированной связи */
+  MarketingOffers: IArray<MarketingProduct>;
   /** Описание промо-периода. */
   PromoPeriod: string;
   /** Описание момента начала действия обычной цены. */
@@ -204,4 +206,6 @@ export interface DevicesForFixConnectAction extends EntityObject {
   /** Маркетинговое оборудование */
   MarketingDevice: MarketingProduct;
   Parent: ProductRelation;
+  /** Акция фиксированной связи */
+  FixConnectAction: Product;
 }
