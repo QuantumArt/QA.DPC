@@ -399,7 +399,9 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                   className={cn("relation-field-accordion__header", {
                     "relation-field-accordion__header--open": isOpen,
                     "relation-field-accordion__header--edited": contentSchema.isEdited(entity),
-                    "relation-field-accordion__header--invalid": contentSchema.hasErrors(entity)
+                    "relation-field-accordion__header--invalid": contentSchema.hasVisibleErrors(
+                      entity
+                    )
                   })}
                   onClick={e => this.handleToggle(e, entity)}
                 >

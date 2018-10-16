@@ -26,6 +26,7 @@ interface RelationFieldTabsProps extends ExpandableFieldEditorProps {
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   displayField?: string | FieldSelector;
+  titleField?: string | FieldSelector;
   collapsed?: boolean;
   vertical?: boolean;
   className?: string;
@@ -320,6 +321,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
       fieldEditors,
       vertical,
       className,
+      titleField,
       onShowEntity,
       onHideEntity,
       onSaveEntity,
@@ -373,6 +375,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
                       skipOtherFields={skipOtherFields}
                       fieldOrders={fieldOrders}
                       fieldEditors={fieldEditors}
+                      titleField={titleField}
                       withHeader
                       onShowEntity={onShowEntity}
                       onHideEntity={onHideEntity}

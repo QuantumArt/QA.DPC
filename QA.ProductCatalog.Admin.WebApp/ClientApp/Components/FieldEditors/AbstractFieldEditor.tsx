@@ -105,7 +105,7 @@ export abstract class AbstractFieldEditor<
 }
 
 export type FieldSelector<T = ReactNode> = (model: ArticleObject) => T;
-export type EntityComparer = (first: EntityObject, second: EntityObject) => -1 | 0 | 1;
+export type EntityComparer = (first: EntityObject, second: EntityObject) => number;
 
 export abstract class AbstractRelationFieldEditor<
   P extends FieldEditorProps = FieldEditorProps

@@ -7,6 +7,7 @@ import { ProductController } from "Services/ProductController";
 import { EntityController } from "Services/EntityController";
 import { PublicationController } from "Services/PublicationController";
 import { isString } from "Utils/TypeChecks";
+import { FieldSelector } from "Components/FieldEditors/AbstractFieldEditor";
 import { EntityMenu } from "./EntityMenu";
 import { EntityLink } from "./EntityLink";
 import { AbstractEditor, ArticleEditorProps } from "./ArticleEditor";
@@ -16,8 +17,8 @@ import { action } from "mobx";
 interface EntityEditorProps extends ArticleEditorProps {
   model: EntityObject;
   className?: string;
-  titleField?: string | ((entity: EntityObject) => string);
   withHeader?: ReactNode | boolean;
+  titleField?: string | FieldSelector;
   // allowed actions
   canSaveEntity?: boolean;
   canRefreshEntity?: boolean;
