@@ -56,10 +56,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EntityDeploy Include="Model.edmx">
+    <None Include="Model.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
       <LastGenOutput>Model.Designer.cs</LastGenOutput>
-    </EntityDeploy>
+    </None>
     <None Update="Model.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>Model.edmx</DependentUpon>
@@ -76,5 +76,23 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+      <EmbeddedResource Include="Model.csdl">
+          <LogicalName>Model.csdl</LogicalName>
+      </EmbeddedResource>
+      <EmbeddedResource Include="Model.ssdl">
+          
+          <LogicalName>Model.ssdl</LogicalName>         
+      </EmbeddedResource>
+      <EmbeddedResource Include="Model.msl">
+          <LogicalName>Model.msl</LogicalName>
+      </EmbeddedResource>
+  </ItemGroup>
+    <PropertyGroup>
+        <PreBuildEvent>dotnet "$(MSBuildProjectDirectory)/utils/QA.Core.Splitedmx.dll" "$(MSBuildProjectDirectory)/Model.edmx"</PreBuildEvent>
+    </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="utils" />
   </ItemGroup>
 </Project>

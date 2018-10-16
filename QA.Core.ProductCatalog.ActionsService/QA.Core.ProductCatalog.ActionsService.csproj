@@ -517,6 +517,22 @@
       <HintPath>$(SolutionDir)packages\Unity.5.8.11\lib\net47\Unity.ServiceLocation.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Z.EntityFramework.Classic, Version=7.0.0.0, Culture=neutral, PublicKeyToken=afc61983f100d280">
+      <HintPath>$(SolutionDir)packages\Z.EntityFramework.Classic.Community.7.0.19\lib\net45\Z.EntityFramework.Classic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Z.EntityFramework.Classic.SqlServer, Version=7.0.0.0, Culture=neutral, PublicKeyToken=afc61983f100d280">
+      <HintPath>$(SolutionDir)packages\Z.EntityFramework.Classic.Community.7.0.19\lib\net45\Z.EntityFramework.Classic.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Z.EntityFramework.Extensions.Classic, Version=3.16.3.0, Culture=neutral, PublicKeyToken=59b66d028979105b">
+      <HintPath>$(SolutionDir)packages\Z.EntityFramework.Extensions.Classic.3.16.3\lib\net45\Z.EntityFramework.Extensions.Classic.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Z.Expressions.Eval, Version=2.7.9.0, Culture=neutral, PublicKeyToken=59b66d028979105b">
+      <HintPath>$(SolutionDir)packages\Z.Expressions.Eval.2.7.9\lib\net45\Z.Expressions.Eval.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ProjectInstaller.cs">
