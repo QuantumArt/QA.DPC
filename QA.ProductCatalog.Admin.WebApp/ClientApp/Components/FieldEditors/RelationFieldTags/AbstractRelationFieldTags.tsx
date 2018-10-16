@@ -3,17 +3,19 @@ import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { EntityObject } from "Models/EditorDataModels";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
-import { isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
+import { isNullOrWhiteSpace } from "Utils/TypeChecks";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
-  FieldSelector
+  FieldSelector,
+  EntityComparer
 } from "../AbstractFieldEditor";
 import "./RelationFieldTags.scss";
 
 export interface RelationFieldTagsProps extends FieldEditorProps {
+  sortItems?: EntityComparer;
+  sortItemsBy?: string | FieldSelector;
   displayField?: string | FieldSelector;
-  orderByField?: string | FieldSelector;
 }
 
 export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEditor<
@@ -25,9 +27,7 @@ export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEdi
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
-    const displayField =
-      props.displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
-    this._displayField = isString(displayField) ? entity => entity[displayField] : displayField;
+    this._displayField = this.makeDisplayFieldSelector(props.displayField, fieldSchema);
   }
 
   protected getTitle(entity: EntityObject) {

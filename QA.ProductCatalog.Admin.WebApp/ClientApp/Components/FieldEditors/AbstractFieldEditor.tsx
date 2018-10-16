@@ -9,16 +9,16 @@ import {
   FieldSchema,
   RelationFieldSchema,
   UpdatingMode,
-  FieldExactTypes
+  FieldExactTypes,
+  MultiRelationFieldSchema
 } from "Models/EditorSchemaModels";
 import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { RelationController } from "Services/RelationController";
-import { isArray } from "Utils/TypeChecks";
+import { isArray, isString } from "Utils/TypeChecks";
 import { required } from "Utils/Validators";
 import { newUid } from "Utils/Common";
 import "./FieldEditors.scss";
-
-export type FieldSelector<T = ReactNode> = (model: ArticleObject) => T;
+import { asc } from "ClientApp/Utils/Array/Sort";
 
 export interface FieldEditorProps {
   model: ArticleObject;
@@ -104,6 +104,9 @@ export abstract class AbstractFieldEditor<
   }
 }
 
+export type FieldSelector<T = ReactNode> = (model: ArticleObject) => T;
+export type EntityComparer = (first: EntityObject, second: EntityObject) => -1 | 0 | 1;
+
 export abstract class AbstractRelationFieldEditor<
   P extends FieldEditorProps = FieldEditorProps
 > extends AbstractFieldEditor<P> {
@@ -116,6 +119,39 @@ export abstract class AbstractRelationFieldEditor<
       this._readonly ||
       (fieldSchema.FieldType === FieldExactTypes.M2ORelation &&
         fieldSchema.UpdatingMode === UpdatingMode.Ignore);
+  }
+
+  protected makeDisplayFieldSelector<T = ReactNode>(
+    displayField: string | FieldSelector<T>,
+    fieldSchema: RelationFieldSchema
+  ): FieldSelector<T> {
+    const expression = displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
+    return isString(expression) ? entity => entity[expression] : expression;
+  }
+
+  protected makeDisplayFieldsSelectors<T = ReactNode>(
+    displayFields: (string | FieldSelector<T>)[],
+    fieldSchema: RelationFieldSchema
+  ): FieldSelector<T>[] {
+    const expressions = displayFields || fieldSchema.DisplayFieldNames || [];
+    return expressions.map(field => (isString(field) ? entity => entity[field] : field));
+  }
+
+  protected makeEntityComparer(
+    sortItems: string | FieldSelector | EntityComparer,
+    fieldSchema: MultiRelationFieldSchema
+  ): EntityComparer {
+    const expression = sortItems || fieldSchema.OrderByFieldName || ArticleObject._ServerId;
+    if (isString(expression)) {
+      return asc(entity => entity[expression]);
+    }
+    if (expression.length === 1) {
+      return asc(expression as FieldSelector);
+    }
+    if (expression.length === 2) {
+      return expression as EntityComparer;
+    }
+    throw new Error("Invalid `sortItems` parameter");
   }
 }
 

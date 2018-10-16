@@ -68,7 +68,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
             PDF: this.renderFixTariffsFile,
             ListImage: this.renderFixTariffsFile,
             Parameters: this.renderFixConnectParameters,
-            Regions: this.renderFormRegions
+            Regions: this.renderRegions
           }}
         />
         <Divider />
@@ -131,14 +131,14 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       canRemoveEntity
       canPublishEntity
       canClonePrototype
-      displayFields={[this.renderTableRegions]}
+      displayFields={[regionsDisplayField]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
         MarketingProduct: IGNORE,
         Parameters: this.renderInternetParameters,
-        Regions: this.renderFormRegions
+        Regions: this.renderRegions
       }}
       onShowEntity={product => product.setTouched("Regions")}
     />
@@ -151,33 +151,23 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       canRemoveEntity
       canPublishEntity
       canClonePrototype
-      displayFields={[this.renderTableRegions]}
+      displayFields={[regionsDisplayField]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
         MarketingProduct: IGNORE,
         Parameters: this.renderPhoneParameters,
-        Regions: this.renderFormRegions
+        Regions: this.renderRegions
       }}
       onShowEntity={product => product.setTouched("Regions")}
     />
   );
 
-  private renderTableRegions = (device: Product) => (
-    <div className="products-accordion__regions">
-      {device.Regions.map(region => region.Title).join(", ")}
-    </div>
-  );
-
-  private renderFormRegions = (props: FieldEditorProps) => {
+  private renderRegions = (props: FieldEditorProps) => {
     const product = props.model as Product;
     return (
-      <MultiRelationFieldTags
-        {...props}
-        orderByField="Title"
-        validate={hasUniqueRegions(product)}
-      />
+      <MultiRelationFieldTags {...props} sortItemsBy="Title" validate={hasUniqueRegions(product)} />
     );
   };
 
@@ -253,3 +243,9 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
     />
   );
 }
+
+const regionsDisplayField = (tariff: Product) => (
+  <div className="products-accordion__regions">
+    {tariff.Regions.map(region => region.Title).join(", ")}
+  </div>
+);

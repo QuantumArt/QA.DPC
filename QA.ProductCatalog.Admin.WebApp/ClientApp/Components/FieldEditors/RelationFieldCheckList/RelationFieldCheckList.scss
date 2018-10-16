@@ -1,4 +1,8 @@
 .relation-field-check-list {
+  &--single {
+    margin-top: 3px;
+  }
+
   &--scroll {
     border: 1px solid #ccc;
     border-top-left-radius: 5px;

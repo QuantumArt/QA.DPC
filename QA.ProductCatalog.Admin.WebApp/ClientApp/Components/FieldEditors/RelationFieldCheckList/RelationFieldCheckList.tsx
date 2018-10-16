@@ -13,7 +13,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { isArray, isObject, isString } from "Utils/TypeChecks";
+import { isArray, isObject } from "Utils/TypeChecks";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
@@ -22,7 +22,7 @@ import {
 import "./RelationFieldCheckList.scss";
 
 export interface RelationFieldCheckListProps extends FieldEditorProps {
-  displayFields?: (string | FieldSelector)[];
+  displayFields?: (string | FieldSelector<string>)[];
 }
 
 interface Option {
@@ -46,13 +46,10 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
   constructor(props: RelationFieldCheckListProps, context?: any) {
     super(props, context);
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
-    const displayFields = props.displayFields || fieldSchema.DisplayFieldNames || [];
-    const fieldSelectors = displayFields.map(
-      field => (isString(field) ? entity => entity[field] : field)
-    );
+    const displayFields = this.makeDisplayFieldsSelectors<string>(props.displayFields, fieldSchema);
     this._getOption = entity => ({
       entity,
-      fields: fieldSelectors.map(field => field(entity))
+      fields: displayFields.map(field => field(entity))
     });
     this._multiple = isMultiRelationField(props.fieldSchema);
   }
@@ -154,6 +151,7 @@ export class RelationFieldCheckList extends AbstractRelationFieldEditor<
       <Col xl md={6}>
         <div
           className={cn("relation-field-check-list", {
+            "relation-field-check-list--single": sortedOptions.length === 1,
             "relation-field-check-list--scroll": sortedOptions.length > 7
           })}
         >

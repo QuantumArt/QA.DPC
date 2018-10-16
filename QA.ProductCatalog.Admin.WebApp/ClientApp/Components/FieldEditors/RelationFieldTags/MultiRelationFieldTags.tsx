@@ -5,23 +5,20 @@ import { observer } from "mobx-react";
 import { consumer } from "react-ioc";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
-import { asc } from "Utils/Array/Sort";
-import { isString } from "Utils/TypeChecks";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
-import { FieldSelector } from "../AbstractFieldEditor";
+import { EntityComparer } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTags, RelationFieldTagsProps } from "./AbstractRelationFieldTags";
 
 @consumer
 @observer
 export class MultiRelationFieldTags extends AbstractRelationFieldTags {
-  private _orderByField: FieldSelector;
+  private _entityComparer: EntityComparer;
 
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
+    const { sortItems, sortItemsBy } = props;
     const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
-    const orderByField =
-      props.orderByField || fieldSchema.OrderByFieldName || ArticleObject._ServerId;
-    this._orderByField = isString(orderByField) ? entity => entity[orderByField] : orderByField;
+    this._entityComparer = this.makeEntityComparer(sortItems || sortItemsBy, fieldSchema);
   }
 
   @action
@@ -60,7 +57,7 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
         {list &&
           list
             .slice()
-            .sort(asc(this._orderByField))
+            .sort(this._entityComparer)
             .map(entity => (
               <Fragment key={entity._ClientId}>
                 {" "}

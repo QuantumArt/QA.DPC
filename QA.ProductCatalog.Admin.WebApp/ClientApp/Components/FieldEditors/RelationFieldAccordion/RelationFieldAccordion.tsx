@@ -8,8 +8,6 @@ import { Icon, Button } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ComputedCache } from "Utils/WeakCache";
-import { isString } from "Utils/TypeChecks";
-import { asc } from "Utils/Array/Sort";
 import { DataContext } from "Services/DataContext";
 import { ProductController } from "Services/ProductController";
 import { EntityController } from "Services/EntityController";
@@ -22,15 +20,17 @@ import { EntityLink } from "Components/ArticleEditor/EntityLink";
 import {
   AbstractRelationFieldEditor,
   ExpandableFieldEditorProps,
-  FieldSelector
+  FieldSelector,
+  EntityComparer
 } from "Components/FieldEditors/AbstractFieldEditor";
 import "./RelationFieldAccordion.scss";
 
 export interface RelationFieldAccordionProps extends ExpandableFieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
+  sortItems?: EntityComparer;
+  sortItemsBy?: string | FieldSelector;
   columnProportions?: number[];
   displayFields?: (string | FieldSelector)[];
-  orderByField?: string | FieldSelector;
   collapsed?: boolean;
 }
 
@@ -75,7 +75,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
   @inject private _productController: ProductController;
   private _columnProportions?: number[];
   private _displayFields: FieldSelector[];
-  private _orderByField: FieldSelector;
+  private _entityComparer: EntityComparer;
 
   readonly state: RelationFieldAccordionState = {
     isOpen: !this.props.collapsed,
@@ -87,23 +87,21 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
   private get dataSource() {
     const { model, fieldSchema, filterItems } = this.props;
     const array: EntityObject[] = model[fieldSchema.FieldName];
-    return array && array.filter(filterItems).sort(asc(this._orderByField));
+    return array && array.filter(filterItems).sort(this._entityComparer);
   }
 
   constructor(props: RelationFieldAccordionProps, context?: any) {
     super(props, context);
-    const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
-
-    const displayFields = props.displayFields || fieldSchema.DisplayFieldNames || [];
-    this._displayFields = displayFields.map(
-      field => (isString(field) ? entity => entity[field] : field)
-    );
-
-    const orderByField =
-      props.orderByField || fieldSchema.OrderByFieldName || ArticleObject._ServerId;
-    this._orderByField = isString(orderByField) ? entity => entity[orderByField] : orderByField;
-
-    this._columnProportions = props.columnProportions;
+    const {
+      fieldSchema,
+      sortItems,
+      sortItemsBy,
+      displayFields,
+      columnProportions
+    } = props as PrivateProps;
+    this._displayFields = this.makeDisplayFieldsSelectors(displayFields, fieldSchema);
+    this._entityComparer = this.makeEntityComparer(sortItems || sortItemsBy, fieldSchema);
+    this._columnProportions = columnProportions;
   }
 
   private clonePrototype = () => {

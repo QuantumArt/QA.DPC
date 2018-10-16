@@ -56,7 +56,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
       vertical
       canSaveEntity={false}
       canRefreshEntity={false}
-      displayField={"Title"}
+      displayField="Title"
       fieldOrders={["Modifiers", "Products", "DevicesOnTariffs"]}
       fieldEditors={{
         Title: IGNORE,
@@ -74,14 +74,14 @@ export class DevicesTab extends Component<DevicesTabProps> {
       canPublishEntity
       canClonePrototype
       columnProportions={[3, 1, 1]}
-      displayFields={[this.renderTableRegions, this.renderRentPrice, this.renderSalePrice]}
+      displayFields={[regionsDisplayField, rentPriceDisplayField, salePriceDisplayField]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
         MarketingProduct: IGNORE,
         Parameters: this.renderParameters,
-        Regions: this.renderFormRegions
+        Regions: this.renderRegions
       }}
       onShowEntity={product => product.setTouched("Regions")}
     />
@@ -92,68 +92,27 @@ export class DevicesTab extends Component<DevicesTabProps> {
       {...props}
       canCloneEntity
       canRemoveEntity
-      canPublishEntity
       canClonePrototype
       columnProportions={[3, 1, 1]}
       displayFields={[
-        this.renderMatrixTableRegions,
-        this.renderMatrixRentPrice,
-        this.renderMatrixSalePrice
+        matrixRegionsDisplayField,
+        matrixRentPriceDisplayField,
+        matrixSalePriceDisplayField
       ]}
       filterItems={this.filterModel.filterDevicesOnTariffs}
       fieldOrders={["Cities", "Parent", "MarketingTariffs"]}
       fieldEditors={{
         MarketingDevice: IGNORE,
-        Parent: this.renderMatrixProductRelation,
+        Parent: this.renderDeviceOnTariffParent,
         MarketingTariffs: MultiRelationFieldTable
       }}
     />
   );
 
-  private renderTableRegions = (device: Product) => (
-    <div className="products-accordion__regions">
-      {device.Regions.map(region => region.Title).join(", ")}
-    </div>
-  );
-
-  private renderFormRegions = (props: FieldEditorProps) => {
+  private renderRegions = (props: FieldEditorProps) => {
     const product = props.model as Product;
     return (
-      <MultiRelationFieldTags
-        {...props}
-        orderByField="Title"
-        validate={hasUniqueRegions(product)}
-      />
-    );
-  };
-
-  private renderRentPrice = (device: Product) => {
-    const parameter = device.Parameters.find(parameter => parameter.Title === "Цена аренды");
-    return (
-      parameter &&
-      parameter.NumValue !== null && (
-        <>
-          <div>Цена аренды:</div>
-          <div>
-            {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
-          </div>
-        </>
-      )
-    );
-  };
-
-  private renderSalePrice = (device: Product) => {
-    const parameter = device.Parameters.find(parameter => parameter.Title === "Цена продажи");
-    return (
-      parameter &&
-      parameter.NumValue !== null && (
-        <>
-          <div>Цена продажи:</div>
-          <div>
-            {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
-          </div>
-        </>
-      )
+      <MultiRelationFieldTags {...props} sortItemsBy="Title" validate={hasUniqueRegions(product)} />
     );
   };
 
@@ -167,45 +126,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
     />
   );
 
-  private renderMatrixTableRegions = (device: DeviceOnTariffs) => (
-    <div className="products-accordion__regions">
-      {device.Cities.map(region => region.Title).join(", ")}
-    </div>
-  );
-
-  private renderMatrixRentPrice = (device: DeviceOnTariffs) => {
-    const parameter = device.Parent.Parameters.find(parameter => parameter.Title === "Цена аренды");
-    return (
-      parameter &&
-      parameter.NumValue !== null && (
-        <>
-          <div>Цена аренды:</div>
-          <div>
-            {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
-          </div>
-        </>
-      )
-    );
-  };
-
-  private renderMatrixSalePrice = (device: DeviceOnTariffs) => {
-    const parameter = device.Parent.Parameters.find(
-      parameter => parameter.Title === "Цена продажи"
-    );
-    return (
-      parameter &&
-      parameter.NumValue !== null && (
-        <>
-          <div>Цена продажи:</div>
-          <div>
-            {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
-          </div>
-        </>
-      )
-    );
-  };
-
-  private renderMatrixProductRelation = ({ model, fieldSchema }: FieldEditorProps) => {
+  private renderDeviceOnTariffParent = ({ model, fieldSchema }: FieldEditorProps) => {
     const contentSchema = (fieldSchema as RelationFieldSchema).RelatedContent;
     const productRelation = model[fieldSchema.FieldName] as ProductRelation;
     return (
@@ -222,3 +143,75 @@ export class DevicesTab extends Component<DevicesTabProps> {
     );
   };
 }
+
+const regionsDisplayField = (device: Product) => (
+  <div className="products-accordion__regions">
+    {device.Regions.map(region => region.Title).join(", ")}
+  </div>
+);
+
+const rentPriceDisplayField = (device: Product) => {
+  const parameter = device.Parameters.find(parameter => parameter.Title === "Цена аренды");
+  return (
+    parameter &&
+    parameter.NumValue !== null && (
+      <>
+        <div>Цена аренды:</div>
+        <div>
+          {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
+        </div>
+      </>
+    )
+  );
+};
+
+const salePriceDisplayField = (device: Product) => {
+  const parameter = device.Parameters.find(parameter => parameter.Title === "Цена продажи");
+  return (
+    parameter &&
+    parameter.NumValue !== null && (
+      <>
+        <div>Цена продажи:</div>
+        <div>
+          {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
+        </div>
+      </>
+    )
+  );
+};
+
+const matrixRegionsDisplayField = (device: DeviceOnTariffs) => (
+  <div className="products-accordion__regions">
+    {device.Cities.map(region => region.Title).join(", ")}
+  </div>
+);
+
+const matrixRentPriceDisplayField = (device: DeviceOnTariffs) => {
+  const parameter = device.Parent.Parameters.find(parameter => parameter.Title === "Цена аренды");
+  return (
+    parameter &&
+    parameter.NumValue !== null && (
+      <>
+        <div>Цена аренды:</div>
+        <div>
+          {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
+        </div>
+      </>
+    )
+  );
+};
+
+const matrixSalePriceDisplayField = (device: DeviceOnTariffs) => {
+  const parameter = device.Parent.Parameters.find(parameter => parameter.Title === "Цена продажи");
+  return (
+    parameter &&
+    parameter.NumValue !== null && (
+      <>
+        <div>Цена продажи:</div>
+        <div>
+          {parameter.NumValue} {parameter.Unit && parameter.Unit.Title}
+        </div>
+      </>
+    )
+  );
+};

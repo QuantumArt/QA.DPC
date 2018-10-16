@@ -6,24 +6,21 @@ import { observer } from "mobx-react";
 import { Button, Intent } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
-import { isString } from "Utils/TypeChecks";
-import { asc } from "Utils/Array/Sort";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
-import { FieldSelector } from "../AbstractFieldEditor";
+import { EntityComparer } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTable, RelationFieldTableProps } from "./AbstractRelationFieldTable";
 import { EntityLink } from "Components/ArticleEditor/EntityLink";
 
 @consumer
 @observer
 export class MultiRelationFieldTable extends AbstractRelationFieldTable {
-  private _orderByField: FieldSelector;
+  private _entityComparer: EntityComparer;
 
   constructor(props: RelationFieldTableProps, context?: any) {
     super(props, context);
+    const { sortItems, sortItemsBy } = props;
     const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
-    const orderByField =
-      props.orderByField || fieldSchema.OrderByFieldName || ArticleObject._ServerId;
-    this._orderByField = isString(orderByField) ? entity => entity[orderByField] : orderByField;
+    this._entityComparer = this.makeEntityComparer(sortItems || sortItemsBy, fieldSchema);
   }
 
   @action
@@ -64,7 +61,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
             <div className="relation-field-table__table">
               {list
                 .slice()
-                .sort(asc(this._orderByField))
+                .sort(this._entityComparer)
                 .map(entity => {
                   return (
                     <div key={entity._ClientId} className="relation-field-table__row">

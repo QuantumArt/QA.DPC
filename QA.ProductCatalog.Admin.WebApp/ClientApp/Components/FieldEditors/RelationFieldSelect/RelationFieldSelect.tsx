@@ -12,7 +12,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
-import { isArray, isObject, isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
+import { isArray, isObject, isNullOrWhiteSpace } from "Utils/TypeChecks";
 import { Select } from "Components/FormControls/FormControls";
 import {
   AbstractRelationFieldEditor,
@@ -21,7 +21,7 @@ import {
 } from "../AbstractFieldEditor";
 
 export interface RelationFieldSelectProps extends FieldEditorProps {
-  displayField?: string | FieldSelector;
+  displayField?: string | FieldSelector<string>;
 }
 
 const optionsCache = new WeakMap<RelationFieldSchema, Options>();
@@ -35,11 +35,9 @@ export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFie
   constructor(props: RelationFieldSelectProps, context?: any) {
     super(props, context);
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
-    const displayField =
-      props.displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
-    const getTitle = isString(displayField) ? entity => entity[displayField] : displayField;
+    const displayField = this.makeDisplayFieldSelector<string>(props.displayField, fieldSchema);
     this._getOption = entity => {
-      const title = getTitle(entity);
+      const title = displayField(entity);
       return {
         value: entity._ClientId,
         label: isNullOrWhiteSpace(title) ? "..." : title

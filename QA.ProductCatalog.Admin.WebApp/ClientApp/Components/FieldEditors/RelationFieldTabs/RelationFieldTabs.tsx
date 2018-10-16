@@ -7,7 +7,6 @@ import { Col, Row } from "react-flexbox-grid";
 import { Button, Tab, Tabs } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
-import { asc } from "Utils/Array/Sort";
 import { isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
 import { DataContext } from "Services/DataContext";
 import { CloneController } from "Services/CloneController";
@@ -17,14 +16,16 @@ import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import {
   AbstractRelationFieldEditor,
   FieldSelector,
-  ExpandableFieldEditorProps
+  ExpandableFieldEditorProps,
+  EntityComparer
 } from "Components/FieldEditors/AbstractFieldEditor";
 import "./RelationFieldTabs.scss";
 
 interface RelationFieldTabsProps extends ExpandableFieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
+  sortItems?: EntityComparer;
+  sortItemsBy?: string | FieldSelector;
   displayField?: string | FieldSelector;
-  orderByField?: string | FieldSelector;
   collapsed?: boolean;
   vertical?: boolean;
   className?: string;
@@ -63,7 +64,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
   @inject private _cloneController: CloneController;
   @inject private _entityController: EntityController;
   private _displayField: FieldSelector;
-  private _orderByField: FieldSelector;
+  private _entityComparer: EntityComparer;
 
   readonly state: RelationFieldTabsState = {
     isOpen: !this.props.collapsed,
@@ -75,20 +76,14 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
   private get dataSource() {
     const { model, fieldSchema, filterItems } = this.props;
     const array: EntityObject[] = model[fieldSchema.FieldName];
-    return array && array.filter(filterItems).sort(asc(this._orderByField));
+    return array && array.filter(filterItems).sort(this._entityComparer);
   }
 
   constructor(props: RelationFieldTabsProps, context?: any) {
     super(props, context);
-    const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
-
-    const displayField =
-      props.displayField || fieldSchema.RelatedContent.DisplayFieldName || (() => "");
-    this._displayField = isString(displayField) ? entity => entity[displayField] : displayField;
-
-    const orderByField =
-      props.orderByField || fieldSchema.OrderByFieldName || ArticleObject._ServerId;
-    this._orderByField = isString(orderByField) ? entity => entity[orderByField] : orderByField;
+    const { fieldSchema, sortItems, sortItemsBy, displayField } = props as PrivateProps;
+    this._displayField = this.makeDisplayFieldSelector(displayField, fieldSchema);
+    this._entityComparer = this.makeEntityComparer(sortItems || sortItemsBy, fieldSchema);
 
     untracked(() => {
       const array = props.model[fieldSchema.FieldName] as EntityObject[];

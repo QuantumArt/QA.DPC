@@ -36,7 +36,7 @@ const App = () => (
 );
 
 const RelationFieldTagsDefault = props => (
-  <RelationFieldTags displayField="Title" orderByField="Title" {...props} />
+  <RelationFieldTags displayField="Title" sortItemsBy="Title" {...props} />
 );
 
 ReactDOM.render(<App />, document.getElementById("editor"));
