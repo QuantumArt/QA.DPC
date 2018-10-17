@@ -22,6 +22,8 @@ using QA.Core.DPC.API.Update;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.ProductCatalog.Actions.Exceptions;
+using System.Threading.Tasks;
+using System.Web.UI;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -40,6 +42,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly EditorDataService _editorDataService;
         private readonly EditorPartialContentService _editorPartialContentService;
         private readonly EditorPreloadingService _editorPreloadingService;
+        private readonly PublicationStatusService _publicationStatusService;
 
         public ProductEditorController(
             IContentDefinitionService contentDefinitionService,
@@ -53,7 +56,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             EditorSchemaService editorSchemaService,
             EditorDataService editorDataService,
             EditorPartialContentService editorPartialContentService,
-            EditorPreloadingService editorPreloadingService)
+            EditorPreloadingService editorPreloadingService,
+            PublicationStatusService publicationStatusService)
         {
             _contentDefinitionService = contentDefinitionService;
             _productService = productService;
@@ -67,6 +71,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorDataService = editorDataService;
             _editorPartialContentService = editorPartialContentService;
             _editorPreloadingService = editorPreloadingService;
+            _publicationStatusService = publicationStatusService;
         }
         
         /// <summary>
@@ -212,6 +217,46 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
 
             return new HttpStatusCodeResult(HttpStatusCode.NoContent);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult> GetPublicationTimestamps(
+            [ModelBinder(typeof(JsonModelBinder))] int[] productIds)
+        {
+            var timestamps = await _publicationStatusService.GetProductTimestamps(productIds);
+
+            var timestampsById = timestamps
+                .GroupBy(t => t.ProductId)
+                .ToDictionary(g => g.Key, g => new
+                {
+                    Live = g.Where(t => t.IsLive).DefaultIfEmpty().Max(t => t?.Updated),
+                    Stage = g.Where(t => t.IsLive).DefaultIfEmpty().Max(t => t?.Updated)
+                });
+
+            string json = JsonConvert.SerializeObject(timestampsById);
+
+            return Content(json, "application/json");
+        }
+
+        [HttpGet, OutputCache(
+            Duration = 5,
+            Location = OutputCacheLocation.Server,
+            VaryByParam = "customerCode;updatedSince")]
+        public async Task<ActionResult> GetPublicationTimestamps(DateTime updatedSince)
+        {
+            var timestamps = await _publicationStatusService.GetProductTimestamps(updatedSince);
+
+            var timestampsById = timestamps
+                .GroupBy(t => t.ProductId)
+                .ToDictionary(g => g.Key, g => new
+                {
+                    Live = g.Where(t => t.IsLive).DefaultIfEmpty().Max(t => t?.Updated),
+                    Stage = g.Where(t => t.IsLive).DefaultIfEmpty().Max(t => t?.Updated)
+                });
+
+            string json = JsonConvert.SerializeObject(timestampsById);
+
+            return Content(json, "application/json");
         }
 
         /// <summary>
@@ -510,7 +555,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             return articleObject;
         }
-
+        
 #if DEBUG
         [HttpGet]
         public ViewResult ComponentLibrary()

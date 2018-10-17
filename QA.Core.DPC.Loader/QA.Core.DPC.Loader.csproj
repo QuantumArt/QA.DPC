@@ -80,6 +80,9 @@
       <HintPath>$(SolutionDir)packages\CommonServiceLocator.2.0.4\lib\net47\CommonServiceLocator.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Dapper, Version=1.50.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dapper.1.50.5\lib\net451\Dapper.dll</HintPath>
+    </Reference>
     <Reference Include="EFExtensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\EFExtensions.dll</HintPath>
       <Private>True</Private>
@@ -374,6 +377,7 @@
     <Compile Include="Services\ProductLocalizationService.cs" />
     <Compile Include="Services\ProductPdfTemplateService.cs" />
     <Compile Include="CacheTags.cs" />
+    <Compile Include="Services\PublicationStatusService.cs" />
     <Compile Include="Services\QpCachedContextStorage.cs" />
     <Compile Include="Services\ServiceFactory.cs" />
     <Compile Include="Services\StructureCachTracker.cs" />
@@ -492,4 +496,3 @@
   </Target>
   -->
 </Project>
-
