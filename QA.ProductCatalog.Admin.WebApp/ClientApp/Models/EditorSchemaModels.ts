@@ -16,11 +16,22 @@ export interface ContentSchema {
     readonly [name: string]: FieldSchema;
   };
 
+  /**
+   * @see SchemaContext.ts#compileRecursivePredicate
+   * @see SchemaContext.ts#compileRecursiveLastModified
+   */
+  /** Была ли отредактирована хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
   isEdited(article: ArticleObject): boolean;
+  /** Получала ли фокус хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
   isTouched(article: ArticleObject): boolean;
+  /** Была ли изменена хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
   isChanged(article: ArticleObject): boolean;
+  /** Имеет ли ошибки хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
   hasErrors(article: ArticleObject): boolean;
+  /** Имеет ли видимые ошибки хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
   hasVisibleErrors(article: ArticleObject): boolean;
+  /** Максимальная дата модификации по всем статьям, входящим в продукт, на основе обхода полей схемы */
+  lastModified(article: ArticleObject): Date;
 }
 
 export function isContent(content: any): content is ContentSchema {

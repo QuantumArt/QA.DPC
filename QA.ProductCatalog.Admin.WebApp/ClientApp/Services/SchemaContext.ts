@@ -65,6 +65,11 @@ export class SchemaContext {
       const hasVisibleErrors = compileRecursivePredicate(contentSchema, "hasVisibleErrors");
       contentSchema.hasVisibleErrors = (article: ArticleObject) =>
         hasVisibleErrorsCache.getOrAdd(article, () => hasVisibleErrors(contentSchema, article));
+
+      const lastModifiedCache = new ComputedCache();
+      const lastModified = compileRecursiveLastModified(contentSchema);
+      contentSchema.lastModified = (article: ArticleObject) =>
+        lastModifiedCache.getOrAdd(article, () => lastModified(contentSchema, article));
     });
   }
 }
@@ -206,7 +211,8 @@ function compileRecursivePredicate(
     "article",
     `
     var fields = contentSchema.Fields;
-    return article.${funcName}()${complexFields
+    return article.${funcName}()
+    ${complexFields
       .map(fieldSchema => {
         const name = fieldSchema.FieldName;
         if (isSingleRelationField(fieldSchema)) {
@@ -224,5 +230,82 @@ function compileRecursivePredicate(
               .${funcName}(article.${name}_Extension[article.${name}])`;
       })
       .join("")};`
+  ) as any;
+}
+
+/**
+ * Компилирует функцию для интерфейса `ContentSchema`, возвращающую максимальную
+ * дату модификации по всем статьям, входящим в продукт, на основе обхода полей схемы.
+ * @example
+ * function lastModified(contentSchema, article) {
+ *   var lastModified = article._Modified;
+ *   if (article.Type) {
+ *     var extensionContent = contentSchema.Fields.Type.ExtensionContents[article.Type];
+ *     var extensionModified = extensionContent.lastModified(article.Type_Extension[article.Type]);
+ *     if (lastModified < extensionModified) {
+ *       lastModified = extensionModified;
+ *     }
+ *   }
+ *   if (article.Parameters) {
+ *     var relatedContent = contentSchema.Fields.Parameters.RelatedContent;
+ *     article.Parameters.forEach(function(item) {
+ *       var itemModified = relatedContent.lastModified(item);
+ *       if (lastModified < itemModified) {
+ *         lastModified = itemModified;
+ *       }
+ *     });
+ *   }
+ *   return lastModified;
+ * }
+ */
+function compileRecursiveLastModified(
+  contentSchema: ContentSchema
+): (contentSchema: ContentSchema, article: ArticleObject) => Date {
+  const complexFields = Object.values(contentSchema.Fields).filter(
+    fieldSchema =>
+      (isRelationField(fieldSchema) && fieldSchema.UpdatingMode === UpdatingMode.Update) ||
+      isExtensionField(fieldSchema)
+  );
+  return new Function(
+    "contentSchema",
+    "article",
+    `
+    var lastModified = article._Modified;
+    ${complexFields
+      .map(fieldSchema => {
+        const name = fieldSchema.FieldName;
+        if (isSingleRelationField(fieldSchema)) {
+          return `
+          if (article.${name}) {
+            var relatedContent = contentSchema.Fields.${name}.RelatedContent;
+            var relationModified = relatedContent.lastModified(article.${name});
+            if (lastModified < relationModified) {
+              lastModified = relationModified;
+            }
+          }`;
+        }
+        if (isMultiRelationField(fieldSchema)) {
+          return `
+          if (article.${name}) {
+            var relatedContent = contentSchema.Fields.${name}.RelatedContent;
+            article.${name}.forEach(function(item) {
+              var itemModified = relatedContent.lastModified(item);
+              if (lastModified < itemModified) {
+                lastModified = itemModified;
+              }
+            });
+          }`;
+        }
+        return `
+        if (article.${name}) {
+          var extensionContent = contentSchema.Fields.${name}.ExtensionContents[article.${name}];
+          var extensionModified = extensionContent.lastModified(article.${name}_Extension[article.${name}]);
+          if (lastModified < extensionModified) {
+            lastModified = extensionModified;
+          }
+        }`;
+      })
+      .join("")}
+    return lastModified;`
   ) as any;
 }
