@@ -20,6 +20,7 @@ using Unity.Lifetime;
 using IStatusProvider = QA.ProductCatalog.ContentProviders.IStatusProvider;
 using IUserProvider = QA.ProductCatalog.ContentProviders.IUserProvider;
 using NotificationChannel = QA.ProductCatalog.ContentProviders.NotificationChannel;
+using INotificationChannelService = QA.ProductCatalog.ContentProviders.INotificationChannelService;
 
 namespace QA.Core.DPC
 {
