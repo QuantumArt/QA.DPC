@@ -60,12 +60,12 @@ export interface Product extends EntityObject {
   StartDate: Date;
   /** Дата снятия с публикации */
   EndDate: Date;
+  /** Порядок */
+  SortOrder: number;
   /** Приоритет (популярность) */
   Priority: number;
   /** Изображение в списке */
   ListImage: string;
-  /** Порядок */
-  SortOrder: number;
 }
 
 export interface ProductModifer extends EntityObject {

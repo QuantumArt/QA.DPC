@@ -69,6 +69,15 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
       canClonePrototype
       canCloneEntity
       canRemoveEntity
+      canSelectRelation
+      onClonePrototype={async clonePrototype => {
+        await clonePrototype();
+        props.model.setChanged(props.fieldSchema.FieldName, false);
+      }}
+      onSelectRelation={async selectRelation => {
+        await selectRelation();
+        props.model.setChanged(props.fieldSchema.FieldName, false);
+      }}
     />
   );
 
@@ -86,11 +95,13 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
             "Regions",
             "Parameters",
             "Advantages",
+            "ActionMarketingDevices",
             "Modifiers",
-            "StartDate",
             "PDF",
+            "StartDate",
+            "Priority",
             "EndDate",
-            "ActionMarketingDevices"
+            "SortOrder"
           ]}
           fieldEditors={{
             MarketingProduct: SingleRelationFieldTags,
@@ -106,7 +117,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
     <RelationFieldTabs
       {...props}
       vertical
-      titleField={deviceDisplayField}
+      titleField={deviceTitleField}
       displayField={deviceDisplayField}
       fieldOrders={["MarketingDevice", "Parent"]}
       fieldEditors={{
@@ -161,4 +172,7 @@ const actionRegionsDisplayField = (action: FixConnectAction) =>
   );
 
 const deviceDisplayField = (device: DevicesForFixConnectAction) =>
+  device.MarketingDevice && device.MarketingDevice.Title;
+
+const deviceTitleField = (device: DevicesForFixConnectAction) =>
   device.Parent && device.Parent.Title;
