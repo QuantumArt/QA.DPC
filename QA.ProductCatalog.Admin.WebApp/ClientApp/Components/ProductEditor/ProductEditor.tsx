@@ -20,6 +20,7 @@ import { CloneController } from "Services/CloneController";
 import { FileController } from "Services/FileController";
 import { PublicationController } from "Services/PublicationController";
 import { DataSchemaLinker } from "Services/DataSchemaLinker";
+import { PublicationContext } from "Services/PublicationContext";
 
 type RenderEditor = (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
 
@@ -32,6 +33,7 @@ interface ProductEditorProps {
 @provider(
   DataContext,
   SchemaContext,
+  PublicationContext,
   DataNormalizer,
   DataSerializer,
   DataMerger,
