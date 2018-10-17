@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data;
-using System.Runtime.InteropServices;
 using Microsoft.Extensions.Caching.Memory;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;

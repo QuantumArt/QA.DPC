@@ -17,25 +17,16 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
-    <Reference Include="System.Xaml" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj" />
-    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
-    <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj" />
-    <ProjectReference Include="..\QA.ProductCatalog.ContentProviders\QA.ProductCatalog.ContentProviders.csproj" />
-    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.10" />
     <PackageReference Include="NLog" Version="4.5.10" />
-    <PackageReference Include="QA.Core" Version="3.5.0-beta4" />
-    <PackageReference Include="QA.Core.Data" Version="3.5.0-beta4" />
-    <PackageReference Include="QA.Core.Web" Version="3.5.0-beta4" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="2.9.0-beta2" />
-    <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageReference Include="Quantumart.AspNetCore" Version="3.3.0-beta5" />
     <PackageReference Include="System.Data.SqlClient" Version="4.5.1" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+    <PackageReference Include="Unity" Version="5.8.11" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
   </ItemGroup>
 </Project>
-

@@ -580,7 +580,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj">
+    <ProjectReference Include="..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj">
       <Project>{5842a6a8-2bcc-4c8b-b4e8-b28726d17b19}</Project>
       <Name>QA.Core.DPC.QP.Configuration</Name>
     </ProjectReference>

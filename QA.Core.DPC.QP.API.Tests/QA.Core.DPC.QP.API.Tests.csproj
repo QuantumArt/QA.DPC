@@ -20,7 +20,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj" />
+    <ProjectReference Include="..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj" />
     <ProjectReference Include="..\QA.Core.DPC.QP.API\QA.Core.DPC.QP.API.csproj" />
   </ItemGroup>
   <ItemGroup>

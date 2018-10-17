@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.ContentProviders
 {

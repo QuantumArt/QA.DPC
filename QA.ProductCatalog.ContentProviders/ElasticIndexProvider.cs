@@ -1,5 +1,4 @@
 ﻿using QA.Core.DPC.QP.Services;
-using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.ContentProviders
 {

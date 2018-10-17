@@ -1,9 +1,7 @@
 ﻿using System;
 using Microsoft.Extensions.Caching.Memory;
-using QA.Core;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
-using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.ContentProviders
 {
