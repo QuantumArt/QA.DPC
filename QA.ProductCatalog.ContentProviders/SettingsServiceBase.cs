@@ -1,22 +1,23 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using QA.Core;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Web;
 
 namespace QA.ProductCatalog.ContentProviders
 {
     public abstract class SettingsServiceBase : ISettingsService
 	{
-		private static readonly RequestLocal<Dictionary<string, string>> Actions =
-			new RequestLocal<Dictionary<string, string>>(() => new Dictionary<string, string>());
 
 		protected readonly string _connectionString;
+		protected readonly ICacheProvider _provider;
 
-		protected SettingsServiceBase(IConnectionProvider connectionProvider)
+		protected SettingsServiceBase(IConnectionProvider connectionProvider, ICacheProvider provider)
 		{
 			_connectionString = connectionProvider.GetConnection();
+			_provider = provider;
 		}
 
 		public string GetSetting(SettingsTitles title)
@@ -31,22 +32,13 @@ namespace QA.ProductCatalog.ContentProviders
 			if (string.IsNullOrEmpty(name))
 				return null;
 
-			Dictionary<string, string> d = Actions.Value ?? new Dictionary<string, string>();
-
-			string result;
-
-			if (d.TryGetValue(name, out result))
-			{
-				d[name] = result;
-			}
-			else
+			string key = $"Actions_[{name}]";
+			string result = (string)_provider.Get(key);
+			if (result == null)
 			{
 				result = GetActionCodeInternal(name);
-				d[name] = result;
+				_provider.Set(key, result, TimeSpan.FromMinutes(5));
 			}
-
-			Actions.Value = d;
-
 			return result;
 		}
 

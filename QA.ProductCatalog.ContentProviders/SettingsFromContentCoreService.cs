@@ -16,7 +16,7 @@ namespace QA.ProductCatalog.ContentProviders
         public SettingsFromContentCoreService(IVersionedCacheProvider2 cacheProvider, 
             IConnectionProvider connectionProvider, 
             int settingsContentId)
-            : base(connectionProvider)
+            : base(connectionProvider, cacheProvider)
         {
             _cacheProvider = cacheProvider;
             _settingsContentId = settingsContentId;

@@ -19,7 +19,7 @@ namespace QA.Core.DPC.Loader
 			ICacheItemWatcher cacheItemWatcher,
 			IReadOnlyArticleService articleService,
             IConnectionProvider connectionProvider)
-            : base(connectionProvider)
+            : base(connectionProvider, cacheProvider)
 		{
 			_cacheProvider = cacheProvider;
 			

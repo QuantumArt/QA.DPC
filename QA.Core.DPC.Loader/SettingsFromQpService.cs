@@ -15,7 +15,7 @@ namespace QA.Core.DPC.Loader
 		private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
 
 		public SettingsFromQpService(IVersionedCacheProvider cacheProvider, IConnectionProvider connectionProvider)
-            : base(connectionProvider)
+            : base(connectionProvider, cacheProvider)
 		{
 
             _dbService = new DbService(_connectionString, 1);

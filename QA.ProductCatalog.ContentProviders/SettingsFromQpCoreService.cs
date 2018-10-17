@@ -17,7 +17,7 @@ namespace QA.ProductCatalog.ContentProviders
 		private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
 
 		public SettingsFromQpCoreService(IVersionedCacheProvider2 cacheProvider, IConnectionProvider connectionProvider)
-            : base(connectionProvider)
+            : base(connectionProvider, cacheProvider)
 		{
 
 			_cacheProvider = cacheProvider;
