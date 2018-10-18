@@ -40,7 +40,21 @@ export class DataValidator {
     return this._errors;
   }
 
-  private visitArticle(article: ArticleObject, contentSchema: ContentSchema) {
+  private visitArticle(
+    article: ArticleObject,
+    contentSchema: ContentSchema,
+    visitedArticlesByContent = new Map<ContentSchema, Set<ArticleObject>>()
+  ) {
+    let visitedArticles = visitedArticlesByContent.get(contentSchema);
+    if (!visitedArticles) {
+      visitedArticles = new Set<ArticleObject>();
+      visitedArticlesByContent.set(contentSchema, visitedArticles);
+    }
+    if (visitedArticles.has(article)) {
+      return;
+    }
+    visitedArticles.add(article);
+
     if (article.isEdited()) {
       this._isEdited = true;
     }
@@ -58,7 +72,7 @@ export class DataValidator {
       if (isSingleRelationField(fieldSchema)) {
         const relatedEntity = fieldValue as EntityObject;
         if (fieldSchema.UpdatingMode === UpdatingMode.Update) {
-          this.visitArticle(relatedEntity, fieldSchema.RelatedContent);
+          this.visitArticle(relatedEntity, fieldSchema.RelatedContent, visitedArticlesByContent);
         } else if (relatedEntity._ServerId < 0) {
           this.addNotSavedRelationError(relatedEntity, fieldSchema.RelatedContent);
         }
@@ -66,7 +80,7 @@ export class DataValidator {
         const relatedCollection = fieldValue as EntityObject[];
         if (fieldSchema.UpdatingMode === UpdatingMode.Update) {
           relatedCollection.forEach(entity =>
-            this.visitArticle(entity, fieldSchema.RelatedContent)
+            this.visitArticle(entity, fieldSchema.RelatedContent, visitedArticlesByContent)
           );
         } else {
           relatedCollection.forEach(entity => {
@@ -79,7 +93,7 @@ export class DataValidator {
         const extensionFieldName = `${fieldName}${ArticleObject._Extension}`;
         const extensionArticle = article[extensionFieldName][fieldValue] as ArticleObject;
         const extensionContentSchema = fieldSchema.ExtensionContents[fieldValue];
-        this.visitArticle(extensionArticle, extensionContentSchema);
+        this.visitArticle(extensionArticle, extensionContentSchema, visitedArticlesByContent);
       }
     }
   }
