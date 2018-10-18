@@ -1,7 +1,9 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
+import { consumer, inject } from "react-ioc";
 import { Divider } from "@blueprintjs/core";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
+import { PublicationContext } from "Services/PublicationContext";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import {
   RelationFieldAccordion,
@@ -9,6 +11,7 @@ import {
   RelationFieldTabs,
   SingleRelationFieldTags
 } from "Components/FieldEditors/FieldEditors";
+import { makePublicatoinStatusIcons } from "Components/PublicationStatusIcon/PublicationStatusIcon";
 import { by, asc } from "Utils/Array/Sort";
 import {
   Product,
@@ -26,8 +29,11 @@ interface ActionsTabTabProps {
   contentSchema: ContentSchema;
 }
 
+@consumer
 @observer
 export class ActionsTab extends Component<ActionsTabTabProps> {
+  @inject private publicationContext: PublicationContext;
+
   private filterModel = new FilterModel(this.props.model);
 
   render() {
@@ -59,8 +65,12 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
         asc((action: FixConnectAction) => action.Parent.MarketingProduct._ServerId),
         asc((action: FixConnectAction) => action.Parent._ServerId)
       )}
-      columnProportions={[2, 5]}
-      displayFields={[actionTitleDisplayField, actionRegionsDisplayField]}
+      columnProportions={[4, 10, 1]}
+      displayFields={[
+        actionTitleDisplayField,
+        actionRegionsDisplayField,
+        makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
+      ]}
       fieldOrders={["Parent", "PromoPeriod", "AfterPromo", "MarketingOffers"]}
       fieldEditors={{
         Parent: this.renderActionParent,

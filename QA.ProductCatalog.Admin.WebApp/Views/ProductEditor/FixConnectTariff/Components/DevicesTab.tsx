@@ -1,7 +1,9 @@
 import React, { Component } from "react";
+import { consumer, inject } from "react-ioc";
 import { Divider } from "@blueprintjs/core";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import { ExtensionEditor } from "Components/ArticleEditor/ExtensionEditor";
+import { makePublicatoinStatusIcons } from "Components/PublicationStatusIcon/PublicationStatusIcon";
 import {
   RelationFieldTabs,
   RelationFieldAccordion,
@@ -13,6 +15,7 @@ import {
   RelationFieldSchema,
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
+import { PublicationContext } from "Services/PublicationContext";
 import { Product, DeviceOnTariffs, ProductRelation } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { hasUniqueRegions } from "../Utils/Validators";
@@ -24,7 +27,10 @@ interface DevicesTabProps {
   contentSchema: ContentSchema;
 }
 
+@consumer
 export class DevicesTab extends Component<DevicesTabProps> {
+  @inject private publicationContext: PublicationContext;
+
   private filterModel = new FilterModel(this.props.model);
 
   render() {
@@ -73,8 +79,13 @@ export class DevicesTab extends Component<DevicesTabProps> {
       canRemoveEntity
       canPublishEntity
       canClonePrototype
-      columnProportions={[3, 1, 1]}
-      displayFields={[regionsDisplayField, rentPriceDisplayField, salePriceDisplayField]}
+      columnProportions={[9, 3, 3, 1]}
+      displayFields={[
+        regionsDisplayField,
+        rentPriceDisplayField,
+        salePriceDisplayField,
+        makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
+      ]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{

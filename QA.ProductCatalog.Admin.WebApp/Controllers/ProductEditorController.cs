@@ -219,6 +219,16 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.NoContent);
         }
 
+        [HttpGet]
+        public async Task<ActionResult> GetMaxPublicationTime()
+        {
+            DateTime? timestamp = await _publicationStatusService.GetMaxPublicationTime();
+            
+            string json = JsonConvert.SerializeObject(timestamp);
+
+            return Content(json, "application/json");
+        }
+
         [HttpPost]
         public async Task<ActionResult> GetPublicationTimestamps(
             [ModelBinder(typeof(JsonModelBinder))] int[] productIds)
@@ -230,7 +240,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .ToDictionary(g => g.Key, g => new
                 {
                     Live = g.Where(t => t.IsLive).DefaultIfEmpty().Max(t => t?.Updated),
-                    Stage = g.Where(t => t.IsLive).DefaultIfEmpty().Max(t => t?.Updated)
+                    Stage = g.Where(t => !t.IsLive).DefaultIfEmpty().Max(t => t?.Updated)
                 });
 
             string json = JsonConvert.SerializeObject(timestampsById);
@@ -239,7 +249,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [HttpGet, OutputCache(
-            Duration = 5,
+            Duration = 4,
             Location = OutputCacheLocation.Server,
             VaryByParam = "customerCode;updatedSince")]
         public async Task<ActionResult> GetPublicationTimestamps(DateTime updatedSince)
@@ -251,7 +261,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .ToDictionary(g => g.Key, g => new
                 {
                     Live = g.Where(t => t.IsLive).DefaultIfEmpty().Max(t => t?.Updated),
-                    Stage = g.Where(t => t.IsLive).DefaultIfEmpty().Max(t => t?.Updated)
+                    Stage = g.Where(t => !t.IsLive).DefaultIfEmpty().Max(t => t?.Updated)
                 });
 
             string json = JsonConvert.SerializeObject(timestampsById);

@@ -1,11 +1,13 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
+import { consumer, inject } from "react-ioc";
 import { Divider } from "@blueprintjs/core";
 import {
   ContentSchema,
   ExtensionFieldSchema,
   RelationFieldSchema
 } from "Models/EditorSchemaModels";
+import { PublicationContext } from "Services/PublicationContext";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import {
@@ -13,6 +15,7 @@ import {
   FileFieldEditor,
   MultiRelationFieldTags
 } from "Components/FieldEditors/FieldEditors";
+import { makePublicatoinStatusIcons } from "Components/PublicationStatusIcon/PublicationStatusIcon";
 import { Product } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { hasUniqueRegions } from "../Utils/Validators";
@@ -24,8 +27,11 @@ interface RegionalTabTabProps {
   contentSchema: ContentSchema;
 }
 
+@consumer
 @observer
 export class RegionalTab extends Component<RegionalTabTabProps> {
+  @inject private publicationContext: PublicationContext;
+
   private filterModel = new FilterModel(this.props.model);
 
   private getMarketingFixConnectTariffProps() {
@@ -131,7 +137,11 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       canRemoveEntity
       canPublishEntity
       canClonePrototype
-      displayFields={[regionsDisplayField]}
+      columnProportions={[20, 1]}
+      displayFields={[
+        regionsDisplayField,
+        makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
+      ]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
@@ -151,7 +161,11 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       canRemoveEntity
       canPublishEntity
       canClonePrototype
-      displayFields={[regionsDisplayField]}
+      columnProportions={[20, 1]}
+      displayFields={[
+        regionsDisplayField,
+        makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
+      ]}
       filterItems={this.filterModel.filterProducts}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{

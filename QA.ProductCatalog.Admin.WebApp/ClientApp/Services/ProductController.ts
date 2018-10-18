@@ -11,6 +11,7 @@ import { SchemaContext } from "Services/SchemaContext";
 import { command } from "Utils/Command";
 import { rootUrl } from "Utils/Common";
 import { DataSchemaLinker } from "Services/DataSchemaLinker";
+import { PublicationTracker } from "Services/PublicationTracker";
 
 export class ProductController {
   @inject private _editorSettings: EditorSettings;
@@ -21,6 +22,7 @@ export class ProductController {
   @inject private _dataValidator: DataValidator;
   @inject private _dataContext: DataContext;
   @inject private _schemaContext: SchemaContext;
+  @inject private _publicationTracker: PublicationTracker;
 
   private _query = document.location.search;
 
@@ -55,6 +57,8 @@ export class ProductController {
 
       this._dataContext.initTables(tablesSnapshot);
 
+      this._publicationTracker.initStatusTracking();
+
       this._dataSchemaLinker.linkPreloadedArticles(contentSchema);
 
       return this._dataContext.tables[contentSchema.ContentName].get(
@@ -63,11 +67,13 @@ export class ProductController {
     } else {
       const contentSchema = await initSchemaTask;
 
-      const teblesSnapshot: TablesSnapshot = {};
+      const tablesSnapshot: TablesSnapshot = {};
 
-      this._dataSchemaLinker.addPreloadedArticlesToSnapshot(teblesSnapshot, contentSchema);
+      this._dataSchemaLinker.addPreloadedArticlesToSnapshot(tablesSnapshot, contentSchema);
 
-      this._dataContext.initTables(teblesSnapshot);
+      this._dataContext.initTables(tablesSnapshot);
+
+      this._publicationTracker.initStatusTracking();
 
       return this._dataContext.createEntity(contentSchema.ContentName);
     }

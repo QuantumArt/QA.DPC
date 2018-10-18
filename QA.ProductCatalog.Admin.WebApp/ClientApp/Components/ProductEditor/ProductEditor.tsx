@@ -21,6 +21,7 @@ import { FileController } from "Services/FileController";
 import { PublicationController } from "Services/PublicationController";
 import { DataSchemaLinker } from "Services/DataSchemaLinker";
 import { PublicationContext } from "Services/PublicationContext";
+import { PublicationTracker } from "Services/PublicationTracker";
 
 type RenderEditor = (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
 
@@ -34,6 +35,7 @@ interface ProductEditorProps {
   DataContext,
   SchemaContext,
   PublicationContext,
+  PublicationTracker,
   DataNormalizer,
   DataSerializer,
   DataMerger,

@@ -27,6 +27,22 @@ namespace QA.Core.DPC.Loader.Services
             _connectionString = connectionProvider.GetConnection();
         }
 
+        public async Task<DateTime?> GetMaxPublicationTime()
+        {
+            using (var connection = new SqlConnection(_connectionString))
+            {
+                await connection.OpenAsync();
+
+                DateTime? timestamp = await connection.QuerySingleAsync<DateTime?>($@"
+                    SELECT TOP (1)
+                        Updated
+                    FROM dbo.Products
+                    ORDER BY Updated DESC");
+
+                return timestamp;
+            }
+        }
+
         public async Task<IEnumerable<ProductTimestamp>> GetProductTimestamps(int[] productIds)
         {
             using (var connection = new SqlConnection(_connectionString))
@@ -37,16 +53,16 @@ namespace QA.Core.DPC.Loader.Services
                     SELECT
                         DpcId AS {nameof(ProductTimestamp.ProductId)},
                         IsLive AS {nameof(ProductTimestamp.IsLive)},
-                        MAX(Updated) AS {nameof(ProductTimestamp.Updated)}
+                        Updated AS {nameof(ProductTimestamp.Updated)}
                     FROM dbo.Products
-                    WHERE DpcId IN (@productIds)",
+                    WHERE DpcId IN @productIds",
                     new { productIds });
 
                 return timestamps;
             }
         }
 
-        public async Task<IEnumerable<ProductTimestamp>> GetProductTimestamps(DateTime updatedSice)
+        public async Task<IEnumerable<ProductTimestamp>> GetProductTimestamps(DateTime updatedSince)
         {
             using (var connection = new SqlConnection(_connectionString))
             {
@@ -56,11 +72,10 @@ namespace QA.Core.DPC.Loader.Services
                     SELECT
                         DpcId AS {nameof(ProductTimestamp.ProductId)},
                         IsLive AS {nameof(ProductTimestamp.IsLive)},
-                        MAX(Updated) AS {nameof(ProductTimestamp.Updated)}
+                        Updated AS {nameof(ProductTimestamp.Updated)}
                     FROM dbo.Products
-                    WHERE Updated > @updatedSice
-                    GROUP BY DpcId, IsLive;",
-                    new { updatedSice });
+                    WHERE Updated > @updatedSince",
+                    new { updatedSince });
 
                 return timestamps;
             }

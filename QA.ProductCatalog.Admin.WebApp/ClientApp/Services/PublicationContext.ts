@@ -1,4 +1,5 @@
 import { observable, action } from "mobx";
+import { EntityObject } from "Models/EditorDataModels";
 
 export interface PublicationTimestamp {
   Live?: Date;
@@ -7,16 +8,27 @@ export interface PublicationTimestamp {
 
 export class PublicationContext {
   private _timestampsById = observable.map<number, PublicationTimestamp>();
+  private _maxPublicationTime: Date = null;
 
-  public maxTimestamp: Date = null;
+  public get maxPublicationTime() {
+    return this._maxPublicationTime;
+  }
 
-  public getLiveTime(serverId: number) {
-    const timestamp = this._timestampsById.get(serverId);
+  public updateMaxPublicationTime(publicationTime: Date) {
+    if (this._maxPublicationTime < publicationTime) {
+      this._maxPublicationTime = publicationTime;
+    }
+  }
+
+  public getLiveTime(product: EntityObject) {
+    const serverId = product._ServerId;
+    const timestamp = serverId && this._timestampsById.get(serverId);
     return timestamp && timestamp.Live;
   }
 
-  public getStageTime(serverId: number) {
-    const timestamp = this._timestampsById.get(serverId);
+  public getStageTime(product: EntityObject) {
+    const serverId = product._ServerId;
+    const timestamp = serverId && this._timestampsById.get(serverId);
     return timestamp && timestamp.Stage;
   }
 
@@ -34,12 +46,8 @@ export class PublicationContext {
       } else {
         this._timestampsById.set(Number(serverId), observable(timestamp));
       }
-      if (this.maxTimestamp < timestamp.Live) {
-        this.maxTimestamp = timestamp.Live;
-      }
-      if (this.maxTimestamp < timestamp.Live) {
-        this.maxTimestamp = timestamp.Stage;
-      }
+      this.updateMaxPublicationTime(timestamp.Live);
+      this.updateMaxPublicationTime(timestamp.Stage);
     });
   }
 }
