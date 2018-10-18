@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
@@ -60,6 +63,23 @@ namespace QA.Core.DPC.Loader
 			}
 		}
 
+		private string XmlToString(XDocument doc)
+		{
+			var sb = new StringBuilder();
+			var xws = new XmlWriterSettings
+			{
+				CheckCharacters = false, OmitXmlDeclaration = true, Indent = true
+			};
+
+			using (var xw = XmlWriter.Create(sb, xws))  
+			{  
+
+				doc.WriteTo(xw);  
+			}
+
+			return sb.ToString();
+		}
+
 
 		private string ProcessProductWithTags(IArticleFilter filter, params Article[] content)
 		{
@@ -74,7 +94,7 @@ namespace QA.Core.DPC.Loader
 				if (doc == null)
 					return string.Empty;
 
-				var xml = doc.ToString();
+				var xml = XmlToString(doc);
 
 				//региональные замены
 				if (content == null || !content.Any() || content[0] == null)
@@ -108,41 +128,36 @@ namespace QA.Core.DPC.Loader
 		{
             var doc = new XDocument();
 
-			var products = ConvertProduct(ctx, out exceptions, ctx.Filter.Filter(articles).ToArray());
-			doc.Add(products);
-			return doc;
-		}
-
-        private XObject ConvertProduct(CallContext ctx, out string[] exceptions, params Article[] articles)
-		{
+			Article[] articles1 = ctx.Filter.Filter(articles).ToArray();
 			exceptions = null;
 			XNamespace ns = "http://www.w3.org/2001/XMLSchema-instance";
 
 			var node = new XElement("ProductInfo",
-				new XElement("Products", articles.Select(article => Convert(article, ctx, false, true, "Product"))));
+				new XElement("Products", articles1.Select(article => Convert(article, ctx, false, true, "Product"))));
 
 			node.Add(new XAttribute(XNamespace.Xmlns + "xsi", ns));
+			doc.Add(node);
 
 			//Получение региональных замен
-            var regionIds =
-                articles
-				.Select(x => x.GetField("Regions") as MultiArticleField)
-				.Where(x => x != null)
-				.SelectMany(x => x.Items.Keys).ToArray();
+			var regionIds =
+				articles1
+					.Select(x => x.GetField("Regions") as MultiArticleField)
+					.Where(x => x != null)
+					.SelectMany(x => x.Items.Keys).ToArray();
 
 			if (regionIds.Any())
 			{
-				var tags = GenerateRegionTags(node, regionIds, out exceptions);
+				var tags = GenerateRegionTags(doc, regionIds, out exceptions);
 
 				if (tags != null)
 					node.Add(tags);
 			}
-			
-			return node;
+
+			return doc;
 		}
 
 
-        public Article DeserializeProductXml(XDocument productXml, Models.Configuration.Content definition)
+		public Article DeserializeProductXml(XDocument productXml, Models.Configuration.Content definition)
         {
             var rootProductElement = productXml.Root?.Elements().First().Elements().First();
 
@@ -152,9 +167,9 @@ namespace QA.Core.DPC.Loader
         }
 
 
-        private XObject GenerateRegionTags(XObject product, int[] regionIds, out string[] exceptions)
+        private XObject GenerateRegionTags(XDocument product, int[] regionIds, out string[] exceptions)
 		{
-			var tags = _regionTagReplaceService.GetRegionTagValues(product.ToString(), regionIds);
+			var tags = _regionTagReplaceService.GetRegionTagValues(XmlToString(product), regionIds);
 			
 			var node = new XElement("RegionsTags");
 			var xmlTags = new List<XElement>();
