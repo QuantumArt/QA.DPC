@@ -9,7 +9,6 @@ import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { isString, isNullOrWhiteSpace } from "Utils/TypeChecks";
 import { DataContext } from "Services/DataContext";
-import { CloneController } from "Services/CloneController";
 import { EntityController } from "Services/EntityController";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
@@ -62,8 +61,8 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
   };
 
   @inject private _dataContext: DataContext;
-  @inject private _cloneController: CloneController;
   @inject private _entityController: EntityController;
+
   private _displayField: FieldSelector;
   private _entityComparer: EntityComparer;
 
@@ -99,7 +98,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
     const { model, fieldSchema, onClonePrototype } = this.props as PrivateProps;
     onClonePrototype(
       action("clonePrototype", async () => {
-        const clone = await this._cloneController.cloneProductPrototype(model, fieldSchema);
+        const clone = await this._relationController.cloneProductPrototype(model, fieldSchema);
         this.setState({
           activeId: clone._ClientId,
           isOpen: true,
@@ -161,7 +160,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
     onCloneEntity(
       entity,
       action("cloneEntity", async () => {
-        const clone = await this._cloneController.cloneRelatedEntity(model, fieldSchema, entity);
+        const clone = await this._entityController.cloneRelatedEntity(model, fieldSchema, entity);
 
         this.setState({
           activeId: clone._ClientId,

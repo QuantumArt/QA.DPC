@@ -4,22 +4,19 @@ import { Grid } from "react-flexbox-grid";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { DataContext } from "Services/DataContext";
-import { SchemaContext } from "Services/SchemaContext";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataMerger } from "Services/DataMerger";
 import { DataValidator } from "Services/DataValidator";
 import { EntityController } from "Services/EntityController";
 import { RelationController } from "Services/RelationController";
-import { ProductController } from "Services/ProductController";
+import { InitializationController } from "Services/InitializationController";
 import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { isFunction } from "Utils/TypeChecks";
 import { EditorSettings } from "Models/EditorSettings";
-import { CloneController } from "Services/CloneController";
 import { FileController } from "Services/FileController";
-import { PublicationController } from "Services/PublicationController";
-import { DataSchemaLinker } from "Services/DataSchemaLinker";
+import { SchemaLinker } from "Services/SchemaLinker";
 import { PublicationContext } from "Services/PublicationContext";
 import { PublicationTracker } from "Services/PublicationTracker";
 
@@ -33,30 +30,27 @@ interface ProductEditorProps {
 
 @provider(
   DataContext,
-  SchemaContext,
   PublicationContext,
   PublicationTracker,
   DataNormalizer,
   DataSerializer,
   DataMerger,
   DataValidator,
-  DataSchemaLinker,
+  SchemaLinker,
   EntityController,
-  CloneController,
-  ProductController,
+  InitializationController,
   FileController,
   RelationController,
-  PublicationController,
   RelationsConfig,
   EditorSettings
 )
 export class ProductEditor extends Component<ProductEditorProps> {
   @inject private _editorSettings: EditorSettings;
   @inject private _relationsConfig: RelationsConfig;
-  @inject private _productController: ProductController;
-  @inject private _schemaContext: SchemaContext;
+  @inject private _initializationController: InitializationController;
   readonly state = {
-    entity: null
+    entity: null,
+    contentSchema: null
   };
 
   constructor(props: ProductEditorProps, context?: any) {
@@ -68,18 +62,16 @@ export class ProductEditor extends Component<ProductEditorProps> {
   }
 
   async componentDidMount() {
-    const entity = await this._productController.initialize();
-    this.setState({ entity });
+    this.setState(await this._initializationController.initialize());
   }
 
   render() {
     const { children } = this.props;
-    const { entity } = this.state;
-    if (!entity) {
+    const { entity, contentSchema } = this.state;
+    if (!entity || !contentSchema) {
       return null;
     }
 
-    const contentSchema = this._schemaContext.rootSchema;
     return (
       <Grid fluid>
         {isFunction(children) ? (

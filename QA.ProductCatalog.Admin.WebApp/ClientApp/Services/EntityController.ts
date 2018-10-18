@@ -3,9 +3,11 @@ import QP8 from "Scripts/qp/QP8BackendApi.Interaction";
 import qs from "qs";
 import { inject } from "react-ioc";
 import { isObservableArray, runInAction } from "mobx";
-import { DataSerializer } from "Services/DataSerializer";
+import { DataSerializer, IdMapping } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
+import { DataValidator } from "Services/DataValidator";
 import { DataMerger, MergeStrategy } from "Services/DataMerger";
+import { DataContext } from "Services/DataContext";
 import {
   ContentSchema,
   RelationFieldSchema,
@@ -21,7 +23,9 @@ export class EntityController {
   @inject private _editorSettings: EditorSettings;
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
+  @inject private _dataValidator: DataValidator;
   @inject private _dataMerger: DataMerger;
+  @inject private _dataContext: DataContext;
 
   private _query = document.location.search;
   private _hostUid = qs.parse(document.location.search).hostUID as string;
@@ -98,6 +102,34 @@ export class EntityController {
   }
 
   @command
+  public async publishEntity(entity: EntityObject, contentSchema: ContentSchema) {
+    const errors = this._dataValidator.collectErrors(entity, contentSchema, false);
+    if (errors.length > 0) {
+      // TODO: React alert dialog
+      window.alert(this._dataValidator.getErrorMessage(errors));
+      return;
+    }
+
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/PublishProduct${this._query}&articleId=${entity._ServerId}`,
+      {
+        method: "POST",
+        credentials: "include"
+      }
+    );
+    if (
+      response.status === 500 &&
+      response.headers.get("Content-Type").startsWith("application/json")
+    ) {
+      const errorData = await response.json();
+      // TODO: React alert dialog
+      window.alert(errorData.Message);
+    } else if (!response.ok) {
+      throw new Error(await response.text());
+    }
+  }
+
+  @command
   public async removeRelatedEntity(
     parent: ArticleObject,
     fieldSchema: RelationFieldSchema,
@@ -140,5 +172,117 @@ export class EntityController {
         parent.setChanged(fieldSchema.FieldName, false);
       }
     });
+  }
+
+  @command
+  public async cloneRelatedEntity(
+    parent: ArticleObject,
+    fieldSchema: RelationFieldSchema,
+    entity: EntityObject
+  ): Promise<EntityObject> {
+    const contentSchema = fieldSchema.RelatedContent;
+
+    const response = await fetch(`${rootUrl}/ProductEditor/ClonePartialProduct${this._query}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+        ContentPath: contentSchema.ContentPath,
+        CloneArticleId: entity._ServerId
+      })
+    });
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
+
+    return runInAction("cloneRelatedEntity", () => {
+      const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
+
+      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Refresh);
+
+      const cloneId = String(dataTree._ClientId);
+      const clonedEntity = this._dataContext.tables[contentSchema.ContentName].get(cloneId);
+
+      const relation = parent[fieldSchema.FieldName];
+      const wasRelationChanged = parent.isChanged(fieldSchema.FieldName);
+      if (isMultiRelationField(fieldSchema) && isObservableArray(relation)) {
+        relation.push(clonedEntity);
+        // клонированный продукт уже сохранен на сервере,
+        // поэтому считаем, что связь уже синхронизирована с бекэндом
+        if (!wasRelationChanged) {
+          parent.setChanged(fieldSchema.FieldName, false);
+        }
+      }
+      return clonedEntity;
+    });
+  }
+
+  @command
+  public async saveEntitySubgraph(entity: EntityObject, contentSchema: ContentSchema) {
+    const errors = this._dataValidator.collectErrors(entity, contentSchema, true);
+    if (errors.length > 0) {
+      // TODO: React alert dialog
+      window.alert(this._dataValidator.getErrorMessage(errors));
+      return;
+    }
+
+    const partialProduct = this._dataSerializer.serialize(entity, contentSchema);
+
+    const response = await fetch(`${rootUrl}/ProductEditor/SavePartialProduct${this._query}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+        ContentPath: contentSchema.ContentPath,
+        PartialProduct: partialProduct
+      })
+    });
+    if (response.status === 409) {
+      const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
+      const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
+
+      if (this._dataMerger.tablesHasConflicts(dataSnapshot)) {
+        // TODO: React confirm dialog
+        const serverWins = window.confirm(
+          `Данные на сервере были изменены другим пользователем.\n` +
+            `Применить изменения с сервера?`
+        );
+        if (serverWins) {
+          this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
+        } else {
+          this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ClientWins);
+        }
+        // TODO: React alert dialog
+        window.alert(`Пожалуйста, проверьте корректность данных и сохраните статью снова.`);
+      } else {
+        this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ClientWins);
+        // TODO: React alert dialog
+        window.alert(
+          `Данные на сервере были изменены другим пользователем.\n` +
+            `Пожалуйста, проверьте корректность данных и сохраните статью снова.`
+        );
+      }
+      return;
+    }
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    const okResponse: {
+      IdMappings: IdMapping[];
+      PartialProduct: Object;
+    } = await response.json();
+
+    this._dataSerializer.extendIdMappings(okResponse.IdMappings);
+
+    const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(okResponse.PartialProduct);
+    const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
+    this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
   }
 }

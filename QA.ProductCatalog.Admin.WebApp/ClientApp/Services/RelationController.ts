@@ -2,7 +2,7 @@ import "../../Scripts/pmrpc";
 import QP8 from "../../Scripts/qp/QP8BackendApi.Interaction";
 import qs from "qs";
 import { inject } from "react-ioc";
-import { untracked, runInAction, IObservableArray } from "mobx";
+import { untracked, runInAction, IObservableArray, isObservableArray } from "mobx";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataMerger, MergeStrategy } from "Services/DataMerger";
@@ -12,7 +12,9 @@ import {
   SingleRelationFieldSchema,
   MultiRelationFieldSchema,
   RelationFieldSchema,
-  PreloadingState
+  PreloadingState,
+  isMultiRelationField,
+  isSingleRelationField
 } from "Models/EditorSchemaModels";
 import { ArticleObject, EntitySnapshot, EntityObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
@@ -259,6 +261,58 @@ export class RelationController {
       throw new Error(await response.text());
     }
     return await response.text();
+  }
+
+  @command
+  public async cloneProductPrototype(
+    parent: ArticleObject,
+    fieldSchema: RelationFieldSchema
+  ): Promise<EntityObject> {
+    const contentSchema = fieldSchema.RelatedContent;
+
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/ClonePartialProductPrototype${this._query}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: fieldSchema.ParentContent.ContentPath,
+          RelationFieldName: fieldSchema.FieldName,
+          ParentArticleId: parent._ServerId
+        })
+      }
+    );
+    if (!response.ok) {
+      throw new Error(await response.text());
+    }
+    const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
+
+    return runInAction("cloneProductPrototype", () => {
+      const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
+
+      this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Refresh);
+
+      const cloneId = String(dataTree._ClientId);
+      const clonedEntity = this._dataContext.tables[contentSchema.ContentName].get(cloneId);
+
+      const relation = parent[fieldSchema.FieldName];
+      const wasRelationChanged = parent.isChanged(fieldSchema.FieldName);
+      if (isMultiRelationField(fieldSchema) && isObservableArray(relation)) {
+        relation.push(clonedEntity);
+      } else if (isSingleRelationField(fieldSchema) && !relation) {
+        parent[fieldSchema.FieldName] = clonedEntity;
+      }
+      // клонированный продукт уже сохранен на сервере,
+      // поэтому считаем, что связь уже синхронизирована с бекэндом
+      if (!wasRelationChanged) {
+        parent.setChanged(fieldSchema.FieldName, false);
+      }
+      return clonedEntity;
+    });
   }
 }
 

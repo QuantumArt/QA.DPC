@@ -1,46 +1,17 @@
 import {
   ContentSchema,
-  EditorSchema,
-  ContentSchemasById,
-  isContent,
-  isField,
   isRelationField,
   isExtensionField,
   isSingleRelationField,
   isMultiRelationField,
   UpdatingMode
 } from "Models/EditorSchemaModels";
-import { isObject, isInteger, isSingleKeyObject } from "Utils/TypeChecks";
 import { ArticleObject } from "Models/EditorDataModels";
 import { ComputedCache } from "Utils/WeakCache";
 
-export class SchemaContext {
-  /** Схема корневого контента */
-  public rootSchema: ContentSchema;
-  /** Объединенные схемы контентов по Id контента */
-  public contentSchemasById: ContentSchemasById;
-  /** Объединенные схемы контентов по имени контента */
-  public contentSchemasByName: {
-    readonly [contentName: string]: ContentSchema;
-  };
-
-  public initSchema(editorSchema: EditorSchema, mergedSchemas: ContentSchemasById) {
-    const definitions = editorSchema.Definitions;
-    delete editorSchema.Definitions;
-
-    linkNestedSchemas(editorSchema, definitions, new Set(), null);
-    this.rootSchema = editorSchema.Content;
-
-    const mergedSchemasRef = { mergedSchemas };
-    linkMergedSchemas(mergedSchemasRef, mergedSchemas, new Set(), null);
-    this.contentSchemasById = mergedSchemasRef.mergedSchemas;
-
-    this.contentSchemasByName = Object.values(mergedSchemas).reduce((obj, contentSchema) => {
-      obj[contentSchema.ContentName] = contentSchema;
-      return obj;
-    }, {});
-
-    visitContentSchema(this.rootSchema, contentSchema => {
+export class SchemaCompiler {
+  public compileSchemaFunctions(contentSchema: ContentSchema) {
+    visitContentSchema(contentSchema, contentSchema => {
       const isEditedCache = new ComputedCache();
       const isEdited = compileRecursivePredicate(contentSchema, "isEdited");
       contentSchema.isEdited = (article: ArticleObject) =>
@@ -66,95 +37,12 @@ export class SchemaContext {
       contentSchema.hasVisibleErrors = (article: ArticleObject) =>
         hasVisibleErrorsCache.getOrAdd(article, () => hasVisibleErrors(contentSchema, article));
 
-      const lastModifiedCache = new ComputedCache();
-      const lastModified = compileRecursiveLastModified(contentSchema);
-      contentSchema.lastModified = (article: ArticleObject) =>
-        lastModifiedCache.getOrAdd(article, () => lastModified(contentSchema, article));
+      const getLastModifiedCache = new ComputedCache();
+      const getLastModified = compileRecursiveGetLastModified(contentSchema);
+      contentSchema.getLastModified = (article: ArticleObject) =>
+        getLastModifiedCache.getOrAdd(article, () => getLastModified(contentSchema, article));
     });
   }
-}
-
-/**
- * Преобразует JSON Reference ссылки на `ContentSchema` вида
- * `{ "$ref": "#/definitions/MySchema2" }` в циклическую структуру объектов.
- * Заполняет обратные ссылки `FieldSchema.ParentContent`.
- */
-function linkNestedSchemas(
-  object: any,
-  definitions: { [name: string]: any },
-  visited: Set<Object>,
-  lastContent: ContentSchema
-): void {
-  if (object && typeof object === "object") {
-    if (visited.has(object)) {
-      return;
-    }
-    visited.add(object);
-
-    if (Array.isArray(object)) {
-      object.forEach((value, index) => {
-        object[index] = resolveJsonRef(value, definitions);
-        linkNestedSchemas(object[index], definitions, visited, lastContent);
-      });
-    } else {
-      if (isContent(object)) {
-        lastContent = object;
-      }
-      Object.keys(object).forEach(key => {
-        object[key] = resolveJsonRef(object[key], definitions);
-        linkNestedSchemas(object[key], definitions, visited, lastContent);
-      });
-      if (isField(object)) {
-        object.ParentContent = lastContent;
-      }
-    }
-  }
-}
-
-function resolveJsonRef(object: any, definitions: { [name: string]: any }): any {
-  return isObject(object) && "$ref" in object ? definitions[object.$ref.slice(14)] : object;
-}
-
-/**
- * Преобразует ссылки на `ContentSchema` вида `{ "ContentId": 1234 }`
- * в циклическую структуру объектов. Заполняет обратные ссылки `FieldSchema.ParentContent`.
- */
-function linkMergedSchemas(
-  object: any,
-  mergedSchemas: { [name: string]: any },
-  visited: Set<Object>,
-  lastContent: ContentSchema
-): void {
-  if (object && typeof object === "object") {
-    if (visited.has(object)) {
-      return;
-    }
-    visited.add(object);
-
-    if (Array.isArray(object)) {
-      object.forEach((value, index) => {
-        object[index] = resolveContentIdRef(value, mergedSchemas);
-        linkMergedSchemas(object[index], mergedSchemas, visited, lastContent);
-      });
-    } else {
-      if (isContent(object)) {
-        lastContent = object;
-      }
-      Object.keys(object).forEach(key => {
-        object[key] = resolveContentIdRef(object[key], mergedSchemas);
-        linkMergedSchemas(object[key], mergedSchemas, visited, lastContent);
-      });
-      if (isField(object)) {
-        object.ParentContent = lastContent;
-      }
-    }
-  }
-}
-
-function resolveContentIdRef(object: any, mergedSchemas: ContentSchemasById) {
-  return isSingleKeyObject(object) && isInteger(object.ContentId)
-    ? mergedSchemas[object.ContentId]
-    : object;
 }
 
 function visitContentSchema(
@@ -237,11 +125,11 @@ function compileRecursivePredicate(
  * Компилирует функцию для интерфейса `ContentSchema`, возвращающую максимальную
  * дату модификации по всем статьям, входящим в продукт, на основе обхода полей схемы.
  * @example
- * function lastModified(contentSchema, article) {
+ * function getLastModified(contentSchema, article) {
  *   var lastModified = article._Modified;
  *   if (article.Type) {
  *     var extensionContent = contentSchema.Fields.Type.ExtensionContents[article.Type];
- *     var extensionModified = extensionContent.lastModified(article.Type_Extension[article.Type]);
+ *     var extensionModified = extensionContent.getLastModified(article.Type_Extension[article.Type]);
  *     if (lastModified < extensionModified) {
  *       lastModified = extensionModified;
  *     }
@@ -249,7 +137,7 @@ function compileRecursivePredicate(
  *   if (article.Parameters) {
  *     var relatedContent = contentSchema.Fields.Parameters.RelatedContent;
  *     article.Parameters.forEach(function(item) {
- *       var itemModified = relatedContent.lastModified(item);
+ *       var itemModified = relatedContent.getLastModified(item);
  *       if (lastModified < itemModified) {
  *         lastModified = itemModified;
  *       }
@@ -258,7 +146,7 @@ function compileRecursivePredicate(
  *   return lastModified;
  * }
  */
-function compileRecursiveLastModified(
+function compileRecursiveGetLastModified(
   contentSchema: ContentSchema
 ): (contentSchema: ContentSchema, article: ArticleObject) => Date {
   const complexFields = Object.values(contentSchema.Fields).filter(
@@ -278,7 +166,7 @@ function compileRecursiveLastModified(
           return `
           if (article.${name}) {
             var relatedContent = contentSchema.Fields.${name}.RelatedContent;
-            var relationModified = relatedContent.lastModified(article.${name});
+            var relationModified = relatedContent.getLastModified(article.${name});
             if (lastModified < relationModified) {
               lastModified = relationModified;
             }
@@ -289,7 +177,7 @@ function compileRecursiveLastModified(
           if (article.${name}) {
             var relatedContent = contentSchema.Fields.${name}.RelatedContent;
             article.${name}.forEach(function(item) {
-              var itemModified = relatedContent.lastModified(item);
+              var itemModified = relatedContent.getLastModified(item);
               if (lastModified < itemModified) {
                 lastModified = itemModified;
               }
@@ -299,7 +187,7 @@ function compileRecursiveLastModified(
         return `
         if (article.${name}) {
           var extensionContent = contentSchema.Fields.${name}.ExtensionContents[article.${name}];
-          var extensionModified = extensionContent.lastModified(article.${name}_Extension[article.${name}]);
+          var extensionModified = extensionContent.getLastModified(article.${name}_Extension[article.${name}]);
           if (lastModified < extensionModified) {
             lastModified = extensionModified;
           }

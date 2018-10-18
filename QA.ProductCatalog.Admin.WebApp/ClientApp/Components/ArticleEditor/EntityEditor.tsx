@@ -3,9 +3,7 @@ import { Col, Row } from "react-flexbox-grid";
 import { consumer, inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { EntityObject } from "Models/EditorDataModels";
-import { ProductController } from "Services/ProductController";
 import { EntityController } from "Services/EntityController";
-import { PublicationController } from "Services/PublicationController";
 import { isString } from "Utils/TypeChecks";
 import { FieldSelector } from "Components/FieldEditors/AbstractFieldEditor";
 import { EntityMenu } from "./EntityMenu";
@@ -54,8 +52,6 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   };
 
   @inject private _entityController: EntityController;
-  @inject private _productController: ProductController;
-  @inject private _publicationController: PublicationController;
   private _titleField: (model: EntityObject) => string;
 
   constructor(props: EntityEditorProps, context?: any) {
@@ -69,7 +65,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     onSaveEntity(
       model,
       action("saveEntity", async () => {
-        await this._productController.savePartialProduct(model, contentSchema);
+        await this._entityController.saveEntitySubgraph(model, contentSchema);
       })
     );
   };
@@ -99,7 +95,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     onPublishEntity(
       model,
       action("publishEntity", async () => {
-        await this._publicationController.publishEntity(model, contentSchema);
+        await this._entityController.publishEntity(model, contentSchema);
       })
     );
   };

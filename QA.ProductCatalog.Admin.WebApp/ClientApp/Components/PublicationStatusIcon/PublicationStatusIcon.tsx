@@ -13,7 +13,7 @@ export const makePublicatoinStatusIcons = (
   return (product: EntityObject) => {
     const liveTime = publicationContext.getLiveTime(product);
     const stageTime = publicationContext.getStageTime(product);
-    const lastModified = contentSchema.lastModified(product);
+    const lastModified = contentSchema.getLastModified(product);
     const liveIsSync = liveTime && liveTime >= lastModified;
     const stageIsSync = stageTime && stageTime >= lastModified;
     return (

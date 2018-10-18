@@ -9,10 +9,7 @@ import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ComputedCache } from "Utils/WeakCache";
 import { DataContext } from "Services/DataContext";
-import { ProductController } from "Services/ProductController";
 import { EntityController } from "Services/EntityController";
-import { CloneController } from "Services/CloneController";
-import { PublicationController } from "Services/PublicationController";
 import { EntityMenu } from "Components/ArticleEditor/EntityMenu";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
@@ -70,9 +67,6 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
 
   @inject private _dataContext: DataContext;
   @inject private _entityController: EntityController;
-  @inject private _cloneController: CloneController;
-  @inject private _publicationController: PublicationController;
-  @inject private _productController: ProductController;
   private _columnProportions?: number[];
   private _displayFields: FieldSelector[];
   private _entityComparer: EntityComparer;
@@ -108,7 +102,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
     const { model, fieldSchema, onClonePrototype } = this.props as PrivateProps;
     onClonePrototype(
       action("clonePrototype", async () => {
-        const clone = await this._cloneController.cloneProductPrototype(model, fieldSchema);
+        const clone = await this._relationController.cloneProductPrototype(model, fieldSchema);
         this.toggleScreen(clone);
         return clone;
       })
@@ -164,7 +158,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
     onSaveEntity(
       entity,
       action("saveEntity", async () => {
-        await this._productController.savePartialProduct(entity, contentSchema);
+        await this._entityController.saveEntitySubgraph(entity, contentSchema);
       })
     );
   }
@@ -199,7 +193,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
     onCloneEntity(
       entity,
       action("cloneEntity", async () => {
-        const clone = await this._cloneController.cloneRelatedEntity(model, fieldSchema, entity);
+        const clone = await this._entityController.cloneRelatedEntity(model, fieldSchema, entity);
         this.toggleScreen(clone);
         return clone;
       })
@@ -212,7 +206,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
     onPublishEntity(
       entity,
       action("publishEntity", async () => {
-        await this._publicationController.publishEntity(entity, fieldSchema.RelatedContent);
+        await this._entityController.publishEntity(entity, fieldSchema.RelatedContent);
       })
     );
   };

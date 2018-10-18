@@ -8,7 +8,6 @@ import { Button } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { DataContext } from "Services/DataContext";
-import { CloneController } from "Services/CloneController";
 import { EntityController } from "Services/EntityController";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
@@ -46,7 +45,6 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
   };
 
   @inject private _dataContext: DataContext;
-  @inject private _cloneController: CloneController;
   @inject private _entityController: EntityController;
 
   readonly state = {
@@ -58,7 +56,7 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
     const { model, fieldSchema, onClonePrototype } = this.props as PrivateProps;
     onClonePrototype(
       action("clonePrototype", async () => {
-        const clone = await this._cloneController.cloneProductPrototype(model, fieldSchema);
+        const clone = await this._relationController.cloneProductPrototype(model, fieldSchema);
         this.setState({
           isOpen: true,
           isTouched: true
@@ -120,7 +118,7 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
     onCloneEntity(
       entity,
       action("cloneEntity", async () => {
-        return await this._cloneController.cloneRelatedEntity(model, fieldSchema, entity);
+        return await this._entityController.cloneRelatedEntity(model, fieldSchema, entity);
       })
     );
   };
