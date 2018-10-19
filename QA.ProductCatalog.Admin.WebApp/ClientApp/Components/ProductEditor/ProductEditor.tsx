@@ -17,6 +17,7 @@ import { isFunction } from "Utils/TypeChecks";
 import { EditorSettings } from "Models/EditorSettings";
 import { FileController } from "Services/FileController";
 import { SchemaLinker } from "Services/SchemaLinker";
+import { SchemaCompiler } from "Services/SchemaCompiler";
 import { PublicationContext } from "Services/PublicationContext";
 import { PublicationTracker } from "Services/PublicationTracker";
 
@@ -37,6 +38,7 @@ interface ProductEditorProps {
   DataMerger,
   DataValidator,
   SchemaLinker,
+  SchemaCompiler,
   EntityController,
   InitializationController,
   FileController,

@@ -19,6 +19,15 @@ interface CommandDecorator {
 function commandDecorator(target: Object, key: string, descriptor: PropertyDescriptor) {
   const commandName = `${target.constructor.name || ""}.${key}`;
   let commandNumber = 0;
+  const backdrop = document.createElement("div");
+  Object.assign(backdrop.style, {
+    position: "fixed",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+    zIndex: 20
+  });
   const startCommand = action(`${commandName}: start`, () => {
     if (DEBUG) {
       const currentName = `${commandName} #${++commandNumber}`;
@@ -26,7 +35,7 @@ function commandDecorator(target: Object, key: string, descriptor: PropertyDescr
       console.time(currentName);
     }
     if (commandState.runningCount === 0) {
-      captureUserInput(document.body, true);
+      document.body.appendChild(backdrop);
       NProgress.start();
     }
     commandState.runningCount++;
@@ -37,7 +46,7 @@ function commandDecorator(target: Object, key: string, descriptor: PropertyDescr
     }
     commandState.runningCount--;
     if (commandState.runningCount === 0) {
-      captureUserInput(document.body, false);
+      document.body.removeChild(backdrop);
       NProgress.done();
     }
     if (error instanceof Error) {
@@ -84,25 +93,3 @@ Object.defineProperties(commandDecorator, {
  * Включает полосу NProgress. Логирует время выполнения операции в DEBUG-режиме.
  */
 export const command = commandDecorator as CommandDecorator;
-
-/** Prevent all user input to some element and all it's descentants */
-function captureUserInput(element: Node, capture: boolean): void {
-  ["mousedown", "click", "contextmenu", "focus"].forEach(event => {
-    if (capture) {
-      element.addEventListener(event, preventInput, true);
-    } else {
-      element.removeEventListener(event, preventInput, true);
-    }
-  });
-  if (capture) {
-    (document.activeElement as HTMLElement).blur();
-  }
-}
-
-function preventInput(event: Event): void {
-  event.stopPropagation();
-  event.preventDefault();
-  if (event.type === "focus") {
-    (event.target as HTMLElement).blur();
-  }
-}
