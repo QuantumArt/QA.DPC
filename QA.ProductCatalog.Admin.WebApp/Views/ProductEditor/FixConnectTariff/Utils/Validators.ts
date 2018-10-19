@@ -37,10 +37,17 @@ export const hasUniqueTariffDirection = (
   parameter: Parameter,
   allParameters: Parameter[]
 ) => () => {
+  if (parameter._IsVirtual || !parameter.BaseParameter) {
+    return undefined;
+  }
+
   const paramsWithSameTariffDirection = allParameters.filter(
     otherParameter =>
+      !otherParameter._IsVirtual &&
       otherParameter !== parameter &&
       otherParameter.BaseParameter === parameter.BaseParameter &&
+      otherParameter.Zone === parameter.Zone &&
+      otherParameter.Direction === parameter.Direction &&
       setEquals(parameter.BaseParameterModifiers, otherParameter.BaseParameterModifiers)
   );
 
@@ -48,6 +55,7 @@ export const hasUniqueTariffDirection = (
     const titles = paramsWithSameTariffDirection.map(param => `[${param.Title}]`);
     return `Тарифное направление совпадает с ${titles.join(", ")}`;
   }
+
   return undefined;
 };
 

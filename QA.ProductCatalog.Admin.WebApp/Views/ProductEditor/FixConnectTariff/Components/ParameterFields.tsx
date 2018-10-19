@@ -22,8 +22,8 @@ type Parameter = ProductParameter | LinkParameter;
 
 interface ParameterField {
   Title: string;
-  Unit: string;
-  BaseParam: string;
+  Unit?: string;
+  BaseParam?: string;
   BaseParamModifiers?: string[];
 }
 
@@ -64,9 +64,12 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
           Title: field.Title,
           Unit: unitsByAlias[field.Unit],
           BaseParameter: baseParamsByAlias[field.BaseParam],
+          // TODO: Zone
+          // TODO: Direction
           BaseParameterModifiers:
             field.BaseParamModifiers &&
             field.BaseParamModifiers.map(alias => baseParamModifiersByAlias[alias])
+          // TODO: Modifiers
         })
       );
     });
@@ -76,6 +79,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
         const parameters = this.getParameters();
         // find missing virtual parameters then add it to entity field
         const parametersToAdd = this.virtualParameters.filter(
+          // TODO: смотреть не на Title, а на комбинацию TariffDirection (если есть BaseParameter)
           virtual => !parameters.some(parameter => parameter.Title === virtual.Title)
         );
         runInAction("addParameters", () => {
@@ -98,16 +102,17 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
 
     this.reactions.push(
       autorun(() => {
-        const editedParameters = this.getParameters().filter(
-          parameter => parameter._IsVirtual && parameter.isEdited()
-        );
-        if (editedParameters.length > 0) {
-          runInAction("materializeParameters", () => {
-            editedParameters.forEach(parameter => {
-              parameter._IsVirtual = false;
-            });
+        const parameters = this.getParameters();
+        // touch parameter NumValue and Value to capture reaction dependencies
+        parameters.forEach(parameter => (parameter.NumValue, parameter.Value));
+        runInAction("synchronizeParameters", () => {
+          parameters.forEach(parameter => {
+            const isVirtual = parameter.NumValue === null && !parameter.Value;
+            if (parameter._IsVirtual !== isVirtual) {
+              parameter._IsVirtual = isVirtual;
+            }
           });
-        }
+        });
       })
     );
 

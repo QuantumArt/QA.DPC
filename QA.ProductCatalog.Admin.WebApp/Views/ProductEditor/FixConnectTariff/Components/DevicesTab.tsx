@@ -162,7 +162,10 @@ const regionsDisplayField = (device: Product) => (
 );
 
 const rentPriceDisplayField = (device: Product) => {
-  const parameter = device.Parameters.find(parameter => parameter.Title === "Цена аренды");
+  const parameter = device.Parameters.find(parameter => {
+    const baseParameter = parameter.BaseParameter;
+    return baseParameter && baseParameter.Alias === "RentPrice";
+  });
   return (
     parameter &&
     parameter.NumValue !== null && (
@@ -177,7 +180,10 @@ const rentPriceDisplayField = (device: Product) => {
 };
 
 const salePriceDisplayField = (device: Product) => {
-  const parameter = device.Parameters.find(parameter => parameter.Title === "Цена продажи");
+  const parameter = device.Parameters.find(parameter => {
+    const baseParameter = parameter.BaseParameter;
+    return baseParameter && baseParameter.Alias === "SalePrice";
+  });
   return (
     parameter &&
     parameter.NumValue !== null && (
@@ -198,7 +204,10 @@ const matrixRegionsDisplayField = (device: DeviceOnTariffs) => (
 );
 
 const matrixRentPriceDisplayField = (device: DeviceOnTariffs) => {
-  const parameter = device.Parent.Parameters.find(parameter => parameter.Title === "Цена аренды");
+  const parameter = device.Parent.Parameters.find(parameter => {
+    const baseParameter = parameter.BaseParameter;
+    return baseParameter && baseParameter.Alias === "RentPrice";
+  });
   return (
     parameter &&
     parameter.NumValue !== null && (
@@ -213,7 +222,10 @@ const matrixRentPriceDisplayField = (device: DeviceOnTariffs) => {
 };
 
 const matrixSalePriceDisplayField = (device: DeviceOnTariffs) => {
-  const parameter = device.Parent.Parameters.find(parameter => parameter.Title === "Цена продажи");
+  const parameter = device.Parent.Parameters.find(parameter => {
+    const baseParameter = parameter.BaseParameter;
+    return baseParameter && baseParameter.Alias === "SalePrice";
+  });
   return (
     parameter &&
     parameter.NumValue !== null && (

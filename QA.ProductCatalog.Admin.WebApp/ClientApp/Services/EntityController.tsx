@@ -184,7 +184,7 @@ export class EntityController {
         parent.setChanged(fieldSchema.FieldName, false);
       }
       this._overlayPresenter.notify({
-        message: `Удалена статья ${entity._ServerId}`,
+        message: `Статья ${entity._ServerId} успешно удалена`,
         intent: Intent.WARNING
       });
     });
