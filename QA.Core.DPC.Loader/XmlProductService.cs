@@ -23,7 +23,10 @@ namespace QA.Core.DPC.Loader
 	{
 		public const string RenderTextFieldAsXmlName = "RenderTextFieldAsXml";
 	    public const string RenderFileFieldAsImage = "RenderFileFieldAsImage";
-
+		
+		private static Regex _invalidXMLChars = new Regex(
+			@"(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]|[\uD800-\uDBFF](?![\uDC00-\uDFFF])|[\x00-\x08\x0B\x0C\x0E-\x1F\x7F-\x9F\uFEFF\uFFFE\uFFFF]",
+			RegexOptions.Compiled);
 
         private readonly ILogger _logger;
         private readonly ISettingsService _settingsService;
@@ -82,10 +85,8 @@ namespace QA.Core.DPC.Loader
 		}
 		
 		public static string PrepareXml(string text)   
-		{   
-			string re = @"[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";   
-			string result = Regex.Replace(text, re, "");
-			return result;
+		{
+			return _invalidXMLChars.Replace(text, "");
 		}   
 
 
