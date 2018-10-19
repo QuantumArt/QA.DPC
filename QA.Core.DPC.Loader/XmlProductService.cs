@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using QA.Core.DPC.QP.Services;
@@ -77,8 +78,15 @@ namespace QA.Core.DPC.Loader
 				doc.WriteTo(xw);  
 			}
 
-			return sb.ToString();
+			return PrepareXml(sb.ToString());
 		}
+		
+		public static string PrepareXml(string text)   
+		{   
+			string re = @"[^\x09\x0A\x0D\x20-\xD7FF\xE000-\xFFFD\x10000-x10FFFF]";   
+			string result = Regex.Replace(text, re, "");
+			return result;
+		}   
 
 
 		private string ProcessProductWithTags(IArticleFilter filter, params Article[] content)
