@@ -104,11 +104,18 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
     onRemoveEntity(
       entity,
       action("removeEntity", async () => {
-        await this._entityController.removeRelatedEntity(model, fieldSchema, entity);
-        this.setState({
-          isOpen: false,
-          isTouched: false
-        });
+        const isRemoved = await this._entityController.removeRelatedEntity(
+          model,
+          fieldSchema,
+          entity
+        );
+        if (isRemoved) {
+          this.setState({
+            isOpen: false,
+            isTouched: false
+          });
+        }
+        return isRemoved;
       })
     );
   };

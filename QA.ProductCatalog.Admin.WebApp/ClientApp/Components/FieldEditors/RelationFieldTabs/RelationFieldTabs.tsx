@@ -149,8 +149,15 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
       entity,
       action("removeEntity", async () => {
         const nextEntity = this.getNextTab(entity);
-        await this._entityController.removeRelatedEntity(model, fieldSchema, entity);
-        this.deactivateTab(entity, nextEntity);
+        const isRemoved = await this._entityController.removeRelatedEntity(
+          model,
+          fieldSchema,
+          entity
+        );
+        if (isRemoved) {
+          this.deactivateTab(entity, nextEntity);
+        }
+        return isRemoved;
       })
     );
   };

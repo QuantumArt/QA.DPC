@@ -182,7 +182,7 @@ export interface ExpandableFieldEditorProps extends FieldEditorProps {
   onRefreshEntity?(entity: EntityObject, refreshEntity: () => Promise<void>): void;
   onReloadEntity?(entity: EntityObject, reloadEntity: () => Promise<void>): void;
   onPublishEntity?(entity: EntityObject, publishEntity: () => Promise<void>): void;
-  onRemoveEntity?(entity: EntityObject, removeEntity: () => Promise<void>): void;
+  onRemoveEntity?(entity: EntityObject, removeEntity: () => Promise<boolean>): void;
   onDetachEntity?(entity: EntityObject, detachEntity: () => void): void;
   onSelectRelation?(selectRelation: () => Promise<void>): void;
   onReloadRelation?(relaoadRelation: () => Promise<void>): void;

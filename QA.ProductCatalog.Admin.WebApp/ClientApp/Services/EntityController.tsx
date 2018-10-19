@@ -1,13 +1,17 @@
 import "Scripts/pmrpc";
 import QP8 from "Scripts/qp/QP8BackendApi.Interaction";
 import qs from "qs";
+import React from "react";
 import { inject } from "react-ioc";
 import { isObservableArray, runInAction } from "mobx";
+import { Intent } from "@blueprintjs/core";
 import { DataSerializer, IdMapping } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataValidator } from "Services/DataValidator";
 import { DataMerger, MergeStrategy } from "Services/DataMerger";
 import { DataContext } from "Services/DataContext";
+import { ValidationSummay } from "Components/ValidationSummary/ValidationSummary";
+import { OverlayPresenter } from "Services/OverlayPresenter";
 import {
   ContentSchema,
   RelationFieldSchema,
@@ -26,6 +30,7 @@ export class EntityController {
   @inject private _dataValidator: DataValidator;
   @inject private _dataMerger: DataMerger;
   @inject private _dataContext: DataContext;
+  @inject private _overlayPresenter: OverlayPresenter;
 
   private _query = document.location.search;
   private _hostUid = qs.parse(document.location.search).hostUID as string;
@@ -105,8 +110,7 @@ export class EntityController {
   public async publishEntity(entity: EntityObject, contentSchema: ContentSchema) {
     const errors = this._dataValidator.collectErrors(entity, contentSchema, false);
     if (errors.length > 0) {
-      // TODO: React alert dialog
-      window.alert(this._dataValidator.getErrorMessage(errors));
+      await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
       return;
     }
 
@@ -122,10 +126,14 @@ export class EntityController {
       response.headers.get("Content-Type").startsWith("application/json")
     ) {
       const errorData = await response.json();
-      // TODO: React alert dialog
-      window.alert(errorData.Message);
+      await this._overlayPresenter.alert(<pre>{errorData.Message}</pre>, "OK");
     } else if (!response.ok) {
       throw new Error(await response.text());
+    } else {
+      this._overlayPresenter.notify({
+        message: `Статья ${entity._ServerId} успешно опубликована`,
+        intent: Intent.SUCCESS
+      });
     }
   }
 
@@ -135,9 +143,13 @@ export class EntityController {
     fieldSchema: RelationFieldSchema,
     entity: EntityObject
   ) {
-    // TODO: React confirm dialog
-    if (!window.confirm(`Вы действительно хотите удалить статью ${entity._ServerId} ?`)) {
-      return;
+    const confirmed = await this._overlayPresenter.confirm(
+      <>Вы действительно хотите удалить статью {entity._ServerId} ?</>,
+      "Удалить",
+      "Отмена"
+    );
+    if (!confirmed) {
+      return false;
     }
 
     const contentSchema = fieldSchema.RelatedContent;
@@ -158,7 +170,7 @@ export class EntityController {
       throw new Error(await response.text());
     }
 
-    return runInAction("removeRelatedEntity", () => {
+    runInAction("removeRelatedEntity", () => {
       const relation = parent[fieldSchema.FieldName];
       const wasRelationChanged = parent.isChanged(fieldSchema.FieldName);
       if (isMultiRelationField(fieldSchema) && isObservableArray(relation)) {
@@ -171,7 +183,13 @@ export class EntityController {
       if (!wasRelationChanged) {
         parent.setChanged(fieldSchema.FieldName, false);
       }
+      this._overlayPresenter.notify({
+        message: `Удалена статья ${entity._ServerId}`,
+        intent: Intent.WARNING
+      });
     });
+
+    return true;
   }
 
   @command
@@ -217,6 +235,10 @@ export class EntityController {
           parent.setChanged(fieldSchema.FieldName, false);
         }
       }
+      this._overlayPresenter.notify({
+        message: `Создана новая статья ${clonedEntity._ServerId}`,
+        intent: Intent.SUCCESS
+      });
       return clonedEntity;
     });
   }
@@ -225,8 +247,7 @@ export class EntityController {
   public async saveEntitySubgraph(entity: EntityObject, contentSchema: ContentSchema) {
     const errors = this._dataValidator.collectErrors(entity, contentSchema, true);
     if (errors.length > 0) {
-      // TODO: React alert dialog
-      window.alert(this._dataValidator.getErrorMessage(errors));
+      await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
       return;
     }
 
@@ -249,24 +270,31 @@ export class EntityController {
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
 
       if (this._dataMerger.tablesHasConflicts(dataSnapshot)) {
-        // TODO: React confirm dialog
-        const serverWins = window.confirm(
-          `Данные на сервере были изменены другим пользователем.\n` +
-            `Применить изменения с сервера?`
+        const serverWins = await this._overlayPresenter.confirm(
+          <>
+            Данные на сервере были изменены другим пользователем.<br />
+            Применить изменения с сервера?
+          </>,
+          "Применить",
+          "Отмена"
         );
         if (serverWins) {
           this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
         } else {
           this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ClientWins);
         }
-        // TODO: React alert dialog
-        window.alert(`Пожалуйста, проверьте корректность данных и сохраните статью снова.`);
+        await this._overlayPresenter.alert(
+          `Пожалуйста, проверьте корректность данных и сохраните статью снова.`,
+          "OK"
+        );
       } else {
         this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ClientWins);
-        // TODO: React alert dialog
-        window.alert(
-          `Данные на сервере были изменены другим пользователем.\n` +
-            `Пожалуйста, проверьте корректность данных и сохраните статью снова.`
+        await this._overlayPresenter.alert(
+          <>
+            Данные на сервере были изменены другим пользователем.<br />
+            Пожалуйста, проверьте корректность данных и сохраните статью снова.
+          </>,
+          "OK"
         );
       }
       return;
@@ -284,5 +312,10 @@ export class EntityController {
     const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(okResponse.PartialProduct);
     const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);
     this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ServerWins);
+
+    this._overlayPresenter.notify({
+      message: `Статья ${entity._ServerId} успешно сохранена`,
+      intent: Intent.SUCCESS
+    });
   }
 }

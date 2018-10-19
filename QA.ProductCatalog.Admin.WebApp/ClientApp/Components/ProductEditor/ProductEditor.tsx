@@ -1,5 +1,6 @@
 import React, { Component, ReactNode } from "react";
 import { provider, inject } from "react-ioc";
+import { Observer } from "mobx-react";
 import { Grid } from "react-flexbox-grid";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationsConfig } from "Components/ArticleEditor/ArticleEditor";
@@ -20,6 +21,7 @@ import { SchemaLinker } from "Services/SchemaLinker";
 import { SchemaCompiler } from "Services/SchemaCompiler";
 import { PublicationContext } from "Services/PublicationContext";
 import { PublicationTracker } from "Services/PublicationTracker";
+import { OverlayPresenter } from "Services/OverlayPresenter";
 
 type RenderEditor = (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
 
@@ -43,6 +45,7 @@ interface ProductEditorProps {
   InitializationController,
   FileController,
   RelationController,
+  OverlayPresenter,
   RelationsConfig,
   EditorSettings
 )
@@ -50,6 +53,8 @@ export class ProductEditor extends Component<ProductEditorProps> {
   @inject private _editorSettings: EditorSettings;
   @inject private _relationsConfig: RelationsConfig;
   @inject private _initializationController: InitializationController;
+  @inject private _overlayPresenter: OverlayPresenter;
+
   readonly state = {
     entity: null,
     contentSchema: null
@@ -75,13 +80,16 @@ export class ProductEditor extends Component<ProductEditorProps> {
     }
 
     return (
-      <Grid fluid>
-        {isFunction(children) ? (
-          children(entity, contentSchema)
-        ) : (
-          <EntityEditor model={entity} contentSchema={contentSchema} />
-        )}
-      </Grid>
+      <>
+        <Grid fluid>
+          {isFunction(children) ? (
+            children(entity, contentSchema)
+          ) : (
+            <EntityEditor model={entity} contentSchema={contentSchema} />
+          )}
+        </Grid>
+        <Observer>{() => this._overlayPresenter.overlays.peek()}</Observer>
+      </>
     );
   }
 }

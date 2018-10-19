@@ -145,8 +145,15 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
     onRemoveEntity(
       entity,
       action("removeEntity", async () => {
-        await this._entityController.removeRelatedEntity(model, fieldSchema, entity);
-        this.deactivateScreen(entity);
+        const isRemoved = await this._entityController.removeRelatedEntity(
+          model,
+          fieldSchema,
+          entity
+        );
+        if (isRemoved) {
+          this.deactivateScreen(entity);
+        }
+        return isRemoved;
       })
     );
   }

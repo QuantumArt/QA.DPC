@@ -1,7 +1,9 @@
 import { observable, action } from "mobx";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
+import { Intent } from "@blueprintjs/core";
 import { isObject, isFunction } from "Utils/TypeChecks";
+import { AppToaster } from "Utils/Toaster";
 
 const commandState = observable({
   runningCount: 0,
@@ -51,7 +53,11 @@ function commandDecorator(target: Object, key: string, descriptor: PropertyDescr
     }
     if (error instanceof Error) {
       if (command.alertErrors) {
-        alert("Произошла ошибка");
+        AppToaster.show({
+          intent: Intent.DANGER,
+          message: "Произошла ошибка",
+          timeout: 10 ** 9
+        });
       }
       throw error;
     }

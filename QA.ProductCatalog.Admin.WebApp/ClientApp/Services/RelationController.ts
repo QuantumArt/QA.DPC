@@ -3,10 +3,12 @@ import QP8 from "../../Scripts/qp/QP8BackendApi.Interaction";
 import qs from "qs";
 import { inject } from "react-ioc";
 import { untracked, runInAction, IObservableArray, isObservableArray } from "mobx";
+import { Intent } from "@blueprintjs/core";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataMerger, MergeStrategy } from "Services/DataMerger";
 import { DataContext } from "Services/DataContext";
+import { OverlayPresenter } from "Services/OverlayPresenter";
 import {
   ContentSchema,
   SingleRelationFieldSchema,
@@ -28,6 +30,7 @@ export class RelationController {
   @inject private _dataNormalizer: DataNormalizer;
   @inject private _dataMerger: DataMerger;
   @inject private _dataContext: DataContext;
+  @inject private _overlayPresenter: OverlayPresenter;
 
   private _query = document.location.search;
   private _hostUid = qs.parse(document.location.search).hostUID as string;
@@ -311,6 +314,10 @@ export class RelationController {
       if (!wasRelationChanged) {
         parent.setChanged(fieldSchema.FieldName, false);
       }
+      this._overlayPresenter.notify({
+        message: `Создана новая статья ${clonedEntity._ServerId}`,
+        intent: Intent.SUCCESS
+      });
       return clonedEntity;
     });
   }

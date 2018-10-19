@@ -122,22 +122,4 @@ export class DataValidator {
       FieldErrors: []
     });
   }
-
-  public getErrorMessage(articleErrors: ArticleErrors[]) {
-    return articleErrors
-      .slice(0, 3)
-      .map(
-        articleError =>
-          `${articleError.ContentName}: ${articleError.ServerId}\n` +
-          (articleError.ArticleErrors.length > 0
-            ? `${articleError.ArticleErrors.join(", ")}\n`
-            : ``) +
-          (articleError.FieldErrors.length > 0
-            ? `${articleError.FieldErrors.map(
-                fieldError => `${fieldError.Name}: ${fieldError.Messages.join(", ")}`
-              ).join("\n")}\n`
-            : ``)
-      )
-      .join("\n");
-  }
 }
