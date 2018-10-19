@@ -24,11 +24,18 @@ import "./RelationFieldAccordion.scss";
 
 export interface RelationFieldAccordionProps extends ExpandableFieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
+  highlightItems?: (item: EntityObject) => HighlightMode;
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   columnProportions?: number[];
   displayFields?: (string | FieldSelector)[];
   collapsed?: boolean;
+}
+
+export const enum HighlightMode {
+  None,
+  Highlight,
+  Shade
 }
 
 interface RelationFieldAccordionState {
@@ -47,6 +54,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
 > {
   static defaultProps = {
     filterItems: () => true,
+    highlightItems: () => HighlightMode.None,
     canSaveEntity: true,
     canRefreshEntity: true,
     canReloadEntity: true,
@@ -368,6 +376,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
     const {
       fieldOrders,
       fieldEditors,
+      highlightItems,
       skipOtherFields,
       onShowEntity,
       onHideEntity,
@@ -394,15 +403,20 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
           {dataSource.map(entity => {
             const isOpen = entity._ClientId === activeId;
             const hasServerId = entity._ServerId > 0;
+            const isEdited = contentSchema.isEdited(entity);
+            const hasVisibleErrors = contentSchema.hasVisibleErrors(entity);
+            const highlightMode = highlightItems(entity);
+            const highlight = highlightMode === HighlightMode.Highlight;
+            const shade = highlightMode === HighlightMode.Shade;
             return (
               <Fragment key={entity._ClientId}>
                 <tr
                   className={cn("relation-field-accordion__header", {
                     "relation-field-accordion__header--open": isOpen,
-                    "relation-field-accordion__header--edited": contentSchema.isEdited(entity),
-                    "relation-field-accordion__header--invalid": contentSchema.hasVisibleErrors(
-                      entity
-                    )
+                    "relation-field-accordion__header--edited": isEdited,
+                    "relation-field-accordion__header--invalid": hasVisibleErrors,
+                    "relation-field-accordion__header--highlight": highlight,
+                    "relation-field-accordion__header--shade": shade
                   })}
                   onClick={e => this.handleToggle(e, entity)}
                 >

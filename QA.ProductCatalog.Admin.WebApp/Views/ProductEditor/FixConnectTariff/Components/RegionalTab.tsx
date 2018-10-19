@@ -143,6 +143,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
       ]}
       filterItems={this.filterModel.filterProducts}
+      highlightItems={this.filterModel.highlightProduct}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
@@ -167,6 +168,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
       ]}
       filterItems={this.filterModel.filterProducts}
+      highlightItems={this.filterModel.highlightProduct}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,

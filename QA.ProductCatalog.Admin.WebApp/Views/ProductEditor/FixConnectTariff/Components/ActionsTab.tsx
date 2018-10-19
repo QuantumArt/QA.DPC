@@ -61,6 +61,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
     <RelationFieldAccordion
       {...props}
       filterItems={this.filterModel.filterActions}
+      highlightItems={this.filterModel.highlightAction}
       sortItems={by(
         asc((action: FixConnectAction) => action.Parent.MarketingProduct._ServerId),
         asc((action: FixConnectAction) => action.Parent._ServerId)

@@ -87,6 +87,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
         makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
       ]}
       filterItems={this.filterModel.filterProducts}
+      highlightItems={this.filterModel.highlightProduct}
       fieldOrders={["Modifiers", "Regions", "Parameters"]}
       fieldEditors={{
         Type: IGNORE,
@@ -111,6 +112,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
         matrixSalePriceDisplayField
       ]}
       filterItems={this.filterModel.filterDevicesOnTariffs}
+      highlightItems={this.filterModel.highlightDeviceOnTariffs}
       fieldOrders={["Cities", "Parent", "MarketingTariffs"]}
       fieldEditors={{
         MarketingDevice: IGNORE,

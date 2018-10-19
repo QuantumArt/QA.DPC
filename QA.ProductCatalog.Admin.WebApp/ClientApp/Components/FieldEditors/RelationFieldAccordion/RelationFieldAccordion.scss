@@ -48,6 +48,14 @@ $background: darken($light-gray5, 5%);
     background-color: rgba($red3, 0.2) !important;
   }
 
+  &--highlight {
+    text-shadow: 0 0 0 $dark-gray1;
+  }
+
+  &--shade {
+    color: $gray1;
+  }
+
   &:first-child {
     .relation-field-accordion__expander {
       border-top: $border;

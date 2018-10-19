@@ -1,4 +1,5 @@
 import { observable, action, computed } from "mobx";
+import { HighlightMode } from "Components/FieldEditors/RelationFieldAccordion/RelationFieldAccordion";
 import { Product, DeviceOnTariffs, FixConnectAction } from "../TypeScriptSchema";
 
 export class FilterModel {
@@ -110,5 +111,49 @@ export class FilterModel {
       return false;
     }
     return true;
+  };
+
+  public highlightProduct = (product: Product) => {
+    const { filterByTariffRegions, fixTariffHasRegionId } = this;
+    if (filterByTariffRegions) {
+      return HighlightMode.None;
+    }
+    if (product.getBaseValue("Regions").some(region => fixTariffHasRegionId[region._ClientId])) {
+      return HighlightMode.Highlight;
+    }
+    return HighlightMode.Shade;
+  };
+
+  public highlightAction = (action: FixConnectAction) => {
+    const { filterByTariffRegions, fixTariffHasRegionId } = this;
+    if (filterByTariffRegions) {
+      return HighlightMode.None;
+    }
+    if (
+      action.Parent.getBaseValue("Regions").some(region => fixTariffHasRegionId[region._ClientId])
+    ) {
+      return HighlightMode.Highlight;
+    }
+    return HighlightMode.Shade;
+  };
+
+  public highlightDeviceOnTariffs = (device: DeviceOnTariffs) => {
+    const { filterByMarketingTariff, filterByTariffRegions, fixTariffHasRegionId } = this;
+    if (filterByMarketingTariff && filterByTariffRegions) {
+      return HighlightMode.None;
+    }
+    if (
+      !filterByMarketingTariff &&
+      !device.getBaseValue("MarketingTariffs").includes(this.fixTariff.MarketingProduct)
+    ) {
+      return HighlightMode.Shade;
+    }
+    if (
+      !filterByTariffRegions &&
+      !device.getBaseValue("Cities").some(region => fixTariffHasRegionId[region._ClientId])
+    ) {
+      return HighlightMode.Shade;
+    }
+    return HighlightMode.Highlight;
   };
 }
