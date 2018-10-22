@@ -12,7 +12,7 @@ import {
   SingleRelationFieldTags
 } from "Components/FieldEditors/FieldEditors";
 import { makePublicatoinStatusIcons } from "Components/PublicationStatusIcon/PublicationStatusIcon";
-import { by, asc } from "Utils/Array/Sort";
+import { by, asc } from "Utils/Array";
 import {
   Product,
   FixConnectAction,
@@ -116,13 +116,32 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
           ]}
           fieldEditors={{
             MarketingProduct: SingleRelationFieldTags,
-            // TODO: Parameters: this.renderActionParameters
+            Parameters: this.renderActionParameters,
             ActionMarketingDevices: this.renderDevices
           }}
         />
       )
     );
   };
+
+  private renderActionParameters = (props: FieldEditorProps) => (
+    <ParameterFields
+      {...props}
+      fields={[
+        {
+          Title: "Скидка на цену предложения, %",
+          BaseParam: "SubscriptionFee",
+          Modifiers: ["PercentDiscount"]
+        },
+        {
+          Title: "Скидка на цену предложения, руб.",
+          Unit: "rub",
+          BaseParam: "SubscriptionFee",
+          Modifiers: ["Discount"]
+        }
+      ]}
+    />
+  );
 
   private renderDevices = (props: FieldEditorProps) => (
     <RelationFieldTabs

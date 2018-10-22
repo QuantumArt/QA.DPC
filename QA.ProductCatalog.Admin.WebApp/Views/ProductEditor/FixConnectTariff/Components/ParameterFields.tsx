@@ -4,7 +4,8 @@ import { observable, runInAction, autorun, IObservableArray, IReactionDisposer }
 import { observer } from "mobx-react";
 import { Options } from "react-select";
 import { WeakCache, ComputedCache } from "Utils/WeakCache";
-import { asc } from "Utils/Array/Sort";
+import { asc } from "Utils/Array";
+import { setEquals } from "Utils/Array";
 import { DataContext } from "Services/DataContext";
 import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
 import { RelationFieldSchema, NumericFieldSchema } from "Models/EditorSchemaModels";
@@ -14,7 +15,9 @@ import {
   ProductParameter,
   BaseParameter,
   Unit,
-  BaseParameterModifier
+  BaseParameterModifier,
+  ParameterModifier,
+  Direction
 } from "../TypeScriptSchema";
 import { ParameterBlock } from "./ParameterBlock";
 
@@ -24,7 +27,9 @@ interface ParameterField {
   Title: string;
   Unit?: string;
   BaseParam?: string;
+  Direction?: string;
   BaseParamModifiers?: string[];
+  Modifiers?: string[];
 }
 
 interface ParameterFieldsProps extends FieldEditorProps {
@@ -34,7 +39,9 @@ interface ParameterFieldsProps extends FieldEditorProps {
 const unitOptionsCache = new WeakCache();
 const unitByAliasCache = new ComputedCache();
 const baseParamsByAliasCache = new ComputedCache();
+const directionByAliasCache = new ComputedCache();
 const baseParamModifiersByAliasCache = new ComputedCache();
+const paramModifiersByAliasCache = new ComputedCache();
 
 @consumer
 @observer
@@ -50,7 +57,9 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     const contentName = this.getContentName();
     const unitsByAlias = this.getUnitsByAlias();
     const baseParamsByAlias = this.getBaseParamsByAlias();
+    const directionByAlias = this.getDirectionsByAlias();
     const baseParamModifiersByAlias = this.getBaseParameterModifiersByAlias();
+    const paramModifiersByAlias = this.getParameterModifiersByAlias();
 
     fields.forEach((field, i) => {
       this.fieldOrdersByTitile[field.Title] = i;
@@ -64,12 +73,11 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
           Title: field.Title,
           Unit: unitsByAlias[field.Unit],
           BaseParameter: baseParamsByAlias[field.BaseParam],
-          // TODO: Zone
-          // TODO: Direction
+          Direction: directionByAlias[field.Direction],
           BaseParameterModifiers:
             field.BaseParamModifiers &&
-            field.BaseParamModifiers.map(alias => baseParamModifiersByAlias[alias])
-          // TODO: Modifiers
+            field.BaseParamModifiers.map(alias => baseParamModifiersByAlias[alias]),
+          Modifiers: field.Modifiers && field.Modifiers.map(alias => paramModifiersByAlias[alias])
         })
       );
     });
@@ -79,8 +87,19 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
         const parameters = this.getParameters();
         // find missing virtual parameters then add it to entity field
         const parametersToAdd = this.virtualParameters.filter(
-          // TODO: смотреть не на Title, а на комбинацию TariffDirection (если есть BaseParameter)
-          virtual => !parameters.some(parameter => parameter.Title === virtual.Title)
+          // if virtual BaseParameter search for parameter with same Title
+          // else search for parameter with same TariffDirection and Modifiers
+          virtual =>
+            !parameters.some(
+              virtual.BaseParameter
+                ? parameter =>
+                    parameter.BaseParameter === virtual.BaseParameter &&
+                    parameter.Zone === virtual.Zone &&
+                    parameter.Direction === virtual.Direction &&
+                    setEquals(parameter.BaseParameterModifiers, virtual.BaseParameterModifiers) &&
+                    setEquals(parameter.Modifiers, virtual.Modifiers)
+                : parameter => parameter.Title === virtual.Title
+            )
         );
         runInAction("addParameters", () => {
           if (parametersToAdd.length > 0) {
@@ -166,11 +185,33 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     });
   }
 
+  // Direction.PreloadingMode должно быть PreloadingMode.Eager
+  private getDirectionsByAlias(): { [alias: string]: Direction } {
+    return directionByAliasCache.getOrAdd(this._dataContext, { keepAlive: true }, () => {
+      const byAlias = {};
+      for (const direction of this._dataContext.tables.Direction.values()) {
+        byAlias[direction.Alias] = direction;
+      }
+      return byAlias;
+    });
+  }
+
   // BaseParameterModifiers.PreloadingMode должно быть PreloadingMode.Eager
   private getBaseParameterModifiersByAlias(): { [alias: string]: BaseParameterModifier } {
     return baseParamModifiersByAliasCache.getOrAdd(this._dataContext, { keepAlive: true }, () => {
       const byAlias = {};
       for (const modifier of this._dataContext.tables.BaseParameterModifier.values()) {
+        byAlias[modifier.Alias] = modifier;
+      }
+      return byAlias;
+    });
+  }
+
+  // Modifiers.PreloadingMode должно быть PreloadingMode.Eager
+  private getParameterModifiersByAlias(): { [alias: string]: ParameterModifier } {
+    return paramModifiersByAliasCache.getOrAdd(this._dataContext, { keepAlive: true }, () => {
+      const byAlias = {};
+      for (const modifier of this._dataContext.tables.ParameterModifier.values()) {
         byAlias[modifier.Alias] = modifier;
       }
       return byAlias;

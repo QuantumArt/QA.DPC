@@ -1,0 +1,361 @@
+<Content ContentId="339" LoadAllPlainFields="False" xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <EntityField CloningMode="UseExisting" FieldId="1542" FieldName="MarketingProduct" RelationCondition="c.Type = 504">
+    <Content ContentId="383" ContentName="Маркетинговые продукты" LoadAllPlainFields="False">
+      <ExtensionField CloningMode="Copy" DeletingMode="Delete" FieldId="1540" FieldName="Type" UpdatingMode="Update">
+        <Content ContentId="504" ContentName="Маркетинговые тарифы фиксированной связи" LoadAllPlainFields="False">
+          <EntityField CloningMode="UseExisting" FieldId="2493" FieldName="MarketingTvPackage">
+            <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
+              <PlainField FieldId="1534" FieldName="Title" />
+            </Content>
+          </EntityField>
+          <EntityField CloningMode="UseExisting" FieldId="2516" FieldName="MarketingInternetTariff">
+            <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
+              <PlainField FieldId="1534" FieldName="Title" />
+              <EntityField ClonePrototypeCondition="c.Type = 510" CloningMode="UseExisting" FieldId="1543" FieldName="Products" FieldTitle=" Характеристики Интернет-составляющей">
+                <Content ContentId="339" ContentName="Продукты" LoadAllPlainFields="False">
+                  <EntityField CloningMode="UseExisting" FieldId="1326" FieldName="Regions">
+                    <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False">
+                      <PlainField FieldId="1114" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <EntityField CloningMode="UseExisting" FieldId="1523" FieldName="Modifiers" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND c.HideInRegionalProducts = 0&#xA;    AND t.Alias = 'InternetTariff')">
+                    <Content ContentId="342" ContentName="Модификаторы продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+                      <PlainField FieldId="1339" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <ExtensionField CloningMode="Copy" DeletingMode="Delete" FieldId="1341" FieldName="Type" UpdatingMode="Update">
+                    <Content ContentId="510" ContentName="Тарифы Интернет" LoadAllPlainFields="False" />
+                  </ExtensionField>
+                  <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1403" FieldName="Parameters" UpdatingMode="Update">
+                    <x:Reference Name="__ProductParameters" />
+                  </EntityField>
+                  <EntityField CloningMode="UseExisting" FieldId="1542" FieldName="MarketingProduct">
+                    <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False" />
+                  </EntityField>
+                </Content>
+              </EntityField>
+            </Content>
+          </EntityField>
+          <EntityField CloningMode="UseExisting" FieldId="2517" FieldName="MarketingPhoneTariff">
+            <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
+              <PlainField FieldId="1534" FieldName="Title" />
+              <EntityField ClonePrototypeCondition="c.Type = 507" CloningMode="UseExisting" FieldId="1543" FieldName="Products" FieldTitle="Характеристики Телефонной составляющей">
+                <Content ContentId="339" ContentName="Продукты" LoadAllPlainFields="False">
+                  <EntityField CloningMode="UseExisting" FieldId="1326" FieldName="Regions">
+                    <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False">
+                      <PlainField FieldId="1114" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <ExtensionField CloningMode="Copy" DeletingMode="Delete" FieldId="1341" FieldName="Type" UpdatingMode="Update">
+                    <Content ContentId="507" ContentName="Тарифы телефонии" LoadAllPlainFields="False" />
+                  </ExtensionField>
+                  <EntityField CloningMode="UseExisting" FieldId="1523" FieldName="Modifiers" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND c.HideInRegionalProducts = 0&#xA;    AND t.Alias = 'PhoneTariff')">
+                    <Content ContentId="342" ContentName="Модификаторы продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+                      <PlainField FieldId="1339" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1403" FieldName="Parameters" UpdatingMode="Update">
+                    <x:Reference Name="__ProductParameters" />
+                  </EntityField>
+                  <EntityField CloningMode="UseExisting" FieldId="1542" FieldName="MarketingProduct">
+                    <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False" />
+                  </EntityField>
+                </Content>
+              </EntityField>
+            </Content>
+          </EntityField>
+          <EntityField CloningMode="UseExisting" FieldId="2519" FieldName="MarketingDevices">
+            <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
+              <PlainField FieldId="1534" FieldName="Title" />
+              <EntityField ClonePrototypeCondition="c.Type = 490" CloningMode="UseExisting" FieldId="1543" FieldName="Products" FieldTitle="Продукты, тип &quot;Оборудование&quot;">
+                <Content ContentId="339" ContentName="Продукты" LoadAllPlainFields="False">
+                  <ExtensionField CloningMode="Copy" DeletingMode="Delete" FieldId="1341" FieldName="Type" UpdatingMode="Update">
+                    <Content ContentId="490" ContentName="Оборудование" LoadAllPlainFields="False" />
+                  </ExtensionField>
+                  <EntityField CloningMode="UseExisting" FieldId="1326" FieldName="Regions">
+                    <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False">
+                      <PlainField FieldId="1114" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1403" FieldName="Parameters" UpdatingMode="Update">
+                    <x:Reference Name="__ProductParameters" />
+                  </EntityField>
+                  <EntityField CloningMode="UseExisting" FieldId="1523" FieldName="Modifiers" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND c.HideInRegionalProducts = 0&#xA;    AND t.Alias = 'Device')">
+                    <Content ContentId="342" ContentName="Модификаторы продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+                      <PlainField FieldId="1339" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <EntityField CloningMode="UseExisting" FieldId="1542" FieldName="MarketingProduct">
+                    <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False" />
+                  </EntityField>
+                </Content>
+              </EntityField>
+              <BackwardRelationField ClonePrototypeCondition="1 = 1" CloningMode="UseExisting" DisplayName="Матрица связей &quot;Оборудование на тарифах&quot;" FieldId="2531" FieldName="DevicesOnTariffs" FieldTitle="Матрица связей &quot;Оборудование на тарифах&quot;" RelationGroupName="MarketingDevice">
+                <Content ContentId="511" ContentName="Оборудование на тарифах" LoadAllPlainFields="False">
+                  <EntityField CloningMode="UseExisting" FieldId="2532" FieldName="MarketingTariffs">
+                    <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
+                      <PlainField FieldId="1534" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <EntityField CloningMode="UseExisting" FieldId="2533" FieldName="Cities">
+                    <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False">
+                      <PlainField FieldId="1114" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="2530" FieldName="Parent" UpdatingMode="Update">
+                    <Content ContentId="361" ContentName="Матрица связей" LoadAllPlainFields="False">
+                      <PlainField FieldId="1416" FieldName="Title" />
+                      <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1431" FieldName="Parameters" UpdatingMode="Update">
+                        <x:Reference Name="__LinkParameters" />
+                      </EntityField>
+                    </Content>
+                  </EntityField>
+                  <EntityField CloningMode="UseExisting" FieldId="2531" FieldName="MarketingDevice">
+                    <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False" />
+                  </EntityField>
+                </Content>
+              </BackwardRelationField>
+            </Content>
+          </EntityField>
+          <EntityField CloningMode="UseExisting" FieldId="2494" FieldName="Category" PreloadingMode="Eager">
+            <Content ContentId="441" ContentName="Категории тарифов" IsReadOnly="True" LoadAllPlainFields="False">
+              <PlainField FieldId="1989" FieldName="Title" />
+            </Content>
+          </EntityField>
+          <EntityField CloningMode="UseExisting" FieldId="2518" FieldName="BonusTVPackages">
+            <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
+              <PlainField FieldId="1534" FieldName="Title" />
+            </Content>
+          </EntityField>
+          <EntityField CloningMode="UseExisting" FieldId="2492" FieldName="Segment" PreloadingMode="Eager">
+            <Content ContentId="416" ContentName="Сегменты" IsReadOnly="True" LoadAllPlainFields="False">
+              <PlainField FieldId="1792" FieldName="Title" />
+            </Content>
+          </EntityField>
+          <PlainField FieldId="2491" FieldName="TitleForSite" />
+        </Content>
+      </ExtensionField>
+      <PlainField FieldId="1534" FieldName="Title" />
+      <PlainField FieldId="1558" FieldName="Description" />
+      <PlainField FieldId="1752" FieldName="SortOrder" />
+      <PlainField FieldId="2124" FieldName="ArchiveDate" />
+      <EntityField CloningMode="UseExisting" FieldId="2028" FieldName="Advantages" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND t.Alias = 'FixTariff')">
+        <Content ContentId="446" ContentName="Преимущества маркетинговых продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+          <PlainField FieldId="2024" FieldName="Title" />
+          <PlainField FieldId="2514" FieldName="IsGift" />
+          <PlainField FieldId="2026" FieldName="ImageSvg" />
+        </Content>
+      </EntityField>
+      <EntityField CloningMode="UseExisting" FieldId="1653" FieldName="Modifiers" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND c.HideInMarketingProducts = 0&#xA;    AND t.Alias = 'FixTariff')">
+        <Content ContentId="342" ContentName="Модификаторы продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+          <PlainField FieldId="1339" FieldName="Title" />
+        </Content>
+      </EntityField>
+      <BackwardRelationField ClonePrototypeCondition="1 = 1" CloningMode="UseExisting" DisplayName="Акции фиксированной связи" FieldId="2528" FieldName="FixConnectActions" FieldTitle="Акции фиксированной связи" RelationGroupName="FixConnectActions">
+        <Content ContentId="500" ContentName="Акции фиксированной связи" LoadAllPlainFields="False">
+          <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="2469" FieldName="Parent" UpdatingMode="Update">
+            <Content ContentId="339" ContentName="Продукты" LoadAllPlainFields="False">
+              <EntityField CloningMode="UseExisting" FieldId="1542" FieldName="MarketingProduct">
+                <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
+                  <PlainField FieldId="1534" FieldName="Title" />
+                </Content>
+              </EntityField>
+              <EntityField CloningMode="UseExisting" FieldId="1326" FieldName="Regions">
+                <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False">
+                  <PlainField FieldId="1114" FieldName="Title" />
+                </Content>
+              </EntityField>
+              <BackwardRelationField ClonePrototypeCondition="1 = 1" CloningMode="Copy" DeletingMode="Delete" DisplayName="Акционное оборудование" FieldId="2537" FieldName="ActionMarketingDevices" FieldTitle="Акционное оборудование" RelationGroupName="ActionMarketingDevices" UpdatingMode="Update">
+                <Content ContentId="512" ContentName="Акционное оборудование" LoadAllPlainFields="False">
+                  <EntityField CloningMode="UseExisting" FieldId="2538" FieldName="MarketingDevice">
+                    <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
+                      <PlainField FieldId="1534" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="2536" FieldName="Parent" UpdatingMode="Update">
+                    <Content ContentId="361" ContentName="Матрица связей" LoadAllPlainFields="False">
+                      <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1431" FieldName="Parameters" UpdatingMode="Update">
+                        <Content ContentId="362" x:Name="__LinkParameters" ContentName="Параметры связей" LoadAllPlainFields="False">
+                          <PlainField FieldId="1418" FieldName="Title" />
+                          <PlainField FieldId="1426" FieldName="NumValue" />
+                          <PlainField FieldId="1427" FieldName="Value" />
+                          <EntityField CloningMode="UseExisting" FieldId="1428" FieldName="Unit" PreloadingMode="Eager">
+                            <Content ContentId="355" ContentName="Единицы измерения" IsReadOnly="True" LoadAllPlainFields="False">
+                              <PlainField FieldId="1384" FieldName="Title" />
+                              <PlainField FieldId="2062" FieldName="Alias" />
+                            </Content>
+                          </EntityField>
+                          <EntityField CloningMode="UseExisting" FieldId="1420" FieldName="BaseParameter" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND t.Alias = 'Device')">
+                            <Content ContentId="350" ContentName="Базовые параметры продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+                              <PlainField FieldId="1359" FieldName="Alias" />
+                            </Content>
+                          </EntityField>
+                          <EntityField CloningMode="UseExisting" FieldId="1423" FieldName="BaseParameterModifiers" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND t.Alias IN (&#xA;      'FixTariff', 'InternetTariff', 'PhoneTariff', 'Device', 'FixAction'))">
+                            <Content ContentId="351" ContentName="Модификаторы базовых параметров продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+                              <PlainField FieldId="1362" FieldName="Alias" />
+                            </Content>
+                          </EntityField>
+                          <EntityField CloningMode="UseExisting" FieldId="1422" FieldName="Direction" PreloadingMode="Eager">
+                            <Content ContentId="347" ContentName="Направления соединения" IsReadOnly="True" LoadAllPlainFields="False">
+                              <PlainField FieldId="1350" FieldName="Alias" />
+                            </Content>
+                          </EntityField>
+                        </Content>
+                      </EntityField>
+                      <PlainField FieldId="1416" FieldName="Title" />
+                    </Content>
+                  </EntityField>
+                  <EntityField CloningMode="UseExisting" FieldId="2537" FieldName="FixConnectAction">
+                    <Content ContentId="339" ContentName="Продукты" IsReadOnly="True" LoadAllPlainFields="False" />
+                  </EntityField>
+                </Content>
+              </BackwardRelationField>
+              <PlainField FieldId="1551" FieldName="Description" />
+              <EntityField CloningMode="UseExisting" FieldId="2133" FieldName="Advantages" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND t.Alias = 'FixAction')">
+                <Content ContentId="446" ContentName="Преимущества маркетинговых продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+                  <PlainField FieldId="2024" FieldName="Title" />
+                  <PlainField FieldId="2514" FieldName="IsGift" />
+                  <PlainField FieldId="2026" FieldName="ImageSvg" />
+                </Content>
+              </EntityField>
+              <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1403" FieldName="Parameters" UpdatingMode="Update">
+                <x:Reference Name="__ProductParameters" />
+              </EntityField>
+              <EntityField CloningMode="UseExisting" FieldId="1523" FieldName="Modifiers" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND t.Alias = 'FixAction')">
+                <Content ContentId="342" ContentName="Модификаторы продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+                  <PlainField FieldId="1339" FieldName="Title" />
+                </Content>
+              </EntityField>
+              <PlainField FieldId="1582" FieldName="PDF" />
+              <PlainField FieldId="1407" FieldName="StartDate" />
+              <PlainField FieldId="1410" FieldName="EndDate" />
+              <PlainField FieldId="1476" FieldName="SortOrder" />
+              <PlainField FieldId="2132" FieldName="Priority" />
+            </Content>
+          </EntityField>
+          <EntityField CloningMode="UseExisting" FieldId="2528" FieldName="MarketingOffers">
+            <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
+              <PlainField FieldId="1534" FieldName="Title" />
+            </Content>
+          </EntityField>
+          <PlainField FieldId="2472" FieldName="PromoPeriod" />
+          <PlainField FieldId="2473" FieldName="AfterPromo" />
+        </Content>
+      </BackwardRelationField>
+      <EntityField CloningMode="UseExisting" FieldId="1543" FieldName="Products">
+        <Content ContentId="339" ContentName="Продукты" IsReadOnly="True" LoadAllPlainFields="False">
+          <EntityField CloningMode="UseExisting" FieldId="1326" FieldName="Regions">
+            <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False" />
+          </EntityField>
+        </Content>
+      </EntityField>
+    </Content>
+  </EntityField>
+  <EntityField CloningMode="UseExisting" FieldId="1326" FieldName="Regions">
+    <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False">
+      <PlainField FieldId="1114" FieldName="Title" />
+    </Content>
+  </EntityField>
+  <ExtensionField CloningMode="Copy" DeletingMode="Delete" FieldId="1341" FieldName="Type" UpdatingMode="Update">
+    <Content ContentId="505" ContentName="Тарифы фиксированной связи" LoadAllPlainFields="False">
+      <PlainField FieldId="2525" FieldName="TitleForSite" />
+    </Content>
+  </ExtensionField>
+  <Dictionaries DefaultCachePeriod="00:10:00">
+    <Content ContentId="290" ContentName="Регионы">
+      <XmlMappingBehavior.CachePeriod>
+        <x:TimeSpan>01:45:00</x:TimeSpan>
+      </XmlMappingBehavior.CachePeriod>
+    </Content>
+    <Content ContentId="342" ContentName="Модификаторы продуктов">
+      <XmlMappingBehavior.CachePeriod>
+        <x:TimeSpan>01:45:00</x:TimeSpan>
+      </XmlMappingBehavior.CachePeriod>
+    </Content>
+    <Content ContentId="441" ContentName="Категории тарифов">
+      <XmlMappingBehavior.CachePeriod>
+        <x:TimeSpan>01:45:00</x:TimeSpan>
+      </XmlMappingBehavior.CachePeriod>
+    </Content>
+    <Content ContentId="355" ContentName="Единицы измерения">
+      <XmlMappingBehavior.CachePeriod>
+        <x:TimeSpan>01:45:00</x:TimeSpan>
+      </XmlMappingBehavior.CachePeriod>
+    </Content>
+    <Content ContentId="350" ContentName="Базовые параметры продуктов">
+      <XmlMappingBehavior.CachePeriod>
+        <x:TimeSpan>01:45:00</x:TimeSpan>
+      </XmlMappingBehavior.CachePeriod>
+    </Content>
+    <Content ContentId="416" ContentName="Сегменты">
+      <XmlMappingBehavior.CachePeriod>
+        <x:TimeSpan>01:45:00</x:TimeSpan>
+      </XmlMappingBehavior.CachePeriod>
+    </Content>
+    <Content ContentId="351" ContentName="Модификаторы базовых параметров продуктов">
+      <XmlMappingBehavior.CachePeriod>
+        <x:TimeSpan>01:45:00</x:TimeSpan>
+      </XmlMappingBehavior.CachePeriod>
+    </Content>
+    <Content ContentId="347" ContentName="Направления соединения">
+      <XmlMappingBehavior.CachePeriod>
+        <x:TimeSpan>01:45:00</x:TimeSpan>
+      </XmlMappingBehavior.CachePeriod>
+    </Content>
+    <Content ContentId="352" ContentName="Модификаторы параметров продуктов">
+      <XmlMappingBehavior.CachePeriod>
+        <x:TimeSpan>01:45:00</x:TimeSpan>
+      </XmlMappingBehavior.CachePeriod>
+    </Content>
+  </Dictionaries>
+  <EntityField CloningMode="UseExisting" FieldId="1523" FieldName="Modifiers" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND c.HideInRegionalProducts = 0&#xA;    AND t.Alias = 'FixTariff')">
+    <Content ContentId="342" ContentName="Модификаторы продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+      <PlainField FieldId="1339" FieldName="Title" />
+    </Content>
+  </EntityField>
+  <PlainField FieldId="1551" FieldName="Description" />
+  <PlainField FieldId="1582" FieldName="PDF" />
+  <PlainField FieldId="2132" FieldName="Priority" />
+  <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="1403" FieldName="Parameters" UpdatingMode="Update">
+    <Content ContentId="354" x:Name="__ProductParameters" ContentName="Параметры продуктов" LoadAllPlainFields="False">
+      <PlainField FieldId="1373" FieldName="Title" />
+      <PlainField FieldId="1382" FieldName="NumValue" />
+      <PlainField FieldId="1383" FieldName="Value" />
+      <EntityField CloningMode="UseExisting" FieldId="1386" FieldName="Unit" PreloadingMode="Eager">
+        <Content ContentId="355" ContentName="Единицы измерения" IsReadOnly="True" LoadAllPlainFields="False">
+          <PlainField FieldId="1384" FieldName="Title" />
+          <PlainField FieldId="2062" FieldName="Alias" />
+        </Content>
+      </EntityField>
+      <EntityField CloningMode="UseExisting" FieldId="1375" FieldName="BaseParameter" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND t.Alias IN (&#xA;      'FixTariff', 'InternetTariff', 'PhoneTariff', 'Device', 'FixAction'))">
+        <Content ContentId="350" ContentName="Базовые параметры продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+          <PlainField FieldId="1359" FieldName="Alias" />
+        </Content>
+      </EntityField>
+      <EntityField CloningMode="UseExisting" FieldId="1379" FieldName="BaseParameterModifiers" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND t.Alias IN (&#xA;      'FixTariff', 'InternetTariff', 'PhoneTariff', 'Device', 'FixAction'))">
+        <Content ContentId="351" ContentName="Модификаторы базовых параметров продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+          <PlainField FieldId="1362" FieldName="Alias" />
+        </Content>
+      </EntityField>
+      <EntityField CloningMode="UseExisting" FieldId="1378" FieldName="Direction" PreloadingMode="Eager">
+        <Content ContentId="347" ContentName="Направления соединения" IsReadOnly="True" LoadAllPlainFields="False">
+          <PlainField FieldId="1350" FieldName="Alias" />
+        </Content>
+      </EntityField>
+      <EntityField CloningMode="UseExisting" FieldId="1380" FieldName="Modifiers" PreloadingMode="Eager" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND t.Alias IN (&#xA;      'FixTariff', 'InternetTariff', 'PhoneTariff', 'Device', 'FixAction'))">
+        <Content ContentId="352" ContentName="Модификаторы параметров продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+          <PlainField FieldId="1365" FieldName="Alias" />
+        </Content>
+      </EntityField>
+    </Content>
+  </EntityField>
+  <EntityField CloningMode="UseExisting" FieldId="2133" FieldName="Advantages" RelationCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_349 AS t&#xA;  JOIN  item_to_item AS i2i ON t.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.ApplyToTypes&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND t.Alias = 'FixTariff')">
+    <Content ContentId="446" ContentName="Преимущества маркетинговых продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+      <PlainField FieldId="2024" FieldName="Title" />
+      <PlainField FieldId="2514" FieldName="IsGift" />
+      <PlainField FieldId="2026" FieldName="ImageSvg" />
+    </Content>
+  </EntityField>
+  <PlainField FieldId="2498" FieldName="ListImage" />
+  <PlainField FieldId="1476" FieldName="SortOrder" />
+</Content>

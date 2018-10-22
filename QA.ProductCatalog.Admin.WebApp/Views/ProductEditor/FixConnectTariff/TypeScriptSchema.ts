@@ -13,8 +13,10 @@ export interface Tables extends TablesObject {
   Region: IMap<Region>;
   Product: IMap<Product>;
   ProductModifer: IMap<ProductModifer>;
+  Direction: IMap<Direction>;
   BaseParameter: IMap<BaseParameter>;
   BaseParameterModifier: IMap<BaseParameterModifier>;
+  ParameterModifier: IMap<ParameterModifier>;
   ProductParameter: IMap<ProductParameter>;
   Unit: IMap<Unit>;
   ProductRelation: IMap<ProductRelation>;
@@ -73,6 +75,11 @@ export interface ProductModifer extends EntityObject {
   readonly Title: string;
 }
 
+export interface Direction extends EntityObject {
+  /** Псевдоним */
+  readonly Alias: string;
+}
+
 export interface BaseParameter extends EntityObject {
   /** Псевдоним */
   readonly Alias: string;
@@ -83,17 +90,28 @@ export interface BaseParameterModifier extends EntityObject {
   readonly Alias: string;
 }
 
+export interface ParameterModifier extends EntityObject {
+  /** Псевдоним */
+  readonly Alias: string;
+}
+
 export interface ProductParameter extends EntityObject {
   /** Название */
   Title: string;
   /** Числовое значение */
   NumValue: number;
+  /** Текстовое значение */
+  Value: string;
   /** Единица измерения */
   Unit: Unit;
   /** Базовый параметр */
   BaseParameter: BaseParameter;
   /** Модификаторы базового параметра */
   BaseParameterModifiers: IArray<BaseParameterModifier>;
+  /** Направление действия базового параметра */
+  Direction: Direction;
+  /** Модификаторы */
+  Modifiers: IArray<ParameterModifier>;
 }
 
 export interface Unit extends EntityObject {
@@ -113,10 +131,16 @@ export interface LinkParameter extends EntityObject {
   Title: string;
   /** Числовое значение */
   NumValue: number;
+  /** Текстовое значение */
+  Value: string;
   /** Единица измерения */
   Unit: Unit;
   /** Базовый параметр */
   BaseParameter: BaseParameter;
+  /** Модификаторы базового параметра */
+  BaseParameterModifiers: IArray<BaseParameterModifier>;
+  /** Направление действия базового параметра */
+  Direction: Direction;
 }
 
 export interface MarketingProduct extends EntityObject {
