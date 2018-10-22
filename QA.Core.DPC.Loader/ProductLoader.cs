@@ -928,30 +928,31 @@ FROM
                     _logger.Error(
                         $"Статья {errData.Id} не имеет расширения, хотя поле {fieldId} классификатора  запонено значением {errData.Value}.");
                 }
-
-                var extQpArticles = extensionsQpData.Select(n => n.Article).ToArray();
-
-                var subContentDef = contentMapping[extContentId];
-                var extArticles =
-                    GetArticlesForQpArticles(extQpArticles, subContentDef, localCache, isLive, counter)
-                        .ToDictionary(n => n.Id, m => m);
-
-
-                var results = extensionsQpData
-                    .Where(n => extArticles.ContainsKey(n.Article.Id))
-                    .Select(n => new KeyValuePair<int, ArticleField>(
-                    n.Id, 
-                    new ExtensionArticleField()
-                    {
-                        Value = n.Value,
-                        Item = extArticles[n.Article.Id]
-                    })).ToArray();
-
-                foreach (var result in results)
+                else
                 {
-                    yield return result;
-                }
+                    var extQpArticles = extensionsQpData.Select(n => n.Article).ToArray();
 
+                    var subContentDef = contentMapping[extContentId];
+                    var extArticles =
+                        GetArticlesForQpArticles(extQpArticles, subContentDef, localCache, isLive, counter)
+                            .ToDictionary(n => n.Id, m => m);
+
+
+                    var results = extensionsQpData
+                        .Where(n => extArticles.ContainsKey(n.Article.Id))
+                        .Select(n => new KeyValuePair<int, ArticleField>(
+                            n.Id, 
+                            new ExtensionArticleField()
+                            {
+                                Value = n.Value,
+                                Item = extArticles[n.Article.Id]
+                            })).ToArray();
+
+                    foreach (var result in results)
+                    {
+                        yield return result;
+                    }                   
+                }
             }
         }
 
