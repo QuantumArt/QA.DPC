@@ -40,6 +40,10 @@ export function isPlainObject(arg): arg is Object {
   return false;
 }
 
+export function isPromiseLike<T = any>(arg): arg is PromiseLike<T> {
+  return isObject(arg) && isFunction(arg.then);
+}
+
 export function isSingleKeyObject(arg): arg is Object {
   if (!isObject(arg)) {
     return false;

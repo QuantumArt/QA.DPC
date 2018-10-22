@@ -20,7 +20,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { ArticleObject, EntitySnapshot, EntityObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
-import { command } from "Utils/Command";
+import { trace, modal, progress, handleError } from "Utils/Decorators";
 import { isArray } from "Utils/TypeChecks";
 import { newUid, rootUrl } from "Utils/Common";
 
@@ -49,6 +49,8 @@ export class RelationController {
     this._observer.dispose();
   }
 
+  @trace
+  @handleError
   public async selectRelation(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const existingArticleIds = untracked(() => {
       const existingArticle: EntityObject = model[fieldSchema.FieldName];
@@ -63,6 +65,8 @@ export class RelationController {
     }
   }
 
+  @trace
+  @handleError
   public async selectRelations(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const existingArticleIds = untracked(() => {
       const existingArticles: EntityObject[] = model[fieldSchema.FieldName];
@@ -127,7 +131,10 @@ export class RelationController {
     });
   }
 
-  @command
+  @trace
+  @modal
+  @progress
+  @handleError
   private async loadSelectedArticles(contentSchema: ContentSchema, articleToLoadIds: number[]) {
     const response = await fetch(`${rootUrl}/ProductEditor/LoadPartialProduct${this._query}`, {
       method: "POST",
@@ -151,6 +158,8 @@ export class RelationController {
     this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Refresh);
   }
 
+  @trace
+  @handleError
   public async reloadRelation(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const relationsJson = await this.loadProductRelationJson(model, fieldSchema);
 
@@ -175,6 +184,8 @@ export class RelationController {
     });
   }
 
+  @trace
+  @handleError
   public async reloadRelations(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const relationsJson = await this.loadProductRelationJson(model, fieldSchema);
 
@@ -199,7 +210,8 @@ export class RelationController {
     });
   }
 
-  @command
+  @modal
+  @progress
   private async loadProductRelationJson(model: ArticleObject, fieldSchema: RelationFieldSchema) {
     const response = await fetch(`${rootUrl}/ProductEditor/LoadProductRelation${this._query}`, {
       method: "POST",
@@ -220,6 +232,8 @@ export class RelationController {
     return await response.text();
   }
 
+  @trace
+  @handleError
   public async preloadRelationArticles(fieldSchema: RelationFieldSchema) {
     runInAction("preloadRelationArticles", () => {
       fieldSchema.PreloadingState = PreloadingState.Loading;
@@ -246,7 +260,8 @@ export class RelationController {
     });
   }
 
-  @command
+  @modal
+  @progress
   private async preloadRelationArticlesJson(fieldSchema: RelationFieldSchema) {
     const response = await fetch(`${rootUrl}/ProductEditor/PreloadRelationArticles${this._query}`, {
       method: "POST",
@@ -266,7 +281,10 @@ export class RelationController {
     return await response.text();
   }
 
-  @command
+  @trace
+  @modal
+  @progress
+  @handleError
   public async cloneProductPrototype(
     parent: ArticleObject,
     fieldSchema: RelationFieldSchema

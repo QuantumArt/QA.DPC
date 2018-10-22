@@ -20,7 +20,7 @@ import {
 } from "Models/EditorSchemaModels";
 import { EntitySnapshot, EntityObject, ArticleObject } from "Models/EditorDataModels";
 import { EditorSettings } from "Models/EditorSettings";
-import { command } from "Utils/Command";
+import { trace, modal, progress, handleError } from "Utils/Decorators";
 import { newUid, rootUrl } from "Utils/Common";
 
 export class EntityController {
@@ -35,15 +35,22 @@ export class EntityController {
   private _query = document.location.search;
   private _hostUid = qs.parse(document.location.search).hostUID as string;
 
+  @trace
+  @handleError
   public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
     await this.loadEntity(model, contentSchema, MergeStrategy.Refresh);
   }
 
+  @trace
+  @handleError
   public async reloadEntity(model: EntityObject, contentSchema: ContentSchema) {
     await this.loadEntity(model, contentSchema, MergeStrategy.Overwrite);
   }
 
-  @command
+  @trace
+  @modal
+  @progress
+  @handleError
   private async loadEntity(
     model: EntityObject,
     contentSchema: ContentSchema,
@@ -71,6 +78,8 @@ export class EntityController {
     this._dataMerger.mergeTables(dataSnapshot, strategy);
   }
 
+  @trace
+  @handleError
   public editEntity(model: EntityObject, contentSchema: ContentSchema, isWindow = true) {
     const callbackUid = newUid();
 
@@ -106,7 +115,10 @@ export class EntityController {
     });
   }
 
-  @command
+  @trace
+  @modal
+  @progress
+  @handleError
   public async publishEntity(entity: EntityObject, contentSchema: ContentSchema) {
     const errors = this._dataValidator.collectErrors(entity, contentSchema, false);
     if (errors.length > 0) {
@@ -137,7 +149,10 @@ export class EntityController {
     }
   }
 
-  @command
+  @trace
+  @modal
+  @progress
+  @handleError
   public async removeRelatedEntity(
     parent: ArticleObject,
     fieldSchema: RelationFieldSchema,
@@ -192,7 +207,10 @@ export class EntityController {
     return true;
   }
 
-  @command
+  @trace
+  @modal
+  @progress
+  @handleError
   public async cloneRelatedEntity(
     parent: ArticleObject,
     fieldSchema: RelationFieldSchema,
@@ -243,7 +261,10 @@ export class EntityController {
     });
   }
 
-  @command
+  @trace
+  @modal
+  @progress
+  @handleError
   public async saveEntitySubgraph(entity: EntityObject, contentSchema: ContentSchema) {
     const errors = this._dataValidator.collectErrors(entity, contentSchema, true);
     if (errors.length > 0) {

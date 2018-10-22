@@ -1,8 +1,7 @@
 import React, { ReactNode } from "react";
 import { observable, action } from "mobx";
-import { Intent, IToastProps } from "@blueprintjs/core";
+import { Intent, IToastProps, Toaster, Position } from "@blueprintjs/core";
 import { AlertWrapper } from "Components/Overlay/AlertWrapper";
-import { AppToaster } from "Utils/Toaster";
 
 export class OverlayPresenter {
   public overlays = observable.array<ReactNode>();
@@ -52,6 +51,10 @@ export class OverlayPresenter {
   }
 
   public notify(toast: IToastProps) {
-    AppToaster.show(toast);
+    NotificationPresenter.show(toast);
   }
 }
+
+export const NotificationPresenter = Toaster.create({
+  position: Position.BOTTOM_RIGHT
+});

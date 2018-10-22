@@ -7,7 +7,7 @@ import { DataContext } from "Services/DataContext";
 import { SchemaLinker } from "Services/SchemaLinker";
 import { SchemaCompiler } from "Services/SchemaCompiler";
 import { PublicationTracker } from "Services/PublicationTracker";
-import { command } from "Utils/Command";
+import { trace, progress, handleError, modal } from "Utils/Decorators";
 import { rootUrl } from "Utils/Common";
 
 export class InitializationController {
@@ -21,7 +21,10 @@ export class InitializationController {
 
   private _query = document.location.search;
 
-  @command
+  @trace
+  @modal
+  @progress
+  @handleError
   public async initialize() {
     const initSchemaTask = this.initSchema();
 

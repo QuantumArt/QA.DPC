@@ -63,9 +63,7 @@ export class ProductEditor extends Component<ProductEditorProps> {
   constructor(props: ProductEditorProps, context?: any) {
     super(props, context);
     Object.assign(this._editorSettings, props.settings);
-    if (props.relationEditors) {
-      Object.assign(this._relationsConfig, props.relationEditors);
-    }
+    Object.assign(this._relationsConfig, props.relationEditors);
   }
 
   async componentDidMount() {

@@ -6,15 +6,3 @@ export function newUid() {
     .toString(36)
     .slice(2);
 }
-
-const normailzedStrings: { [key: string]: string } = Object.create(null);
-
-export function normailzeSearchString(input: string) {
-  return (
-    normailzedStrings[input] ||
-    (normailzedStrings[input] = input
-      .toLowerCase()
-      .replace(/[^а-яё]+/g, " ")
-      .trim())
-  );
-}
