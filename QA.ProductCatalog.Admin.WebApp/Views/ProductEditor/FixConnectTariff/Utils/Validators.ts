@@ -1,3 +1,4 @@
+import { setEquals } from "Utils/Array";
 import {
   Product,
   ProductParameter,
@@ -58,15 +59,3 @@ export const hasUniqueTariffDirection = (
 
   return undefined;
 };
-
-function setEquals(first: any[], second: any[]) {
-  if (first === second) {
-    return true;
-  }
-  return (
-    first &&
-    second &&
-    first.every(el => second.includes(el)) &&
-    second.every(el => first.includes(el))
-  );
-}

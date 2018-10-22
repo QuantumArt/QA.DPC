@@ -55,3 +55,20 @@ export const by = <T>(...comparers: ((left: T, right: T) => number)[]) => {
     return 0;
   };
 };
+
+/**
+ * Check if two arrays contains the same set of elements
+ */
+export function setEquals(first: any[], second: any[]) {
+  if (first === second) {
+    return true;
+  }
+  const firstSet = first.length > 100 && new Set(first);
+  const secondSet = second.length > 100 && new Set(second);
+  return (
+    first &&
+    second &&
+    first.every(secondSet ? el => secondSet.has(el) : el => second.includes(el)) &&
+    second.every(firstSet ? el => firstSet.has(el) : el => first.includes(el))
+  );
+}

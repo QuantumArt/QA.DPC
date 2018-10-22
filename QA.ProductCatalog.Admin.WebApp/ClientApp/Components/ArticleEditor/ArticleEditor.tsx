@@ -32,7 +32,7 @@ import {
   RelationFieldCheckList,
   RelationFieldForm
 } from "Components/FieldEditors/FieldEditors";
-import { asc } from "Utils/Array/Sort";
+import { asc } from "Utils/Array";
 import { isFunction, isObject } from "Utils/TypeChecks";
 import "./ArticleEditor.scss";
 

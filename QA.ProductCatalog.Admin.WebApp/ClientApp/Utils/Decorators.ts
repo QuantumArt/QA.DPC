@@ -73,13 +73,16 @@ export function progress(_target: Object, _key: string, descriptor: PropertyDesc
   );
 }
 
-const handledErrors = new WeakSet();
+const visitedErrors = new WeakSet();
 
 /** Show notification about error */
 export function handleError(_target: Object, _key: string, descriptor: PropertyDescriptor) {
+  if (handleError.silent) {
+    return descriptor;
+  }
   return intercept(descriptor, null, error => {
-    if (error instanceof Error && !handledErrors.has(error)) {
-      handledErrors.add(error);
+    if (error instanceof Error && !visitedErrors.has(error)) {
+      visitedErrors.add(error);
       NotificationPresenter.show({
         intent: Intent.DANGER,
         message: "Произошла ошибка",
@@ -88,6 +91,9 @@ export function handleError(_target: Object, _key: string, descriptor: PropertyD
     }
   });
 }
+
+/** Disable all notifications about errors */
+handleError.silent = false;
 
 /** Attach `before` and `after` callbacks to method or async method */
 const intercept = (

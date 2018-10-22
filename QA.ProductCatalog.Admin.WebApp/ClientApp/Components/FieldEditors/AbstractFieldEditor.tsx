@@ -18,7 +18,7 @@ import { isArray, isString } from "Utils/TypeChecks";
 import { required } from "Utils/Validators";
 import { newUid } from "Utils/Common";
 import "./FieldEditors.scss";
-import { asc } from "ClientApp/Utils/Array/Sort";
+import { asc } from "ClientApp/Utils/Array";
 
 export interface FieldEditorProps {
   model: ArticleObject;
