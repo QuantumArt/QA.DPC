@@ -13,12 +13,13 @@ import {
   MultiRelationFieldSchema
 } from "Models/EditorSchemaModels";
 import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
+import { EntityActionNodes } from "Components/ArticleEditor/EntityMenu";
 import { RelationController } from "Services/RelationController";
 import { isArray, isString } from "Utils/TypeChecks";
 import { required } from "Utils/Validators";
 import { newUid } from "Utils/Common";
 import "./FieldEditors.scss";
-import { asc } from "ClientApp/Utils/Array";
+import { asc } from "Utils/Array";
 
 export interface FieldEditorProps {
   model: ArticleObject;
@@ -187,4 +188,6 @@ export interface ExpandableFieldEditorProps extends FieldEditorProps {
   onSelectRelation?(selectRelation: () => Promise<void>): void;
   onReloadRelation?(relaoadRelation: () => Promise<void>): void;
   onClearRelation?(clearRelation: () => void): void;
+  entityActions?: EntityActionNodes;
+  relationActions?: ReactNode;
 }

@@ -47,6 +47,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
   };
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
+    const { relationActions } = this.props;
     const list: EntityObject[] = model[fieldSchema.FieldName];
     const isEmpty = !list || list.length === 0;
     return (
@@ -54,7 +55,9 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
         <RelationFieldMenu
           onSelect={!this._readonly && this.selectRelations}
           onClear={!this._readonly && !isEmpty && this.clearRelations}
-        />
+        >
+          {relationActions}
+        </RelationFieldMenu>
         {this.renderValidation(model, fieldSchema)}
         {list && (
           <div className="relation-field-table">

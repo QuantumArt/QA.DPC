@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
@@ -14,6 +14,7 @@ export interface RelationFieldTableProps extends FieldEditorProps {
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   displayFields?: (string | FieldSelector)[];
+  relationActions?: ReactNode;
 }
 
 export abstract class AbstractRelationFieldTable extends AbstractRelationFieldEditor<

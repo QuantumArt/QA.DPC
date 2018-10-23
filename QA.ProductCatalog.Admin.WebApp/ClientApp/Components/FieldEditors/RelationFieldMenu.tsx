@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { ButtonGroup, Button, Intent } from "@blueprintjs/core";
 
 interface RelationFieldMenuProps {
@@ -7,6 +7,7 @@ interface RelationFieldMenuProps {
   onSelect?: (e: any) => void;
   onClear?: (e: any) => void;
   onReload?: (e: any) => void;
+  children?: ReactNode;
 }
 
 export const RelationFieldMenu = ({
@@ -14,7 +15,8 @@ export const RelationFieldMenu = ({
   onClonePrototype,
   onSelect,
   onClear,
-  onReload
+  onReload,
+  children
 }: RelationFieldMenuProps) => (
   <ButtonGroup>
     {onCreate && (
@@ -77,5 +79,6 @@ export const RelationFieldMenu = ({
         Перезагрузить
       </Button>
     )}
+    {children}
   </ButtonGroup>
 );

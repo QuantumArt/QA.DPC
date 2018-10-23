@@ -205,6 +205,7 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
 
   renderControls(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
     const {
+      relationActions,
       canCreateEntity,
       canSelectRelation,
       canClearRelation,
@@ -223,7 +224,9 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
           onClonePrototype={
             canClonePrototype && model._ServerId > 0 && !entity && this.clonePrototype
           }
-        />
+        >
+          {relationActions}
+        </RelationFieldMenu>
         <Button
           small
           disabled={!entity}
@@ -243,6 +246,7 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
       fieldEditors,
       borderless,
       className,
+      entityActions,
       onShowEntity,
       onHideEntity,
       onSaveEntity,
@@ -273,6 +277,7 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
           skipOtherFields={skipOtherFields}
           fieldOrders={fieldOrders}
           fieldEditors={fieldEditors}
+          entityActions={entityActions}
           onShowEntity={onShowEntity}
           onHideEntity={onHideEntity}
           onSaveEntity={onSaveEntity}

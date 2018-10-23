@@ -10,7 +10,7 @@ import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ComputedCache } from "Utils/WeakCache";
 import { DataContext } from "Services/DataContext";
 import { EntityController } from "Services/EntityController";
-import { EntityMenu } from "Components/ArticleEditor/EntityMenu";
+import { EntityMenu, bindEntityActions } from "Components/ArticleEditor/EntityMenu";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { EntityLink } from "Components/ArticleEditor/EntityLink";
@@ -340,6 +340,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
 
   renderControls(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const {
+      relationActions,
       canCreateEntity,
       canClonePrototype,
       canSelectRelation,
@@ -357,7 +358,9 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
           onClear={canClearRelation && !this._readonly && !isEmpty && this.clearRelations}
           onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelations}
           onClonePrototype={canClonePrototype && model._ServerId > 0 && this.clonePrototype}
-        />
+        >
+          {relationActions}
+        </RelationFieldMenu>
         <Button
           small
           disabled={isEmpty}
@@ -378,6 +381,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
       fieldEditors,
       highlightItems,
       skipOtherFields,
+      entityActions,
       onShowEntity,
       onHideEntity,
       canSaveEntity,
@@ -465,7 +469,9 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                         onPublish={
                           canPublishEntity && hasServerId && (e => this.publishEntity(e, entity))
                         }
-                      />
+                      >
+                        {bindEntityActions(entityActions, entity)}
+                      </EntityMenu>
                     )}
                   </td>
                 </tr>

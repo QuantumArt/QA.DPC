@@ -1,5 +1,7 @@
-import React from "react";
+import React, { ReactNode, ReactElement, Children, cloneElement, ReactFragment } from "react";
+import { isFragment } from "react-is";
 import { Button, Menu, MenuItem, Intent, Popover, Position, Icon } from "@blueprintjs/core";
+import { EntityObject } from "Models/EditorDataModels";
 import "./ArticleEditor.scss";
 
 interface EntityMenuProps {
@@ -11,6 +13,7 @@ interface EntityMenuProps {
   onReload?: (e: any) => void;
   onClone?: (e: any) => void;
   onPublish?: (e: any) => void;
+  children?: ReactNode;
 }
 
 export const EntityMenu = ({
@@ -21,7 +24,8 @@ export const EntityMenu = ({
   onRefresh,
   onReload,
   onClone,
-  onPublish
+  onPublish,
+  children
 }: EntityMenuProps) => (
   <Popover position={Position.BOTTOM_RIGHT} interactionKind="hover">
     <Button minimal small={small} icon="caret-down" intent={Intent.PRIMARY}>
@@ -91,6 +95,25 @@ export const EntityMenu = ({
           title="Опубликовать часть продукта"
         />
       )}
+      {children}
     </Menu>
   </Popover>
 );
+
+export type EntityActionNodes = ReactFragment | EntityActionElement | EntityActionElement[];
+
+type EntityActionElement = ReactElement<{
+  onClick(event: React.MouseEvent<HTMLElement>, entity: EntityObject): void;
+}>;
+
+export function bindEntityActions(children: EntityActionNodes, entity: EntityObject) {
+  if (isFragment(children)) {
+    // @ts-ignore
+    return bindEntityActions(children.props.children, entity);
+  }
+  return Children.map(children, (child: EntityActionElement) =>
+    cloneElement(child, {
+      onClick: event => child.props.onClick(event, entity)
+    })
+  );
+}

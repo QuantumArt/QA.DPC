@@ -27,13 +27,16 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
+    const { relationActions } = this.props;
     const entity: EntityObject = model[fieldSchema.FieldName];
     return (
       <Col md>
         <RelationFieldMenu
           onSelect={!this._readonly && this.selectRelation}
           onClear={!this._readonly && !!entity && this.detachEntity}
-        />
+        >
+          {relationActions}
+        </RelationFieldMenu>
         {this.renderValidation(model, fieldSchema)}
         {entity && (
           <div className="relation-field-table">

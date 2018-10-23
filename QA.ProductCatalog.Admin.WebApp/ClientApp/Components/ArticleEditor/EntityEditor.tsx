@@ -6,7 +6,7 @@ import { EntityObject } from "Models/EditorDataModels";
 import { EntityController } from "Services/EntityController";
 import { isString } from "Utils/TypeChecks";
 import { FieldSelector } from "Components/FieldEditors/AbstractFieldEditor";
-import { EntityMenu } from "./EntityMenu";
+import { EntityMenu, EntityActionNodes, bindEntityActions } from "./EntityMenu";
 import { EntityLink } from "./EntityLink";
 import { AbstractEditor, ArticleEditorProps } from "./ArticleEditor";
 import "./ArticleEditor.scss";
@@ -34,6 +34,7 @@ interface EntityEditorProps extends ArticleEditorProps {
   onCloneEntity?(entity: EntityObject): void;
   onShowEntity?(entity: EntityObject): void;
   onHideEntity?(entity: EntityObject): void;
+  entityActions?: EntityActionNodes;
 }
 
 const defaultEntityHandler = (_entity, action) => action();
@@ -179,6 +180,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   private renderButtons() {
     const {
       model,
+      entityActions,
       canSaveEntity,
       canRefreshEntity,
       canReloadEntity,
@@ -199,7 +201,9 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
           onReload={canReloadEntity && hasServerId && this.reloadEntity}
           onPublish={canPublishEntity && hasServerId && this.publishEntity}
           onClone={canCloneEntity && hasServerId && this.cloneEntity}
-        />
+        >
+          {bindEntityActions(entityActions, model)}
+        </EntityMenu>
       </div>
     );
   }
