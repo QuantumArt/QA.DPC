@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
 import { consumer, inject } from "react-ioc";
-import { Divider } from "@blueprintjs/core";
+import { Divider, Button, Intent } from "@blueprintjs/core";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
 import { PublicationContext } from "Services/PublicationContext";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
@@ -23,6 +23,7 @@ import { hasUniqueMarketingDevice } from "../Utils/Validators";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
+import { action } from "mobx";
 
 interface ActionsTabTabProps {
   model: Product;
@@ -35,6 +36,15 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
   @inject private publicationContext: PublicationContext;
 
   private filterModel = new FilterModel(this.props.model);
+
+  @action
+  private pinActionToMarketingTariff(fixConnectAction: FixConnectAction) {
+    const marketingTariff = this.props.model.MarketingProduct;
+    if (!fixConnectAction.MarketingOffers.includes(marketingTariff)) {
+      fixConnectAction.MarketingOffers.push(marketingTariff);
+      fixConnectAction.setTouched("MarketingOffers");
+    }
+  }
 
   render() {
     const { model, contentSchema } = this.props;
@@ -75,7 +85,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
       fieldOrders={["Parent", "PromoPeriod", "AfterPromo", "MarketingOffers"]}
       fieldEditors={{
         Parent: this.renderActionParent,
-        MarketingOffers: MultiRelationFieldTable
+        MarketingOffers: this.renderMarketingOffers
       }}
       canClonePrototype
       canCloneEntity
@@ -89,6 +99,24 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
         await selectRelation();
         props.model.setChanged(props.fieldSchema.FieldName, false);
       }}
+    />
+  );
+
+  private renderMarketingOffers = (props: FieldEditorProps) => (
+    <MultiRelationFieldTable
+      {...props}
+      relationActions={
+        <Button
+          minimal
+          small
+          rightIcon="pin"
+          intent={Intent.PRIMARY}
+          onClick={() => this.pinActionToMarketingTariff(props.model as FixConnectAction)}
+          title="Привязать к текущему маркетинговому тарифу фиксированной связи"
+        >
+          Привязать к текущему тарифу
+        </Button>
+      }
     />
   );
 
