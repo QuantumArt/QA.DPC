@@ -44,13 +44,29 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("{type}")]
-        public async Task<ActionResult> GetByType(string type, string language = null, string state = null)
+        public async Task<ActionResult> GetByType(ProductsOptions options, string language = null, string state = null)
         {
-            type = type?.TrimStart('@');
-            var options = ProductOptionsParser.Parse(Request.Query, _options);
             try
             {
-                var stream = await Manager.GetProductsInTypeStream(type, options, language, state);
+                var stream = await Manager.GetProductsInTypeStream(options, language, state);
+                return await GetResponse(stream);
+            }
+            catch (ElasticsearchClientException ex)
+            {
+                LogElasticException(ex);
+                return BadRequest($"Elastic search error occurred:: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
+            }
+        }
+        
+        [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
+        [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
+        [Route("{type}"), HttpPost]
+        public async Task<ActionResult> GetByType([FromBody]ProductsOptions options, string type, string language = null, string state = null)
+        {
+            options.Type = type?.TrimStart('@');
+            try
+            {
+                var stream = await Manager.GetProductsInTypeStream(options, language, state);
                 return await GetResponse(stream);
             }
             catch (ElasticsearchClientException ex)

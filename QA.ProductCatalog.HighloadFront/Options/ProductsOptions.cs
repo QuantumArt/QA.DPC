@@ -1,11 +1,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Primitives;
+using Microsoft.AspNetCore.Mvc;
 
 namespace QA.ProductCatalog.HighloadFront.Options
 {
     public class ProductsOptions
     {
+        public string Type { get; set; }
+        
+        public int Id { get; set; }
+        
         public IList<string> PropertiesFilter { get; set; }
 
         public IList<IElasticFilter> Filters { get; set; }
@@ -29,6 +34,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public string[] DisableNot { get; set; }
 
         public string[] DisableLike { get; set; }
+        
+        
 
     }
 

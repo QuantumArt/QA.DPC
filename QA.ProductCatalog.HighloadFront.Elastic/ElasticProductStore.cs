@@ -302,16 +302,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<Stream> GetProductsInTypeStreamAsync(string type, ProductsOptions options, string language, string state)
+        public async Task<Stream> GetProductsInTypeStreamAsync(ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
 
-            if (type == null) throw new ArgumentNullException(nameof(type));
             var q = JObject.FromObject(new
             {
                 from = (options?.Page ?? 0) * (options?.PerPage ?? Options.DefaultSize),
                 size = options?.PerPage ?? Options.DefaultSize,
-                _source = new { include = GetFields(options, type) }
+                _source = new { include = GetFields(options) }
             });
 
             SetQuery(q, options);
@@ -322,7 +321,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var timer = new Stopwatch();
             timer.Start();
 #endif
-            var response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, type, q.ToString());
+            var response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, options?.Type, q.ToString());
 #if DEBUG             
             timer.Stop();
             Logger.Debug("Query to ElasticSearch took {0} ms", timer.Elapsed.TotalMilliseconds);
@@ -666,7 +665,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             ));
         }
 
-        private string[] GetFields(ProductsOptions options, string type = null)
+        private string[] GetFields(ProductsOptions options)
         {
             string[] fields = null;
 
@@ -674,7 +673,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 fields = options.PropertiesFilter.ToArray();
             }
-            else if (type == "RegionTags")
+            else if (options?.Type == "RegionTags")
             {
                 fields = new[] { "ProductId", "Type", "RegionTags" };
             }

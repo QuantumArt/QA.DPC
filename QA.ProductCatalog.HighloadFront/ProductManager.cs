@@ -110,16 +110,16 @@ namespace QA.ProductCatalog.HighloadFront
             return store.SearchStreamAsync(options ?? Options.Product, language, state);
         }
 
-        public Task<Stream> GetProductsInTypeStream(string type, ProductsOptions options, string language, string state)
+        public Task<Stream> GetProductsInTypeStream(ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
-            if (type == null)
+            if (options?.Type == null)
             {
-                throw new ArgumentNullException(nameof(type));
+                throw new ArgumentNullException("type");
             }
             var store = GetProductTypeStore();
 
-            return store.GetProductsInTypeStreamAsync(type, options ?? Options.Product, language, state);
+            return store.GetProductsInTypeStreamAsync(options, language, state);
         }
 
 
