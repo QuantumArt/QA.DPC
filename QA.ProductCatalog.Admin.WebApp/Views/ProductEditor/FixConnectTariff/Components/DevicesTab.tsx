@@ -21,6 +21,7 @@ import { FilterModel } from "../Models/FilterModel";
 import { hasUniqueRegions } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
+import { PublishButtons } from "./PublishButtons";
 
 interface DevicesTabProps {
   model: Product;
@@ -72,32 +73,37 @@ export class DevicesTab extends Component<DevicesTabProps> {
     />
   );
 
-  private renderDevices = (props: FieldEditorProps) => (
-    <RelationFieldAccordion
-      {...props}
-      canCloneEntity
-      canRemoveEntity
-      canPublishEntity
-      canClonePrototype
-      columnProportions={[9, 3, 3, 1]}
-      displayFields={[
-        regionsDisplayField,
-        rentPriceDisplayField,
-        salePriceDisplayField,
-        makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
-      ]}
-      filterItems={this.filterModel.filterProducts}
-      highlightItems={this.filterModel.highlightProduct}
-      fieldOrders={["Modifiers", "Regions", "Parameters"]}
-      fieldEditors={{
-        Type: IGNORE,
-        MarketingProduct: IGNORE,
-        Parameters: this.renderParameters,
-        Regions: this.renderRegions
-      }}
-      onShowEntity={product => product.setTouched("Regions")}
-    />
-  );
+  private renderDevices = (props: FieldEditorProps) => {
+    const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    return (
+      <RelationFieldAccordion
+        {...props}
+        canCloneEntity
+        canRemoveEntity
+        canClonePrototype
+        columnProportions={[9, 3, 3, 1]}
+        displayFields={[
+          regionsDisplayField,
+          rentPriceDisplayField,
+          salePriceDisplayField,
+          makePublicatoinStatusIcons(this.publicationContext, fieldSchema)
+        ]}
+        filterItems={this.filterModel.filterProducts}
+        highlightItems={this.filterModel.highlightProduct}
+        fieldOrders={["Modifiers", "Regions", "Parameters"]}
+        fieldEditors={{
+          Type: IGNORE,
+          MarketingProduct: IGNORE,
+          Parameters: this.renderParameters,
+          Regions: this.renderRegions
+        }}
+        onShowEntity={(product: Product) => product.setTouched("Regions")}
+        entityActions={(product: Product) => (
+          <PublishButtons model={product} contentSchema={fieldSchema.RelatedContent} />
+        )}
+      />
+    );
+  };
 
   private renderDevicesOnTariffs = (props: FieldEditorProps) => (
     <RelationFieldAccordion

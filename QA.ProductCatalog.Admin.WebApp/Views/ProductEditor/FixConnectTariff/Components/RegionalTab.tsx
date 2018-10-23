@@ -21,6 +21,7 @@ import { FilterModel } from "../Models/FilterModel";
 import { hasUniqueRegions } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
+import { PublishButtons } from "./PublishButtons";
 
 interface RegionalTabTabProps {
   model: Product;
@@ -49,7 +50,6 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       <>
         <EntityEditor
           withHeader
-          canPublishEntity
           model={model}
           contentSchema={contentSchema}
           titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
@@ -76,6 +76,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
             Parameters: this.renderFixConnectParameters,
             Regions: this.renderRegions
           }}
+          customActions={() => <PublishButtons model={model} contentSchema={contentSchema} />}
         />
         <Divider />
         <FilterBlock model={this.filterModel} />
@@ -130,55 +131,65 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
     <FileFieldEditor {...props} customSubFolder="fix_tariffs" />
   );
 
-  private renderInternetTariffs = (props: FieldEditorProps) => (
-    <RelationFieldAccordion
-      {...props}
-      canCloneEntity
-      canRemoveEntity
-      canPublishEntity
-      canClonePrototype
-      columnProportions={[20, 1]}
-      displayFields={[
-        regionsDisplayField,
-        makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
-      ]}
-      filterItems={this.filterModel.filterProducts}
-      highlightItems={this.filterModel.highlightProduct}
-      fieldOrders={["Modifiers", "Regions", "Parameters"]}
-      fieldEditors={{
-        Type: IGNORE,
-        MarketingProduct: IGNORE,
-        Parameters: this.renderInternetParameters,
-        Regions: this.renderRegions
-      }}
-      onShowEntity={product => product.setTouched("Regions")}
-    />
-  );
+  private renderInternetTariffs = (props: FieldEditorProps) => {
+    const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    return (
+      <RelationFieldAccordion
+        {...props}
+        canCloneEntity
+        canRemoveEntity
+        canClonePrototype
+        columnProportions={[20, 1]}
+        displayFields={[
+          regionsDisplayField,
+          makePublicatoinStatusIcons(this.publicationContext, fieldSchema)
+        ]}
+        filterItems={this.filterModel.filterProducts}
+        highlightItems={this.filterModel.highlightProduct}
+        fieldOrders={["Modifiers", "Regions", "Parameters"]}
+        fieldEditors={{
+          Type: IGNORE,
+          MarketingProduct: IGNORE,
+          Parameters: this.renderInternetParameters,
+          Regions: this.renderRegions
+        }}
+        onShowEntity={(product: Product) => product.setTouched("Regions")}
+        entityActions={(product: Product) => (
+          <PublishButtons model={product} contentSchema={fieldSchema.RelatedContent} />
+        )}
+      />
+    );
+  };
 
-  private renderPhoneTariffs = (props: FieldEditorProps) => (
-    <RelationFieldAccordion
-      {...props}
-      canCloneEntity
-      canRemoveEntity
-      canPublishEntity
-      canClonePrototype
-      columnProportions={[20, 1]}
-      displayFields={[
-        regionsDisplayField,
-        makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
-      ]}
-      filterItems={this.filterModel.filterProducts}
-      highlightItems={this.filterModel.highlightProduct}
-      fieldOrders={["Modifiers", "Regions", "Parameters"]}
-      fieldEditors={{
-        Type: IGNORE,
-        MarketingProduct: IGNORE,
-        Parameters: this.renderPhoneParameters,
-        Regions: this.renderRegions
-      }}
-      onShowEntity={product => product.setTouched("Regions")}
-    />
-  );
+  private renderPhoneTariffs = (props: FieldEditorProps) => {
+    const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    return (
+      <RelationFieldAccordion
+        {...props}
+        canCloneEntity
+        canRemoveEntity
+        canClonePrototype
+        columnProportions={[20, 1]}
+        displayFields={[
+          regionsDisplayField,
+          makePublicatoinStatusIcons(this.publicationContext, fieldSchema)
+        ]}
+        filterItems={this.filterModel.filterProducts}
+        highlightItems={this.filterModel.highlightProduct}
+        fieldOrders={["Modifiers", "Regions", "Parameters"]}
+        fieldEditors={{
+          Type: IGNORE,
+          MarketingProduct: IGNORE,
+          Parameters: this.renderPhoneParameters,
+          Regions: this.renderRegions
+        }}
+        onShowEntity={(product: Product) => product.setTouched("Regions")}
+        entityActions={(product: Product) => (
+          <PublishButtons model={product} contentSchema={fieldSchema.RelatedContent} />
+        )}
+      />
+    );
+  };
 
   private renderRegions = (props: FieldEditorProps) => {
     const product = props.model as Product;
