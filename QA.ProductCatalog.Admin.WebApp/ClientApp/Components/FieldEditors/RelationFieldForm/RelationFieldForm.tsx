@@ -277,7 +277,6 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
           skipOtherFields={skipOtherFields}
           fieldOrders={fieldOrders}
           fieldEditors={fieldEditors}
-          entityActions={entityActions}
           onShowEntity={onShowEntity}
           onHideEntity={onHideEntity}
           onSaveEntity={onSaveEntity}
@@ -294,6 +293,7 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
           canRemoveEntity={canRemoveEntity}
           canPublishEntity={canPublishEntity}
           canCloneEntity={canCloneEntity}
+          customActions={entityActions}
         />
       </div>
     ) : null;

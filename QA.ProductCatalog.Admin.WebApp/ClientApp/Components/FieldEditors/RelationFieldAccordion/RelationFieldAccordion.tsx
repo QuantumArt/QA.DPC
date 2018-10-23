@@ -10,7 +10,7 @@ import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ComputedCache } from "Utils/WeakCache";
 import { DataContext } from "Services/DataContext";
 import { EntityController } from "Services/EntityController";
-import { EntityMenu, bindEntityActions } from "Components/ArticleEditor/EntityMenu";
+import { EntityMenu } from "Components/ArticleEditor/EntityMenu";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { EntityLink } from "Components/ArticleEditor/EntityLink";
@@ -470,7 +470,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                           canPublishEntity && hasServerId && (e => this.publishEntity(e, entity))
                         }
                       >
-                        {bindEntityActions(entityActions, entity)}
+                        {entityActions && entityActions(entity)}
                       </EntityMenu>
                     )}
                   </td>

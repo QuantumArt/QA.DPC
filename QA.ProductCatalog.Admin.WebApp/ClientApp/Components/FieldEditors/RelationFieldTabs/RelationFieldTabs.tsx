@@ -387,7 +387,6 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
                       fieldEditors={fieldEditors}
                       titleField={titleField}
                       withHeader
-                      entityActions={entityActions}
                       onShowEntity={onShowEntity}
                       onHideEntity={onHideEntity}
                       onSaveEntity={onSaveEntity}
@@ -404,6 +403,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
                       canRemoveEntity={canRemoveEntity}
                       canPublishEntity={canPublishEntity}
                       canCloneEntity={canCloneEntity}
+                      customActions={entityActions}
                     />
                   )
                 }

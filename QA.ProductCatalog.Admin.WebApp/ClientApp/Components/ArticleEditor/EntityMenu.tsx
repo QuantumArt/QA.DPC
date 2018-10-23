@@ -1,7 +1,5 @@
-import React, { ReactNode, ReactElement, Children, cloneElement, ReactFragment } from "react";
-import { isFragment } from "react-is";
+import React, { ReactNode } from "react";
 import { Button, Menu, MenuItem, Intent, Popover, Position, Icon } from "@blueprintjs/core";
-import { EntityObject } from "Models/EditorDataModels";
 import "./ArticleEditor.scss";
 
 interface EntityMenuProps {
@@ -99,21 +97,3 @@ export const EntityMenu = ({
     </Menu>
   </Popover>
 );
-
-export type EntityActionNodes = ReactFragment | EntityActionElement | EntityActionElement[];
-
-type EntityActionElement = ReactElement<{
-  onClick(event: React.MouseEvent<HTMLElement>, entity: EntityObject): void;
-}>;
-
-export function bindEntityActions(children: EntityActionNodes, entity: EntityObject) {
-  if (isFragment(children)) {
-    // @ts-ignore
-    return bindEntityActions(children.props.children, entity);
-  }
-  return Children.map(children, (child: EntityActionElement) =>
-    cloneElement(child, {
-      onClick: event => child.props.onClick(event, entity)
-    })
-  );
-}
