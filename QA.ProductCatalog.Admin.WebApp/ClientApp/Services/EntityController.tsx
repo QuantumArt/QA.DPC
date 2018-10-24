@@ -19,21 +19,19 @@ import {
   isSingleRelationField
 } from "Models/EditorSchemaModels";
 import { EntitySnapshot, EntityObject, ArticleObject } from "Models/EditorDataModels";
-import { EditorSettings } from "Models/EditorSettings";
+import { EditorSettings, EditorQueryParams } from "Models/EditorSettingsModels";
 import { trace, modal, progress, handleError } from "Utils/Decorators";
 import { newUid, rootUrl } from "Utils/Common";
 
 export class EntityController {
   @inject private _editorSettings: EditorSettings;
+  @inject private _queryParams: EditorQueryParams;
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
   @inject private _dataValidator: DataValidator;
   @inject private _dataMerger: DataMerger;
   @inject private _dataContext: DataContext;
   @inject private _overlayPresenter: OverlayPresenter;
-
-  private _query = document.location.search;
-  private _hostUid = qs.parse(document.location.search).hostUID as string;
 
   @trace
   @handleError
@@ -56,18 +54,21 @@ export class EntityController {
     contentSchema: ContentSchema,
     strategy: MergeStrategy
   ) {
-    const response = await fetch(`${rootUrl}/ProductEditor/LoadPartialProduct${this._query}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-        ContentPath: contentSchema.ContentPath,
-        ArticleIds: [model._ServerId]
-      })
-    });
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/LoadPartialProduct?${qs.stringify(this._queryParams)}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: contentSchema.ContentPath,
+          ArticleIds: [model._ServerId]
+        })
+      }
+    );
     if (!response.ok) {
       throw new Error(await response.text());
     }
@@ -99,7 +100,7 @@ export class EntityController {
       options: articleOptions
     };
 
-    QP8.executeBackendAction(executeOptions, this._hostUid, window.parent);
+    QP8.executeBackendAction(executeOptions, this._queryParams.hostUID, window.parent);
 
     const observer = new QP8.BackendEventObserver(callbackUid, async (eventType, args) => {
       if (eventType === QP8.BackendEventTypes.HostUnbinded) {
@@ -127,7 +128,10 @@ export class EntityController {
     }
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/PublishProduct${this._query}&articleId=${entity._ServerId}`,
+      `${rootUrl}/ProductEditor/PublishProduct?${qs.stringify({
+        ...this._queryParams,
+        articleId: entity._ServerId
+      })}`,
       {
         method: "POST",
         credentials: "include"
@@ -169,18 +173,21 @@ export class EntityController {
 
     const contentSchema = fieldSchema.RelatedContent;
 
-    const response = await fetch(`${rootUrl}/ProductEditor/RemovePartialProduct${this._query}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-        ContentPath: contentSchema.ContentPath,
-        RemoveArticleId: entity._ServerId
-      })
-    });
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/RemovePartialProduct?${qs.stringify(this._queryParams)}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: contentSchema.ContentPath,
+          RemoveArticleId: entity._ServerId
+        })
+      }
+    );
     if (!response.ok) {
       throw new Error(await response.text());
     }
@@ -218,18 +225,21 @@ export class EntityController {
   ): Promise<EntityObject> {
     const contentSchema = fieldSchema.RelatedContent;
 
-    const response = await fetch(`${rootUrl}/ProductEditor/ClonePartialProduct${this._query}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-        ContentPath: contentSchema.ContentPath,
-        CloneArticleId: entity._ServerId
-      })
-    });
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/ClonePartialProduct?${qs.stringify(this._queryParams)}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: contentSchema.ContentPath,
+          CloneArticleId: entity._ServerId
+        })
+      }
+    );
     if (!response.ok) {
       throw new Error(await response.text());
     }
@@ -274,18 +284,21 @@ export class EntityController {
 
     const partialProduct = this._dataSerializer.serialize(entity, contentSchema);
 
-    const response = await fetch(`${rootUrl}/ProductEditor/SavePartialProduct${this._query}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-        ContentPath: contentSchema.ContentPath,
-        PartialProduct: partialProduct
-      })
-    });
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/SavePartialProduct?${qs.stringify(this._queryParams)}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: contentSchema.ContentPath,
+          PartialProduct: partialProduct
+        })
+      }
+    );
     if (response.status === 409) {
       const dataTree = this._dataSerializer.deserialize<EntitySnapshot>(await response.text());
       const dataSnapshot = this._dataNormalizer.normalize(dataTree, contentSchema.ContentName);

@@ -1,10 +1,12 @@
 import "Scripts/pmrpc";
 import QP8 from "Scripts/qp/QP8BackendApi.Interaction";
 import qs from "qs";
+import { inject } from "react-ioc";
 import { rootUrl } from "Utils/Common";
 import { handleError, modal } from "Utils/Decorators";
-import { CustomActionInfo } from "Models/CustomActionInfo";
+import { CustomActionInfo } from "Models/CustomActionModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
+import { EditorQueryParams } from "Models/EditorSettingsModels";
 import { EntityObject } from "Models/EditorDataModels";
 
 const actionInfosByName: {
@@ -12,8 +14,7 @@ const actionInfosByName: {
 } = {};
 
 export class ActionController {
-  private _query = document.location.search;
-  private _hostUid = qs.parse(document.location.search).hostUID as string;
+  @inject private _queryParams: EditorQueryParams;
 
   @modal
   @handleError
@@ -33,7 +34,7 @@ export class ActionController {
       ...options
     };
 
-    QP8.executeBackendAction(executeOptions, this._hostUid, window.parent);
+    QP8.executeBackendAction(executeOptions, this._queryParams.hostUID, window.parent);
   }
 
   @handleError
@@ -43,7 +44,8 @@ export class ActionController {
       return actionInfo;
     }
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetCustomActionByName${this._query}&${qs.stringify({
+      `${rootUrl}/ProductEditor/GetCustomActionByName?${qs.stringify({
+        ...this._queryParams,
         actionName
       })}`,
       {

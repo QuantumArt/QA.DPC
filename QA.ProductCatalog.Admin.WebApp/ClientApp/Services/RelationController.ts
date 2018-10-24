@@ -19,21 +19,20 @@ import {
   isSingleRelationField
 } from "Models/EditorSchemaModels";
 import { ArticleObject, EntitySnapshot, EntityObject } from "Models/EditorDataModels";
-import { EditorSettings } from "Models/EditorSettings";
+import { EditorSettings, EditorQueryParams } from "Models/EditorSettingsModels";
 import { trace, modal, progress, handleError } from "Utils/Decorators";
 import { isArray } from "Utils/TypeChecks";
 import { newUid, rootUrl } from "Utils/Common";
 
 export class RelationController {
   @inject private _editorSettings: EditorSettings;
+  @inject private _queryParams: EditorQueryParams;
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
   @inject private _dataMerger: DataMerger;
   @inject private _dataContext: DataContext;
   @inject private _overlayPresenter: OverlayPresenter;
 
-  private _query = document.location.search;
-  private _hostUid = qs.parse(document.location.search).hostUID as string;
   private _resolvePromise: (articleIds: number[] | typeof CANCEL) => void;
   private _callbackUid = newUid();
 
@@ -103,7 +102,7 @@ export class RelationController {
       options.options = { filter: fieldSchema.RelationCondition };
     }
 
-    QP8.openSelectWindow(options, this._hostUid, window.parent);
+    QP8.openSelectWindow(options, this._queryParams.hostUID, window.parent);
 
     const selectedArticleIds = await new Promise<number[] | typeof CANCEL>(resolve => {
       this._resolvePromise = resolve;
@@ -136,18 +135,21 @@ export class RelationController {
   @progress
   @handleError
   private async loadSelectedArticles(contentSchema: ContentSchema, articleToLoadIds: number[]) {
-    const response = await fetch(`${rootUrl}/ProductEditor/LoadPartialProduct${this._query}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-        ContentPath: contentSchema.ContentPath,
-        ArticleIds: articleToLoadIds
-      })
-    });
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/LoadPartialProduct?${qs.stringify(this._queryParams)}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: contentSchema.ContentPath,
+          ArticleIds: articleToLoadIds
+        })
+      }
+    );
     if (!response.ok) {
       throw new Error(await response.text());
     }
@@ -213,19 +215,22 @@ export class RelationController {
   @modal
   @progress
   private async loadProductRelationJson(model: ArticleObject, fieldSchema: RelationFieldSchema) {
-    const response = await fetch(`${rootUrl}/ProductEditor/LoadProductRelation${this._query}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-        ContentPath: fieldSchema.ParentContent.ContentPath,
-        RelationFieldName: fieldSchema.FieldName,
-        ParentArticleId: model._ServerId
-      })
-    });
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/LoadProductRelation?${qs.stringify(this._queryParams)}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: fieldSchema.ParentContent.ContentPath,
+          RelationFieldName: fieldSchema.FieldName,
+          ParentArticleId: model._ServerId
+        })
+      }
+    );
     if (!response.ok) {
       throw new Error(await response.text());
     }
@@ -263,18 +268,21 @@ export class RelationController {
   @modal
   @progress
   private async preloadRelationArticlesJson(fieldSchema: RelationFieldSchema) {
-    const response = await fetch(`${rootUrl}/ProductEditor/PreloadRelationArticles${this._query}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ProductDefinitionId: this._editorSettings.ProductDefinitionId,
-        ContentPath: fieldSchema.ParentContent.ContentPath,
-        RelationFieldName: fieldSchema.FieldName
-      })
-    });
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/PreloadRelationArticles?${qs.stringify(this._queryParams)}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          ProductDefinitionId: this._editorSettings.ProductDefinitionId,
+          ContentPath: fieldSchema.ParentContent.ContentPath,
+          RelationFieldName: fieldSchema.FieldName
+        })
+      }
+    );
     if (!response.ok) {
       throw new Error(await response.text());
     }
@@ -292,7 +300,7 @@ export class RelationController {
     const contentSchema = fieldSchema.RelatedContent;
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/ClonePartialProductPrototype${this._query}`,
+      `${rootUrl}/ProductEditor/ClonePartialProductPrototype?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",

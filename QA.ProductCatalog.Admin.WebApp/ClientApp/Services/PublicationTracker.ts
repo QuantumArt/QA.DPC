@@ -2,15 +2,16 @@ import qs from "qs";
 import { inject } from "react-ioc";
 import { IReactionDisposer, computed, reaction } from "mobx";
 import { rootUrl } from "Utils/Common";
+import { EditorQueryParams } from "Models/EditorSettingsModels";
 import { DataContext } from "Services/DataContext";
 import { PublicationContext } from "Services/PublicationContext";
 import { isIsoDateString } from "Utils/TypeChecks";
 
 export class PublicationTracker {
+  @inject private _queryParams: EditorQueryParams;
   @inject private _dataContext: DataContext;
   @inject private _publicationContext: PublicationContext;
 
-  private _query = document.location.search;
   private _loadedProductIds = new Set<number>();
   private _reactionDisposer: IReactionDisposer;
   private _updateTimer: number;
@@ -42,9 +43,12 @@ export class PublicationTracker {
   }
 
   private loadMaxPublicationTime = async () => {
-    const response = await fetch(`${rootUrl}/ProductEditor/GetMaxPublicationTime${this._query}`, {
-      credentials: "include"
-    });
+    const response = await fetch(
+      `${rootUrl}/ProductEditor/GetMaxPublicationTime?${qs.stringify(this._queryParams)}`,
+      {
+        credentials: "include"
+      }
+    );
     if (!response.ok) {
       throw new Error(await response.text());
     }
@@ -63,7 +67,7 @@ export class PublicationTracker {
     newProductIds.forEach(id => this._loadedProductIds.add(id));
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetPublicationTimestamps${this._query}`,
+      `${rootUrl}/ProductEditor/GetPublicationTimestamps?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",
@@ -94,7 +98,8 @@ export class PublicationTracker {
     }
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetPublicationTimestamps${this._query}&${qs.stringify({
+      `${rootUrl}/ProductEditor/GetPublicationTimestamps?${qs.stringify({
+        ...this._queryParams,
         updatedSince: maxPublicationTime
       })}`,
       {

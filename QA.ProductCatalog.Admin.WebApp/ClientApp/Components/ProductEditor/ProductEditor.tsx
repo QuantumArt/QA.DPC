@@ -1,4 +1,5 @@
 import React, { Component, ReactNode } from "react";
+import qs from "qs";
 import { provider, inject } from "react-ioc";
 import { Observer } from "mobx-react";
 import { Grid } from "react-flexbox-grid";
@@ -15,8 +16,8 @@ import { RelationController } from "Services/RelationController";
 import { InitializationController } from "Services/InitializationController";
 import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
-import { isFunction } from "Utils/TypeChecks";
-import { EditorSettings } from "Models/EditorSettings";
+import { isFunction, isString } from "Utils/TypeChecks";
+import { EditorSettings, EditorQueryParams } from "Models/EditorSettingsModels";
 import { FileController } from "Services/FileController";
 import { SchemaLinker } from "Services/SchemaLinker";
 import { SchemaCompiler } from "Services/SchemaCompiler";
@@ -28,6 +29,7 @@ type RenderEditor = (entity: EntityObject, contentSchema: ContentSchema) => Reac
 
 interface ProductEditorProps {
   settings: EditorSettings;
+  queryParams?: EditorQueryParams | string;
   relationEditors?: RelationsConfig;
   children?: RenderEditor | ReactNode;
 }
@@ -49,10 +51,12 @@ interface ProductEditorProps {
   RelationController,
   OverlayPresenter,
   RelationsConfig,
-  EditorSettings
+  EditorSettings,
+  EditorQueryParams
 )
 export class ProductEditor extends Component<ProductEditorProps> {
   @inject private _editorSettings: EditorSettings;
+  @inject private _queryParams: EditorQueryParams;
   @inject private _relationsConfig: RelationsConfig;
   @inject private _initializationController: InitializationController;
   @inject private _overlayPresenter: OverlayPresenter;
@@ -66,6 +70,10 @@ export class ProductEditor extends Component<ProductEditorProps> {
     super(props, context);
     Object.assign(this._editorSettings, props.settings);
     Object.assign(this._relationsConfig, props.relationEditors);
+
+    const queryString = props.queryParams || document.location.search;
+    const queryParams = isString(queryString) ? qs.parse(queryString) : queryString;
+    Object.assign(this._queryParams, queryParams);
   }
 
   async componentDidMount() {

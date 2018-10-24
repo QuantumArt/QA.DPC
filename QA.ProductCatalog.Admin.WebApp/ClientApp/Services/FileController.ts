@@ -1,13 +1,15 @@
 import "../../Scripts/pmrpc";
 import QP8 from "../../Scripts/qp/QP8BackendApi.Interaction";
-import qs from "qs";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { ArticleObject } from "Models/EditorDataModels";
 import { untracked, runInAction } from "mobx";
 import { newUid } from "Utils/Common";
+import { inject } from "react-ioc";
+import { EditorQueryParams } from "ClientApp/Models/EditorSettingsModels";
 
 export class FileController {
-  private _hostUid = qs.parse(document.location.search).hostUID as string;
+  @inject private _queryParams: EditorQueryParams;
+
   private _resolvePromise: (filePath: string | typeof CANCEL) => void;
   private _callbackUid = newUid();
 
@@ -40,7 +42,7 @@ export class FileController {
       libraryParentEntityId: fieldSchema.LibraryParentEntityId,
       callerCallback: this._callbackUid
     };
-    QP8.openFileLibrary(options, this._hostUid, window.parent);
+    QP8.openFileLibrary(options, this._queryParams.hostUID, window.parent);
 
     const relativePath = await new Promise<string | typeof CANCEL>(resolve => {
       this._resolvePromise = resolve;
@@ -65,7 +67,7 @@ export class FileController {
     const fieldId = fieldSchema.FieldId;
     const fileName = untracked(() => model[fieldSchema.FieldName]);
     if (fileName) {
-      QP8.previewImage({ entityId, fieldId, fileName }, this._hostUid, window.parent);
+      QP8.previewImage({ entityId, fieldId, fileName }, this._queryParams.hostUID, window.parent);
     }
   }
 
@@ -74,7 +76,7 @@ export class FileController {
     const fieldId = fieldSchema.FieldId;
     const fileName = untracked(() => model[fieldSchema.FieldName]);
     if (fileName) {
-      QP8.downloadFile({ entityId, fieldId, fileName }, this._hostUid, window.parent);
+      QP8.downloadFile({ entityId, fieldId, fileName }, this._queryParams.hostUID, window.parent);
     }
   }
 }

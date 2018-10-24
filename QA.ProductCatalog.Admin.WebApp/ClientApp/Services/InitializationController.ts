@@ -1,6 +1,6 @@
 import { inject } from "react-ioc";
 import { TablesSnapshot, EntitySnapshot } from "Models/EditorDataModels";
-import { EditorSettings } from "Models/EditorSettings";
+import { EditorSettings, EditorQueryParams } from "Models/EditorSettingsModels";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataNormalizer } from "Services/DataNormalizer";
 import { DataContext } from "Services/DataContext";
@@ -9,17 +9,17 @@ import { SchemaCompiler } from "Services/SchemaCompiler";
 import { PublicationTracker } from "Services/PublicationTracker";
 import { trace, progress, handleError, modal } from "Utils/Decorators";
 import { rootUrl } from "Utils/Common";
+import qs from "qs";
 
 export class InitializationController {
   @inject private _editorSettings: EditorSettings;
+  @inject private _queryParams: EditorQueryParams;
   @inject private _schemaLinker: SchemaLinker;
   @inject private _schemaCompiler: SchemaCompiler;
   @inject private _dataSerializer: DataSerializer;
   @inject private _dataNormalizer: DataNormalizer;
   @inject private _dataContext: DataContext;
   @inject private _publicationTracker: PublicationTracker;
-
-  private _query = document.location.search;
 
   @trace
   @modal
@@ -30,9 +30,11 @@ export class InitializationController {
 
     if (this._editorSettings.ArticleId > 0) {
       const response = await fetch(
-        `${rootUrl}/ProductEditor/GetEditorData${this._query}&productDefinitionId=${
-          this._editorSettings.ProductDefinitionId
-        }&articleId=${this._editorSettings.ArticleId}`
+        `${rootUrl}/ProductEditor/GetEditorData?${qs.stringify({
+          ...this._queryParams,
+          productDefinitionId: this._editorSettings.ProductDefinitionId,
+          articleId: this._editorSettings.ArticleId
+        })}`
       );
       if (!response.ok) {
         throw new Error(await response.text());
@@ -82,9 +84,9 @@ export class InitializationController {
 
   private async initSchema() {
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetEditorSchema${this._query}&productDefinitionId=${
-        this._editorSettings.ProductDefinitionId
-      }`
+      `${rootUrl}/ProductEditor/GetEditorSchema?${qs.stringify(
+        this._queryParams
+      )}&productDefinitionId=${this._editorSettings.ProductDefinitionId}`
     );
     if (!response.ok) {
       throw new Error(await response.text());
