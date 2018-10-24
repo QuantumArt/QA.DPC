@@ -67,7 +67,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     onSaveEntity(
       model,
       action("saveEntity", async () => {
-        await this._entityController.saveEntitySubgraph(model, contentSchema);
+        await this._entityController.saveEntity(model, contentSchema);
       })
     );
   };

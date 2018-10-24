@@ -36,20 +36,20 @@ export class EntityController {
   @trace
   @handleError
   public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
-    await this.loadEntity(model, contentSchema, MergeStrategy.Refresh);
+    await this.loadPartialProduct(model, contentSchema, MergeStrategy.Refresh);
   }
 
   @trace
   @handleError
   public async reloadEntity(model: EntityObject, contentSchema: ContentSchema) {
-    await this.loadEntity(model, contentSchema, MergeStrategy.Overwrite);
+    await this.loadPartialProduct(model, contentSchema, MergeStrategy.Overwrite);
   }
 
   @trace
   @modal
   @progress
   @handleError
-  private async loadEntity(
+  protected async loadPartialProduct(
     model: EntityObject,
     contentSchema: ContentSchema,
     strategy: MergeStrategy
@@ -107,26 +107,31 @@ export class EntityController {
         observer.dispose();
       } else if (eventType === QP8.BackendEventTypes.ActionExecuted) {
         if (args.actionCode === "update_article") {
-          await this.loadEntity(model, contentSchema, MergeStrategy.ServerWins);
+          await this.loadPartialProduct(model, contentSchema, MergeStrategy.ServerWins);
         } else if (args.actionCode === "update_article_and_up") {
           observer.dispose();
-          await this.loadEntity(model, contentSchema, MergeStrategy.ServerWins);
+          await this.loadPartialProduct(model, contentSchema, MergeStrategy.ServerWins);
         }
       }
     });
   }
 
   @trace
-  @modal
-  @progress
   @handleError
   public async publishEntity(entity: EntityObject, contentSchema: ContentSchema) {
     const errors = this._dataValidator.collectErrors(entity, contentSchema, false);
     if (errors.length > 0) {
       await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
-      return;
+    } else {
+      await this.publishProduct(entity);
     }
+  }
 
+  @trace
+  @modal
+  @progress
+  @handleError
+  protected async publishProduct(entity: EntityObject) {
     const response = await fetch(
       `${rootUrl}/ProductEditor/PublishProduct?${qs.stringify({
         ...this._queryParams,
@@ -154,8 +159,6 @@ export class EntityController {
   }
 
   @trace
-  @modal
-  @progress
   @handleError
   public async removeRelatedEntity(
     parent: ArticleObject,
@@ -167,10 +170,21 @@ export class EntityController {
       "Удалить",
       "Отмена"
     );
-    if (!confirmed) {
-      return false;
+    if (confirmed) {
+      await this.removePartialProduct(parent, fieldSchema, entity);
     }
+    return confirmed;
+  }
 
+  @trace
+  @modal
+  @progress
+  @handleError
+  protected async removePartialProduct(
+    parent: ArticleObject,
+    fieldSchema: RelationFieldSchema,
+    entity: EntityObject
+  ) {
     const contentSchema = fieldSchema.RelatedContent;
 
     const response = await fetch(
@@ -210,8 +224,6 @@ export class EntityController {
         intent: Intent.WARNING
       });
     });
-
-    return true;
   }
 
   @trace
@@ -272,10 +284,21 @@ export class EntityController {
   }
 
   @trace
+  @handleError
+  public async saveEntity(entity: EntityObject, contentSchema: ContentSchema) {
+    const errors = this._dataValidator.collectErrors(entity, contentSchema, true);
+    if (errors.length > 0) {
+      await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
+    } else {
+      await this.savePartialProduct(entity, contentSchema);
+    }
+  }
+
+  @trace
   @modal
   @progress
   @handleError
-  public async saveEntitySubgraph(entity: EntityObject, contentSchema: ContentSchema) {
+  protected async savePartialProduct(entity: EntityObject, contentSchema: ContentSchema) {
     const errors = this._dataValidator.collectErrors(entity, contentSchema, true);
     if (errors.length > 0) {
       await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");

@@ -173,7 +173,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
     onSaveEntity(
       entity,
       action("saveEntity", async () => {
-        await this._entityController.saveEntitySubgraph(entity, contentSchema);
+        await this._entityController.saveEntity(entity, contentSchema);
       })
     );
   }
