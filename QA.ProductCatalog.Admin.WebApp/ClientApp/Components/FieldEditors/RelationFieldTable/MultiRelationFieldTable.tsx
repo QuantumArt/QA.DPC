@@ -1,7 +1,7 @@
 import React from "react";
 import { Col } from "react-flexbox-grid";
 import { consumer } from "react-ioc";
-import { action, IObservableArray } from "mobx";
+import { action, IObservableArray, computed } from "mobx";
 import { observer } from "mobx-react";
 import { Button, Intent } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
@@ -15,6 +15,13 @@ import { EntityLink } from "Components/ArticleEditor/EntityLink";
 @observer
 export class MultiRelationFieldTable extends AbstractRelationFieldTable {
   private _entityComparer: EntityComparer;
+
+  @computed
+  private get dataSource() {
+    const { model, fieldSchema } = this.props;
+    const array: EntityObject[] = model[fieldSchema.FieldName];
+    return array && array.sort(this._entityComparer);
+  }
 
   constructor(props: RelationFieldTableProps, context?: any) {
     super(props, context);
@@ -48,8 +55,8 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const { relationActions } = this.props;
-    const list: EntityObject[] = model[fieldSchema.FieldName];
-    const isEmpty = !list || list.length === 0;
+    const dataSource = this.dataSource;
+    const isEmpty = !dataSource || dataSource.length === 0;
     return (
       <Col md>
         <RelationFieldMenu
@@ -59,40 +66,35 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
           {relationActions && relationActions()}
         </RelationFieldMenu>
         {this.renderValidation(model, fieldSchema)}
-        {list && (
+        {dataSource && (
           <div className="relation-field-table">
             <div className="relation-field-table__table">
-              {list
-                .slice()
-                .sort(this._entityComparer)
-                .map(entity => {
-                  return (
-                    <div key={entity._ClientId} className="relation-field-table__row">
-                      <div key={-1} className="relation-field-table__cell">
-                        <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />
-                      </div>
-                      {this._displayFields.map((displayField, i) => (
-                        <div key={i} className="relation-field-table__cell">
-                          {displayField(entity)}
-                        </div>
-                      ))}
-                      <div key={-2} className="relation-field-table__controls">
-                        {!this._readonly && (
-                          <Button
-                            minimal
-                            small
-                            rightIcon="remove"
-                            intent={Intent.DANGER}
-                            title="Удалить связь с текущей статьей"
-                            onClick={e => this.detachEntity(e, entity)}
-                          >
-                            Отвязать
-                          </Button>
-                        )}
-                      </div>
+              {dataSource.map(entity => (
+                <div key={entity._ClientId} className="relation-field-table__row">
+                  <div key={-1} className="relation-field-table__cell">
+                    <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />
+                  </div>
+                  {this._displayFields.map((displayField, i) => (
+                    <div key={i} className="relation-field-table__cell">
+                      {displayField(entity)}
                     </div>
-                  );
-                })}
+                  ))}
+                  <div key={-2} className="relation-field-table__controls">
+                    {!this._readonly && (
+                      <Button
+                        minimal
+                        small
+                        rightIcon="remove"
+                        intent={Intent.DANGER}
+                        title="Удалить связь с текущей статьей"
+                        onClick={e => this.detachEntity(e, entity)}
+                      >
+                        Отвязать
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         )}

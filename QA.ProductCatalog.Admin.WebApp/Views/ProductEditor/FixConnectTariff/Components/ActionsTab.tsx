@@ -109,17 +109,20 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
       <MultiRelationFieldTable
         {...props}
         relationActions={() => (
-          <Button
-            minimal
-            small
-            rightIcon="pin"
-            intent={Intent.PRIMARY}
-            disabled={fixAction.MarketingOffers.includes(marketingTariff)}
-            onClick={() => this.pinActionToMarketingTariff(props.model as FixConnectAction)}
-            title="Привязать к текущему маркетинговому тарифу фиксированной связи"
-          >
-            Привязать к текущему тарифу
-          </Button>
+          <>
+            {!fixAction.MarketingOffers.includes(marketingTariff) && (
+              <Button
+                minimal
+                small
+                rightIcon="pin"
+                intent={Intent.PRIMARY}
+                onClick={() => this.pinActionToMarketingTariff(props.model as FixConnectAction)}
+                title="Привязать к текущему маркетинговому тарифу фиксированной связи"
+              >
+                Привязать к текущему тарифу
+              </Button>
+            )}
+          </>
         )}
       />
     );
