@@ -40,7 +40,7 @@ export class PublicationContext {
         if (oldTimestamp.Live < timestamp.Live) {
           oldTimestamp.Live = timestamp.Live;
         }
-        if (oldTimestamp.Stage < timestamp.Live) {
+        if (oldTimestamp.Stage < timestamp.Stage) {
           oldTimestamp.Stage = timestamp.Stage;
         }
       } else {

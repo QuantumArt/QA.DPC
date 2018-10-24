@@ -1,3 +1,4 @@
+import qs from "qs";
 import { inject } from "react-ioc";
 import { IReactionDisposer, computed, reaction } from "mobx";
 import { rootUrl } from "Utils/Common";
@@ -42,7 +43,6 @@ export class PublicationTracker {
 
   private loadMaxPublicationTime = async () => {
     const response = await fetch(`${rootUrl}/ProductEditor/GetMaxPublicationTime${this._query}`, {
-      method: "GET",
       credentials: "include"
     });
     if (!response.ok) {
@@ -85,17 +85,19 @@ export class PublicationTracker {
   };
 
   private updatePublicationTimestamps = async () => {
+    if (document.hidden) {
+      return;
+    }
     const maxPublicationTime = this._publicationContext.maxPublicationTime;
     if (!maxPublicationTime) {
       return;
     }
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetPublicationTimestamps${
-        this._query
-      }&updatedSince=${maxPublicationTime.toISOString()}`,
+      `${rootUrl}/ProductEditor/GetPublicationTimestamps${this._query}&${qs.stringify({
+        updatedSince: maxPublicationTime
+      })}`,
       {
-        method: "GET",
         credentials: "include"
       }
     );

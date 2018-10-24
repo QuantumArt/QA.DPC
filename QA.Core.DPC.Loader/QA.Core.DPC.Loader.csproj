@@ -324,6 +324,7 @@
     <Compile Include="Container\LoaderConfigurationExtension.cs" />
     <Compile Include="ContentDefinitionService.cs" />
     <Compile Include="DPCContentInvalidator.cs" />
+    <Compile Include="Editor\EditorCustomActionService.cs" />
     <Compile Include="Editor\EditorPartialContentService.cs" />
     <Compile Include="Editor\EditorDataModels.cs" />
     <Compile Include="Editor\EditorDataService.cs" />

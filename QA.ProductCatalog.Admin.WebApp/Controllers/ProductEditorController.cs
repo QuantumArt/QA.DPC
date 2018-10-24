@@ -43,6 +43,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly EditorPartialContentService _editorPartialContentService;
         private readonly EditorPreloadingService _editorPreloadingService;
         private readonly PublicationStatusService _publicationStatusService;
+        private readonly EditorCustomActionService _editorCustomActionService;
 
         public ProductEditorController(
             IContentDefinitionService contentDefinitionService,
@@ -57,7 +58,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             EditorDataService editorDataService,
             EditorPartialContentService editorPartialContentService,
             EditorPreloadingService editorPreloadingService,
-            PublicationStatusService publicationStatusService)
+            PublicationStatusService publicationStatusService,
+            EditorCustomActionService editorCustomActionService)
         {
             _contentDefinitionService = contentDefinitionService;
             _productService = productService;
@@ -72,6 +74,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorPartialContentService = editorPartialContentService;
             _editorPreloadingService = editorPreloadingService;
             _publicationStatusService = publicationStatusService;
+            _editorCustomActionService = editorCustomActionService;
         }
         
         /// <summary>
@@ -265,6 +268,16 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 });
 
             string json = JsonConvert.SerializeObject(timestampsById);
+
+            return Content(json, "application/json");
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetCustomActionByName(string actionName)
+        {
+            CustomActionInfo actionInfo = await _editorCustomActionService.GetCustomActionByName(actionName);
+
+            string json = JsonConvert.SerializeObject(actionInfo);
 
             return Content(json, "application/json");
         }

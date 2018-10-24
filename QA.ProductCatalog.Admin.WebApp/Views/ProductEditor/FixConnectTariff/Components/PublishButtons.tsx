@@ -4,6 +4,7 @@ import { MenuItem, Icon, Intent } from "@blueprintjs/core";
 import { ValidationSummay } from "Components/ValidationSummary/ValidationSummary";
 import { DataValidator } from "Services/DataValidator";
 import { OverlayPresenter } from "Services/OverlayPresenter";
+import { ActionController } from "Services/ActionController";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { Product } from "../TypeScriptSchema";
 
@@ -16,6 +17,7 @@ interface PublishButtonsProps {
 export class PublishButtons extends Component<PublishButtonsProps> {
   @inject private _dataValidator: DataValidator;
   @inject private _overlayPresenter: OverlayPresenter;
+  @inject private _actionController: ActionController;
 
   private publishProduct = async (e: any) => {
     e.stopPropagation();
@@ -25,7 +27,7 @@ export class PublishButtons extends Component<PublishButtonsProps> {
       await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
       return;
     }
-    window.alert(`TODO: Публиковать ${model._ServerId}`);
+    this._actionController.executeCustomAction("Публиковать", model, contentSchema);
   };
 
   private stageProduct = async (e: any) => {
@@ -36,7 +38,7 @@ export class PublishButtons extends Component<PublishButtonsProps> {
       await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
       return;
     }
-    window.alert(`TODO: Отправить на stage ${model._ServerId}`);
+    this._actionController.executeCustomAction("Отправить на stage", model, contentSchema);
   };
 
   render() {
@@ -44,7 +46,6 @@ export class PublishButtons extends Component<PublishButtonsProps> {
       <>
         <MenuItem
           labelElement={<Icon icon="tick-circle" intent={Intent.SUCCESS} />}
-          intent={Intent.SUCCESS}
           onClick={this.publishProduct}
           text="Публиковать"
           title="Публиковать"

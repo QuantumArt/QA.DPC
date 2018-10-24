@@ -9,6 +9,7 @@ import { DataNormalizer } from "Services/DataNormalizer";
 import { DataSerializer } from "Services/DataSerializer";
 import { DataMerger } from "Services/DataMerger";
 import { DataValidator } from "Services/DataValidator";
+import { ActionController } from "Services/ActionController";
 import { EntityController } from "Services/EntityController";
 import { RelationController } from "Services/RelationController";
 import { InitializationController } from "Services/InitializationController";
@@ -41,6 +42,7 @@ interface ProductEditorProps {
   DataValidator,
   SchemaLinker,
   SchemaCompiler,
+  ActionController,
   EntityController,
   InitializationController,
   FileController,

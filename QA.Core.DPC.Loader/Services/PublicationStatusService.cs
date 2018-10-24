@@ -55,7 +55,7 @@ namespace QA.Core.DPC.Loader.Services
                         IsLive AS {nameof(ProductTimestamp.IsLive)},
                         Updated AS {nameof(ProductTimestamp.Updated)}
                     FROM dbo.Products
-                    WHERE DpcId IN @productIds",
+                    WHERE DpcId IN @{nameof(productIds)}",
                     new { productIds });
 
                 return timestamps;
@@ -74,7 +74,7 @@ namespace QA.Core.DPC.Loader.Services
                         IsLive AS {nameof(ProductTimestamp.IsLive)},
                         Updated AS {nameof(ProductTimestamp.Updated)}
                     FROM dbo.Products
-                    WHERE Updated > @updatedSince",
+                    WHERE Updated > @{nameof(updatedSince)}",
                     new { updatedSince });
 
                 return timestamps;
