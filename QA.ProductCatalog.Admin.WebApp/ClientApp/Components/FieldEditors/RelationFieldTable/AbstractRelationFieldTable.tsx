@@ -14,7 +14,7 @@ export interface RelationFieldTableProps extends FieldEditorProps {
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   displayFields?: (string | FieldSelector)[];
-  relationActions?: ReactNode;
+  relationActions?: () => ReactNode;
 }
 
 export abstract class AbstractRelationFieldTable extends AbstractRelationFieldEditor<

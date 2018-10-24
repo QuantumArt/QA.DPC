@@ -35,7 +35,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
           onSelect={!this._readonly && this.selectRelation}
           onClear={!this._readonly && !!entity && this.detachEntity}
         >
-          {relationActions}
+          {relationActions && relationActions()}
         </RelationFieldMenu>
         {this.renderValidation(model, fieldSchema)}
         {entity && (

@@ -306,7 +306,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
           onReload={canReloadRelation && model._ServerId > 0 && this.reloadRelations}
           onClonePrototype={canClonePrototype && model._ServerId > 0 && this.clonePrototype}
         >
-          {relationActions}
+          {relationActions && relationActions()}
         </RelationFieldMenu>
         <Button
           small

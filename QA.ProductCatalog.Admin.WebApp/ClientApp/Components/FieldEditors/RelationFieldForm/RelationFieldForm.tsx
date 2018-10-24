@@ -225,7 +225,7 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
             canClonePrototype && model._ServerId > 0 && !entity && this.clonePrototype
           }
         >
-          {relationActions}
+          {relationActions && relationActions()}
         </RelationFieldMenu>
         <Button
           small

@@ -102,23 +102,28 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
     />
   );
 
-  private renderMarketingOffers = (props: FieldEditorProps) => (
-    <MultiRelationFieldTable
-      {...props}
-      relationActions={
-        <Button
-          minimal
-          small
-          rightIcon="pin"
-          intent={Intent.PRIMARY}
-          onClick={() => this.pinActionToMarketingTariff(props.model as FixConnectAction)}
-          title="Привязать к текущему маркетинговому тарифу фиксированной связи"
-        >
-          Привязать к текущему тарифу
-        </Button>
-      }
-    />
-  );
+  private renderMarketingOffers = (props: FieldEditorProps) => {
+    const fixAction = props.model as FixConnectAction;
+    const marketingTariff = this.props.model.MarketingProduct;
+    return (
+      <MultiRelationFieldTable
+        {...props}
+        relationActions={() => (
+          <Button
+            minimal
+            small
+            rightIcon="pin"
+            intent={Intent.PRIMARY}
+            disabled={fixAction.MarketingOffers.includes(marketingTariff)}
+            onClick={() => this.pinActionToMarketingTariff(props.model as FixConnectAction)}
+            title="Привязать к текущему маркетинговому тарифу фиксированной связи"
+          >
+            Привязать к текущему тарифу
+          </Button>
+        )}
+      />
+    );
+  };
 
   private renderActionParent = ({ model, fieldSchema }: FieldEditorProps) => {
     const contentSchema = (fieldSchema as RelationFieldSchema).RelatedContent;

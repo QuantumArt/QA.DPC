@@ -56,7 +56,7 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
           onSelect={!this._readonly && this.selectRelations}
           onClear={!this._readonly && !isEmpty && this.clearRelations}
         >
-          {relationActions}
+          {relationActions && relationActions()}
         </RelationFieldMenu>
         {this.renderValidation(model, fieldSchema)}
         {list && (

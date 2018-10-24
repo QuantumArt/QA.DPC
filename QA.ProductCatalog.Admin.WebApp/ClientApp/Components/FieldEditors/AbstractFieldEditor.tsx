@@ -188,6 +188,6 @@ export interface ExpandableFieldEditorProps extends FieldEditorProps {
   onReloadRelation?(relaoadRelation: () => Promise<void>): void;
   onClearRelation?(clearRelation: () => void): void;
   // custom actions
-  relationActions?: ReactNode;
-  entityActions?(entity: EntityObject): ReactNode;
+  relationActions?: () => ReactNode;
+  entityActions?: (entity: EntityObject) => ReactNode;
 }
