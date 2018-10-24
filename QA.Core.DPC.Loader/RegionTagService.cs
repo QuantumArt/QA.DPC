@@ -235,7 +235,7 @@ namespace QA.Core.DPC.Loader
                 {
                     _articleService.LoadStructureCache();  
                     
-                    var regionTagsDict = keysToLoad.Select(n => new { CacheKey = n, Tag = n.Replace(key, "")})
+                    var regionTagsDict = keysToLoad.Distinct().Select(n => new { CacheKey = n, Tag = n.Replace(key, "")})
                         .ToDictionary(n => n.Tag, m => m.CacheKey);
 
                     var regionTagsStr = string.Join(", ", regionTagsDict.Keys.Select(n => $"'{n.Replace("'", "''")}'"));
@@ -251,9 +251,16 @@ namespace QA.Core.DPC.Loader
                     var tagValueIds = tagValuesRelations.Values.SelectMany(n => n).Distinct().ToArray();
                     var tagValues = _articleService.List(TagValuesContentId, tagValueIds).ToDictionary(n => n.Id, m => m);
 
-                    return tags.Select(t => new TagWithValues() {
+                    return tags.Select(t => new {
                             Title = t.FieldValues.Single(n => n.Field.Name == TagTitleName).Value,
-                            Values = GetTagValues(t, tagValuesRelations, tagValues)
+                            Values = GetTagValues(t, tagValuesRelations, tagValues),
+                            Id = t.Id
+                        })
+                        .GroupBy(n => n.Title)
+                        .Select( group => new TagWithValues
+                        {
+                            Title = group.Key,
+                            Values = group.OrderBy(n => n.Id).First().Values
                         })
                         .ToDictionary(n => regionTagsDict[n.Title], m => m);
                 }

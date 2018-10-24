@@ -41,9 +41,9 @@ namespace QA.Core.DPC.Front
             {
                 return locator.GetSerialiser().Deserialize(data);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // ignored
+                Logger.Error(ex.Message);
             }
 
             return null;
