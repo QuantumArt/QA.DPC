@@ -192,6 +192,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
     <RelationFieldTabs
       {...props}
       vertical
+      renderAllTabs
       titleField={deviceTitleField}
       displayField={deviceDisplayField}
       fieldOrders={["MarketingDevice", "Parent"]}
@@ -202,7 +203,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
       }}
       canClonePrototype
       canRemoveEntity
-      onShowEntity={device => device.setTouched("MarketingDevice")}
+      onMountEntity={device => device.setTouched("MarketingDevice")}
     />
   );
 

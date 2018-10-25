@@ -377,8 +377,8 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
       highlightItems,
       skipOtherFields,
       entityActions,
-      onShowEntity,
-      onHideEntity,
+      onMountEntity,
+      onUnmountEntity,
       canSaveEntity,
       canRefreshEntity,
       canReloadEntity,
@@ -484,8 +484,8 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                         fieldOrders={fieldOrders}
                         fieldEditors={fieldEditors}
                         skipOtherFields={skipOtherFields}
-                        onShowEntity={onShowEntity}
-                        onHideEntity={onHideEntity}
+                        onMountEntity={onMountEntity}
+                        onUnmountEntity={onUnmountEntity}
                       />
                     )}
                   </td>

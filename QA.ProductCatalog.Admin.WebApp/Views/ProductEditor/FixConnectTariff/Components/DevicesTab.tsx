@@ -109,7 +109,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
           Parameters: this.renderParameters,
           Regions: this.renderRegions
         }}
-        onShowEntity={(product: Product) => product.setTouched("Regions")}
+        onMountEntity={(product: Product) => product.setTouched("Regions")}
         entityActions={(product: Product) => (
           <PublishButtons model={product} contentSchema={fieldSchema.RelatedContent} />
         )}

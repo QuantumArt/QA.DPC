@@ -247,8 +247,8 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
       borderless,
       className,
       entityActions,
-      onShowEntity,
-      onHideEntity,
+      onMountEntity,
+      onUnmountEntity,
       onSaveEntity,
       onRefreshEntity,
       onReloadEntity,
@@ -277,8 +277,8 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
           skipOtherFields={skipOtherFields}
           fieldOrders={fieldOrders}
           fieldEditors={fieldEditors}
-          onShowEntity={onShowEntity}
-          onHideEntity={onHideEntity}
+          onMountEntity={onMountEntity}
+          onUnmountEntity={onUnmountEntity}
           onSaveEntity={onSaveEntity}
           onRefreshEntity={onRefreshEntity}
           onReloadEntity={onReloadEntity}

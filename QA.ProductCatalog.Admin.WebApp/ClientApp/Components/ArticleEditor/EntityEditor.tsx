@@ -32,8 +32,8 @@ interface EntityEditorProps extends ArticleEditorProps {
   onRemoveEntity?(entity: EntityObject): void;
   onDetachEntity?(entity: EntityObject): void;
   onCloneEntity?(entity: EntityObject): void;
-  onShowEntity?(entity: EntityObject): void;
-  onHideEntity?(entity: EntityObject): void;
+  onMountEntity?(entity: EntityObject): void;
+  onUnmountEntity?(entity: EntityObject): void;
   // custom actions
   customActions?(entity: EntityObject): ReactNode;
 }
@@ -130,16 +130,16 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   };
 
   componentDidMount() {
-    const { model, onShowEntity } = this.props;
-    if (onShowEntity) {
-      onShowEntity(model);
+    const { model, onMountEntity } = this.props;
+    if (onMountEntity) {
+      onMountEntity(model);
     }
   }
 
   componentWillUnmount() {
-    const { model, onHideEntity } = this.props;
-    if (onHideEntity) {
-      onHideEntity(model);
+    const { model, onUnmountEntity } = this.props;
+    if (onUnmountEntity) {
+      onUnmountEntity(model);
     }
   }
 

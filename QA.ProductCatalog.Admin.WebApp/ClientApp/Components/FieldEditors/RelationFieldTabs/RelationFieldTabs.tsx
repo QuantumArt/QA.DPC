@@ -30,6 +30,7 @@ interface RelationFieldTabsProps extends ExpandableFieldEditorProps {
   vertical?: boolean;
   className?: string;
   borderless?: boolean;
+  renderAllTabs?: boolean;
 }
 
 interface RelationFieldTabsState {
@@ -329,11 +330,12 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
       fieldOrders,
       fieldEditors,
       vertical,
+      renderAllTabs,
       className,
       titleField,
       entityActions,
-      onShowEntity,
-      onHideEntity,
+      onMountEntity,
+      onUnmountEntity,
       onSaveEntity,
       onRefreshEntity,
       onReloadEntity,
@@ -357,7 +359,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
     }
     return (
       <Tabs
-        renderActiveTabPanelOnly
+        renderActiveTabPanelOnly={!renderAllTabs}
         vertical={vertical}
         id={`${tabId}_${fieldSchema.FieldName}`}
         className={cn("relation-field-tabs", className, {
@@ -387,8 +389,8 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
                       fieldEditors={fieldEditors}
                       titleField={titleField}
                       withHeader
-                      onShowEntity={onShowEntity}
-                      onHideEntity={onHideEntity}
+                      onMountEntity={onMountEntity}
+                      onUnmountEntity={onUnmountEntity}
                       onSaveEntity={onSaveEntity}
                       onRefreshEntity={onRefreshEntity}
                       onReloadEntity={onReloadEntity}

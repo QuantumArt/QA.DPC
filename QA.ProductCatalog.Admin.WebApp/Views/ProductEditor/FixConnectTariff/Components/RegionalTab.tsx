@@ -153,7 +153,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           Parameters: this.renderInternetParameters,
           Regions: this.renderRegions
         }}
-        onShowEntity={(product: Product) => product.setTouched("Regions")}
+        onMountEntity={(product: Product) => product.setTouched("Regions")}
         entityActions={(product: Product) => (
           <PublishButtons model={product} contentSchema={fieldSchema.RelatedContent} />
         )}
@@ -183,7 +183,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           Parameters: this.renderPhoneParameters,
           Regions: this.renderRegions
         }}
-        onShowEntity={(product: Product) => product.setTouched("Regions")}
+        onMountEntity={(product: Product) => product.setTouched("Regions")}
         entityActions={(product: Product) => (
           <PublishButtons model={product} contentSchema={fieldSchema.RelatedContent} />
         )}
