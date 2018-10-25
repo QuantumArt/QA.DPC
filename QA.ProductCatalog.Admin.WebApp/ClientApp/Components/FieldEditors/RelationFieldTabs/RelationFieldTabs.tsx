@@ -29,7 +29,6 @@ interface RelationFieldTabsProps extends ExpandableFieldEditorProps {
   collapsed?: boolean;
   vertical?: boolean;
   className?: string;
-  borderless?: boolean;
   renderAllTabs?: boolean;
 }
 
@@ -350,6 +349,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
     } = this.props;
     const { isOpen, isTouched, activeId } = this.state;
     const dataSource = this.dataSource;
+    const contentSchema = fieldSchema.RelatedContent;
     const isEmpty = !dataSource || dataSource.length === 0;
     const isSingle = dataSource && dataSource.length === 1;
     let tabId = RelationFieldTabs._tabIdsByModel.get(model);
@@ -375,12 +375,15 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
           dataSource &&
           dataSource.map(entity => {
             const title = this.getTitle(entity);
+            const shouldRender = renderAllTabs || activeId === entity._ClientId;
+            const isEdited = contentSchema.isEdited(entity);
+            const hasVisibleErrors = contentSchema.hasVisibleErrors(entity);
             return (
               <Tab
                 key={entity._ClientId}
                 id={entity._ClientId}
                 panel={
-                  activeId === entity._ClientId && (
+                  shouldRender && (
                     <EntityEditor
                       model={entity}
                       contentSchema={fieldSchema.RelatedContent}
@@ -410,7 +413,13 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
                   )
                 }
               >
-                <div className="relation-field-tabs__title" title={isString(title) ? title : ""}>
+                <div
+                  className={cn("relation-field-tabs__title", {
+                    "relation-field-tabs__title--edited": isEdited,
+                    "relation-field-tabs__title--invalid": hasVisibleErrors
+                  })}
+                  title={isString(title) ? title : ""}
+                >
                   {title}
                 </div>
               </Tab>

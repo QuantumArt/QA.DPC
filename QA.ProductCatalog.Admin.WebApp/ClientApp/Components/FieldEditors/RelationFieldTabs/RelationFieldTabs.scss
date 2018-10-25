@@ -1,3 +1,5 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
 .relation-field-tabs {
   &--empty,
   &--hidden {
@@ -23,6 +25,20 @@
   &__title {
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &--edited {
+      color: $blue2;
+      text-shadow: 0 0 0 $blue2;
+      text-decoration-line: underline;
+      text-underline-position: under;
+    }
+
+    &--invalid {
+      color: $red2;
+      text-shadow: 0 0 0 $red2;
+      text-decoration-line: underline;
+      text-underline-position: under;
+    }
   }
 
   &:not(.bp3-vertical) > .bp3-tab-list {
