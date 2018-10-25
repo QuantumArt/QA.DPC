@@ -21,7 +21,7 @@ import {
 } from "Components/FormControls/FormControls";
 import { pattern } from "Utils/Validators";
 import { Intent } from "@blueprintjs/core";
-import { AbstractFieldEditor } from "./AbstractFieldEditor";
+import { AbstractFieldEditor, HighlightMode } from "./AbstractFieldEditor";
 import { Validate } from "mst-validation-mixin";
 export { FileFieldEditor } from "./FileFieldEditor";
 export { TextFieldEditor } from "./TextFieldEditor";
@@ -40,6 +40,7 @@ export {
   MultiRelationFieldTable,
   RelationFieldTable
 } from "./RelationFieldTable/RelationFieldTable";
+export { HighlightMode };
 
 @observer
 export class StringFieldEditor extends AbstractFieldEditor {

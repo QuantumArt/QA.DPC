@@ -2,15 +2,19 @@ import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
+import { EntityObject } from "Models/EditorDataModels";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
   FieldSelector,
-  EntityComparer
+  EntityComparer,
+  HighlightMode
 } from "../AbstractFieldEditor";
 import "./RelationFieldTable.scss";
 
 export interface RelationFieldTableProps extends FieldEditorProps {
+  filterItems?: (item: EntityObject) => boolean;
+  highlightItems?: (item: EntityObject) => HighlightMode;
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   displayFields?: (string | FieldSelector)[];

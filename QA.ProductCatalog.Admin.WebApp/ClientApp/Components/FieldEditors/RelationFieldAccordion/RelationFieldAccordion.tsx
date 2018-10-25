@@ -18,7 +18,8 @@ import {
   AbstractRelationFieldEditor,
   ExpandableFieldEditorProps,
   FieldSelector,
-  EntityComparer
+  EntityComparer,
+  HighlightMode
 } from "Components/FieldEditors/AbstractFieldEditor";
 import "./RelationFieldAccordion.scss";
 
@@ -30,12 +31,6 @@ export interface RelationFieldAccordionProps extends ExpandableFieldEditorProps 
   columnProportions?: number[];
   displayFields?: (string | FieldSelector)[];
   collapsed?: boolean;
-}
-
-export const enum HighlightMode {
-  None,
-  Highlight,
-  Shade
 }
 
 interface RelationFieldAccordionState {

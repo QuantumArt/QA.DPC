@@ -1,3 +1,5 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
 .relation-field-table {
   overflow-y: auto;
   max-height: 237px;
@@ -14,6 +16,14 @@
 
   &:hover {
     background-color: rgba(19, 124, 189, 0.15);
+  }
+
+  &--highlight {
+    text-shadow: 0 0 0 $dark-gray1;
+  }
+
+  &--shade {
+    color: $gray1;
   }
 }
 

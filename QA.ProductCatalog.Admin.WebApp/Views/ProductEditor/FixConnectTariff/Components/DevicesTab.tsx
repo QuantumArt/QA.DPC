@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { consumer, inject } from "react-ioc";
-import { Divider } from "@blueprintjs/core";
+import { action } from "mobx";
+import { Divider, Button, Intent } from "@blueprintjs/core";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import { ExtensionEditor } from "Components/ArticleEditor/ExtensionEditor";
 import { makePublicatoinStatusIcons } from "Components/PublicationStatusIcon/PublicationStatusIcon";
@@ -8,7 +9,8 @@ import {
   RelationFieldTabs,
   RelationFieldAccordion,
   MultiRelationFieldTable,
-  MultiRelationFieldTags
+  MultiRelationFieldTags,
+  HighlightMode
 } from "Components/FieldEditors/FieldEditors";
 import {
   ContentSchema,
@@ -16,7 +18,8 @@ import {
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
 import { PublicationContext } from "Services/PublicationContext";
-import { Product, DeviceOnTariffs, ProductRelation } from "../TypeScriptSchema";
+import { by, desc, asc } from "Utils/Array";
+import { Product, DeviceOnTariffs, ProductRelation, MarketingProduct } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { hasUniqueRegions } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
@@ -33,6 +36,15 @@ export class DevicesTab extends Component<DevicesTabProps> {
   @inject private publicationContext: PublicationContext;
 
   private filterModel = new FilterModel(this.props.model);
+
+  @action
+  private pinDeviceToMarketingTariff(deviceOnTariffs: DeviceOnTariffs) {
+    const marketingTariff = this.props.model.MarketingProduct;
+    if (!deviceOnTariffs.MarketingTariffs.includes(marketingTariff)) {
+      deviceOnTariffs.MarketingTariffs.push(marketingTariff);
+      deviceOnTariffs.setTouched("MarketingTariffs");
+    }
+  }
 
   render() {
     const { model, contentSchema } = this.props;
@@ -105,6 +117,23 @@ export class DevicesTab extends Component<DevicesTabProps> {
     );
   };
 
+  private renderRegions = (props: FieldEditorProps) => {
+    const product = props.model as Product;
+    return (
+      <MultiRelationFieldTags {...props} sortItemsBy="Title" validate={hasUniqueRegions(product)} />
+    );
+  };
+
+  private renderParameters = (props: FieldEditorProps) => (
+    <ParameterFields
+      {...props}
+      fields={[
+        { Title: "Цена аренды", Unit: "rub_month", BaseParam: "RentPrice" },
+        { Title: "Цена продажи", Unit: "rub", BaseParam: "SalePrice" }
+      ]}
+    />
+  );
+
   private renderDevicesOnTariffs = (props: FieldEditorProps) => (
     <RelationFieldAccordion
       {...props}
@@ -123,25 +152,8 @@ export class DevicesTab extends Component<DevicesTabProps> {
       fieldEditors={{
         MarketingDevice: IGNORE,
         Parent: this.renderDeviceOnTariffParent,
-        MarketingTariffs: MultiRelationFieldTable
+        MarketingTariffs: this.renderDevicesOnTariffsMarketingTariffs
       }}
-    />
-  );
-
-  private renderRegions = (props: FieldEditorProps) => {
-    const product = props.model as Product;
-    return (
-      <MultiRelationFieldTags {...props} sortItemsBy="Title" validate={hasUniqueRegions(product)} />
-    );
-  };
-
-  private renderParameters = (props: FieldEditorProps) => (
-    <ParameterFields
-      {...props}
-      fields={[
-        { Title: "Цена аренды", Unit: "rub_month", BaseParam: "RentPrice" },
-        { Title: "Цена продажи", Unit: "rub", BaseParam: "SalePrice" }
-      ]}
     />
   );
 
@@ -159,6 +171,39 @@ export class DevicesTab extends Component<DevicesTabProps> {
           }}
         />
       )
+    );
+  };
+
+  private renderDevicesOnTariffsMarketingTariffs = (props: FieldEditorProps) => {
+    const device = props.model as DeviceOnTariffs;
+    const marketingTariff = this.props.model.MarketingProduct;
+    return (
+      <MultiRelationFieldTable
+        {...props}
+        highlightItems={(deviceTariff: MarketingProduct) =>
+          deviceTariff === marketingTariff ? HighlightMode.Highlight : HighlightMode.None
+        }
+        sortItems={by(
+          desc((deviceTariff: MarketingProduct) => deviceTariff === marketingTariff),
+          asc((deviceTariff: MarketingProduct) => deviceTariff.Title)
+        )}
+        relationActions={() => (
+          <>
+            {!device.MarketingTariffs.includes(marketingTariff) && (
+              <Button
+                minimal
+                small
+                rightIcon="pin"
+                intent={Intent.PRIMARY}
+                onClick={() => this.pinDeviceToMarketingTariff(device)}
+                title="Привязать к текущему маркетинговому тарифу фиксированной связи"
+              >
+                Привязать к текущему тарифу
+              </Button>
+            )}
+          </>
+        )}
+      />
     );
   };
 }

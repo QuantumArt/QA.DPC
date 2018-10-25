@@ -9,15 +9,17 @@ import {
   RelationFieldAccordion,
   MultiRelationFieldTable,
   RelationFieldTabs,
-  SingleRelationFieldTags
+  SingleRelationFieldTags,
+  HighlightMode
 } from "Components/FieldEditors/FieldEditors";
 import { makePublicatoinStatusIcons } from "Components/PublicationStatusIcon/PublicationStatusIcon";
-import { by, asc } from "Utils/Array";
+import { by, asc, desc } from "Utils/Array";
 import {
   Product,
   FixConnectAction,
   DevicesForFixConnectAction,
-  ProductRelation
+  ProductRelation,
+  MarketingProduct
 } from "../TypeScriptSchema";
 import { hasUniqueMarketingDevice } from "../Utils/Validators";
 import { FilterModel } from "../Models/FilterModel";
@@ -108,6 +110,13 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
     return (
       <MultiRelationFieldTable
         {...props}
+        highlightItems={(marketingOffer: MarketingProduct) =>
+          marketingOffer === marketingTariff ? HighlightMode.Highlight : HighlightMode.None
+        }
+        sortItems={by(
+          desc((marketingOffer: MarketingProduct) => marketingOffer === marketingTariff),
+          asc((marketingOffer: MarketingProduct) => marketingOffer.Title)
+        )}
         relationActions={() => (
           <>
             {!fixAction.MarketingOffers.includes(marketingTariff) && (
@@ -116,7 +125,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
                 small
                 rightIcon="pin"
                 intent={Intent.PRIMARY}
-                onClick={() => this.pinActionToMarketingTariff(props.model as FixConnectAction)}
+                onClick={() => this.pinActionToMarketingTariff(fixAction)}
                 title="Привязать к текущему маркетинговому тарифу фиксированной связи"
               >
                 Привязать к текущему тарифу

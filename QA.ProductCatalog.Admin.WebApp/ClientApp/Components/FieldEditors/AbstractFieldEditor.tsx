@@ -155,6 +155,12 @@ export abstract class AbstractRelationFieldEditor<
   }
 }
 
+export const enum HighlightMode {
+  None,
+  Highlight,
+  Shade
+}
+
 export interface ExpandableFieldEditorProps extends FieldEditorProps {
   // ArticleEditor props
   fieldOrders?: string[];

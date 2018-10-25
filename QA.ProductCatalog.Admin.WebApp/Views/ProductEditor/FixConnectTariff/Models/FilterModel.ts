@@ -1,5 +1,5 @@
 import { observable, action, computed } from "mobx";
-import { HighlightMode } from "Components/FieldEditors/RelationFieldAccordion/RelationFieldAccordion";
+import { HighlightMode } from "Components/FieldEditors/FieldEditors";
 import { Product, DeviceOnTariffs, FixConnectAction } from "../TypeScriptSchema";
 
 export class FilterModel {
