@@ -6,11 +6,11 @@ skinparam BoxPadding 100
 participant Backend
 
 box "Frontend Services"
-participant ProductController
+participant InitializationController
+participant SchemaLinker
 participant DataSerializer
 participant DataNormalizer
 database DataContext
-database SchemaContext
 end box
 
 collections Components
@@ -21,27 +21,30 @@ hnote over Components
   сервисы в DI
 end note
 
-hnote over ProductController
+hnote over InitializationController
   читаем настройкииз DI
 end note
 
-Components -> ProductController: <b>.initialize()
-activate ProductController
+Components -> InitializationController: <b>.initialize()
+activate InitializationController
 
-ProductController -> Backend: <b>/GetEditorSchema\n<b>?productDefinitionId
-note left of ProductController: EditorSchemaModel
-Backend --> ProductController
+InitializationController -> Backend: <b>/GetEditorSchema\n<b>?productDefinitionId
+note left of InitializationController: EditorSchemaModel
+Backend --> InitializationController
 
-ProductController -> SchemaContext: <b>.initSchema( schemaModel )
-hnote over SchemaContext
+InitializationController -> SchemaLinker: <b>.linkSchema( schemaModel )
+hnote over SchemaLinker
  Линкуем $ref
  ссылки в схеме
 end note
 
-ProductController -> DataNormalizer: <b>.initSchema( schemaModel )
+note right of InitializationController: Schema Graph
+SchemaLinker --> InitializationController
+
+InitializationController -> DataNormalizer: <b>.initSchema( schemaGraph )
 hnote over DataNormalizer: строим схему Normalizr
 
-ProductController -> DataContext: <b>.initSchema( schemaModel )
+InitializationController -> DataContext: <b>.initSchema( schemaGraph )
 hnote over DataContext
   строим схему
   MobX State Tree
@@ -53,46 +56,58 @@ end note
 
 alt Создаем новый продукт
 
-  ProductController -> DataContext: <b>.initStore( {} )
+  InitializationController -> SchemaLinker: \n<b>.addPreloadedArticles( {} )
+  hnote over SchemaLinker
+    Добавляем предзагруженные
+    статьи в пустой снапшот
+  end note
+
+  InitializationController -> DataContext: <b>.initStore( flatObjects )
   hnote over DataContext: Создаем пустой Store
 
-  ProductController -> DataContext: <b>.createArticle( contentName )
+  InitializationController -> DataContext: <b>.createArticle( contentName )
 
-  note right of ProductController: New Article
-  DataContext --> ProductController
+  note right of InitializationController: New Article
+  DataContext --> InitializationController
 
 else Редактируем существующий продукт
 
   ...
 
-  ProductController -> Backend: <b>/GetEditorData\n<b>?articleId
-  note left of ProductController: EditorDataModel
-  Backend --> ProductController:
+  InitializationController -> Backend: <b>/GetEditorData\n<b>?articleId
+  note left of InitializationController: EditorDataModel
+  Backend --> InitializationController:
 
-  ProductController -> DataSerializer: <b>.deserialize( JSON )
-  note right of ProductController: Nested Objects
-  DataSerializer --> ProductController
+  InitializationController -> DataSerializer: <b>.deserialize( JSON )
+  note right of InitializationController: Nested Objects
+  DataSerializer --> InitializationController
 
-  ProductController -> DataNormalizer: \n<b>.normalize( nestedObjects )
-  note right of ProductController: Flat Objects
-  DataNormalizer --> ProductController
+  InitializationController -> DataNormalizer: \n<b>.normalize( nestedObjects )
+  note right of InitializationController: Flat Objects
+  DataNormalizer --> InitializationController
 
-  ProductController -> DataContext: \n<b>.initStore( flatObjects )
+  InitializationController -> SchemaLinker: \n<b>.addPreloadedArticles( flatObjects )
+  hnote over SchemaLinker
+    Добавляем предзагруженные
+    статьи в снапшот
+  end note
+
+  InitializationController -> DataContext: \n<b>.initStore( flatObjects )
   hnote over DataContext
     Создаем Store из
     плоских объектов
   end note
 
-  ProductController -> DataContext: <b>.store[ contentName ].get( articleId )
-  note right of ProductController: Article Graph
-  DataContext --> ProductController
+  InitializationController -> DataContext: <b>.store[ contentName ].get( articleId )
+  note right of InitializationController: Article Graph
+  DataContext --> InitializationController
 
-deactivate ProductController
+deactivate InitializationController
 end
 
 note left of Components: Article Graph
-ProductController --> Components
+InitializationController --> Components
 
-deactivate ProductController
+deactivate InitializationController
 
 @enduml
