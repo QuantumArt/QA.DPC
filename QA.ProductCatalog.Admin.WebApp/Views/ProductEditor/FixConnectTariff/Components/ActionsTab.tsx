@@ -69,40 +69,43 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
     );
   }
 
-  private renderActions = (props: FieldEditorProps) => (
-    <RelationFieldAccordion
-      {...props}
-      filterItems={this.filterModel.filterActions}
-      highlightItems={this.filterModel.highlightAction}
-      sortItems={by(
-        asc((action: FixConnectAction) => action.Parent.MarketingProduct._ServerId),
-        asc((action: FixConnectAction) => action.Parent._ServerId)
-      )}
-      columnProportions={[4, 10, 1]}
-      displayFields={[
-        actionTitleDisplayField,
-        actionRegionsDisplayField,
-        makePublicatoinStatusIcons(this.publicationContext, props.fieldSchema)
-      ]}
-      fieldOrders={["Parent", "PromoPeriod", "AfterPromo", "MarketingOffers"]}
-      fieldEditors={{
-        Parent: this.renderActionParent,
-        MarketingOffers: this.renderMarketingOffers
-      }}
-      canClonePrototype
-      canCloneEntity
-      canRemoveEntity
-      canSelectRelation
-      onClonePrototype={async clonePrototype => {
-        await clonePrototype();
-        props.model.setChanged(props.fieldSchema.FieldName, false);
-      }}
-      onSelectRelation={async selectRelation => {
-        await selectRelation();
-        props.model.setChanged(props.fieldSchema.FieldName, false);
-      }}
-    />
-  );
+  private renderActions = (props: FieldEditorProps) => {
+    const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    return (
+      <RelationFieldAccordion
+        {...props}
+        filterItems={this.filterModel.filterActions}
+        highlightItems={this.filterModel.highlightAction}
+        sortItems={by(
+          asc((action: FixConnectAction) => action.Parent.MarketingProduct._ServerId),
+          asc((action: FixConnectAction) => action.Parent._ServerId)
+        )}
+        columnProportions={[4, 10, 1]}
+        displayFields={[
+          actionTitleDisplayField,
+          actionRegionsDisplayField,
+          makePublicatoinStatusIcons(this.publicationContext, fieldSchema.RelatedContent)
+        ]}
+        fieldOrders={["Parent", "PromoPeriod", "AfterPromo", "MarketingOffers"]}
+        fieldEditors={{
+          Parent: this.renderActionParent,
+          MarketingOffers: this.renderMarketingOffers
+        }}
+        canClonePrototype
+        canCloneEntity
+        canRemoveEntity
+        canSelectRelation
+        onClonePrototype={async clonePrototype => {
+          await clonePrototype();
+          props.model.setChanged(props.fieldSchema.FieldName, false);
+        }}
+        onSelectRelation={async selectRelation => {
+          await selectRelation();
+          props.model.setChanged(props.fieldSchema.FieldName, false);
+        }}
+      />
+    );
+  };
 
   private renderMarketingOffers = (props: FieldEditorProps) => {
     const fixAction = props.model as FixConnectAction;

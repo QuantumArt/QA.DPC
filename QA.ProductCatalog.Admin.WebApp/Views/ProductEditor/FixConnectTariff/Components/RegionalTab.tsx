@@ -52,7 +52,12 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           withHeader
           model={model}
           contentSchema={contentSchema}
-          titleField={(p: Product) => p.MarketingProduct && p.MarketingProduct.Title}
+          titleField={(p: Product) => (
+            <>
+              {p.MarketingProduct && p.MarketingProduct.Title}
+              <div style={{ float: "right" }}>{this.renderPublicationStatusIcons(model)}</div>
+            </>
+          )}
           fieldOrders={[
             // поля статьи расширения
             "Type",
@@ -86,6 +91,11 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       </>
     );
   }
+
+  private renderPublicationStatusIcons = makePublicatoinStatusIcons(
+    this.publicationContext,
+    this.props.contentSchema
+  );
 
   private renderMarketingInternetTariff() {
     const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
@@ -142,7 +152,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         columnProportions={[20, 1]}
         displayFields={[
           regionsDisplayField,
-          makePublicatoinStatusIcons(this.publicationContext, fieldSchema)
+          makePublicatoinStatusIcons(this.publicationContext, fieldSchema.RelatedContent)
         ]}
         filterItems={this.filterModel.filterProducts}
         highlightItems={this.filterModel.highlightProduct}
@@ -172,7 +182,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         columnProportions={[20, 1]}
         displayFields={[
           regionsDisplayField,
-          makePublicatoinStatusIcons(this.publicationContext, fieldSchema)
+          makePublicatoinStatusIcons(this.publicationContext, fieldSchema.RelatedContent)
         ]}
         filterItems={this.filterModel.filterProducts}
         highlightItems={this.filterModel.highlightProduct}

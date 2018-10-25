@@ -98,7 +98,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
           regionsDisplayField,
           rentPriceDisplayField,
           salePriceDisplayField,
-          makePublicatoinStatusIcons(this.publicationContext, fieldSchema)
+          makePublicatoinStatusIcons(this.publicationContext, fieldSchema.RelatedContent)
         ]}
         filterItems={this.filterModel.filterProducts}
         highlightItems={this.filterModel.highlightProduct}
