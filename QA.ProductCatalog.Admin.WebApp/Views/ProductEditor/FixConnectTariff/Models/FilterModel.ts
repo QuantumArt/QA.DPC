@@ -126,6 +126,9 @@ export class FilterModel {
 
   public highlightAction = (action: FixConnectAction) => {
     const { filterByTariffRegions, fixTariffHasRegionId } = this;
+    if (!action.getBaseValue("MarketingOffers").includes(this.fixTariff.MarketingProduct)) {
+      return HighlightMode.Shade;
+    }
     if (filterByTariffRegions) {
       return HighlightMode.None;
     }
