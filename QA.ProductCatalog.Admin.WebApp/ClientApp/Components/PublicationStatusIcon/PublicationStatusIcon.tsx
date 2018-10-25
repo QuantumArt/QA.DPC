@@ -23,7 +23,7 @@ export const makePublicatoinStatusIcons = (
             className={cn("publication-status-icon", {
               "publication-status-icon--sync": stageIsSync
             })}
-            title={stageIsSync ? "Опубликовано на STAGE" : "Требуется публикацияна STAGE"}
+            title={stageIsSync ? "Опубликовано на STAGE" : "Требуется публикация на STAGE"}
           >
             S
           </div>
