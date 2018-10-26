@@ -16,7 +16,7 @@ import { RelationController } from "Services/RelationController";
 import { InitializationController } from "Services/InitializationController";
 import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
-import { isFunction, isString } from "Utils/TypeChecks";
+import { isFunction, isString, isObject } from "Utils/TypeChecks";
 import { EditorSettings, EditorQueryParams } from "Models/EditorSettingsModels";
 import { FileController } from "Services/FileController";
 import { SchemaLinker } from "Services/SchemaLinker";
@@ -68,12 +68,19 @@ export class ProductEditor extends Component<ProductEditorProps> {
 
   constructor(props: ProductEditorProps, context?: any) {
     super(props, context);
-    Object.assign(this._editorSettings, props.settings);
-    Object.assign(this._relationsConfig, props.relationEditors);
+    const { settings, queryParams, relationEditors } = this.props;
+    Object.assign(this._editorSettings, settings);
+    Object.assign(this._relationsConfig, relationEditors);
 
-    const queryString = props.queryParams || document.location.search;
-    const queryParams = isString(queryString) ? qs.parse(queryString) : queryString;
-    Object.assign(this._queryParams, queryParams);
+    if (isObject(queryParams)) {
+      Object.assign(this._queryParams, queryParams);
+    } else {
+      let queryString = isString(queryParams) ? queryParams : document.location.search;
+      if (queryString.startsWith("?")) {
+        queryString = queryString.slice(1);
+      }
+      Object.assign(this._queryParams, qs.parse(queryString));
+    }
   }
 
   async componentDidMount() {
