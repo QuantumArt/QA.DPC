@@ -17,7 +17,11 @@ import { InitializationController } from "Services/InitializationController";
 import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { isFunction, isString, isObject } from "Utils/TypeChecks";
-import { EditorSettings, EditorQueryParams } from "Models/EditorSettingsModels";
+import {
+  EditorSettings,
+  EditorQueryParams,
+  PublicationTrackerSettings
+} from "Models/EditorSettingsModels";
 import { FileController } from "Services/FileController";
 import { SchemaLinker } from "Services/SchemaLinker";
 import { SchemaCompiler } from "Services/SchemaCompiler";
@@ -28,8 +32,9 @@ import { OverlayPresenter } from "Services/OverlayPresenter";
 type RenderEditor = (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
 
 interface ProductEditorProps {
-  settings: EditorSettings;
+  editorSettings: EditorSettings;
   queryParams?: EditorQueryParams | string;
+  publicationTrackerSettings?: Partial<PublicationTrackerSettings>;
   relationEditors?: RelationsConfig;
   children?: RenderEditor | ReactNode;
 }
@@ -52,12 +57,14 @@ interface ProductEditorProps {
   OverlayPresenter,
   RelationsConfig,
   EditorSettings,
-  EditorQueryParams
+  EditorQueryParams,
+  PublicationTrackerSettings
 )
 export class ProductEditor extends Component<ProductEditorProps> {
   @inject private _editorSettings: EditorSettings;
   @inject private _queryParams: EditorQueryParams;
   @inject private _relationsConfig: RelationsConfig;
+  @inject private _publicationTrackerSettings: PublicationTrackerSettings;
   @inject private _initializationController: InitializationController;
   @inject private _overlayPresenter: OverlayPresenter;
 
@@ -68,9 +75,10 @@ export class ProductEditor extends Component<ProductEditorProps> {
 
   constructor(props: ProductEditorProps, context?: any) {
     super(props, context);
-    const { settings, queryParams, relationEditors } = this.props;
-    Object.assign(this._editorSettings, settings);
+    const { editorSettings, queryParams, relationEditors, publicationTrackerSettings } = this.props;
+    Object.assign(this._editorSettings, editorSettings);
     Object.assign(this._relationsConfig, relationEditors);
+    Object.assign(this._publicationTrackerSettings, publicationTrackerSettings);
 
     if (isObject(queryParams)) {
       Object.assign(this._queryParams, queryParams);

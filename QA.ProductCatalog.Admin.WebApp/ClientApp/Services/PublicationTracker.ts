@@ -2,7 +2,7 @@ import qs from "qs";
 import { inject } from "react-ioc";
 import { IReactionDisposer, computed, reaction } from "mobx";
 import { rootUrl } from "Utils/Common";
-import { EditorQueryParams } from "Models/EditorSettingsModels";
+import { EditorQueryParams, PublicationTrackerSettings } from "Models/EditorSettingsModels";
 import { DataContext } from "Services/DataContext";
 import { PublicationContext } from "Services/PublicationContext";
 import { isIsoDateString } from "Utils/TypeChecks";
@@ -11,6 +11,7 @@ export class PublicationTracker {
   @inject private _queryParams: EditorQueryParams;
   @inject private _dataContext: DataContext;
   @inject private _publicationContext: PublicationContext;
+  @inject private _settings: PublicationTrackerSettings;
 
   private _loadedProductIds = new Set<number>();
   private _reactionDisposer: IReactionDisposer;
@@ -18,9 +19,15 @@ export class PublicationTracker {
 
   @computed
   private get allProductIds() {
-    return [...this._dataContext.tables.Product.values()]
-      .filter(product => product._ServerId)
-      .map(product => Number(product._ServerId));
+    const ids: number[] = [];
+    this._settings.contentNames.forEach(tableName => {
+      for (let entity of this._dataContext.tables[tableName].values()) {
+        if (entity._ServerId) {
+          ids.push(Number(entity._ServerId));
+        }
+      }
+    });
+    return ids;
   }
 
   public dispose() {
@@ -33,12 +40,15 @@ export class PublicationTracker {
   }
 
   public async initStatusTracking() {
-    if ("Product" in this._dataContext.tables) {
+    if (this._settings.contentNames.length > 0) {
       await Promise.all([this.loadMaxPublicationTime(), this.loadPublicationTimestamps()]);
 
       this._reactionDisposer = reaction(() => this.allProductIds, this.loadPublicationTimestamps);
 
-      this._updateTimer = window.setInterval(this.updatePublicationTimestamps, 5000);
+      this._updateTimer = window.setInterval(
+        this.updatePublicationTimestamps,
+        this._settings.updateInterval
+      );
     }
   }
 

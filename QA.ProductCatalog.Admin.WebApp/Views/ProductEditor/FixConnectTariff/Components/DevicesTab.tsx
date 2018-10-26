@@ -4,7 +4,7 @@ import { action } from "mobx";
 import { Divider, Button, Intent } from "@blueprintjs/core";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
 import { ExtensionEditor } from "Components/ArticleEditor/ExtensionEditor";
-import { makePublicatoinStatusIcons } from "Components/PublicationStatusIcon/PublicationStatusIcon";
+import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
 import {
   RelationFieldTabs,
   RelationFieldAccordion,
@@ -98,7 +98,13 @@ export class DevicesTab extends Component<DevicesTabProps> {
           regionsDisplayField,
           rentPriceDisplayField,
           salePriceDisplayField,
-          makePublicatoinStatusIcons(this.publicationContext, fieldSchema.RelatedContent)
+          (device: Product) => (
+            <PublicationStatusIcons
+              model={device}
+              contentSchema={fieldSchema.RelatedContent}
+              publicationContext={this.publicationContext}
+            />
+          )
         ]}
         filterItems={this.filterModel.filterProducts}
         highlightItems={this.filterModel.highlightProduct}

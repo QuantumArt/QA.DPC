@@ -9,7 +9,7 @@ import { RelationFieldTags } from "Components/FieldEditors/FieldEditors";
 const App = () => (
   <LocaleContext.Provider value="ru">
     <ProductEditor
-      settings={window["ProductEditorSettings"]}
+      editorSettings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: RelationFieldTagsDefault,
         Group: RelationFieldTagsDefault,

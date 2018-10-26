@@ -13,7 +13,7 @@ import "./FixConnectTariff.scss";
 const App = () => (
   <LocaleContext.Provider value="ru">
     <ProductEditor
-      settings={window["ProductEditorSettings"]}
+      editorSettings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: props => <MultiRelationFieldTags {...props} sortItemsBy="Title" />,
         ProductParameter: props => <ParameterFields {...props} />,

@@ -13,3 +13,17 @@ export class EditorQueryParams {
   customerCode: string;
   hostUID: string;
 }
+
+/** Настройки синхронизации статусов публикации */
+export class PublicationTrackerSettings {
+  /**
+   * Названия контентов, статус публикации которых нужно просматривать
+   * @default ["Product"]
+   */
+  contentNames = ["Product"];
+  /**
+   * Интервал обновления в милисекундах
+   * @default 5000
+   */
+  updateInterval = 5000;
+}

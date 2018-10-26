@@ -12,7 +12,7 @@ import {
   SingleRelationFieldTags,
   HighlightMode
 } from "Components/FieldEditors/FieldEditors";
-import { makePublicatoinStatusIcons } from "Components/PublicationStatusIcon/PublicationStatusIcon";
+import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
 import { by, asc, desc } from "Utils/Array";
 import {
   Product,
@@ -26,6 +26,7 @@ import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 import { action } from "mobx";
+import { PublishButtons } from "./PublishButtons";
 
 interface ActionsTabTabProps {
   model: Product;
@@ -71,6 +72,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
 
   private renderActions = (props: FieldEditorProps) => {
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    const parentFieldSchema = fieldSchema.RelatedContent.Fields.Parent as RelationFieldSchema;
     return (
       <RelationFieldAccordion
         {...props}
@@ -84,7 +86,14 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
         displayFields={[
           actionTitleDisplayField,
           actionRegionsDisplayField,
-          makePublicatoinStatusIcons(this.publicationContext, fieldSchema.RelatedContent)
+          (action: FixConnectAction) => (
+            <PublicationStatusIcons
+              model={action}
+              product={action.Parent}
+              contentSchema={fieldSchema.RelatedContent}
+              publicationContext={this.publicationContext}
+            />
+          )
         ]}
         fieldOrders={["Parent", "PromoPeriod", "AfterPromo", "MarketingOffers"]}
         fieldEditors={{
@@ -103,6 +112,9 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
           await selectRelation();
           props.model.setChanged(props.fieldSchema.FieldName, false);
         }}
+        entityActions={(action: FixConnectAction) => (
+          <PublishButtons model={action.Parent} contentSchema={parentFieldSchema.RelatedContent} />
+        )}
       />
     );
   };

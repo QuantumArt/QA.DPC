@@ -15,7 +15,7 @@ import {
   FileFieldEditor,
   MultiRelationFieldTags
 } from "Components/FieldEditors/FieldEditors";
-import { makePublicatoinStatusIcons } from "Components/PublicationStatusIcon/PublicationStatusIcon";
+import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
 import { Product } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { hasUniqueRegions } from "../Utils/Validators";
@@ -55,7 +55,13 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           titleField={(p: Product) => (
             <>
               {p.MarketingProduct && p.MarketingProduct.Title}
-              <div style={{ float: "right" }}>{this.renderPublicationStatusIcons(model)}</div>
+              <div style={{ float: "right" }}>
+                <PublicationStatusIcons
+                  model={model}
+                  contentSchema={contentSchema}
+                  publicationContext={this.publicationContext}
+                />
+              </div>
             </>
           )}
           fieldOrders={[
@@ -91,11 +97,6 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       </>
     );
   }
-
-  private renderPublicationStatusIcons = makePublicatoinStatusIcons(
-    this.publicationContext,
-    this.props.contentSchema
-  );
 
   private renderMarketingInternetTariff() {
     const { extension, extensionSchema } = this.getMarketingFixConnectTariffProps();
@@ -152,7 +153,13 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         columnProportions={[20, 1]}
         displayFields={[
           regionsDisplayField,
-          makePublicatoinStatusIcons(this.publicationContext, fieldSchema.RelatedContent)
+          (tariff: Product) => (
+            <PublicationStatusIcons
+              model={tariff}
+              contentSchema={fieldSchema.RelatedContent}
+              publicationContext={this.publicationContext}
+            />
+          )
         ]}
         filterItems={this.filterModel.filterProducts}
         highlightItems={this.filterModel.highlightProduct}
@@ -182,7 +189,13 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         columnProportions={[20, 1]}
         displayFields={[
           regionsDisplayField,
-          makePublicatoinStatusIcons(this.publicationContext, fieldSchema.RelatedContent)
+          (tariff: Product) => (
+            <PublicationStatusIcons
+              model={tariff}
+              contentSchema={fieldSchema.RelatedContent}
+              publicationContext={this.publicationContext}
+            />
+          )
         ]}
         filterItems={this.filterModel.filterProducts}
         highlightItems={this.filterModel.highlightProduct}
