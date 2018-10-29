@@ -123,7 +123,6 @@ namespace QA.ProductCatalog.HighloadFront
         }
 
 
-
         public Task<SonicResult> DeleteAllASync(string language, string state)
         {
             ThrowIfDisposed();

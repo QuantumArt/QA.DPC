@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Elasticsearch.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json.Linq;
 using QA.Core.Extensions;
 using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
@@ -17,8 +18,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     [Produces("application/json")]
     [
         Route("api/products"),
+        
         Route("api/{version:decimal}/products"),
+        Route("api/{version:decimal}"),
+        
         Route("api/{version:decimal}/{language}/{state}/products"),
+        Route("api/{version:decimal}/{language}/{state}"),
+        
         Route("api/{customerCode}/products"),
         Route("api/{customerCode}/{language}/{state}/products"),
         Route("api/{customerCode}/{version:decimal}/products"),
@@ -61,9 +67,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [TypeFilter(typeof(RateLimitAttribute), Arguments = new object[]{"GetByType"})]
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         [Route("{type}"), HttpPost]
-        public async Task<ActionResult> GetByType([FromBody]ProductsOptions options, string type, string language = null, string state = null)
+        public async Task<ActionResult> GetByType([FromBody]object json, string type, string language = null, string state = null)
         {
-            options.Type = type?.TrimStart('@');
+            var options = new ProductsOptions(json, _options) {Type = type?.TrimStart('@')};
             try
             {
                 var stream = await Manager.GetProductsInTypeStream(options, language, state);

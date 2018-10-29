@@ -218,7 +218,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
 
             var client = Configuration.GetElasticClient(language, state);
-            var response = await client.UpdateAsync<JObject>(id, d => d.Upsert(product).Type(type));
+            var response = await client.UpdateAsync<JObject>(id, d => d.Upsert(product).Type(type), cancellationToken);
 
             return response.IsValid
                 ? SonicResult.Success
@@ -275,7 +275,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                 var indexResult = await client.IndexExistsAsync(client.ConnectionSettings.DefaultIndex);
 
-                if(indexResult == null || !indexResult.IsValid)
+                if (indexResult == null || !indexResult.IsValid)
                 {
                     return SonicResult.Failed(SonicErrorDescriber.StoreFailure("index is not available"));
                 }
@@ -305,11 +305,16 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public async Task<Stream> GetProductsInTypeStreamAsync(ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
 
+            var size = options.Take ?? options.PerPage ?? Options.DefaultSize;
+            var from = options.Skip ?? (options.Page ?? 0) * size;
+            
             var q = JObject.FromObject(new
             {
-                from = (options?.Page ?? 0) * (options?.PerPage ?? Options.DefaultSize),
-                size = options?.PerPage ?? Options.DefaultSize,
+                from,
+                size,
                 _source = new { include = GetFields(options) }
             });
 
@@ -321,7 +326,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var timer = new Stopwatch();
             timer.Start();
 #endif
-            var response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, options?.Type, q.ToString());
+            var response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, options.Type, q.ToString());
 #if DEBUG             
             timer.Stop();
             Logger.Debug("Query to ElasticSearch took {0} ms", timer.Elapsed.TotalMilliseconds);
@@ -392,7 +397,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var filters = productsOptions.Filters;
             if (filters != null)
             {
-                var conditions = filters.Select(n => CreateFilter(n, productsOptions.DisableOr, productsOptions.DisableNot, productsOptions.DisableLike));
+                var conditions = filters.Select(n => CreateQueryElem(n, productsOptions.DisableOr, productsOptions.DisableNot, productsOptions.DisableLike));
                 var shouldGroups = new List<List<JProperty>>();
                 var currentGroup = new List<JProperty>();
                 foreach (var condition in conditions)
@@ -423,13 +428,22 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        private JProperty CreateFilter(IElasticFilter filter, string[] disableOr, string[] disableNot, string[] disableLike)
+        private JProperty CreateQueryElem(IElasticFilter filter, string[] disableOr, string[] disableNot, string[] disableLike)
         {
             var simpleFilter = filter as SimpleFilter;
             var rangeFilter = filter as RangeFilter;
             var queryFilter = filter as QueryFilter;
+            var groupFilter = filter as GroupFilter;
+            
             JProperty result = null;
 
+            if (groupFilter != null)
+            {
+                var props = groupFilter.Filters.Select(n =>
+                    CreateQueryElem(n, disableOr, disableNot, disableLike)).ToArray();
+
+                return (groupFilter.IsDisjunction) ? Should(props) : Must(props);
+            }
 
             if (simpleFilter != null)
             {
@@ -499,7 +513,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             if (!String.IsNullOrEmpty(options.Sort))
             {
-                json.Add(new JProperty("sort", new JArray(new JObject(new JProperty(options.Sort, options.Order ? "asc" : "desc")))));
+                json.Add(new JProperty("sort", new JArray(new JObject(new JProperty(options.Sort, options.DirectOrder ? "asc" : "desc")))));
             }
         }
 
@@ -523,9 +537,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             JProperty result;
             var actualSeparator = GetActualSeparator(field, disabledOrFields);
-            bool disableLike = disableLikeFields.Contains(field);
-            bool hasNegation;            
-            var actualValue = GetActualValue(field, value, disabledNotFields, out hasNegation);
+            var disableLike = disableLikeFields.Contains(field);
+            var actualValue = GetActualValue(field, value, disabledNotFields, out var hasNegation);
 
             if (actualValue == "null")
             {
@@ -576,7 +589,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 if (isSeparated)
                 {
-                    if (!disableLike && values.Any(v => IsWildcard(v)))
+                    if (!disableLike && values.Any(IsWildcard))
                     {
                         return Wildcards(field, values);                        
                     }

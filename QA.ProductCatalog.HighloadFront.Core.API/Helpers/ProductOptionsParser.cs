@@ -32,7 +32,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
             var result = new ProductsOptions
             {
                 Sort = sort,
-                Order = order == "asc",
+                OrderDirection = order,
                 PropertiesFilter = fields?.Split(',').ToList(),
                 DisableOr = string.IsNullOrEmpty(disableOr) ? new string[] { } : disableOr.Split(','),
                 DisableNot = string.IsNullOrEmpty(disableNot) ? new string[] { } : disableNot.Split(','),
