@@ -35,6 +35,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return _dataOptions.Elastic;
         }
 
+        public string GetJsonByAlias(string alias)
+        {
+            throw new NotImplementedException();
+        }
+
         public int GetElasticTimeout()
         {
             return _dataOptions.ElasticTimeout != 0 ? _dataOptions.ElasticTimeout : _timeout;

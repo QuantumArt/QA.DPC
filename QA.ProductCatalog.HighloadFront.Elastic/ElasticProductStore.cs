@@ -146,12 +146,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(string id, ProductsOptions options, string language, string state)
+        public async Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
 
             var client = Configuration.GetElasticClient(language, state); 
-            var response = await client.LowLevel.GetSourceAsync<Stream>(client.ConnectionSettings.DefaultIndex, "_all", id, p =>
+            var response = await client.LowLevel.GetSourceAsync<Stream>(client.ConnectionSettings.DefaultIndex, "_all", options.Id.ToString(), p =>
             {
                 if (options?.PropertiesFilter != null)
                 {
@@ -302,19 +302,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        public async Task<Stream> GetProductsInTypeStreamAsync(ProductsOptions options, string language, string state)
+        public async Task<Stream> SearchStreamAsync(ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
+            
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
 
-            var size = options.Take ?? options.PerPage ?? Options.DefaultSize;
-            var from = options.Skip ?? (options.Page ?? 0) * size;
-            
             var q = JObject.FromObject(new
             {
-                from,
-                size,
+                from = options.ActualFrom,
+                size = options.ActualSize,
                 _source = new { include = GetFields(options) }
             });
 
@@ -322,54 +320,29 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             SetSorting(q, options);
 
             var client = Configuration.GetElasticClient(language, state);
+            
 #if DEBUG            
             var timer = new Stopwatch();
             timer.Start();
 #endif
-            var response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, options.Type, q.ToString());
-#if DEBUG             
-            timer.Stop();
-            Logger.Debug("Query to ElasticSearch took {0} ms", timer.Elapsed.TotalMilliseconds);
-#endif
-            return response.Body;
-
-        }
-
-        public async Task<Stream> SearchStreamAsync(ProductsOptions options, string language, string state)
-        {
-            ThrowIfDisposed();
-
-            var q = JObject.FromObject(new
-            {
-                from = (options?.Page ?? 0) * (options?.PerPage ?? Options.DefaultSize),
-                size = options?.PerPage ?? Options.DefaultSize,
-                _source = new { include = GetFields(options) }
-            });
-
-            SetQuery(q, options);
-            SetSorting(q, options);
-
-            var client = Configuration.GetElasticClient(language, state);
+            
             ElasticsearchResponse<Stream> response;
-            var types = GetTypesString(options);
-            if (types == null)
+            var type = options.ActualType;
+            if (type == null)
             {
                 response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, q.ToString());
             }
             else
             {
-                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, types, q.ToString());
+                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, type, q.ToString());
             }
+            
+#if DEBUG             
+            timer.Stop();
+            Logger.Debug("Query to ElasticSearch took {0} ms", timer.Elapsed.TotalMilliseconds);
+#endif
+            
             return response.Body;
-        }
-
-        private string GetTypesString(ProductsOptions options)
-        {
-            var types = options?.SimpleFilters?
-                .Where(f => f.Name == Options.TypePath)
-                .Select(f => f.Value).FirstOrDefault();
-
-            return types;
         }
 
         public async Task<string[]> GetTypesAsync(string language, string state)
@@ -733,6 +706,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             {
                 throw new ObjectDisposedException(GetType().Name);
             }
+        }
+
+        public string GetJsonByAlias(string alias)
+        {
+            return Configuration.GetJsonByAlias(alias);
         }
 
         #region IDisposable Support

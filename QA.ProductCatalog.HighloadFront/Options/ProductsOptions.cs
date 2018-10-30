@@ -34,7 +34,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public HashSet<string> ReservedKeywords;
         
-        public ProductsOptions(object json, SonicElasticStoreOptions options)
+        public ProductsOptions(object json, SonicElasticStoreOptions options, int id = 0)
         {
             _elasticOptions = options;
             ReservedKeywords = new HashSet<string>()
@@ -54,7 +54,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
             
             Filters = new IElasticFilter[] { };
             if (!(json is JObject jobj)) return;
-            
+
+            Id = id;
             Page = (decimal?) jobj.SelectToken(PAGE);
             PerPage = (decimal?) jobj.SelectToken(PER_PAGE);
             Skip = (decimal?) jobj.SelectToken(SKIP);
@@ -68,7 +69,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             Sort = (string) jobj.SelectToken(SORT);
 
             var queryToken = jobj.SelectToken(QUERY);
-            IEnumerable<JProperty> filterProperties;
+            JProperty[] filterProperties;
             if (queryToken != null)
             {
                 filterProperties = queryToken.Children().OfType<JProperty>().ToArray();
@@ -83,7 +84,11 @@ namespace QA.ProductCatalog.HighloadFront.Options
             
             Filters = filterProperties
                 .Select(n => CreateFilter(n.Name, n.Value))
-                .ToArray();
+                .ToList();
+            if (id != 0)
+            {
+                Filters.Add(CreateFilter("Id", id));
+            }
         }
 
         private string[] JTokenToStringArray(JToken fields)
@@ -147,8 +152,29 @@ namespace QA.ProductCatalog.HighloadFront.Options
         [ModelBinder(Name = DISABLE_LIKE)]
         public string[] DisableLike { get; set; }
 
-        private SonicElasticStoreOptions _elasticOptions;
+        public decimal ActualSize => Take ?? PerPage ?? _elasticOptions.DefaultSize;
 
+        public decimal ActualFrom => (Id != 0) ? 0 : (Skip ?? Page ?? 0) * ActualSize;
+
+        public string ActualType
+        {
+            get
+            {
+
+                if (!string.IsNullOrEmpty(Type))
+                {
+                    return Type;
+                }
+                else
+                {
+                    return SimpleFilters
+                        .Where(f => f.Name == _elasticOptions.TypePath)
+                        .Select(f => f.Value).FirstOrDefault();                   
+                }
+            }
+        }
+            
+        private SonicElasticStoreOptions _elasticOptions;
 
         public IElasticFilter CreateFilter(string key, JToken token)
         {

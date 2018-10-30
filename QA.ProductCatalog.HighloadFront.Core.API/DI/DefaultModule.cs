@@ -116,6 +116,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 builder.RegisterScoped<IContentProvider<ElasticIndex>, ElasticIndexProvider>();
                 builder.RegisterScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
                 builder.RegisterScoped<IContentProvider<HighloadApiUser>, HighloadApiUserProvider>();
+                builder.RegisterScoped<IContentProvider<HighloadApiMethod>, HighloadApiMethodProvider>();                
                 builder.RegisterScoped<IElasticConfiguration, QpElasticConfiguration>();
             }
             else

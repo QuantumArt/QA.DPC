@@ -7,6 +7,6 @@ namespace QA.ProductCatalog.HighloadFront.Interfaces
 {
     public interface IProductStreamStore
     {
-        Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(string id, ProductsOptions options, string language, string state);
+        Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(ProductsOptions options, string language, string state);
     }
 }
