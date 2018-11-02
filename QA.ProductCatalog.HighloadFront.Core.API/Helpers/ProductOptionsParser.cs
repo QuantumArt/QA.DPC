@@ -40,14 +40,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 Filters = filters.Select(n => CreateFilter(n, options)).ToList()
             };
 
-            int intPage;
-            if (int.TryParse(page, out intPage))
+            if (int.TryParse(page, out var intPage))
             {
                 result.Page = intPage;
             }
 
-            int intPerPage;
-            if (int.TryParse(perPage, out intPerPage))
+            if (int.TryParse(perPage, out var intPerPage))
             {
                 result.PerPage = intPerPage;
             }

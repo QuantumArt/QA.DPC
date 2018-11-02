@@ -302,40 +302,40 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
+        public async Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        {
+            ThrowIfDisposed();
+            
+            var q = GetQuery(options).ToString();
+            var client = Configuration.GetElasticClient(language, state);
+            var type = options.ActualType;
+            var index = client.ConnectionSettings.DefaultIndex;
+            
+            var response = (type != null)
+                ? await client.LowLevel.SearchAsync<string>(index, type, q)
+                : await client.LowLevel.SearchAsync<string>(index, q);
+            
+            return response.Body;
+
+        }
+        
         public async Task<Stream> SearchStreamAsync(ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
             
-            if (options == null)
-                throw new ArgumentNullException(nameof(options));
-
-            var q = JObject.FromObject(new
-            {
-                from = options.ActualFrom,
-                size = options.ActualSize,
-                _source = new { include = GetFields(options) }
-            });
-
-            SetQuery(q, options);
-            SetSorting(q, options);
-
+            var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
+            var type = options.ActualType;
+            var index = client.ConnectionSettings.DefaultIndex;
             
 #if DEBUG            
             var timer = new Stopwatch();
             timer.Start();
 #endif
             
-            ElasticsearchResponse<Stream> response;
-            var type = options.ActualType;
-            if (type == null)
-            {
-                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, q.ToString());
-            }
-            else
-            {
-                response = await client.LowLevel.SearchAsync<Stream>(client.ConnectionSettings.DefaultIndex, type, q.ToString());
-            }
+            var response = (type != null)
+                ? await client.LowLevel.SearchAsync<Stream>(index, type, q)
+                : await client.LowLevel.SearchAsync<Stream>(index, q);
             
 #if DEBUG             
             timer.Stop();
@@ -343,6 +343,23 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 #endif
             
             return response.Body;
+        }
+
+        private JObject GetQuery(ProductsOptions options)
+        {
+            if (options == null)
+                throw new ArgumentNullException(nameof(options));
+
+            var q = JObject.FromObject(new
+            {
+                from = options.ActualFrom,
+                size = options.ActualSize,
+                _source = new {include = GetFields(options)}
+            });
+
+            SetQuery(q, options);
+            SetSorting(q, options);
+            return q;
         }
 
         public async Task<string[]> GetTypesAsync(string language, string state)

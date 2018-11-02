@@ -101,6 +101,15 @@ namespace QA.ProductCatalog.HighloadFront
             return Store.GetId(product);
         }
 
+        
+        public Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        {
+            ThrowIfDisposed();
+            var store = GetProductSearchStore();
+
+            return store.SearchAsync(options, language, state);
+        }
+
       
         public Task<Stream> SearchStreamAsync(ProductsOptions options, string language, string state)
         {
