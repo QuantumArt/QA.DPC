@@ -19,12 +19,6 @@
     <DebugType>full</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.AspNetCore.Mvc.Abstractions, Version=1.1.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
-      <HintPath>..\QA.ProductCatalog.WebApi\Bin\Microsoft.AspNetCore.Mvc.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.AspNetCore.Mvc.Core, Version=1.1.2.0, Culture=neutral, PublicKeyToken=adb9793829ddae60">
-      <HintPath>..\QA.ProductCatalog.WebApi\Bin\Microsoft.AspNetCore.Mvc.Core.dll</HintPath>
-    </Reference>
     <Reference Include="netstandard" />
   </ItemGroup>
   <ItemGroup>
@@ -35,6 +29,8 @@
     <PackageReference Include="QA.Core" Version="3.3.1" />
     <PackageReference Include="Automapper" Version="1.1.2" />
     <PackageReference Include="Unity.Abstractions" Version="3.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
+   
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj" />
