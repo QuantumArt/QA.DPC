@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { EntityObject } from "Models/EditorDataModels";
 import { EntityController } from "Services/EntityController";
@@ -40,7 +40,6 @@ interface EntityEditorProps extends ArticleEditorProps {
 
 const defaultEntityHandler = (_entity, action) => action();
 
-@consumer
 @observer
 export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   static defaultProps = {

@@ -1,6 +1,6 @@
 import React, { Fragment, ReactNode } from "react";
 import cn from "classnames";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { action, IObservableArray, computed } from "mobx";
 import { observer } from "mobx-react";
 import { Col, Row } from "react-flexbox-grid";
@@ -42,7 +42,6 @@ interface RelationFieldAccordionState {
 const defaultRelationHandler = action => action();
 const defaultEntityHandler = (_entity, action) => action();
 
-@consumer
 @observer
 export class RelationFieldAccordion extends AbstractRelationFieldEditor<
   RelationFieldAccordionProps

@@ -2,13 +2,12 @@ import React from "react";
 import { Col } from "react-flexbox-grid";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-import { consumer } from "react-ioc";
+
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTags } from "./AbstractRelationFieldTags";
 
-@consumer
 @observer
 export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   protected _isHalfSize = true;

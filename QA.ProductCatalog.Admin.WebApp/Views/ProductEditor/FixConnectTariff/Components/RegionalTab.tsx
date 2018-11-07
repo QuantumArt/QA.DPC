@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { Divider } from "@blueprintjs/core";
 import {
   ContentSchema,
@@ -28,7 +28,6 @@ interface RegionalTabTabProps {
   contentSchema: ContentSchema;
 }
 
-@consumer
 @observer
 export class RegionalTab extends Component<RegionalTabTabProps> {
   @inject private publicationContext: PublicationContext;

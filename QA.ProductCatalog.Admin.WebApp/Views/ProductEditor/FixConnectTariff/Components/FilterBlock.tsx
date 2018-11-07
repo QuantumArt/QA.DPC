@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import ReactSelect, { Options, Option } from "react-select";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { computed } from "mobx";
 import { observer } from "mobx-react";
 import { Col, Row } from "react-flexbox-grid";
@@ -14,7 +14,6 @@ interface FilterBlockProps {
   byMarketingTariff?: boolean;
 }
 
-@consumer
 @observer
 export class FilterBlock extends Component<FilterBlockProps> {
   @inject private _dataContext: DataContext<Tables>;

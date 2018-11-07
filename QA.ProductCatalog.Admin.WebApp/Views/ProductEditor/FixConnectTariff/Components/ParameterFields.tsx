@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { observable, runInAction, autorun, IObservableArray, IReactionDisposer } from "mobx";
 import { observer } from "mobx-react";
 import { Options } from "react-select";
@@ -43,7 +43,6 @@ const directionByAliasCache = new ComputedCache();
 const baseParamModifiersByAliasCache = new ComputedCache();
 const paramModifiersByAliasCache = new ComputedCache();
 
-@consumer
 @observer
 export class ParameterFields extends Component<ParameterFieldsProps> {
   @inject private _dataContext: DataContext<Tables>;

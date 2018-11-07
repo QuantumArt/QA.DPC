@@ -4,10 +4,9 @@ import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
 import { MultiRelationFieldTable } from "Components/FieldEditors/FieldEditors";
 import { Advantage } from "../TypeScriptSchema";
 import { RelationFieldSchema, FileFieldSchema } from "Models/EditorSchemaModels";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { FileController } from "Services/FileController";
 
-@consumer
 export class AdvantagesTable extends Component<FieldEditorProps> {
   @inject private _fileController: FileController;
 

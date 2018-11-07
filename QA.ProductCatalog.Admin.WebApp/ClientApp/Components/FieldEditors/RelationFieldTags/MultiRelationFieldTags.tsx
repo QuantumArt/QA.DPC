@@ -2,14 +2,13 @@ import React, { Fragment } from "react";
 import { Col } from "react-flexbox-grid";
 import { action, IObservableArray } from "mobx";
 import { observer } from "mobx-react";
-import { consumer } from "react-ioc";
+
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { EntityComparer } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTags, RelationFieldTagsProps } from "./AbstractRelationFieldTags";
 
-@consumer
 @observer
 export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   private _entityComparer: EntityComparer;

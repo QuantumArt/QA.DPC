@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { MenuItem, Icon, Intent } from "@blueprintjs/core";
 import { ValidationSummay } from "Components/ValidationSummary/ValidationSummary";
 import { DataValidator } from "Services/DataValidator";
@@ -13,7 +13,6 @@ interface PublishButtonsProps {
   contentSchema: ContentSchema;
 }
 
-@consumer
 export class PublishButtons extends Component<PublishButtonsProps> {
   @inject private _dataValidator: DataValidator;
   @inject private _overlayPresenter: OverlayPresenter;

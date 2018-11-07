@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { EntityObject } from "Models/EditorDataModels";
 import { ContentSchema } from "Models/EditorSchemaModels";
 import { observer } from "mobx-react";
@@ -13,7 +13,6 @@ interface EntityLinkProps {
   contentSchema: ContentSchema;
 }
 
-@consumer
 @observer
 export class EntityLink extends Component<EntityLinkProps> {
   @inject private _entityController: EntityController;

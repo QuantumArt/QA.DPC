@@ -1,7 +1,7 @@
 import React from "react";
 import cn from "classnames";
 import { Col } from "react-flexbox-grid";
-import { consumer } from "react-ioc";
+
 import { action, IObservableArray, computed } from "mobx";
 import { observer } from "mobx-react";
 import { Button, Intent } from "@blueprintjs/core";
@@ -12,7 +12,6 @@ import { EntityComparer, HighlightMode } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTable, RelationFieldTableProps } from "./AbstractRelationFieldTable";
 import { EntityLink } from "Components/ArticleEditor/EntityLink";
 
-@consumer
 @observer
 export class MultiRelationFieldTable extends AbstractRelationFieldTable {
   static defaultProps = {

@@ -6,7 +6,7 @@ import { ArticleObject } from "Models/EditorDataModels";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { InputFile } from "Components/FormControls/FormControls";
 import { AbstractFieldEditor, FieldEditorProps } from "./AbstractFieldEditor";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { FileController } from "Services/FileController";
 import { action } from "mobx";
 
@@ -15,7 +15,6 @@ interface FileFieldEditorProps extends FieldEditorProps {
   customSubFolder?: string;
 }
 
-@consumer
 @observer
 export class FileFieldEditor extends AbstractFieldEditor<FileFieldEditorProps> {
   @inject private _fileController: FileController;

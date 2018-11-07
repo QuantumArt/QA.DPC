@@ -1,6 +1,6 @@
 import React from "react";
 import { Col } from "react-flexbox-grid";
-import { consumer } from "react-ioc";
+
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { Button, Intent } from "@blueprintjs/core";
@@ -10,7 +10,6 @@ import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTable } from "./AbstractRelationFieldTable";
 import { EntityLink } from "Components/ArticleEditor/EntityLink";
 
-@consumer
 @observer
 export class SingleRelationFieldTable extends AbstractRelationFieldTable {
   @action

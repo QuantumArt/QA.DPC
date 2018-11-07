@@ -2,7 +2,7 @@ import React from "react";
 import { Col } from "react-flexbox-grid";
 import { Options, Option } from "react-select";
 import { observer } from "mobx-react";
-import { consumer } from "react-ioc";
+
 import cn from "classnames";
 import {
   RelationFieldSchema,
@@ -26,7 +26,6 @@ export interface RelationFieldSelectProps extends FieldEditorProps {
 
 const optionsCache = new WeakMap<RelationFieldSchema, Options>();
 
-@consumer
 @observer
 export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFieldSelectProps> {
   private readonly _getOption: (entity: EntityObject) => Option;

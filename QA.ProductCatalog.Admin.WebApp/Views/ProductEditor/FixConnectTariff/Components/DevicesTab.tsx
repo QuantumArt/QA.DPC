@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { action } from "mobx";
 import { Divider, Button, Intent } from "@blueprintjs/core";
 import { ArticleEditor, FieldEditorProps, IGNORE } from "Components/ArticleEditor/ArticleEditor";
@@ -31,7 +31,6 @@ interface DevicesTabProps {
   contentSchema: ContentSchema;
 }
 
-@consumer
 export class DevicesTab extends Component<DevicesTabProps> {
   @inject private publicationContext: PublicationContext;
 

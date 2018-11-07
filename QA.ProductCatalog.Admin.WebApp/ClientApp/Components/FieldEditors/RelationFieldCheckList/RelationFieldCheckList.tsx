@@ -4,7 +4,7 @@ import { Col } from "react-flexbox-grid";
 import { action, IObservableArray } from "mobx";
 import { Checkbox, Radio } from "@blueprintjs/core";
 import { observer } from "mobx-react";
-import { consumer } from "react-ioc";
+
 import {
   RelationFieldSchema,
   isMultiRelationField,
@@ -32,7 +32,6 @@ interface Option {
 
 const optionsCache = new WeakMap<RelationFieldSchema, Option[]>();
 
-@consumer
 @observer
 export class RelationFieldCheckList extends AbstractRelationFieldEditor<
   RelationFieldCheckListProps

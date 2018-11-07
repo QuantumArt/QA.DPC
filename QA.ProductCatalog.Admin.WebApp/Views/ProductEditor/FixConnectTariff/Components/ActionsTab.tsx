@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { observer } from "mobx-react";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { Divider, Button, Intent } from "@blueprintjs/core";
 import { ContentSchema, RelationFieldSchema } from "Models/EditorSchemaModels";
 import { PublicationContext } from "Services/PublicationContext";
@@ -33,7 +33,6 @@ interface ActionsTabTabProps {
   contentSchema: ContentSchema;
 }
 
-@consumer
 @observer
 export class ActionsTab extends Component<ActionsTabTabProps> {
   @inject private publicationContext: PublicationContext;

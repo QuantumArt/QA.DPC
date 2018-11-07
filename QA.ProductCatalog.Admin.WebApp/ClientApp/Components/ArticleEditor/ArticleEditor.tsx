@@ -1,5 +1,5 @@
 import React, { Component, StatelessComponent, ReactNode } from "react";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
@@ -269,6 +269,5 @@ export abstract class AbstractEditor<P extends ArticleEditorProps> extends Compo
   }
 }
 
-@consumer
 @observer
 export class ArticleEditor extends AbstractEditor<ArticleEditorProps> {}
