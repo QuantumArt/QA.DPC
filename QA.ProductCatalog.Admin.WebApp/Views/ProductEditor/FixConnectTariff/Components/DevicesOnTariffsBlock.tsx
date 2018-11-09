@@ -12,7 +12,11 @@ import { RelationFieldSchema } from "Models/EditorSchemaModels";
 import { by, desc, asc } from "Utils/Array";
 import { DeviceOnTariffs, ProductRelation, MarketingProduct } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
-import { hasUniqueCities, isUniqueCity } from "../Utils/DeviceOnTariffsValidators";
+import {
+  hasUniqueCities,
+  isUniqueCity,
+  isUniqueMarketingTariff
+} from "../Utils/DeviceOnTariffsValidators";
 import { ParameterFields } from "./ParameterFields";
 
 interface DevicesOnTariffsBlockProps extends FieldEditorProps {
@@ -55,8 +59,8 @@ export class DevicesOnTariffsBlock extends Component<DevicesOnTariffsBlockProps>
   }
 
   private renderCities = (props: FieldEditorProps) => {
-    const marketingDevice = this.props.model as MarketingProduct;
     const device = props.model as DeviceOnTariffs;
+    const marketingDevice = this.props.model as MarketingProduct;
     return (
       <MultiRelationFieldTags
         {...props}
@@ -86,6 +90,7 @@ export class DevicesOnTariffsBlock extends Component<DevicesOnTariffsBlockProps>
 
   private renderMarketingTariffs = (props: FieldEditorProps) => {
     const device = props.model as DeviceOnTariffs;
+    const marketingDevice = this.props.model as MarketingProduct;
     const { marketingTariff } = this.props;
     return (
       <MultiRelationFieldTable
@@ -97,6 +102,7 @@ export class DevicesOnTariffsBlock extends Component<DevicesOnTariffsBlockProps>
           desc((deviceTariff: MarketingProduct) => deviceTariff === marketingTariff),
           asc((deviceTariff: MarketingProduct) => deviceTariff.Title)
         )}
+        validateItem={isUniqueMarketingTariff(device, marketingDevice.DevicesOnTariffs)}
         relationActions={() => (
           <>
             {!device.MarketingTariffs.includes(marketingTariff) && (
