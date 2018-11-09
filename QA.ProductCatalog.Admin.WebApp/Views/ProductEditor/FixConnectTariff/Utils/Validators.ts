@@ -7,8 +7,11 @@ import {
   Region
 } from "../TypeScriptSchema";
 
-export const hasUniqueRegions = (product: Product) => () => {
-  const productsWithSameRegions = product.MarketingProduct.Products.filter(
+export const hasUniqueProductRegions = (
+  product: Product,
+  otherProducts: Product[] = product.MarketingProduct.Products
+) => () => {
+  const productsWithSameRegions = otherProducts.filter(
     otherProduct =>
       otherProduct !== product &&
       product.Regions.some(region => otherProduct.getBaseValue("Regions").includes(region))
@@ -21,8 +24,11 @@ export const hasUniqueRegions = (product: Product) => () => {
   return undefined;
 };
 
-export const isUniqueRegion = (product: Product) => (region: Region) => {
-  const productsWithSameRegions = product.MarketingProduct.Products.filter(
+export const isUniqueProductRegion = (
+  product: Product,
+  otherProducts: Product[] = product.MarketingProduct.Products
+) => (region: Region) => {
+  const productsWithSameRegions = otherProducts.filter(
     otherProduct =>
       otherProduct !== product && otherProduct.getBaseValue("Regions").includes(region)
   );

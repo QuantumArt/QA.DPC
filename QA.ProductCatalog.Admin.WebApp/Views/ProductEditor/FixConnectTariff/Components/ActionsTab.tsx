@@ -10,7 +10,8 @@ import {
   MultiRelationFieldTable,
   RelationFieldTabs,
   SingleRelationFieldTags,
-  HighlightMode
+  HighlightMode,
+  MultiRelationFieldTags
 } from "Components/FieldEditors/FieldEditors";
 import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
 import { by, asc, desc } from "Utils/Array";
@@ -21,11 +22,15 @@ import {
   ProductRelation,
   MarketingProduct
 } from "../TypeScriptSchema";
-import { hasUniqueMarketingDevice } from "../Utils/Validators";
+import {
+  hasUniqueMarketingDevice,
+  isUniqueProductRegion,
+  hasUniqueProductRegions
+} from "../Utils/Validators";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
-import { action } from "mobx";
+import { action, computed } from "mobx";
 import { PublishButtons } from "./PublishButtons";
 
 interface ActionsTabTabProps {
@@ -38,6 +43,26 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
   @inject private publicationContext: PublicationContext;
 
   private filterModel = new FilterModel(this.props.model);
+
+  @computed
+  get actionsParentsByMarketingProduct() {
+    const result = new Map<MarketingProduct, Product[]>();
+
+    this.props.model.MarketingProduct.FixConnectActions.forEach(action => {
+      const product = action.Parent;
+      const marketingProduct = product.getBaseValue("MarketingProduct");
+
+      let products = result.get(marketingProduct);
+      if (!products) {
+        products = [product];
+        result.set(marketingProduct, products);
+      } else {
+        products.push(product);
+      }
+    });
+
+    return result;
+  }
 
   @action
   private pinActionToMarketingTariff(fixConnectAction: FixConnectAction) {
@@ -175,11 +200,25 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
           ]}
           fieldEditors={{
             MarketingProduct: SingleRelationFieldTags,
+            Regions: this.renderActionRegions,
             Parameters: this.renderActionParameters,
             ActionMarketingDevices: this.renderDevices
           }}
         />
       )
+    );
+  };
+
+  private renderActionRegions = (props: FieldEditorProps) => {
+    const product = props.model as Product;
+    const otherProducts = this.actionsParentsByMarketingProduct.get(product.MarketingProduct) || [];
+    return (
+      <MultiRelationFieldTags
+        {...props}
+        sortItemsBy="Title"
+        validate={hasUniqueProductRegions(product, otherProducts)}
+        validateItem={isUniqueProductRegion(product, otherProducts)}
+      />
     );
   };
 

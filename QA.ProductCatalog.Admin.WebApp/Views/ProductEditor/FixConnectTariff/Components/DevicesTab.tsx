@@ -21,7 +21,7 @@ import { PublicationContext } from "Services/PublicationContext";
 import { by, desc, asc } from "Utils/Array";
 import { Product, DeviceOnTariffs, ProductRelation, MarketingProduct } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
-import { hasUniqueRegions, isUniqueRegion } from "../Utils/Validators";
+import { hasUniqueProductRegions, isUniqueProductRegion } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 import { PublishButtons } from "./PublishButtons";
@@ -128,8 +128,8 @@ export class DevicesTab extends Component<DevicesTabProps> {
       <MultiRelationFieldTags
         {...props}
         sortItemsBy="Title"
-        validate={hasUniqueRegions(product)}
-        validateItem={isUniqueRegion(product)}
+        validate={hasUniqueProductRegions(product)}
+        validateItem={isUniqueProductRegion(product)}
       />
     );
   };
