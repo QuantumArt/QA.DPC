@@ -23,9 +23,30 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
 
   @computed
   private get dataSource() {
-    const { model, fieldSchema, filterItems } = this.props;
+    const { model, fieldSchema, filterItems, validateItem } = this.props;
     const array: EntityObject[] = model[fieldSchema.FieldName];
-    return array && array.filter(filterItems).sort(this._entityComparer);
+    if (!array) {
+      return array;
+    }
+    if (!validateItem) {
+      return array.filter(filterItems).sort(this._entityComparer);
+    }
+    const head: EntityObject[] = [];
+    const tail: EntityObject[] = [];
+
+    array.filter(filterItems).forEach(entity => {
+      const error = this._validationCache.getOrAdd(entity, () => validateItem(entity));
+      if (error) {
+        head.push(entity);
+      } else {
+        tail.push(entity);
+      }
+    });
+
+    head.sort(this._entityComparer);
+    tail.sort(this._entityComparer);
+
+    return head.concat(tail);
   }
 
   constructor(props: RelationFieldTableProps, context?: any) {
@@ -78,13 +99,16 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
                 const highlightMode = highlightItems(entity);
                 const highlight = highlightMode === HighlightMode.Highlight;
                 const shade = highlightMode === HighlightMode.Shade;
+                const error = this._validationCache.get(entity);
                 return (
                   <div
                     key={entity._ClientId}
                     className={cn("relation-field-table__row", {
                       "relation-field-table__row--highlight": highlight,
-                      "relation-field-table__row--shade": shade
+                      "relation-field-table__row--shade": shade,
+                      "relation-field-table__row--invalid": !!error
                     })}
+                    title={error}
                   >
                     <div key={-1} className="relation-field-table__cell">
                       <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
 import { Validator } from "mst-validation-mixin";
@@ -15,10 +15,13 @@ import {
 import "./RelationFieldTags.scss";
 
 export interface RelationFieldTagsProps extends FieldEditorProps {
+  filterItems?: (item: EntityObject) => boolean;
   validateItem?: Validator;
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   displayField?: string | FieldSelector;
+  // custom actions
+  relationActions?: () => ReactNode;
 }
 
 export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEditor<

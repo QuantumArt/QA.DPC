@@ -1,8 +1,10 @@
 import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
+import { Validator } from "mst-validation-mixin";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
 import { EntityObject } from "Models/EditorDataModels";
+import { ComputedCache } from "Utils/WeakCache";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
@@ -15,9 +17,11 @@ import "./RelationFieldTable.scss";
 export interface RelationFieldTableProps extends FieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
   highlightItems?: (item: EntityObject) => HighlightMode;
+  validateItem?: Validator;
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   displayFields?: (string | FieldSelector)[];
+  // custom actions
   relationActions?: () => ReactNode;
 }
 
@@ -25,6 +29,7 @@ export abstract class AbstractRelationFieldTable extends AbstractRelationFieldEd
   RelationFieldTableProps
 > {
   protected _displayFields: FieldSelector[];
+  protected _validationCache = new ComputedCache<EntityObject, string>();
 
   constructor(props: RelationFieldTableProps, context?: any) {
     super(props, context);

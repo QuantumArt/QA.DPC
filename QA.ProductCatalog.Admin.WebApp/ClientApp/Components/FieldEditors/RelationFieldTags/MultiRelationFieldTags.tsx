@@ -12,22 +12,26 @@ import { AbstractRelationFieldTags, RelationFieldTagsProps } from "./AbstractRel
 
 @observer
 export class MultiRelationFieldTags extends AbstractRelationFieldTags {
+  static defaultProps = {
+    filterItems: () => true
+  };
+
   private _entityComparer: EntityComparer;
 
   @computed
   private get dataSource() {
-    const { model, fieldSchema, validateItem } = this.props;
+    const { model, fieldSchema, filterItems, validateItem } = this.props;
     const array: EntityObject[] = model[fieldSchema.FieldName];
     if (!array) {
       return array;
     }
     if (!validateItem) {
-      return array.slice().sort(this._entityComparer);
+      return array.filter(filterItems).sort(this._entityComparer);
     }
     const head: EntityObject[] = [];
     const tail: EntityObject[] = [];
 
-    array.forEach(entity => {
+    array.filter(filterItems).forEach(entity => {
       const error = this._validationCache.getOrAdd(entity, () => validateItem(entity));
       if (error) {
         head.push(entity);
@@ -74,6 +78,7 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   };
 
   renderField(_model: ArticleObject, _fieldSchema: MultiRelationFieldSchema) {
+    const { relationActions } = this.props;
     const dataSource = this.dataSource;
     const isEmpty = !dataSource || dataSource.length === 0;
     return (
@@ -81,7 +86,9 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
         <RelationFieldMenu
           onSelect={!this._readonly && this.selectRelations}
           onClear={!this._readonly && !isEmpty && this.clearRelations}
-        />
+        >
+          {relationActions && relationActions()}
+        </RelationFieldMenu>
         {dataSource &&
           dataSource.map(entity => {
             const error = this._validationCache.get(entity);

@@ -3,7 +3,6 @@ import cn from "classnames";
 import { Col } from "react-flexbox-grid";
 import { action } from "mobx";
 import { observer } from "mobx-react";
-
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
@@ -28,13 +27,15 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { validateItem } = this.props;
+    const { relationActions, validateItem } = this.props;
     const entity: EntityObject = model[fieldSchema.FieldName];
     const error =
       entity && validateItem && this._validationCache.getOrAdd(entity, () => validateItem(entity));
     return (
       <Col md className="relation-field-list__tags">
-        <RelationFieldMenu onSelect={!this._readonly && this.selectRelation} />
+        <RelationFieldMenu onSelect={!this._readonly && this.selectRelation}>
+          {relationActions && relationActions()}
+        </RelationFieldMenu>
         {entity && (
           <span
             className={cn("bp3-tag bp3-minimal", {

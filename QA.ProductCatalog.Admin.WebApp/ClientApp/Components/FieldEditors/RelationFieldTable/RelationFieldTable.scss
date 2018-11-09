@@ -25,6 +25,10 @@
   &--shade {
     color: $gray1;
   }
+
+  &--invalid {
+    color: $red2;
+  }
 }
 
 .relation-field-table__cell {

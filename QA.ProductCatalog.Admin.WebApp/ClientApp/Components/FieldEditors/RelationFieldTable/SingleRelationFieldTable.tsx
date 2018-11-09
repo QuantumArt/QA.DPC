@@ -1,6 +1,6 @@
 import React from "react";
+import cn from "classnames";
 import { Col } from "react-flexbox-grid";
-
 import { action } from "mobx";
 import { observer } from "mobx-react";
 import { Button, Intent } from "@blueprintjs/core";
@@ -26,8 +26,10 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { relationActions } = this.props;
+    const { relationActions, validateItem } = this.props;
     const entity: EntityObject = model[fieldSchema.FieldName];
+    const error =
+      entity && validateItem && this._validationCache.getOrAdd(entity, () => validateItem(entity));
     return (
       <Col md>
         <RelationFieldMenu
@@ -40,7 +42,12 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
         {entity && (
           <div className="relation-field-table">
             <div className="relation-field-table__table">
-              <div className="relation-field-table__row">
+              <div
+                className={cn("relation-field-table__row", {
+                  "relation-field-table__row--invalid": !!error
+                })}
+                title={error}
+              >
                 <div key={-1} className="relation-field-table__cell">
                   <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />
                 </div>
