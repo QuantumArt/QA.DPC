@@ -23,7 +23,7 @@ import {
   MarketingProduct
 } from "../TypeScriptSchema";
 import {
-  hasUniqueMarketingDevice,
+  hasUniqueActionMarketingDevice,
   isUniqueProductRegion,
   hasUniqueProductRegions
 } from "../Utils/Validators";
@@ -262,7 +262,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
 
   private renderMarketingDevice = (props: FieldEditorProps) => {
     const device = props.model as DevicesForFixConnectAction;
-    return <SingleRelationFieldTags {...props} validate={hasUniqueMarketingDevice(device)} />;
+    return <SingleRelationFieldTags {...props} validate={hasUniqueActionMarketingDevice(device)} />;
   };
 
   private renderDeviceParent = ({ model, fieldSchema }: FieldEditorProps) => {

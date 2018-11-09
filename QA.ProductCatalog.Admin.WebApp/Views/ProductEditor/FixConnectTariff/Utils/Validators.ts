@@ -40,7 +40,9 @@ export const isUniqueProductRegion = (
   return undefined;
 };
 
-export const hasUniqueMarketingDevice = (device: DevicesForFixConnectAction) => () => {
+export const hasUniqueDeviceCities = () => () => undefined;
+
+export const hasUniqueActionMarketingDevice = (device: DevicesForFixConnectAction) => () => {
   const devicesWithSameMarketing = device.FixConnectAction.ActionMarketingDevices.filter(
     otherDevice => otherDevice !== device && otherDevice.MarketingDevice === device.MarketingDevice
   );
