@@ -21,7 +21,7 @@ import { PublicationContext } from "Services/PublicationContext";
 import { by, desc, asc } from "Utils/Array";
 import { Product, DeviceOnTariffs, ProductRelation, MarketingProduct } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
-import { hasUniqueRegions } from "../Utils/Validators";
+import { hasUniqueRegions, isUniqueRegion } from "../Utils/Validators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 import { PublishButtons } from "./PublishButtons";
@@ -125,7 +125,12 @@ export class DevicesTab extends Component<DevicesTabProps> {
   private renderRegions = (props: FieldEditorProps) => {
     const product = props.model as Product;
     return (
-      <MultiRelationFieldTags {...props} sortItemsBy="Title" validate={hasUniqueRegions(product)} />
+      <MultiRelationFieldTags
+        {...props}
+        sortItemsBy="Title"
+        validate={hasUniqueRegions(product)}
+        validateItem={isUniqueRegion(product)}
+      />
     );
   };
 

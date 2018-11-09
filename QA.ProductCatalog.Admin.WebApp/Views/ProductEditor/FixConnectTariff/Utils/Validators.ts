@@ -3,7 +3,8 @@ import {
   Product,
   ProductParameter,
   LinkParameter,
-  DevicesForFixConnectAction
+  DevicesForFixConnectAction,
+  Region
 } from "../TypeScriptSchema";
 
 export const hasUniqueRegions = (product: Product) => () => {
@@ -16,6 +17,19 @@ export const hasUniqueRegions = (product: Product) => () => {
   if (productsWithSameRegions.length > 0) {
     const productIds = productsWithSameRegions.map(product => product._ServerId || 0);
     return `Продукт содержит регионы из продуктов: ${productIds.join(", ")}`;
+  }
+  return undefined;
+};
+
+export const isUniqueRegion = (product: Product) => (region: Region) => {
+  const productsWithSameRegions = product.MarketingProduct.Products.filter(
+    otherProduct =>
+      otherProduct !== product && otherProduct.getBaseValue("Regions").includes(region)
+  );
+
+  if (productsWithSameRegions.length > 0) {
+    const productIds = productsWithSameRegions.map(product => product._ServerId || 0);
+    return `Регион содержится в продуктах: ${productIds.join(", ")}`;
   }
   return undefined;
 };
