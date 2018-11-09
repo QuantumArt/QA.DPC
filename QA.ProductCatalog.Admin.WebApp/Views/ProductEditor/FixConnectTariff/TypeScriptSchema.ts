@@ -1,6 +1,6 @@
 /**
  * DO NOT MODIFY THIS FILE BECAUSE IT WAS GENERATED AUTOMATICALLY
- * @see ProductEditorControllser.TypeScriptSchema()
+ * @see ProductEditorController.TypeScriptSchema()
  */
 import { IMSTArray, IMSTMap } from "mobx-state-tree";
 import { EntityObject, ExtensionObject, TablesObject } from "Models/EditorDataModels";
