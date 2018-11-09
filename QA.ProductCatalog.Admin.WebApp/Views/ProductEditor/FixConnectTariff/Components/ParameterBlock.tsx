@@ -8,7 +8,7 @@ import { Validate } from "mst-validation-mixin";
 import { InputNumber, Select } from "Components/FormControls/FormControls";
 import { NumericFieldSchema } from "Models/EditorSchemaModels";
 import { LinkParameter, ProductParameter } from "../TypeScriptSchema";
-import { hasUniqueTariffDirection } from "../Utils/Validators";
+import { hasUniqueTariffDirection } from "../Utils/ParameterValidators";
 
 type Parameter = ProductParameter | LinkParameter;
 

@@ -18,7 +18,7 @@ import {
 import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
 import { Product } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
-import { hasUniqueProductRegions, isUniqueProductRegion } from "../Utils/Validators";
+import { hasUniqueRegions, isUniqueRegion } from "../Utils/ProductValidators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 import { PublishButtons } from "./PublishButtons";
@@ -219,8 +219,8 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
       <MultiRelationFieldTags
         {...props}
         sortItemsBy="Title"
-        validate={hasUniqueProductRegions(product)}
-        validateItem={isUniqueProductRegion(product)}
+        validate={hasUniqueRegions(product)}
+        validateItem={isUniqueRegion(product)}
       />
     );
   };

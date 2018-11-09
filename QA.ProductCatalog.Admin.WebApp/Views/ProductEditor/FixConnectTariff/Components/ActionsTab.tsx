@@ -22,11 +22,8 @@ import {
   ProductRelation,
   MarketingProduct
 } from "../TypeScriptSchema";
-import {
-  hasUniqueActionMarketingDevice,
-  isUniqueProductRegion,
-  hasUniqueProductRegions
-} from "../Utils/Validators";
+import { hasUniqueRegions, isUniqueRegion } from "../Utils/ProductValidators";
+import { hasUniqueMarketingDevice } from "../Utils/ActionDeviceValidators";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
@@ -216,8 +213,8 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
       <MultiRelationFieldTags
         {...props}
         sortItemsBy="Title"
-        validate={hasUniqueProductRegions(product, otherProducts)}
-        validateItem={isUniqueProductRegion(product, otherProducts)}
+        validate={hasUniqueRegions(product, otherProducts)}
+        validateItem={isUniqueRegion(product, otherProducts)}
       />
     );
   };
@@ -262,7 +259,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
 
   private renderMarketingDevice = (props: FieldEditorProps) => {
     const device = props.model as DevicesForFixConnectAction;
-    return <SingleRelationFieldTags {...props} validate={hasUniqueActionMarketingDevice(device)} />;
+    return <SingleRelationFieldTags {...props} validate={hasUniqueMarketingDevice(device)} />;
   };
 
   private renderDeviceParent = ({ model, fieldSchema }: FieldEditorProps) => {
