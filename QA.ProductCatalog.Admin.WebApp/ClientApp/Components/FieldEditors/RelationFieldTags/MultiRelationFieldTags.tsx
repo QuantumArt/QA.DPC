@@ -1,17 +1,46 @@
 import React, { Fragment } from "react";
+import cn from "classnames";
 import { Col } from "react-flexbox-grid";
-import { action, IObservableArray } from "mobx";
+import { action, IObservableArray, computed } from "mobx";
 import { observer } from "mobx-react";
-
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
+
 import { EntityComparer } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTags, RelationFieldTagsProps } from "./AbstractRelationFieldTags";
 
 @observer
 export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   private _entityComparer: EntityComparer;
+
+  @computed
+  private get dataSource() {
+    const { model, fieldSchema, validateItem } = this.props;
+    const array: EntityObject[] = model[fieldSchema.FieldName];
+    if (!array) {
+      return array;
+    }
+    if (!validateItem) {
+      return array.slice().sort(this._entityComparer);
+    }
+    const head: EntityObject[] = [];
+    const tail: EntityObject[] = [];
+
+    array.forEach(entity => {
+      const error = this._validationCache.getOrAdd(entity, () => validateItem(entity));
+      if (error) {
+        head.push(entity);
+      } else {
+        tail.push(entity);
+      }
+    });
+
+    head.sort(this._entityComparer);
+    tail.sort(this._entityComparer);
+
+    return head.concat(tail);
+  }
 
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
@@ -44,23 +73,27 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
-  renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
-    const list: EntityObject[] = model[fieldSchema.FieldName];
-    const isEmpty = !list || list.length === 0;
+  renderField(_model: ArticleObject, _fieldSchema: MultiRelationFieldSchema) {
+    const dataSource = this.dataSource;
+    const isEmpty = !dataSource || dataSource.length === 0;
     return (
       <Col md className="relation-field-list__tags">
         <RelationFieldMenu
           onSelect={!this._readonly && this.selectRelations}
           onClear={!this._readonly && !isEmpty && this.clearRelations}
         />
-        {list &&
-          list
-            .slice()
-            .sort(this._entityComparer)
-            .map(entity => (
+        {dataSource &&
+          dataSource.map(entity => {
+            const error = this._validationCache.get(entity);
+            return (
               <Fragment key={entity._ClientId}>
                 {" "}
-                <span className="bp3-tag bp3-minimal">
+                <span
+                  className={cn("bp3-tag bp3-minimal", {
+                    "bp3-intent-danger": !!error
+                  })}
+                  title={error}
+                >
                   {this.getTitle(entity)}
                   {!this._readonly && (
                     <button
@@ -71,7 +104,8 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
                   )}
                 </span>
               </Fragment>
-            ))}
+            );
+          })}
       </Col>
     );
   }

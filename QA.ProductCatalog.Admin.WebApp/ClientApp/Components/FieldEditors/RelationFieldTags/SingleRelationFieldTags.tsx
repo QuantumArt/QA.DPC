@@ -1,4 +1,5 @@
 import React from "react";
+import cn from "classnames";
 import { Col } from "react-flexbox-grid";
 import { action } from "mobx";
 import { observer } from "mobx-react";
@@ -27,12 +28,20 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
+    const { validateItem } = this.props;
     const entity: EntityObject = model[fieldSchema.FieldName];
+    const error =
+      entity && validateItem && this._validationCache.getOrAdd(entity, () => validateItem(entity));
     return (
       <Col md className="relation-field-list__tags">
         <RelationFieldMenu onSelect={!this._readonly && this.selectRelation} />
         {entity && (
-          <span className="bp3-tag bp3-minimal">
+          <span
+            className={cn("bp3-tag bp3-minimal", {
+              "bp3-intent-danger": !!error
+            })}
+            title={error}
+          >
             {this.getTitle(entity)}
             {!this._readonly && (
               <button className="bp3-tag-remove" title="Отвязать" onClick={this.detachEntity} />

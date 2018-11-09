@@ -1,9 +1,11 @@
 import React from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
+import { Validator } from "mst-validation-mixin";
 import { EntityObject } from "Models/EditorDataModels";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
 import { isNullOrWhiteSpace } from "Utils/TypeChecks";
+import { ComputedCache } from "Utils/WeakCache";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
@@ -13,6 +15,7 @@ import {
 import "./RelationFieldTags.scss";
 
 export interface RelationFieldTagsProps extends FieldEditorProps {
+  validateItem?: Validator;
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   displayField?: string | FieldSelector;
@@ -23,6 +26,7 @@ export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEdi
 > {
   protected _displayField: FieldSelector;
   protected _isHalfSize = false;
+  protected _validationCache = new ComputedCache<EntityObject, string>();
 
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
