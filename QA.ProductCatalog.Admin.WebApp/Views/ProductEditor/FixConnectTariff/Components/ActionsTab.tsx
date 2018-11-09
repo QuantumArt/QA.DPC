@@ -49,12 +49,11 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
       const product = action.Parent;
       const marketingProduct = product.getBaseValue("MarketingProduct");
 
-      let products = result.get(marketingProduct);
-      if (!products) {
-        products = [product];
-        result.set(marketingProduct, products);
-      } else {
+      const products = result.get(marketingProduct);
+      if (products) {
         products.push(product);
+      } else {
+        result.set(marketingProduct, [product]);
       }
     });
 
@@ -77,7 +76,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
 
     return (
       <>
-        <FilterBlock model={this.filterModel} />
+        <FilterBlock filterModel={this.filterModel} />
         <Divider />
         <ArticleEditor
           model={model.MarketingProduct}
@@ -100,7 +99,10 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
         filterItems={this.filterModel.filterActions}
         highlightItems={this.filterModel.highlightAction}
         sortItems={by(
-          asc((action: FixConnectAction) => action.Parent.MarketingProduct._ServerId),
+          asc(
+            (action: FixConnectAction) =>
+              action.Parent.MarketingProduct && action.Parent.MarketingProduct._ServerId
+          ),
           asc((action: FixConnectAction) => action.Parent._ServerId)
         )}
         columnProportions={[4, 10, 1]}
@@ -125,6 +127,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
         canCloneEntity
         canRemoveEntity
         canSelectRelation
+        onMountEntity={(action: FixConnectAction) => action.Parent.setTouched("Regions")}
         onClonePrototype={async clonePrototype => {
           await clonePrototype();
           props.model.setChanged(props.fieldSchema.FieldName, false);

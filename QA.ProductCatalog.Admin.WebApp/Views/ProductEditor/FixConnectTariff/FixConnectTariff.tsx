@@ -16,8 +16,8 @@ const App = () => (
       editorSettings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: props => <MultiRelationFieldTags {...props} sortItemsBy="Title" />,
-        ProductParameter: props => <ParameterFields {...props} />,
-        LinkParameter: props => <ParameterFields {...props} />,
+        ProductParameter: ParameterFields,
+        LinkParameter: ParameterFields,
         Advantage: AdvantagesTable
       }}
     >

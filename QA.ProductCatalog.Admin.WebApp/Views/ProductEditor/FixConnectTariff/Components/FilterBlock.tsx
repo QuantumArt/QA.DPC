@@ -10,7 +10,7 @@ import { FilterModel } from "../Models/FilterModel";
 import { Tables } from "../TypeScriptSchema";
 
 interface FilterBlockProps {
-  model: FilterModel;
+  filterModel: FilterModel;
   byMarketingTariff?: boolean;
 }
 
@@ -31,11 +31,11 @@ export class FilterBlock extends Component<FilterBlockProps> {
   }
 
   private handleRegionsFilterChange = (selection: Option<number>[]) => {
-    this.props.model.setSelectedRegionIds(selection.map(option => option.value));
+    this.props.filterModel.setSelectedRegionIds(selection.map(option => option.value));
   };
 
   render() {
-    const { model, byMarketingTariff } = this.props;
+    const { filterModel, byMarketingTariff } = this.props;
     return (
       <Col md className="devices-filter">
         <Row>
@@ -43,9 +43,9 @@ export class FilterBlock extends Component<FilterBlockProps> {
             <Switch
               large
               alignIndicator={Alignment.RIGHT}
-              checked={model.filterByTariffRegions}
+              checked={filterModel.filterByTariffRegions}
               label=""
-              onChange={model.toggleFilterByTariffRegions}
+              onChange={filterModel.toggleFilterByTariffRegions}
             >
               Фильтровать по регионам <br /> тарифа фиксированной связи
             </Switch>
@@ -58,7 +58,7 @@ export class FilterBlock extends Component<FilterBlockProps> {
               placeholder="Фильтровать по регионам"
               noResultsText="Ничего не найдено"
               options={this.options}
-              value={model.selectedRegionIds}
+              value={filterModel.selectedRegionIds}
               onChange={this.handleRegionsFilterChange}
             />
           </Col>
@@ -67,8 +67,8 @@ export class FilterBlock extends Component<FilterBlockProps> {
               <Switch
                 large
                 alignIndicator={Alignment.RIGHT}
-                checked={model.filterByMarketingTariff}
-                onChange={model.toggleFilterByMarketingTariff}
+                checked={filterModel.filterByMarketingTariff}
+                onChange={filterModel.toggleFilterByMarketingTariff}
               >
                 Фильтровать по маркетинговому <br /> тарифу фиксированной связи
               </Switch>

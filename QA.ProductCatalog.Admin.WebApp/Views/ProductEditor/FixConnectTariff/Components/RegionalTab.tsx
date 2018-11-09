@@ -89,7 +89,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           customActions={() => <PublishButtons model={model} contentSchema={contentSchema} />}
         />
         <Divider />
-        <FilterBlock model={this.filterModel} />
+        <FilterBlock filterModel={this.filterModel} />
         <Divider />
         {this.renderMarketingInternetTariff()}
         {this.renderMarketingPhoneTariff()}
