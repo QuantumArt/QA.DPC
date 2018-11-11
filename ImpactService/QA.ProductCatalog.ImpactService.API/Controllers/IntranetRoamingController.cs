@@ -77,7 +77,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 try
                 {
                     InitialTariffProperties = (JArray)Product["Parameters"];
-                    Product["Parameters"] = _calc.GetResultParameters(Scale, Product, useMacroRegionParameters);
+                    Product["Parameters"] = _calc.GetResultParameters(Scale, Product, region, useMacroRegionParameters);
                 }
                 catch (Exception ex)
                 {
