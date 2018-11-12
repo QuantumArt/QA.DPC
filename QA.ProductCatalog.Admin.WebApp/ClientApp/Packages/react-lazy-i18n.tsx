@@ -55,36 +55,10 @@ export function makeTranslate(resources: Resources, shouldPrepareKeys = true): T
   };
 }
 
-class MapStub<K, V> {
-  private _pairs: { key: K; value: V }[] = [];
-
-  get(key: K): V | undefined {
-    for (let i = 0; i < this._pairs.length; i++) {
-      const pair = this._pairs[i];
-      if (pair.key === key) {
-        return pair.value;
-      }
-    }
-    return undefined;
-  }
-
-  set(key: K, value: V): this {
-    for (let i = 0; i < this._pairs.length; i++) {
-      const pair = this._pairs[i];
-      if (pair.key === key) {
-        pair.value = value;
-        return this;
-      }
-    }
-    this._pairs.push({ key, value });
-    return this;
-  }
-}
-
 const resourcesCache =
-  typeof WeakMap !== "undefined"
+  typeof WeakMap === "function"
     ? new WeakMap<Resources, Resources>()
-    : new MapStub<Resources, Resources>();
+    : new Map<Resources, Resources>();
 
 function prepareKeys(resources: Resources): Resources {
   if (!resources) {
