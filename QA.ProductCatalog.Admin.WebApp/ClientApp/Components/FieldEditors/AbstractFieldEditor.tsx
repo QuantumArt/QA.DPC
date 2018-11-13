@@ -104,7 +104,9 @@ export abstract class AbstractFieldEditor<
   }
 }
 
+/** Функция выбора поля статьи */
 export type FieldSelector<T = ReactNode> = (model: ArticleObject) => T;
+/** Функция сравнения статей */
 export type EntityComparer = (first: EntityObject, second: EntityObject) => number;
 
 export abstract class AbstractRelationFieldEditor<

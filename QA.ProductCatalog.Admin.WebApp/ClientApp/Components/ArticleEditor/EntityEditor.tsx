@@ -13,33 +13,65 @@ import "./ArticleEditor.scss";
 import { action } from "mobx";
 
 interface EntityEditorProps extends ArticleEditorProps {
+  /** Статья для редакторования */
   model: EntityObject;
+  /** Класс для тела редактора статьи */
   className?: string;
+  /** Заголовок редактора статьи */
   withHeader?: ReactNode | boolean;
+  /** Поле статьи для отображения в заголовке */
   titleField?: string | FieldSelector;
-  // allowed actions
+  /** Разрешено ли сохранение статьи @default true */
   canSaveEntity?: boolean;
+  /** Разрешено ли обновление статьи @default true */
   canRefreshEntity?: boolean;
+  /** Разрешена ли перезагрузка статьи @default true */
   canReloadEntity?: boolean;
+  /** Разрешено ли открепление статьи-связи */
   canDetachEntity?: boolean;
+  /** Разрешено ли удаление статьи */
   canRemoveEntity?: boolean;
+  /** Разрешена ли публикация статьи */
   canPublishEntity?: boolean;
+  /** Разрешено ли клонирование статьи */
   canCloneEntity?: boolean;
+  /**
+   * Обработчик сохранения статьи
+   * @param saveEntity Метод, выполняющий реальное сохранение
+   */
   onSaveEntity?(entity: EntityObject, saveEntity: () => Promise<void>): void;
+  /**
+   * Обработчик обновления статьи
+   * @param refreshEntity Метод, выполняющий реальное обновление
+   */
   onRefreshEntity?(entity: EntityObject, refreshEntity: () => Promise<void>): void;
+  /**
+   * Обработчик перезагрузки статьи
+   * @param reloadEntity Метод, выполняющий реальную перезагрузку
+   */
   onReloadEntity?(entity: EntityObject, reloadEntity: () => Promise<void>): void;
+  /**
+   * Обработчик публикации статьи
+   * @param publishEntity Метод, выполняющий реальную публикацию
+   */
   onPublishEntity?(entity: EntityObject, publishEntity: () => Promise<void>): void;
+  /** Обработчик удаления статьи */
   onRemoveEntity?(entity: EntityObject): void;
+  /** Обработчик открепления статьи-связи */
   onDetachEntity?(entity: EntityObject): void;
+  /** Обработчик клонирования статьи */
   onCloneEntity?(entity: EntityObject): void;
+  /** Обработчик, выполняющийся при добавлении редактора в DOM */
   onMountEntity?(entity: EntityObject): void;
+  /** Обработчик, выполняющийся при удалении редактора из DOM */
   onUnmountEntity?(entity: EntityObject): void;
-  // custom actions
+  /** Render Callback для добавления дополнительных кнопок-действий в меню статьи */
   customActions?(entity: EntityObject): ReactNode;
 }
 
 const defaultEntityHandler = (_entity, action) => action();
 
+/** Компонент для отображения и редактирования статьи-сущности */
 @observer
 export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   static defaultProps = {

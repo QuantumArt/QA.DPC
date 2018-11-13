@@ -36,14 +36,36 @@ import { asc } from "Utils/Array";
 import { isFunction, isObject } from "Utils/TypeChecks";
 import "./ArticleEditor.scss";
 
+/**
+ * Настройка компонентов-редакторов для полей-связей по имени контента связи.
+ * Переопределяются с помощью @see ArticleEditorProps.fieldEditors
+ */
 export class RelationsConfig {
   [contentName: string]: typeof IGNORE | RelationFieldEditor;
 }
 
+/**
+ * Настройка компонентов-редакторов для полей-связей по имени поля.
+ * Ключь — имя поля, значение — компонент-редактор,
+ * или статическое значение поля (в этом случае поле не отображается),
+ * или признак отсутствия редактора (в этом случае значение поля не меняется).
+ * @example {
+ *   Title: StringFieldEditor,
+ *   Description: IGNORE,
+ *   Products: props => <RelationFieldTable {...props} />
+ *   Type: "Tariff",
+ *   Type_Extension: {
+ *     Tariff: {
+ *       Order: NumericFieldEditor
+ *     }
+ *   }
+ * }
+ */
 export interface FieldsConfig {
   [fieldName: string]: typeof IGNORE | FieldValue | FieldEditor | ExtensionConfig;
 }
 
+/** Настройка групп компонентов-редакторов для полей-связей по имени контента-расширения */
 interface ExtensionConfig {
   [contentName: string]: FieldsConfig;
 }
@@ -52,8 +74,10 @@ function isContentsConfig(field: any): field is ExtensionConfig {
   return isObject(field) && Object.values(field).every(isObject);
 }
 
+/** Не отображать редактор поля */
 export const IGNORE = Symbol("IGNORE");
 
+/** Статическое значение поля контента */
 type FieldValue =
   | null
   | string
@@ -65,28 +89,45 @@ type FieldValue =
   | EntityObject
   | EntityObject[];
 
+/** Props для компонента-редактора произвольного поля */
 export interface FieldEditorProps {
   model: ArticleObject;
   fieldSchema: FieldSchema;
 }
 
-declare class FieldEditorComponent extends Component<FieldEditorProps> {}
+/** Интерфейс компонента-редактора произвольного поля */
 type FieldEditor = StatelessComponent<FieldEditorProps> | typeof FieldEditorComponent;
+declare class FieldEditorComponent extends Component<FieldEditorProps> {}
 
+/** Props для компонента-редактора поля-связи */
 interface RelationFieldEditorProps extends FieldEditorProps {
   fieldSchema: RelationFieldSchema;
 }
 
-declare class RelationFieldEditorComponent extends Component<FieldEditorProps> {}
+/** Интерфейс компонента-редактора поля-связи */
 type RelationFieldEditor =
   | StatelessComponent<RelationFieldEditorProps>
   | typeof RelationFieldEditorComponent;
+declare class RelationFieldEditorComponent extends Component<FieldEditorProps> {}
 
+/** Props для компонента-редактора произвольной статьи */
 export interface ArticleEditorProps {
+  /** Статья для редакторования */
   model: ArticleObject;
+  /** Схема контента для редактирования */
   contentSchema: ContentSchema;
+  /**
+   * Порядок отображения полей в форме.
+   * @example ["Title", "Description", "Products"]
+   */
   fieldOrders?: string[];
+  /**
+   * Настройки редакторов полей по имени поля. Если настройка для поля отсутствует,
+   * то редактор определяется по типу схемы поля @see FieldSchema
+   * @example { Title: StringFieldEditor, Products: props => <RelationFieldTable {...props} /> }
+   */
   fieldEditors?: FieldsConfig;
+  /** Не отображать поля, не описанные в @see fieldEditors */
   skipOtherFields?: boolean;
 }
 
@@ -269,5 +310,6 @@ export abstract class AbstractEditor<P extends ArticleEditorProps> extends Compo
   }
 }
 
+/** Компонент для отображения и редактирования произвольной статьи */
 @observer
 export class ArticleEditor extends AbstractEditor<ArticleEditorProps> {}

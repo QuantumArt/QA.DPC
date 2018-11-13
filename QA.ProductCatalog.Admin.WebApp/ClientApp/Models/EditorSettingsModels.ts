@@ -1,4 +1,4 @@
-/** Настройки ProductEditor */
+/** Обище настройки ProductEditor */
 export class EditorSettings {
   /** Id корневой статьи */
   ArticleId?: number;

@@ -29,16 +29,28 @@ import { PublicationContext } from "Services/PublicationContext";
 import { PublicationTracker } from "Services/PublicationTracker";
 import { OverlayPresenter } from "Services/OverlayPresenter";
 
+/** Render-callback для отрисовки редактора корневой статьи после загрузки схемы и данных */
 type RenderEditor = (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
 
 interface ProductEditorProps {
+  /** Обище настройки ProductEditor */
   editorSettings: EditorSettings;
+  /** URL-параметры корневого CustomAction */
   queryParams?: EditorQueryParams | string;
+  /** Настройки синхронизации статусов публикации */
   publicationTrackerSettings?: Partial<PublicationTrackerSettings>;
+  /**
+   * Настройка компонентов-редакторов для полей-связей по имени контента связи.
+   * Переопределяются с помощью @see ArticleEditorProps.fieldEditors
+   */
   relationEditors?: RelationsConfig;
+  /** Render-callback для отрисовки редактора корневой статьи после загрузки данных */
   children?: RenderEditor | ReactNode;
 }
 
+/**
+ * Корневой компонент редактора. Регистрирует необходимые сервисы, загружает схему и данные.
+ */
 @provider(
   DataContext,
   PublicationContext,

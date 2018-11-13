@@ -13,6 +13,7 @@ interface EntityLinkProps {
   contentSchema: ContentSchema;
 }
 
+/** Ссылка на редактирование статьи в модальном окне QP */
 @observer
 export class EntityLink extends Component<EntityLinkProps> {
   @inject private _entityController: EntityController;

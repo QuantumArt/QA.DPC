@@ -14,6 +14,7 @@ interface EntityMenuProps {
   children?: ReactNode;
 }
 
+/** Выпадающее меню действий со статьей */
 export const EntityMenu = ({
   small,
   onSave,

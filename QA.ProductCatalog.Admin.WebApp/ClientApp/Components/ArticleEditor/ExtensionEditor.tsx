@@ -7,5 +7,6 @@ interface ExtensionEditorProps extends ArticleEditorProps {
   model: ExtensionObject;
 }
 
+/** Компонент для отображения и редактирования статьи-расширения */
 @observer
 export class ExtensionEditor extends AbstractEditor<ExtensionEditorProps> {}
