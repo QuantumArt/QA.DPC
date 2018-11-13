@@ -91,7 +91,9 @@ type FieldValue =
 
 /** Props для компонента-редактора произвольного поля */
 export interface FieldEditorProps {
+  /** Статья, содержащая поле */
   model: ArticleObject;
+  /** Схема поля */
   fieldSchema: FieldSchema;
 }
 

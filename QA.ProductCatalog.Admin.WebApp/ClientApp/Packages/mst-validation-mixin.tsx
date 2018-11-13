@@ -22,30 +22,87 @@ import {
 } from "mobx-state-tree";
 import { isArray } from "Utils/TypeChecks";
 
-export type Validator = (value: any) => string;
+/**
+ * Функция-валидатор.
+ * @returns Строка ошибки или `undefined` при отсутствии ошибки.
+ * @example
+ * const required = value => value ? undefined : "Поле обязательно для заполнения";
+ *
+ * const pattern = (regExp: RegExp) => value =>
+ *   regExp.test(value) ? undefined : "Поле не соответствует шаблону";
+ */
+export type Validator = (value: any) => string | undefined;
 
+/**
+ * Объект, имеющий состояние редактирования и валидации.
+ * При первом изменении поля его значение сохраняется во внутренних структурах,
+ * и доступно с помощью методов @see getBaseValue @see restoreBaseValue @see restoreBaseValues
+ * Ошибка, привязанная к полю, считается видимой, если поле ранее было выбрано
+ * в фокус @see isTouched и изменено @see isChanged
+ */
 export interface ValidatableObject {
+  /** Поле объекта (или любое из полей объекта) ранее было выбрано в фокус и изменено */
   isEdited<K extends keyof this>(name?: K): boolean;
+  /** Поле объекта (или любое из полей объекта) ранее было выбрано в фокус */
   isTouched<K extends keyof this>(name?: K): boolean;
+  /**
+   * Присвоить признак @see isTouched полю объекта
+   * @param isTouched @default true
+   */
   setTouched<K extends keyof this>(name: K, isTouched?: boolean): this;
+  /** Сбросить признак @see isTouched для всех полей объекта */
   setUntouched(): this;
+  /** Поле объекта (или любое из полей объекта) ранее было изменено */
   isChanged<K extends keyof this>(name?: K): boolean;
+  /**
+   * Присвоить признак @see isChanged полю объекта. При установке признака isChanged
+   * в false, текущие значения полей становятся базовыми (изначальными).
+   * @param isChanged @default true
+   */
   setChanged<K extends keyof this>(name: K, isChanged?: boolean): this;
+  /**
+   * Сбросить признак @see isChanged для всех полей объекта. При установке признака isChanged
+   * в false, текущие значения полей становятся базовыми (изначальными).
+   */
   setUnchanged(): this;
+  /** Поле объекта находится в фокусе */
   hasFocus<K extends keyof this>(name: K): boolean;
+  /**
+   * Присвоить признак @see hasFocus полю объекта
+   * @param hasFocus @default true
+   */
   setFocus<K extends keyof this>(name: K, hasFocus?: boolean): this;
+  /**
+   * Получить изначальное значение поля объекта (до редактирования)
+   * или текущее, если поле не было изменено
+   */
   getBaseValue<K extends keyof this>(name: K): Readonly<this[K]>;
+  /** Восстановить изначальное значение поля объеткта */
   restoreBaseValue<K extends keyof this>(name: K): this;
+  /** Восстановить изначальные значения всех полей объеткта */
   restoreBaseValues(): this;
+  /** Имеет ли ошибки указанное поле объекта (или хотя бы одно из полей) */
   hasErrors<K extends keyof this>(name?: K): boolean;
+  /** Имеет ли видимые ошибки указанное поле объекта (или хотя бы одно из полей) */
   hasVisibleErrors<K extends keyof this>(name?: K): boolean;
+  /** Получить ошибки по полю, если они есть */
   getErrors<K extends keyof this>(name: K): string[] | null;
+  /** Получить видимые ошибки по полю, если они есть */
   getVisibleErrors<K extends keyof this>(name: K): string[] | null;
+  /** Получить ошибки по все полям, если они есть */
   getAllErrors(): { [field: string]: string[] } | null;
+  /** Получить видимые ошибки по все полям, если они есть */
   getAllVisibleErrors(): { [field: string]: string[] } | null;
+  /** Добавить ошибки к полю. Эти ошибки будут стерты при любом изменении поля. */
   addErrors<K extends keyof this>(name: K, ...errors: string[]): this;
+  /** Очистить ошибки привязанные к полю (или по всем полям) */
   clearErrors<K extends keyof this>(name?: K): this;
+  /**
+   * Добавить функции валидации к полю. Они выполняются реактивно,
+   * при любом изменении зартагиваемых полей.
+   */
   addValidators<K extends keyof this>(name: K, ...validators: Validator[]): this;
+  /** Удалить ранее добавленные валидаторы к полю */
   removeValidators<K extends keyof this>(name: K, ...validators: Validator[]): this;
 }
 
@@ -92,6 +149,14 @@ class FieldState {
   }
 }
 
+/**
+ * Mixin для MobX State Tree, реализующий интерфейс @see ValidatableObject
+ * @example
+ * types.model("Product", {
+ *   Title: types.string,
+ *   Order: types.number,
+ * }).extend(validationMixin);
+ */
 export const validationMixin = (self: Object) => {
   const fields = observable.map<string, FieldState>(null, SHALLOW);
 
@@ -439,6 +504,14 @@ Object.keys(validationMixin(observable({})).actions).forEach(key => {
   actionDecorators[key] = action;
 });
 
+/**
+ * Утилита для MobX, добавляющая интерфейс @see ValidatableObject
+ * @example
+ * const product = validatable(observable({
+ *   Title: "",
+ *   Order: 0,
+ * }))
+ */
 export function validatable<T extends Object>(target: T): T & ValidatableObject {
   const { actions, views } = validationMixin(target);
   for (const name in views) {
@@ -450,6 +523,18 @@ export function validatable<T extends Object>(target: T): T & ValidatableObject 
 
 type Constructor<T = any> = { new (...args: any[]): T };
 
+/**
+ * Mixin для MobX, реализующий интерфейс @see ValidatableObject
+ * @example
+ * class Entity {
+ *   Id: number;
+ * }
+ *
+ * class Product extends Validatable(Entity) {
+ *   @observable Title: string;
+ *   @observable Order: number;
+ * }
+ */
 export function Validatable<T extends Constructor = Constructor<Object>>(
   constructor?: T
 ): T & Constructor<ValidatableObject> {
@@ -464,16 +549,33 @@ export function Validatable<T extends Constructor = Constructor<Object>>(
   };
 }
 
+/** Props для компонента Validate */
 interface ValidateProps {
+  /** Объект для валидации */
   model: ValidatableObject & { [x: string]: any };
+  /** Имя поля для валидаци */
   name: string;
+  /** Класс для элемента-обертки включающего поле ввода + сообщения об ошибках */
   className?: string;
+  /** Класс для отображения ошибок */
   errorClassName?: string;
+  /** Не отображать сообщения об ошибках */
   silent?: boolean;
+  /** Правила валидации значения поля */
   rules?: Validator | Validator[];
+  /** Render Callback для отображения ошибок */
   renderErrors?: (...errors: string[]) => ReactNode;
 }
 
+/**
+ * React компонент для декларативного описания валидации поля
+ * @example
+ * <Validate silent model={article} name="Title" rules={[required, pattern(/^[A-Z]+$/i)]} />
+ *
+ * <Validate name="Title" model={article} rules={required}>
+ *   <input value={article.Title} onChange={e => (article.Title = e.target.value)} />
+ * </Validate>
+ */
 export class Validate extends Component<ValidateProps> {
   private _validators: Validator[];
 

@@ -7,9 +7,11 @@ interface RelationFieldMenuProps {
   onSelect?: (e: any) => void;
   onClear?: (e: any) => void;
   onReload?: (e: any) => void;
+  /** Дополнительные кнопки-действия */
   children?: ReactNode;
 }
 
+/** Строка кнопок-действий с полем-связью */
 export const RelationFieldMenu = ({
   onCreate,
   onClonePrototype,
