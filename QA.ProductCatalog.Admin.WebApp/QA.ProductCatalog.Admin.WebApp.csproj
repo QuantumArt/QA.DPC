@@ -314,6 +314,8 @@
     <Compile Include="Controllers\DefinitionEditorController.cs" />
     <Compile Include="Controllers\HighloadFrontController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
+    <Compile Include="Controllers\ProductEditorCommandController.cs" />
+    <Compile Include="Controllers\ProductEditorQueryController.cs" />
     <Compile Include="Controllers\TarantoolController.cs" />
     <Compile Include="Core\Adapters\ActionAdapterBase.cs" />
     <Compile Include="Core\Adapters\CountActionAdapter.cs" />

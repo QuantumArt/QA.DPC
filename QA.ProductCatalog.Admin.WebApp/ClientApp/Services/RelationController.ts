@@ -136,7 +136,7 @@ export class RelationController {
   @handleError
   private async loadSelectedArticles(contentSchema: ContentSchema, articleToLoadIds: number[]) {
     const response = await fetch(
-      `${rootUrl}/ProductEditor/LoadPartialProduct?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorQuery/LoadPartialProduct?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",
@@ -216,7 +216,7 @@ export class RelationController {
   @progress
   private async loadProductRelationJson(model: ArticleObject, fieldSchema: RelationFieldSchema) {
     const response = await fetch(
-      `${rootUrl}/ProductEditor/LoadProductRelation?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorQuery/LoadProductRelation?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",
@@ -269,7 +269,7 @@ export class RelationController {
   @progress
   private async preloadRelationArticlesJson(fieldSchema: RelationFieldSchema) {
     const response = await fetch(
-      `${rootUrl}/ProductEditor/PreloadRelationArticles?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorQuery/PreloadRelationArticles?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",
@@ -300,7 +300,9 @@ export class RelationController {
     const contentSchema = fieldSchema.RelatedContent;
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/ClonePartialProductPrototype?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorCommand/ClonePartialProductPrototype?${qs.stringify(
+        this._queryParams
+      )}`,
       {
         method: "POST",
         credentials: "include",

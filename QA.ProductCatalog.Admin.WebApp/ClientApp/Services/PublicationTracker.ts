@@ -54,7 +54,7 @@ export class PublicationTracker {
 
   private loadMaxPublicationTime = async () => {
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetMaxPublicationTime?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorQuery/GetMaxPublicationTime?${qs.stringify(this._queryParams)}`,
       {
         credentials: "include"
       }
@@ -77,7 +77,7 @@ export class PublicationTracker {
     newProductIds.forEach(id => this._loadedProductIds.add(id));
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetPublicationTimestamps?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorQuery/GetPublicationTimestamps?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",
@@ -108,7 +108,7 @@ export class PublicationTracker {
     }
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetPublicationTimestamps?${qs.stringify({
+      `${rootUrl}/ProductEditorQuery/GetPublicationTimestamps?${qs.stringify({
         ...this._queryParams,
         updatedSince: maxPublicationTime
       })}`,

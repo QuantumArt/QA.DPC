@@ -44,7 +44,7 @@ export class ActionController {
       return actionInfo;
     }
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetCustomActionByName?${qs.stringify({
+      `${rootUrl}/ProductEditorQuery/GetCustomActionByName?${qs.stringify({
         ...this._queryParams,
         actionName
       })}`,

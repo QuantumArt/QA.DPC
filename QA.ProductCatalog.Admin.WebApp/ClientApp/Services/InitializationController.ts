@@ -30,7 +30,7 @@ export class InitializationController {
 
     if (this._editorSettings.ArticleId > 0) {
       const response = await fetch(
-        `${rootUrl}/ProductEditor/GetEditorData?${qs.stringify({
+        `${rootUrl}/ProductEditorQuery/GetEditorData?${qs.stringify({
           ...this._queryParams,
           productDefinitionId: this._editorSettings.ProductDefinitionId,
           articleId: this._editorSettings.ArticleId
@@ -84,7 +84,7 @@ export class InitializationController {
 
   private async initSchema() {
     const response = await fetch(
-      `${rootUrl}/ProductEditor/GetEditorSchema?${qs.stringify(
+      `${rootUrl}/ProductEditorQuery/GetEditorSchema?${qs.stringify(
         this._queryParams
       )}&productDefinitionId=${this._editorSettings.ProductDefinitionId}`
     );

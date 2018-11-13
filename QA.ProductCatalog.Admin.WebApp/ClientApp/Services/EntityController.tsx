@@ -55,7 +55,7 @@ export class EntityController {
     strategy: MergeStrategy
   ) {
     const response = await fetch(
-      `${rootUrl}/ProductEditor/LoadPartialProduct?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorQuery/LoadPartialProduct?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",
@@ -133,7 +133,7 @@ export class EntityController {
   @handleError
   protected async publishProduct(entity: EntityObject) {
     const response = await fetch(
-      `${rootUrl}/ProductEditor/PublishProduct?${qs.stringify({
+      `${rootUrl}/ProductEditorCommand/PublishProduct?${qs.stringify({
         ...this._queryParams,
         articleId: entity._ServerId
       })}`,
@@ -188,7 +188,7 @@ export class EntityController {
     const contentSchema = fieldSchema.RelatedContent;
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/RemovePartialProduct?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorCommand/RemovePartialProduct?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",
@@ -238,7 +238,7 @@ export class EntityController {
     const contentSchema = fieldSchema.RelatedContent;
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/ClonePartialProduct?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorCommand/ClonePartialProduct?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",
@@ -308,7 +308,7 @@ export class EntityController {
     const partialProduct = this._dataSerializer.serialize(entity, contentSchema);
 
     const response = await fetch(
-      `${rootUrl}/ProductEditor/SavePartialProduct?${qs.stringify(this._queryParams)}`,
+      `${rootUrl}/ProductEditorCommand/SavePartialProduct?${qs.stringify(this._queryParams)}`,
       {
         method: "POST",
         credentials: "include",
