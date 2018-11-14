@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import cn from "classnames";
 import { Col } from "react-flexbox-grid";
-import { action, IObservableArray, computed } from "mobx";
+import { action, IObservableArray, computed, untracked } from "mobx";
 import { observer } from "mobx-react";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
@@ -32,8 +32,10 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
     const tail: EntityObject[] = [];
 
     array.filter(filterItems).forEach(entity => {
-      const error = this._validationCache.getOrAdd(entity, () => validateItems(entity));
-      if (error) {
+      const itemError = untracked(() =>
+        this._validationCache.getOrAdd(entity, () => validateItems(entity))
+      );
+      if (itemError) {
         head.push(entity);
       } else {
         tail.push(entity);
@@ -91,15 +93,15 @@ export class MultiRelationFieldTags extends AbstractRelationFieldTags {
         </RelationFieldMenu>
         {dataSource &&
           dataSource.map(entity => {
-            const error = this._validationCache.get(entity);
+            const itemError = this._validationCache.get(entity);
             return (
               <Fragment key={entity._ClientId}>
                 {" "}
                 <span
                   className={cn("bp3-tag bp3-minimal", {
-                    "bp3-intent-danger": !!error
+                    "bp3-intent-danger": !!itemError
                   })}
-                  title={error}
+                  title={itemError}
                 >
                   {this.getTitle(entity)}
                   {!this._readonly && (

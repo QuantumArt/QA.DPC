@@ -2,7 +2,7 @@ import React from "react";
 import cn from "classnames";
 import { Col } from "react-flexbox-grid";
 
-import { action, IObservableArray, computed } from "mobx";
+import { action, IObservableArray, computed, untracked } from "mobx";
 import { observer } from "mobx-react";
 import { Button, Intent } from "@blueprintjs/core";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
@@ -35,8 +35,10 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
     const tail: EntityObject[] = [];
 
     array.filter(filterItems).forEach(entity => {
-      const error = this._validationCache.getOrAdd(entity, () => validateItems(entity));
-      if (error) {
+      const itemError = untracked(() =>
+        this._validationCache.getOrAdd(entity, () => validateItems(entity))
+      );
+      if (itemError) {
         head.push(entity);
       } else {
         tail.push(entity);
@@ -99,16 +101,16 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
                 const highlightMode = highlightItems(entity);
                 const highlight = highlightMode === HighlightMode.Highlight;
                 const shade = highlightMode === HighlightMode.Shade;
-                const error = this._validationCache.get(entity);
+                const itemError = this._validationCache.get(entity);
                 return (
                   <div
                     key={entity._ClientId}
                     className={cn("relation-field-table__row", {
                       "relation-field-table__row--highlight": highlight,
                       "relation-field-table__row--shade": shade,
-                      "relation-field-table__row--invalid": !!error
+                      "relation-field-table__row--invalid": !!itemError
                     })}
-                    title={error}
+                    title={itemError}
                   >
                     <div key={-1} className="relation-field-table__cell">
                       <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />

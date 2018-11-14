@@ -23,7 +23,11 @@ import {
   MarketingProduct
 } from "../TypeScriptSchema";
 import { hasUniqueRegions, isUniqueRegion } from "../Utils/ProductValidators";
-import { hasUniqueMarketingDevice } from "../Utils/ActionDeviceValidators";
+import {
+  hasUniqueMarketingDevice,
+  onlyOnePerRegionHasDevices,
+  onlyOneItemPerRegionHasDevices
+} from "../Utils/ActionDeviceValidators";
 import { FilterModel } from "../Models/FilterModel";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
@@ -42,7 +46,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
   private filterModel = new FilterModel(this.props.model);
 
   @computed
-  get actionsParentsByMarketingProduct() {
+  get actionsParentsByMarketingAction() {
     const result = new Map<MarketingProduct, Product[]>();
 
     this.props.model.MarketingProduct.FixConnectActions.forEach(action => {
@@ -93,6 +97,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
   private renderActions = (props: FieldEditorProps) => {
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
     const parentFieldSchema = fieldSchema.RelatedContent.Fields.Parent as RelationFieldSchema;
+    const otherActions = this.props.model.MarketingProduct.FixConnectActions;
     return (
       <RelationFieldAccordion
         {...props}
@@ -123,11 +128,14 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
           Parent: this.renderActionParent,
           MarketingOffers: this.renderMarketingOffers
         }}
+        validateItems={onlyOneItemPerRegionHasDevices(otherActions)}
         canClonePrototype
         canCloneEntity
         canRemoveEntity
         canSelectRelation
-        onMountEntity={(action: FixConnectAction) => action.Parent.setTouched("Regions")}
+        onMountEntity={(action: FixConnectAction) =>
+          action.Parent.setTouched("Regions").setTouched("ActionMarketingDevices")
+        }
         onClonePrototype={async clonePrototype => {
           await clonePrototype();
           props.model.setChanged(props.fieldSchema.FieldName, false);
@@ -211,7 +219,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
 
   private renderActionRegions = (props: FieldEditorProps) => {
     const product = props.model as Product;
-    const otherProducts = this.actionsParentsByMarketingProduct.get(product.MarketingProduct) || [];
+    const otherProducts = this.actionsParentsByMarketingAction.get(product.MarketingProduct) || [];
     return (
       <MultiRelationFieldTags
         {...props}
@@ -241,24 +249,29 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
     />
   );
 
-  private renderDevices = (props: FieldEditorProps) => (
-    <RelationFieldTabs
-      {...props}
-      vertical
-      renderAllTabs
-      titleField={deviceTitleField}
-      displayField={deviceDisplayField}
-      fieldOrders={["MarketingDevice", "Parent"]}
-      fieldEditors={{
-        MarketingDevice: this.renderMarketingDevice,
-        Parent: this.renderDeviceParent,
-        FixConnectAction: IGNORE
-      }}
-      canClonePrototype
-      canRemoveEntity
-      onMountEntity={device => device.setTouched("MarketingDevice")}
-    />
-  );
+  private renderDevices = (props: FieldEditorProps) => {
+    const actionParent = props.model as Product;
+    const otherActions = this.props.model.MarketingProduct.FixConnectActions;
+    return (
+      <RelationFieldTabs
+        {...props}
+        vertical
+        renderAllTabs
+        titleField={deviceTitleField}
+        displayField={deviceDisplayField}
+        fieldOrders={["MarketingDevice", "Parent"]}
+        fieldEditors={{
+          MarketingDevice: this.renderMarketingDevice,
+          Parent: this.renderDeviceParent,
+          FixConnectAction: IGNORE
+        }}
+        validate={onlyOnePerRegionHasDevices(actionParent, otherActions)}
+        canClonePrototype
+        canRemoveEntity
+        onMountEntity={device => device.setTouched("MarketingDevice")}
+      />
+    );
+  };
 
   private renderMarketingDevice = (props: FieldEditorProps) => {
     const device = props.model as DevicesForFixConnectAction;
