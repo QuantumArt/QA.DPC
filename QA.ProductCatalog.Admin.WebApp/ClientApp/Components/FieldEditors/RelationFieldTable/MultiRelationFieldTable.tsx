@@ -23,19 +23,19 @@ export class MultiRelationFieldTable extends AbstractRelationFieldTable {
 
   @computed
   private get dataSource() {
-    const { model, fieldSchema, filterItems, validateItem } = this.props;
+    const { model, fieldSchema, filterItems, validateItems } = this.props;
     const array: EntityObject[] = model[fieldSchema.FieldName];
     if (!array) {
       return array;
     }
-    if (!validateItem) {
+    if (!validateItems) {
       return array.filter(filterItems).sort(this._entityComparer);
     }
     const head: EntityObject[] = [];
     const tail: EntityObject[] = [];
 
     array.filter(filterItems).forEach(entity => {
-      const error = this._validationCache.getOrAdd(entity, () => validateItem(entity));
+      const error = this._validationCache.getOrAdd(entity, () => validateItems(entity));
       if (error) {
         head.push(entity);
       } else {

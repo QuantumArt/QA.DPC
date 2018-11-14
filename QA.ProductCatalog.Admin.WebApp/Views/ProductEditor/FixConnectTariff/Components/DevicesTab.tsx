@@ -125,7 +125,7 @@ export class DevicesTab extends Component<DevicesTabProps> {
         {...props}
         sortItemsBy="Title"
         validate={hasUniqueRegions(product)}
-        validateItem={isUniqueRegion(product)}
+        validateItems={isUniqueRegion(product)}
       />
     );
   };

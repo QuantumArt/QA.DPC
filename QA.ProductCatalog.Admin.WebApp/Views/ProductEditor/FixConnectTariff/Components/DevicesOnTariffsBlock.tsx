@@ -15,7 +15,8 @@ import { FilterModel } from "../Models/FilterModel";
 import {
   hasUniqueCities,
   isUniqueCity,
-  isUniqueMarketingTariff
+  isUniqueMarketingTariff,
+  itemHasUniqueCities
 } from "../Utils/DeviceOnTariffsValidators";
 import { ParameterFields } from "./ParameterFields";
 
@@ -36,6 +37,7 @@ export class DevicesOnTariffsBlock extends Component<DevicesOnTariffsBlockProps>
 
   render() {
     const { filterModel, marketingTariff, ...props } = this.props;
+    const marketingDevice = this.props.model as MarketingProduct;
     return (
       <RelationFieldAccordion
         {...props}
@@ -46,6 +48,7 @@ export class DevicesOnTariffsBlock extends Component<DevicesOnTariffsBlockProps>
         displayFields={[regionsDisplayField, rentPriceDisplayField, salePriceDisplayField]}
         filterItems={filterModel.filterDevicesOnTariffs}
         highlightItems={filterModel.highlightDeviceOnTariffs}
+        validateItems={itemHasUniqueCities(marketingDevice.DevicesOnTariffs)}
         fieldOrders={["Cities", "Parent", "MarketingTariffs"]}
         fieldEditors={{
           MarketingDevice: IGNORE,
@@ -66,7 +69,7 @@ export class DevicesOnTariffsBlock extends Component<DevicesOnTariffsBlockProps>
         {...props}
         sortItemsBy="Title"
         validate={hasUniqueCities(device, marketingDevice.DevicesOnTariffs)}
-        validateItem={isUniqueCity(device, marketingDevice.DevicesOnTariffs)}
+        validateItems={isUniqueCity(device, marketingDevice.DevicesOnTariffs)}
       />
     );
   };
@@ -102,7 +105,7 @@ export class DevicesOnTariffsBlock extends Component<DevicesOnTariffsBlockProps>
           desc((deviceTariff: MarketingProduct) => deviceTariff === marketingTariff),
           asc((deviceTariff: MarketingProduct) => deviceTariff.Title)
         )}
-        validateItem={isUniqueMarketingTariff(device, marketingDevice.DevicesOnTariffs)}
+        validateItems={isUniqueMarketingTariff(device, marketingDevice.DevicesOnTariffs)}
         relationActions={() => (
           <>
             {!device.MarketingTariffs.includes(marketingTariff) && (

@@ -217,7 +217,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
         {...props}
         sortItemsBy="Title"
         validate={hasUniqueRegions(product, otherProducts)}
-        validateItem={isUniqueRegion(product, otherProducts)}
+        validateItems={isUniqueRegion(product, otherProducts)}
       />
     );
   };

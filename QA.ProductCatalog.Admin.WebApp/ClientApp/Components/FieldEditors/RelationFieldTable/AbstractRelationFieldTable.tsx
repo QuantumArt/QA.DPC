@@ -17,7 +17,7 @@ import "./RelationFieldTable.scss";
 export interface RelationFieldTableProps extends FieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
   highlightItems?: (item: EntityObject) => HighlightMode;
-  validateItem?: Validator;
+  validateItems?: Validator;
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   displayFields?: (string | FieldSelector)[];

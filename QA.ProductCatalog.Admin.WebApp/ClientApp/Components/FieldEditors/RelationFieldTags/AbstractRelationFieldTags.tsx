@@ -16,7 +16,7 @@ import "./RelationFieldTags.scss";
 
 export interface RelationFieldTagsProps extends FieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
-  validateItem?: Validator;
+  validateItems?: Validator;
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   displayField?: string | FieldSelector;

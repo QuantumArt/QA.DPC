@@ -5,6 +5,7 @@ import { action, IObservableArray, computed } from "mobx";
 import { observer } from "mobx-react";
 import { Col, Row } from "react-flexbox-grid";
 import { Icon, Button } from "@blueprintjs/core";
+import { Validator } from "mst-validation-mixin";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
 import { ComputedCache } from "Utils/WeakCache";
@@ -26,6 +27,7 @@ import "./RelationFieldAccordion.scss";
 export interface RelationFieldAccordionProps extends ExpandableFieldEditorProps {
   filterItems?: (item: EntityObject) => boolean;
   highlightItems?: (item: EntityObject) => HighlightMode;
+  validateItems?: Validator;
   sortItems?: EntityComparer;
   sortItemsBy?: string | FieldSelector;
   columnProportions?: number[];
@@ -72,6 +74,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
   private _columnProportions?: number[];
   private _displayFields: FieldSelector[];
   private _entityComparer: EntityComparer;
+  private _validationCache = new ComputedCache<EntityObject, string>();
 
   readonly state: RelationFieldAccordionState = {
     isOpen: !this.props.collapsed,
@@ -374,6 +377,7 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
       fieldOrders,
       fieldEditors,
       highlightItems,
+      validateItems,
       skipOtherFields,
       entityActions,
       onMountEntity,
@@ -406,16 +410,19 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
             const highlightMode = highlightItems(entity);
             const highlight = highlightMode === HighlightMode.Highlight;
             const shade = highlightMode === HighlightMode.Shade;
+            const itemError =
+              validateItems && this._validationCache.getOrAdd(entity, () => validateItems(entity));
             return (
               <Fragment key={entity._ClientId}>
                 <tr
                   className={cn("relation-field-accordion__header", {
                     "relation-field-accordion__header--open": isOpen,
                     "relation-field-accordion__header--edited": isEdited,
-                    "relation-field-accordion__header--invalid": hasVisibleErrors,
+                    "relation-field-accordion__header--invalid": hasVisibleErrors || !!itemError,
                     "relation-field-accordion__header--highlight": highlight,
                     "relation-field-accordion__header--shade": shade
                   })}
+                  title={itemError}
                   onClick={e => this.handleToggle(e, entity)}
                 >
                   <td

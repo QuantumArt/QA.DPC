@@ -220,7 +220,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
         {...props}
         sortItemsBy="Title"
         validate={hasUniqueRegions(product)}
-        validateItem={isUniqueRegion(product)}
+        validateItems={isUniqueRegion(product)}
       />
     );
   };

@@ -27,10 +27,12 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { relationActions, validateItem } = this.props;
+    const { relationActions, validateItems } = this.props;
     const entity: EntityObject = model[fieldSchema.FieldName];
-    const error =
-      entity && validateItem && this._validationCache.getOrAdd(entity, () => validateItem(entity));
+    const itemError =
+      entity &&
+      validateItems &&
+      this._validationCache.getOrAdd(entity, () => validateItems(entity));
     return (
       <Col md className="relation-field-list__tags">
         <RelationFieldMenu onSelect={!this._readonly && this.selectRelation}>
@@ -39,9 +41,9 @@ export class SingleRelationFieldTags extends AbstractRelationFieldTags {
         {entity && (
           <span
             className={cn("bp3-tag bp3-minimal", {
-              "bp3-intent-danger": !!error
+              "bp3-intent-danger": !!itemError
             })}
-            title={error}
+            title={itemError}
           >
             {this.getTitle(entity)}
             {!this._readonly && (

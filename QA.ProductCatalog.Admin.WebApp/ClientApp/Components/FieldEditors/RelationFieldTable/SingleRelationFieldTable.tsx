@@ -26,10 +26,12 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
   };
 
   renderField(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
-    const { relationActions, validateItem } = this.props;
+    const { relationActions, validateItems } = this.props;
     const entity: EntityObject = model[fieldSchema.FieldName];
-    const error =
-      entity && validateItem && this._validationCache.getOrAdd(entity, () => validateItem(entity));
+    const itemError =
+      entity &&
+      validateItems &&
+      this._validationCache.getOrAdd(entity, () => validateItems(entity));
     return (
       <Col md>
         <RelationFieldMenu
@@ -44,9 +46,9 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
             <div className="relation-field-table__table">
               <div
                 className={cn("relation-field-table__row", {
-                  "relation-field-table__row--invalid": !!error
+                  "relation-field-table__row--invalid": !!itemError
                 })}
-                title={error}
+                title={itemError}
               >
                 <div key={-1} className="relation-field-table__cell">
                   <EntityLink model={entity} contentSchema={fieldSchema.RelatedContent} />
