@@ -137,19 +137,6 @@ namespace QA.ProductCatalog.ImpactService
             return new JArray(region == null ? parameters : FilterResultParameters(parameters, region));
         }
 
-        private static IEnumerable<JToken> FilterResultParameters(IEnumerable<JToken> parameters, string region)
-        {
-            foreach (var p in parameters)
-            {
-                if (p.SelectToken("Zone.Regions") != null)
-                {
-                    var aliases = new HashSet<string>(p.SelectTokens("Zone.Regions.[?(@.Alias)].Alias").Select(n => n.ToString()));
-                    if (!aliases.Contains(region)) continue;
-                }
-
-                yield return p;
-            }
-        }
 
 
         public void MergeValuesFromTariff(JObject option, JArray tariffRoot)

@@ -55,6 +55,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogStartImpact("VSR", id, serviceIds);
 
+            _calc.Region = region;
             result = result ?? await CorrectProductWithScale(id, region, useMacroRegionParameters, searchOptions);
             result = result ?? CalculateImpact(searchOptions.HomeRegionData);
 
