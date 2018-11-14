@@ -315,7 +315,7 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
 
-        private void CalculateImpact(JToken parametersRoot, JToken[] optionParameters) //***
+        private void CalculateImpact(JToken parametersRoot, JToken[] optionParameters)
         {
 
             if (!string.IsNullOrEmpty(Region))
