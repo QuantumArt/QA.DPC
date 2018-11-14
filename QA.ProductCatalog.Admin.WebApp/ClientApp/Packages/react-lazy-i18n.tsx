@@ -1,94 +1,75 @@
 import React, {
   Component,
-  StatelessComponent,
   ReactNode,
-  cloneElement,
-  createContext
+  ComponentType,
+  createContext,
+  useState,
+  useContext,
+  useRef
 } from "react";
 import hoistNonReactStatics from "hoist-non-react-statics";
-import { isObject, isString, isFunction } from "Utils/TypeChecks";
-
-type Tempalte = (...args: any[]) => string;
 
 interface Resources {
-  [id: string]: string | Tempalte | StatelessComponent;
+  [id: string]: string | Function;
 }
 
-export interface TranslateFunction {
-  (id: string, fallback: FallbackArgs): string;
-  (id: string, ...values: any[]): string;
-  (strings: TemplateStringsArray, ...values: any[]): string;
+export interface Translate {
+  (id: string, ...values: any[]): any;
+  (strings: TemplateStringsArray, ...values: any[]): any;
 }
 
-export function makeTranslate(resources: Resources, shouldPrepareKeys = true): TranslateFunction {
-  if (shouldPrepareKeys) {
-    resources = prepareKeys(resources);
-  }
+function isString(arg): arg is string {
+  return typeof arg === "string";
+}
 
-  return function translate(
-    idOrStrings: TemplateStringsArray | string,
-    ...fallbackOrValues: any[]
-  ) {
+function isFunction(arg): arg is Function {
+  return typeof arg === "function";
+}
+
+function isObject(arg: any): arg is Object {
+  return arg && typeof arg === "object" && !Array.isArray(arg);
+}
+
+function makeTranslate(resources: Resources): Translate {
+  resources = prepareKeys(resources);
+
+  return (idOrStrings: TemplateStringsArray | string, ...values: any[]) => {
     const templateId = isString(idOrStrings)
       ? idOrStrings
       : idOrStrings.join("{*}").replace(/\s+/g, " ");
 
-    const template = resources && (resources[templateId] as string | Tempalte);
+    const template = resources && resources[templateId];
     if (isString(template)) {
       return template;
     }
-    const fallbackArgs = fallbackOrValues[0];
-    if (fallbackArgs instanceof FallbackArgs) {
-      const { strings, values } = fallbackArgs;
-      if (isFunction(template)) {
-        return template(...values);
-      }
-      return defaultTemplate(strings, ...values);
-    }
     if (isFunction(template)) {
-      return template(...fallbackOrValues);
+      return template(...values);
     }
     if (isString(idOrStrings)) {
-      return idOrStrings;
+      return null;
     }
-    return defaultTemplate(idOrStrings, ...fallbackOrValues);
+    return defaultTemplate(idOrStrings, ...values);
   };
 }
 
-const resourcesCache =
-  typeof WeakMap === "function"
-    ? new WeakMap<Resources, Resources>()
-    : new Map<Resources, Resources>();
+const preparedResources =
+  typeof WeakSet === "function" ? new WeakSet<Resources>() : new Set<Resources>();
 
 function prepareKeys(resources: Resources): Resources {
-  if (!resources) {
+  if (!resources || preparedResources.has(resources)) {
     return resources;
   }
-  const cached = resourcesCache.get(resources);
-  if (cached) {
-    return cached;
-  }
-  const prepared: Resources = {};
+  preparedResources.add(resources);
 
   Object.keys(resources).forEach(resourceId => {
     const templateId = resourceId.replace(/\$\{\s*[A-Za-z0-9_]+\s*\}/g, "{*}").replace(/\s+/g, " ");
-    prepared[templateId] = resources[resourceId];
+    if (templateId !== resourceId) {
+      resources[templateId] = resources[resourceId];
+      delete resources[resourceId];
+    }
   });
 
-  resourcesCache.set(resources, prepared);
-  return prepared;
-}
-
-export function id(strings: TemplateStringsArray) {
-  return strings[0];
-}
-
-export function fallback(strings: TemplateStringsArray, ...values: any[]) {
-  return new FallbackArgs(strings, values);
-}
-
-class FallbackArgs {
-  constructor(public strings: TemplateStringsArray, public values: any[]) {}
+  return resources;
 }
 
 function defaultTemplate(strings: TemplateStringsArray, ...values: any[]) {
@@ -106,198 +87,97 @@ function defaultTemplate(strings: TemplateStringsArray, ...values: any[]) {
   return arr.join("");
 }
 
-const ResourcesContext = createContext<Resources>(null);
+export const LocaleContext = createContext<string>(null);
 
-export class Translate extends Component<{ id: string }> {
-  private _params: { [name: string]: any };
-  private _propsByKey: { [key: string]: Object };
+type LoadResources = (
+  locale: string
+) => Resources | Promise<Resources> | Promise<{ default: Resources }>;
 
-  private clearData() {
-    this._params = {};
-    this._propsByKey = {};
-  }
+const emptyTranslate = makeTranslate(null);
 
-  private collectData = (node: any) => {
-    if (Array.isArray(node)) {
-      node.forEach(this.collectData);
-    } else if (isObject(node)) {
-      const { type, props, key } = node;
-      if (type && props) {
-        if (key != null) {
-          const storedProps = { ...props };
-          delete storedProps.children;
-          this._propsByKey[key] = storedProps;
-          this.collectData(props.children);
-        }
-      } else {
-        Object.assign(this._params, node);
-      }
-    }
-  };
-
-  private visitNode = (node: any) => {
-    if (Array.isArray(node)) {
-      return node.map(this.visitNode);
-    }
-    if (isObject(node)) {
-      const { type, props, key } = node;
-      if (type && props) {
-        const { children } = props;
-        const newProps = (key != null && this._propsByKey[key]) || props;
-        const newChildren = this.visitNode(children);
-        if (props === newProps && children === newChildren) {
-          return node;
-        }
-        if (typeof newChildren === "undefined") {
-          return cloneElement(node, newProps);
-        }
-        if (Array.isArray(newChildren)) {
-          return cloneElement(node, newProps, ...newChildren);
-        }
-        return cloneElement(node, newProps, newChildren);
-      }
-      for (const key in node) {
-        return node[key];
-      }
-    }
-    return node;
-  };
-
-  private renderChildren = (resources: Resources) => {
-    const { id, children } = this.props;
-    this.clearData();
-    this.collectData(children);
-    const resource = resources && (resources[id] as StatelessComponent);
-    const nodes = resource ? resource(this._params) : children;
-    return this.visitNode(nodes) || null;
-  };
-
-  render() {
-    return <ResourcesContext.Consumer>{this.renderChildren}</ResourcesContext.Consumer>;
-  }
+function useForceUpdate() {
+  const [tick, setTick] = useState(0);
+  return () => setTick((tick + 1) & 0x7fffffff);
 }
 
-export const LocaleContext = createContext<string>("");
+export function useTranslate(load: LoadResources) {
+  const forceUpdate = useForceUpdate();
+  const locale = useContext(LocaleContext);
+  const ref = useRef<{ _locale: string; _translate: Translate }>(null);
+  const self = ref.current || (ref.current = { _locale: null, _translate: emptyTranslate });
 
-interface LocalizeConfig {
-  load: (locale: string) => Resources | Promise<Resources> | Promise<{ default: Resources }>;
-  defaultLocale?: string;
-  defaultResources?: Resources;
-}
-
-interface LocalizeState {
-  resources: Resources;
-  translate: TranslateFunction;
-}
-
-abstract class LocalizeComponent<T = {}> extends Component<T, LocalizeState> {
-  protected _locale: string;
-
-  protected updateResources(
-    locale: string,
-    resources: Resources | Promise<Resources> | Promise<{ default: Resources }>
-  ) {
+  if (self._locale !== locale) {
+    self._locale = locale;
+    const resources = load(locale);
     if (resources instanceof Promise) {
       resources.catch(() => null).then(resources => {
-        if (this._locale === locale) {
+        if (self._locale === locale) {
           if (resources && isObject(resources.default)) {
             resources = resources.default;
           }
-          this.setResources(resources);
+          self._translate = makeTranslate(resources);
+          forceUpdate();
         }
       });
     } else {
-      this.setResources(resources);
+      self._translate = makeTranslate(resources);
     }
   }
+  return self._translate;
+}
 
-  private setResources(resources: Resources) {
-    resources = prepareKeys(resources);
-    const translate = makeTranslate(resources, false);
-    this.setState({ resources, translate });
+abstract class LocalizeComponent<T = {}> extends Component<T> {
+  static contextType = LocaleContext;
+  protected _locale: string = null;
+  protected _translate = emptyTranslate;
+
+  protected loadResources(locale: string, load: LoadResources) {
+    if (this._locale !== locale) {
+      this._locale = locale;
+      const resources = load(locale);
+      if (resources instanceof Promise) {
+        resources.catch(() => null).then(resources => {
+          if (this._locale === locale) {
+            if (resources && isObject(resources.default)) {
+              resources = resources.default;
+            }
+            this._translate = makeTranslate(resources);
+            this.forceUpdate();
+          }
+        });
+      } else {
+        this._translate = makeTranslate(resources);
+      }
+    }
   }
 }
 
-interface LocalizeProps extends LocalizeConfig {
-  children: (translate: TranslateFunction) => ReactNode;
+interface LocalizeProps {
+  load: LoadResources;
+  children: (translate: Translate) => ReactNode;
 }
 
 export class Localize extends LocalizeComponent<LocalizeProps> {
-  constructor(props: LocalizeProps, context?: any) {
-    super(props, context);
-    const { defaultLocale, defaultResources } = props;
-    this._locale = defaultLocale;
-    const resources = prepareKeys(defaultResources);
-    const translate = makeTranslate(resources, false);
-    // @ts-ignore
-    this.state = { resources, translate };
-  }
-
-  private renderChildren = (locale: string) => {
-    const { load, children } = this.props;
-    const { resources, translate } = this.state;
-    if (this._locale !== locale) {
-      this._locale = locale;
-      this.updateResources(locale, load(locale));
-    }
-    return (
-      <ResourcesContext.Provider value={resources}>{children(translate)}</ResourcesContext.Provider>
-    );
-  };
+  static displayName = "Localize";
 
   render() {
-    return <LocaleContext.Consumer>{this.renderChildren}</LocaleContext.Consumer>;
+    const { load, children } = this.props;
+    this.loadResources(this.context, load);
+    return children(this._translate);
   }
 }
 
-export function localize(
-  load: LocalizeConfig["load"]
-): <T extends typeof Component>(Wrapped: T) => T;
-export function localize(config: LocalizeConfig): <T extends typeof Component>(Wrapped: T) => T;
-export function localize(argument: any) {
-  let load, defaultLocale, defaultResources;
-  if (isFunction(argument)) {
-    load = argument;
-  } else {
-    ({ load, defaultLocale, defaultResources } = argument);
-  }
-  const resources = prepareKeys(defaultResources);
-  const translate = makeTranslate(resources, false);
+export const localize = (load: LoadResources) => <T extends ComponentType>(Wrapped: T) => {
+  class Localize extends LocalizeComponent {
+    static displayName = `Localize(${Wrapped.displayName || Wrapped.name})`;
+    static WrappedComponent = Wrapped;
 
-  return Wrapped => {
-    class Localized extends LocalizeComponent {
-      static displayName = `Localized(${getDisplayName(Wrapped)})`;
-
-      constructor(props: {}, context?: any) {
-        super(props, context);
-        this._locale = defaultLocale;
-        // @ts-ignore
-        this.state = { resources, translate };
-      }
-
-      private renderComponent = (locale: string) => {
-        const { resources, translate } = this.state;
-        if (this._locale !== locale) {
-          this._locale = locale;
-          this.updateResources(locale, load(locale));
-        }
-        return (
-          <ResourcesContext.Provider value={resources}>
-            <Wrapped translate={translate} {...this.props} />
-          </ResourcesContext.Provider>
-        );
-      };
-
-      render() {
-        return <LocaleContext.Consumer>{this.renderComponent}</LocaleContext.Consumer>;
-      }
+    render() {
+      this.loadResources(this.context, load);
+      // @ts-ignore
+      return <Wrapped translate={this._translate} {...this.props} />;
     }
-    // static fields from component should be visible on the generated Component
-    hoistNonReactStatics(Localized, Wrapped);
-    return Localized;
-  };
-}
-
-function getDisplayName(Component) {
-  return Component.displayName || Component.name || "Component";
-}
+  }
+  // static fields from component should be visible on the generated Component
+  return hoistNonReactStatics(Localize, Wrapped) as T;
+};

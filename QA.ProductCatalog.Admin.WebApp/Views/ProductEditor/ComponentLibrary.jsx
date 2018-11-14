@@ -11,11 +11,10 @@ import { validationMixin, Validate } from "mst-validation-mixin";
 import {
   LocaleContext,
   Localize,
-  Translate,
   localize,
-  id,
-  fallback,
-  TranslateFunction
+  Translate
+  // TODO: uncomment when React Hooks will be released
+  // useTranslate
 } from "react-lazy-i18n";
 import {
   InputText,
@@ -66,28 +65,25 @@ class App extends React.Component {
               import(/* webpackChunkName: "i18n-" */ `./ComponentLibrary.${lang}.jsx`)
             }
           >
-            {tran => (
-              <Translate id="customComponent">
-                <article key={1} title={tran`Test...`}>
-                  User Card
-                  <div key={2} title={tran`Hello, ${firstName}!`}>
-                    First Name: {{ firstName }}
-                  </div>
-                  <div key={3} title={tran(`helloTemplate`, lastName)}>
-                    Last Name: {{ lastName }}
-                  </div>
-                  <div
-                    key={4}
-                    title={tran(id`missingKey`, fallback`Hello, ${fullName}!`)}
-                  >
-                    Full Name: {{ fullName }}
-                  </div>
-                </article>
-              </Translate>
+            {tr => (
+              <article title={tr`Hello, ${firstName}!`}>
+                {tr`User Card`}
+                <div>
+                  {tr`First Name`}: {firstName}
+                </div>
+                <div title={tr("helloTemplate", lastName)}>
+                  {tr`Last Name`}: {lastName}
+                </div>
+                <div title={tr("missingKey") || "Fallback"}>
+                  {tr`Full Name`}: {fullName}
+                </div>
+              </article>
             )}
           </Localize>
           <Divider />
           <LocalizedComponent />
+          <Divider />
+          {/* <LocalizedHook /> */}
           <br />
         </LocaleContext.Provider>
       </>
@@ -100,33 +96,54 @@ class App extends React.Component {
 )
 class LocalizedComponent extends React.Component {
   render() {
-    /** @type {TranslateFunction} */
-    const tran = this.props.translate;
+    /** @type {Translate} */
+    const tr = this.props.translate;
 
     const firstName = "Foo";
     const lastName = "Bar";
     const fullName = "Foo Bar";
     return (
-      <Translate id="customComponent">
-        <article key={1} title={tran`Test...`}>
-          User Card
-          <div key={2} title={tran`Hello, ${firstName}!`}>
-            First Name: {{ firstName }}
+      tr(`customMarkup`, { firstName, lastName, fullName }) || (
+        <article title={tr`Hello, ${firstName}!`}>
+          {tr`User Card`}
+          <div>
+            {tr`First Name`}: {firstName}
           </div>
-          <div key={3} title={tran(`helloTemplate`, lastName)}>
-            Last Name: {{ lastName }}
+          <div title={tr("helloTemplate", lastName)}>
+            {tr`Last Name`}: {lastName}
           </div>
-          <div
-            key={4}
-            title={tran(id`missingKey`, fallback`Hello, ${fullName}!`)}
-          >
-            Full Name: {{ fullName }}
+          <div title={tr("missingKey") || "Fallback"}>
+            {tr`Full Name`}: {fullName}
           </div>
         </article>
-      </Translate>
+      )
     );
   }
 }
+
+// const LocalizedHook = () => {
+//   const tr = useTranslate(lang =>
+//     import(/* webpackChunkName: "i18n-" */ `./ComponentLibrary.${lang}.jsx`)
+//   );
+
+//   const firstName = "Foo";
+//   const lastName = "Bar";
+//   const fullName = "Foo Bar";
+//   return (
+//     <article title={tr`Hello, ${firstName}!`}>
+//       {tr`User Card`}
+//       <div>
+//         {tr`First Name`}: {firstName}
+//       </div>
+//       <div title={tr("helloTemplate", lastName)}>
+//         {tr`Last Name`}: {lastName}
+//       </div>
+//       <div title={tr("missingKey") || "Fallback"}>
+//         {tr`Full Name`}: {fullName}
+//       </div>
+//     </article>
+//   );
+// };
 
 ReactDOM.render(
   <Grid fluid>
