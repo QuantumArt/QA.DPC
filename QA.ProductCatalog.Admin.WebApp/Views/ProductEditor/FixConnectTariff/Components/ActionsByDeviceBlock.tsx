@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { inject } from "react-ioc";
+import { action } from "mobx";
 import { Intent, Icon, MenuItem } from "@blueprintjs/core";
 import { FieldEditorProps, ArticleEditor } from "Components/ArticleEditor/ArticleEditor";
 import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
@@ -9,13 +10,12 @@ import {
 } from "Components/FieldEditors/FieldEditors";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
 import { PublicationContext } from "Services/PublicationContext";
+import { EntityController } from "Services/EntityController";
 import { by, asc } from "Utils/Array";
 import { Product, FixConnectAction, MarketingProduct } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { onlyOneItemPerRegionHasDevices } from "../Utils/ActionDeviceValidators";
 import { ParameterFields } from "./ParameterFields";
-import { getSnapshot } from "mobx-state-tree";
-import { action } from "mobx";
 
 interface ActionsByDeviceBlockProps {
   marketingDevice: MarketingProduct;
@@ -26,11 +26,26 @@ interface ActionsByDeviceBlockProps {
 
 export class ActionsByDeviceBlock extends Component<ActionsByDeviceBlockProps> {
   @inject private publicationContext: PublicationContext;
+  @inject private entityController: EntityController;
 
   @action
-  private saveActionDevice(e: any, action: FixConnectAction) {
+  private async saveActionDevice(e: any, action: FixConnectAction) {
     e.stopPropagation();
-    console.log(getSnapshot(action));
+    const { marketingDevice, actionsFieldSchema } = this.props;
+    const actionDevice = action.Parent.ActionMarketingDevices.find(
+      device => device.MarketingDevice === marketingDevice
+    );
+
+    const productRelation = actionDevice && actionDevice.Parent;
+
+    const productRelationContentSchema = (((actionsFieldSchema.RelatedContent.Fields
+      .Parent as RelationFieldSchema).RelatedContent.Fields
+      .ActionMarketingDevices as RelationFieldSchema).RelatedContent.Fields
+      .Parent as RelationFieldSchema).RelatedContent;
+
+    if (productRelation) {
+      await this.entityController.saveEntity(productRelation, productRelationContentSchema);
+    }
   }
 
   render() {
@@ -120,7 +135,6 @@ export class ActionsByDeviceBlock extends Component<ActionsByDeviceBlockProps> {
         <ArticleEditor
           model={actionDevice.Parent}
           contentSchema={productRelationContentSchema}
-          skipOtherFields
           fieldOrders={["Title", "Parameters"]}
           fieldEditors={{
             Parameters: this.renderActionDeviceParameters

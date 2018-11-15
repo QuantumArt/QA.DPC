@@ -280,7 +280,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
 
   private renderDeviceParent = ({ model, fieldSchema }: FieldEditorProps) => {
     const contentSchema = (fieldSchema as RelationFieldSchema).RelatedContent;
-    const productRelation = model[fieldSchema.FieldName] as ProductRelation;
+    const productRelation = model.Parent as ProductRelation;
     return (
       productRelation && (
         <ArticleEditor
