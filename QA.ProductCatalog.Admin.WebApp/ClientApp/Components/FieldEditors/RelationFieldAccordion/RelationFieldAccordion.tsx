@@ -388,7 +388,8 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
       canDetachEntity,
       canRemoveEntity,
       canPublishEntity,
-      canCloneEntity
+      canCloneEntity,
+      children
     } = this.props;
     const { isOpen, isTouched, activeId } = this.state;
     const dataSource = this.dataSource;
@@ -492,7 +493,9 @@ export class RelationFieldAccordion extends AbstractRelationFieldEditor<
                         skipOtherFields={skipOtherFields}
                         onMountEntity={onMountEntity}
                         onUnmountEntity={onUnmountEntity}
-                      />
+                      >
+                        {children}
+                      </EntityEditor>
                     )}
                   </td>
                 </tr>

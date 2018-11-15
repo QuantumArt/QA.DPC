@@ -15,13 +15,14 @@ import {
   ExtensionFieldSchema
 } from "Models/EditorSchemaModels";
 import { PublicationContext } from "Services/PublicationContext";
-import { Product } from "../TypeScriptSchema";
+import { Product, MarketingProduct } from "../TypeScriptSchema";
 import { FilterModel } from "../Models/FilterModel";
 import { hasUniqueRegions, isUniqueRegion } from "../Utils/ProductValidators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 import { PublishButtons } from "./PublishButtons";
 import { DevicesOnTariffsBlock } from "./DevicesOnTariffsBlock";
+import { ActionsByDeviceBlock } from "./ActionsByDeviceBlock";
 
 interface DevicesTabProps {
   model: Product;
@@ -69,15 +70,9 @@ export class DevicesTab extends Component<DevicesTabProps> {
         Products: this.renderDevices,
         DevicesOnTariffs: this.renderDevicesOnTariffs
       }}
-    />
-  );
-
-  private renderDevicesOnTariffs = (props: FieldEditorProps) => (
-    <DevicesOnTariffsBlock
-      {...props}
-      filterModel={this.filterModel}
-      marketingTariff={this.props.model.MarketingProduct}
-    />
+    >
+      {this.renderActionsByDevice}
+    </RelationFieldTabs>
   );
 
   private renderDevices = (props: FieldEditorProps) => {
@@ -139,6 +134,30 @@ export class DevicesTab extends Component<DevicesTabProps> {
       ]}
     />
   );
+
+  private renderDevicesOnTariffs = (props: FieldEditorProps) => (
+    <DevicesOnTariffsBlock
+      {...props}
+      filterModel={this.filterModel}
+      marketingTariff={this.props.model.MarketingProduct}
+    />
+  );
+
+  private renderActionsByDevice = (marketingDevice: MarketingProduct) => {
+    const marketingTariff = this.props.model.MarketingProduct;
+    const actionsFieldSchema = (this.props.contentSchema.Fields
+      .MarketingProduct as RelationFieldSchema).RelatedContent.Fields
+      .FixConnectActions as RelationFieldSchema;
+
+    return (
+      <ActionsByDeviceBlock
+        marketingDevice={marketingDevice}
+        marketingTariff={marketingTariff}
+        actionsFieldSchema={actionsFieldSchema}
+        filterModel={this.filterModel}
+      />
+    );
+  };
 }
 
 const regionsDisplayField = (device: Product) => (

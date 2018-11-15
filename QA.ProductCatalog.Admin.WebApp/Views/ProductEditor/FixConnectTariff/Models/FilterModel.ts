@@ -1,6 +1,6 @@
 import { observable, action, computed } from "mobx";
 import { HighlightMode } from "Components/FieldEditors/FieldEditors";
-import { Product, DeviceOnTariffs, FixConnectAction } from "../TypeScriptSchema";
+import { Product, DeviceOnTariffs, FixConnectAction, MarketingProduct } from "../TypeScriptSchema";
 
 export class FilterModel {
   @observable.ref public filterByTariffRegions = true;
@@ -82,6 +82,17 @@ export class FilterModel {
       return false;
     }
     return true;
+  };
+
+  public filterDeviceActions = (markDevice: MarketingProduct) => (action: FixConnectAction) => {
+    if (
+      !action.Parent.getBaseValue("ActionMarketingDevices").some(
+        actionDevice => actionDevice.getBaseValue("MarketingDevice") === markDevice
+      )
+    ) {
+      return false;
+    }
+    return this.filterActions(action);
   };
 
   public filterDevicesOnTariffs = (device: DeviceOnTariffs) => {

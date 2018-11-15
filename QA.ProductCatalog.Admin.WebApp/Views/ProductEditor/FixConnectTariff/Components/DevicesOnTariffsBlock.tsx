@@ -36,11 +36,12 @@ export class DevicesOnTariffsBlock extends Component<DevicesOnTariffsBlockProps>
   }
 
   render() {
-    const { filterModel, marketingTariff, ...props } = this.props;
-    const marketingDevice = this.props.model as MarketingProduct;
+    const { model, fieldSchema, filterModel } = this.props;
+    const marketingDevice = model as MarketingProduct;
     return (
       <RelationFieldAccordion
-        {...props}
+        model={model}
+        fieldSchema={fieldSchema}
         canCloneEntity
         canRemoveEntity
         canClonePrototype
@@ -76,7 +77,7 @@ export class DevicesOnTariffsBlock extends Component<DevicesOnTariffsBlockProps>
 
   private renderParent = ({ model, fieldSchema }: FieldEditorProps) => {
     const contentSchema = (fieldSchema as RelationFieldSchema).RelatedContent;
-    const productRelation = model[fieldSchema.FieldName] as ProductRelation;
+    const productRelation = model.Parent as ProductRelation;
     return (
       productRelation && (
         <ArticleEditor

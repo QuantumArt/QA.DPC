@@ -3,8 +3,9 @@ import { Col, Row } from "react-flexbox-grid";
 import { inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { EntityObject } from "Models/EditorDataModels";
+import { ContentSchema } from "Models/EditorSchemaModels";
 import { EntityController } from "Services/EntityController";
-import { isString } from "Utils/TypeChecks";
+import { isString, isFunction } from "Utils/TypeChecks";
 import { FieldSelector } from "Components/FieldEditors/AbstractFieldEditor";
 import { EntityMenu } from "./EntityMenu";
 import { EntityLink } from "./EntityLink";
@@ -67,6 +68,8 @@ interface EntityEditorProps extends ArticleEditorProps {
   onUnmountEntity?(entity: EntityObject): void;
   /** Render Callback для добавления дополнительных кнопок-действий в меню статьи */
   customActions?(entity: EntityObject): ReactNode;
+  /** Render Callback для добавления дополнительной разметки в @see EntityEditor */
+  children?: (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
 }
 
 const defaultEntityHandler = (_entity, action) => action();
@@ -175,12 +178,13 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   }
 
   render() {
-    const { className } = this.props;
+    const { model, contentSchema, className, children } = this.props;
     return (
       <>
         {this.renderHeader()}
         <Col key={2} md className={className}>
           <Row>{super.render()}</Row>
+          {isFunction(children) && <Row>{children(model, contentSchema)}</Row>}
         </Col>
       </>
     );

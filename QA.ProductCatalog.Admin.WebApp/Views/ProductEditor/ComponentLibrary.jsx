@@ -103,7 +103,7 @@ class LocalizedComponent extends React.Component {
     const lastName = "Bar";
     const fullName = "Foo Bar";
     return (
-      tr(`customMarkup`, { firstName, lastName, fullName }) || (
+      tr("customMarkup", { firstName, lastName, fullName }) || (
         <article title={tr`Hello, ${firstName}!`}>
           {tr`User Card`}
           <div>

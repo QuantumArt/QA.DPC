@@ -29,6 +29,10 @@
     max-height: 40px;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    &--action {
+      max-height: 55px;
+    }
   }
 }
 

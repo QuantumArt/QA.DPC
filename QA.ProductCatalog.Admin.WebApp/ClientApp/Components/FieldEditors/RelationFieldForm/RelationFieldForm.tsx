@@ -258,7 +258,8 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
       canDetachEntity,
       canRemoveEntity,
       canPublishEntity,
-      canCloneEntity
+      canCloneEntity,
+      children
     } = this.props;
     const { isOpen, isTouched } = this.state;
     const entity: EntityObject = model[fieldSchema.FieldName];
@@ -293,7 +294,9 @@ export class RelationFieldForm extends AbstractRelationFieldEditor<RelationField
           canPublishEntity={canPublishEntity}
           canCloneEntity={canCloneEntity}
           customActions={entityActions}
-        />
+        >
+          {children}
+        </EntityEditor>
       </div>
     ) : null;
   }

@@ -344,7 +344,8 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
       canDetachEntity,
       canRemoveEntity,
       canPublishEntity,
-      canCloneEntity
+      canCloneEntity,
+      children
     } = this.props;
     const { isOpen, isTouched, activeId } = this.state;
     const dataSource = this.dataSource;
@@ -408,7 +409,9 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
                       canPublishEntity={canPublishEntity}
                       canCloneEntity={canCloneEntity}
                       customActions={entityActions}
-                    />
+                    >
+                      {children}
+                    </EntityEditor>
                   )
                 }
               >

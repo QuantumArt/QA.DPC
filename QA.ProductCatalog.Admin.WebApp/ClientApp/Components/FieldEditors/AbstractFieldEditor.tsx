@@ -10,7 +10,8 @@ import {
   RelationFieldSchema,
   UpdatingMode,
   FieldExactTypes,
-  MultiRelationFieldSchema
+  MultiRelationFieldSchema,
+  ContentSchema
 } from "Models/EditorSchemaModels";
 import { FieldsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { RelationController } from "Services/RelationController";
@@ -292,6 +293,8 @@ export interface ExpandableFieldEditorProps extends FieldEditorProps {
 
   /** Render Callback для добавления дополнительных кнопок-действий в редактор поля-связи */
   relationActions?: () => ReactNode;
-  /** Render Callback для добавления дополнительных кнопок-действий в меню вложенных статьи */
+  /** Render Callback для добавления дополнительных кнопок-действий в меню вложенной статьи */
   entityActions?: (entity: EntityObject) => ReactNode;
+  /** Render Callback для добавления дополнительной разметки в @see EntityEditor */
+  children?: (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
 }
