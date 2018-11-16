@@ -34,10 +34,7 @@ export class SingleRelationFieldTable extends AbstractRelationFieldTable {
       this._validationCache.getOrAdd(entity, () => validateItems(entity));
     return (
       <Col md>
-        <RelationFieldMenu
-          onSelect={!this._readonly && this.selectRelation}
-          onClear={!this._readonly && !!entity && this.detachEntity}
-        >
+        <RelationFieldMenu onSelect={!this._readonly && this.selectRelation}>
           {relationActions && relationActions()}
         </RelationFieldMenu>
         {this.renderValidation(model, fieldSchema)}
