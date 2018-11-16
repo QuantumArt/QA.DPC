@@ -1,7 +1,8 @@
-import React, {
+import {
   Component,
   ReactNode,
   ComponentType,
+  createElement,
   createContext,
   useState,
   useContext,
@@ -10,7 +11,7 @@ import React, {
 import hoistNonReactStatics from "hoist-non-react-statics";
 
 /** React Context for user's locale */
-export const LocaleContext = createContext<string>(null);
+export const LocaleContext = createContext<string | null>(null);
 
 /**
  * Translation function
@@ -30,6 +31,8 @@ export interface Translate {
   (key: string, ...values: any[]): any;
   /** ES6 template tag */
   (strings: TemplateStringsArray, ...values: any[]): any;
+  /** Current Locale */
+  locale: string | null;
 }
 
 interface Resources {
@@ -37,42 +40,33 @@ interface Resources {
 }
 
 type LoadResources = (
-  locale: string
-) => Resources | Promise<Resources> | Promise<{ default: Resources }>;
+  locale: string | null
+) => Resources | Promise<Resources> | Promise<{ default: Resources }> | null;
+
+interface Translatable {
+  _locale: string | null;
+  _translate: Translate;
+}
 
 /** Default translate function with empty resources */
-const emptyTranslate = makeTranslate(null);
+const emptyTranslate = makeTranslate(null, null);
 
 /**
  * React 16.7 Hook for loading translate function
  * @example
- * const tr = useTranslate(lang => import(`./MyComponent.${lang}.jsx`));
+ * const tr = useTranslation(lang => import(`./MyComponent.${lang}.jsx`));
  * return <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>
  */
-export function useTranslate(load: LoadResources) {
+export function useTranslation(load: LoadResources) {
   const forceUpdate = useForceUpdate();
   const locale = useContext(LocaleContext);
-  const ref = useRef<{ locale: string; translate: Translate }>(null);
-  const self = ref.current || (ref.current = { locale: null, translate: emptyTranslate });
+  const ref = useRef<Translatable>(null);
+  // @ts-ignore: RefObject<T>.current isn't actually readonly
+  const self = ref.current || (ref.current = { _locale: null, _translate: emptyTranslate });
 
-  if (self.locale !== locale) {
-    self.locale = locale;
-    const resourcesOrPromise = load(locale);
-    if (resourcesOrPromise instanceof Promise) {
-      resourcesOrPromise.catch(() => null).then(resources => {
-        if (self.locale === locale) {
-          if (resources && isObject(resources.default)) {
-            resources = resources.default;
-          }
-          self.translate = makeTranslate(resources);
-          forceUpdate();
-        }
-      });
-    } else {
-      self.translate = makeTranslate(resourcesOrPromise);
-    }
-  }
-  return self.translate;
+  loadResources(self, locale, load, forceUpdate);
+
+  return self._translate;
 }
 
 function useForceUpdate() {
@@ -80,15 +74,108 @@ function useForceUpdate() {
   return () => setTick((tick + 1) & 0x7fffffff);
 }
 
-function makeTranslate(resources: Resources): Translate {
+interface TranslationProps {
+  load: LoadResources;
+  children: (translate: Translate) => ReactNode;
+}
+
+/**
+ * Component for translating it's descendants
+ * @example
+ * <Translation load={lang => import(`./MyResource.${lang}.jsx`)}>
+ *   {tr => <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>}
+ * </Translation>
+ */
+export class Translation extends Component<TranslationProps> {
+  static contextType = LocaleContext;
+  static displayName = "Translation";
+
+  _locale: string | null = null;
+  _translate = emptyTranslate;
+  _forceUpdate = this.forceUpdate.bind(this);
+
+  render() {
+    const { load, children } = this.props;
+    loadResources(this, this.context, load, this._forceUpdate);
+    return children(this._translate);
+  }
+}
+
+/**
+ * HOC that injects `translate` prop
+ * @example
+ * const MyComponent = ({ name, translate: tr }) => (
+ *   <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>
+ * )
+ *
+ * @withTranslation(lang => import(`./MyComponent.${lang}.jsx`))
+ * class MyComponent extends Component {
+ *   render() {
+ *     const { name, translate: tr } = this.props;
+ *     return <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>
+ *   }
+ * }
+ */
+export function withTranslation(load: LoadResources) {
+  return function<T extends ComponentType<any>>(Wrapped: T): WithTranslation<T> {
+    class Translation extends Component {
+      static contextType = LocaleContext;
+      static displayName = `withTranslation(${Wrapped.displayName || Wrapped.name})`;
+      static WrappedComponent = Wrapped;
+
+      _locale: string | null = null;
+      _translate = emptyTranslate;
+      _forceUpdate = this.forceUpdate.bind(this);
+
+      render() {
+        loadResources(this, this.context, load, this._forceUpdate);
+        return createElement(Wrapped, { translate: this._translate, ...this.props });
+      }
+    }
+    return hoistNonReactStatics(Translation, Wrapped) as any;
+  };
+}
+
+type WithTranslation<T> = T & {
+  contextType: typeof LocaleContext;
+  WrappedComponent: T;
+};
+
+function loadResources(
+  self: Translatable,
+  locale: string | null,
+  loadResources: LoadResources,
+  forceUpdate: () => void
+) {
+  if (self._locale !== locale) {
+    self._locale = locale;
+    const resourcesOrPromise = loadResources(locale);
+    if (resourcesOrPromise instanceof Promise) {
+      resourcesOrPromise.catch(() => null).then(resources => {
+        if (self._locale === locale) {
+          if (resources && isObject(resources.default)) {
+            resources = resources.default as any;
+          }
+          self._translate = makeTranslate(locale, resources);
+          forceUpdate();
+        }
+      });
+    } else {
+      self._translate = makeTranslate(locale, resourcesOrPromise);
+    }
+  }
+}
+
+function makeTranslate(locale: string | null, resources: Resources | null): Translate {
   resources = prepareKeys(resources);
 
-  return (keyOrStrings: TemplateStringsArray | string, ...values: any[]) => {
+  function translate(keyOrStrings: TemplateStringsArray | string, ...values: any[]) {
     const templateKey = isString(keyOrStrings)
       ? keyOrStrings
       : keyOrStrings.join("{*}").replace(/\s+/g, " ");
 
     const template = resources && resources[templateKey];
+
     if (isString(template)) {
       return template;
     }
@@ -98,54 +185,63 @@ function makeTranslate(resources: Resources): Translate {
     if (isString(keyOrStrings)) {
       return null;
     }
-    return defaultTemplate(keyOrStrings, ...values);
-  };
+    return defaultTemplate(keyOrStrings, values);
+  }
+
+  translate.locale = locale;
+
+  return translate;
 }
 
-// React 16 already requires ES6 Set but not WeakSet
-const preparedResources =
-  typeof WeakSet === "function" ? new WeakSet<Resources>() : new Set<Resources>();
+// React 16 already requires ES6 Map but not WeakMap
+const resourcesCache =
+  typeof WeakMap === "function"
+    ? new WeakMap<Resources, Resources>()
+    : new Map<Resources, Resources>();
 
-function prepareKeys(resources: Resources): Resources {
-  if (!resources || preparedResources.has(resources)) {
+function prepareKeys(resources: Resources | null): Resources | null {
+  if (!resources) {
     return resources;
   }
-  preparedResources.add(resources);
+  const cached = resourcesCache.get(resources);
+  if (cached) {
+    return cached;
+  }
+  const prepared: Resources = {};
 
-  Object.keys(resources).forEach(resourceKey => {
+  for (const resourceKey in resources) {
     const templateKey = resourceKey
       .replace(/\$\{\s*[A-Za-z0-9_]+\s*\}/g, "{*}")
       .replace(/\s+/g, " ");
 
-    if (templateKey !== resourceKey) {
-      resources[templateKey] = resources[resourceKey];
-      delete resources[resourceKey];
-    }
-  });
+    prepared[templateKey] = resources[resourceKey];
+  }
 
-  return resources;
+  resourcesCache.set(resources, prepared);
+  return prepared;
 }
 
-function defaultTemplate(strings: TemplateStringsArray, ...values: any[]) {
-  switch (strings.length) {
+function defaultTemplate(strings: TemplateStringsArray, values: any[]) {
+  const length = strings.length;
+  switch (length) {
     case 1:
       return strings[0];
     case 2:
       return strings[0] + values[0] + strings[1];
   }
-  const arr = [];
-  strings.forEach((str, i) => {
-    arr.push(str, values[i]);
-  });
-  arr.pop();
-  return arr.join("");
+  const array = [];
+  for (let i = 0; i < length; i++) {
+    array.push(strings[i], values[i]);
+  }
+  array.pop();
+  return array.join("");
 }
 
-function isString(arg): arg is string {
+function isString(arg: any): arg is string {
   return typeof arg === "string";
 }
 
-function isFunction(arg): arg is Function {
+function isFunction(arg: any): arg is Function {
   return typeof arg === "function";
 }
 
@@ -153,80 +249,4 @@ function isObject(arg: any): arg is Object {
   return arg && typeof arg === "object" && !Array.isArray(arg);
 }
 
-abstract class LocalizeComponent<T = {}> extends Component<T> {
-  static contextType = LocaleContext;
-  protected _locale: string = null;
-  protected _translate = emptyTranslate;
-
-  protected loadResources(locale: string, load: LoadResources) {
-    if (this._locale !== locale) {
-      this._locale = locale;
-      const resources = load(locale);
-      if (resources instanceof Promise) {
-        resources.catch(() => null).then(resources => {
-          if (this._locale === locale) {
-            if (resources && isObject(resources.default)) {
-              resources = resources.default;
-            }
-            this._translate = makeTranslate(resources);
-            this.forceUpdate();
-          }
-        });
-      } else {
-        this._translate = makeTranslate(resources);
-      }
-    }
-  }
-}
-
-interface LocalizeProps {
-  load: LoadResources;
-  children: (translate: Translate) => ReactNode;
-}
-
-/**
- * Component for translating it's descendants
- * @example
- * <Localize load={lang => import(`./MyResource.${lang}.jsx`)}>
- *   {tr => <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>}
- * </Localize>
- */
-export class Localize extends LocalizeComponent<LocalizeProps> {
-  static displayName = "Localize";
-
-  render() {
-    const { load, children } = this.props;
-    this.loadResources(this.context, load);
-    return children(this._translate);
-  }
-}
-
-/**
- * HOC for inject `translate` prop
- * @example
- * const MyComponent = ({ name, translate: tr }) => (
- *   <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>
- * )
- *
- * @localize(lang => import(`./MyComponent.${lang}.jsx`))
- * class MyComponent extends Component {
- *   render() {
- *     const { name, translate: tr } = this.props;
- *     return <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>
- *   }
- * }
- */
-export const localize = (load: LoadResources) => <T extends ComponentType>(Wrapped: T) => {
-  class Localize extends LocalizeComponent {
-    static displayName = `Localize(${Wrapped.displayName || Wrapped.name})`;
-    static WrappedComponent = Wrapped;
-
-    render() {
-      this.loadResources(this.context, load);
-      // @ts-ignore
-      return <Wrapped translate={this._translate} {...this.props} />;
-    }
-  }
-  // @ts-ignore
-  return hoistNonReactStatics(Localize, Wrapped) as T;
-};
+export { useTranslation as useTran, withTranslation as withTran, Translation as Tran };

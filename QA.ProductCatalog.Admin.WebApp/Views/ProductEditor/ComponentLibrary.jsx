@@ -10,8 +10,8 @@ import { observer } from "mobx-react";
 import { validationMixin, Validate } from "mst-validation-mixin";
 import {
   LocaleContext,
-  Localize,
-  localize,
+  Translation,
+  withTranslation,
   Translate
   // TODO: uncomment when React Hooks will be released
   // useTranslate
@@ -60,13 +60,14 @@ class App extends React.Component {
         <Divider />
         <LocaleContext.Provider value={lang}>
           <br />
-          <Localize
+          <Translation
             load={lang =>
               import(/* webpackChunkName: "i18n-" */ `./ComponentLibrary.${lang}.jsx`)
             }
           >
             {tr => (
               <article title={tr`Hello, ${firstName}!`}>
+                locale: {tr.locale}
                 {tr`User Card`}
                 <div>
                   {tr`First Name`}: {firstName}
@@ -79,7 +80,7 @@ class App extends React.Component {
                 </div>
               </article>
             )}
-          </Localize>
+          </Translation>
           <Divider />
           <LocalizedComponent />
           <Divider />
@@ -91,7 +92,7 @@ class App extends React.Component {
   }
 }
 
-@localize(lang =>
+@withTranslation(lang =>
   import(/* webpackChunkName: "i18n-" */ `./ComponentLibrary.${lang}.jsx`)
 )
 class LocalizedComponent extends React.Component {
@@ -105,6 +106,7 @@ class LocalizedComponent extends React.Component {
     return (
       tr("customMarkup", { firstName, lastName, fullName }) || (
         <article title={tr`Hello, ${firstName}!`}>
+          locale: {tr.locale}
           {tr`User Card`}
           <div>
             {tr`First Name`}: {firstName}
