@@ -796,5 +796,26 @@ namespace QA.ProductCatalog.ImpactService
                 }
             }
         }
+        
+        public int[] FindServicesOnTariff(JObject tariff, string link, string modifier)
+        {
+            return tariff?.SelectTokens($"{link}.[?(@.Service)]")
+                .Where(n => n.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{modifier}')]").Any())
+                .Select(n => (int) n.SelectToken("Service.Id"))
+                .ToArray();
+        }
+
+        protected static void ProcessRemoveModifier(JArray scaleParameters)
+        {
+            var toRemove =
+                scaleParameters.Where(
+                        n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains("Remove"))
+                    .ToArray();
+
+            foreach (var t in toRemove)
+            {
+                t.Remove();
+            }
+        }
     }
 }

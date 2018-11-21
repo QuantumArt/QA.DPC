@@ -111,9 +111,9 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                         if (service == null)
                         {
                             if (loadServicesSilently) continue;
-                            message = $"Service {0} is not found";
-                            Log(LogLevel.Error, message, searchOptions, id);
-                            result = NotFound(String.Format(message, id));
+                            message = "Service {0} is not found";
+                            Log(LogLevel.Error, message, searchOptions, serviceId);
+                            result = NotFound(String.Format(message, serviceId));
                         }
                         else
                         {
@@ -154,7 +154,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return null;
         }
 
-        protected ActionResult TestLayout(JObject product, int[] serviceIds, string state, string language, string homeRegion = null, string region = null, string country = null)
+        protected ActionResult TestLayout(JObject product, int[] serviceIds, string state, string language, string homeRegion = null, string region = null, string country = null, string tariffId = null)
         {
             var result = new ProductLayoutModel
             {
@@ -165,7 +165,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 Language = language,
                 Region = region,
                 HomeRegion = homeRegion,
-                Country = country
+                Country = country,
+                TariffId = tariffId
             };
             return View("Product", result);
         }

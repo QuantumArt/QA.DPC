@@ -18,14 +18,26 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected override BaseImpactCalculator Calculator => _calc;
 
+        private JObject Tariff { get; set; }
 
-        public InternationalRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
+
+        public InternationalRoamingController(
+            ISearchRepository searchRepo,
+            IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, 
+            ILoggerFactory loggerFactory,
+            IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
         {
             _calc = new InternationalRoamingCalculator();
         }
 
         [HttpGet("country/{countryCode}")]
-        public async Task<ActionResult> Get(string countryCode, [FromQuery] string homeRegion, [FromQuery] bool isB2C = true, string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage)
+        public async Task<ActionResult> Get(
+            string countryCode, 
+            [FromQuery] string homeRegion,
+            [FromQuery] bool isB2C = true,
+            [FromQuery] bool calculateImpact = false,
+            string state = ElasticIndex.DefaultState,
+            string language = ElasticIndex.DefaultLanguage)
         {
 
             var searchOptions = new SearchOptions
@@ -35,9 +47,14 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 HomeRegion = homeRegion
             };
 
-            ActionResult result = null;
             JObject json = new JObject();
             int[] ids = { 0 };
+            
+            var serviceIds = new int[] { };
+            var id = Convert.ToInt32(isB2C) * 2 + Convert.ToInt32(calculateImpact);
+            var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
+            var result = (!IsCacheDisabled()) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            if (result != null) return result;
             
             if (string.IsNullOrEmpty(searchOptions.HomeRegion))
             {
@@ -68,7 +85,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 result = BadRequest(message);
             }
 
-            result = await FillHomeRegion(searchOptions);
+            result = result ?? await FillHomeRegion(searchOptions);
             result = result ?? await LoadProducts(ids[0], ids.Skip(1).ToArray(), searchOptions, true);
             result = result ?? FilterServicesOnProduct(true, null, searchOptions.HomeRegionData);
             
@@ -76,35 +93,63 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 return result;
 
             var defaultProduct = (JObject)Product.DeepClone();
-            var defaultServices = Services;
+
+            var servicesCopy = Services;
             Services = new JObject[] {};
             result = CalculateImpact(countryCode, searchOptions.HomeRegionData);
-            var simpleProduct = Product;
-            var resultProducts = new List<JObject>();
+            json["BaseRoamingScale"] = Product;
 
-            foreach (var s in defaultServices)
+            if (calculateImpact)
             {
-                if (result == null)
-                {
-                    Product = (JObject)defaultProduct.DeepClone();
-                    Services = new[] { s };
-                    result = CalculateImpact(countryCode, searchOptions.HomeRegionData);
-                    Product["OptionId"] = s["Id"];
-                    resultProducts.Add(Product);
-                }
-
+                Services = servicesCopy;
+                result = result ?? AppendImpactNode(countryCode, defaultProduct, searchOptions, json);               
             }
 
-            json["RoamingScaleWithOptions"] = new JArray(resultProducts);
-            json["BaseRoamingScale"] = simpleProduct;
             result = result ?? Content(json.ToString());
+            
+            if (!IsCacheDisabled())
+            {
+                SetCachedResult(id, serviceIds, result, cacheKey);
+            }
+            
             return result;
 
         }
 
+        private ActionResult AppendImpactNode(
+            string countryCode, 
+            JObject defaultProduct, 
+            SearchOptions searchOptions, 
+            JObject json)
+        {
+            ActionResult result = null;
+            var services = Services;
+            var resultProducts = new List<JObject>();
+
+            foreach (var s in services)
+            {
+                if (result == null)
+                {
+                    Product = (JObject) defaultProduct.DeepClone();
+                    Services = new[] {s};
+                    result = CalculateImpact(countryCode, searchOptions.HomeRegionData);
+                    Product["OptionId"] = s["Id"];
+                    resultProducts.Add(Product);
+                }
+            }
+
+            json["RoamingScaleWithOptions"] = new JArray(resultProducts);
+            return result;
+        }
+
         [HttpGet("option/{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] string homeRegion, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState,
-            string language = ElasticIndex.DefaultLanguage, bool html = false)
+        public async Task<ActionResult> Get(
+            int id, 
+            [FromQuery] string homeRegion,
+            [FromQuery] string countryCode = "WorldExceptRussia", 
+            string state = ElasticIndex.DefaultState,
+            string language = ElasticIndex.DefaultLanguage, 
+            bool html = false)
         {
             var searchOptions = new SearchOptions
             {
@@ -117,11 +162,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             {
                 searchOptions.HomeRegion = await GetDefaultRegionAliasForMnr(searchOptions);                
             }
-            
+
             var serviceIds = new int[] { };
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
-            var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
-            var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            var result = (!IsCacheDisabled(html)) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
 
             result = await FillHomeRegion(searchOptions);
@@ -132,7 +176,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = result ?? (html ? TestLayout(Product, serviceIds, state, language, country: countryCode) : Content(Product.ToString()));
 
-            if (!disableCache)
+            if (!IsCacheDisabled(html))
             {
                 SetCachedResult(id, serviceIds, result, cacheKey);
             }
@@ -140,8 +184,21 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return result;
         }
 
+        private bool IsCacheDisabled(bool html = false)
+        {
+            return html || ConfigurationOptions.CachingInterval <= 0;
+        }
+
         [HttpGet("{id}")]
-        public async Task<ActionResult> Get(int id, [FromQuery] int[] serviceIds, [FromQuery] string homeRegion, [FromQuery] string countryCode = "WorldExceptRussia", string state = ElasticIndex.DefaultState, string language = ElasticIndex.DefaultLanguage, bool html = false)
+        public async Task<ActionResult> Get(
+            int id, 
+            [FromQuery] int[] serviceIds,
+            [FromQuery] int? tariffId,
+            [FromQuery] string homeRegion,
+            [FromQuery] string countryCode = "WorldExceptRussia", 
+            string state = ElasticIndex.DefaultState,
+            string language = ElasticIndex.DefaultLanguage, 
+            bool html = false)
         {
 
             var searchOptions = new SearchOptions
@@ -156,15 +213,22 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 searchOptions.HomeRegion = await GetDefaultRegionAliasForMnr(searchOptions);                
             }
 
+            if (tariffId.HasValue)
+            {
+                serviceIds = serviceIds.Union(new[] {tariffId.Value}).ToArray();
+            }
+            
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
-            var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
-            var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            var result = (!IsCacheDisabled(html)) ? await GetCachedResult(cacheKey, searchOptions) : null;
             if (result != null) return result;
 
             result = await FillHomeRegion(searchOptions);
             result = result ?? await LoadProducts(id, serviceIds, searchOptions);
+            SplitLoadedServicesAndTariff(tariffId);
+            
             result = result ?? await FillDefaultHomeRegion(searchOptions, Product);            
-            result = result ?? FilterServicesOnProduct(true, null, searchOptions.HomeRegionData);
+            int[] excludedByTariff = FindServicesOnTariff(Tariff, "ServicesOnTariff", "HideInInternationalRoamingCalculator"); 
+            result = result ?? FilterServicesOnProduct(true, excludedByTariff, searchOptions.HomeRegionData);
 
             LogStartImpact("MNR", id, serviceIds);
 
@@ -172,9 +236,25 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogEndImpact("MNR", id, serviceIds);
 
-            result = result ?? (html ? TestLayout(Product, serviceIds, state, language, homeRegion: homeRegion, country: countryCode) : Content(Product.ToString()));
+            if (html)
+            {
+                result = result ?? TestLayout(
+                             Product, 
+                             serviceIds, 
+                             state, 
+                             language,
+                             homeRegion: homeRegion,
+                             country: countryCode,
+                             tariffId: tariffId?.ToString()
+                         );
+            }
+            else
+            {
+                result = result ?? Content(Product.ToString());
+            }
+            
 
-            if (!disableCache)
+            if (!IsCacheDisabled(html))
             {
                 SetCachedResult(id, serviceIds, result, cacheKey);
             }
@@ -183,11 +263,31 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         }
 
+        private int[] FindServicesOnTariff(JObject tariff, string link, string modifier)
+        {
+            return tariff?.SelectTokens($"{link}.[?(@.Service)]")
+                .Where(n => n.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{modifier}')]").Any())
+                .Select(n => (int) n.SelectToken("Service.Id"))
+                .ToArray();
+        }
+
+        private void SplitLoadedServicesAndTariff(int? tariffId)
+        {
+            if (tariffId.HasValue)
+            {
+                Tariff = Services.SingleOrDefault(n => (int) n.SelectToken("Id") == tariffId.Value);
+                if (Tariff != null)
+                {
+                    Services = Services.Where(n => (int) n.SelectToken("Id") != tariffId.Value).ToArray();
+                }
+            }
+        }
+
         private ActionResult CalculateImpact(string countryCode, JObject homeRegionData)
         {
             try
             {
-                _calc.Calculate(Product, Services.ToArray(), countryCode, homeRegionData);
+                _calc.Calculate(Product, Tariff, Services.ToArray(), countryCode, homeRegionData);
             }
             catch (Exception ex)
             {

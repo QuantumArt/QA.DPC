@@ -54,16 +54,7 @@ namespace QA.ProductCatalog.ImpactService
             if (!UseTariffData)
             {
                 MergeLinkImpact(scaleParameters, scaleLinkParameters, useMacroRegionParameters ? "ForHomeMacroRegion" : null);
-                var toRemove =
-                    scaleParameters.Where(
-                            n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains("Remove"))
-                        .ToArray();
-
-                foreach (var t in toRemove)
-                {
-                    t.Remove();
-                }
-
+                ProcessRemoveModifier(scaleParameters);
             }
             else
             {
