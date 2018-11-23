@@ -26,7 +26,7 @@ export class PublishButtons extends Component<PublishButtonsProps> {
       await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
       return;
     }
-    this._actionController.executeCustomAction("Публиковать", model, contentSchema);
+    await this._actionController.executeCustomAction("Публиковать", model, contentSchema);
   };
 
   private stageProduct = async (e: any) => {
@@ -37,7 +37,7 @@ export class PublishButtons extends Component<PublishButtonsProps> {
       await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
       return;
     }
-    this._actionController.executeCustomAction("Отправить на stage", model, contentSchema);
+    await this._actionController.executeCustomAction("Отправить на stage", model, contentSchema);
   };
 
   render() {

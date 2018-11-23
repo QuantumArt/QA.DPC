@@ -22,6 +22,7 @@ import { hasUniqueRegions, isUniqueRegion } from "../Utils/ProductValidators";
 import { FilterBlock } from "./FilterBlock";
 import { ParameterFields } from "./ParameterFields";
 import { PublishButtons } from "./PublishButtons";
+import { CloneButtons } from "./CloneButtons";
 
 interface RegionalTabTabProps {
   model: Product;
@@ -45,6 +46,8 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
 
   render() {
     const { model, contentSchema } = this.props;
+    const productsFieldSchema = (contentSchema.Fields.MarketingProduct as RelationFieldSchema)
+      .RelatedContent.Fields.Products as RelationFieldSchema;
     return (
       <>
         <EntityEditor
@@ -86,7 +89,16 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
             Parameters: this.renderFixConnectParameters,
             Regions: this.renderRegions
           }}
-          customActions={() => <PublishButtons model={model} contentSchema={contentSchema} />}
+          customActions={() => (
+            <>
+              <CloneButtons
+                product={model}
+                marketingProduct={model.MarketingProduct}
+                fieldSchema={productsFieldSchema}
+              />
+              <PublishButtons model={model} contentSchema={contentSchema} />
+            </>
+          )}
         />
         <Divider />
         <FilterBlock filterModel={this.filterModel} />

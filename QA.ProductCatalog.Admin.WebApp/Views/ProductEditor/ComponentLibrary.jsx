@@ -68,6 +68,7 @@ class App extends React.Component {
             {tr => (
               <article title={tr`Hello, ${firstName}!`}>
                 locale: {tr.locale}
+                <br />
                 {tr`User Card`}
                 <div>
                   {tr`First Name`}: {firstName}
@@ -107,6 +108,7 @@ class LocalizedComponent extends React.Component {
       tr("customMarkup", { firstName, lastName, fullName }) || (
         <article title={tr`Hello, ${firstName}!`}>
           locale: {tr.locale}
+          <br />
           {tr`User Card`}
           <div>
             {tr`First Name`}: {firstName}
