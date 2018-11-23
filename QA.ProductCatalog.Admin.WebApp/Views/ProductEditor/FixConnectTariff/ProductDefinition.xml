@@ -1,4 +1,4 @@
-<Content ContentId="339" LoadAllPlainFields="False" xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+<Content x:Name="__ReferenceID2" ContentId="339" LoadAllPlainFields="False" xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <EntityField CloningMode="UseExisting" FieldId="1542" FieldName="MarketingProduct" RelationCondition="c.Type = 504">
     <Content ContentId="383" ContentName="Маркетинговые продукты" LoadAllPlainFields="False">
       <ExtensionField CloningMode="Copy" DeletingMode="Delete" FieldId="1540" FieldName="Type" UpdatingMode="Update">
@@ -11,7 +11,7 @@
           <EntityField CloningMode="UseExisting" FieldId="2516" FieldName="MarketingInternetTariff">
             <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
               <PlainField FieldId="1534" FieldName="Title" />
-              <EntityField ClonePrototypeCondition="c.Type = 510" CloningMode="UseExisting" FieldId="1543" FieldName="Products" FieldTitle=" Характеристики Интернет-составляющей">
+              <EntityField ClonePrototypeCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_383 AS mp&#xA;  WHERE c.ARCHIVE = 0&#xA;    AND c.MarketingProduct = mp.CONTENT_ITEM_ID&#xA;    AND mp.Alias = 'shablon_tarifa_internet_ne_udalyat')" CloningMode="UseExisting" FieldId="1543" FieldName="Products" FieldTitle=" Характеристики Интернет-составляющей">
                 <Content ContentId="339" ContentName="Продукты" LoadAllPlainFields="False">
                   <EntityField CloningMode="UseExisting" FieldId="1326" FieldName="Regions">
                     <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False">
@@ -69,7 +69,7 @@
           <EntityField CloningMode="UseExisting" FieldId="2517" FieldName="MarketingPhoneTariff">
             <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
               <PlainField FieldId="1534" FieldName="Title" />
-              <EntityField ClonePrototypeCondition="c.Type = 507" CloningMode="UseExisting" FieldId="1543" FieldName="Products" FieldTitle="Характеристики Телефонной составляющей">
+              <EntityField ClonePrototypeCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_383 AS mp&#xA;  WHERE c.ARCHIVE = 0&#xA;    AND c.MarketingProduct = mp.CONTENT_ITEM_ID&#xA;    AND mp.Alias = 'shablon_tarifov_telefonii_ne_udalyat')" CloningMode="UseExisting" FieldId="1543" FieldName="Products" FieldTitle="Характеристики Телефонной составляющей">
                 <Content ContentId="339" ContentName="Продукты" LoadAllPlainFields="False">
                   <EntityField CloningMode="UseExisting" FieldId="1326" FieldName="Regions">
                     <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False">
@@ -97,7 +97,7 @@
           <EntityField CloningMode="UseExisting" FieldId="2519" FieldName="MarketingDevices">
             <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
               <PlainField FieldId="1534" FieldName="Title" />
-              <EntityField ClonePrototypeCondition="c.Type = 490" CloningMode="UseExisting" FieldId="1543" FieldName="Products" FieldTitle="Продукты, тип &quot;Оборудование&quot;">
+              <EntityField ClonePrototypeCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_383 AS mp&#xA;  WHERE c.ARCHIVE = 0&#xA;    AND c.MarketingProduct = mp.CONTENT_ITEM_ID&#xA;    AND mp.Alias = 'shablon_oborudovaniya_ne_udalyat')" CloningMode="UseExisting" FieldId="1543" FieldName="Products" FieldTitle="Продукты, тип &quot;Оборудование&quot;">
                 <Content ContentId="339" ContentName="Продукты" LoadAllPlainFields="False">
                   <ExtensionField CloningMode="Copy" DeletingMode="Delete" FieldId="1341" FieldName="Type" UpdatingMode="Update">
                     <Content ContentId="490" ContentName="Оборудование" LoadAllPlainFields="False" />
@@ -120,7 +120,7 @@
                   </EntityField>
                 </Content>
               </EntityField>
-              <BackwardRelationField ClonePrototypeCondition="1 = 1" CloningMode="UseExisting" DisplayName="Матрица связей &quot;Оборудование на тарифах&quot;" FieldId="2531" FieldName="DevicesOnTariffs" FieldTitle="Матрица связей &quot;Оборудование на тарифах&quot;" RelationGroupName="MarketingDevice">
+              <BackwardRelationField ClonePrototypeCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_383 AS mp&#xA;  JOIN CONTENT_361 AS pr ON c.Parent = pr.CONTENT_ITEM_ID&#xA;  WHERE pr.ARCHIVE = 0&#xA;    AND c.MarketingDevice = mp.CONTENT_ITEM_ID&#xA;    AND mp.Alias = 'shablon_oborudovaniya_ne_udalyat')" CloningMode="UseExisting" DisplayName="Матрица связей &quot;Оборудование на тарифах&quot;" FieldId="2531" FieldName="DevicesOnTariffs" FieldTitle="Матрица связей &quot;Оборудование на тарифах&quot;" RelationGroupName="MarketingDevice">
                 <Content ContentId="511" ContentName="Оборудование на тарифах" LoadAllPlainFields="False">
                   <EntityField CloningMode="UseExisting" FieldId="2532" FieldName="MarketingTariffs">
                     <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
@@ -211,7 +211,7 @@
           <PlainField FieldId="1339" FieldName="Title" />
         </Content>
       </EntityField>
-      <BackwardRelationField ClonePrototypeCondition="1 = 1" CloningMode="UseExisting" DisplayName="Акции фиксированной связи" FieldId="2528" FieldName="FixConnectActions" FieldTitle="Акции фиксированной связи" RelationGroupName="FixConnectActions">
+      <BackwardRelationField ClonePrototypeCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_383 AS mp&#xA;  JOIN CONTENT_339 AS p ON p.MarketingProduct = mp.CONTENT_ITEM_ID&#xA;  WHERE p.ARCHIVE = 0&#xA;    AND c.Parent = p.CONTENT_ITEM_ID&#xA;    AND mp.Alias = 'shablon_akcii_fiksirovannoj_svyazi_ne_udalyat')" CloningMode="UseExisting" DisplayName="Акции фиксированной связи" FieldId="2528" FieldName="FixConnectActions" FieldTitle="Акции фиксированной связи" RelationGroupName="FixConnectActions">
         <Content ContentId="500" ContentName="Акции фиксированной связи" LoadAllPlainFields="False">
           <EntityField CloningMode="Copy" DeletingMode="Delete" FieldId="2469" FieldName="Parent" UpdatingMode="Update">
             <Content ContentId="339" ContentName="Продукты" LoadAllPlainFields="False">
@@ -225,7 +225,7 @@
                   <PlainField FieldId="1114" FieldName="Title" />
                 </Content>
               </EntityField>
-              <BackwardRelationField ClonePrototypeCondition="1 = 1" CloningMode="Copy" DeletingMode="Delete" DisplayName="Акционное оборудование" FieldId="2537" FieldName="ActionMarketingDevices" FieldTitle="Акционное оборудование" RelationGroupName="ActionMarketingDevices" UpdatingMode="Update">
+              <BackwardRelationField ClonePrototypeCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_383 AS mp&#xA;  JOIN CONTENT_361 AS pr ON c.Parent = pr.CONTENT_ITEM_ID&#xA;  WHERE pr.ARCHIVE = 0&#xA;    AND c.MarketingDevice = mp.CONTENT_ITEM_ID&#xA;    AND mp.Alias = 'shablon_oborudovaniya_ne_udalyat')" CloningMode="Copy" DeletingMode="Delete" DisplayName="Акционное оборудование" FieldId="2537" FieldName="ActionMarketingDevices" FieldTitle="Акционное оборудование" RelationGroupName="ActionMarketingDevices" UpdatingMode="Update">
                 <Content ContentId="512" ContentName="Акционное оборудование" LoadAllPlainFields="False">
                   <EntityField CloningMode="UseExisting" FieldId="2538" FieldName="MarketingDevice" RelationCondition="c.Type = 489 AND EXISTS (&#xA;  SELECT 1 FROM CONTENT_342 AS m&#xA;  JOIN  item_to_item AS i2i ON m.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.Modifiers&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND m.Alias IN ('CheckconnectDevice'))">
                     <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
@@ -277,7 +277,7 @@
           <PlainField FieldId="2473" FieldName="AfterPromo" />
         </Content>
       </BackwardRelationField>
-      <EntityField CloningMode="UseExisting" FieldId="1543" FieldName="Products">
+      <EntityField CloneDefinition="{x:Reference __ReferenceID2}" ClonePrototypeCondition="EXISTS (&#xA;  SELECT 1 FROM CONTENT_383 AS mp&#xA;  WHERE c.ARCHIVE = 0&#xA;    AND c.MarketingProduct = mp.CONTENT_ITEM_ID&#xA;    AND mp.Alias = 'tp_shablon_tarifa_ne_udalyat')" CloningMode="UseExisting" FieldId="1543" FieldName="Products">
         <Content ContentId="339" ContentName="Продукты" IsReadOnly="True" LoadAllPlainFields="False">
           <EntityField CloningMode="UseExisting" FieldId="1326" FieldName="Regions">
             <Content ContentId="290" ContentName="Регионы" IsReadOnly="True" LoadAllPlainFields="False" />
