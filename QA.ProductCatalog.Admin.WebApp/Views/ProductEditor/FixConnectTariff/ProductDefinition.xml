@@ -170,6 +170,11 @@
                   </EntityField>
                 </Content>
               </BackwardRelationField>
+              <EntityField CloningMode="UseExisting" FieldId="1653" FieldName="Modifiers">
+                <Content ContentId="342" ContentName="Модификаторы продуктов" IsReadOnly="True" LoadAllPlainFields="False">
+                  <PlainField FieldId="1340" FieldName="Alias" />
+                </Content>
+              </EntityField>
             </Content>
           </EntityField>
           <EntityField CloningMode="UseExisting" FieldId="2494" FieldName="Category" PreloadingMode="Eager">
@@ -222,7 +227,7 @@
               </EntityField>
               <BackwardRelationField ClonePrototypeCondition="1 = 1" CloningMode="Copy" DeletingMode="Delete" DisplayName="Акционное оборудование" FieldId="2537" FieldName="ActionMarketingDevices" FieldTitle="Акционное оборудование" RelationGroupName="ActionMarketingDevices" UpdatingMode="Update">
                 <Content ContentId="512" ContentName="Акционное оборудование" LoadAllPlainFields="False">
-                  <EntityField CloningMode="UseExisting" FieldId="2538" FieldName="MarketingDevice" RelationCondition="c.Type = 489 AND EXISTS (&#xD;&#xA;  SELECT 1 FROM CONTENT_342 AS m&#xD;&#xA;  JOIN  item_to_item AS i2i ON m.CONTENT_ITEM_ID = i2i.r_item_id&#xD;&#xA;  WHERE i2i.link_id = c.Modifiers&#xD;&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xD;&#xA;    AND m.Alias IN ('CheckconnectDevice'))">
+                  <EntityField CloningMode="UseExisting" FieldId="2538" FieldName="MarketingDevice" RelationCondition="c.Type = 489 AND EXISTS (&#xA;  SELECT 1 FROM CONTENT_342 AS m&#xA;  JOIN  item_to_item AS i2i ON m.CONTENT_ITEM_ID = i2i.r_item_id&#xA;  WHERE i2i.link_id = c.Modifiers&#xA;    AND i2i.l_item_id = c.CONTENT_ITEM_ID&#xA;    AND m.Alias IN ('CheckconnectDevice'))">
                     <Content ContentId="383" ContentName="Маркетинговые продукты" IsReadOnly="True" LoadAllPlainFields="False">
                       <PlainField FieldId="1534" FieldName="Title" />
                     </Content>

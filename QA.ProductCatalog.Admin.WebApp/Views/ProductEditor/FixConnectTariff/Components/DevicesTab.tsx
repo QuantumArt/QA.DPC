@@ -64,9 +64,10 @@ export class DevicesTab extends Component<DevicesTabProps> {
       canSaveEntity={false}
       canRefreshEntity={false}
       displayField="Title"
-      fieldOrders={["Modifiers", "Products", "DevicesOnTariffs"]}
+      fieldOrders={["Products", "DevicesOnTariffs"]}
       fieldEditors={{
         Title: IGNORE,
+        Modifiers: IGNORE,
         Products: this.renderDevices,
         DevicesOnTariffs: this.renderDevicesOnTariffs
       }}

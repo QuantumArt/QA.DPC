@@ -71,6 +71,8 @@ export interface Product extends EntityObject {
 }
 
 export interface ProductModifer extends EntityObject {
+  /** Псевдоним */
+  readonly Alias: string;
   /** Название */
   readonly Title: string;
 }
@@ -155,6 +157,8 @@ export interface MarketingProduct extends EntityObject {
   Products: IArray<Product>;
   /** Матрица связей "Оборудование на тарифах" */
   DevicesOnTariffs: IArray<DeviceOnTariffs>;
+  /** Модификаторы */
+  Modifiers: IArray<ProductModifer>;
   Description: string;
   /** Порядок */
   SortOrder: number;
@@ -162,8 +166,6 @@ export interface MarketingProduct extends EntityObject {
   ArchiveDate: Date;
   /** Преимущества */
   Advantages: IArray<Advantage>;
-  /** Модификаторы */
-  Modifiers: IArray<ProductModifer>;
   /** Акции фиксированной связи */
   FixConnectActions: IArray<FixConnectAction>;
 }
