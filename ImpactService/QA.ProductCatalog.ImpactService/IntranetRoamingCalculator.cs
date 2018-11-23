@@ -75,12 +75,12 @@ namespace QA.ProductCatalog.ImpactService
 
         private void MergeTariffParametersToScale(JArray tariffParameters, JArray scaleParameters)
         {
-            var parameters = FilterProductParameters(tariffParameters);
+            var parameters = FilterTariffParameters(tariffParameters);
             scaleParameters.Add(parameters);
         }
 
 
-        public IEnumerable<JToken> FilterProductParameters(JArray root)
+        public IEnumerable<JToken> FilterTariffParameters(JArray root)
         {
             var russiaParams =
                 root.Where(n => 
@@ -126,19 +126,18 @@ namespace QA.ProductCatalog.ImpactService
            
         }
 
-        public JArray GetResultParameters(JObject scale, JObject product, bool useMacroRegionParameters)
+        public JArray GetResultParameters(JObject scale, JObject product, string region, bool useMacroRegionParameters)
         {
             MergeLinkImpactToRoamingScale(scale, product, useMacroRegionParameters);
 
             IEnumerable<JToken> parameters = (!UseTariffData)
                 ? FilterScaleParameters((JArray)scale.SelectToken("Parameters"))
-                : FilterProductParameters((JArray)product.SelectToken("Parameters"));
-
-            var resultParameters = parameters as JArray ?? new JArray(parameters);
-            return resultParameters;
+                : FilterTariffParameters((JArray)product.SelectToken("Parameters"));
+            
+            return new JArray(region == null ? parameters : FilterResultParameters(parameters, region));
         }
 
- 
+
 
         public void MergeValuesFromTariff(JObject option, JArray tariffRoot)
         {
