@@ -18,8 +18,6 @@ namespace QA.ProductCatalog.ImpactService
 
         public string LinkModifierName { get; }
 
-        public string Region { get; set; } = null;
-
         public string LinkName { get; }
 
         private int _maxSiblings;
@@ -301,28 +299,8 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
 
-        public IEnumerable<JToken> FilterResultParameters(IEnumerable<JToken> parameters, string region)
-        {
-            foreach (var p in parameters)
-            {
-                if (p.SelectToken("Zone.Regions") != null)
-                {
-                    var aliases = new HashSet<string>(p.SelectTokens("Zone.Regions.[?(@.Alias)].Alias").Select(n => n.ToString()));
-                    if (!aliases.Contains(region)) continue;
-                }
-
-                yield return p;
-            }
-        }
-
         private void CalculateImpact(JToken parametersRoot, JToken[] optionParameters)
         {
-
-            if (!string.IsNullOrEmpty(Region))
-            {
-                optionParameters = FilterResultParameters(optionParameters, Region).ToArray();
-            }
-
             var parametersToAppendInsteadOfChange = new List<JToken>();
 
             ProcessRemove(parametersRoot, optionParameters);
@@ -794,6 +772,27 @@ namespace QA.ProductCatalog.ImpactService
                 {
                     item.Remove();
                 }
+            }
+        }
+        
+        public int[] FindServicesOnTariff(JObject tariff, string link, string modifier)
+        {
+            return tariff?.SelectTokens($"{link}.[?(@.Service)]")
+                .Where(n => n.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{modifier}')]").Any())
+                .Select(n => (int) n.SelectToken("Service.Id"))
+                .ToArray();
+        }
+
+        protected static void ProcessRemoveModifier(JArray scaleParameters)
+        {
+            var toRemove =
+                scaleParameters.Where(
+                        n => n.SelectTokens("Modifiers.[?(@.Alias)].Alias").Select(m => m.ToString()).Contains("Remove"))
+                    .ToArray();
+
+            foreach (var t in toRemove)
+            {
+                t.Remove();
             }
         }
     }

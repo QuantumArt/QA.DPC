@@ -9,6 +9,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         public BaseImpactCalculator Calculator { get; set; }
 
         public int[] ServiceIds { get; set; }
+        
+        public string TariffId { get; set; }
 
         public string State { get; set; }
 
@@ -19,5 +21,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         public string HomeRegion { get; set; }
 
         public string Country { get; set;  }
+        
     }
 }
