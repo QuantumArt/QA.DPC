@@ -1,6 +1,6 @@
 @import "~@blueprintjs/core/lib/scss/variables";
 
-.article-editor__header {
+.entity-editor__header {
   display: flex;
   margin-top: 5px;
   justify-content: space-between;
@@ -8,7 +8,7 @@
   flex-wrap: wrap;
 }
 
-.article-editor__title {
+.entity-editor__title {
   font-size: 120%;
   flex: 1 1 0%;
   min-width: 200px;
@@ -16,19 +16,20 @@
   margin-right: 20px;
 }
 
-.article-editor__buttons {
+.entity-editor__buttons {
   flex: none;
   margin-bottom: 10px;
 }
 
-.article-link {
-  .pt-button-text {
+.entity-link {
+  .bp3-button-text {
     color: $dark-gray1 !important;
+    user-select: auto;
   }
 }
 
-.article-editor__header {
-  .article-link {
+.entity-editor__header {
+  .entity-link {
     position: relative;
     left: -5px;
   }

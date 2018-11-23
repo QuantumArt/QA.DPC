@@ -1,0 +1,12 @@
+body.bp3-overlay-open {
+  overflow: auto;
+}
+
+.bp3-overlay-backdrop {
+  visibility: hidden;
+}
+
+.bp3-alert {
+  max-width: calc(100vw - 200px);
+  width: auto;
+}

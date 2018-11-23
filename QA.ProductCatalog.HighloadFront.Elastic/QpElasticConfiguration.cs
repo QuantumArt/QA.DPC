@@ -19,6 +19,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly IContentProvider<ElasticIndex> _indexProvider;
         private readonly IContentProvider<HighloadApiUser> _userProvider;
         private readonly IContentProvider<HighloadApiLimit> _limitProvider;
+        private readonly IContentProvider<HighloadApiMethod> _methodProvider;
+        
         private readonly IVersionedCacheProvider2 _cacheProvider;
         private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(60);
         private readonly int _timeout = 5;
@@ -30,6 +32,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             IContentProvider<ElasticIndex> indexProvider,
             IContentProvider<HighloadApiUser> userProvider,
             IContentProvider<HighloadApiLimit> limitProvider,
+            IContentProvider<HighloadApiMethod> methodProvider,
             IVersionedCacheProvider2 cacheProvider,
             ILogger logger,
             IOptions<DataOptions> options
@@ -38,6 +41,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _indexProvider = indexProvider;
             _userProvider = userProvider;
             _limitProvider = limitProvider;
+            _methodProvider = methodProvider;
             _cacheProvider = cacheProvider;
             _logger = logger;
             _options = options.Value;
@@ -61,6 +65,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         protected IEnumerable<HighloadApiLimit> GetHighloadApiLimits()
         {
             return _cacheProvider.GetOrAdd("HighloadApiLimits", _limitProvider.GetTags(), _cacheTimeSpan, _limitProvider.GetArticles, true, CacheItemPriority.NeverRemove);
+        }
+        
+        protected IEnumerable<HighloadApiMethod> GetHighloadApiMethods()
+        {
+            return _cacheProvider.GetOrAdd("HighloadApiMethods", _methodProvider.GetTags(), _cacheTimeSpan, _methodProvider.GetArticles, true, CacheItemPriority.NeverRemove);
         }
 
         public Dictionary<string, IElasticClient> GetClientMap()
@@ -120,6 +129,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 .Where(n => n.User == name && n.Method == profile)
                 .Select(n => new RateLimit() { Limit = n.Limit, Seconds = n.Seconds})
                 .FirstOrDefault() ?? new RateLimit() { Limit = 0, Seconds = 1 };
+        }
+
+        public string GetJsonByAlias(string alias)
+        {
+            var customMethods = GetHighloadApiMethods().Where(n => !n.System);
+            var customMethod = customMethods.SingleOrDefault(n =>
+                String.Equals(n.Title, alias, StringComparison.InvariantCultureIgnoreCase));
+            return customMethod?.Json;
         }
 
 

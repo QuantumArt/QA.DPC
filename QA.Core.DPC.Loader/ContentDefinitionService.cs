@@ -63,7 +63,23 @@ namespace QA.Core.DPC.Loader
 			return (Content)XamlConfigurationParser.CreateFrom(GetDefinitionXml(productTypeId, contentId, isLive));
 		}
 
-		public Content[] GetDefinitions(bool isLive = false)
+        /// <returns><see cref="Content"/> or null</returns>
+        public Content TryGetDefinitionById(int productDefinitionId, bool isLive = false)
+        {
+            string xml = GetDefinitionXml(productDefinitionId, isLive);
+
+            return xml != null ? (Content)XamlConfigurationParser.CreateFrom(xml) : null;
+        }
+
+        /// <returns><see cref="Content"/> or null</returns>
+        public Content TryGetDefinitionForContent(int productTypeId, int contentId, bool isLive = false)
+        {
+            string xml = GetDefinitionXml(productTypeId, contentId, isLive);
+
+            return xml != null ? (Content)XamlConfigurationParser.CreateFrom(xml) : null;
+        }
+
+        public Content[] GetDefinitions(bool isLive = false)
 		{
 			int prodDefContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
 

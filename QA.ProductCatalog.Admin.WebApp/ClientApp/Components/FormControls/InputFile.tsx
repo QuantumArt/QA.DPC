@@ -43,7 +43,10 @@ export class InputFile extends ValidatableControl<InputHTMLAttributes<HTMLInputE
     } = this.props;
     const fileName = model[name];
     return (
-      <label className={cn("pt-file-input pt-fill editor-input-file", className)} title={fileName}>
+      <label
+        className={cn("bp3-file-input bp3-fill editor-input-file", className)}
+        title={fileName}
+      >
         <input
           ref={this.inputRef}
           type={readOnly ? "text" : "file"}
@@ -54,13 +57,13 @@ export class InputFile extends ValidatableControl<InputHTMLAttributes<HTMLInputE
           {...props}
         />
         <span
-          className={cn("pt-file-upload-input", {
+          className={cn("bp3-file-upload-input", {
             "editor-input-file__placeholder": !fileName
           })}
         >
           {fileName ? fileName : placeholder}
           <span
-            className="editor-input-file__clear pt-icon pt-icon-cross"
+            className="editor-input-file__clear bp3-icon bp3-icon-cross"
             title="Очистить"
             onClick={this.handleClear}
           />

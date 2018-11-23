@@ -229,9 +229,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 				Xml = resultXml
 			});
 		}
-
-
-
+        
 		public ActionResult SaveContent(DefinitionContentInfo defInfo)
 		{
 			var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
@@ -257,11 +255,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			}
 			else
 			{
+                contentToSave.IsReadOnly = defInfo.Content.IsReadOnly;
 				contentToSave.LoadAllPlainFields = defInfo.Content.LoadAllPlainFields;
-
 				contentToSave.PublishingMode = defInfo.Content.PublishingMode;
 
-			    if (notFoundInDef)
+                if (notFoundInDef)
 			    {
                      var parentExtension = (ExtensionField)_definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path);
 

@@ -26,7 +26,7 @@ export class TextArea extends ValidatableInput<TextareaHTMLAttributes<HTMLTextAr
     return (
       <TextAreaAutosize
         useCacheForDOMMeasurements
-        className={cn("pt-input pt-fill editor-textarea", className)}
+        className={cn("bp3-input bp3-fill editor-textarea", className)}
         minRows={2}
         maxRows={6}
         value={inputValue}

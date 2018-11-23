@@ -1,49 +1,56 @@
 ﻿html,
 body {
-	height: 100%;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
 }
 
 #verticalRootSplitter {
-	height: 100%;
-	border-width: 0;
+  height: 100%;
+  border-width: 0;
 }
 
 #horizontalTreeAndPropsSplitter {
-	height: 100%;
+  height: 100%;
 }
 
 #propsPane {
-	padding: 5px;
+  padding: 5px;
 }
 
 span.NotInDefinition {
-	color: gray;
+  color: gray;
 }
 
 span.IsDictionaries {
-	color: green;
+  color: green;
 }
 
 span.MissingInQp {
-	color: red;
+  color: red;
 }
 
 span.EditorNote {
-	color: green;
-	font-weight: bold;
+  color: green;
+  font-weight: bold;
 }
 
-.display-field, .editor-field {
-	min-height: 25px;
+.display-field,
+.editor-field {
+  min-height: 25px;
 }
 
-.display-label, .editor-label {
-	min-width: 260px;
+.display-label,
+.editor-label {
+  min-width: 260px;
 }
 
 .text-box {
-	min-width: 200px;
+  min-width: 200px;
+}
+
+.editor-field input[type="text"]:first-child:last-child,
+.editor-field select {
+  min-width: 240px;
 }

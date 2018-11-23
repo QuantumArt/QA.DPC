@@ -1,40 +1,31 @@
 ﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
-import { LocaleContext } from "Packages/react-lazy-i18n";
+import { LocaleContext } from "react-lazy-i18n";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
-import { RelationFieldTags, RelationFieldTabs } from "Components/FieldEditors/FieldEditors";
-import { FixConnectTariffEditor } from "./FixConnectTariffEditor";
+import { MultiRelationFieldTags } from "Components/FieldEditors/FieldEditors";
+import { EditorTabs } from "./Components/EditorTabs";
+import { Product } from "./TypeScriptSchema";
+import { AdvantagesTable } from "./Components/AdvantagesTable";
+import { ParameterFields } from "./Components/ParameterFields";
+import "./FixConnectTariff.scss";
 
 const App = () => (
   <LocaleContext.Provider value="ru">
     <ProductEditor
-      settings={window["ProductEditorSettings"]}
+      editorSettings={window["ProductEditorSettings"]}
       relationEditors={{
-        Region: props => <RelationFieldTags {...props} selectMultiple orderByField="Title" />,
-        ProductModifer: RelationFieldTagsEditor,
-        BaseParameter: RelationFieldTagsEditor,
-        Unit: RelationFieldTagsEditor,
-        Segment: RelationFieldTagsEditor,
-        TariffCategory: RelationFieldTagsEditor,
-        ProductParameter: ProductParameterEditor
+        Region: props => <MultiRelationFieldTags {...props} sortItemsBy="Title" />,
+        ProductParameter: ParameterFields,
+        LinkParameter: ParameterFields,
+        Advantage: AdvantagesTable
       }}
     >
-      {(model, contentSchema) => (
-        <FixConnectTariffEditor model={model} contentSchema={contentSchema} />
+      {(model: Product, contentSchema) => (
+        <EditorTabs model={model} contentSchema={contentSchema} />
       )}
     </ProductEditor>
   </LocaleContext.Provider>
-);
-
-const RelationFieldTagsEditor = props => (
-  <RelationFieldTags {...props} displayField="Title" orderByField="Title" />
-);
-
-const ProductParameterEditor = props => (
-  <RelationFieldTabs {...props} displayField="Title" orderByField="Title">
-    {(_headerNode, fieldsNode) => fieldsNode}
-  </RelationFieldTabs>
 );
 
 ReactDOM.render(<App />, document.getElementById("editor"));

@@ -1,100 +1,246 @@
 import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
-import { consumer, inject } from "react-ioc";
+import { inject } from "react-ioc";
 import { observer } from "mobx-react";
 import { EntityObject } from "Models/EditorDataModels";
-import { EditorController } from "Services/EditorController";
-import { ArticleController } from "Services/ArticleController";
+import { ContentSchema } from "Models/EditorSchemaModels";
+import { EntityController } from "Services/EntityController";
 import { isString, isFunction } from "Utils/TypeChecks";
-import { ArticleMenu } from "./ArticleMenu";
-import { ArticleLink } from "./ArticleLink";
-import { ArticleEditor, ArticleEditorProps } from "./ArticleEditor";
-export { IGNORE, FieldsConfig, RelationsConfig } from "./ArticleEditor";
+import { FieldSelector } from "Components/FieldEditors/AbstractFieldEditor";
+import { EntityMenu } from "./EntityMenu";
+import { EntityLink } from "./EntityLink";
+import { AbstractEditor, ArticleEditorProps } from "./ArticleEditor";
 import "./ArticleEditor.scss";
+import { action } from "mobx";
 
-export type RenderEntity = (headerNode: ReactNode, fieldsNode: ReactNode) => ReactNode;
-
-interface EntityEditorProps {
+interface EntityEditorProps extends ArticleEditorProps {
+  /** Статья для редакторования */
   model: EntityObject;
-  header?: ReactNode | boolean;
-  buttons?: ReactNode | boolean;
-  onRemove?: (article: EntityObject) => void;
-  titleField?: string | ((article: EntityObject) => string);
-  children?: RenderEntity | ReactNode;
+  /** Класс для тела редактора статьи */
+  className?: string;
+  /** Заголовок редактора статьи */
+  withHeader?: ReactNode | boolean;
+  /** Поле статьи для отображения в заголовке */
+  titleField?: string | FieldSelector;
+  /** Разрешено ли сохранение статьи @default true */
+  canSaveEntity?: boolean;
+  /** Разрешено ли обновление статьи @default true */
+  canRefreshEntity?: boolean;
+  /** Разрешена ли перезагрузка статьи @default true */
+  canReloadEntity?: boolean;
+  /** Разрешено ли открепление статьи-связи */
+  canDetachEntity?: boolean;
+  /** Разрешено ли удаление статьи */
+  canRemoveEntity?: boolean;
+  /** Разрешена ли публикация статьи */
+  canPublishEntity?: boolean;
+  /** Разрешено ли клонирование статьи */
+  canCloneEntity?: boolean;
+  /**
+   * Обработчик сохранения статьи
+   * @param saveEntity Метод, выполняющий реальное сохранение
+   */
+  onSaveEntity?(entity: EntityObject, saveEntity: () => Promise<void>): void;
+  /**
+   * Обработчик обновления статьи
+   * @param refreshEntity Метод, выполняющий реальное обновление
+   */
+  onRefreshEntity?(entity: EntityObject, refreshEntity: () => Promise<void>): void;
+  /**
+   * Обработчик перезагрузки статьи
+   * @param reloadEntity Метод, выполняющий реальную перезагрузку
+   */
+  onReloadEntity?(entity: EntityObject, reloadEntity: () => Promise<void>): void;
+  /**
+   * Обработчик публикации статьи
+   * @param publishEntity Метод, выполняющий реальную публикацию
+   */
+  onPublishEntity?(entity: EntityObject, publishEntity: () => Promise<void>): void;
+  /** Обработчик удаления статьи */
+  onRemoveEntity?(entity: EntityObject): void;
+  /** Обработчик открепления статьи-связи */
+  onDetachEntity?(entity: EntityObject): void;
+  /** Обработчик клонирования статьи */
+  onCloneEntity?(entity: EntityObject): void;
+  /** Обработчик, выполняющийся при добавлении редактора в DOM */
+  onMountEntity?(entity: EntityObject): void;
+  /** Обработчик, выполняющийся при удалении редактора из DOM */
+  onUnmountEntity?(entity: EntityObject): void;
+  /** Render Callback для добавления дополнительных кнопок-действий в меню статьи */
+  customActions?(entity: EntityObject): ReactNode;
+  /** Render Callback для добавления дополнительной разметки в @see EntityEditor */
+  children?: (entity: EntityObject, contentSchema: ContentSchema) => ReactNode;
 }
 
-@consumer
+const defaultEntityHandler = (_entity, action) => action();
+
+/** Компонент для отображения и редактирования статьи-сущности */
 @observer
-export class EntityEditor extends ArticleEditor<EntityEditorProps> {
-  @inject private _articleController: ArticleController;
-  @inject private _editorController: EditorController;
-  private _titleField: (model: EntityObject) => string;
-
-  constructor(props: ArticleEditorProps & EntityEditorProps, context?: any) {
-    super(props, context);
-    const { contentSchema, titleField = contentSchema.DisplayFieldName || (() => "") } = this.props;
-    this._titleField = isString(titleField) ? article => article[titleField] : titleField;
-  }
-
-  private savePartialProduct = async () => {
-    const { model, contentSchema } = this.props;
-    await this._editorController.savePartialProduct(model, contentSchema);
+export class EntityEditor extends AbstractEditor<EntityEditorProps> {
+  static defaultProps = {
+    canSaveEntity: true,
+    canRefreshEntity: true,
+    canReloadEntity: true,
+    onSaveEntity: defaultEntityHandler,
+    onRefreshEntity: defaultEntityHandler,
+    onReloadEntity: defaultEntityHandler,
+    onPublishEntity: defaultEntityHandler
   };
 
-  private refreshEntity = async () => {
-    const { model, contentSchema } = this.props;
-    await this._articleController.refreshEntity(model, contentSchema);
+  @inject private _entityController: EntityController;
+  private _titleField: (model: EntityObject) => string;
+
+  constructor(props: EntityEditorProps, context?: any) {
+    super(props, context);
+    const { contentSchema, titleField = contentSchema.DisplayFieldName || (() => "") } = this.props;
+    this._titleField = isString(titleField) ? entity => entity[titleField] : titleField;
+  }
+
+  private saveEntity = () => {
+    const { model, contentSchema, onSaveEntity } = this.props;
+    onSaveEntity(
+      model,
+      action("saveEntity", async () => {
+        await this._entityController.saveEntity(model, contentSchema);
+      })
+    );
+  };
+
+  private refreshEntity = () => {
+    const { model, contentSchema, onRefreshEntity } = this.props;
+    onRefreshEntity(
+      model,
+      action("refreshEntity", async () => {
+        await this._entityController.refreshEntity(model, contentSchema);
+      })
+    );
   };
 
   private reloadEntity = async () => {
-    const { model, contentSchema } = this.props;
-    await this._articleController.reloadEntity(model, contentSchema);
+    const { model, contentSchema, onReloadEntity } = this.props;
+    onReloadEntity(
+      model,
+      action("reloadEntity", async () => {
+        await this._entityController.reloadEntity(model, contentSchema);
+      })
+    );
   };
 
-  render() {
-    const { model, contentSchema, header, buttons, onRemove, children } = this.props;
-    if (isFunction(children) && children.length === 0) {
-      return children(null, null);
+  private publishEntity = () => {
+    const { model, contentSchema, onPublishEntity } = this.props;
+    onPublishEntity(
+      model,
+      action("publishEntity", async () => {
+        await this._entityController.publishEntity(model, contentSchema);
+      })
+    );
+  };
+
+  private detachEntity = () => {
+    const { model, onDetachEntity } = this.props;
+    if (onDetachEntity) {
+      onDetachEntity(model);
+    } else if (DEBUG) {
+      console.warn("EntityEditor `onDetach` is not defined");
     }
+  };
+
+  private removeEntity = () => {
+    const { model, onRemoveEntity } = this.props;
+    if (onRemoveEntity) {
+      onRemoveEntity(model);
+    } else if (DEBUG) {
+      console.warn("EntityEditor `onRemove` is not defined");
+    }
+  };
+
+  private cloneEntity = () => {
+    const { model, onCloneEntity } = this.props;
+    if (onCloneEntity) {
+      onCloneEntity(model);
+    } else if (DEBUG) {
+      console.warn("EntityEditor `onClone` is not defined");
+    }
+  };
+
+  componentDidMount() {
+    const { model, onMountEntity } = this.props;
+    if (onMountEntity) {
+      onMountEntity(model);
+    }
+  }
+
+  componentWillUnmount() {
+    const { model, onUnmountEntity } = this.props;
+    if (onUnmountEntity) {
+      onUnmountEntity(model);
+    }
+  }
+
+  render() {
+    const { model, contentSchema, className, children } = this.props;
+    return (
+      <>
+        {this.renderHeader()}
+        <Col key={2} md className={className}>
+          <Row>{super.render()}</Row>
+          {isFunction(children) && <Row>{children(model, contentSchema)}</Row>}
+        </Col>
+      </>
+    );
+  }
+
+  private renderHeader() {
+    const { model, contentSchema, withHeader } = this.props;
+
+    return withHeader === true ? (
+      <Col key={1} md className="entity-editor__header">
+        <div
+          className="entity-editor__title"
+          title={
+            contentSchema.ContentDescription ||
+            contentSchema.ContentTitle ||
+            contentSchema.ContentName
+          }
+        >
+          <EntityLink model={model} contentSchema={contentSchema} />
+          {this._titleField(model)}
+        </div>
+        {this.renderButtons()}
+      </Col>
+    ) : (
+      withHeader || null
+    );
+  }
+
+  private renderButtons() {
+    const {
+      model,
+      customActions,
+      canSaveEntity,
+      canRefreshEntity,
+      canReloadEntity,
+      canDetachEntity,
+      canRemoveEntity,
+      canPublishEntity,
+      canCloneEntity
+    } = this.props;
     const hasServerId = model._ServerId > 0;
 
-    const headerNode =
-      header === true ? (
-        <Col key={1} md className="article-editor__header">
-          <div
-            className="article-editor__title"
-            title={
-              contentSchema.ContentDescription ||
-              contentSchema.ContentTitle ||
-              contentSchema.ContentName
-            }
-          >
-            <ArticleLink model={model} contentSchema={contentSchema} />
-            {this._titleField(model)}
-          </div>
-          {buttons === true ? (
-            <div className="article-editor__buttons">
-              <ArticleMenu
-                onSave={this.savePartialProduct}
-                onRemove={onRemove && (() => onRemove(model))}
-                onRefresh={hasServerId && this.refreshEntity}
-                onReload={hasServerId && this.reloadEntity}
-                onClone={() => {}} // TODO: clone PartialProduct
-                onPublish={() => {}} // TODO: publish PartialProduct
-              />
-            </div>
-          ) : (
-            buttons || null
-          )}
-        </Col>
-      ) : (
-        header || null
-      );
-    const fieldsNode = (
-      <Col key={2} md>
-        <Row>{super.render()}</Row>
-      </Col>
+    return (
+      <div className="entity-editor__buttons">
+        <EntityMenu
+          onSave={canSaveEntity && this.saveEntity}
+          onDetach={canDetachEntity && this.detachEntity}
+          onRemove={canRemoveEntity && hasServerId && this.removeEntity}
+          onRefresh={canRefreshEntity && hasServerId && this.refreshEntity}
+          onReload={canReloadEntity && hasServerId && this.reloadEntity}
+          onPublish={canPublishEntity && hasServerId && this.publishEntity}
+          onClone={canCloneEntity && hasServerId && this.cloneEntity}
+        >
+          {customActions && customActions(model)}
+        </EntityMenu>
+      </div>
     );
-    return isFunction(children) ? children(headerNode, fieldsNode) : [headerNode, fieldsNode];
   }
 }

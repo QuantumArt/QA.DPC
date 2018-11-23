@@ -1,18 +1,24 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { ButtonGroup, Button, Intent } from "@blueprintjs/core";
 
 interface RelationFieldMenuProps {
   onCreate?: (e: any) => void;
+  onClonePrototype?: (e: any) => void;
   onSelect?: (e: any) => void;
   onClear?: (e: any) => void;
   onReload?: (e: any) => void;
+  /** Дополнительные кнопки-действия */
+  children?: ReactNode;
 }
 
+/** Строка кнопок-действий с полем-связью */
 export const RelationFieldMenu = ({
   onCreate,
+  onClonePrototype,
   onSelect,
   onClear,
-  onReload
+  onReload,
+  children
 }: RelationFieldMenuProps) => (
   <ButtonGroup>
     {onCreate && (
@@ -25,6 +31,18 @@ export const RelationFieldMenu = ({
         title="Создать пустую связанную статью с нуля"
       >
         Создать
+      </Button>
+    )}
+    {onClonePrototype && (
+      <Button
+        minimal
+        small
+        rightIcon="add"
+        intent={Intent.SUCCESS}
+        onClick={onClonePrototype}
+        title="Создать связанную статью по образцу"
+      >
+        Создать по образцу
       </Button>
     )}
     {onSelect && (
@@ -63,5 +81,6 @@ export const RelationFieldMenu = ({
         Перезагрузить
       </Button>
     )}
+    {children}
   </ButtonGroup>
 );

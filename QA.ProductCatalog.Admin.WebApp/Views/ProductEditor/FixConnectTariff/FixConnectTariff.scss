@@ -1,0 +1,41 @@
+.advantages-table {
+  &__is-gift {
+    margin-left: 10px;
+
+    .bp3-checkbox {
+      display: inline-block;
+      margin: 0;
+      margin-left: 5px;
+    }
+  }
+}
+
+.devices-filter {
+  padding-top: 10px;
+
+  .bp3-switch.bp3-align-right.bp3-large {
+    .bp3-control-indicator {
+      top: 6px;
+    }
+  }
+
+  .Select {
+    margin-top: 2px;
+  }
+}
+
+.products-accordion {
+  &__regions {
+    max-height: 40px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    &--action {
+      max-height: 55px;
+    }
+  }
+}
+
+.bp3-divider {
+  margin: 0;
+}

@@ -98,3 +98,36 @@ class MarketingTariff2 extends MarketingProduct {
   Parent: MarketingProduct;
 }
 ```
+
+Единственным исключением является обратная ссылка (BackwardRelation)
+на тот же контент, но с флагом : `IsReadOnly`:
+
+```js
+class Product {
+  Id: number;
+  Type: string;
+  MarketingProduct: MarketingProduct;
+}
+
+class MarketingProduct {
+  Id: number;
+  Type: string;
+  Products: Readonly<Product>[]; // Circular Reference на Readonly контент
+}
+```
+
+```json
+{
+  "Id": 1234,
+  "Type": "Tariff",
+  "MarketingProduct": {
+    "Id": 123,
+    "Type": "MarketingTariff",
+    "Priducts": [
+      { "Id": 1234 }, // Circular Reference
+      { "Id": 2345, "Type": "Tariff" },
+      { "Id": 3456, "Type": "Tariff" }
+    ]
+  }
+}
+```

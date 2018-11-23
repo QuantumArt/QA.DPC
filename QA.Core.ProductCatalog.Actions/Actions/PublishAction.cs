@@ -93,6 +93,21 @@ namespace QA.Core.ProductCatalog.Actions
         }
         #endregion
 
+        /// <exception cref="MessageResultException"/>
+        public void PublishProduct(int productId, Dictionary<string, string> actionParameters)
+        {
+            var userProvider = ObjectFactoryBase.Resolve<IUserProvider>();
+
+            UserId = userProvider.GetUserId();
+            UserName = userProvider.GetUserName();
+
+            using (var transaction = CreateTransaction())
+            {
+                ProcessProduct(productId, actionParameters ?? new Dictionary<string, string>());
+                transaction.Commit();
+            }
+        }
+
         #region Private methods
 
         public static IEnumerable<Article> GetAllArticlesToCheck(params Article[] articles)

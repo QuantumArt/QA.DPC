@@ -265,6 +265,7 @@ namespace QA.Core.DPC.Loader.Services
                     }
 
 					fieldToSave.FieldName = field.FieldName;
+                    fieldToSave.FieldTitle = field.FieldTitle;
 
                     fieldToSave.CustomProperties.Clear();
 
@@ -284,7 +285,9 @@ namespace QA.Core.DPC.Loader.Services
                         if (field is EntityField entityDef)
                         {
                             var entityToSave = (EntityField)fieldToSave;
+                            entityToSave.PreloadingMode = entityDef.PreloadingMode;
                             entityToSave.RelationCondition = entityDef.RelationCondition;
+                            entityToSave.ClonePrototypeCondition = entityDef.ClonePrototypeCondition;
 
                             if (field is BackwardRelationField backwardDef)
                             {

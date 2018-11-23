@@ -31,11 +31,11 @@ namespace QA.ProductCatalog.HighloadFront
             _productPostProcessor = productPostProcessor;
         }
 
-        public Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(string id, ProductsOptions options, string language, string state)
+        public Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
             var store = GetProductStreamStore();
-            return store.FindStreamByIdAsync(id, options, language, state);
+            return store.FindStreamByIdAsync(options, language, state);
         }
 
         public async Task<SonicResult> CreateAsync(JObject product, RegionTag[] regionTags, string language, string state)
@@ -101,29 +101,25 @@ namespace QA.ProductCatalog.HighloadFront
             return Store.GetId(product);
         }
 
+        
+        public Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        {
+            ThrowIfDisposed();
+            var store = GetProductSearchStore();
+
+            return store.SearchAsync(options, language, state);
+        }
+
       
         public Task<Stream> SearchStreamAsync(ProductsOptions options, string language, string state)
         {
             ThrowIfDisposed();
             var store = GetProductSearchStore();
 
-            return store.SearchStreamAsync(options ?? Options.Product, language, state);
+            return store.SearchStreamAsync(options, language, state);
         }
 
-        public Task<Stream> GetProductsInTypeStream(string type, ProductsOptions options, string language, string state)
-        {
-            ThrowIfDisposed();
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
-            var store = GetProductTypeStore();
-
-            return store.GetProductsInTypeStreamAsync(type, options ?? Options.Product, language, state);
-        }
-
-
-
+        
         public Task<SonicResult> DeleteAllASync(string language, string state)
         {
             ThrowIfDisposed();
@@ -210,7 +206,6 @@ namespace QA.ProductCatalog.HighloadFront
                 return tags;
             }
         }
-
 
         #region IDisposable Support
 

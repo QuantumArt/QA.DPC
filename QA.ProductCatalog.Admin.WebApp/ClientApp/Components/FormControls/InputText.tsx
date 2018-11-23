@@ -27,7 +27,7 @@ export class InputText extends ValidatableInput<
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : "";
     return props.mask ? (
       <MaskedInput
-        className={cn("pt-input pt-fill", className)}
+        className={cn("bp3-input bp3-fill", className)}
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}
@@ -37,7 +37,7 @@ export class InputText extends ValidatableInput<
     ) : (
       <input
         type="text"
-        className={cn("pt-input pt-fill", className)}
+        className={cn("bp3-input bp3-fill", className)}
         value={inputValue}
         onFocus={this.handleFocus}
         onChange={this.handleChange}

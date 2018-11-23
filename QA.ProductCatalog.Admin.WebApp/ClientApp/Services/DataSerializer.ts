@@ -1,4 +1,4 @@
-import { isIsoDateString } from "Utils/TypeChecks";
+import { isIsoDateString, isString } from "Utils/TypeChecks";
 import { isEntityObject, ArticleObject, EntityObject } from "Models/EditorDataModels";
 import {
   ContentSchema,
@@ -32,7 +32,11 @@ export class DataSerializer {
    * клиентские отрицательные Id (если они определены).
    * Преобразует ISO Date strings в Unix time.
    */
-  public deserialize<T = any>(json: string): T {
+  public deserialize<T = any>(object: T): T;
+  public deserialize<T = any>(object: object): T;
+  public deserialize<T = any>(json: string): T;
+  public deserialize<T = any>(argument: any): T {
+    const json = isString(argument) ? argument : JSON.stringify(argument);
     return JSON.parse(json, (_key, value) => {
       if (isEntityObject(value)) {
         // @ts-ignore
@@ -79,7 +83,9 @@ export class DataSerializer {
       const fieldSchema = contentSchema.Fields[fieldName];
       if (isSingleRelationField(fieldSchema)) {
         const relatedEntity = fieldValue as EntityObject;
-        if (fieldSchema.UpdatingMode === UpdatingMode.Ignore) {
+        if (relatedEntity._IsVirtual) {
+          snapshot[fieldName] = null;
+        } else if (fieldSchema.UpdatingMode === UpdatingMode.Ignore) {
           snapshot[fieldName] = { _ServerId: relatedEntity._ServerId };
         } else {
           snapshot[fieldName] = this.serialize(relatedEntity, fieldSchema.RelatedContent);
@@ -87,14 +93,16 @@ export class DataSerializer {
       } else if (isMultiRelationField(fieldSchema)) {
         const relatedCollection = fieldValue as EntityObject[];
         if (fieldSchema.UpdatingMode === UpdatingMode.Ignore) {
-          snapshot[fieldName] = relatedCollection.map(entity => ({ _ServerId: entity._ServerId }));
+          snapshot[fieldName] = relatedCollection
+            .filter(entity => !entity._IsVirtual)
+            .map(entity => ({ _ServerId: entity._ServerId }));
         } else {
-          snapshot[fieldName] = relatedCollection.map(entity =>
-            this.serialize(entity, fieldSchema.RelatedContent)
-          );
+          snapshot[fieldName] = relatedCollection
+            .filter(entity => !entity._IsVirtual)
+            .map(entity => this.serialize(entity, fieldSchema.RelatedContent));
         }
       } else if (isExtensionField(fieldSchema)) {
-        const extensionFieldName = `${fieldName}${ArticleObject._Contents}`;
+        const extensionFieldName = `${fieldName}${ArticleObject._Extension}`;
         const extensionArticle = article[extensionFieldName][fieldValue] as ArticleObject;
         const extensionContentSchema = fieldSchema.ExtensionContents[fieldValue];
         snapshot[fieldName] = fieldValue;

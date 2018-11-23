@@ -81,7 +81,7 @@ export abstract class ValidatableInput<P = {}> extends ValidatableControl<P> {
   protected handleFocus(...args) {
     super.handleFocus(...args);
     const { model, name } = this.props;
-    let editValue = model[name];
+    let editValue: string = model[name];
     if (editValue == null) {
       editValue = "";
     }

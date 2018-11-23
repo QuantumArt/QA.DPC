@@ -21,6 +21,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         RateLimit GetLimit(string name, string profile);
 
+        string GetJsonByAlias(string alias);
+
         int GetElasticTimeout();
     }
 }

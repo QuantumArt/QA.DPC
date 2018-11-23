@@ -22,6 +22,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         protected JArray InitialTariffProperties;
 
+        protected string Region;
+
 
         public InRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
         {
@@ -38,6 +40,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 HomeRegion = homeRegion
             };
 
+            Region = region;
 
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, region, homeRegion, state, language);
             var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
@@ -77,7 +80,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 try
                 {
                     InitialTariffProperties = (JArray)Product["Parameters"];
-                    Product["Parameters"] = _calc.GetResultParameters(Scale, Product, useMacroRegionParameters);
+                    Product["Parameters"] = _calc.GetResultParameters(Scale, Product, region, useMacroRegionParameters);
                 }
                 catch (Exception ex)
                 {
@@ -118,9 +121,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             {
                 foreach (var service in Services)
                 {
-                    _calc.MergeValuesFromTariff(service, InitialTariffProperties);   
+                    _calc.MergeValuesFromTariff(service, InitialTariffProperties);
+                    _calc.FilterServiceParameters(service, Region);
                 }
-
+                _calc.FilterServiceOnTariffParameters(Product, Region);
                 _calc.Calculate(Product, Services.ToArray(), homeRegionData);
             }
             catch (Exception ex)

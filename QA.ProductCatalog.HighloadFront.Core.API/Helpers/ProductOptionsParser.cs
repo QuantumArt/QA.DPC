@@ -32,7 +32,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
             var result = new ProductsOptions
             {
                 Sort = sort,
-                Order = order == "asc",
+                OrderDirection = order,
                 PropertiesFilter = fields?.Split(',').ToList(),
                 DisableOr = string.IsNullOrEmpty(disableOr) ? new string[] { } : disableOr.Split(','),
                 DisableNot = string.IsNullOrEmpty(disableNot) ? new string[] { } : disableNot.Split(','),
@@ -40,14 +40,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 Filters = filters.Select(n => CreateFilter(n, options)).ToList()
             };
 
-            int intPage;
-            if (int.TryParse(page, out intPage))
+            if (int.TryParse(page, out var intPage))
             {
                 result.Page = intPage;
             }
 
-            int intPerPage;
-            if (int.TryParse(perPage, out intPerPage))
+            if (int.TryParse(perPage, out var intPerPage))
             {
                 result.PerPage = intPerPage;
             }

@@ -28,6 +28,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
             Profile = profile;
         }
 
+        public virtual string GetActualProfile(ActionExecutingContext context)
+        {
+            return Profile;
+        }
+
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             var ip = context.HttpContext.Request.HttpContext.Connection.RemoteIpAddress.ToString();
@@ -38,7 +43,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 
             var user = _configuration.GetUserName(token) ?? "Default";
             var key = GetKey(user, ip, context);
-            var limit = _configuration.GetLimit(user, Profile);
+            var limit = _configuration.GetLimit(user, GetActualProfile(context));
             var counter = _cacheProvider.GetOrAdd(key, TimeSpan.FromSeconds(limit.Seconds),
                 () => new RateCounter(limit.Limit, limit.Seconds));
 
