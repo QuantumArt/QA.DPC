@@ -27,7 +27,7 @@ export class CloneButtons extends Component<CloneButtonsProps> {
       product
     );
     await this._actionController.executeCustomAction(
-      "Редактор dev",
+      "Редактор",
       clonedProduct,
       fieldSchema.RelatedContent
     );
@@ -41,7 +41,7 @@ export class CloneButtons extends Component<CloneButtonsProps> {
       fieldSchema
     );
     await this._actionController.executeCustomAction(
-      "Редактор dev",
+      "Редактор",
       clonedProduct,
       fieldSchema.RelatedContent
     );
