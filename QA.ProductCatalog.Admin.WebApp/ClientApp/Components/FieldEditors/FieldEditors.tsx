@@ -2,7 +2,7 @@ import React from "react";
 import { Col } from "react-flexbox-grid";
 import cn from "classnames";
 import { observer } from "mobx-react";
-import { EntityObject, ExtensionObject } from "Models/EditorDataModels";
+import { ArticleObject } from "Models/EditorDataModels";
 import {
   EnumFieldSchema,
   PlainFieldSchema,
@@ -21,15 +21,15 @@ import {
 } from "Components/FormControls/FormControls";
 import { pattern } from "Utils/Validators";
 import { Intent } from "@blueprintjs/core";
-import { AbstractFieldEditor } from "./AbstractFieldEditor";
+import { AbstractFieldEditor, HighlightMode } from "./AbstractFieldEditor";
 import { Validate } from "mst-validation-mixin";
 export { FileFieldEditor } from "./FileFieldEditor";
 export { TextFieldEditor } from "./TextFieldEditor";
-export {
-  SingleRelationFieldAccordion,
-  MultiRelationFieldAccordion,
-  RelationFieldAccordion
-} from "./RelationFieldAccordion/RelationFieldAccordion";
+export { RelationFieldCheckList } from "./RelationFieldCheckList/RelationFieldCheckList";
+export { RelationFieldSelect } from "./RelationFieldSelect/RelationFieldSelect";
+export { RelationFieldForm } from "./RelationFieldForm/RelationFieldForm";
+export { RelationFieldTabs } from "./RelationFieldTabs/RelationFieldTabs";
+export { RelationFieldAccordion } from "./RelationFieldAccordion/RelationFieldAccordion";
 export {
   SingleRelationFieldTags,
   MultiRelationFieldTags,
@@ -40,15 +40,11 @@ export {
   MultiRelationFieldTable,
   RelationFieldTable
 } from "./RelationFieldTable/RelationFieldTable";
-export {
-  SingleRelationFieldTabs,
-  MultiRelationFieldTabs,
-  RelationFieldTabs
-} from "./RelationFieldTabs/RelationFieldTabs";
+export { HighlightMode };
 
 @observer
 export class StringFieldEditor extends AbstractFieldEditor {
-  renderValidation(model: EntityObject | ExtensionObject, fieldSchema: StringFieldSchema) {
+  renderValidation(model: ArticleObject, fieldSchema: StringFieldSchema) {
     return (
       <>
         <Validate
@@ -62,17 +58,17 @@ export class StringFieldEditor extends AbstractFieldEditor {
     );
   }
 
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: StringFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: StringFieldSchema) {
     return (
       <Col xl md={6}>
         <InputText
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -82,15 +78,15 @@ export class StringFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class NumericFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: NumericFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: NumericFieldSchema) {
     return (
       <Col xl={4} md={3}>
         <InputNumber
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           isInteger={fieldSchema.IsInteger}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           intent={
             model.hasVisibleErrors(fieldSchema.FieldName)
               ? Intent.DANGER
@@ -106,17 +102,17 @@ export class NumericFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class BooleanFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col md>
         <CheckBox
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -126,18 +122,18 @@ export class BooleanFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class DateFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
         <DatePicker
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           type="date"
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -147,18 +143,18 @@ export class DateFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class TimeFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
         <DatePicker
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           type="time"
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -168,17 +164,17 @@ export class TimeFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class DateTimeFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: PlainFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: PlainFieldSchema) {
     return (
       <Col xl={4} md={3}>
         <DatePicker
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -188,21 +184,21 @@ export class DateTimeFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class ClassifierFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: ClassifierFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: ClassifierFieldSchema) {
     const value = model[fieldSchema.FieldName];
     const options = value ? [{ value, label: value }] : [];
     return (
       <Col xl md={6}>
         <Select
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           options={options}
           required
           disabled
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -212,7 +208,7 @@ export class ClassifierFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class EnumFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: EnumFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: EnumFieldSchema) {
     const options = fieldSchema.Items.map(item => ({ value: item.Value, label: item.Alias }));
     return fieldSchema.ShowAsRadioButtons ? (
       <Col md>
@@ -220,25 +216,25 @@ export class EnumFieldEditor extends AbstractFieldEditor {
           model={model}
           name={fieldSchema.FieldName}
           options={options}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
     ) : (
       <Col xl md={6}>
         <Select
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           options={options}
           required={fieldSchema.IsRequired}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -248,25 +244,25 @@ export class EnumFieldEditor extends AbstractFieldEditor {
 
 @observer
 export class ExtensionFieldEditor extends AbstractFieldEditor {
-  renderField(model: EntityObject | ExtensionObject, fieldSchema: ExtensionFieldSchema) {
+  renderField(model: ArticleObject, fieldSchema: ExtensionFieldSchema) {
     const options = Object.values(fieldSchema.ExtensionContents).map(contentSchema => ({
       value: contentSchema.ContentName,
       label: contentSchema.ContentTitle || contentSchema.ContentName
     }));
 
-    const disabled = fieldSchema.IsReadOnly || (!fieldSchema.Changeable && model._ServerId > 0);
+    const disabled = this._readonly || (!fieldSchema.Changeable && model._ServerId > 0);
     return (
       <Col xl md={6}>
         <Select
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
           options={options}
           required={fieldSchema.IsRequired}
           disabled={disabled}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>

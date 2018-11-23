@@ -17,17 +17,17 @@ export class InputSearch extends AbstractControl<InputHTMLAttributes<HTMLInputEl
     const { model, name, className, onFocus, onChange, onBlur, ...props } = this.props;
     const inputValue = model[name] != null ? model[name] : "";
     return (
-      <div className={cn("pt-input-group", className)}>
+      <div className={cn("bp3-input-group", className)}>
         <input
           type="search"
-          className={cn("pt-input", className)}
+          className={cn("bp3-input", className)}
           value={inputValue}
           onFocus={this.handleFocus}
           onChange={this.handleChange}
           onBlur={this.handleBlur}
           {...props}
         />
-        <span className="pt-icon pt-icon-search" />
+        <span className="bp3-icon bp3-icon-search" />
       </div>
     );
   }

@@ -18,14 +18,18 @@ export interface ArticleErrors {
 }
 
 export class DataValidator {
-  private _isChanged: boolean;
+  private _isEdited: boolean;
   private _errors: ArticleErrors[];
 
-  public validate(article: ArticleObject, contentSchema: ContentSchema) {
-    this._isChanged = false;
+  public collectErrors(
+    article: ArticleObject,
+    contentSchema: ContentSchema,
+    reuqireChanges: boolean
+  ) {
+    this._isEdited = false;
     this._errors = [];
-    this.validateArticle(article, contentSchema);
-    if (!this._isChanged && this._errors.length === 0) {
+    this.visitArticle(article, contentSchema);
+    if (reuqireChanges && !this._isEdited && this._errors.length === 0) {
       this._errors.push({
         ServerId: article._ServerId,
         ContentName: contentSchema.ContentName,
@@ -36,9 +40,23 @@ export class DataValidator {
     return this._errors;
   }
 
-  private validateArticle(article: ArticleObject, contentSchema: ContentSchema) {
-    if (article.isChanged()) {
-      this._isChanged = true;
+  private visitArticle(
+    article: ArticleObject,
+    contentSchema: ContentSchema,
+    visitedArticlesByContent = new Map<ContentSchema, Set<ArticleObject>>()
+  ) {
+    let visitedArticles = visitedArticlesByContent.get(contentSchema);
+    if (!visitedArticles) {
+      visitedArticles = new Set<ArticleObject>();
+      visitedArticlesByContent.set(contentSchema, visitedArticles);
+    }
+    if (visitedArticles.has(article)) {
+      return;
+    }
+    visitedArticles.add(article);
+
+    if (article.isEdited()) {
+      this._isEdited = true;
     }
     if (article.hasErrors()) {
       this.addFieldErrors(article, contentSchema);
@@ -54,7 +72,7 @@ export class DataValidator {
       if (isSingleRelationField(fieldSchema)) {
         const relatedEntity = fieldValue as EntityObject;
         if (fieldSchema.UpdatingMode === UpdatingMode.Update) {
-          this.validateArticle(relatedEntity, fieldSchema.RelatedContent);
+          this.visitArticle(relatedEntity, fieldSchema.RelatedContent, visitedArticlesByContent);
         } else if (relatedEntity._ServerId < 0) {
           this.addNotSavedRelationError(relatedEntity, fieldSchema.RelatedContent);
         }
@@ -62,7 +80,7 @@ export class DataValidator {
         const relatedCollection = fieldValue as EntityObject[];
         if (fieldSchema.UpdatingMode === UpdatingMode.Update) {
           relatedCollection.forEach(entity =>
-            this.validateArticle(entity, fieldSchema.RelatedContent)
+            this.visitArticle(entity, fieldSchema.RelatedContent, visitedArticlesByContent)
           );
         } else {
           relatedCollection.forEach(entity => {
@@ -72,10 +90,10 @@ export class DataValidator {
           });
         }
       } else if (isExtensionField(fieldSchema)) {
-        const extensionFieldName = `${fieldName}${ArticleObject._Contents}`;
+        const extensionFieldName = `${fieldName}${ArticleObject._Extension}`;
         const extensionArticle = article[extensionFieldName][fieldValue] as ArticleObject;
         const extensionContentSchema = fieldSchema.ExtensionContents[fieldValue];
-        this.validateArticle(extensionArticle, extensionContentSchema);
+        this.visitArticle(extensionArticle, extensionContentSchema, visitedArticlesByContent);
       }
     }
   }
@@ -86,6 +104,7 @@ export class DataValidator {
       ContentName: contentSchema.ContentName,
       ArticleErrors: [],
       FieldErrors: Object.entries(article.getAllErrors()).map(([fieldName, messages]) => {
+        article.setTouched(fieldName, true);
         const fieldSchema = contentSchema.Fields[fieldName];
         return {
           Name: fieldSchema.FieldTitle || fieldSchema.FieldName,

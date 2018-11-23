@@ -26,6 +26,10 @@ namespace QA.Core.Models.Configuration
     [TypeConverter(typeof(ContentTypeConverter))]
     public sealed class Content : AttachableConfigurableItem
     {
+        [DisplayName("Только для чтения ")]
+        [DefaultValue(false)]
+        public bool IsReadOnly { get; set; }
+
         [DisplayName("Грузить все простые поля")]
         [DefaultValue(true)]
         public bool LoadAllPlainFields { get; set; }
@@ -39,7 +43,7 @@ namespace QA.Core.Models.Configuration
         [DisplayName("Поведение при публикации")]
         [DefaultValue(PublishingMode.Publish)]
         public PublishingMode PublishingMode { get; set; }
-
+        
         public List<Field> Fields { get; private set; }
 
         public Content()
@@ -132,6 +136,7 @@ namespace QA.Core.Models.Configuration
             visitedContents.Add(this);
 
             int hash = PublishingMode.GetHashCode();
+            hash = HashHelper.CombineHashCodes(hash, IsReadOnly.GetHashCode());
             hash = HashHelper.CombineHashCodes(hash, LoadAllPlainFields.GetHashCode());
             hash = HashHelper.CombineHashCodes(hash, ContentId.GetHashCode());
 
@@ -165,6 +170,7 @@ namespace QA.Core.Models.Configuration
             visitedContents.Add(this, other);
 
             return ContentId == other.ContentId
+                && IsReadOnly == other.IsReadOnly
                 && LoadAllPlainFields == other.LoadAllPlainFields
                 && PublishingMode == other.PublishingMode
                 && Fields.Count == other.Fields.Count

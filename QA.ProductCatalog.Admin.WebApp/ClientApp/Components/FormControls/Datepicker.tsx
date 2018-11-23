@@ -53,13 +53,13 @@ export class DatePicker extends ValidatableInput<DatePickerProps> {
     const { hasFocus, editValue } = this.state;
     const inputValue = hasFocus ? editValue : model[name] != null ? model[name] : null;
     return (
-      <div className={cn("pt-input-group", { "pt-fill": type !== "time" }, className)}>
+      <div className={cn("bp3-input-group", { "bp3-fill": type !== "time" }, className)}>
         <LocaleContext.Consumer>
           {locale => (
             <DateTime
               className="editor-datepicker"
               inputProps={{
-                className: "pt-input",
+                className: "bp3-input",
                 id,
                 placeholder,
                 disabled,
@@ -76,7 +76,7 @@ export class DatePicker extends ValidatableInput<DatePickerProps> {
             />
           )}
         </LocaleContext.Consumer>
-        <span className={cn("pt-icon", type === "time" ? "pt-icon-time" : "pt-icon-calendar")} />
+        <span className={cn("bp3-icon", type === "time" ? "bp3-icon-time" : "bp3-icon-calendar")} />
       </div>
     );
   }

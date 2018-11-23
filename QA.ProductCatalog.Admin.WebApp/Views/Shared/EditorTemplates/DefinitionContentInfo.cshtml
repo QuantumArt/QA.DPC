@@ -1,71 +1,78 @@
 ﻿@using QA.Core.Models.Configuration
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionContentInfo
-		   
+
 <div class="display-label">
-	@Html.LabelFor(x => x.Content.ContentId)
+  @Html.LabelFor(x => x.Content.ContentId)
 </div>
 <div class="display-field">
-	@Html.DisplayFor(x => x.Content.ContentId)
+  @Html.DisplayFor(x => x.Content.ContentId)
 </div>
 
 <div class="editor-label">
-	Настройки кеширования
+  Настройки кеширования
 </div>
 <div class="editor-field">
-	@if (Model.AlreadyCachedAsDictionary)
-	{
-		<span class="EditorNote">Контент уже кешируется как словарь</span>
-	}
-	else
-	{
-		@Html.CheckBox("Content.CacheEnabled", XmlMappingBehavior.GetCachePeriod(Model.Content) != null, new {onchange = "ChangeCachePeriodTxVisibility()", id = "cbCacheEnabled"})
-		<label for="cbCacheEnabled">Кешировать</label>
-		@Html.TextBox("Content.CachePeriod", XmlMappingBehavior.GetCachePeriod(Model.Content), new {id = "txCachePeriod"})
-	
-		<script>
-			function ChangeCachePeriodTxVisibility() {
-				var txCachePeriod = $("#txCachePeriod");
+  @if (Model.AlreadyCachedAsDictionary)
+  {
+    <span class="EditorNote">Контент уже кешируется как словарь</span>
+  }
+  else
+  {
+    @Html.CheckBox("Content.CacheEnabled", XmlMappingBehavior.GetCachePeriod(Model.Content) != null, new { onchange = "ChangeCachePeriodTxVisibility()", id = "cbCacheEnabled" })
+    <label for="cbCacheEnabled">Кешировать</label>
+    @Html.TextBox("Content.CachePeriod", XmlMappingBehavior.GetCachePeriod(Model.Content), new { id = "txCachePeriod" })
 
-				var cbCacheEnabled = $("#cbCacheEnabled");
+    <script>
+      function ChangeCachePeriodTxVisibility() {
+        var txCachePeriod = $("#txCachePeriod");
 
-				if (cbCacheEnabled[0].checked) {
-				
-					txCachePeriod.show();
+        var cbCacheEnabled = $("#cbCacheEnabled");
 
-					if (txCachePeriod.val() == "")
-						txCachePeriod.val("01:45:00");
+        if (cbCacheEnabled[0].checked) {
 
-				} else {
-					txCachePeriod.hide();
-				}
-			}
+          txCachePeriod.show();
 
-			ChangeCachePeriodTxVisibility();
-		</script>
-	}
+          if (txCachePeriod.val() == "")
+            txCachePeriod.val("01:45:00");
+
+        } else {
+          txCachePeriod.hide();
+        }
+      }
+
+      ChangeCachePeriodTxVisibility();
+    </script>
+  }
 </div>
 <div class="editor-label">
-	@Html.LabelFor(x => x.Content.ContentName)
+  @Html.LabelFor(x => x.Content.ContentName)
 </div>
 <div class="editor-field">
-	@Html.EditorFor(x => x.Content.ContentName)
+  @Html.EditorFor(x => x.Content.ContentName)
 </div>
 
 @if (!Model.IsFromDictionaries)
 {
-	<div class="editor-label">
-		@Html.LabelFor(x => x.Content.LoadAllPlainFields)
-	</div>
-	<div class="editor-field">
-		@Html.EditorFor(x => x.Content.LoadAllPlainFields)
-	</div>
+  <div class="editor-label">
+    @Html.LabelFor(x => x.Content.IsReadOnly)
+  </div>
+  <div class="editor-field">
+    @Html.EditorFor(x => x.Content.IsReadOnly)
+  </div>
 
-	<div class="editor-label">
-		@Html.LabelFor(x => x.Content.PublishingMode)
-	</div>
-	<div class="editor-field">
-		@Html.EnumDropDownListFor(x => x.Content.PublishingMode)
-	</div>
+  <div class="editor-label">
+    @Html.LabelFor(x => x.Content.LoadAllPlainFields)
+  </div>
+  <div class="editor-field">
+    @Html.EditorFor(x => x.Content.LoadAllPlainFields)
+  </div>
+
+  <div class="editor-label">
+    @Html.LabelFor(x => x.Content.PublishingMode)
+  </div>
+  <div class="editor-field">
+    @Html.EnumDropDownListFor(x => x.Content.PublishingMode)
+  </div>
 }
 
-@Html.HiddenFor(x=>x.IsFromDictionaries)
+@Html.HiddenFor(x => x.IsFromDictionaries)

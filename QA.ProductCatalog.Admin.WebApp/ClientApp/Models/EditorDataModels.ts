@@ -1,8 +1,8 @@
 import { IMSTMap, IStateTreeNode } from "mobx-state-tree";
-import { isObject, isString } from "Utils/TypeChecks";
+import { isObject } from "Utils/TypeChecks";
 import { ValidatableObject } from "mst-validation-mixin";
 
-export interface StoreObject {
+export interface TablesObject {
   readonly [contentName: string]: IMSTMap<any, any, EntityObject>;
 }
 
@@ -12,9 +12,7 @@ export interface ArticleObject
     IStateTreeNode<ArticleSnapshot, ArticleSnapshot> {
   [field: string]: any;
   /** Серверный Id статьи, полученный при сохранении в БД */
-  _ServerId: number;
-  /** .NET-название контента статьи `Quantumart.QP8.BLL.Content.NetName` */
-  readonly _ContentName: string;
+  _ServerId?: number;
   /** Дата создания или последнего изменения статьи `QA.Core.Models.Entities.Article.Modified` */
   _Modified?: Date;
   /** Признак того, что объект является статьей-расшиернием */
@@ -24,14 +22,14 @@ export interface ArticleObject
 export class ArticleObject {
   static _ClientId = "_ClientId";
   static _ServerId = "_ServerId";
-  static _ContentName = "_ContentName";
   static _Modified = "_Modified";
   static _IsExtension = "_IsExtension";
-  static _Contents = "_Contents";
+  static _Extension = "_Extension";
+  static _IsVirtual = "_IsVirtual";
 }
 
 export function isArticleObject(object: any): object is ArticleObject {
-  return isObject(object) && isString(object._ContentName);
+  return isObject(object) && ArticleObject._ServerId in object;
 }
 
 /** Объект, содержащий поля нормальной статьи */
@@ -44,6 +42,8 @@ export interface EntityObject extends ArticleObject {
   readonly _ClientId: number;
   /** Признак того, что объект не является статьей-расшиернием */
   readonly _IsExtension: false;
+  /** Признак того, что объект не должен быть сохранен на сервере */
+  _IsVirtual: boolean;
 }
 
 export function isEntityObject(object: any): object is EntityObject {
@@ -62,7 +62,7 @@ export function isExtensionObject(object: any): object is ExtensionObject {
 
 /**
  * Словарь, содержащий отображение названий контентов на статьи-расширения.
- * Используется в полях вида `Type_Contents`.
+ * Используется в полях вида `Type_Extension`.
  */
 export interface ExtensionDictionary {
   [contentName: string]: ExtensionObject;
@@ -72,7 +72,7 @@ export function isExtensionDictionary(object: any): object is ExtensionObject {
   return isObject(object) && Object.values(object).every(isExtensionObject);
 }
 
-export interface StoreSnapshot {
+export interface TablesSnapshot {
   readonly [contentName: string]: {
     readonly [articleId: string]: EntitySnapshot;
   };
@@ -80,8 +80,6 @@ export interface StoreSnapshot {
 
 export interface ArticleSnapshot {
   readonly [field: string]: any;
-  /** .NET-название контента статьи `Quantumart.QP8.BLL.Content.NetName` */
-  readonly _ContentName?: string;
   /** Серверный Id статьи, полученный при сохранении в БД */
   readonly _ServerId?: number;
   /** Дата создания или последнего изменения статьи `QA.Core.Models.Entities.Article.Modified` */
@@ -99,6 +97,8 @@ export interface EntitySnapshot extends ArticleSnapshot {
   readonly _ClientId: number;
   /** Признак того, что объект не является статьей-расшиернием */
   readonly _IsExtension?: false;
+  /** Признак того, что объект не должен быть сохранен на сервере */
+  readonly _IsVirtual?: boolean;
 }
 
 export interface ExtensionSnapshot extends ArticleSnapshot {

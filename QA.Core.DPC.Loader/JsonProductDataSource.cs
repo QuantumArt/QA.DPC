@@ -102,8 +102,8 @@ namespace QA.Core.DPC.Loader
 
         public override IProductDataSource GetExtensionContainer(string fieldName, string extensionContentName)
         {
-            // при десериализации для редактора используем объект [$"{fieldName}_Contents"][extensionContentName]
-            return GetContainer(ArticleObject._Contents(fieldName)).GetContainer(extensionContentName);
+            // при десериализации для редактора используем объект [$"{fieldName}_Extension"][extensionContentName]
+            return GetContainer(ArticleObject._Extension(fieldName)).GetContainer(extensionContentName);
         }
     }
 }

@@ -1,10 +1,18 @@
 import { action } from "mobx";
-import { types as t, unprotect, IModelType, onPatch, ModelProperties } from "mobx-state-tree";
+import {
+  types as t,
+  unprotect,
+  IModelType,
+  onPatch,
+  ModelProperties,
+  getType,
+  getSnapshot
+} from "mobx-state-tree";
 import { validationMixin } from "mst-validation-mixin";
 import { isNumber, isString, isIsoDateString, isBoolean } from "Utils/TypeChecks";
 import {
-  StoreObject,
-  StoreSnapshot,
+  TablesObject,
+  TablesSnapshot,
   EntityObject,
   EntitySnapshot,
   ArticleObject
@@ -23,41 +31,65 @@ import {
 
 type ModelType<S, T> = IModelType<ModelProperties, any, S, S, T>;
 
-export class DataContext {
+export class DataContext<TTables extends TablesObject = TablesObject> {
   private _nextId = -1;
   private _defaultSnapshots: DefaultSnapshots = null;
-  private _storeType: ModelType<StoreSnapshot, StoreObject> = null;
-  public store: StoreObject = null;
+  private _tablesType: ModelType<TablesSnapshot, TablesObject> = null;
+  public tables: TTables = null;
 
   public initSchema(mergedSchemas: ContentSchemasById) {
-    this._storeType = compileStoreType(mergedSchemas, () => this._nextId--);
+    this._tablesType = compileTablesType(mergedSchemas, () => this._nextId--);
     this._defaultSnapshots = compileDefaultSnapshots(mergedSchemas);
   }
 
-  public initStore(storeSnapshot: StoreSnapshot) {
-    this.store = this._storeType.create(storeSnapshot);
-    if (DEBUG) {
-      onPatch(this.store, patch => console.log(patch));
-    }
+  public initTables(tablesSnapshot: TablesSnapshot) {
+    this.tables = this._tablesType.create(tablesSnapshot) as TTables;
+
     // разрешаем изменения моделей из других сервисов и компонентов
-    unprotect(this.store);
+    unprotect(this.tables);
+
+    if (DEBUG) {
+      // отладочный вывод в консоль
+      const tables = this.tables;
+      class SnapshotView {
+        get snapshot() {
+          return getSnapshot(tables);
+        }
+      }
+      const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+      if (isChrome) {
+        onPatch(this.tables, patch => console.log(patch, new SnapshotView()));
+      } else {
+        onPatch(this.tables, patch => console.log(patch));
+      }
+    }
   }
 
   @action
-  public createArticle<T extends EntityObject = EntityObject>(contentName: string): T {
-    const article = this.getContentType(contentName).create({
+  public createEntity<T extends EntityObject = EntityObject>(
+    contentName: string,
+    properties?: { [key: string]: any }
+  ): T {
+    const entity = this.getContentType(contentName).create({
       _ClientId: this._nextId,
-      ...this._defaultSnapshots[contentName]
+      ...this._defaultSnapshots[contentName],
+      ...properties
     }) as T;
 
-    this.store[contentName].put(article);
-    return article;
+    this.tables[contentName].put(entity);
+    return entity;
+  }
+
+  @action
+  public deleteEntity(entity: EntityObject) {
+    const contentName = getType(entity).name;
+    this.tables[contentName].delete(String(entity._ClientId));
   }
 
   private getContentType(contentName: string): ModelType<EntitySnapshot, EntityObject> {
-    const optionalType = this._storeType.properties[contentName];
+    const optionalType = this._tablesType.properties[contentName];
     if (!optionalType) {
-      throw new TypeError(`Content "${contentName}" is not defined in this Store schema`);
+      throw new TypeError(`Content "${contentName}" is not defined in this Tables schema`);
     }
     // @ts-ignore
     return optionalType.type.subType;
@@ -68,7 +100,7 @@ export class DataContext {
  * Компилирует MobX-модели из нормализованных схем контентов
  * @example
  *
- * interface Store {
+ * interface Tables {
  *   Product: Map<string, Product>;
  *   Region: Map<string, Region>;
  * }
@@ -83,7 +115,7 @@ export class DataContext {
  *   Parent: Region;
  * }
  */
-function compileStoreType(
+function compileTablesType(
   mergedSchemas: { [name: string]: ContentSchema },
   getNextId: () => number
 ) {
@@ -103,7 +135,6 @@ function compileStoreType(
         // для каждого контента-расширения создаем словарь его полей
         const extFieldModels = {
           _ServerId: t.optional(t.number, getNextId),
-          _ContentName: t.optional(t.literal(extName), extName),
           _Modified: t.maybeNull(t.Date),
           _IsExtension: t.optional(t.literal(true), true)
         };
@@ -117,7 +148,7 @@ function compileStoreType(
       });
       // создаем анонимную модель словаря контентов-расширений
       // prettier-ignore
-      fieldModels[`${field.FieldName}${ArticleObject._Contents}`] = t.optional(
+      fieldModels[`${field.FieldName}${ArticleObject._Extension}`] = t.optional(
         t.model(extContentModels), {}
       );
     } else if (isSingleRelationField(field)) {
@@ -174,9 +205,9 @@ function compileStoreType(
       const fieldModels = {
         _ClientId: t.identifierNumber,
         _ServerId: t.optional(t.number, getNextId),
-        _ContentName: t.optional(t.literal(content.ContentName), content.ContentName),
         _Modified: t.maybeNull(t.Date),
-        _IsExtension: t.optional(t.literal(false), false)
+        _IsExtension: t.optional(t.literal(false), false),
+        _IsVirtual: t.optional(t.boolean, false)
       };
       // заполняем поля модели объекта
       Object.values(content.Fields).forEach(field => visitField(field, fieldModels));
@@ -208,7 +239,7 @@ interface DefaultSnapshots {
  * {
  *   Product: {
  *     Type: "InternetTariff",
- *     Type_Contents: {
+ *     Type_Extension: {
  *       InternetTariff: {
  *         Description: "Тариф интернет"
  *       }
@@ -243,7 +274,7 @@ function compileDefaultSnapshots(mergedSchemas: { [name: string]: ContentSchema 
       });
       // запоминаем объект со со снапшотами контентов-расширений, если они определены
       if (Object.keys(extContentSnapshots).length > 0) {
-        fieldValues[`${field.FieldName}${ArticleObject._Contents}`] = extContentSnapshots;
+        fieldValues[`${field.FieldName}${ArticleObject._Extension}`] = extContentSnapshots;
       }
     } else if (isPlainField(field)) {
       switch (field.FieldType) {

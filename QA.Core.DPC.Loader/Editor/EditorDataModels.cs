@@ -19,10 +19,6 @@ namespace QA.Core.DPC.Loader.Editor
         /// </summary>
         internal const string _ServerId = "_ServerId";
         /// <summary>
-        /// Имя поля для .NET-названия контента статьи <see cref="Quantumart.QP8.BLL.Content.NetName" />.
-        /// </summary>
-        internal const string _ContentName = "_ContentName";
-        /// <summary>
         /// Имя поля для даты создания или последнего изменения статьи <see cref="Models.Entities.Article.Modified"/>.
         /// </summary>
         internal const string _Modified = "_Modified";
@@ -31,9 +27,13 @@ namespace QA.Core.DPC.Loader.Editor
         /// </summary>
         internal const string _IsExtension = "_IsExtension";
         /// <summary>
+        /// Признак того, что объект не должен быть сохранен на сервере
+        /// </summary>
+        internal const string _IsVirtual = "_IsVirtual";
+        /// <summary>
         /// Имя поля для словаря, группирующего поля расширений по имени контента-расширения.
         /// </summary>
-        internal static string _Contents(string prop) => $"{prop}_Contents";
+        internal static string _Extension(string prop) => $"{prop}_Extension";
     }
     
     /// <summary>

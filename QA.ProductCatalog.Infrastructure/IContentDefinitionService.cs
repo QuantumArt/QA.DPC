@@ -4,11 +4,17 @@ namespace QA.ProductCatalog.Infrastructure
 {
     public interface IContentDefinitionService
     {
-        Content GetDefinitionForContent(int productTypeId, int contentId, bool isLive = false);
-
 		Content[] GetDefinitions(bool isLive = false);
 
         Content GetDefinitionById(int productDefinitionId, bool isLive = false);
+
+        Content GetDefinitionForContent(int productTypeId, int contentId, bool isLive = false);
+        
+        /// <returns><see cref="Content"/> or null</returns>
+        Content TryGetDefinitionById(int productDefinitionId, bool isLive = false);
+
+        /// <returns><see cref="Content"/> or null</returns>
+        Content TryGetDefinitionForContent(int productTypeId, int contentId, bool isLive = false);
 
         string GetControlDefinition(int contentId, int productTypeId);
 

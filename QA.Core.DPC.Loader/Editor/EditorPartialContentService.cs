@@ -26,7 +26,8 @@ namespace QA.Core.DPC.Loader.Editor
         /// в формате <c>"/FieldName/.../ExtensionContentName/.../FieldName"</c>
         /// </summary>
         /// <exception cref="InvalidOperationException" />
-        public Content FindContentByPath(Content rootContent, string contentPath, bool withDictionaries = false)
+        public Content FindContentByPath(
+            Content rootContent, string contentPath, bool withDictionaries = false, bool forClone = false)
         {
             if (rootContent == null) throw new ArgumentNullException(nameof(rootContent));
             if (contentPath == null) throw new ArgumentNullException(nameof(contentPath));
@@ -47,7 +48,14 @@ namespace QA.Core.DPC.Loader.Editor
 
                 if (field is EntityField entityField)
                 {
-                    content = entityField.Content;
+                    if (forClone && i == pathSegments.Length - 1)
+                    {
+                        content = entityField.CloneDefinition ?? entityField.Content;
+                    }
+                    else
+                    {
+                        content = entityField.Content;
+                    }
                     continue;
                 }
                 if (field is ExtensionField extensionField && i + 1 < pathSegments.Length)

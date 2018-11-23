@@ -18,16 +18,25 @@ namespace QA.Core.ProductCatalog.Actions
 		private const string FieldIdParameterKey = "FieldId";
 		private const string ArticleIdParameterKey = "ArticleId";
 
-		private ICacheItemWatcher _cacheItemWatcher;
-		public List<int> Ids { get; private set; }
+        private readonly IContentDefinitionService _definitionService;
+        private readonly ICacheItemWatcher _cacheItemWatcher;
 
-        public CloneBatchAction(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, ICacheItemWatcher cacheItemWatcher)
+		public List<int> Ids { get; } = new List<int>();
+
+        public CloneBatchAction(
+            IArticleService articleService,
+            IFieldService fieldService,
+            IProductService productService,
+            ILogger logger,
+            Func<ITransaction> createTransaction,
+            IContentDefinitionService definitionService,
+            ICacheItemWatcher cacheItemWatcher)
 			: base(articleService, fieldService, productService, logger, createTransaction)
 		{
-			_cacheItemWatcher = cacheItemWatcher;
-			Ids = new List<int>();
+            _definitionService = definitionService;
+            _cacheItemWatcher = cacheItemWatcher;
 		}
-
+        
 		#region Overrides
 		protected override void OnStartProcess()
 		{
@@ -36,32 +45,72 @@ namespace QA.Core.ProductCatalog.Actions
 
 		protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
 		{
-            var clearFieldIds = actionParameters.GetClearFieldIds();
+            int? clonedProductId = CloneProductImpl(productId, null, actionParameters);
 
-            _cacheItemWatcher.TrackChanges();
-
-			ArticleService.LoadStructureCache();
-
-			var article = ArticleService.Read(productId);
-
-			if (Filter(article))
-			{
-				if (!ArticleService.CheckRelationSecurity(article.ContentId, new int[] { productId }, false)[productId])
-					throw new ProductException(productId, "Операция недопустима из-за недостаточных прав доступа по связям");
-
-				var definition = Productservice.GetProductDefinition(0, article.ContentId);
-				UpdateDefinition(article, definition, actionParameters);
-
-				var dictionary = GetProductsToBeProcessed<CloningMode>(article, definition, ef => ef.CloningMode, CloningMode.Copy, Filter, true);
-				var missedAggArticles = PrepareProducts(dictionary, clearFieldIds);
-				MapProducts(dictionary[productId], dictionary);
-				int id = SaveProducts(productId, dictionary, missedAggArticles);
-				Ids.Add(id);
-			}
-		}
+            if (clonedProductId != null)
+            {
+                Ids.Add(clonedProductId.Value);
+            }
+        }
 		#endregion		
 
-		#region Private methods
+        public int? CloneProduct(
+            int productId, Models.Configuration.Content contentDefinition, Dictionary<string, string> actionParameters)
+        {
+            using (var transaction = CreateTransaction())
+            {
+                int? clonedProductId = CloneProductImpl(productId, contentDefinition, actionParameters);
+                transaction.Commit();
+                return clonedProductId;
+            }
+        }
+
+        #region Private methods
+        private int? CloneProductImpl(
+            int productId, Models.Configuration.Content contentDefinition, Dictionary<string, string> actionParameters)
+        {
+            _cacheItemWatcher.TrackChanges();
+
+            ArticleService.LoadStructureCache();
+
+            var article = ArticleService.Read(productId);
+
+            if (!Filter(article))
+            {
+                return null;
+            }
+
+            if (!ArticleService.CheckRelationSecurity(article.ContentId, new[] { productId }, false)[productId])
+            {
+                throw new ProductException(productId,
+                    "Операция недопустима из-за недостаточных прав доступа по связям");
+            }
+
+            if (contentDefinition == null)
+            {
+                contentDefinition = _definitionService.GetDefinitionForContent(0, article.ContentId);
+            }
+            if (actionParameters == null)
+            {
+                actionParameters = new Dictionary<string, string>();
+            }
+
+            var productDefinition = new ProductDefinition { StorageSchema = contentDefinition };
+
+            UpdateDefinition(article, productDefinition, actionParameters);
+
+            var productsById = GetProductsToBeProcessed(
+                article, productDefinition, ef => ef.CloningMode, CloningMode.Copy, Filter, excludeArchive: true);
+
+            var clearFieldIds = actionParameters.GetClearFieldIds();
+
+            var missedAggArticles = PrepareProducts(productsById, clearFieldIds);
+
+            MapProducts(productsById[productId], productsById);
+
+            return SaveProducts(productId, productsById, missedAggArticles);
+        }
+        
 		private static bool Filter(Article article)
 		{
 			return !article.Archived;

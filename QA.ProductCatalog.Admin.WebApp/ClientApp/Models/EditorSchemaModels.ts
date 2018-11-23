@@ -1,4 +1,5 @@
 import { isObject, isInteger } from "Utils/TypeChecks";
+import { EntityObject, ArticleObject } from "Models/EditorDataModels";
 
 export interface ContentSchema {
   readonly ContentId: number;
@@ -7,11 +8,28 @@ export interface ContentSchema {
   readonly ContentTitle?: string;
   readonly ContentDescription?: string;
   readonly DisplayFieldName?: string;
+  /** Используется только для чтения */
+  readonly IsReadOnly: boolean;
   /** Используется только в качестве расширения */
   readonly ForExtension: boolean;
   readonly Fields: {
     readonly [name: string]: FieldSchema;
   };
+
+  /** @see SchemaCompiler*/
+
+  /** Была ли отредактирована хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
+  isEdited(article: ArticleObject): boolean;
+  /** Получала ли фокус хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
+  isTouched(article: ArticleObject): boolean;
+  /** Была ли изменена хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
+  isChanged(article: ArticleObject): boolean;
+  /** Имеет ли ошибки хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
+  hasErrors(article: ArticleObject): boolean;
+  /** Имеет ли видимые ошибки хотя бы одна статья, входящая в продукт на основе обхода полей схемы */
+  hasVisibleErrors(article: ArticleObject): boolean;
+  /** Получить максимальную дату модификации по всем статьям, входящим в продукт, на основе обхода полей схемы */
+  getLastModified(article: ArticleObject): Date;
 }
 
 export function isContent(content: any): content is ContentSchema {
@@ -30,7 +48,7 @@ export interface FieldSchema {
   readonly ViewInList: boolean;
   readonly DefaultValue?: any;
   readonly ClassNames: string[];
-  readonly ParentContent: ContentSchema;
+  ParentContent: ContentSchema;
 }
 
 export function isField(field: any): field is FieldSchema {
@@ -116,26 +134,34 @@ interface StringEnumItem {
 
 export interface RelationFieldSchema extends FieldSchema {
   readonly RelatedContent: ContentSchema;
-  readonly CloningMode: CloningMode;
-  readonly UpdatingMode: UpdatingMode;
   readonly IsDpcBackwardField: boolean;
   readonly RelationCondition: string;
   readonly DisplayFieldNames: string[];
+  readonly UpdatingMode: UpdatingMode;
+  readonly PreloadingMode: PreloadingMode;
+  PreloadedArticles?: ReadonlyArray<EntityObject>;
+  PreloadingState?: PreloadingState;
 }
 
 export function isRelationField(field: any): field is RelationFieldSchema {
   return isField(field) && field.ClassNames.includes("RelationFieldSchema");
 }
 
-export enum CloningMode {
-  Ignore = "Ignore",
-  UseExisting = "UseExisting",
-  Copy = "Copy"
-}
-
 export enum UpdatingMode {
   Ignore = "Ignore",
   Update = "Update"
+}
+
+export enum PreloadingMode {
+  None = "None",
+  Eager = "Eager",
+  Lazy = "Lazy"
+}
+
+export enum PreloadingState {
+  NotStarted = "NotStarted",
+  Loading = "Loading",
+  Done = "Done"
 }
 
 export interface SingleRelationFieldSchema extends RelationFieldSchema {}

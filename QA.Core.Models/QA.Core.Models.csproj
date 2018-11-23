@@ -296,6 +296,7 @@
     <Compile Include="Configuration\Field.cs" />
     <Compile Include="Configuration\LoadingOption.cs" />
     <Compile Include="Configuration\NumberType.cs" />
+    <Compile Include="Configuration\PreloadingMode.cs" />
     <Compile Include="Configuration\PublishingMode.cs" />
     <Compile Include="Configuration\UpdatingMode.cs" />
     <Compile Include="Configuration\VirtualMultiEntityField.cs" />

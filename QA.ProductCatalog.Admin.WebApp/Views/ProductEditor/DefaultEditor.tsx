@@ -1,7 +1,7 @@
 ﻿import "Environment";
 import React from "react";
 import ReactDOM from "react-dom";
-import { LocaleContext } from "Packages/react-lazy-i18n";
+import { LocaleContext } from "react-lazy-i18n";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { ProductEditor } from "Components/ProductEditor/ProductEditor";
 import { RelationFieldTags } from "Components/FieldEditors/FieldEditors";
@@ -9,7 +9,7 @@ import { RelationFieldTags } from "Components/FieldEditors/FieldEditors";
 const App = () => (
   <LocaleContext.Provider value="ru">
     <ProductEditor
-      settings={window["ProductEditorSettings"]}
+      editorSettings={window["ProductEditorSettings"]}
       relationEditors={{
         Region: RelationFieldTagsDefault,
         Group: RelationFieldTagsDefault,
@@ -25,11 +25,10 @@ const App = () => (
     >
       {(model, contentSchema) => (
         <EntityEditor
+          withHeader
           model={model}
           contentSchema={contentSchema}
           titleField={p => p.MarketingProduct && p.MarketingProduct.Title}
-          header
-          buttons
         />
       )}
     </ProductEditor>
@@ -37,7 +36,7 @@ const App = () => (
 );
 
 const RelationFieldTagsDefault = props => (
-  <RelationFieldTags displayField="Title" orderByField="Title" {...props} />
+  <RelationFieldTags displayField="Title" sortItemsBy="Title" {...props} />
 );
 
 ReactDOM.render(<App />, document.getElementById("editor"));

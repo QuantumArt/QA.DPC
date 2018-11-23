@@ -10,6 +10,8 @@ namespace QA.ProductCatalog.ImpactService
         {
 
         }
+        
+        
 
         public JObject Calculate(JObject option, string countryCode)
         {
@@ -18,8 +20,9 @@ namespace QA.ProductCatalog.ImpactService
             return option;
         }
 
-        public JObject Calculate(JObject roamingScale, JObject[] options, string countryCode, JObject homeRegionData)
+        public JObject Calculate(JObject roamingScale, JObject tariff, JObject[] options, string countryCode, JObject homeRegionData)
         {
+            MergeLinkImpactToRoamingScale(roamingScale, tariff);
             FilterByCountryCode(roamingScale, countryCode);
             foreach (var option in options)
             {
@@ -60,7 +63,7 @@ namespace QA.ProductCatalog.ImpactService
                 foreach (var zp in zoneParameters)
                 {
                     var codes = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@.Country)].Country.Code").Select(n => n.ToString()));
-                    var aliases = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@Alias)].Alias").Select(n => n.ToString()));
+                    var aliases = new HashSet<string>(zp.SelectTokens("Zone.RoamingCountries.[?(@.Alias)].Alias").Select(n => n.ToString()));
                     if (codes.Contains(countryCode) || aliases.Contains(countryCode))
                     {
                         countryParams.Add((int)zp["Id"], zp);
@@ -93,6 +96,28 @@ namespace QA.ProductCatalog.ImpactService
                     zp["Zone"] = null;
                 }
             }
+        }
+        
+        public void MergeLinkImpactToRoamingScale(JObject scale, JObject tariff)
+        {
+            int scaleId = (int) scale["Id"];
+
+            var link = tariff?
+                .SelectTokens($"RoamingScalesOnTariff.[?(@.RoamingScale)]")
+                .Where(n => n.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{LinkModifierName}')]").Any())                
+                .FirstOrDefault(n => (int)n.SelectToken("RoamingScale.Id") == scaleId)
+                ?.SelectToken("Parent");
+
+            if (link == null)
+                return;
+
+            var scaleParameters = (JArray)scale.SelectToken("Parameters");
+            var scaleLinkParameters = (JArray)link.SelectToken("Parameters");
+            if (scaleLinkParameters == null) return;
+
+            MergeLinkImpact(scaleParameters, scaleLinkParameters);
+            ProcessRemoveModifier(scaleParameters);
+
         }
     }
 }

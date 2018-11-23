@@ -5,20 +5,22 @@ import { observer } from "mobx-react";
 import { ArticleObject } from "Models/EditorDataModels";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { InputFile } from "Components/FormControls/FormControls";
-import { AbstractFieldEditor } from "./AbstractFieldEditor";
-import { consumer, inject } from "react-ioc";
+import { AbstractFieldEditor, FieldEditorProps } from "./AbstractFieldEditor";
+import { inject } from "react-ioc";
 import { FileController } from "Services/FileController";
 import { action } from "mobx";
 
-// TODO: загрузка файлов на сервер
+interface FileFieldEditorProps extends FieldEditorProps {
+  /** Опциональный подкаталог, который добавляется справа к `fieldSchema.SubFolder` */
+  customSubFolder?: string;
+}
 
-@consumer
 @observer
-export class FileFieldEditor extends AbstractFieldEditor {
+export class FileFieldEditor extends AbstractFieldEditor<FileFieldEditorProps> {
   @inject private _fileController: FileController;
 
   @action
-  previewImage = () => {
+  private previewImage = () => {
     const { model, fieldSchema } = this.props;
     const fileName = model[fieldSchema.FieldName];
     if (fileName) {
@@ -27,7 +29,7 @@ export class FileFieldEditor extends AbstractFieldEditor {
   };
 
   @action
-  downloadFile = () => {
+  private downloadFile = () => {
     const { model, fieldSchema } = this.props;
     const fileName = model[fieldSchema.FieldName];
     if (fileName) {
@@ -36,46 +38,58 @@ export class FileFieldEditor extends AbstractFieldEditor {
   };
 
   @action
-  selectFile = () => {
-    const { model, fieldSchema } = this.props;
-    this._fileController.selectFile(model, fieldSchema as FileFieldSchema);
+  private selectFile = () => {
+    const { model, fieldSchema, readonly, customSubFolder } = this.props;
+    if (!readonly) {
+      this._fileController.selectFile(model, fieldSchema as FileFieldSchema, customSubFolder);
+    }
   };
 
   renderField(model: ArticleObject, fieldSchema: FileFieldSchema) {
     return (
       <Col xl md={6} className="file-field-editor">
-        <div className="pt-control-group pt-fill">
+        <div className="bp3-control-group bp3-fill">
           <InputFile
-            id={this.id}
+            id={this._id}
             model={model}
             name={fieldSchema.FieldName}
-            disabled={fieldSchema.IsReadOnly}
+            placeholder={this.getPlaceholder()}
+            disabled={this._readonly}
             readOnly={true}
             accept={fieldSchema.FieldType === FieldExactTypes.Image ? "image/*" : ""}
             className={cn({
-              "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-              "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+              "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+              "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
             })}
           />
           {fieldSchema.FieldType === FieldExactTypes.Image && (
             <button
-              className="pt-button pt-icon-media"
+              className="bp3-button bp3-icon-media"
               title="Просмотр"
               onClick={this.previewImage}
             />
           )}
           <button
-            className="pt-button pt-icon-cloud-download"
+            className="bp3-button bp3-icon-cloud-download"
             title="Скачать"
             onClick={this.downloadFile}
           />
           <button
-            className="pt-button pt-icon-folder-close"
+            className="bp3-button bp3-icon-folder-close"
             title="Библиотека"
             onClick={this.selectFile}
           />
         </div>
       </Col>
     );
+  }
+
+  private getPlaceholder() {
+    const { customSubFolder } = this.props;
+    return customSubFolder
+      ? customSubFolder.endsWith("/")
+        ? customSubFolder
+        : customSubFolder + "/"
+      : "";
   }
 }

@@ -4,6 +4,7 @@ import ReactSelect, { ReactSelectProps, Option } from "react-select";
 import { action, isObservableArray } from "mobx";
 import { observer } from "mobx-react";
 import { ValidatableControl } from "./AbstractControls";
+import { isStateTreeNode, getIdentifier, getSnapshot } from "mobx-state-tree";
 
 interface SelectProps extends ReactSelectProps {
   required?: boolean;
@@ -28,10 +29,28 @@ export class Select extends ValidatableControl<SelectProps> {
   }
 
   render() {
-    const { model, name, onFocus, onChange, onBlur, required, multiple, ...props } = this.props;
+    const {
+      model,
+      name,
+      onFocus,
+      onChange,
+      onBlur,
+      required,
+      multiple,
+      placeholder = "",
+      ...props
+    } = this.props;
     let value = model[name];
     if ((multiple || props.multi) && isObservableArray(value)) {
-      value = value.peek();
+      if (isStateTreeNode(value)) {
+        value = getSnapshot(value);
+      } else {
+        value = value.peek();
+      }
+    } else {
+      if (isStateTreeNode(value)) {
+        value = getIdentifier(value);
+      }
     }
     return (
       <ReactSelect
@@ -39,6 +58,7 @@ export class Select extends ValidatableControl<SelectProps> {
         onFocus={this.handleFocus}
         onChange={this.handleChange}
         onBlur={this.handleBlur}
+        placeholder={placeholder}
         clearable={!required}
         multi={multiple}
         {...props}

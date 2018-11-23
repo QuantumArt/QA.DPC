@@ -28,7 +28,7 @@
     if (Model is DefinitionFieldInfo || (!Model.InDefinition && !(Model is DefinitionContentInfo && ((DefinitionContentInfo)Model).IsFromDictionaries)))
     {
         <div class="editor-label">
-            @Html.LabelFor(x => x.InDefinition)
+            @Html.LabelFor(x => x.InDefinition, new { @for = "inDefinitionCheckbox" })
         </div>
         <div class="editor-field">
             @Html.CheckBoxFor(x => x.InDefinition, new { id = "inDefinitionCheckbox", onchange = "DefinitionEditor.ShowOrHideFieldProps()" })

@@ -25,7 +25,8 @@
     "baseUrl": ".",
     "paths": {
       "*": ["*", "ClientApp/*", "ClientApp/Packages/*"]
-    }
+    },
+    "outDir": "Scripts/Bundles"
   },
   "include": ["ClientApp/**/*", "Views/**/*"]
 }

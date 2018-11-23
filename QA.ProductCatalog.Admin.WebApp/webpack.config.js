@@ -37,6 +37,7 @@ module.exports = (env, argv) => ({
     extensions: [".js", ".ts", ".jsx", ".tsx"],
     plugins: [
       new TsconfigPathsPlugin({
+        extensions: [".js", ".ts", ".jsx", ".tsx"],
         configFile: path.resolve(__dirname, "tsconfig.json")
       })
     ]

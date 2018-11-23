@@ -1,121 +1,120 @@
 import React, { Fragment } from "react";
-import { Col } from "react-flexbox-grid";
-import { action, IObservableArray } from "mobx";
-import { observer } from "mobx-react";
-import { consumer } from "react-ioc";
 import cn from "classnames";
+import { Col } from "react-flexbox-grid";
+import { action, IObservableArray, computed, untracked } from "mobx";
+import { observer } from "mobx-react";
 import { ArticleObject, EntityObject } from "Models/EditorDataModels";
 import { MultiRelationFieldSchema } from "Models/EditorSchemaModels";
-import { asc } from "Utils/Array/Sort";
-import { isString } from "Utils/TypeChecks";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
-import { FieldSelector } from "../AbstractFieldEditor";
+
+import { EntityComparer } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTags, RelationFieldTagsProps } from "./AbstractRelationFieldTags";
 
-interface MultiRelationFieldTagsState {
-  selectedIds: {
-    [articleId: number]: boolean;
-  };
-}
-
-@consumer
 @observer
 export class MultiRelationFieldTags extends AbstractRelationFieldTags {
-  private _orderByField: FieldSelector;
-  readonly state: MultiRelationFieldTagsState = {
-    selectedIds: {}
+  static defaultProps = {
+    filterItems: () => true
   };
+
+  private _entityComparer: EntityComparer;
+
+  @computed
+  private get dataSource() {
+    const { model, fieldSchema, filterItems, validateItems } = this.props;
+    const array: EntityObject[] = model[fieldSchema.FieldName];
+    if (!array) {
+      return array;
+    }
+    if (!validateItems) {
+      return array.filter(filterItems).sort(this._entityComparer);
+    }
+    const head: EntityObject[] = [];
+    const tail: EntityObject[] = [];
+
+    array.filter(filterItems).forEach(entity => {
+      const itemError = untracked(() =>
+        this._validationCache.getOrAdd(entity, () => validateItems(entity))
+      );
+      if (itemError) {
+        head.push(entity);
+      } else {
+        tail.push(entity);
+      }
+    });
+
+    head.sort(this._entityComparer);
+    tail.sort(this._entityComparer);
+
+    return head.concat(tail);
+  }
 
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
-    const {
-      fieldSchema,
-      orderByField = (fieldSchema as MultiRelationFieldSchema).OrderByFieldName ||
-        ArticleObject._ServerId
-    } = props;
-    this._orderByField = isString(orderByField) ? article => article[orderByField] : orderByField;
+    const { sortItems, sortItemsBy } = props;
+    const fieldSchema = props.fieldSchema as MultiRelationFieldSchema;
+    this._entityComparer = this.makeEntityComparer(sortItems || sortItemsBy, fieldSchema);
   }
 
   @action
-  private clearRelation = () => {
-    const { model, fieldSchema } = this.props;
-    this.setState({ selectedIds: {} });
-    model[fieldSchema.FieldName] = [];
-    model.setTouched(fieldSchema.FieldName, true);
-  };
-
-  @action
-  private removeRelation(e: any, article: EntityObject) {
+  private detachEntity(e: any, entity: EntityObject) {
     e.stopPropagation();
     const { model, fieldSchema } = this.props;
-    const { selectedIds } = this.state;
-    delete selectedIds[article._ClientId];
-    this.setState({ selectedIds });
     const array: IObservableArray<EntityObject> = model[fieldSchema.FieldName];
     if (array) {
-      array.remove(article);
+      array.remove(entity);
       model.setTouched(fieldSchema.FieldName, true);
     }
   }
 
-  private toggleRelation(e: any, article: EntityObject) {
-    const { selectMultiple, onClick } = this.props;
-    if (onClick) {
-      let { selectedIds } = this.state;
-      if (selectedIds[article._ClientId]) {
-        delete selectedIds[article._ClientId];
-      } else {
-        if (selectMultiple) {
-          selectedIds[article._ClientId] = true;
-        } else {
-          selectedIds = { [article._ClientId]: true };
-        }
-      }
-      this.setState({ selectedIds });
-      onClick(e, article);
-    }
-  }
+  @action
+  private clearRelations = () => {
+    const { model, fieldSchema } = this.props;
+    this.setState({ selectedIds: {} });
+    model[fieldSchema.FieldName].replace([]);
+    model.setTouched(fieldSchema.FieldName, true);
+  };
 
   private selectRelations = async () => {
     const { model, fieldSchema } = this.props;
     await this._relationController.selectRelations(model, fieldSchema as MultiRelationFieldSchema);
   };
 
-  renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
-    const { selectedIds } = this.state;
-    const list: EntityObject[] = model[fieldSchema.FieldName];
-    const isEmpty = !list || list.length === 0;
+  renderField(_model: ArticleObject, _fieldSchema: MultiRelationFieldSchema) {
+    const { relationActions } = this.props;
+    const dataSource = this.dataSource;
+    const isEmpty = !dataSource || dataSource.length === 0;
     return (
       <Col md className="relation-field-list__tags">
         <RelationFieldMenu
-          onSelect={this._canEditRelation && this.selectRelations}
-          onClear={this._canEditRelation && !isEmpty && this.clearRelation}
-        />
-        {list &&
-          list
-            .slice()
-            .sort(asc(this._orderByField))
-            .map(article => (
-              <Fragment key={article._ClientId}>
+          onSelect={!this._readonly && this.selectRelations}
+          onClear={!this._readonly && !isEmpty && this.clearRelations}
+        >
+          {relationActions && relationActions()}
+        </RelationFieldMenu>
+        {dataSource &&
+          dataSource.map(entity => {
+            const itemError = this._validationCache.get(entity);
+            return (
+              <Fragment key={entity._ClientId}>
                 {" "}
                 <span
-                  onClick={e => this.toggleRelation(e, article)}
-                  className={cn("pt-tag pt-minimal pt-interactive", {
-                    "pt-tag-removable": this._canEditRelation,
-                    "pt-intent-primary": selectedIds[article._ClientId]
+                  className={cn("bp3-tag bp3-minimal", {
+                    "bp3-intent-danger": !!itemError
                   })}
+                  title={itemError}
                 >
-                  {this.getTitle(article)}
-                  {this._canEditRelation && (
+                  {this.getTitle(entity)}
+                  {!this._readonly && (
                     <button
-                      className="pt-tag-remove"
-                      title="Удалить"
-                      onClick={e => this.removeRelation(e, article)}
+                      className="bp3-tag-remove"
+                      title="Отвязать"
+                      onClick={e => this.detachEntity(e, entity)}
                     />
                   )}
                 </span>
               </Fragment>
-            ))}
+            );
+          })}
       </Col>
     );
   }

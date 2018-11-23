@@ -1,5 +1,7 @@
 import { isObservableArray } from "mobx";
 
+export type Mutable<T> = { [k in keyof T]: Mutable<T[k]> };
+
 export function isString(arg): arg is string {
   return typeof arg === "string";
 }
@@ -38,6 +40,10 @@ export function isPlainObject(arg): arg is Object {
   return false;
 }
 
+export function isPromiseLike<T = any>(arg): arg is PromiseLike<T> {
+  return isObject(arg) && isFunction(arg.then);
+}
+
 export function isSingleKeyObject(arg): arg is Object {
   if (!isObject(arg)) {
     return false;
@@ -49,6 +55,10 @@ export function isSingleKeyObject(arg): arg is Object {
     }
   }
   return count === 1;
+}
+
+export function isNullOrWhiteSpace(arg): arg is null | string {
+  return arg == null || (isString(arg) && /^\s*$/.test(arg));
 }
 
 // Примеры для проверки

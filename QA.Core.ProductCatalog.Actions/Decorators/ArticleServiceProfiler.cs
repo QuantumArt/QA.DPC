@@ -53,6 +53,13 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
             return result;
         }
 
+        public virtual IEnumerable<int> Ids(int contentId, int[] ids, bool excludeArchive = true, string filter = "")
+        {
+            var token = CallMethod("Ids", "contentId = {0}, ids = {1}", contentId, string.Join(",", ids));
+            var result = _articleService.Ids(contentId, ids, excludeArchive);
+            EndMethod(token, "IEnumerable<int>");
+            return result;
+        }
 
         public IEnumerable<Article> List(int contentId, int[] ids, bool excludeArchive = true, string filter = "")
 		{

@@ -1,22 +1,22 @@
-.pt-tabs {
+.bp3-tabs {
   margin-top: 10px;
 }
 
-.pt-tabs:not(.pt-vertical) {
-  > .pt-tab-list {
+.bp3-tabs:not(.bp3-vertical) {
+  > .bp3-tab-list {
     flex-wrap: wrap;
 
-    > .pt-tab-indicator-wrapper {
+    > .bp3-tab-indicator-wrapper {
       z-index: 1;
 
-      > .pt-tab-indicator {
+      > .bp3-tab-indicator {
         bottom: -1px;
         right: -2px;
         background-color: #5c7080;
       }
     }
 
-    > .pt-tab {
+    > .bp3-tab {
       display: flex;
       align-items: center;
       min-height: 30px;
@@ -40,7 +40,7 @@
         color: inherit;
       }
 
-      > .pt-icon {
+      > .bp3-icon {
         color: #5c7080;
 
         &:first-child {
@@ -53,21 +53,21 @@
       }
     }
 
-    &.pt-large {
-      > .pt-tab {
+    &.bp3-large {
+      > .bp3-tab {
         min-height: 40px;
       }
     }
   }
 
-  > .pt-tab-panel {
+  > .bp3-tab-panel {
     margin-top: -2px;
     border-top-left-radius: 0;
   }
 }
 
-.pt-tabs.pt-vertical {
-  > .pt-tab-panel {
+.bp3-tabs.bp3-vertical {
+  > .bp3-tab-panel {
     flex: 1 1 0%;
     padding-left: 0;
     margin-left: 8px;
@@ -76,7 +76,7 @@
   }
 }
 
-.pt-tab {
+.bp3-tab {
   padding: 0 10px;
 
   &[aria-selected="true"] {
@@ -84,7 +84,7 @@
   }
 }
 
-.pt-tab-panel {
+.bp3-tab-panel {
   border: 1px solid #ccc;
   border-radius: 5px;
 }

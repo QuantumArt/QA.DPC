@@ -32,7 +32,7 @@ else
   if (!(Model.Field is BaseVirtualField))
   {
     <div class="editor-field">
-      @Html.EditorFor(x => x.Field.FieldName)
+      @Html.TextBoxFor(x => x.Field.FieldName, new { Placeholder = "Имя поля в JSON" })
     </div>
   }
   else
@@ -42,6 +42,13 @@ else
     </div>
     @Html.HiddenFor(x => x.Field.FieldName);
   }
+
+  <div class="editor-label">
+    @Html.LabelFor(x => x.Field.FieldTitle)
+  </div>
+  <div class="editor-field">
+    @Html.TextBoxFor(x => x.Field.FieldTitle, new { Placeholder = "Текст в <label>" })
+  </div>
 }
 
 @if (Model.Field is Association)
@@ -52,21 +59,21 @@ else
     @Html.LabelFor(x => association.CloningMode)
   </div>
   <div class="editor-field">
-    @Html.EnumDropDownListFor(x => ((Association)Model.Field).CloningMode, new { Name = "Field.CloningMode" })
+    @Html.EnumDropDownListFor(x => association.CloningMode, new { Name = "Field.CloningMode" })
   </div>
 
   <div class="editor-label">
     @Html.LabelFor(x => association.DeletingMode)
   </div>
   <div class="editor-field">
-    @Html.EnumDropDownListFor(x => ((Association)Model.Field).DeletingMode, new { Name = "Field.DeletingMode" })
+    @Html.EnumDropDownListFor(x => association.DeletingMode, new { Name = "Field.DeletingMode" })
   </div>
 
   <div class="editor-label">
     @Html.LabelFor(x => association.UpdatingMode)
   </div>
   <div class="editor-field">
-    @Html.EnumDropDownListFor(x => ((Association)Model.Field).UpdatingMode, new { Name = "Field.UpdatingMode" })
+    @Html.EnumDropDownListFor(x => association.UpdatingMode, new { Name = "Field.UpdatingMode" })
   </div>
 
   if (Model.Field is EntityField)
@@ -74,14 +81,36 @@ else
     var entity = (EntityField)Model.Field;
 
     <div class="editor-label">
+      @Html.LabelFor(x => entity.PreloadingMode)
+    </div>
+    <div class="editor-field">
+      @Html.EnumDropDownListFor(x => entity.PreloadingMode, new { Name = "Field.PreloadingMode" })
+    </div>
+
+    <div class="editor-label">
       @Html.LabelFor(x => entity.RelationCondition)
     </div>
     <div class="editor-field">
-      @Html.TextAreaFor(x => ((EntityField)Model.Field).RelationCondition, new
+      @Html.TextAreaFor(x => entity.RelationCondition, new
       {
         Cols = 80,
-        Rows = 2,
+        Rows = 6,
+        Placeholder = "SQL-условие фильтрации списка статей",
         Name = "Field.RelationCondition",
+        Style = "resize: none; font-family: monospace"
+      })
+    </div>
+
+    <div class="editor-label">
+      @Html.LabelFor(x => entity.ClonePrototypeCondition)
+    </div>
+    <div class="editor-field">
+      @Html.TextAreaFor(x => entity.ClonePrototypeCondition, new
+      {
+        Cols = 80,
+        Rows = 6,
+        Name = "Field.ClonePrototypeCondition",
+        Placeholder = "SQL-условие выбора статьи-прообраза для клонирования",
         Style = "resize: none; font-family: monospace"
       })
     </div>
@@ -91,12 +120,6 @@ else
   {
     var backwardField = (BackwardRelationField)Model.Field;
 
-    <div class="editor-label">
-      @Html.LabelFor(x => backwardField.DisplayName)
-    </div>
-    <div class="editor-field">
-      @Html.TextBox("Field.DisplayName", ((BackwardRelationField)Model.Field).DisplayName)
-    </div>
     <div class="display-label">
       Ссылается на данный контент из контента
     </div>
@@ -159,6 +182,3 @@ else if (Model.Field is PlainField)
     @Html.CheckBox("loadlikeimage", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage))
   </div>
 }
-
-
-
