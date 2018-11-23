@@ -2,11 +2,20 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import cn from "classnames";
-import { Radio } from "@blueprintjs/core";
+import { Radio, Divider } from "@blueprintjs/core";
 import { Grid, Row, Col } from "react-flexbox-grid";
 import { types as t, unprotect } from "mobx-state-tree";
 import { toJS, configure } from "mobx";
 import { observer } from "mobx-react";
+import { validationMixin, Validate } from "mst-validation-mixin";
+import {
+  LocaleContext,
+  Translation,
+  withTranslation,
+  Translate
+  // TODO: uncomment when React Hooks will be released
+  // useTranslate
+} from "react-lazy-i18n";
 import {
   InputText,
   InputNumber,
@@ -19,16 +28,6 @@ import {
   RadioGroup
 } from "Components/FormControls/FormControls";
 import { required, pattern, maxCount } from "Utils/Validators";
-import { validationMixin, Validate } from "mst-validation-mixin";
-import {
-  LocaleContext,
-  Localize,
-  Translate,
-  localize,
-  id,
-  fallback,
-  TranslateFunction
-} from "react-lazy-i18n";
 
 class App extends React.Component {
   state = { lang: "eng" };
@@ -58,36 +57,35 @@ class App extends React.Component {
             onChange={() => this.setState({ lang: "rus" })}
           />
         </label>
-        <hr />
+        <Divider />
         <LocaleContext.Provider value={lang}>
           <br />
-          <Localize
+          <Translation
             load={lang =>
-              import(/* webpackChunkName: "i18n-" */ `./Foo.${lang}.jsx`)
+              import(/* webpackChunkName: "i18n-" */ `./ComponentLibrary.${lang}.jsx`)
             }
           >
-            {tran => (
-              <Translate id="customComponent">
-                <article key={1} title={tran`Test...`}>
-                  User Card
-                  <div key={2} title={tran`Hello, ${firstName}!`}>
-                    First Name: {{ firstName }}
-                  </div>
-                  <div key={3} title={tran(`helloTemplate`, lastName)}>
-                    Last Name: {{ lastName }}
-                  </div>
-                  <div
-                    key={4}
-                    title={tran(id`missingKey`, fallback`Hello, ${fullName}!`)}
-                  >
-                    Full Name: {{ fullName }}
-                  </div>
-                </article>
-              </Translate>
+            {tr => (
+              <article title={tr`Hello, ${firstName}!`}>
+                locale: {tr.locale}
+                <br />
+                {tr`User Card`}
+                <div>
+                  {tr`First Name`}: {firstName}
+                </div>
+                <div title={tr("helloTemplate", lastName)}>
+                  {tr`Last Name`}: {lastName}
+                </div>
+                <div title={tr("missingKey") || "Fallback"}>
+                  {tr`Full Name`}: {fullName}
+                </div>
+              </article>
             )}
-          </Localize>
-          <hr />
+          </Translation>
+          <Divider />
           <LocalizedComponent />
+          <Divider />
+          {/* <LocalizedHook /> */}
           <br />
         </LocaleContext.Provider>
       </>
@@ -95,38 +93,69 @@ class App extends React.Component {
   }
 }
 
-@localize(lang => import(/* webpackChunkName: "i18n-" */ `./Bar.${lang}.jsx`))
+@withTranslation(lang =>
+  import(/* webpackChunkName: "i18n-" */ `./ComponentLibrary.${lang}.jsx`)
+)
 class LocalizedComponent extends React.Component {
   render() {
-    /** @type {TranslateFunction} */
-    const tran = this.props.translate;
+    /** @type {Translate} */
+    const tr = this.props.translate;
 
     const firstName = "Foo";
     const lastName = "Bar";
     const fullName = "Foo Bar";
     return (
-      <Translate id="customComponent">
-        <article key={1} title={tran`Test...`}>
-          User Card
-          <div key={2} title={tran`Hello, ${firstName}!`}>
-            First Name: {{ firstName }}
+      tr("customMarkup", { firstName, lastName, fullName }) || (
+        <article title={tr`Hello, ${firstName}!`}>
+          locale: {tr.locale}
+          <br />
+          {tr`User Card`}
+          <div>
+            {tr`First Name`}: {firstName}
           </div>
-          <div key={3} title={tran(`helloTemplate`, lastName)}>
-            Last Name: {{ lastName }}
+          <div title={tr("helloTemplate", lastName)}>
+            {tr`Last Name`}: {lastName}
           </div>
-          <div
-            key={4}
-            title={tran(id`missingKey`, fallback`Hello, ${fullName}!`)}
-          >
-            Full Name: {{ fullName }}
+          <div title={tr("missingKey") || "Fallback"}>
+            {tr`Full Name`}: {fullName}
           </div>
         </article>
-      </Translate>
+      )
     );
   }
 }
 
-ReactDOM.render(<App />, document.getElementById("translate"));
+// const LocalizedHook = () => {
+//   const tr = useTranslate(lang =>
+//     import(/* webpackChunkName: "i18n-" */ `./ComponentLibrary.${lang}.jsx`)
+//   );
+
+//   const firstName = "Foo";
+//   const lastName = "Bar";
+//   const fullName = "Foo Bar";
+//   return (
+//     <article title={tr`Hello, ${firstName}!`}>
+//       {tr`User Card`}
+//       <div>
+//         {tr`First Name`}: {firstName}
+//       </div>
+//       <div title={tr("helloTemplate", lastName)}>
+//         {tr`Last Name`}: {lastName}
+//       </div>
+//       <div title={tr("missingKey") || "Fallback"}>
+//         {tr`Full Name`}: {fullName}
+//       </div>
+//     </article>
+//   );
+// };
+
+ReactDOM.render(
+  <Grid fluid>
+    <h4>react-lazy-i18n</h4>
+    <App />
+  </Grid>,
+  document.getElementById("translate")
+);
 
 const Category = t
   .model("Category", {
@@ -172,7 +201,7 @@ const category = Category.create({
 
 unprotect(category);
 
-configure({ enforceActions: false });
+configure({ enforceActions: "never" });
 
 article.Category = category;
 
@@ -182,19 +211,19 @@ const phoneMask = ["+", "7", " ", "(", /\d/, /\d/, /\d/, ")", " ", /\d/, /\d/, /
 const FormControlsBlock = observer(() => (
   <div>
     <h4>FormControls</h4>
-    <hr />
+    <Divider />
 
     <Row
-      className={cn("pt-form-group", {
-        "pt-intent-danger": article.hasVisibleErrors("StringField")
+      className={cn("bp3-form-group", {
+        "bp3-intent-danger": article.hasVisibleErrors("StringField")
       })}
     >
       <Col md={3}>InputText [ pattern | required]</Col>
-      <Col md={3} className="pt-form-content">
+      <Col md={3} className="bp3-form-content">
         <Validate
           model={article}
           name="StringField"
-          errorClassName="pt-form-helper-text"
+          errorClassName="bp3-form-helper-text"
           rules={[required, pattern(/^[A-Za-z0-9]+$/)]}
         >
           <InputText
@@ -202,30 +231,30 @@ const FormControlsBlock = observer(() => (
             model={article}
             placeholder="StringField"
             className={cn({
-              "pt-intent-danger": article.hasVisibleErrors("StringField")
+              "bp3-intent-danger": article.hasVisibleErrors("StringField")
             })}
           />
         </Validate>
       </Col>
-      <Col md={3} className="pt-form-content">
+      <Col md={3} className="bp3-form-content">
         <InputText
           name="StringField"
           model={article}
           placeholder="StringField"
           className={cn({
-            "pt-intent-danger": article.hasVisibleErrors("StringField")
+            "bp3-intent-danger": article.hasVisibleErrors("StringField")
           })}
         />
         <Validate
           model={article}
           name="StringField"
-          errorClassName="pt-form-helper-text"
+          errorClassName="bp3-form-helper-text"
           rules={required}
         />
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row className="bp3-form-group">
       <Col md={3}>InputText [normal | disabled]</Col>
       <Col md={3}>
         <InputText
@@ -244,7 +273,7 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row className="bp3-form-group">
       <Col md={3}>InputText [mask | readonly]</Col>
       <Col md={3}>
         <InputText
@@ -264,7 +293,7 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row className="bp3-form-group">
       <Col md={3}>InputNumber [normal | disabled]</Col>
       <Col md={3}>
         <InputNumber
@@ -284,7 +313,7 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row className="bp3-form-group">
       <Col md={3}>InputSearch [normal | disabled]</Col>
       <Col md={3}>
         <InputSearch
@@ -304,8 +333,8 @@ const FormControlsBlock = observer(() => (
     </Row>
 
     <Row
-      className={cn("pt-form-group", {
-        "pt-intent-danger": article.hasVisibleErrors("FileField")
+      className={cn("bp3-form-group", {
+        "bp3-intent-danger": article.hasVisibleErrors("FileField")
       })}
     >
       <Col md={3}>InputFile [required | disabled]</Col>
@@ -315,13 +344,13 @@ const FormControlsBlock = observer(() => (
           model={article}
           placeholder="FileField"
           className={cn({
-            "pt-intent-danger": article.hasVisibleErrors("FileField")
+            "bp3-intent-danger": article.hasVisibleErrors("FileField")
           })}
         />
         <Validate
           model={article}
           name="FileField"
-          errorClassName="pt-form-helper-text"
+          errorClassName="bp3-form-helper-text"
           rules={required}
         />
       </Col>
@@ -336,8 +365,8 @@ const FormControlsBlock = observer(() => (
     </Row>
 
     <Row
-      className={cn("pt-form-group", {
-        "pt-intent-danger": article.hasVisibleErrors("DateField")
+      className={cn("bp3-form-group", {
+        "bp3-intent-danger": article.hasVisibleErrors("DateField")
       })}
     >
       <Col md={3}>DatePicker [date | date required]</Col>
@@ -349,26 +378,26 @@ const FormControlsBlock = observer(() => (
           placeholder="DateField"
         />
       </Col>
-      <Col md={3} className="pt-form-content">
+      <Col md={3} className="bp3-form-content">
         <DatePicker
           name="DateField"
           model={article}
           type="date"
           className={cn({
-            "pt-intent-danger": article.hasVisibleErrors("DateField")
+            "bp3-intent-danger": article.hasVisibleErrors("DateField")
           })}
           placeholder="DateField"
         />
         <Validate
           model={article}
           name="DateField"
-          errorClassName="pt-form-helper-text"
+          errorClassName="bp3-form-helper-text"
           rules={required}
         />
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row className="bp3-form-group">
       <Col md={3}>DatePicker [time | time disabled]</Col>
       <Col md={3}>
         <DatePicker
@@ -389,7 +418,7 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row className="bp3-form-group">
       <Col md={3}>DatePicker [normal | disabled]</Col>
       <Col md={3}>
         <DatePicker
@@ -408,7 +437,7 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row className="bp3-form-group">
       <Col md={3}>CheckBox [normal | disabled] </Col>
       <Col md={3}>
         <CheckBox name="BooleanField" model={article} inline />
@@ -418,7 +447,7 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row className="bp3-form-group">
       <Col md={3}>Select [normal | disabled]</Col>
       <Col md={3}>
         <Select
@@ -446,8 +475,8 @@ const FormControlsBlock = observer(() => (
     </Row>
 
     <Row
-      className={cn("pt-form-group", {
-        "pt-intent-danger": article.hasVisibleErrors("ArrayField")
+      className={cn("bp3-form-group", {
+        "bp3-intent-danger": article.hasVisibleErrors("ArrayField")
       })}
     >
       <Col md={3}>Select [required | multiple]</Col>
@@ -463,12 +492,12 @@ const FormControlsBlock = observer(() => (
           required
         />
       </Col>
-      <Col md={3} className="pt-form-content">
+      <Col md={3} className="bp3-form-content">
         <Select
           name="ArrayField"
           model={article}
           className={cn({
-            "pt-intent-danger": article.hasVisibleErrors("ArrayField")
+            "bp3-intent-danger": article.hasVisibleErrors("ArrayField")
           })}
           placeholder="ArrayField"
           options={[
@@ -480,15 +509,15 @@ const FormControlsBlock = observer(() => (
         <Validate
           model={article}
           name="ArrayField"
-          errorClassName="pt-form-helper-text"
+          errorClassName="bp3-form-helper-text"
           rules={[required, maxCount(1)]}
         />
       </Col>
     </Row>
 
     <Row
-      className={cn("pt-form-group", {
-        "pt-intent-danger": article.hasVisibleErrors("EnumField")
+      className={cn("bp3-form-group", {
+        "bp3-intent-danger": article.hasVisibleErrors("EnumField")
       })}
     >
       <Col md={3}>RadioGroup [validation | disabled]</Col>
@@ -499,7 +528,7 @@ const FormControlsBlock = observer(() => (
           placeholder="EnumField"
           inline
           className={cn({
-            "pt-intent-danger": article.hasVisibleErrors("EnumField")
+            "bp3-intent-danger": article.hasVisibleErrors("EnumField")
           })}
           options={[
             { value: "first", label: "Первый" },
@@ -510,7 +539,7 @@ const FormControlsBlock = observer(() => (
         <Validate
           model={article}
           name="EnumField"
-          errorClassName="pt-form-helper-text"
+          errorClassName="bp3-form-helper-text"
           rules={[required, pattern(/^[0-9]+$/)]}
         />
       </Col>
@@ -528,14 +557,14 @@ const FormControlsBlock = observer(() => (
       </Col>
     </Row>
 
-    <Row className="pt-form-group">
+    <Row className="bp3-form-group">
       <Col md={3}>TextArea [normal]</Col>
       <Col md>
         <TextArea name="TextField" model={article} placeholder="TextField" />
       </Col>
     </Row>
 
-    <hr />
+    <Divider />
 
     <Row>
       <Col md>
@@ -556,18 +585,9 @@ const FormControlsBlock = observer(() => (
   </div>
 ));
 
-const ArticleEditorBlock = observer(() => (
-  <div>
-    <h4>ArticleEditor</h4>
-    <hr />
-  </div>
-));
-
 ReactDOM.render(
   <Grid fluid>
     <FormControlsBlock />
-    <br />
-    <ArticleEditorBlock />
   </Grid>,
   document.getElementById("library")
 );

@@ -24,6 +24,10 @@ namespace QA.Core.Models.Configuration
         [DisplayName("Имя поля")]
         public virtual string FieldName { get; set; }
 
+        [DisplayName("Имя поля для карточки")]
+        [DefaultValue(null)]
+        public virtual string FieldTitle { get; set; }
+
         public virtual int FieldId { get; set; }
 
         [DefaultValue(null)]
@@ -142,8 +146,8 @@ namespace QA.Core.Models.Configuration
 		protected Association()
 		{
 			CloningMode = CloningMode.Ignore;
-
-			DeletingMode = DeletingMode.Keep;
+            UpdatingMode = UpdatingMode.Ignore;
+            DeletingMode = DeletingMode.Keep;
 		}
 
 		internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
@@ -175,16 +179,34 @@ namespace QA.Core.Models.Configuration
 	[ContentProperty("Content")]
 	public class EntityField : Association
 	{
+        [DefaultValue(PreloadingMode.None)]
+        public PreloadingMode PreloadingMode { get; set; }
+
+        /// <summary>
+        /// SQL-условие для фильтрации списка статей, доступных для выбора
+        /// (заменяет <see cref="Quantumart.QP8.BLL.Field.RelationCondition"/>)
+        /// </summary>
         [DefaultValue(null)]
         public string RelationCondition { get; set; }
 
         /// <summary>
-        /// опциональный дефинишен для клонирования, если null то используется Content
+        /// Опциональный дефинишен для клонирования, если null то используется Content
         /// </summary>
         [DefaultValue(null)]
         public Content CloneDefinition { get; set; }
+        
+        /// <summary>
+        /// SQL-условие для получения статьи-прототипа для клонирования
+        /// </summary>
+        [DefaultValue(null)]
+        public string ClonePrototypeCondition { get; set; }
+        
+        public Content Content { get; set; }
 
-		public Content Content { get; set; }
+        public EntityField()
+        {
+            PreloadingMode = PreloadingMode.None;
+        }
 
         protected override void DeepCopyMembers(Field field, ReferenceDictionary<object, object> visited)
         {
@@ -210,7 +232,9 @@ namespace QA.Core.Models.Configuration
         internal override bool RecursiveEquals(Field other, ReferenceDictionary<Content, Content> visitedContents)
 		{
 			return base.RecursiveEquals(other, visitedContents)
+                && PreloadingMode == ((EntityField)other).PreloadingMode
                 && RelationCondition == ((EntityField)other).RelationCondition
+                && ClonePrototypeCondition == ((EntityField)other).ClonePrototypeCondition
                 && Content.RecursiveEquals(((EntityField)other).Content, visitedContents)
                 && (CloneDefinition == null
                     ? ((EntityField)other).CloneDefinition == null
@@ -226,9 +250,15 @@ namespace QA.Core.Models.Configuration
 		{
 			int hash = base.GetHashCode();
 
+            hash = HashHelper.CombineHashCodes(hash, PreloadingMode.GetHashCode());
+
             if (RelationCondition != null)
             {
                 hash = HashHelper.CombineHashCodes(hash, RelationCondition.GetHashCode());
+            }
+            if (ClonePrototypeCondition != null)
+            {
+                hash = HashHelper.CombineHashCodes(hash, ClonePrototypeCondition.GetHashCode());
             }
             if (Content != null)
             {

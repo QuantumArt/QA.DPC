@@ -65,6 +65,11 @@ namespace QA.Core.DPC.Loader.Editor
         public string DisplayFieldName { get; set; }
 
         /// <summary>
+        /// Используется только для чтения
+        /// </summary>
+        public bool IsReadOnly { get; set; }
+
+        /// <summary>
         /// Используется только в качестве расширения
         /// </summary>
         public bool ForExtension { get; set; }
@@ -175,11 +180,6 @@ namespace QA.Core.DPC.Loader.Editor
                 return types;
             }
         }
-
-        /// <summary>
-        /// Циклическая сылка на родительский контент. Заполняется на клиенте.
-        /// </summary>
-        public IContentSchema ParentContent => null;
     }
 
     /// <summary>
@@ -252,11 +252,6 @@ namespace QA.Core.DPC.Loader.Editor
         public IContentSchema RelatedContent { get; set; }
 
         /// <summary>
-        /// Поведение поля связи при клонировании родительской статьи
-        /// </summary>
-        public CloningMode CloningMode { get; set; }
-
-        /// <summary>
         /// Следует ли обновлять связанные статьи при рекурсивном обновлении связей
         /// </summary>
         public UpdatingMode UpdatingMode { get; set; }
@@ -276,6 +271,29 @@ namespace QA.Core.DPC.Loader.Editor
         /// в строке таблици или в заголовке аккордеона
         /// </summary>
         public string[] DisplayFieldNames { get; set; } = new string[0];
+
+        /// <summary>
+        /// Режим предзагрузки статей для выбора при редактировании поля связи
+        /// </summary>
+        public PreloadingMode PreloadingMode { get; set; }
+
+        /// <summary>
+        /// Список предзагруженных статей для выбора при редактировании поля связи
+        /// </summary>
+        public ArticleObject[] PreloadedArticles { get; set; } = new ArticleObject[0];
+
+        public bool ShouldSerializePreloadedArticles() => PreloadingMode != PreloadingMode.None;
+
+        /// <summary>
+        /// Очистить свойства, которые могут отличаться для одного и того же поля в разных узлах ProductDefiniton
+        /// </summary>
+        internal virtual void ClearContextDependentProps()
+        {
+            RelationCondition = null;
+            UpdatingMode = UpdatingMode.Ignore;
+            PreloadingMode = PreloadingMode.None;
+            PreloadedArticles = new ArticleObject[0];
+        }
     }
 
     /// <summary>

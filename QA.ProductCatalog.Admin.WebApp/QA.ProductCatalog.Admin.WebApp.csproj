@@ -309,10 +309,13 @@
     <Compile Include="App_Start\TaskContainerConfiguration.cs" />
     <Compile Include="Binders\ContentBinder.cs" />
     <Compile Include="Binders\JsonModelBinder.cs" />
+    <Compile Include="Controllers\JsonSchemaController.cs" />
     <Compile Include="Controllers\ProductEditorController.cs" />
     <Compile Include="Controllers\DefinitionEditorController.cs" />
     <Compile Include="Controllers\HighloadFrontController.cs" />
     <Compile Include="Controllers\NotificationController.cs" />
+    <Compile Include="Controllers\ProductEditorCommandController.cs" />
+    <Compile Include="Controllers\ProductEditorQueryController.cs" />
     <Compile Include="Controllers\TarantoolController.cs" />
     <Compile Include="Core\Adapters\ActionAdapterBase.cs" />
     <Compile Include="Core\Adapters\CountActionAdapter.cs" />
@@ -508,6 +511,8 @@
     <Content Include="Scripts\jquery\jquery-1.11.1.js" />
     <Content Include="Scripts\jq.trottle.js" />
     <Content Include="Scripts\json2.js" />
+    <Content Include="Scripts\JsonSchema\TypeScriptSchema.js" />
+    <Content Include="Scripts\JsonSchema\TypeScriptSchema.min.js" />
     <Content Include="Scripts\KendoUI\jquery.min.js" />
     <Content Include="Scripts\KendoUI\kendo.culture.ru-RU.min.js" />
     <Content Include="Scripts\KendoUI\kendo.messages.ru-RU.min.js" />
@@ -524,8 +529,6 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Scripts\Bundles\**\*.*" />
-    <Content Include="Views\ProductEditor\ComponentLibrary.jsx" />
-    <Content Include="Views\ProductEditor\ProductEditorSchema.js" />
     <Content Include="webpack.config.js" />
     <Content Include="package.json" />
     <Content Include=".editorconfig" />
@@ -535,11 +538,11 @@
     <None Include="Properties\PublishProfiles\ms-dpcdvlp001.pubxml" />
     <None Include="Properties\PublishProfiles\mscdev01-biryukov.pubxml" />
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <Content Include="Scripts\JsonSchema\TypeScriptSchema.min.js.map" />
     <None Include="Scripts\_references.js" />
     <Content Include="Scripts\Schedule.js" />
     <Content Include="Scripts\Tarantool.js" />
     <Content Include="Scripts\vanilla.helpers.js" />
-    <Content Include="Views\ProductEditor\TypeScriptSchema.js" />
     <Content Include="Views\ProductRelevance\Index.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -584,11 +587,11 @@
     <Content Include="Views\Shared\DisplayTemplates\Image.cshtml" />
     <Content Include="Views\Shared\DisplayTemplates\SimpleLink.cshtml" />
     <Content Include="Views\Tarantool\Index.cshtml" />
-    <Content Include="Views\ProductEditor\TypeScriptSchema.cshtml" />
+    <Content Include="Views\JsonSchema\TypeScriptSchema.cshtml" />
     <Content Include="tsconfig.json" />
     <Content Include="Views\ProductEditor\ComponentLibrary.cshtml" />
     <Content Include="Views\ProductEditor\FixConnectTariff\FixConnectTariff.cshtml" />
-    <Content Include="Views\ProductEditor\ProductEditorSchema.cshtml" />
+    <Content Include="Views\ProductEditor\TypeScriptSchema.cshtml" />
     <Content Include="Views\ProductEditor\DefaultEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -715,10 +718,6 @@
     <TypeScriptCompile Include="Scripts\qp\QP8BackendApi.Interaction.d.ts">
       <DependentUpon>QP8BackendApi.Interaction.js</DependentUpon>
     </TypeScriptCompile>
-    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\FixConnectTariff.tsx" />
-    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\FixConnectTariffEditor.tsx" />
-    <TypeScriptCompile Include="Views\ProductEditor\FixConnectTariff\ProductEditorSchema.ts" />
-    <TypeScriptCompile Include="Views\ProductEditor\DefaultEditor.tsx" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
@@ -790,4 +789,3 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
-

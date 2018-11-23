@@ -1,7 +1,7 @@
 @startuml DataTransformations
 
 cloud Backend {
-  rectangle EditorController {
+  rectangle ProductEditorController {
     card GetDefinition [
       1. Получаем
       ProductDefinition
@@ -91,7 +91,7 @@ cloud Frontend {
     MobxSchema ..> InitStore: <b>MobX\nSchema
   }
 
-  rectangle SchemaContext {
+  rectangle SchemaLinker {
     card LinkSchema [
       7. Линкуем <b>$ref
       ссылки в схеме

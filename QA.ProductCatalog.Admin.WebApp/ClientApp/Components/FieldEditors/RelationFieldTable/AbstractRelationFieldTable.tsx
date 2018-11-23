@@ -1,34 +1,40 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
+import { Validator } from "mst-validation-mixin";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
-import { isString } from "Utils/TypeChecks";
+import { EntityObject } from "Models/EditorDataModels";
+import { ComputedCache } from "Utils/WeakCache";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
-  FieldSelector
+  FieldSelector,
+  EntityComparer,
+  HighlightMode
 } from "../AbstractFieldEditor";
 import "./RelationFieldTable.scss";
 
 export interface RelationFieldTableProps extends FieldEditorProps {
+  filterItems?: (item: EntityObject) => boolean;
+  highlightItems?: (item: EntityObject) => HighlightMode;
+  validateItems?: Validator;
+  sortItems?: EntityComparer;
+  sortItemsBy?: string | FieldSelector;
   displayFields?: (string | FieldSelector)[];
-  orderByField?: string | FieldSelector;
+  // custom actions
+  relationActions?: () => ReactNode;
 }
 
 export abstract class AbstractRelationFieldTable extends AbstractRelationFieldEditor<
   RelationFieldTableProps
 > {
   protected _displayFields: FieldSelector[];
+  protected _validationCache = new ComputedCache<EntityObject, string>();
 
   constructor(props: RelationFieldTableProps, context?: any) {
     super(props, context);
-    const {
-      fieldSchema,
-      displayFields = (fieldSchema as RelationFieldSchema).DisplayFieldNames || []
-    } = this.props;
-    this._displayFields = displayFields.map(
-      field => (isString(field) ? article => article[field] : field)
-    );
+    const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    this._displayFields = this.makeDisplayFieldsSelectors(props.displayFields, fieldSchema);
   }
 
   render() {
@@ -36,8 +42,8 @@ export abstract class AbstractRelationFieldTable extends AbstractRelationFieldEd
     return (
       <Col
         md={12}
-        className={cn("field-editor__block pt-form-group", {
-          "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+        className={cn("field-editor__block bp3-form-group", {
+          "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
         <Row>

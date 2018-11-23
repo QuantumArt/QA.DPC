@@ -1,43 +1,45 @@
-import React, { MouseEvent } from "react";
+import React, { ReactNode } from "react";
 import { Col, Row } from "react-flexbox-grid";
 import cn from "classnames";
+import { Validator } from "mst-validation-mixin";
 import { EntityObject } from "Models/EditorDataModels";
 import { RelationFieldSchema } from "Models/EditorSchemaModels";
-import { isString } from "Utils/TypeChecks";
+import { isNullOrWhiteSpace } from "Utils/TypeChecks";
+import { ComputedCache } from "Utils/WeakCache";
 import {
   AbstractRelationFieldEditor,
   FieldEditorProps,
-  FieldSelector
+  FieldSelector,
+  EntityComparer
 } from "../AbstractFieldEditor";
 import "./RelationFieldTags.scss";
 
 export interface RelationFieldTagsProps extends FieldEditorProps {
+  filterItems?: (item: EntityObject) => boolean;
+  validateItems?: Validator;
+  sortItems?: EntityComparer;
+  sortItemsBy?: string | FieldSelector;
   displayField?: string | FieldSelector;
-  orderByField?: string | FieldSelector;
-  selectMultiple?: boolean;
-  onClick?: (e: MouseEvent<HTMLElement>, article: EntityObject) => void;
+  // custom actions
+  relationActions?: () => ReactNode;
 }
 
 export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEditor<
   RelationFieldTagsProps
 > {
   protected _displayField: FieldSelector;
-  protected _canEditRelation: boolean;
   protected _isHalfSize = false;
+  protected _validationCache = new ComputedCache<EntityObject, string>();
 
   constructor(props: RelationFieldTagsProps, context?: any) {
     super(props, context);
-    const {
-      fieldSchema,
-      displayField = (fieldSchema as RelationFieldSchema).RelatedContent.DisplayFieldName ||
-        (() => "")
-    } = this.props;
-    this._displayField = isString(displayField) ? article => article[displayField] : displayField;
+    const fieldSchema = props.fieldSchema as RelationFieldSchema;
+    this._displayField = this.makeDisplayFieldSelector(props.displayField, fieldSchema);
   }
 
-  protected getTitle(article: EntityObject) {
-    const title = this._displayField(article);
-    return title != null && !/^\s*$/.test(title) ? title : "...";
+  protected getTitle(entity: EntityObject) {
+    const title = this._displayField(entity);
+    return isNullOrWhiteSpace(title) ? "..." : title;
   }
 
   render() {
@@ -46,8 +48,8 @@ export abstract class AbstractRelationFieldTags extends AbstractRelationFieldEdi
       <Col
         xl={this._isHalfSize ? 6 : 12}
         md={12}
-        className={cn("field-editor__block pt-form-group", {
-          "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+        className={cn("field-editor__block bp3-form-group", {
+          "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
         <Row>

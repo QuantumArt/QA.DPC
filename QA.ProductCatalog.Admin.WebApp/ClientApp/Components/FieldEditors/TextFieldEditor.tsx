@@ -13,13 +13,13 @@ export class TextFieldEditor extends AbstractFieldEditor {
     return (
       <Col md>
         <TextArea
-          id={this.id}
+          id={this._id}
           model={model}
           name={fieldSchema.FieldName}
-          disabled={fieldSchema.IsReadOnly}
+          disabled={this._readonly}
           className={cn({
-            "pt-intent-primary": model.isEdited(fieldSchema.FieldName),
-            "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+            "bp3-intent-primary": model.isEdited(fieldSchema.FieldName),
+            "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
           })}
         />
       </Col>
@@ -31,8 +31,8 @@ export class TextFieldEditor extends AbstractFieldEditor {
     return (
       <Col
         md={12}
-        className={cn("field-editor__block pt-form-group", {
-          "pt-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
+        className={cn("field-editor__block bp3-form-group", {
+          "bp3-intent-danger": model.hasVisibleErrors(fieldSchema.FieldName)
         })}
       >
         <Row>

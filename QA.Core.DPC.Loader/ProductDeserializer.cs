@@ -94,6 +94,7 @@ namespace QA.Core.DPC.Loader
                 ContentId = definition.ContentId,
                 ContentDisplayName = qpContent.Name,
                 PublishingMode = definition.PublishingMode,
+                IsReadOnly = definition.IsReadOnly,
                 Visible = true
             };
 

@@ -1,4 +1,5 @@
-﻿using QA.Core.DPC.QP.Services;
+﻿using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using Quantumart.QP8.BLL.Services.API;
@@ -17,24 +18,35 @@ namespace QA.Core.DPC.Loader.Editor
     public class EditorSchemaService
     {
         private readonly DBConnector _dbConnector;
+        private readonly IReadOnlyArticleService _articleService;
         private readonly ContentService _contentService;
         private readonly FieldService _fieldService;
         private readonly VirtualFieldContextService _virtualFieldContextService;
+        private readonly EditorPreloadingService _editorPreloadingService;
 
         public EditorSchemaService(
             IConnectionProvider connectionProvider,
+            IReadOnlyArticleService articleService,
             ContentService contentService,
             FieldService fieldService,
-            VirtualFieldContextService virtualFieldContextService)
+            VirtualFieldContextService virtualFieldContextService,
+            EditorPreloadingService editorPreloadingService)
         {
             _dbConnector = new DBConnector(connectionProvider.GetConnection());
+            _articleService = articleService;
             _contentService = contentService;
             _fieldService = fieldService;
             _virtualFieldContextService = virtualFieldContextService;
+            _editorPreloadingService = editorPreloadingService;
         }
 
         private class SchemaContext
         {
+            /// <summary>
+            /// Настройки кеширования словарей
+            /// </summary>
+            public Dictionaries Dictionaries;
+
             /// <summary>
             /// Cписок виртуальных полей которые надо игнорировать при создании схемы
             /// </summary>
@@ -56,6 +68,11 @@ namespace QA.Core.DPC.Loader.Editor
             /// </summary>
             public Dictionary<ContentSchema, string> DefinitionNamesBySchema
                 = new Dictionary<ContentSchema, string>();
+
+            /// <summary>
+            /// Предзагружаемые статьи, уже посещенные в <see cref="EditorDataService.ConvertArticle"/>
+            /// </summary>
+            public HashSet<Article> VisitedPreloadedArticles = new HashSet<Article>();
         }
         
         /// <summary>
@@ -74,11 +91,12 @@ namespace QA.Core.DPC.Loader.Editor
 
             var context = new SchemaContext
             {
+                Dictionaries = content.Fields.OfType<Dictionaries>().SingleOrDefault(),
                 IgnoredFields = virtualFieldContext.IgnoredFields,
             };
 
             ContentSchema contentSchema = GetContentSchema(content, context, "");
-
+            
             ProductSchema productSchema = GetProductSchema(contentSchema, context);
 
             return productSchema;
@@ -171,6 +189,7 @@ namespace QA.Core.DPC.Loader.Editor
                 ContentName = String.IsNullOrWhiteSpace(qpContent.NetName) ? "" : qpContent.NetName,
                 ContentTitle = IsHtmlWhiteSpace(qpContent.Name) ? "" : qpContent.Name,
                 ContentDescription = IsHtmlWhiteSpace(qpContent.Description) ? "" : qpContent.Description,
+                IsReadOnly = content.IsReadOnly,
             };
         }
 
@@ -206,9 +225,9 @@ namespace QA.Core.DPC.Loader.Editor
             fieldSchema.FieldType = qpField.ExactType;
             fieldSchema.FieldDescription = IsHtmlWhiteSpace(qpField.Description) ? "" : qpField.Description;
 
-            if (field is BackwardRelationField backwardField && !IsHtmlWhiteSpace(backwardField.DisplayName))
+            if (!IsHtmlWhiteSpace(field?.FieldTitle))
             {
-                fieldSchema.FieldTitle = backwardField.DisplayName;
+                fieldSchema.FieldTitle = field.FieldTitle;
             }
             else if (!IsHtmlWhiteSpace(qpField.FriendlyName))
             {
@@ -234,16 +253,16 @@ namespace QA.Core.DPC.Loader.Editor
         {
             ContentSchema contentSchema = GetContentSchema(entityField.Content, context, path);
 
-            string relationCondition = null;
-            if (!String.IsNullOrWhiteSpace(entityField.RelationCondition))
+            string relationCondition = _editorPreloadingService.GetRelationCondition(entityField, qpField);
+
+            ArticleObject[] preloadedArticles = new ArticleObject[0];
+            if (entityField.PreloadingMode == PreloadingMode.Eager)
             {
-                relationCondition = entityField.RelationCondition;
-            } 
-            else if (!(entityField is BackwardRelationField)
-                && qpField.UseRelationCondition
-                && !String.IsNullOrWhiteSpace(qpField.RelationCondition))
-            {
-                relationCondition = qpField.RelationCondition;
+                preloadedArticles = _editorPreloadingService.PreloadRelationArticles(
+                    entityField,
+                    relationCondition,
+                    context.VisitedPreloadedArticles,
+                    context.Dictionaries);
             }
 
             string[] displayFieldNames = contentSchema.Fields.Values
@@ -261,11 +280,12 @@ namespace QA.Core.DPC.Loader.Editor
                 return new SingleRelationFieldSchema
                 {
                     RelatedContent = contentSchema,
-                    CloningMode = entityField.CloningMode,
                     UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     RelationCondition = relationCondition,
-                    DisplayFieldNames = displayFieldNames
+                    DisplayFieldNames = displayFieldNames,
+                    PreloadingMode = entityField.PreloadingMode,
+                    PreloadedArticles = preloadedArticles,
                 };
             }
             if (qpField.ExactType == FieldExactTypes.M2MRelation
@@ -305,19 +325,20 @@ namespace QA.Core.DPC.Loader.Editor
                 return new MultiRelationFieldSchema
                 {
                     RelatedContent = contentSchema,
-                    CloningMode = entityField.CloningMode,
                     UpdatingMode = entityField.UpdatingMode,
                     IsDpcBackwardField = entityField is BackwardRelationField,
                     RelationCondition = relationCondition,
                     DisplayFieldNames = displayFieldNames,
                     OrderByFieldName = orderByFieldName,
-                    MaxDataListItemCount = maxDataListItemCount
+                    MaxDataListItemCount = maxDataListItemCount,
+                    PreloadingMode = entityField.PreloadingMode,
+                    PreloadedArticles = preloadedArticles,
                 };
             }
 
             throw new NotSupportedException($"Связь типа {qpField.ExactType} не поддерживается");
         }
-
+        
         /// <exception cref="NotSupportedException" />
         /// <exception cref="InvalidOperationException" />
         private FieldSchema GetExtensionFieldSchema(
@@ -499,7 +520,7 @@ namespace QA.Core.DPC.Loader.Editor
             return String.IsNullOrEmpty(str)
                 || String.IsNullOrWhiteSpace(WebUtility.HtmlDecode(str));
         }
-
+        
         /// <summary>
         /// Генерация словаря с объединенными схемами для каждого <see cref="ContentSchema.ContentId"/> из продукта
         /// </summary>
@@ -552,6 +573,12 @@ namespace QA.Core.DPC.Loader.Editor
         {
             ContentSchema mergedContentSchema = schemasByContentId[contentSchema.ContentId];
 
+            if (!contentSchema.IsReadOnly)
+            {
+                // Один и тот же контент может использоваться для чтения и для изменения
+                // в разных частях схемы. В этом случае считаем, что контент не является ReadOnly.
+                mergedContentSchema.IsReadOnly = false;
+            }
             if (!contentSchema.ForExtension)
             {
                 // Один и тот же контент может использоваться как Extension и как Relation
@@ -599,6 +626,7 @@ namespace QA.Core.DPC.Loader.Editor
                     {
                         ContentId = singleFieldSchema.RelatedContent.ContentId,
                     };
+                    copy.ClearContextDependentProps();
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
                 else if (fieldSchema is MultiRelationFieldSchema multiFieldSchema)
@@ -608,6 +636,7 @@ namespace QA.Core.DPC.Loader.Editor
                     {
                         ContentId = multiFieldSchema.RelatedContent.ContentId,
                     };
+                    copy.ClearContextDependentProps();
                     mergedContentSchema.Fields[fieldSchema.FieldName] = copy;
                 }
                 else if (!mergedContentSchema.Fields.ContainsKey(fieldSchema.FieldName))
