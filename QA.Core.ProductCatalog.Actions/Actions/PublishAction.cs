@@ -12,6 +12,7 @@ using QA.Core.Models;
 using Quantumart.QP8.BLL.Services.DTO;
 using System.Transactions;
 using QA.Core.Logger;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions
 {

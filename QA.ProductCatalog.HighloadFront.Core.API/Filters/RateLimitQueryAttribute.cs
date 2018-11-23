@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Filters;
-using QA.DPC.Core.Helpers;
+using QA.Core.Cache;
 using QA.ProductCatalog.HighloadFront.Elastic;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Filters

@@ -20,8 +20,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
-    <Compile Include="HighloadApiMethod.cs" />
-    <Compile Include="HighloadApiMethodProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
