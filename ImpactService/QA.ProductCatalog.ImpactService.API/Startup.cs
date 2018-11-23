@@ -23,9 +23,6 @@ namespace QA.ProductCatalog.ImpactService.API
         // This method gets called by the runtime. Use this method to add services to the container
         public void ConfigureServices(IServiceCollection services)
         {
-            // Add framework services.
-            services.AddApplicationInsightsTelemetry(Configuration);
-
             services.AddOptions();
 
             services.Configure<ConfigurationOptions>(Configuration);
@@ -35,8 +32,6 @@ namespace QA.ProductCatalog.ImpactService.API
             services.AddMemoryCache();
 
             services.AddScoped(typeof(ISearchRepository), typeof(ElasticSearchRepository));
-            //services.AddSingleton<ILogger>(n => ;
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

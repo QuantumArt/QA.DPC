@@ -55,6 +55,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             LogStartImpact("VSR", id, serviceIds);
 
+            _calc.Region = region;
             result = result ?? await CorrectProductWithScale(id, region, useMacroRegionParameters, searchOptions);
             result = result ?? CalculateImpact(searchOptions.HomeRegionData);
 
@@ -77,7 +78,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 try
                 {
                     InitialTariffProperties = (JArray)Product["Parameters"];
-                    Product["Parameters"] = _calc.GetResultParameters(Scale, Product, useMacroRegionParameters);
+                    Product["Parameters"] = _calc.GetResultParameters(Scale, Product, region, useMacroRegionParameters);
                 }
                 catch (Exception ex)
                 {
