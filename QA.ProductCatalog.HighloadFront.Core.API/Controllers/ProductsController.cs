@@ -79,7 +79,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("{type}"), HttpPost]
         public async Task<ActionResult> GetByType([FromBody]object json, string type, string language = null, string state = null)
         {
-            var options = new ProductsOptions(json, _options) {Type = type?.TrimStart('@')};
+            var options = new ProductsOptions(json, _options)
+            {
+                Type = type?.TrimStart('@'),
+                CacheForSeconds = 0
+            };
             try
             {
                 return await GetSearchActionResult(options, language, state);
@@ -97,7 +101,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("{id:int}"), HttpPost]
         public async Task<ActionResult> GetById([FromBody]object json, int id, string language = null, string state = null)
         {
-            var options = new ProductsOptions(json, _options) {Id = id};
+            var options = new ProductsOptions(json, _options)
+            {
+                Id = id,
+                CacheForSeconds = 0                
+            };
             try
             {
                 return await GetByIdActionResult(options, language, state);
@@ -138,7 +146,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<ActionResult> Search([FromBody]object json, string language = null, string state = null)
         {
-            var options = new ProductsOptions(json, _options);
+            var options = new ProductsOptions(json, _options) {CacheForSeconds = 0};
             try
             {
                 return await GetSearchActionResult(options, language, state);
