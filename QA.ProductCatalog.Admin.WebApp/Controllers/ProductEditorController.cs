@@ -77,7 +77,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .Select(x => x.Value)
                 .FirstOrDefault();
 
-            int productTypeId = Int32.Parse(productTypeField);
+            Int32.TryParse(productTypeField, out int productTypeId);
 
             return _contentDefinitionService
                 .GetEditorDefinition(productTypeId, qpArticle.ContentId, isLive);

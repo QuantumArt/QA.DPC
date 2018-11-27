@@ -37,7 +37,7 @@
 </head>
 <body>
   <div id="editor"></div>
-  <script src="~/Scripts/Bundles/ProductEditor/MyEditor/Index.js"></script>
+  <script src="@Url.VersionedContent("~/Scripts/Bundles/ProductEditor/MyEditor/Index.js")"></script>
 </body>
 </html>
 ```
@@ -126,7 +126,17 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 ![](./DefinitionEditorDictionaries.png)
 
-10. Сохраняем сначала изменения в XML, а потом статью с описанием продукта:
+10. При большом желании можно добавить XAML-ссылки на описание контентов, и зациклить описание продукта на себя:
+
+```xml
+<Content x:Name="__ReferenceID0" ContentId="290" xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <EntityField CloningMode="UseExisting" FieldId="1140" FieldName="Children">
+    <x:Reference>__ReferenceID0</x:Reference>
+  </EntityField>
+</Content>
+```
+
+11. Сохраняем сначала изменения в XML, а потом статью с описанием продукта:
 
 ![](./DefinitionEditorSave.png)
 ![](./ProductDefinitionSave.png)
