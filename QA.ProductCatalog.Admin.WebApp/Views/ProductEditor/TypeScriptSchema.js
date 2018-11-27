@@ -48,6 +48,7 @@ function compileEditorDataInterfaces(mergedSchemas) {
  * @see ProductEditorController.TypeScriptSchema()
  */
 import { IMSTArray, IMSTMap } from "mobx-state-tree";
+// @ts-ignore
 import { EntityObject, ExtensionObject, TablesObject } from "Models/EditorDataModels";
 
 type IArray<T> = IMSTArray<any, any, T>;
