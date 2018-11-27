@@ -72,13 +72,14 @@ export class DevicesWarningBlock extends Component<DevicesWarningBlockProps> {
   }
 
   render() {
-    const { marketingDevice } = this.props;
     const regionTitles = this.notFoundRegions.map(region => region.Title);
     return regionTitles.length > 0 ? (
       <Col md={12}>
         <Callout intent={Intent.DANGER}>
-          Внимание! Для городов {regionTitles.join(", ")} для оборудования {marketingDevice.Title}{" "}
-          не заданы параметры: Цена продажи, Цена аренды!
+          Внимание! Для городов {regionTitles.join(", ")} проверьте корректность заполнения
+          параметров: {!this.saleUnavailable && "Цена продажи"}
+          {!this.saleUnavailable && !this.rentUnavailable && ", "}
+          {!this.rentUnavailable && "Цена аренды"}!
         </Callout>
       </Col>
     ) : null;
