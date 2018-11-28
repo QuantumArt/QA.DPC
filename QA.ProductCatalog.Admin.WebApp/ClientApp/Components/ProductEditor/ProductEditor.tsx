@@ -3,6 +3,7 @@ import qs from "qs";
 import { provider, inject } from "react-ioc";
 import { Observer } from "mobx-react";
 import { Grid } from "react-flexbox-grid";
+import { LocaleContext } from "react-lazy-i18n";
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
 import { RelationsConfig } from "Components/ArticleEditor/ArticleEditor";
 import { DataContext } from "Services/DataContext";
@@ -115,7 +116,7 @@ export class ProductEditor extends Component<ProductEditorProps> {
     }
 
     return (
-      <>
+      <LocaleContext.Provider value={this._editorSettings.UserLocale}>
         <Grid fluid>
           {isFunction(children) ? (
             children(entity, contentSchema)
@@ -124,7 +125,7 @@ export class ProductEditor extends Component<ProductEditorProps> {
           )}
         </Grid>
         <Observer>{() => this._overlayPresenter.overlays.peek()}</Observer>
-      </>
+      </LocaleContext.Provider>
     );
   }
 }

@@ -33,6 +33,8 @@ export interface Translate {
   (strings: TemplateStringsArray, ...values: any[]): any;
   /** Current Locale */
   locale: string | null;
+  /** Translation Provider */
+  Provider: (props: { children: ReactNode }) => ReactNode;
 }
 
 interface Resources {
@@ -51,13 +53,19 @@ interface Translatable {
 /** Default translate function with empty resources */
 const emptyTranslate = makeTranslate(null, null);
 
+const TranslateContext = createContext(emptyTranslate);
+
 /**
  * React 16.7 Hook for loading translate function
  * @example
  * const tr = useTranslation(lang => import(`./MyComponent.${lang}.jsx`));
  * return <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>
  */
-export function useTranslation(load: LoadResources) {
+export function useTranslation(load?: LoadResources) {
+  if (!load) {
+    return useContext(TranslateContext);
+  }
+
   const forceUpdate = useForceUpdate();
   const locale = useContext(LocaleContext);
   const ref = useRef<Translatable>(null);
@@ -75,7 +83,7 @@ function useForceUpdate() {
 }
 
 interface TranslationProps {
-  load: LoadResources;
+  load?: LoadResources;
   children: (translate: Translate) => ReactNode;
 }
 
@@ -96,8 +104,16 @@ export class Translation extends Component<TranslationProps> {
 
   render() {
     const { load, children } = this.props;
+    if (!load) {
+      // @ts-ignore
+      return createElement(TranslateContext.Consumer, null, translate => children(translate));
+    }
     loadResources(this, this.context, load, this._forceUpdate);
-    return children(this._translate);
+    return createElement(
+      TranslateContext.Provider,
+      { value: this._translate },
+      children(this._translate)
+    );
   }
 }
 
@@ -116,7 +132,21 @@ export class Translation extends Component<TranslationProps> {
  *   }
  * }
  */
-export function withTranslation(load: LoadResources) {
+export function withTranslation(load?: LoadResources) {
+  if (!load) {
+    return function<T extends ComponentType<any>>(Wrapped: T): WithTranslation<T> {
+      class Translation extends Component {
+        static contextType = TranslateContext;
+        static displayName = `withTranslation(${Wrapped.displayName || Wrapped.name})`;
+        static WrappedComponent = Wrapped;
+
+        render() {
+          return createElement(Wrapped, { translate: this.context, ...this.props });
+        }
+      }
+      return hoistNonReactStatics(Translation, Wrapped) as any;
+    };
+  }
   return function<T extends ComponentType<any>>(Wrapped: T): WithTranslation<T> {
     class Translation extends Component {
       static contextType = LocaleContext;
@@ -128,8 +158,12 @@ export function withTranslation(load: LoadResources) {
       _forceUpdate = this.forceUpdate.bind(this);
 
       render() {
-        loadResources(this, this.context, load, this._forceUpdate);
-        return createElement(Wrapped, { translate: this._translate, ...this.props });
+        loadResources(this, this.context, load!, this._forceUpdate);
+        return createElement(
+          TranslateContext.Provider,
+          { value: this._translate },
+          createElement(Wrapped, { translate: this._translate, ...this.props })
+        );
       }
     }
     return hoistNonReactStatics(Translation, Wrapped) as any;
@@ -189,6 +223,11 @@ function makeTranslate(locale: string | null, resources: Resources | null): Tran
   }
 
   translate.locale = locale;
+
+  // @ts-ignore
+  translate.Provider = ({ children }: { children: ReactNode }) =>
+    // @ts-ignore
+    createElement(TranslateContext.Provider, { value: translate }, children);
 
   return translate;
 }

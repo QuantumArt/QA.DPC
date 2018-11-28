@@ -1,9 +1,16 @@
-import { IMSTMap, IStateTreeNode } from "mobx-state-tree";
+import { ObservableMap, IObservableArray } from "mobx";
+import { IStateTreeNode } from "mobx-state-tree";
 import { isObject } from "Utils/TypeChecks";
 import { ValidatableObject } from "mst-validation-mixin";
 
+export interface IArray<T extends ArticleObject> extends IObservableArray<T> {}
+
+export interface IMap<T extends ArticleObject> extends ObservableMap<string, T> {
+  put(value: T | Object): T;
+}
+
 export interface TablesObject {
-  readonly [contentName: string]: IMSTMap<any, any, EntityObject>;
+  readonly [contentName: string]: IMap<EntityObject>;
 }
 
 /** Объект, содержащий поля нормальной статьи или статьи-расширения */

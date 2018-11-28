@@ -23,6 +23,7 @@ import { ParameterFields } from "./ParameterFields";
 import { PublishButtons } from "./PublishButtons";
 import { DevicesOnTariffsBlock } from "./DevicesOnTariffsBlock";
 import { ActionsByDeviceBlock } from "./ActionsByDeviceBlock";
+import { DevicesWarningBlock } from "./DevicesWarningBlock";
 
 interface DevicesTabProps {
   model: Product;
@@ -77,40 +78,49 @@ export class DevicesTab extends Component<DevicesTabProps> {
   );
 
   private renderDevices = (props: FieldEditorProps) => {
+    const fixConnectTariff = this.props.model;
+    const marketingDevice = props.model as MarketingProduct;
     const fieldSchema = props.fieldSchema as RelationFieldSchema;
     return (
-      <RelationFieldAccordion
-        {...props}
-        canCloneEntity
-        canRemoveEntity
-        canClonePrototype
-        columnProportions={[9, 3, 3, 1]}
-        displayFields={[
-          regionsDisplayField,
-          rentPriceDisplayField,
-          salePriceDisplayField,
-          (device: Product) => (
-            <PublicationStatusIcons
-              model={device}
-              contentSchema={fieldSchema.RelatedContent}
-              publicationContext={this.publicationContext}
-            />
-          )
-        ]}
-        filterItems={this.filterModel.filterProducts}
-        highlightItems={this.filterModel.highlightProduct}
-        fieldOrders={["Modifiers", "Regions", "Parameters"]}
-        fieldEditors={{
-          Type: IGNORE,
-          MarketingProduct: IGNORE,
-          Parameters: this.renderParameters,
-          Regions: this.renderRegions
-        }}
-        onMountEntity={(product: Product) => product.setTouched("Regions")}
-        entityActions={(product: Product) => (
-          <PublishButtons model={product} contentSchema={fieldSchema.RelatedContent} />
-        )}
-      />
+      <>
+        <DevicesWarningBlock
+          fixConnectTariff={fixConnectTariff}
+          marketingDevice={marketingDevice}
+        />
+        <RelationFieldAccordion
+          model={marketingDevice}
+          fieldSchema={fieldSchema}
+          canCloneEntity
+          canRemoveEntity
+          canClonePrototype
+          columnProportions={[9, 3, 3, 1]}
+          displayFields={[
+            regionsDisplayField,
+            rentPriceDisplayField,
+            salePriceDisplayField,
+            (device: Product) => (
+              <PublicationStatusIcons
+                model={device}
+                contentSchema={fieldSchema.RelatedContent}
+                publicationContext={this.publicationContext}
+              />
+            )
+          ]}
+          filterItems={this.filterModel.filterProducts}
+          highlightItems={this.filterModel.highlightProduct}
+          fieldOrders={["Modifiers", "Regions", "Parameters"]}
+          fieldEditors={{
+            Type: IGNORE,
+            MarketingProduct: IGNORE,
+            Parameters: this.renderParameters,
+            Regions: this.renderRegions
+          }}
+          onMountEntity={(product: Product) => product.setTouched("Regions")}
+          entityActions={(product: Product) => (
+            <PublishButtons model={product} contentSchema={fieldSchema.RelatedContent} />
+          )}
+        />
+      </>
     );
   };
 

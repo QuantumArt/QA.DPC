@@ -4,6 +4,11 @@ export class EditorSettings {
   ArticleId?: number;
   /** Id описания продукта */
   ProductDefinitionId: number;
+  /**
+   * ISO-код локали текущего пользователя
+   * @example "en-US", "ru-RU", "kk-KZ"
+   */
+  UserLocale: string;
 }
 
 /** URL-параметры корневого CustomAction */
