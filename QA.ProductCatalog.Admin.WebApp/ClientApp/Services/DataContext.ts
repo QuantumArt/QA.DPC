@@ -35,6 +35,7 @@ export class DataContext<TTables extends TablesObject = TablesObject> {
   private _nextId = -1;
   private _defaultSnapshots: DefaultSnapshots = null;
   private _tablesType: ModelType<TablesSnapshot, TablesObject> = null;
+  /** Набор таблиц статей-сущностей. Каждая таблица — ES6 Map */
   public tables: TTables = null;
 
   public initSchema(mergedSchemas: ContentSchemasById) {
@@ -65,6 +66,11 @@ export class DataContext<TTables extends TablesObject = TablesObject> {
     }
   }
 
+  /**
+   * Создать статью в указанном конетнте.
+   * @param contentName Имя контента
+   * @param properties Значения полей статьи.
+   */
   @action
   public createEntity<T extends EntityObject = EntityObject>(
     contentName: string,
@@ -80,6 +86,10 @@ export class DataContext<TTables extends TablesObject = TablesObject> {
     return entity;
   }
 
+  /**
+   * Удалить статью. Статья удаляется только из памяти и НЕ УДАЛЯЕТСЯ НА СЕРВЕРЕ.
+   * @param entity Статья для удаления
+   */
   @action
   public deleteEntity(entity: EntityObject) {
     const contentName = getType(entity).name;
