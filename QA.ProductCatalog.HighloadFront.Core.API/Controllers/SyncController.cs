@@ -27,13 +27,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         private readonly ITaskService _taskService;
         private readonly DataOptions _dataOptions;
 
-        public SyncController(ILogger logger, ProductManager manager, IElasticConfiguration configuration, ITaskService taskService, IOptions<DataOptions> optionsAccessor)
+        public SyncController(ILogger logger, ProductManager manager, IElasticConfiguration configuration, ITaskService taskService, DataOptions options)
         {
             Logger = logger;
             Manager = manager;
             _configuration = configuration;
             _taskService = taskService;
-            _dataOptions = optionsAccessor.Value;
+            _dataOptions = options;
         }
 
         [HttpPut]

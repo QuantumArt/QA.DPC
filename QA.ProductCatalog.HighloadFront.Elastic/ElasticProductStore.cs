@@ -40,10 +40,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             ServicePointManager.DefaultConnectionLimit = ConnectionConfiguration.DefaultConnectionLimit;
         }
         
-        public ElasticProductStore(IElasticConfiguration config, IOptions<SonicElasticStoreOptions> optionsAccessor, ILogger logger)
+        public ElasticProductStore(IElasticConfiguration config, SonicElasticStoreOptions options, ILogger logger)
         {
             Configuration = config;
-            Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
+            Options = options;
             Logger = logger;
         }
 
@@ -527,7 +527,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             JProperty result;
             var actualSeparator = GetActualSeparator(field, disabledOrFields);
-            var disableLike = disableLikeFields.Contains(field);
+            var disableLike = disableLikeFields != null && disableLikeFields.Contains(field);
             var actualValue = GetActualValue(field, value, disabledNotFields, out var hasNegation);
 
             if (actualValue == "null")
@@ -556,7 +556,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             hasNegation = !string.IsNullOrEmpty(Options.NegationMark)
                           && (value.StartsWith(Options.NegationMark))
-                          && !disabledNotFields.Contains(field);
+                          && (disabledNotFields == null || !disabledNotFields.Contains(field));
 
             return (hasNegation) ? value.Substring(Options.NegationMark.Length) : value;
         }
@@ -564,7 +564,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private string GetActualSeparator(string field, string[] disabledOrFields)
         {
             var actualSeparator = !string.IsNullOrWhiteSpace(Options.ValueSeparator) ? Options.ValueSeparator : BaseSeparator;
-            actualSeparator = disabledOrFields.Contains(field) ? null : actualSeparator;
+            if (disabledOrFields != null)
+            {
+                actualSeparator = disabledOrFields.Contains(field) ? null : actualSeparator;
+            }
             return actualSeparator;
         }
 

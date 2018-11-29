@@ -3,9 +3,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
-using QA.ProductCatalog.HighloadFront.Options;
 
-namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
+namespace QA.ProductCatalog.HighloadFront.Options
 {
     public class ProductOptionsParser
     {
@@ -29,7 +28,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
             var exceptKeys = new[] {"sort", "order", "fields", "page", "per_page", "disable_or", "disable_not", "disable_like", "customerCode" };
             var filters = queryCollection.Where(n => !exceptKeys.Contains(n.Key)).ToArray();
 
-            var result = new ProductsOptions
+            var result = new ProductsOptions()
             {
                 Sort = sort,
                 OrderDirection = order,

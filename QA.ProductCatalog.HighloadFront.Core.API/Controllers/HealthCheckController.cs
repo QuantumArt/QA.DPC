@@ -19,10 +19,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private readonly DataOptions _options;
 
-        public HealthCheckController(IElasticConfiguration elasticConfiguration, IOptions<DataOptions> options)
+        public HealthCheckController(IElasticConfiguration elasticConfiguration, DataOptions options)
         {
             _elasticConfiguration = elasticConfiguration;
-            _options = options.Value;
+            _options = options;
         }
 
         public async Task<ActionResult> HealthCheck(bool isSync)

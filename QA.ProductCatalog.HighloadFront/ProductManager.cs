@@ -21,13 +21,10 @@ namespace QA.ProductCatalog.HighloadFront
 
         protected ILogger Logger { get; }
 
-        protected SonicOptions Options { get; }
-
-        public ProductManager(IProductStore store, IOptions<SonicOptions> optionsAccessor, ILogger logger, IProductPostProcessor productPostProcessor)
+        public ProductManager(IProductStore store, ILogger logger, IProductPostProcessor productPostProcessor)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
             Logger = logger;
-            Options = optionsAccessor?.Value ?? new SonicOptions();
             _productPostProcessor = productPostProcessor;
         }
 

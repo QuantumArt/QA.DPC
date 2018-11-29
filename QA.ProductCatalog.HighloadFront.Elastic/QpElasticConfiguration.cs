@@ -34,7 +34,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             IContentProvider<HighloadApiMethod> methodProvider,
             IVersionedCacheProvider2 cacheProvider,
             ILogger logger,
-            IOptions<DataOptions> options
+            DataOptions options
         )
         {
             _indexProvider = indexProvider;
@@ -43,7 +43,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _methodProvider = methodProvider;
             _cacheProvider = cacheProvider;
             _logger = logger;
-            _options = options.Value;
+            _options = options;
         }
 
         public IEnumerable<ElasticIndex> GetElasticIndices()

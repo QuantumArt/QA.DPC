@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using QA.Core;
 using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Elastic;
@@ -36,7 +37,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     [OnlyAuthUsers]
     public class ProductsController : Controller
     {
-        private static readonly Regex ParamsToReplace = new Regex(@"\|\|(?<name>[\w]+)(?<type>\:[\w]+)?\|\|", RegexOptions.Compiled | RegexOptions.Multiline);
+        private static readonly Regex ParamsToReplace = new Regex(
+            @"\|\|(?<name>[\w]+)\:*(?<constraints>(?:[^|]|\|(?!\|))+)?\|\|", 
+            RegexOptions.Compiled | RegexOptions.Singleline
+        );
+        
+        private static readonly Regex ConstaintsToProcess = new Regex(
+            @"((?<name>\w+)\((?<value>(?:[^\)\:]|(?<!\))\)|(?<!\))\:)+)\))+", 
+            RegexOptions.Compiled | RegexOptions.Singleline
+        );
 
         private readonly ProductManager _manager;
 
@@ -49,10 +58,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         private readonly IMemoryCache _cache;
         
 
-        public ProductsController(ProductManager manager, IOptions<SonicElasticStoreOptions> options, ILogger logger, IElasticConfiguration configuration, IMemoryCache cache)
+        public ProductsController(ProductManager manager, SonicElasticStoreOptions options, ILogger logger, IElasticConfiguration configuration, IMemoryCache cache)
         {
             _manager = manager;
-            _options = options.Value;
+            _options = options;
             _logger = logger;
             _configuration = configuration;
             _cache = cache;
@@ -64,6 +73,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("{type}")]
         public async Task<ActionResult> GetByType(ProductsOptions options, string language = null, string state = null)
         {
+            options.ElasticOptions = _options;
+            options.ApplyQueryCollection(Request.Query);
             try
             {
                 return await GetSearchActionResult(options, language, state);
@@ -125,6 +136,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
         public async Task<ActionResult> GetById(ProductsOptions options, string language = null, string state = null)
         {
+            options.ElasticOptions = _options;
+            options.ApplyQueryCollection(Request.Query);
             try
             {
                 return await GetByIdActionResult(options, language, state);
@@ -162,6 +175,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<ActionResult> Search(ProductsOptions options, string language = null, string state = null)
         {
+            options.ElasticOptions = _options;
+            options.ApplyQueryCollection(Request.Query);          
             try
             {
                 return await GetSearchActionResult(options, language, state);
@@ -296,21 +311,89 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 var key = m.Groups[0].Value;
                 var name = m.Groups["name"].Value;
-                var type = m.Groups["type"].Value;
+                var constr = m.Groups["constraints"].Value;
+                var constraintsMatches = ConstaintsToProcess.Matches(constr);
+                var constraints = new Dictionary<string, string>();
+                string defaultValue = null;
+                foreach (Match cm in constraintsMatches)
+                {
+                    var cname = cm.Groups["name"].Value;
+                    var cvalue = m.Groups["value"].Value;
+                    if (cname == "default")
+                    {
+                        defaultValue = cvalue;
+                    }
+                    else
+                    {
+                        constraints[cname] = cvalue;
+                    }
+                }
+                
+                
                 var param = (string)requestQuery[name];
 
-                if (ValidateParam(param, type))
+                if (ValidateParam(param, constraints))
                 {
                     result.Add(key, param);
+                }
+                else if (defaultValue != null)
+                {
+                    result.Add(key, defaultValue);
                 }
             }
 
             return result;
         }
-
-        private bool ValidateParam(string value, string type)
+        
+        private static bool AllInt(string s)
         {
-            return !(type == "int" && !int.TryParse(value, out _));
+            return s.Split(',').All(n => int.TryParse(n.Trim(), out _));
+        }
+        
+        private static bool AllDecimal(string s)
+        {
+            return s.Split(',').All(n => decimal.TryParse(n.Trim(), out _));
+        }
+
+
+        private bool ValidateParam(string value, Dictionary<string, string> constraints)
+        {
+            var result = true;
+            foreach (var key in constraints.Keys)
+            {
+                var constraint = constraints[key];
+                switch (key)
+                {
+                    case "type":
+                        switch (constraint)
+                        {
+                            case "int":
+                                result &= int.TryParse(value, out _);
+                                break;
+                            case "decimal":
+                                result &= decimal.TryParse(value, out _);
+                                break;
+                            case "listofint":
+                                result &= AllInt(value); 
+                                break;
+                            case "listofdecimal":
+                                result &= AllDecimal(value); 
+                                break;                                
+                        }
+                        break;
+                    
+                    case "regex":
+                        Regex re = new Regex(value);
+                        result &= re.IsMatch(value);
+                        break;
+                }
+
+                if (!result) break;
+
+            }
+
+            return result;
+
         }
 
 

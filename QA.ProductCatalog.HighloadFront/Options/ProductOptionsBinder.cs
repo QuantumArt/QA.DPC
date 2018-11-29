@@ -8,9 +8,9 @@ namespace QA.ProductCatalog.HighloadFront.Options
     public class ProductOptionsBinder: IModelBinder
     {
 
-        private IOptions<SonicElasticStoreOptions> _options;
+        private SonicElasticStoreOptions _options;
         
-        public ProductOptionsBinder(IOptions<SonicElasticStoreOptions> options)
+        public ProductOptionsBinder(SonicElasticStoreOptions options)
         {
             _options = options;
         }
