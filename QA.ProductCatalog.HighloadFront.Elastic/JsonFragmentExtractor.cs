@@ -21,10 +21,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public static async Task<int> ExtractJsonFragment(string textToSearch, TextReader reader, StreamWriter writer, int? depthToSearch = null)
         {
-            bool inside = false, startExport = false, exporting = false;
+            bool inside = false, startExport = false, exporting = false, escaped = false;
             int depth = 0, exportDepth = 0, l = 0, batchSize, count = 1, found = 0, entityNumber = 0;
-            char prev = (char)0;
-            char pprev = (char)0;
             writer.Write("[");
             var findInWhole = !depthToSearch.HasValue;
             int deep = depthToSearch ?? 0;
@@ -70,10 +68,20 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                         }
                         continue;
                     }
-                    if (c == '"')
+                    
+                    if (c == '\\')
                     {
-                        if (prev != '\\' || pprev == '\\')
-                            inside = !inside;
+                        escaped = !escaped;
+                    }
+                    
+                    if (c == '"' && !escaped)
+                    {
+                       inside = !inside;
+                    }
+
+                    if (c != '\\')
+                    {
+                        escaped = false;
                     }
 
                     if (!startExport && !findInWhole && depth >= deep)
@@ -96,9 +104,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                             found = 0;
                         }
                     }
-
-                    pprev = prev;
-                    prev = c;
                 }
             }
 
