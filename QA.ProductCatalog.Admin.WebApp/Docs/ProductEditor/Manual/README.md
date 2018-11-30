@@ -406,7 +406,11 @@ interface ExtensionFieldSchema extends FieldSchema {
 ## Форма редактирования статьи
 
 Для отображения и редактрования статьи в виде формы нужно использовать компонент `<EntityEditor>` для статьи-сущности,
-или `<ExtensionEditor>` для статьи-связи. См. `~\ClientApp\Components\ArticleEditor\`. Пример:
+или `<ExtensionEditor>` для статьи-связи. См. `~\ClientApp\Components\ArticleEditor\`.
+
+![](./EntityEditorForm.png)
+
+Пример:
 
 ```jsx
 import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
@@ -539,6 +543,8 @@ const region: Region;
 Посмотреть их работу можно на тестовой странице  
 `http://{host}:{port}/ProductEditor/ComponentLibrary?customerCode={customer_code}`
 
+![](./ComponentLibrary.png)
+
 <br>
 
 ## Редакторы полей-связей
@@ -549,21 +555,40 @@ const region: Region;
 
 * `<RelationFieldTable>` — Отображение поля в виде таблицы.  
   Поддерживает кастомную подсветку элементов, сортировку, фильтрацию и realtime-валидацию.
+
+  ![](./RelationFieldTable.png)
+
 * `<RelationFieldTags>` — Отображение поля в виде списка тэгов.  
   Поддерживает кастомную сортировку элементов, фильтрацию и realtime-валидацию.
+
+  ![](./RelationFieldTags.png)
+
 * `<RelationFieldSelect>` — Отображение поля-связи в виде комбо-бокса с автокомплитом.  
   Требует `PreloadingMode.Eager` или `PreloadingMode.Lazy`.
+
+  ![](./RelationFieldSelect.png)
+
 * `<RelationFieldCheckList>` — Отображение поля-связи в виде списка чекбоксов.  
   Требует `PreloadingMode.Eager` или `PreloadingMode.Lazy`.
+
+  ![](./RelationFieldCheckList.png)
 
 Рекурсивные же отображают внутри себя `<EntityEditor>` для каждой связанной статьи. Поэтому они
 прокструют часть переданных свойств, таких как `fieldOrders`, `fieldEditors`, etc во внутренний `<EntityEditor>`.
 
 * `<RelationFieldForm>` — Отображение единичного поля-связи в виде раскрывающейся формы редактирования.
+
+  ![](./RelationFieldForm.png)
+
 * `<RelationFieldTabs>` — Отображение множественного поля-связи в виде вкладок (возможно вертикальных).  
   Поддерживает кастомную сортировку и фильтрацию элементов.
+
+  ![](./RelationFieldTabs.png)
+
 * `<RelationFieldAccordion>` — Отображение множественного поля-связи в виде раскрывающейся таблицы-аккордеона.  
   Поддерживает кастомную подсветку элементов, сортировку, фильтрацию и realtime-валидацию.
+
+  ![](./RelationFieldAccordion.png)
 
 Пример:
 
