@@ -45,6 +45,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         public async Task<string> SearchAsync(string type, string json)
         {
             var randomIndexes = GetRandomIndexes();
+           _exceptions.Clear();
             
             foreach (var index in randomIndexes)
             {
