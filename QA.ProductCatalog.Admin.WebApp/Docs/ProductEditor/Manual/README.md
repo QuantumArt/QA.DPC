@@ -1,4 +1,4 @@
-<aside style="position: fixed; top: 0; right: 10px">
+<aside style="position: fixed; top: 0; right: 10px; line-height: 1.2">
 
 * [Точка входа](#Точка-входа)
   * [CustomAction](#CustomAction)
@@ -27,6 +27,7 @@
   * [Привязка редакторов](#Привязка-редакторов)
 
 * [Отслеживание состояния публикации](#Отслеживание-состояния-публикации)
+* [Показ уведомлений](#Показ-уведомлений)
 
 </aside>
 <main style="width: 900px">
@@ -672,6 +673,8 @@ const region: Region;
 За отображение статусов публикации отвечает компонент `<PublicationStatusIcons>`. Он рисует две иконки статусов:
 `[S]` на Stage и `[L]` на Live. Зеленый цвет означает, что сохраненные изменения статей были синхронизированны с витриной. Оранжевый — что требуется публикация. Отсутствие иконки — что продукт не был опубликован на витрине еще ни разу.
 
+![](./PublicationStatusIcons.png)
+
 Пример использования:
 
 ```jsx
@@ -704,6 +707,41 @@ class CustomRelationFieldTable extends React.Component<FieldEditorProps> {
 
 <br>
 
-## TODO: Показ уведомлений
+## Показ уведомлений
+
+За показ уведомлений отвечает сервис `OverlayPresenter`. Пример использования:
+
+```jsx
+import { inject } from "react-ioc";
+import { OverlayPresenter } from "Services/OverlayPresenter";
+
+class MyComponent extends React.Component {
+  @inject overlayPresenter: OverlayPresenter;
+
+  async doSomething() {
+    // показать нотификацию в парвом нижнем углу
+    this.overlayPresenter.notify("Выполняется действие doSomething");
+
+    // показать модальный alert и дождаться нажатия на "Ok"
+    await this.overlayPresenter.alert(
+      <div>Выполняется действие doSomething</div>,
+      "Ok"
+    );
+
+    // показать модальный confirm и дождаться ответа пользователя
+    const result: boolean = await this.overlayPresenter.confirm(
+      <div>Вы уверены?</div>,
+      "Да",
+      "Нет"
+    );
+  }
+}
+```
+
+![](./OverlayNotify.png)
+
+![](./OverlayAlert.png)
+
+![](./OverlayConfirm.png)
 
 </main>
