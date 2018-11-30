@@ -73,8 +73,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("{type}")]
         public async Task<ActionResult> GetByType(ProductsOptions options, string language = null, string state = null)
         {
-            options.ElasticOptions = _options;
-            options.ApplyQueryCollection(Request.Query);
+            CorrectProductOptions(options);
             try
             {
                 return await GetSearchActionResult(options, language, state);
@@ -136,8 +135,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [ResponseCache(Location = ResponseCacheLocation.Any, VaryByHeader = "fields", Duration = 600)]
         public async Task<ActionResult> GetById(ProductsOptions options, string language = null, string state = null)
         {
-            options.ElasticOptions = _options;
-            options.ApplyQueryCollection(Request.Query);
+            CorrectProductOptions(options);
             try
             {
                 return await GetByIdActionResult(options, language, state);
@@ -175,8 +173,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<ActionResult> Search(ProductsOptions options, string language = null, string state = null)
         {
-            options.ElasticOptions = _options;
-            options.ApplyQueryCollection(Request.Query);          
+            CorrectProductOptions(options);
             try
             {
                 return await GetSearchActionResult(options, language, state);
@@ -185,6 +182,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return ElasticBadRequest(ex);
             }
+        }
+
+        private void CorrectProductOptions(ProductsOptions options)
+        {
+            options.ElasticOptions = _options;
+            options.ApplyQueryCollection(Request.Query);
+            options.ComputeArrays();
         }
         
         
@@ -310,41 +314,63 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             foreach (Match m in matches)
             {
                 var key = m.Groups[0].Value;
+                if (result.ContainsKey(key)) continue;
+                
                 var name = m.Groups["name"].Value;
                 var constr = m.Groups["constraints"].Value;
-                var constraintsMatches = ConstaintsToProcess.Matches(constr);
-                var constraints = new Dictionary<string, string>();
-                string defaultValue = null;
-                foreach (Match cm in constraintsMatches)
-                {
-                    var cname = cm.Groups["name"].Value;
-                    var cvalue = m.Groups["value"].Value;
-                    if (cname == "default")
-                    {
-                        defaultValue = cvalue;
-                    }
-                    else
-                    {
-                        constraints[cname] = cvalue;
-                    }
-                }
-                
-                
-                var param = (string)requestQuery[name];
+                var constraints = FillConstraints(ConstaintsToProcess.Matches(constr), out var defaultValue);
+                string[] values = requestQuery[name];
+                var replaceValue = GetReplaceValue(values, constraints, defaultValue);
 
-                if (ValidateParam(param, constraints))
+                if (replaceValue != null)
                 {
-                    result.Add(key, param);
+                    result.Add(key, replaceValue);
                 }
-                else if (defaultValue != null)
-                {
-                    result.Add(key, defaultValue);
-                }
+
             }
 
             return result;
         }
-        
+
+        private static Dictionary<string, string> FillConstraints(MatchCollection constraintsMatches, out string defaultValue)
+        {
+            var constraints = new Dictionary<string, string>();
+            defaultValue = null;
+            foreach (Match cm in constraintsMatches)
+            {
+                var cname = cm.Groups["name"].Value;
+                var cvalue = cm.Groups["value"].Value;
+                if (cname == "default")
+                {
+                    defaultValue = cvalue;
+                }
+                else
+                {
+                    constraints[cname] = cvalue;
+                }
+            }
+
+            return constraints;
+        }
+
+        private string GetReplaceValue(string[] values , Dictionary<string, string> constraints, string defaultValue)
+        {
+
+            var param = String.Join(",", values);
+
+            string replaceValue = null;
+            if (!String.IsNullOrEmpty(param) && ValidateParam(param, constraints))
+            {
+                replaceValue = param;
+            }
+            else if (defaultValue != null)
+            {
+                replaceValue = defaultValue;
+            }
+
+            return replaceValue;
+        }
+
         private static bool AllInt(string s)
         {
             return s.Split(',').All(n => int.TryParse(n.Trim(), out _));
@@ -373,17 +399,17 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                             case "decimal":
                                 result &= decimal.TryParse(value, out _);
                                 break;
-                            case "listofint":
+                            case "list_int":
                                 result &= AllInt(value); 
                                 break;
-                            case "listofdecimal":
+                            case "list_decimal":
                                 result &= AllDecimal(value); 
                                 break;                                
                         }
                         break;
                     
                     case "regex":
-                        Regex re = new Regex(value);
+                        Regex re = new Regex(constraint.Replace(@"\\", @"\"));
                         result &= re.IsMatch(value);
                         break;
                 }

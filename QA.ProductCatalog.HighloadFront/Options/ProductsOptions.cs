@@ -99,8 +99,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public int Id { get; set; }
         
         [ModelBinder(Name = FIELDS)]
-        public IList<string> PropertiesFilter { get; set; }
-
+        public string Fields { get; set; }
+        
         [ModelBinder(Name = PAGE)]
         public decimal? Page { get; set; }
         
@@ -133,7 +133,10 @@ namespace QA.ProductCatalog.HighloadFront.Options
         #region Computed properties
         
         [BindNever]
-        public IList<IElasticFilter> Filters { get; set; } 
+        public IList<IElasticFilter> Filters { get; set; }
+        
+        [BindNever]
+        public IList<string> PropertiesFilter { get; set; }
         
         [BindNever]
         public Dictionary<string, string> DataFilters { get; set; }
@@ -212,19 +215,20 @@ namespace QA.ProductCatalog.HighloadFront.Options
             return result;
         }
 
-        private string[] JTokenToStringArray(JToken fields)
+        private string[] JTokenToStringArray(JToken valuesToken, bool skipSplit = false)
         {
-            if (fields == null) return new string[] {};
+            if (valuesToken == null) return new string[] {};
             
-            if (fields is JArray array)
+            if (valuesToken is JArray array)
             {
                 return array.Select(n => n.Value<string>()).ToArray();
             }
 
-            return ((string) fields).Split(',').Select(n => n.Trim()).ToArray();
+            var values = (string) valuesToken;
+
+            return skipSplit ? new[] { values } : values.Split(',').Select(n => n.Trim()).ToArray();
         }
-
-
+        
         private IElasticFilter CreateFilter(string key, JToken token)
         {
             var name = GetParameterName(key, out var isDisjunction);
@@ -239,7 +243,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
                 };
             }
 
-            var values = JTokenToStringArray(token);
+            var values = JTokenToStringArray(token, true);
             var value = values.First();
             
             if (name == FREE_QUERY)
@@ -292,6 +296,24 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public string GetKey()
         {
             return _json != null ? $"Id: {Id}, Skip: {Skip}, Take:{Take}" + _json : null;
+        }
+
+        public void ComputeArrays()
+        {
+            PropertiesFilter = Fields?.Split(',').ToArray();
+            
+            DisableOr = (DisableOr == null || !DisableOr.Any())
+                ? new string[] { }
+                : DisableOr.SelectMany(n => n.Split(',')).ToArray();
+            
+            DisableNot = (DisableNot == null || !DisableNot.Any())
+                ? new string[] { }
+                : DisableNot.SelectMany(n => n.Split(',')).ToArray();
+            
+            DisableLike = (DisableLike == null || !DisableLike.Any())
+                ? new string[] { }
+                : DisableLike.SelectMany(n => n.Split(',')).ToArray();             
+         
         }
     }
 };

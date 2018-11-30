@@ -10,52 +10,9 @@ namespace QA.ProductCatalog.HighloadFront.Options
     {
         private static Regex RangeFilterRegex { get; } = new Regex(@"\[([^&=,\[\]]*),([^&=,\[\]]*)\]");
 
-        public static ProductsOptions Parse(IQueryCollection queryCollection, SonicElasticStoreOptions options)
-        {
-            if (!queryCollection.Any()) return null;
-
-            var properties = queryCollection;
-
-            var sort = properties["sort"].FirstOrDefault();
-            var order = properties["order"].FirstOrDefault();
-            var fields = properties["fields"].FirstOrDefault();
-            var page = properties["page"].FirstOrDefault();
-            var perPage = properties["per_page"].FirstOrDefault();
-            var disableOr = properties["disable_or"].FirstOrDefault();
-            var disableNot = properties["disable_not"].FirstOrDefault();
-            var disableLike = properties["disable_like"].FirstOrDefault();
-
-            var exceptKeys = new[] {"sort", "order", "fields", "page", "per_page", "disable_or", "disable_not", "disable_like", "customerCode" };
-            var filters = queryCollection.Where(n => !exceptKeys.Contains(n.Key)).ToArray();
-
-            var result = new ProductsOptions()
-            {
-                Sort = sort,
-                OrderDirection = order,
-                PropertiesFilter = fields?.Split(',').ToList(),
-                DisableOr = string.IsNullOrEmpty(disableOr) ? new string[] { } : disableOr.Split(','),
-                DisableNot = string.IsNullOrEmpty(disableNot) ? new string[] { } : disableNot.Split(','),
-                DisableLike = string.IsNullOrEmpty(disableLike) ? new string[] { } : disableLike.Split(','),
-                Filters = filters.Select(n => CreateFilter(n, options)).ToList()
-            };
-
-            if (int.TryParse(page, out var intPage))
-            {
-                result.Page = intPage;
-            }
-
-            if (int.TryParse(perPage, out var intPerPage))
-            {
-                result.PerPage = intPerPage;
-            }
-
-            return result;
-        }
-
         public static IElasticFilter CreateFilter(KeyValuePair<string, StringValues> pair, SonicElasticStoreOptions options)
         {
-            bool isDisjunction;
-            var name = GetParameterName(pair.Key, options, out isDisjunction);
+            var name = GetParameterName(pair.Key, options, out var isDisjunction);
             if (name == "q")
             {
                 return new QueryFilter()
