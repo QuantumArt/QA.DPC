@@ -721,7 +721,76 @@ A также содержат Render Callback-и:
 * `ActionController` — Выполнение произвольных CustomAction.
   * `executeCustomAction()` — Найти CustomAction по Alias и выполнить его для заданной статьи.
 
+Также методы данных контроллеров помечены декораторами (их можно использовать и в кастомном коде):
+
+* `@modal` — запрет действий пользователя, пока выполняется асинхронный метод,
+
+* `@progress` — показать полосу **NProgress**, пока выполняется асинхронный метод,
+
+  ![](./ProgressDecorator.png)
+
+* `@handleError` — показать нотификацию "Произошла ошибка" при ошибке в методе,
+
+  ![](./HandleErrorDecorator.png)
+
+* `@trace` — вывести название и время выполнения метода в консоль (в режиме разработки)
+
+  ![](./TraceDecorator.png)
+
+```jsx
+class MyComponent extends React.Component {
+  @trace
+  @modal
+  @progress
+  @handleError
+  async doSomething() {}
+}
+```
+
 ### Кастомные действия
+
+Примр: Кнопка клонирования статьи и открытия редактора в соседней вкладке
+
+```jsx
+import { inject } from "react-ioc";
+
+class MyRelationFieldForm extends React.Component<FieldEditorProps> {
+  @inject actionController: ActionController;
+  @inject entityController: EntityController;
+
+  cloneAndOpenInNewTab = async (entity: EntityObject) => {
+    const { model, fieldSchema } = this.props;
+    // клонируем статью entity, связанную со статьей model
+    const clonedEntity = await this.entityController.cloneRelatedEntity(
+      model,
+      fieldSchema,
+      entity
+    );
+    // находим CustomAction Редактора по Alias "product_editor"
+    // и выполняем его для статьи-клона clonedEntity
+    await this._actionController.executeCustomAction(
+      "product_editor",
+      clonedEntity,
+      fieldSchema.RelatedContent
+    );
+  };
+
+  render() {
+    return (
+      <RelationFieldForm
+        {...this.props}
+        entityActions={() => (
+          <MenuItem
+            labelElement={<Icon icon="duplicate" />}
+            onClick={this.cloneAndOpenInNewTab}
+            text="Клонировать"
+          />
+        )}
+      />
+    );
+  }
+}
+```
 
 ### Сохранение подграфа статей
 
