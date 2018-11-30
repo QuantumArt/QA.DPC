@@ -11,7 +11,13 @@ namespace QA.ProductCatalog.ImpactService.API
             CachingInterval = 300;
             NegativeCachingInterval = 20;
             LoadDefaultServices = true;
+            HttpTimeout = 15;
+            FailuresBeforeCircuitBreaking = 3;
+            CircuitBreakingInterval = 60;
+
         }
+
+        private string[] _elasticUrls;
 
 
         public ElasticIndex[] ElasticIndexes { get; set; }
@@ -22,10 +28,25 @@ namespace QA.ProductCatalog.ImpactService.API
 
         public string ElasticBaseAddress { get; set; }
 
+        public string[] ElasticUrls
+        {
+            get
+            {
+                if (_elasticUrls != null) return _elasticUrls;
+                _elasticUrls = ElasticBaseAddress.Split(';').Select(n => n.Trim()).ToArray();
+                return _elasticUrls;
+            }
+        }
+
         public int CachingInterval { get; set; }
 
         public int NegativeCachingInterval { get; set; }
-
+        
+        public int HttpTimeout { get; set; }
+        
+        public int FailuresBeforeCircuitBreaking { get; set; }
+        
+        public int CircuitBreakingInterval { get; set; }
 
         public int RootRegionId { get; set; }
 
