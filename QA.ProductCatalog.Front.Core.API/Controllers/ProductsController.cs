@@ -23,12 +23,12 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         protected readonly DataOptions Options;
         
-        public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService, DataOptions options)
+        public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService, IOptions<DataOptions> options)
         {
             ProductService = productService;
             Logger = logger;
             DpcService = dpcService;
-            Options = options;
+            Options = options.Value;
         }
 
 
