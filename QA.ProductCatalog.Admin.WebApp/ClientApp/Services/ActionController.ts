@@ -13,9 +13,11 @@ const actionInfosByAlias: {
   [alias: string]: CustomActionInfo;
 } = {};
 
+/** Выполнение произвольных CustomAction */
 export class ActionController {
   @inject private _queryParams: EditorQueryParams;
 
+  /** Найти CustomAction по Alias и выполнить его для заданной статьи */
   @modal
   @handleError
   public async executeCustomAction(

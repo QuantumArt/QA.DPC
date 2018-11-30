@@ -23,6 +23,7 @@ import { EditorSettings, EditorQueryParams } from "Models/EditorSettingsModels";
 import { trace, modal, progress, handleError } from "Utils/Decorators";
 import { newUid, rootUrl } from "Utils/Common";
 
+/** Действия со статьями */
 export class EntityController {
   @inject private _editorSettings: EditorSettings;
   @inject private _queryParams: EditorQueryParams;
@@ -33,12 +34,14 @@ export class EntityController {
   @inject private _dataContext: DataContext;
   @inject private _overlayPresenter: OverlayPresenter;
 
+  /** Обновление статьи с сервера (несохраненные изменения остаются) */
   @trace
   @handleError
   public async refreshEntity(model: EntityObject, contentSchema: ContentSchema) {
     await this.loadPartialProduct(model, contentSchema, MergeStrategy.Refresh);
   }
 
+  /** Перезагрузка статьи с сервера (несохраненные изменения отбрасываются) */
   @trace
   @handleError
   public async reloadEntity(model: EntityObject, contentSchema: ContentSchema) {
@@ -79,6 +82,7 @@ export class EntityController {
     this._dataMerger.mergeTables(dataSnapshot, strategy);
   }
 
+  /** Открытие модального окна QP для редактирования статьи */
   @trace
   @handleError
   public editEntity(model: EntityObject, contentSchema: ContentSchema, isWindow = true) {
@@ -116,6 +120,7 @@ export class EntityController {
     });
   }
 
+  /** Опубликовать продграф статей начиная с заданной, согласно XML ProductDefinition  */
   @trace
   @handleError
   public async publishEntity(entity: EntityObject, contentSchema: ContentSchema) {
@@ -131,7 +136,7 @@ export class EntityController {
   @modal
   @progress
   @handleError
-  protected async publishProduct(entity: EntityObject) {
+  private async publishProduct(entity: EntityObject) {
     const response = await fetch(
       `${rootUrl}/ProductEditorCommand/PublishProduct?${qs.stringify({
         ...this._queryParams,
@@ -158,6 +163,7 @@ export class EntityController {
     }
   }
 
+  /** Удаление с статьи с сервера */
   @trace
   @handleError
   public async removeRelatedEntity(
@@ -180,7 +186,7 @@ export class EntityController {
   @modal
   @progress
   @handleError
-  protected async removePartialProduct(
+  private async removePartialProduct(
     parent: ArticleObject,
     fieldSchema: RelationFieldSchema,
     entity: EntityObject
@@ -226,6 +232,7 @@ export class EntityController {
     });
   }
 
+  /** Клонирование подграфа статей начиная с заданной, согласно XML ProductDefinition */
   @trace
   @modal
   @progress
@@ -283,6 +290,7 @@ export class EntityController {
     });
   }
 
+  /** Сохранение подграфа статей начиная с заданной, согласно XML ProductDefinition */
   @trace
   @handleError
   public async saveEntity(entity: EntityObject, contentSchema: ContentSchema) {
@@ -298,7 +306,7 @@ export class EntityController {
   @modal
   @progress
   @handleError
-  protected async savePartialProduct(entity: EntityObject, contentSchema: ContentSchema) {
+  private async savePartialProduct(entity: EntityObject, contentSchema: ContentSchema) {
     const errors = this._dataValidator.collectErrors(entity, contentSchema, true);
     if (errors.length > 0) {
       await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
