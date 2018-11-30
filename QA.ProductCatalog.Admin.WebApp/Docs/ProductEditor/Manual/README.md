@@ -18,6 +18,10 @@
     * [Предыдущие значения полей](#Предыдущие-значения-полей)
     * [DataContext](#DataContext)
   * [Схема](#Схема)
+* [Форма редактирования статьи](#Форма-редактирования-статьи)
+  * [Порядок полей](#Порядок-полей)
+  * [Редакторы полей](#Редакторы-полей)
+  * [Form Controls](#Form-Controls)
 
 </aside>
 <main style="width: 900px">
@@ -393,7 +397,137 @@ interface ExtensionFieldSchema extends FieldSchema {
 
 <br>
 
-## TODO: Форма редактирования статьи
+## Форма редактирования статьи
+
+Для отображения и редактрования статьи в виде формы нужно использовать компонент `<EntityEditor>` для статьи-сущности,
+или `<ExtensionEditor>` для статьи-связи. См. `~\ClientApp\Components\ArticleEditor\`. Пример:
+
+```jsx
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
+
+const region: Region;
+const contentSchema: ContentSchema;
+
+<EntityEditor model={region} contentSchema={contentSchema} />;
+```
+
+### Порядок полей
+
+Порядок полей по-умолчанию определяется порядком полей в QP. Но его можно переопределить в свойстве `fieldOrders`:
+
+```jsx
+import { EntityEditor } from "Components/ArticleEditor/EntityEditor";
+
+<EntityEditor
+  model={region}
+  contentSchema={contentSchema}
+  fieldOrders={["Title", "Parent"]}
+/>;
+```
+
+Поля, указанные в `fieldOrders` будут следовать в описанном порядке. А не указанные будут отображены после них.
+
+Также в свойстве `fieldOrders` можно определить порядок полей статьи-расширения. Они будут отображены на форме
+вместе с полями статьи-сущности. Но разные поля одного контента-расширения не должны перемешиваться с полями
+контента-сущности. Пример:
+
+```jsx
+interface Product extends EntityObject {
+  Title: string;
+  Type: "InternetTariff"
+  Type_Extension: {
+    InternetTariff: InternetTariff;
+  },
+  Order: number;
+}
+
+interface InternetTariff extends ExtensionObject {
+  Price: number;
+  Description: string;
+}
+
+const product: Product;
+
+<EntityEditor /* ... */ fieldOrders={[
+  "Title", "Type", // поля основной статьи
+  "Price", "Description", // поля статьи расширения
+  "Order" // поля основной статьи
+ ]} />
+```
+
+### Редакторы полей
+
+По-умолчанию, `<EntityEditor>` отображает все поля статьи с дефолтными редакторами полей. Но их можно переопределить
+в свойстве `fieldEditors`. Редактором поля является произвольный React Component с полями:
+
+```ts
+type FieldEditorProps = { model: ArticleObject; fieldSchema: FieldSchema };
+```
+
+```jsx
+import { IGNORE } from "Components/ArticleEditor/ArticleEditor";
+import {
+  StringFieldEditor,
+  NumericFieldEditor
+} from "Components/FieldEditors/FieldEditors";
+
+<EntityEditor
+  /* ... */ fieldEditors={{
+    Title: StringFieldEditor, // задаем полю Title редактор StringFieldEditor
+    Order: IGNORE, // скрываем поле Order; его значение остается неизменным
+    Type: "InternetTariff", // задаем полю Type константное значение "InternetTariff"; поле будет скрыто
+    Type_Extension: {
+      // настраиваем редакторы полей для контентов-расширений
+      InternetTariff: {
+        Price: NumericFieldEditor // задаем полю Price статьи-расширения редактор NumericFieldEditor
+      }
+    }
+  }}
+/>;
+```
+
+Также существует флаг `skipOtherFields`, который убирает отображение полей, не описанных в свойстве `fieldEditors`.
+
+В модуле `~/ClientApp/Components/FieldEditors/FieldEditors` реализованы стандартные редакторы для простых полей
+и полей связей, такие как `StringFieldEditor`, `FileFieldEditor`, `RelationFieldTable`, `RelationFieldAccordion`, etc.
+Если нас не удовлетворяют стандартные редакторы полей, мы можем написать свой, или переопределитиь свойства по-умолчанию для существующих редакторов.
+
+```jsx
+import { RelationFieldForm } from "Components/FieldEditors/FieldEditors";
+
+<EntityEditor
+  /* ... */ fieldEditors={{
+    // задаем полю MarketingProduct редактор RelationFieldForm
+    fMarketingProduct: props => <RelationFieldForm {...props} borderless />
+  }}
+/>;
+```
+
+### Form Controls
+
+Для разработки кастомных редакторов полей в модуле `~/ClientApp/Components/FormControls/FormControls` доступны стандартные компоненты, работающие с реактивными объектами MobX:
+
+* `<InputText>`
+* `<InputNumber>`
+* `<RadioGroup>`
+* `<Select>`
+* `<Datepicker>`
+* etc
+
+Они требуют два свойства (объект модели и имя поля):
+
+```ts
+type FormControlProps { model: Object; name: string; }
+```
+
+```jsx
+const region: Region;
+
+<InputText model={region} name="Title" />
+```
+
+Посмотреть их работу можно на тестовой странице  
+`http://{host}:{port}/ProductEditor/ComponentLibrary?customerCode={customer_code}`
 
 <br>
 
