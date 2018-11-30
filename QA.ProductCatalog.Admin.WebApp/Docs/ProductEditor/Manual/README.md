@@ -1,4 +1,4 @@
-<aside style="position: fixed; right: 10px">
+<aside style="position: fixed; top: 0; right: 10px">
 
 * [Точка входа](#Точка-входа)
   * [CustomAction](#CustomAction)
@@ -23,7 +23,10 @@
   * [Редакторы полей](#Редакторы-полей)
   * [Form Controls](#Form-Controls)
 * [Редакторы полей-связей](#Редакторы-полей-связей)
+
   * [Привязка редакторов](#Привязка-редакторов)
+
+* [Отслеживание состояния публикации](#Отслеживание-состояния-публикации)
 
 </aside>
 <main style="width: 900px">
@@ -653,7 +656,51 @@ const region: Region;
 
 <br>
 
-## TODO: Отслеживание состояния публикации
+## Отслеживание состояния публикации
+
+За состояние публикации продуктов отвечают сервисы `PublicationContext` и`PublicationTracker`. `PublicationTracker` с определенной периодичностью затягивает последние изменения из таблицы `dbo.Products` и обновляет статусы публикации продуктов на Stage и Live в `PublicationContext`. Настроить `PublicationTracker` можно в свойстве `publicationTrackerSettings` компонента `<ProductEditor>`. Или можно использовать настройки по-умолчанию.
+
+```jsx
+<ProductEditor
+  publicationTrackerSettings={{
+    contentNames: ["Product", "Region"] // отслеживать статусы пибликации контентов Product, Region
+    updateInterval: 10000 // затягивать изменения с периодичностью 10 сек
+  }}
+/>
+```
+
+За отображение статусов публикации отвечает компонент `<PublicationStatusIcons>`. Он рисует две иконки статусов:
+`[S]` на Stage и `[L]` на Live. Зеленый цвет означает, что сохраненные изменения статей были синхронизированны с витриной. Оранжевый — что требуется публикация. Отсутствие иконки — что продукт не был опубликован на витрине еще ни разу.
+
+Пример использования:
+
+```jsx
+import { inject } from "react-ioc";
+import { PublicationContext } from "Services/PublicationContext";
+import { FieldEditorProps } from "Components/ArticleEditor/ArticleEditor";
+import { PublicationStatusIcons } from "Components/PublicationStatusIcons/PublicationStatusIcons";
+
+class CustomRelationFieldTable extends React.Component<FieldEditorProps> {
+  @inject publicationContext: PublicationContext;
+
+  renderStatus = entity => (
+    <PublicationStatusIcons
+      model={entity}
+      contentSchema={this.props.fieldSchema.RelatedContent}
+      publicationContext={this.publicationContext}
+    />
+  );
+
+  render() {
+    return (
+      <RelationFieldTable
+        {...this.props}
+        displayFields={["Title", this.renderStatus]}
+      />
+    );
+  }
+}
+```
 
 <br>
 
