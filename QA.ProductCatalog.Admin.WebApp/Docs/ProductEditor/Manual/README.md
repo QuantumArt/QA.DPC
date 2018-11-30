@@ -28,6 +28,7 @@
   * [Кастомные действия](#Кастомные-действия)
   * [Сохранение подграфа статей](#Сохранение-подграфа-статей)
 * [Валидация](#Валидация)
+* [Локализация](#Локализация)
 * [Отслеживание состояния публикации](#Отслеживание-состояния-публикации)
 * [Показ уведомлений](#Показ-уведомлений)
 
@@ -92,7 +93,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 ![](./CreateCustomAction.png)
 
-<br>
+<br><hr><br>
 
 ## XML Описания продуктов
 
@@ -194,7 +195,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 ![](./DefinitionEditorSave.png)
 ![](./ProductDefinitionSave.png)
 
-<br>
+<br><hr><br>
 
 ## Схема TypeScript
 
@@ -209,7 +210,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 Кладем файл `TypeScriptSchema.ts` в папку редактора `~\Views\ProductEditor\MyEditor\` рядом с нашей точкой входа `MyEditor\Index.tsx`.
 
-<br>
+<br><hr><br>
 
 ## Инициализация редактора
 
@@ -244,7 +245,7 @@ const App = () => (
 и схему ее контента в Render Callback. На этом этапе мы можем либо написать свои компоненты,
 отображающие продукт по его данным и схеме, либо использовать стандартный компонент `<EntityEditor>`.
 
-<br>
+<br><hr><br>
 
 ## Модель данных
 
@@ -364,7 +365,7 @@ class MyComponent extends Component {
 }
 ```
 
-<br>
+<br><hr><br>
 
 ### Схема
 
@@ -403,7 +404,7 @@ interface ExtensionFieldSchema extends FieldSchema {
 идентификаторы и т.п. Она используется при построении форм редактора и валидации. Для каждого типа поля QP
 существует свой тип схемы, такой как `StringFieldSchema`, `NumericFieldSchema`, etc.
 
-<br>
+<br><hr><br>
 
 ## Форма редактирования статьи
 
@@ -547,7 +548,7 @@ const region: Region;
 
 ![](./ComponentLibrary.png)
 
-<br>
+<br><hr><br>
 
 ## Редакторы полей-связей
 
@@ -660,7 +661,7 @@ const region: Region;
 В этом случае любые поля-связи ссылающиеся на контент с именем `Region` будут использовать редактор `<RelationFieldTags>`,
 а с именем `Advantage` — `<RelationFieldTable>`.
 
-<br>
+<br><hr><br>
 
 ## Кнопки действий
 
@@ -797,7 +798,7 @@ class MyRelationFieldForm extends React.Component<FieldEditorProps> {
 TODO: Действия при сохранении  
 TODO: Разрешение конфликтов
 
-<br>
+<br><hr><br>
 
 ## Валидация
 
@@ -805,7 +806,14 @@ TODO: валидация полей и подсветка изменений
 TODO: валидация элементов поля-связи  
 TODO: валидация и подсветка изменений по подграфу
 
-<br>
+<br><hr><br>
+
+## Локализация
+
+TODO: проброс локали из QP  
+TODO: локализация компонентов
+
+<br><hr><br>
 
 ## Отслеживание состояния публикации
 
@@ -855,7 +863,7 @@ class CustomRelationFieldTable extends React.Component<FieldEditorProps> {
 }
 ```
 
-<br>
+<br><hr><br>
 
 ## Показ уведомлений
 
