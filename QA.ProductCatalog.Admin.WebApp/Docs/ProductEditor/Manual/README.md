@@ -22,6 +22,8 @@
   * [Порядок полей](#Порядок-полей)
   * [Редакторы полей](#Редакторы-полей)
   * [Form Controls](#Form-Controls)
+* [Редакторы полей-связей](#Редакторы-полей-связей)
+  * [Привязка редакторов](#Привязка-редакторов)
 
 </aside>
 <main style="width: 900px">
@@ -472,7 +474,7 @@ import {
 } from "Components/FieldEditors/FieldEditors";
 
 <EntityEditor
-  /* ... */ fieldEditors={{
+  fieldEditors={{
     Title: StringFieldEditor, // задаем полю Title редактор StringFieldEditor
     Order: IGNORE, // скрываем поле Order; его значение остается неизменным
     Type: "InternetTariff", // задаем полю Type константное значение "InternetTariff"; поле будет скрыто
@@ -496,12 +498,16 @@ import {
 import { RelationFieldForm } from "Components/FieldEditors/FieldEditors";
 
 <EntityEditor
-  /* ... */ fieldEditors={{
+  fieldEditors={{
     // задаем полю MarketingProduct редактор RelationFieldForm
-    fMarketingProduct: props => <RelationFieldForm {...props} borderless />
+    MarketingProduct: props => <RelationFieldForm {...props} borderless />
   }}
+  canSaveEntity
+  canRemoveEntity
 />;
 ```
+
+Также `<EntityEditor>` принимает настройки кнопок действий, которые можно совершить со статьей. Например, флаг `canSaveEntity` отвечает за доступность кнопки сохранения связанной статьи, а флаг `canRemoveEntity` за удаление статьи. Также принимаются коллбеки, выполняемые при нажатии на кнопку вместо стандартных действий, например `onCloneEntity` — вместо реального клонирования статьи. Полный список доступен в интерфейсе `EntityEditorProps`.
 
 ### Form Controls
 
@@ -531,7 +537,97 @@ const region: Region;
 
 <br>
 
-## TODO: Редакторы полей-связей
+## Редакторы полей-связей
+
+Для редактирования связей доступны обычные и рекурсивные редадкторы.
+
+Обычные просто отображают список связанных статей.
+
+* `<RelationFieldTable>` — Отображение поля в виде таблицы.  
+  Поддерживает кастомную подсветку элементов, сортировку, фильтрацию и realtime-валидацию.
+* `<RelationFieldTags>` — Отображение поля в виде списка тэгов.  
+  Поддерживает кастомную сортировку элементов, фильтрацию и realtime-валидацию.
+* `<RelationFieldSelect>` — Отображение поля-связи в виде комбо-бокса с автокомплитом.  
+  Требует `PreloadingMode.Eager` или `PreloadingMode.Lazy`.
+* `<RelationFieldCheckList>` — Отображение поля-связи в виде списка чекбоксов.  
+  Требует `PreloadingMode.Eager` или `PreloadingMode.Lazy`.
+
+Рекурсивные же отображают внутри себя `<EntityEditor>` для каждой связанной статьи. Поэтому они
+прокструют часть переданных свойств, таких как `fieldOrders`, `fieldEditors`, etc во внутренний `<EntityEditor>`.
+
+* `<RelationFieldForm>` — Отображение единичного поля-связи в виде раскрывающейся формы редактирования.
+* `<RelationFieldTabs>` — Отображение множественного поля-связи в виде вкладок (возможно вертикальных).  
+  Поддерживает кастомную сортировку и фильтрацию элементов.
+* `<RelationFieldAccordion>` — Отображение множественного поля-связи в виде раскрывающейся таблицы-аккордеона.  
+  Поддерживает кастомную подсветку элементов, сортировку, фильтрацию и realtime-валидацию.
+
+Пример:
+
+```jsx
+<RelationFieldAccordion
+  model={marketingProduct}
+  fieldSchema={contentSchema.Fields.Products as MultiRelationFieldSchema}
+  filterItems={(product: Product) => product.Regions.includes(region)}
+  sortItemsBy={(product: Product) => product._ServerId}
+  columnProportions={[1, 3]}
+  displayFields={[
+    (product: Product) => product.MarketingProduct,
+    (product: Product) => product.Regions.map(region => region.Title).join(", ")
+  ]}
+```
+
+Также рекурсивные редакторы принимают настройки кнопок действий, которые можно совершить с отдельной связанной статьей
+или с полем связи в целом. Например, флаг `canSaveEntity` отвечает за доступность кнопки сохранения связанной статьи,
+а флаг `canReloadRelation` за доступность кнопки перезагрузки всего поля связи с сервера. Также принимаются коллбеки,
+выполняемые при нажатии на кнопку вместо стандартных действий, например `onCloneEntity` — вместо реального клонирования статьи.
+`***Entity` относятся к кнопкам в выпадающем меню формы редактирования статьи, а `***Relaton` к кнопкам поля-связи.
+Полный список доступен в интерфейсе `ExpandableFieldEditorProps` в `~/ClientApp/FieldEditors/AbstractFieldEditor`.
+
+```jsx
+<RelationFieldAccordion
+  model={marketingProduct}
+  fieldSchema={contentSchema.Fields.Products as MultiRelationFieldSchema}
+  canReloadRelation // разрешить перезагрузку поля связи
+  canCloneEntity // разрешить клонирование связанной статьи
+  onCloneEntity={async (entity, cloneEntity) => {
+    console.log({ entity });
+    await cloneEntity(); // выполнить реальное клонирование
+  }}
+/>
+```
+
+### Привязка редакторов
+
+Привязать редакторы связей к полям можно двумя способами:
+
+* В свойстве `fieldEditors` компонентов `<EntityEditor>`, или `<RelationFieldForm>`, или `<RelationFieldTabs>`, или `<RelationFieldAccordion>` для каждого контента локально.
+
+```jsx
+<RelationFieldForm
+  fieldEditors={{
+    Products: props => (
+      <RelationFieldAccordion
+        {...props}
+        filterItems={product => product.Regions.length > 0}
+      />
+    )
+  }}
+/>
+```
+
+* В свойстве `relationEditors` компонента `<ProductEditor>` глобально.
+
+```jsx
+<ProductEditor
+  relationEditors={{
+    Advantage: RelationFieldTable,
+    Region: props => <RelationFieldTags {...props} sortItemsBy="Title" />
+  }}
+/>
+```
+
+В этом случае любые поля-связи ссылающиеся на контент с именем `Region` будут использовать редактор `<RelationFieldTags>`,
+а с именем `Advantage` — `<RelationFieldTable>`.
 
 ### TODO: Кастомные кнопки действий
 
