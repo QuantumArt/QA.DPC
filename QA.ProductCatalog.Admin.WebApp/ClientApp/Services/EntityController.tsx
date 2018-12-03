@@ -307,12 +307,6 @@ export class EntityController {
   @progress
   @handleError
   private async savePartialProduct(entity: EntityObject, contentSchema: ContentSchema) {
-    const errors = this._dataValidator.collectErrors(entity, contentSchema, true);
-    if (errors.length > 0) {
-      await this._overlayPresenter.alert(<ValidationSummay errors={errors} />, "OK");
-      return;
-    }
-
     const partialProduct = this._dataSerializer.serialize(entity, contentSchema);
 
     const response = await fetch(

@@ -27,6 +27,7 @@
 * [Кнопки действий](#Кнопки-действий)
   * [Кастомные действия](#Кастомные-действия)
   * [Сохранение подграфа статей](#Сохранение-подграфа-статей)
+  * [Конфликты при сохранении](#Конфликты-при-сохранении)
 * [Валидация](#Валидация)
 * [Локализация](#Локализация)
 * [Отслеживание состояния публикации](#Отслеживание-состояния-публикации)
@@ -91,7 +92,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 * `Selected contents` — Контент, статьи которого мы будем редактировать.
 * `URL` — `http://{адрес}/ProductEditor/Edit`, где `{адрес}` это адрес приложения `QA.ProductCatalog.Admin.WebApp`.
 
-![](./CreateCustomAction.png)
+![](./Images/CreateCustomAction.png)
 
 <br><hr><br>
 
@@ -101,7 +102,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 1.  Создаем новую статью в контенте `ProductDefinitions` (Описания продуктов)
 
-![](./ProductDefinitionTree.png)
+![](./Images/ProductDefinitionTree.png)
 
 2.  Заполняем следующие поля:
 
@@ -112,7 +113,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
    Или абсолютный путь: `~\Views\ProductEditor\MyEditor\Index`.
 * `XmlDefinition` — XML Описание (заполняем в отдельном окне)
 
-![](./ProductDefinitionForm.png)
+![](./Images/ProductDefinitionForm.png)
 
 ### Настройка контентов
 
@@ -121,7 +122,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 * `Только для чтения` — Использовать выбранный контент только для чтения. Каждый контент одного и того же типа (см. поле-классификатор `Type`) может быть включен в определение продукта сколько угодно раз с флагом `Только для чтения`, но только один раз без него (для редактирования).
 * `Грузить все простые поля` — Отображать в редакторе все простые поля (не связи) из QP, даже если они явно не включены в XML-описание.
 
-![](./DefinitionEditorContent.png)
+![](./Images/DefinitionEditorContent.png)
 
 ### Простые поля
 
@@ -131,7 +132,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 * `Имя поля` — Название поля в JSON (переопреледяет данные из QP).
 * `Имя поля для карточки` — Label для поля в редакторе (переопреледяет данные из QP).
 
-![](./DefinitionEditorField.png)
+![](./Images/DefinitionEditorField.png)
 
 ### Поля-связи
 
@@ -139,7 +140,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 * `При клонировании родительской сущности` **CloningMode** — Что делать со cвязью, когда клонируется родительская статья.
 * `При удалении родительской сущности или удалении связи` **DeletingMode** — Удалять )архивировать) ли статьи-связи вместе с родительской статьей
-* `При создании\обновлении` **UpdatingMode** — Применять ли изменения в статьях-связях при сохранении изменений родительской статьи.
+* `При создании\обновлении` **UpdatingMode** — Применять ли изменения в статьях-связях при сохранении изменений родительской статьи (см. [Сохранение подграфа статей](#Сохранение-подграфа-статей)).
 * `PreloadingMode` — Загружать ли все возможные значения поля-связи заранее. Возможные варианты:
   * `не загружать` **PreloadingMode.None** — Всегда выбирать статьи-связи в диалоговом окне QP
   * `загружать сразу` **PreloadingMode.Eager** — Заранее загрузить все возможные статьи связи для данного поля. Это позволит выбирать значения поля-связи из комбо-бокса или списка чекбоксов, без открытия QP.
@@ -147,18 +148,18 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 * `RelationCondition` — SQL-фильтр для выбора допустимых статей поля-связи. Подставляется в блок `WHERE` при фильтрации статей в диалоговом окне QP или при предзагрузке допустимых статей-связей. Фильтруемый контент обозначается алиасом `c`. Пример: `c.Type = 343` (Тарифы). Если поле не заполнено, то его значение берется из `RelationCondition` в QP.
 * `ClonePrototypeCondition` — SQL-условие для выбора единственной статьи-шаблона, которая используется для создания статьи-связи по образцу контент обозначается алиасом `c`. Пример: `c.Alias = 'my_region_template'`. Если поле не заполнено, то создание по обрацу будет недоступно.
 
-![](./DefinitionEditorRelation.png)
+![](./Images/DefinitionEditorRelation.png)
 
 6.  Добавляем обратные поля-связи:
 
 То же самое, что и для связей, но необходимо явно переопределить `Имя поля`, т.к. BackwardRelation отсутствует в QP. В примере ниже, статья `Region` будет иметь поле `TariffZones`, содержащее массив статей `TariffZone`
 
-![](./DefinitionEditorBackRelation.png)
+![](./Images/DefinitionEditorBackRelation.png)
 
 Так же можно добавить обратное поле-связь для уже включенного в описание прямого поля. Но при этом, контент, который содержится в обратном поле обязательно должен иметь флаг `Только для чтения`.
 
-![](./DefinitionEditorBackRelationCircular.png)
-![](./DefinitionEditorBackRelationContent.png)
+![](./Images/DefinitionEditorBackRelationCircular.png)
+![](./Images/DefinitionEditorBackRelationContent.png)
 
 ### Поля-расширения
 
@@ -166,7 +167,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 Выбираем допустимые контенты-расширения для данного поля (вручную редактируя XML).
 
-![](./DefinitionEditorClassifier.png)
+![](./Images/DefinitionEditorClassifier.png)
 
 8.  Повторяем п. 1 — п.7 для всех необходимых связей продукта.
 
@@ -176,7 +177,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 Добавляем поле `Настройки кеширования словарей` и включем туда контенты-справочники, которые редко изменяются (и которые не редактируются в нашем редакторе)
 
-![](./DefinitionEditorDictionaries.png)
+![](./Images/DefinitionEditorDictionaries.png)
 
 ### XAML-ссылки
 
@@ -192,8 +193,8 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 
 11. Сохраняем сначала изменения в XML, а потом статью с описанием продукта:
 
-![](./DefinitionEditorSave.png)
-![](./ProductDefinitionSave.png)
+![](./Images/DefinitionEditorSave.png)
+![](./Images/ProductDefinitionSave.png)
 
 <br><hr><br>
 
@@ -204,7 +205,7 @@ ReactDOM.render(<App />, document.getElementById("editor"));
 Выгружаем TypeScript-описание контентов, с которыми мы будем работать в редакторе.
 Выделяем статью XML описания продукта и вызываем в контекстном меню пункт **TypeScript схема редактора**
 
-![](./MakeTypeScriptSchema.png)
+![](./Images/MakeTypeScriptSchema.png)
 
 Должен скачатся файл `TypeScriptSchema.ts`, содержащий интерфейсы объектов (например `Product`, `MarketingProduct`, `Region`) и интерфейс **`Tables`**, описывающий все таблицы QP, затронутые в нашем редакторе.
 
@@ -411,7 +412,7 @@ interface ExtensionFieldSchema extends FieldSchema {
 Для отображения и редактрования статьи в виде формы нужно использовать компонент `<EntityEditor>` для статьи-сущности,
 или `<ExtensionEditor>` для статьи-связи. См. `~\ClientApp\Components\ArticleEditor\`.
 
-![](./EntityEditorForm.png)
+![](./Images/EntityEditorForm.png)
 
 Пример:
 
@@ -546,7 +547,7 @@ const region: Region;
 Посмотреть их работу можно на тестовой странице  
 `http://{host}:{port}/ProductEditor/ComponentLibrary?customerCode={customer_code}`
 
-![](./ComponentLibrary.png)
+![](./Images/ComponentLibrary.png)
 
 <br><hr><br>
 
@@ -559,39 +560,39 @@ const region: Region;
 * `<RelationFieldTable>` — Отображение поля в виде таблицы.  
   Поддерживает кастомную подсветку элементов, сортировку, фильтрацию и realtime-валидацию.
 
-  ![](./RelationFieldTable.png)
+  ![](./Images/RelationFieldTable.png)
 
 * `<RelationFieldTags>` — Отображение поля в виде списка тэгов.  
   Поддерживает кастомную сортировку элементов, фильтрацию и realtime-валидацию.
 
-  ![](./RelationFieldTags.png)
+  ![](./Images/RelationFieldTags.png)
 
 * `<RelationFieldSelect>` — Отображение поля-связи в виде комбо-бокса с автокомплитом.  
   Требует `PreloadingMode.Eager` или `PreloadingMode.Lazy`.
 
-  ![](./RelationFieldSelect.png)
+  ![](./Images/RelationFieldSelect.png)
 
 * `<RelationFieldCheckList>` — Отображение поля-связи в виде списка чекбоксов.  
   Требует `PreloadingMode.Eager` или `PreloadingMode.Lazy`.
 
-  ![](./RelationFieldCheckList.png)
+  ![](./Images/RelationFieldCheckList.png)
 
 Рекурсивные же отображают внутри себя `<EntityEditor>` для каждой связанной статьи. Поэтому они
 прокструют часть переданных свойств, таких как `fieldOrders`, `fieldEditors`, etc во внутренний `<EntityEditor>`.
 
 * `<RelationFieldForm>` — Отображение единичного поля-связи в виде раскрывающейся формы редактирования.
 
-  ![](./RelationFieldForm.png)
+  ![](./Images/RelationFieldForm.png)
 
 * `<RelationFieldTabs>` — Отображение множественного поля-связи в виде вкладок (возможно вертикальных).  
   Поддерживает кастомную сортировку и фильтрацию элементов.
 
-  ![](./RelationFieldTabs.png)
+  ![](./Images/RelationFieldTabs.png)
 
 * `<RelationFieldAccordion>` — Отображение множественного поля-связи в виде раскрывающейся таблицы-аккордеона.  
   Поддерживает кастомную подсветку элементов, сортировку, фильтрацию и realtime-валидацию.
 
-  ![](./RelationFieldAccordion.png)
+  ![](./Images/RelationFieldAccordion.png)
 
 Пример:
 
@@ -722,21 +723,32 @@ A также содержат Render Callback-и:
 * `ActionController` — Выполнение произвольных CustomAction.
   * `executeCustomAction()` — Найти CustomAction по Alias и выполнить его для заданной статьи.
 
+Получить доступ к этим сервисам можно с помощью декотарора `@inject`:
+
+```ts
+import { inject } from "react-ioc";
+
+class MyComponent extends Component {
+  @inject entityController: EntityController;
+  @inject relationController: RelationController;
+}
+```
+
 Также методы данных контроллеров помечены декораторами (их можно использовать и в кастомном коде):
 
 * `@modal` — запрет действий пользователя, пока выполняется асинхронный метод,
 
 * `@progress` — показать полосу **NProgress**, пока выполняется асинхронный метод,
 
-  ![](./ProgressDecorator.png)
+  ![](./Images/ProgressDecorator.png)
 
 * `@handleError` — показать нотификацию "Произошла ошибка" при ошибке в методе,
 
-  ![](./HandleErrorDecorator.png)
+  ![](./Images/HandleErrorDecorator.png)
 
 * `@trace` — вывести название и время выполнения метода в консоль (в режиме разработки)
 
-  ![](./TraceDecorator.png)
+  ![](./Images/TraceDecorator.png)
 
 ```jsx
 class MyComponent extends React.Component {
@@ -795,8 +807,52 @@ class MyRelationFieldForm extends React.Component<FieldEditorProps> {
 
 ### Сохранение подграфа статей
 
-TODO: Действия при сохранении  
-TODO: Разрешение конфликтов
+За сохранение изменений отвечает метод `EntityController.saveEntity()`. Он принимает два параметра:
+объект-статью `EntityObject` и его схему `ContentSchema`. Схему для сохранения можно получить с помощью навигациии
+по графу схем, начиная с корневой. Пример:
+
+```ts
+const regionContentSchema =
+  marketingProductContentSchema.Fields.Products.RelatedContent.Fields.Regions
+    .RelatedContent;
+```
+
+Сохраняются все изменения в подграфе статей, сделанные начиная от переданной статьи. При этом сохраняются измениия:
+
+* в простых полях статьи,
+* в полях-связях,
+* во вложенных статьях-расширениях,
+* в связанных статьях, поля-связи для которых имеют `UpdatingMode.Update` в XML Definition (см. [Поля-связи](#Поля-связи)).
+
+Если для поля-связи установлен признак `UpdatingMode.Ignore`, то изменения самого поля (список связанных статей) применяются на сервере, а изменения в связанных статьях игнорируются. Для сохранения изменений таких статей нужно явно вызвать метод сохранения непосдедственно на каждой из них.
+
+Также следует отметить, что серверный механизм сохранения изменений DPC **не поддерживает** изменения в полях-связях если
+
+```ts
+fieldSchema.FieldType === FieldExactTypes.M2ORelation &&
+  fieldSchema.UpdatingMode === UpdatingMode.Ignore;
+```
+
+Редактирование таких связей будет недоступно. Для них разрешены только клонирование, удаление и создание по образцу. (см. `AbstractRelationFieldEditor._readonly`).
+
+### Конфликты при сохранении
+
+В процессе сохранения выполняются следующие действия:
+
+(1) С подграфа статей собираются все ошибки валидации (начиная с переданной статьи, по связям с `UpdatingMode.Update`).
+Если ошибки присутствуют — сохранение прерывается, а ошибки выводятся в модальном окне.
+
+(2) Подграф статей сериализуется и отправляется на сервер.
+
+(3) С сервера приходят обновленные данные (поля `_ServerId`, `_Modified`). Эти данные мерджатся в таблицы `DataContext`.
+
+(4) Показывается уведомление об успешном сохранении.
+
+(3a) С сервера приходит `HTTP 409 Conflict` — это значит, что сохраняемые данные конфликтуют с изменениями другого пользователя.
+
+(4а) Система пробует смержджить изменения автоматически. Если получается — пользователю предлагается проверить корректность слияния, и сохранить изменения снова.
+
+(5а) Если смерджить данные не получается (на клиенте и на сервере изменено одно и то же поля), то пользователю предлагается выбрать, какие изменения оставить, свои или с сервера. Затем проверить корректность слияния, и сохранить изменения снова.
 
 <br><hr><br>
 
@@ -831,7 +887,7 @@ TODO: локализация компонентов
 За отображение статусов публикации отвечает компонент `<PublicationStatusIcons>`. Он рисует две иконки статусов:
 `[S]` на Stage и `[L]` на Live. Зеленый цвет означает, что сохраненные изменения статей были синхронизированны с витриной. Оранжевый — что требуется публикация. Отсутствие иконки — что продукт не был опубликован на витрине еще ни разу.
 
-![](./PublicationStatusIcons.png)
+![](./Images/PublicationStatusIcons.png)
 
 Пример использования:
 
@@ -896,10 +952,10 @@ class MyComponent extends React.Component {
 }
 ```
 
-![](./OverlayNotify.png)
+![](./Images/OverlayNotify.png)
 
-![](./OverlayAlert.png)
+![](./Images/OverlayAlert.png)
 
-![](./OverlayConfirm.png)
+![](./Images/OverlayConfirm.png)
 
 </main>
