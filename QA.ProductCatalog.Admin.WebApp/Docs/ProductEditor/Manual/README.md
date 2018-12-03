@@ -309,8 +309,7 @@ interface PhoneTariff extends ExtensionObject {
 
 #### Предыдущие значения полей
 
-Каждый объект статьи реализует интерфейс `ValidatableObject`.
-См. `~/ClientApp/Packages/mst-validation-mixin.tsx`.
+Каждый объект статьи реализует интерфейс `ValidatableObject`. См. `~/ClientApp/Packages/mst-validation-mixin.tsx`.
 
 Для получения значения поля, каким оно было до первого редактирования есть метод `getBaseValue(name: string)`.
 Пример:
@@ -873,21 +872,155 @@ fieldSchema.FieldType === FieldExactTypes.M2ORelation &&
 
 (3) С сервера приходят обновленные данные (поля `_ServerId`, `_Modified`). Эти данные мерджатся в таблицы `DataContext`.
 
-(4) Показывается уведомление об успешном сохранении.
+(4) Показывается [уведомление](#Показ-уведомлений) об успешном сохранении.
 
 (3a) С сервера приходит `HTTP 409 Conflict` — это значит, что сохраняемые данные конфликтуют с изменениями другого пользователя.
 
 (4а) Система пробует смержджить изменения автоматически. Если получается — пользователю предлагается проверить корректность слияния, и сохранить изменения снова.
 
-(5а) Если смерджить данные не получается (на клиенте и на сервере изменено одно и то же поля), то пользователю предлагается выбрать, какие изменения оставить, свои или с сервера. Затем проверить корректность слияния, и сохранить изменения снова.
+(5а) Если смерджить данные не получается (на клиенте и на сервере изменено одно и то же поля), то пользователю [предлагается выбрать](#Показ-уведомлений)), какие изменения оставить, свои или с сервера. Затем проверить корректность слияния, и сохранить изменения снова.
 
 <br><hr><br>
 
 ## Валидация
 
-TODO: валидация полей и подсветка изменений  
-TODO: валидация элементов поля-связи  
-TODO: валидация и подсветка изменений по подграфу
+Каждый объект статьи реализует интерфейс `ValidatableObject`. См. `~/ClientApp/Packages/mst-validation-mixin.tsx`.
+Он содержит группы методов:
+
+* `isTouched()` / `setTouched()` / `setUntouched()` — Пробовал ли пользователь редактировать данное поле.
+* `isChanged()` / `setChenged()` / `setUnchanged()` — Было ли поле изменено с момента сохранения.
+* `hasFocus()` / `setFocus()` — Находится ли поле в фокусе.
+* `hasErrors()` / `getErrors()` / `addErrors()` / `clearErrors()` — Получение, добавление и удаление ошибок валидации (вручную).
+* `addValidators()` / `removeValidators()` — Добавление и удаление функций-валидаторов.
+* etc.
+
+Также есть комбинированные методы:
+
+* `isEdited()` — Поле побывало в фокусе и было изменено.
+* `hasVisibleErrors()` / `getVisibleErrors()` — Поле побывало в фокусе и имеет ошибки.
+
+Все методы являются реактивными (в смысле MobX).
+
+Функция валидации `Validator` представляет собой обычную функцию, принимающую значение поля и возвращающую строку ошибки,
+или `undefined` при отсутствии ошибки. Пример:
+
+```ts
+const required = value =>
+  value == null || value == "" ? "Необходимо заполнить поле" : undefined;
+```
+
+Также валидаторы можно создавать с помощью фабрик:
+
+```ts
+const min = minValue => value =>
+  value < minValue ? `Минимальное значение ${minValue}` : undefined;
+
+const maxLength = length => value =>
+  value.length > length ? `Максимальная длина: ${length}` : undefined;
+```
+
+Добавить валидации к полю можно через свойство `validate` [стандартных редакторов полей](#Редакторы-полей):
+
+```jsx
+const MyFieldEditor = props => (
+  <NumberFieldEditor {...props} validate={min(5)} />
+);
+
+const AnotherFieldEditor = props => (
+  <StringFieldEditor {...props} validate={[required, maxLength(10)]} />
+);
+```
+
+Стандартные редакторы подсвечивают измененные поля синим цветом, а невалидные — красным:
+
+![](./Images/EditedField.png)
+![](./Images/InvalidField.png)
+
+А если мы разрабатываем свой тип редактора полей, то мы можем использовать обобщенный компонент `<Validate>`:
+
+```jsx
+<Validate
+  model={articleObject} // объект статьи
+  name={fieldSchema.FieldName} // имя поля
+  rules={[required, maxLength(10)]} // правила валидации
+/>
+```
+
+### Валидация элементов в редакторах связей
+
+Валидация связанных статей в [рекурсивных редакторах связей](#Редакторы-полей-связей) происходит только при открытом вложенном редакторе `<EntityEditor>` т.е. только для одной связанной статьи в каждый момент времени. Валидируется только та вложенная статья, которую мы открыли для редактирования и сохранения. А в нерекурсивных редакторах связанные статьи вообще не валидируются.
+Но иногда требуется проводить валидации для всех связанных статей сразу в режиме реального времени. Для этого в редакторах связей имеется свойство `validateItems: (item: EntityObject) => string`, принимающее функцию валидации.
+
+Пример. Списки городов продуктов не должны пересекаться:
+
+```jsx
+const isUniqueRegion = (product: Product) => (region: Region) => {
+  const otherProducts = product.MarketingProduct.Products;
+  const productsWithSameRegions = otherProducts.filter(
+    otherProduct =>
+      otherProduct !== product && otherProduct.Regions.includes(region)
+  );
+
+  if (productsWithSameRegions.length > 0) {
+    const productIds = productsWithSameRegions.map(
+      product => product._ServerId || 0
+    );
+    return `Регион содержится в статьях: ${productIds.join(", ")}`;
+  }
+  return undefined;
+};
+
+const MyRegionsTags = props => (
+  <RelationFieldTags
+    {...props}
+    sortItemsBy="Title"
+    validateItems={isUniqueRegion(product)}
+  />
+);
+```
+
+![](./Images/RelationFieldEditorValidateItems.png)
+
+### Подсветка изменений по вложенным статьям
+
+Для подсветки изменений во вложенных статьях тип `ContentSchema` содержит методы обхода графа статей:
+
+* `isEdited(article: ArticleObject)` — Была ли отредактирована хотя бы одна статья, входящая в продукт
+  на основе обхода полей схемы .
+* `isTouched(article: ArticleObject)` — Получала ли фокус хотя бы одна статья, входящая в продукт на основе обхода полей схемы.
+* `isChanged(article: ArticleObject)` — Была ли изменена хотя бы одна статья, входящая в продукт на основе обхода полей схемы.
+* `hasErrors(article: ArticleObject)` — Имеет ли ошибки хотя бы одна статья, входящая в продукт на основе обхода полей схемы.
+* `hasVisibleErrors(article: ArticleObject)` — Имеет ли видимые ошибки хотя бы одна статья, входящая в продукт
+  на основе обхода полей схемы.
+* `getLastModified(article: ArticleObject): Date` — Получить максимальную дату модификации по всем статьям, входящим в продукт
+  на основе обхода полей схемы.
+
+Например:
+
+```ts
+interface Product extends EntityObject {
+  Title: string;
+  Parameters: ProductParameter[];
+}
+
+interface ProductParameter extends EntityObject {
+  Title: string;
+  Value: number; // поле было изменено и стало невалидным
+}
+
+// тогда:
+const product: Product;
+product.isEdited() === false;
+product.hasErrors() === false;
+product.Parameters[0].isEdited() === true;
+product.Parameters[0].hasErrors() === true;
+productContentSchema.isEdited(product) === true;
+productContentSchema.hasErrors(product) === true;
+```
+
+Редактор полей связей `<RelationFieldAccordion>` по умолчанию использует такие методы для подсветки измененных статей:
+
+![](./Images/RealtionFieldAccordionItemEdited.png)
 
 <br><hr><br>
 
