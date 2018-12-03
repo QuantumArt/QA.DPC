@@ -24,7 +24,8 @@
   * [Form Controls](#Form-Controls)
 * [Редакторы полей-связей](#Редакторы-полей-связей)
   * [Привязка редакторов](#Привязка-редакторов)
-* [Кнопки действий](#Кнопки-действий)
+* [Действия со статьями](#Действия-со-статьями)
+  * [Dependency Injection](#Dependency-Injection)
   * [Кастомные действия](#Кастомные-действия)
   * [Сохранение подграфа статей](#Сохранение-подграфа-статей)
   * [Конфликты при сохранении](#Конфликты-при-сохранении)
@@ -664,7 +665,7 @@ const region: Region;
 
 <br><hr><br>
 
-## Кнопки действий
+## Действия со статьями
 
 Компонент `<EntityEditor>` содержит базовый набор действий совершаемых со статьей. Это:
 
@@ -723,17 +724,6 @@ A также содержат Render Callback-и:
 * `ActionController` — Выполнение произвольных CustomAction.
   * `executeCustomAction()` — Найти CustomAction по Alias и выполнить его для заданной статьи.
 
-Получить доступ к этим сервисам можно с помощью декотарора `@inject`:
-
-```ts
-import { inject } from "react-ioc";
-
-class MyComponent extends Component {
-  @inject entityController: EntityController;
-  @inject relationController: RelationController;
-}
-```
-
 Также методы данных контроллеров помечены декораторами (их можно использовать и в кастомном коде):
 
 * `@modal` — запрет действий пользователя, пока выполняется асинхронный метод,
@@ -750,7 +740,7 @@ class MyComponent extends Component {
 
   ![](./Images/TraceDecorator.png)
 
-```jsx
+```ts
 class MyComponent extends React.Component {
   @trace
   @modal
@@ -758,6 +748,43 @@ class MyComponent extends React.Component {
   @handleError
   async doSomething() {}
 }
+```
+
+### Dependency Injection
+
+Получить доступ к этим сервисам можно с помощью декоратора `@inject`:
+
+```ts
+import { inject } from "react-ioc";
+
+class MyComponent extends Component {
+  @inject entityController: EntityController;
+  @inject relationController: RelationController;
+}
+```
+
+Зарегистрировать свои сервисы можно на уровне `<ProductEditor>`
+
+```ts
+import { inject } from "react-ioc";
+import { ProductEditor } from "Components/ProductEditor/ProductEditor";
+
+class FooService {}
+
+class BarService {
+  @inject fooService: FooService;
+}
+
+ProductEditor.bind(FooService, BarService);
+```
+
+Либо на уровне какого-то своего компонента:
+
+```ts
+import { provider } from "react-ioc";
+
+@provider(FooService, BarService)
+class MyComponent extends React.Component {}
 ```
 
 ### Кастомные действия
