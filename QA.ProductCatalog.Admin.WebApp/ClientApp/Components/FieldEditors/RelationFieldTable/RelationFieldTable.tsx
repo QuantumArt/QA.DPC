@@ -5,6 +5,7 @@ import { SingleRelationFieldTable } from "./SingleRelationFieldTable";
 import { MultiRelationFieldTable } from "./MultiRelationFieldTable";
 export { SingleRelationFieldTable, MultiRelationFieldTable };
 
+/** Отображение поля-связи в виде таблицы */
 export class RelationFieldTable extends Component<RelationFieldTableProps> {
   FieldTable = isSingleRelationField(this.props.fieldSchema)
     ? SingleRelationFieldTable

@@ -1,3 +1,5 @@
+<main style="width: 900px">
+
 ## Архитектура Frontend
 
 ![](./FrontendArchitecture.png)
@@ -103,3 +105,5 @@ class MarketingProduct {
   }
 }
 ```
+
+</main>

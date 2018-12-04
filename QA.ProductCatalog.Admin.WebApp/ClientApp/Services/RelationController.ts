@@ -24,6 +24,7 @@ import { trace, modal, progress, handleError } from "Utils/Decorators";
 import { isArray } from "Utils/TypeChecks";
 import { newUid, rootUrl } from "Utils/Common";
 
+/** Действия со связями */
 export class RelationController {
   @inject private _editorSettings: EditorSettings;
   @inject private _queryParams: EditorQueryParams;
@@ -48,6 +49,7 @@ export class RelationController {
     this._observer.dispose();
   }
 
+  /** Открыть окно QP для выбора единичной связи */
   @trace
   @handleError
   public async selectRelation(model: ArticleObject, fieldSchema: SingleRelationFieldSchema) {
@@ -64,6 +66,7 @@ export class RelationController {
     }
   }
 
+  /** Открыть окно QP для выбора множественной связи */
   @trace
   @handleError
   public async selectRelations(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
@@ -160,6 +163,7 @@ export class RelationController {
     this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.Refresh);
   }
 
+  /** Перезагрузить с сервера поле единичной связи */
   @trace
   @handleError
   public async reloadRelation(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
@@ -186,6 +190,7 @@ export class RelationController {
     });
   }
 
+  /** Перезагрузить с сервера поле множественной связи */
   @trace
   @handleError
   public async reloadRelations(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
@@ -237,6 +242,10 @@ export class RelationController {
     return await response.text();
   }
 
+  /**
+   * Предзагрузка всех допустимых статей для поля связи.
+   * Используется только при @see PreloadingMode.Lazy
+   */
   @trace
   @handleError
   public async preloadRelationArticles(fieldSchema: RelationFieldSchema) {
@@ -289,6 +298,7 @@ export class RelationController {
     return await response.text();
   }
 
+  /** Создание статьи по образцу, и добавление в поле-связь */
   @trace
   @modal
   @progress

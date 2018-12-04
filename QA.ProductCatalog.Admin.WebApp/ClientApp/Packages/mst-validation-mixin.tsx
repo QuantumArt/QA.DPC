@@ -41,7 +41,7 @@ export type Validator = (value: any) => string | undefined;
  * в фокус @see isTouched и изменено @see isChanged
  */
 export interface ValidatableObject {
-  /** Поле объекта (или любое из полей объекта) ранее было выбрано в фокус и изменено */
+  /** Поле объекта (или любое из полей объекта) ранее было выбрано в фокус и изменено @see isTouched @see isChanged */
   isEdited<K extends keyof this>(name?: K): boolean;
   /** Поле объекта (или любое из полей объекта) ранее было выбрано в фокус */
   isTouched<K extends keyof this>(name?: K): boolean;

@@ -18,14 +18,18 @@ import {
 import "./RelationFieldForm.scss";
 
 interface RelationFieldFormProps extends ExpandableFieldEditorProps {
+  /** Свернута по-умолчанию */
   collapsed?: boolean;
+  /** Кастомный className, добавляющийся к "relation-field-form" */
   className?: string;
+  /** Не отображать рамку и отступы для формы */
   borderless?: boolean;
 }
 
 const defaultRelationHandler = action => action();
 const defaultEntityHandler = (_entity, action) => action();
 
+/** Отображение единичного поля-связи в виде раскрывающейся формы редактирования */
 @observer
 export class RelationFieldForm extends AbstractRelationFieldEditor<RelationFieldFormProps> {
   static defaultProps = {

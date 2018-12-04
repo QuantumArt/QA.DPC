@@ -12,6 +12,7 @@ import { EntityComparer, HighlightMode } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTable, RelationFieldTableProps } from "./AbstractRelationFieldTable";
 import { EntityLink } from "Components/ArticleEditor/EntityLink";
 
+/** Отображение поля-связи в виде таблицы */
 @observer
 export class MultiRelationFieldTable extends AbstractRelationFieldTable {
   static defaultProps = {
