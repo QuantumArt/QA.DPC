@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Elasticsearch.Net;
 using Microsoft.Extensions.Logging;
-using Nest;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Polly.Extensions.Http;
+using Polly.Registry;
 using QA.ProductCatalog.ImpactService.API.Helpers;
 
 namespace QA.ProductCatalog.ImpactService.API.Services
@@ -16,17 +18,28 @@ namespace QA.ProductCatalog.ImpactService.API.Services
     public class ElasticSearchRepository : ISearchRepository
     {
         private readonly string _sourceQuery = "hits.hits.[?(@._source)]._source";
-        private readonly int _timeout = 15;
         private readonly ILogger _logger;
+        private readonly IHttpClientFactory _clientFactory;
+        private readonly PolicyRegistry _policyRegistry;
+        private readonly ConfigurationOptions _options;
+        
 
         private Regex GetRegionTagRegex(string tag)
         {
             return new Regex($@"[<\[]replacement[>\]]tag={tag}[<\[]/replacement[>\]]");
         }
 
-        public ElasticSearchRepository(ILoggerFactory factory)
+        public ElasticSearchRepository(
+            ILoggerFactory factory, 
+            IHttpClientFactory clientFactory, 
+            PolicyRegistry policyRegistry, 
+            IOptions<ConfigurationOptions> elasticIndexOptionsAccessor
+         )
         {
-            _logger = factory.CreateLogger(this.GetType());
+            _logger = factory.CreateLogger(GetType());
+            _clientFactory = clientFactory;
+            _policyRegistry = policyRegistry;
+            _options = elasticIndexOptionsAccessor.Value;
         }
 
         public async Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options, DateTimeOffset defaultValue)
@@ -275,32 +288,16 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             return value;
         }
 
-        private IElasticClient GetElasticClient(SearchOptions options)
+        private ElasticClient GetElasticClient(SearchOptions options)
         {
-            return ElasticConfiguration.GetElasticClient(options.IndexName, options.BaseAddress, _logger, false, _timeout);
+            return new ElasticClient(_clientFactory, _policyRegistry, options.IndexName, options.BaseUrls, _logger, _options);
         }
 
 
         public async Task<string> GetContent(string json, SearchOptions options)
         {
-            var client = GetElasticClient(options);
-
-            ElasticsearchResponse<string> response; 
-            if (options.TypeName == null)
-            {
-                response = await client.LowLevel.SearchAsync<string>(client.ConnectionSettings.DefaultIndex, json);
-            }
-            else
-            {
-                response = await client.LowLevel.SearchAsync<string>(client.ConnectionSettings.DefaultIndex, options.TypeName, json);
-            }
-
-            if (response.Success)
-            {
-                return response.Body;
-            }
-
-            return string.Empty;
+            return await GetElasticClient(options).SearchAsync(options.TypeName, json);
         }
+
     }
 }
