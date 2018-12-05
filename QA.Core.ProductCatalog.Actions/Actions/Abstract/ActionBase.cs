@@ -125,7 +125,16 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				}
 			}
 
-			if (exceptions.Any())
+            try
+            {
+                OnEndProcess();
+            }
+            catch(Exception ex)
+            {
+                exceptions.Add(new ProductException(0, "OnEndProcess error", ex));
+            }
+
+            if (exceptions.Any())
 			{
 				throw new ActionException(ActionErrorMessage, exceptions, context);
 			}
@@ -145,7 +154,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		{
 		}
 
-		protected Dictionary<int, Product<T>> GetProductsToBeProcessed<T>(
+        protected virtual void OnEndProcess()
+        {
+        }
+        protected Dictionary<int, Product<T>> GetProductsToBeProcessed<T>(
 			Article source,
 			ProductDefinition definition,
 			Func<Association, T> selectMode,

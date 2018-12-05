@@ -12,6 +12,7 @@ using QA.Core.Models;
 using Quantumart.QP8.BLL.Services.DTO;
 using System.Transactions;
 using QA.Core.Logger;
+using System.Collections.Concurrent;
 
 namespace QA.Core.ProductCatalog.Actions
 {
@@ -20,6 +21,9 @@ namespace QA.Core.ProductCatalog.Actions
         protected IQPNotificationService NotificationService { get; }
         protected IXmlProductService XmlProductService { get; }
         protected IFreezeService FreezeService { get; }
+        protected IValidationService ValidationService { get; }
+        protected ConcurrentDictionary<int, string> ValidationErrors { get; private set; }
+        protected List<int> ProductIds { get; private set; }
 
         public PublishAction(
             IArticleService articleService,
@@ -29,13 +33,17 @@ namespace QA.Core.ProductCatalog.Actions
             Func<ITransaction> createTransaction,
             IQPNotificationService notificationService,
             IXmlProductService xmlProductService,
-            IFreezeService freezeService
+            IFreezeService freezeService,
+            IValidationService validationService
             )
             : base(articleService, fieldService, productservice, logger, createTransaction)
         {
             NotificationService = notificationService;
             XmlProductService = xmlProductService;
             FreezeService = freezeService;
+            ValidationService = validationService;
+            ValidationErrors = new ConcurrentDictionary<int, string>();
+            ProductIds = new List<int>();
         }
 
         #region Overrides
@@ -50,6 +58,7 @@ namespace QA.Core.ProductCatalog.Actions
 			var ignoredStatuses = ignoredStatus?.Split(',') ?? Enumerable.Empty<string>().ToArray();
 
             var product = DoWithLogging("Productservice.GetProductById", transactionId, () => Productservice.GetProductById(productId));
+            ProductIds.Add(product.Id);
 
 			if (ignoredStatuses.Contains(product.Status))
 				ValidateMessageResult(product.Id, MessageResult.Error("продукт исключен по статусу"));
@@ -65,8 +74,12 @@ namespace QA.Core.ProductCatalog.Actions
             }
 
             var xamlValidationErrors = DoWithLogging("ValidateXaml", transactionId, () => ArticleService.XamlValidationById(product.Id, true));
+
             if (!xamlValidationErrors.IsEmpty)
-                ValidateMessageResult(product.Id, MessageResult.Error(string.Join(@";" + Environment.NewLine, xamlValidationErrors.Errors.Select(s=>s.Message))));
+            {
+                ValidationErrors.TryAdd(product.Id, string.Join(Environment.NewLine, xamlValidationErrors.Errors.Select(s => s.Message)));
+                ValidateMessageResult(product.Id, MessageResult.Error(string.Join(@";" + Environment.NewLine, xamlValidationErrors.Errors.Select(s => s.Message))));
+            }
 
             var allArticles = GetAllArticles(new[] { product }).ToArray();
 			bool containsIgnored = allArticles.Any(a => ignoredStatuses.Contains(a.Status));
@@ -90,6 +103,21 @@ namespace QA.Core.ProductCatalog.Actions
 			{
 				DoWithLogging("SendNotification (includes substeps)", transactionId, () => SendNotification(product, transactionId, UserName, UserId, containsIgnored, localize, channels));
             }          
+        }
+
+        protected override void OnStartProcess()
+        {
+            ProductIds.Clear();
+            ValidationErrors.Clear();
+        }
+
+        protected override void OnEndProcess()
+        {
+            using (var transaction = CreateTransaction())
+            {
+                ValidationService.UpdateValidationInfo(ProductIds.ToArray(), ValidationErrors);
+                transaction.Commit();
+            }
         }
         #endregion
 

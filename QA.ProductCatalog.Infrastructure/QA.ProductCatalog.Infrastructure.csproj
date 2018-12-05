@@ -315,6 +315,7 @@
     <Compile Include="IStatusProvider.cs" />
     <Compile Include="ITask.cs" />
     <Compile Include="IUserProvider.cs" />
+    <Compile Include="IValidationService.cs" />
     <Compile Include="IWarmUpProvider.cs" />
     <Compile Include="IXmlProductService.cs" />
     <Compile Include="IProductService.cs" />
@@ -352,4 +353,3 @@
   </Target>
   -->
 </Project>
-
