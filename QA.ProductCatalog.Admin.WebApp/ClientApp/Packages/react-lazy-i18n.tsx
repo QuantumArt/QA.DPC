@@ -84,7 +84,7 @@ function useForceUpdate() {
 
 interface TranslationProps {
   load?: LoadResources;
-  children: (translate: Translate) => ReactNode;
+  children: (tr: Translate) => ReactNode;
 }
 
 /**
@@ -105,8 +105,7 @@ export class Translation extends Component<TranslationProps> {
   render() {
     const { load, children } = this.props;
     if (!load) {
-      // @ts-ignore
-      return createElement(TranslateContext.Consumer, null, translate => children(translate));
+      return createElement(TranslateContext.Consumer, null, tr => children(tr));
     }
     loadResources(this, this.context, load, this._forceUpdate);
     return createElement(
@@ -118,16 +117,16 @@ export class Translation extends Component<TranslationProps> {
 }
 
 /**
- * HOC that injects `translate` prop
+ * HOC that injects `tr` prop
  * @example
- * const MyComponent = ({ name, translate: tr }) => (
+ * const MyComponent = ({ name, tr }) => (
  *   <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>
  * )
  *
  * @withTranslation(lang => import(`./MyComponent.${lang}.jsx`))
  * class MyComponent extends Component {
  *   render() {
- *     const { name, translate: tr } = this.props;
+ *     const { name, tr } = this.props;
  *     return <span title={tr`Greeting`}>{tr`Hello, ${name}!`}</span>
  *   }
  * }
@@ -141,7 +140,7 @@ export function withTranslation(load?: LoadResources) {
         static WrappedComponent = Wrapped;
 
         render() {
-          return createElement(Wrapped, { translate: this.context, ...this.props });
+          return createElement(Wrapped, { tr: this.context, ...this.props });
         }
       }
       return hoistNonReactStatics(Translation, Wrapped) as any;
@@ -162,7 +161,7 @@ export function withTranslation(load?: LoadResources) {
         return createElement(
           TranslateContext.Provider,
           { value: this._translate },
-          createElement(Wrapped, { translate: this._translate, ...this.props })
+          createElement(Wrapped, { tr: this._translate, ...this.props })
         );
       }
     }
@@ -203,7 +202,7 @@ function loadResources(
 function makeTranslate(locale: string | null, resources: Resources | null): Translate {
   resources = prepareKeys(resources);
 
-  function translate(keyOrStrings: TemplateStringsArray | string, ...values: any[]) {
+  function tr(keyOrStrings: TemplateStringsArray | string, ...values: any[]) {
     const templateKey = isString(keyOrStrings)
       ? keyOrStrings
       : keyOrStrings.join("{*}").replace(/\s+/g, " ");
@@ -222,14 +221,12 @@ function makeTranslate(locale: string | null, resources: Resources | null): Tran
     return defaultTemplate(keyOrStrings, values);
   }
 
-  translate.locale = locale;
+  tr.locale = locale;
 
-  // @ts-ignore
-  translate.Provider = ({ children }: { children: ReactNode }) =>
-    // @ts-ignore
-    createElement(TranslateContext.Provider, { value: translate }, children);
+  tr.Provider = ({ children }: { children: ReactNode }) =>
+    createElement(TranslateContext.Provider, { value: tr }, children);
 
-  return translate;
+  return tr;
 }
 
 // React 16 already requires ES6 Map but not WeakMap

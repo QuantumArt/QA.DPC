@@ -8,6 +8,7 @@ import { SingleRelationFieldSchema } from "Models/EditorSchemaModels";
 import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTags } from "./AbstractRelationFieldTags";
 
+/** Отображение поля-связи в виде списка тегов */
 @observer
 export class SingleRelationFieldTags extends AbstractRelationFieldTags {
   protected _isHalfSize = true;

@@ -7,6 +7,7 @@ import { newUid } from "Utils/Common";
 import { inject } from "react-ioc";
 import { EditorQueryParams } from "ClientApp/Models/EditorSettingsModels";
 
+/** Интеграция с SiteLibrary QP */
 export class FileController {
   @inject private _queryParams: EditorQueryParams;
 
@@ -25,6 +26,7 @@ export class FileController {
     this._observer.dispose();
   }
 
+  /** Открыть окно SiteLibrary QP для выбора файла */
   public async selectFile(
     model: ArticleObject,
     fieldSchema: FileFieldSchema,
@@ -62,6 +64,7 @@ export class FileController {
     });
   }
 
+  /** Открыть окно QP для предпросмотра изображения */
   public previewImage(model: ArticleObject, fieldSchema: FileFieldSchema) {
     const entityId = model._ServerId > 0 ? model._ServerId : 0;
     const fieldId = fieldSchema.FieldId;
@@ -71,6 +74,7 @@ export class FileController {
     }
   }
 
+  /** Скачать файл из SiteLibrary */
   public downloadFile(model: ArticleObject, fieldSchema: FileFieldSchema) {
     const entityId = model._ServerId > 0 ? model._ServerId : 0;
     const fieldId = fieldSchema.FieldId;

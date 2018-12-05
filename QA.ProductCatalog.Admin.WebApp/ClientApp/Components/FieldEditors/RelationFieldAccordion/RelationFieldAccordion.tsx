@@ -25,13 +25,24 @@ import {
 import "./RelationFieldAccordion.scss";
 
 export interface RelationFieldAccordionProps extends ExpandableFieldEditorProps {
+  /** Предикат фильтрации связанных статей при отображении в таблице */
   filterItems?: (item: EntityObject) => boolean;
+  /** Функция подсветки каждой связанной статьи */
   highlightItems?: (item: EntityObject) => HighlightMode;
+  /** Функция realtime валидации каждой связанной статьи */
   validateItems?: Validator;
+  /** Функция сравнения связанных статей для сортировки */
   sortItems?: EntityComparer;
+  /** Селектор поля для сравнения связанных статей для сортировки */
   sortItemsBy?: string | FieldSelector;
+  /**
+   * Относительные пропорции столбцов таблици
+   * @example columnProportions={[1, 3, 1]}
+   */
   columnProportions?: number[];
+  /** Селектор полей для отображения в таблице */
   displayFields?: (string | FieldSelector)[];
+  /** Свернут по-умолчанию */
   collapsed?: boolean;
 }
 
@@ -44,6 +55,7 @@ interface RelationFieldAccordionState {
 const defaultRelationHandler = action => action();
 const defaultEntityHandler = (_entity, action) => action();
 
+/** Отображение множественного поля-связи в виде раскрывающейся таблицы-аккордеона. */
 @observer
 export class RelationFieldAccordion extends AbstractRelationFieldEditor<
   RelationFieldAccordionProps

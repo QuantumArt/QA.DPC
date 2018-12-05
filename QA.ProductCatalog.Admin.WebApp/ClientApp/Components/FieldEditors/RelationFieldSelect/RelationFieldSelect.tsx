@@ -21,11 +21,16 @@ import {
 } from "../AbstractFieldEditor";
 
 export interface RelationFieldSelectProps extends FieldEditorProps {
+  /** Селектор поля для отображения в <option> */
   displayField?: string | FieldSelector<string>;
 }
 
 const optionsCache = new WeakMap<RelationFieldSchema, Options>();
 
+/**
+ * Отображение поля-связи в виде комбо-бокса с автокомплитом.
+ * Требует @see PreloadingMode.Eager или @see PreloadingMode.Lazy
+ */
 @observer
 export class RelationFieldSelect extends AbstractRelationFieldEditor<RelationFieldSelectProps> {
   private readonly _getOption: (entity: EntityObject) => Option;
