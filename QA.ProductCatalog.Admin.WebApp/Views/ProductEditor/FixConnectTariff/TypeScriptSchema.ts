@@ -68,10 +68,10 @@ export interface Product extends EntityObject {
 }
 
 export interface ProductModifer extends EntityObject {
-  /** Псевдоним */
-  readonly Alias: string;
   /** Название */
   readonly Title: string;
+  /** Псевдоним */
+  readonly Alias: string;
 }
 
 export interface Direction extends EntityObject {
