@@ -291,7 +291,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
           Title: "Стоимость минуты ВЗ вызова на др. моб.",
           Unit: "rub_minute",
           BaseParam: "OutgoingCalls",
-          BaseParamModifiers: ["ExceptMTS", "LowerBound"]
+          BaseParamModifiers: ["ExceptMTS"]
         },
         {
           Title: "Стоимость минуты ВЗ вызова на стационарные телефоны",

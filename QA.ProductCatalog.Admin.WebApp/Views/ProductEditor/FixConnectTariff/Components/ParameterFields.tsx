@@ -1,6 +1,13 @@
 import React, { Component } from "react";
 import { inject } from "react-ioc";
-import { observable, runInAction, autorun, IObservableArray, IReactionDisposer } from "mobx";
+import {
+  observable,
+  runInAction,
+  autorun,
+  IObservableArray,
+  IReactionDisposer,
+  action
+} from "mobx";
 import { observer } from "mobx-react";
 import { Options } from "react-select";
 import { WeakCache, ComputedCache } from "Utils/WeakCache";
@@ -34,6 +41,7 @@ interface ParameterField {
 
 interface ParameterFieldsProps extends FieldEditorProps {
   fields?: ParameterField[];
+  optionalBaseParamModifiers?: string[];
 }
 
 const unitOptionsCache = new WeakCache();
@@ -45,6 +53,10 @@ const paramModifiersByAliasCache = new ComputedCache();
 
 @observer
 export class ParameterFields extends Component<ParameterFieldsProps> {
+  static defaultProps = {
+    optionalBaseParamModifiers: ["LowerBound"]
+  };
+
   @inject private _dataContext: DataContext<Tables>;
   @observable private isMounted = false;
   private reactions: IReactionDisposer[] = [];
@@ -52,57 +64,21 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
   private virtualParameters: Parameter[];
 
   componentDidMount() {
-    const { fields = [] } = this.props;
-    const contentName = this.getContentName();
-    const unitsByAlias = this.getUnitsByAlias();
-    const baseParamsByAlias = this.getBaseParamsByAlias();
-    const directionsByAlias = this.getDirectionsByAlias();
-    const baseParamModifiersByAlias = this.getBaseParameterModifiersByAlias();
-    const paramModifiersByAlias = this.getParameterModifiersByAlias();
-
-    fields.forEach((field, i) => {
-      this.fieldOrdersByTitile[field.Title] = i;
-    });
-
-    runInAction("createVirtualParameters", () => {
-      // create virtual paramters in context table
-      this.virtualParameters = fields.map(field =>
-        this._dataContext.createEntity(contentName, {
-          _IsVirtual: true,
-          Title: field.Title,
-          Unit: unitsByAlias[field.Unit],
-          BaseParameter: baseParamsByAlias[field.BaseParam],
-          Direction: directionsByAlias[field.Direction],
-          BaseParameterModifiers:
-            field.BaseParamModifiers &&
-            field.BaseParamModifiers.map(alias => baseParamModifiersByAlias[alias]),
-          Modifiers: field.Modifiers && field.Modifiers.map(alias => paramModifiersByAlias[alias])
-        })
-      );
-    });
+    this.createVirtualParameters();
 
     this.reactions.push(
       autorun(() => {
         const parameters = this.getParameters();
         // find missing virtual parameters then add it to entity field
         const parametersToAdd = this.virtualParameters.filter(
-          // if virtual BaseParameter search for parameter with same Title
-          // else search for parameter with same TariffDirection and Modifiers
           virtual =>
-            !parameters.some(
-              virtual.BaseParameter
-                ? parameter =>
-                    parameter.BaseParameter === virtual.BaseParameter &&
-                    parameter.Zone === virtual.Zone &&
-                    parameter.Direction === virtual.Direction &&
-                    setEquals(parameter.BaseParameterModifiers, virtual.BaseParameterModifiers) &&
-                    setEquals(parameter.Modifiers, virtual.Modifiers)
-                : parameter => parameter.Title === virtual.Title
-            )
+            virtual.BaseParameter
+              ? !parameters.some(parameter => this.hasSameTariffDerection(parameter, virtual))
+              : !parameters.some(parameter => parameter.Title === virtual.Title)
         );
         runInAction("addVirtualParameters", () => {
           if (parametersToAdd.length > 0) {
-            this.resetVirtualParameters(parametersToAdd);
+            this.resetParameters(parametersToAdd);
             parameters.push(...parametersToAdd);
           }
           parameters.forEach(parameter => {
@@ -140,19 +116,86 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     // wait until all <ParameterBlock> are unmounted
     await Promise.resolve();
 
+    this.deleteVirtualParameters();
+  }
+
+  @action
+  private createVirtualParameters() {
+    const { fields = [], optionalBaseParamModifiers } = this.props;
+    if (DEBUG) {
+      const invalidField = fields.find(
+        field =>
+          field.BaseParamModifiers &&
+          field.BaseParamModifiers.some(modifier => optionalBaseParamModifiers.includes(modifier))
+      );
+      if (invalidField) {
+        throw new Error(
+          `Field "${invalidField.Title}" is invalid: BaseParameterModifiers ${JSON.stringify(
+            invalidField.BaseParamModifiers
+          )} intersects with optionalBaseParamModifiers ${JSON.stringify(
+            optionalBaseParamModifiers
+          )}`
+        );
+      }
+    }
+
+    const contentName = this.getContentName();
+    const unitsByAlias = this.getUnitsByAlias();
+    const baseParamsByAlias = this.getBaseParamsByAlias();
+    const directionsByAlias = this.getDirectionsByAlias();
+    const baseParamModifiersByAlias = this.getBaseParameterModifiersByAlias();
+    const paramModifiersByAlias = this.getParameterModifiersByAlias();
+
+    fields.forEach((field, i) => {
+      this.fieldOrdersByTitile[field.Title] = i;
+    });
+
+    // create virtual paramters in context table
+    this.virtualParameters = fields.map(field =>
+      this._dataContext.createEntity(contentName, {
+        _IsVirtual: true,
+        Title: field.Title,
+        Unit: unitsByAlias[field.Unit],
+        BaseParameter: baseParamsByAlias[field.BaseParam],
+        Direction: directionsByAlias[field.Direction],
+        BaseParameterModifiers:
+          field.BaseParamModifiers &&
+          field.BaseParamModifiers.map(alias => baseParamModifiersByAlias[alias]),
+        Modifiers: field.Modifiers && field.Modifiers.map(alias => paramModifiersByAlias[alias])
+      })
+    );
+  }
+
+  @action
+  private deleteVirtualParameters() {
+    const parameters = this.getParameters();
+
     // remove virtual parameters from context table
-    runInAction("deleteVirtualParameters", () => {
-      const parameters = this.getParameters();
-      this.virtualParameters.forEach(virtual => {
-        if (!parameters.includes(virtual)) {
-          this._dataContext.deleteEntity(virtual);
-        }
-      });
+    this.virtualParameters.forEach(virtual => {
+      if (!parameters.includes(virtual)) {
+        this._dataContext.deleteEntity(virtual);
+      }
     });
   }
 
-  private resetVirtualParameters(vistualParameters: Parameter[]) {
-    vistualParameters.forEach(parameter => {
+  private hasSameTariffDerection(parameter: Parameter, virtual: Parameter) {
+    const { optionalBaseParamModifiers } = this.props;
+    return (
+      parameter.BaseParameter === virtual.BaseParameter &&
+      parameter.Zone === virtual.Zone &&
+      parameter.Direction === virtual.Direction &&
+      setEquals(
+        parameter.BaseParameterModifiers.filter(
+          modifier => !optionalBaseParamModifiers.includes(modifier.Alias)
+        ),
+        virtual.BaseParameterModifiers
+      ) &&
+      setEquals(parameter.Modifiers, virtual.Modifiers)
+    );
+  }
+
+  private resetParameters(parameters: Parameter[]) {
+    parameters.forEach(parameter => {
       parameter.NumValue = null;
       parameter.Value = null;
       parameter.setUnchanged();
