@@ -56,7 +56,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     const contentName = this.getContentName();
     const unitsByAlias = this.getUnitsByAlias();
     const baseParamsByAlias = this.getBaseParamsByAlias();
-    const directionByAlias = this.getDirectionsByAlias();
+    const directionsByAlias = this.getDirectionsByAlias();
     const baseParamModifiersByAlias = this.getBaseParameterModifiersByAlias();
     const paramModifiersByAlias = this.getParameterModifiersByAlias();
 
@@ -64,7 +64,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
       this.fieldOrdersByTitile[field.Title] = i;
     });
 
-    runInAction("createParameters", () => {
+    runInAction("createVirtualParameters", () => {
       // create virtual paramters in context table
       this.virtualParameters = fields.map(field =>
         this._dataContext.createEntity(contentName, {
@@ -72,7 +72,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
           Title: field.Title,
           Unit: unitsByAlias[field.Unit],
           BaseParameter: baseParamsByAlias[field.BaseParam],
-          Direction: directionByAlias[field.Direction],
+          Direction: directionsByAlias[field.Direction],
           BaseParameterModifiers:
             field.BaseParamModifiers &&
             field.BaseParamModifiers.map(alias => baseParamModifiersByAlias[alias]),
@@ -100,14 +100,9 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
                 : parameter => parameter.Title === virtual.Title
             )
         );
-        runInAction("addParameters", () => {
+        runInAction("addVirtualParameters", () => {
           if (parametersToAdd.length > 0) {
-            parametersToAdd.forEach(parameter => {
-              parameter.restoreBaseValues();
-              parameter.setUntouched();
-              // @ts-ignore
-              parameter.clearErrors();
-            });
+            this.resetVirtualParameters(parametersToAdd);
             parameters.push(...parametersToAdd);
           }
           parameters.forEach(parameter => {
@@ -142,24 +137,28 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
   async componentWillUnmount() {
     this.reactions.forEach(disposer => disposer());
 
-    // remove virtual parameters from entity field
-    runInAction("removeParameters", () => {
-      const parameters = this.getParameters();
-      if (parameters.some(parameter => parameter._IsVirtual)) {
-        parameters.replace(parameters.filter(parameter => !parameter._IsVirtual));
-      }
-    });
-
     // wait until all <ParameterBlock> are unmounted
     await Promise.resolve();
 
     // remove virtual parameters from context table
-    runInAction("deleteParameters", () => {
+    runInAction("deleteVirtualParameters", () => {
+      const parameters = this.getParameters();
       this.virtualParameters.forEach(virtual => {
-        if (virtual._IsVirtual) {
+        if (!parameters.includes(virtual)) {
           this._dataContext.deleteEntity(virtual);
         }
       });
+    });
+  }
+
+  private resetVirtualParameters(vistualParameters: Parameter[]) {
+    vistualParameters.forEach(parameter => {
+      parameter.NumValue = null;
+      parameter.Value = null;
+      parameter.setUnchanged();
+      parameter.setUntouched();
+      // @ts-ignore
+      parameter.clearErrors();
     });
   }
 
