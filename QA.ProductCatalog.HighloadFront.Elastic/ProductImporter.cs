@@ -27,13 +27,13 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private readonly string _customerCode;
 
-        public ProductImporter(IOptions<HarvesterOptions> optionsAccessor, IOptions<DataOptions> dataOptionsAccessor, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
+        public ProductImporter(HarvesterOptions options, DataOptions dataOptions, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
         {
             _logger = logger;
             _manager = manager;
             _configuration = configuration;
-            _options = optionsAccessor?.Value ?? new HarvesterOptions();
-            _dataOptions = dataOptionsAccessor?.Value ?? new DataOptions();
+            _options = options;
+            _dataOptions = dataOptions;
             _customerCode = customerCode;
         }
 

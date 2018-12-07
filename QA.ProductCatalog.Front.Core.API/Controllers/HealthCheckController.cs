@@ -11,9 +11,9 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
     public class HealthCheckController : Controller
     {
         private DataOptions _options;
-        public HealthCheckController(IOptions<DataOptions> options)
+        public HealthCheckController(DataOptions options)
         {
-            _options = options.Value;
+            _options = options;
         }
 
         [HttpGet]

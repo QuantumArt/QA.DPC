@@ -286,6 +286,8 @@
     <Compile Include="ElasticIndexProvider.cs" />
     <Compile Include="HighloadApiLimit.cs" />
     <Compile Include="HighloadApiLimitProvider.cs" />
+    <Compile Include="HighloadApiMethod.cs" />
+    <Compile Include="HighloadApiMethodProvider.cs" />
     <Compile Include="HighloadApiUser.cs" />
     <Compile Include="HighloadApiUserProvider.cs" />
     <Compile Include="IArticleFormatter.cs" />
@@ -352,4 +354,3 @@
   </Target>
   -->
 </Project>
-

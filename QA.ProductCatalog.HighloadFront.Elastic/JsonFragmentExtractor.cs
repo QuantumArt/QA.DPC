@@ -78,7 +78,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     {
                        inside = !inside;
                     }
-
+                    
                     if (c != '\\')
                     {
                         escaped = false;
