@@ -22,6 +22,7 @@ import {
 import "./RelationFieldCheckList.scss";
 
 export interface RelationFieldCheckListProps extends FieldEditorProps {
+  /** Селектор полей для отображения в <label> */
   displayFields?: (string | FieldSelector<string>)[];
 }
 
@@ -32,6 +33,10 @@ interface Option {
 
 const optionsCache = new WeakMap<RelationFieldSchema, Option[]>();
 
+/**
+ * Отображение поля-связи в виде списка чекбоксов.
+ * Требует @see PreloadingMode.Eager или @see PreloadingMode.Lazy
+ */
 @observer
 export class RelationFieldCheckList extends AbstractRelationFieldEditor<
   RelationFieldCheckListProps

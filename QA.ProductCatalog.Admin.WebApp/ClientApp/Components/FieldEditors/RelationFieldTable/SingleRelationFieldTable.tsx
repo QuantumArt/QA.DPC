@@ -10,6 +10,7 @@ import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { AbstractRelationFieldTable } from "./AbstractRelationFieldTable";
 import { EntityLink } from "Components/ArticleEditor/EntityLink";
 
+/** Отображение поля-связи в виде таблицы */
 @observer
 export class SingleRelationFieldTable extends AbstractRelationFieldTable {
   @action

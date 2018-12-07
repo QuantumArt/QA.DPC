@@ -99,7 +99,7 @@ class App extends React.Component {
 class LocalizedComponent extends React.Component {
   render() {
     /** @type {Translate} */
-    const tr = this.props.translate;
+    const tr = this.props.tr;
 
     const firstName = "Foo";
     const lastName = "Bar";

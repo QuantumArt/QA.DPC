@@ -331,6 +331,7 @@
     <Compile Include="Editor\EditorPreloadingService.cs" />
     <Compile Include="Editor\EditorSchemaModels.cs" />
     <Compile Include="Editor\EditorSchemaService.cs" />
+    <Compile Include="Editor\EditorLocaleService.cs" />
     <Compile Include="FakeProductLoader.cs" />
     <Compile Include="IJsonProductService.cs" />
     <Compile Include="JsonProductDataSource.cs" />

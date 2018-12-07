@@ -2,11 +2,8 @@
  * DO NOT MODIFY THIS FILE BECAUSE IT WAS GENERATED AUTOMATICALLY
  * @see ProductEditorController.TypeScriptSchema()
  */
-import { IMSTArray, IMSTMap } from "mobx-state-tree";
-import { EntityObject, ExtensionObject, TablesObject } from "Models/EditorDataModels";
-
-type IArray<T> = IMSTArray<any, any, T>;
-type IMap<T> = IMSTMap<any, any, T>;
+// @ts-ignore
+import { EntityObject, ExtensionObject, TablesObject, IArray, IMap } from "Models/EditorDataModels";
 
 /** Типизация хранилища данных */
 export interface Tables extends TablesObject {
@@ -71,10 +68,10 @@ export interface Product extends EntityObject {
 }
 
 export interface ProductModifer extends EntityObject {
-  /** Псевдоним */
-  readonly Alias: string;
   /** Название */
   readonly Title: string;
+  /** Псевдоним */
+  readonly Alias: string;
 }
 
 export interface Direction extends EntityObject {

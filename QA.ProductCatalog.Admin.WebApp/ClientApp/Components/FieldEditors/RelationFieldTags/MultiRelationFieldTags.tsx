@@ -10,6 +10,7 @@ import { RelationFieldMenu } from "Components/FieldEditors/RelationFieldMenu";
 import { EntityComparer } from "../AbstractFieldEditor";
 import { AbstractRelationFieldTags, RelationFieldTagsProps } from "./AbstractRelationFieldTags";
 
+/** Отображение поля-связи в виде списка тегов */
 @observer
 export class MultiRelationFieldTags extends AbstractRelationFieldTags {
   static defaultProps = {

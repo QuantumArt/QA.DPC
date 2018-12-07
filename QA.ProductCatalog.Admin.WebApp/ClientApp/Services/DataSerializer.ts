@@ -52,13 +52,13 @@ export class DataSerializer {
   /**
    * Статья может быть создана на клиенте: `{ _ClientId: -1, _ServerId: -1 }`,
    * затем сохранена: `{ _ClientId: -1, _ServerId: 100500 }, _idMappingDict === { 100500: -1 }`,
-   * затем удалена параллельно другим пользователем, и наконец, вновьс охранена  на клиенте
-   * `{ _ClientId: -1, _ServerId: 100501 }, _idMappingDict === { 100501: 100500, 100500: -1 }`.
+   * затем удалена параллельно другим пользователем, и наконец, вновь сохранена  на клиенте
+   * `{ _ClientId: -1, _ServerId: 100501 }, _idMappingDict === { 100500: -1, 100501: 100500 }`.
    * Таким образом, для получения исходного `_ClientId` мы должны пройти по цепочке отображения
    * _ServerId --> _ClientId.
    */
   private getClientId(serverId: number) {
-    for (let i = 0; i < 9999; i++) {
+    for (let i = 0; i < 99999; i++) {
       const clientId = this._idMappingDict[serverId];
       if (!clientId) {
         return serverId;

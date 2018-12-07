@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Elasticsearch.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
@@ -349,7 +348,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             if (searchOptions != null)
             {
-                evt.AddProp("address", searchOptions.BaseAddress);
+                evt.AddProp("address", searchOptions.BaseUrls);
                 evt.AddProp("index", searchOptions.IndexName);
             }
             
@@ -359,9 +358,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         protected void LogException(Exception ex, string message, SearchOptions searchOptions, params object[] args)
         {
             var extra = new Dictionary<string, object>();
-            if (ex is ElasticsearchClientException elex)
+            
+            if (ex is ElasticClientException elex)
             {
-                extra.Add("extra", elex.DebugInformation);
+                extra.Add("extra", elex.Request);
             }
 
             LogExtra(LogLevel.Error, message, searchOptions, extra, ex, args);

@@ -9,22 +9,24 @@ import { ContentSchema } from "Models/EditorSchemaModels";
 import { EditorQueryParams } from "Models/EditorSettingsModels";
 import { EntityObject } from "Models/EditorDataModels";
 
-const actionInfosByName: {
-  [name: string]: CustomActionInfo;
+const actionInfosByAlias: {
+  [alias: string]: CustomActionInfo;
 } = {};
 
+/** Выполнение произвольных CustomAction */
 export class ActionController {
   @inject private _queryParams: EditorQueryParams;
 
+  /** Найти CustomAction по Alias и выполнить его для заданной статьи */
   @modal
   @handleError
   public async executeCustomAction(
-    actionName: string,
+    actionAlias: string,
     entity: EntityObject,
     contentSchema: ContentSchema,
     options?: Partial<QP8.ExecuteActionOptions>
   ) {
-    const actionInfo = await this.getCustomActionInfo(actionName);
+    const actionInfo = await this.getCustomActionInfo(actionAlias);
 
     const executeOptions: QP8.ExecuteActionOptions = {
       actionCode: actionInfo.ActionCode,
@@ -38,15 +40,15 @@ export class ActionController {
   }
 
   @handleError
-  private async getCustomActionInfo(actionName: string) {
-    let actionInfo = actionInfosByName[actionName];
+  private async getCustomActionInfo(alias: string) {
+    let actionInfo = actionInfosByAlias[alias];
     if (actionInfo) {
       return actionInfo;
     }
     const response = await fetch(
-      `${rootUrl}/ProductEditorQuery/GetCustomActionByName?${qs.stringify({
+      `${rootUrl}/ProductEditorQuery/GetCustomActionByAlias?${qs.stringify({
         ...this._queryParams,
-        actionName
+        alias
       })}`,
       {
         credentials: "include"
@@ -56,7 +58,7 @@ export class ActionController {
       throw new Error(await response.text());
     }
     actionInfo = await response.json();
-    actionInfosByName[actionName] = actionInfo;
+    actionInfosByAlias[alias] = actionInfo;
     return actionInfo;
   }
 }
