@@ -197,10 +197,18 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     );
   }
 
+  @action
   private resetParameters(parameters: Parameter[]) {
+    const { optionalBaseParamModifiers } = this.props;
     parameters.forEach(parameter => {
       parameter.NumValue = null;
       parameter.Value = null;
+      // remove optional BaseParameterModifiers
+      parameter.BaseParameterModifiers.replace(
+        parameter.BaseParameterModifiers.filter(
+          alias => !optionalBaseParamModifiers.includes(alias.Alias)
+        )
+      );
       parameter.setUnchanged();
       parameter.setUntouched();
       // @ts-ignore
