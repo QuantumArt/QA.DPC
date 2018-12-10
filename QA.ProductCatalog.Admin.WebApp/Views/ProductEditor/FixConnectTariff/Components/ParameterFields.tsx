@@ -42,6 +42,7 @@ interface ParameterField {
 interface ParameterFieldsProps extends FieldEditorProps {
   fields?: ParameterField[];
   optionalBaseParamModifiers?: string[];
+  showBaseParamModifiers?: boolean;
 }
 
 const unitOptionsCache = new WeakCache();
@@ -186,18 +187,28 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
       parameter.Direction === virtual.Direction &&
       setEquals(
         parameter.BaseParameterModifiers.filter(
-          modifier => !optionalBaseParamModifiers.includes(modifier.Alias)
+          alias => !optionalBaseParamModifiers.includes(alias.Alias)
         ),
-        virtual.BaseParameterModifiers
+        virtual.BaseParameterModifiers.filter(
+          alias => !optionalBaseParamModifiers.includes(alias.Alias)
+        )
       ) &&
       setEquals(parameter.Modifiers, virtual.Modifiers)
     );
   }
 
+  @action
   private resetParameters(parameters: Parameter[]) {
+    const { optionalBaseParamModifiers } = this.props;
     parameters.forEach(parameter => {
       parameter.NumValue = null;
       parameter.Value = null;
+      // remove optional BaseParameterModifiers
+      parameter.BaseParameterModifiers.replace(
+        parameter.BaseParameterModifiers.filter(
+          alias => !optionalBaseParamModifiers.includes(alias.Alias)
+        )
+      );
       parameter.setUnchanged();
       parameter.setUntouched();
       // @ts-ignore
@@ -270,6 +281,15 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
     });
   }
 
+  private getOptionalBaseParameterModifiers(): BaseParameterModifier[] {
+    const { optionalBaseParamModifiers, showBaseParamModifiers } = this.props;
+    if (!showBaseParamModifiers) {
+      return null;
+    }
+    const baseParamModifiersByAlias = this.getBaseParameterModifiersByAlias();
+    return optionalBaseParamModifiers.map(alias => baseParamModifiersByAlias[alias]);
+  }
+
   // Unit.PreloadingMode должно быть PreloadingMode.Eager
   private getUnitOptions(): Options {
     const fieldSchema = this.props.fieldSchema as RelationFieldSchema;
@@ -294,6 +314,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
 
     const parameters = this.getParameters();
     const unitOptions = this.getUnitOptions();
+    const optionalBaseParamModifiers = this.getOptionalBaseParameterModifiers();
 
     return parameters
       .slice()
@@ -305,6 +326,7 @@ export class ParameterFields extends Component<ParameterFieldsProps> {
           allParameters={parameters}
           numValueSchema={numValueSchema}
           unitOptions={unitOptions}
+          baseParamModifiers={optionalBaseParamModifiers}
         />
       ));
   }

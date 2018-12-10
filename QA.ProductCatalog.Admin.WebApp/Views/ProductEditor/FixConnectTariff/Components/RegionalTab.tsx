@@ -273,6 +273,7 @@ export class RegionalTab extends Component<RegionalTabTabProps> {
   private renderPhoneParameters = (props: FieldEditorProps) => (
     <ParameterFields
       {...props}
+      showBaseParamModifiers
       fields={[
         { Title: "Цена", Unit: "rub_month", BaseParam: "SubscriptionFee" },
         {
