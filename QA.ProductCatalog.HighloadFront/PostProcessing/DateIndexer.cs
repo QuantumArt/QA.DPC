@@ -10,9 +10,9 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
     {
         private SonicElasticStoreOptions Options { get; set; }
 
-        public DateIndexer(IOptions<SonicElasticStoreOptions> optionsAccessor)
+        public DateIndexer(SonicElasticStoreOptions options)
         {
-            Options = optionsAccessor?.Value ?? new SonicElasticStoreOptions();
+            Options = options;
         }
 
         public JObject Process(ProductPostProcessorData data)

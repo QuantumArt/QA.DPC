@@ -29,6 +29,8 @@
     <PackageReference Include="QA.Core" Version="3.3.1" />
     <PackageReference Include="Automapper" Version="1.1.2" />
     <PackageReference Include="Unity.Abstractions" Version="3.3.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.1.1" />
+   
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunnerModel\QA.Core.ProductCatalog.ActionsRunnerModel.csproj" />
