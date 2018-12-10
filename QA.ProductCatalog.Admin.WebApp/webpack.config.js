@@ -1,7 +1,7 @@
 const path = require("path");
 const glob = require("glob");
 const webpack = require("webpack");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
@@ -65,14 +65,13 @@ module.exports = (env, argv) => ({
         test: /\.(scss|css)$/,
         use: [
           "style-loader",
-          {
-            loader: "css-loader",
-            options: { minimize: argv.mode === "production" }
-          },
+          "css-loader",
           {
             loader: "postcss-loader",
             options: {
-              plugins: [require("autoprefixer")]
+              plugins: [require("autoprefixer")].concat(
+                argv.mode === "production" ? [require("cssnano")()] : []
+              )
             }
           },
           "sass-loader"
@@ -95,11 +94,11 @@ module.exports = (env, argv) => ({
   ],
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({
+      new TerserPlugin({
         cache: true,
         parallel: true,
         sourceMap: true,
-        uglifyOptions: {
+        terserOptions: {
           compress: {
             // inline is buggy as of uglify-es 3.3.9
             // https://github.com/mishoo/UglifyJS2/issues/2842

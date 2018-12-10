@@ -1,4 +1,3 @@
-import "reflect-metadata";
 import React from "react";
 import { render } from "react-dom";
 import { types as t, unprotect, IMSTMap } from "mobx-state-tree";
