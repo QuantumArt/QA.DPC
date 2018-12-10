@@ -1,18 +1,20 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using System.Web;
-using QA.Core.Models.Entities;
-using QA.Core.DPC.Loader;
-using QA.ProductCatalog.Infrastructure;
-using QA.Core.DPC.Formatters.Configuration;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using QA.Core.DPC.Formatters.Configuration;
+using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Models.Configuration;
+using QA.Core.Models.Entities;
+using QA.ProductCatalog.Infrastructure;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http.Routing;
 
 namespace QA.Core.DPC.Formatters.Services
 {
-	public class JsonProductFormatter : IArticleFormatter
+    public class JsonProductFormatter : IArticleFormatter
 	{
 		private readonly IJsonProductService _jsonProductService;
 		private readonly IContentDefinitionService _contentDefinitionService;
@@ -28,18 +30,17 @@ namespace QA.Core.DPC.Formatters.Services
             _productContentResolver = productContentResolver;
         }
 
-		public async Task<Article> Read(Stream stream)
-		{
-			using (var reader = new StreamReader(stream))
-			{
-				string line = await reader.ReadToEndAsync();
-
-				var context = HttpContext.Current;
-
-				string slug = (string)context?.Request.RequestContext?.RouteData?.Values["slug"];
-				string version = (string)context?.Request.RequestContext?.RouteData?.Values["version"];
-
+        public async Task<Article> Read(Stream stream)
+        {
+            using (var reader = new StreamReader(stream))
+            {
+                string line = await reader.ReadToEndAsync();
+                var context = HttpContext.Current;
                 Content definition = null;
+
+                var subroutes = ((IHttpRouteData[])context.Request.RequestContext.RouteData.Values["MS_SubRoutes"]).FirstOrDefault();
+                subroutes.Values.TryGetValue("slug", out object slug);
+                subroutes.Values.TryGetValue("version", out object version);
 
                 if (slug == null && version == null)
                 {
@@ -49,12 +50,12 @@ namespace QA.Core.DPC.Formatters.Services
                 }
                 else
                 {
-                    definition = _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+                    definition = _contentDefinitionService.GetServiceDefinition((string)slug, (string)version).Content;
                 }
 
                 return _jsonProductService.DeserializeProduct(line, definition);
-			}
-		}
+            }
+        }
 
         private string GetTypeName(string product)
         {

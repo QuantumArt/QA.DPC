@@ -1,18 +1,20 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using System.Web;
-using System.Xml.Linq;
+﻿using QA.Core.DPC.Formatters.Configuration;
+using QA.Core.DPC.Loader.Services;
 using QA.Core.Models;
+using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
-using QA.Core.Models.Configuration;
-using QA.Core.DPC.Formatters.Configuration;
-using QA.Core.DPC.Loader.Services;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Http.Routing;
+using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace QA.Core.DPC.Formatters.Services
 {
-	public class XmlProductFormatter : IArticleFormatter
+    public class XmlProductFormatter : IArticleFormatter
 	{
 		private readonly IXmlProductService _xmlProductService;
 		private readonly IContentDefinitionService _contentDefinitionService;
@@ -33,10 +35,11 @@ namespace QA.Core.DPC.Formatters.Services
 			return Task.Run<Article>(() => ReadProduct(stream, context));
 		}
 
-		public Article ReadProduct(Stream stream, HttpContext context)
-		{
-		    string slug = (string)context?.Request.RequestContext?.RouteData?.Values["slug"];
-		    string version = (string)context?.Request.RequestContext?.RouteData?.Values["version"];
+        public Article ReadProduct(Stream stream, HttpContext context)
+        {
+            var subroutes = ((IHttpRouteData[])context.Request.RequestContext.RouteData.Values["MS_SubRoutes"]).FirstOrDefault();
+            subroutes.Values.TryGetValue("slug", out object slug);
+            subroutes.Values.TryGetValue("version", out object version);
 
             var productXml = XDocument.Load(stream);
             Content definition = null;
@@ -49,11 +52,11 @@ namespace QA.Core.DPC.Formatters.Services
             }
             else
             {
-                definition = _contentDefinitionService.GetServiceDefinition(slug, version).Content;
+                definition = _contentDefinitionService.GetServiceDefinition((string)slug, (string)version).Content;
             }
 
-			return ReadProduct(productXml, definition);
-		}
+            return ReadProduct(productXml, definition);
+        }
 
         private string GetTypeName(XDocument productXml)
         {
