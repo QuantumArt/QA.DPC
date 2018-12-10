@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
       - name: impact
-        image: impact:||version||
+        image: spbdocker03:5000/impact:||version||
         ports:
         - containerPort: 80
