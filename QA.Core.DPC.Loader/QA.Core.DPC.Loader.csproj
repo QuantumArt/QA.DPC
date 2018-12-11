@@ -385,6 +385,7 @@
     <Compile Include="Services\StructureCachTracker.cs" />
     <Compile Include="Services\Transaction.cs" />
     <Compile Include="Services\AlwaysAdminUserProvider.cs" />
+    <Compile Include="Services\ValidationService.cs" />
     <Compile Include="SettingsFromContentService.cs" />
     <Compile Include="SettingsFromQpService.cs" />
     <Compile Include="SettingsServiceBase.cs" />

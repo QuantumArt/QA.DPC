@@ -26,8 +26,8 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         protected IAction Action { get; set; }
         protected ActionContext Context { get; set; }
         protected IXmlProductService XmlService { get; private set; }
-
         protected IFreezeService FreezeService { get; set; }
+        protected IValidationService ValidationService { get; set; }
         protected IEnumerable<Quantumart.QP8.BLL.Article> Articles
         {
             get { return ArticleService.Articles.Values; }
@@ -42,6 +42,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
             NotificationService = new QPNotificationServiceFake();
             FieldService = new FieldServiceFake();
             FreezeService = new FreezeServiceFake();
+            ValidationService = new ValidationServiceFake();
             ProductService = new ProductServiceFake();
             ProductService.Content = new Content();
             Transaction = null;

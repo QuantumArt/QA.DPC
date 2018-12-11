@@ -40,6 +40,7 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<IProductContentResolver, ProductContentResolver>();
 
             Container.RegisterType<IFreezeService, FreezeService>();
+            Container.RegisterType<IValidationService, ValidationService>();
 
             Container.RegisterType<IFieldService>("FieldServiceAdapterAlwaysAdmin",
                 new HttpContextLifetimeManager(),

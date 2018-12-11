@@ -300,6 +300,7 @@
     <Compile Include="Fakes\FieldServiceFake.cs" />
     <Compile Include="Fakes\FreezeServiceFake.cs" />
     <Compile Include="Fakes\QPNotificationServiceFake.cs" />
+    <Compile Include="Fakes\ValidationServiceFake.cs" />
     <Compile Include="Fakes\XmlProductServiceFake.cs" />
     <Compile Include="IntegrationTests\ArchiveActionIntegrationTests.cs" />
     <Compile Include="IntegrationTests\CloneActionIntegrationTests.cs" />
@@ -370,4 +371,3 @@
   </Target>
   -->
 </Project>
-
