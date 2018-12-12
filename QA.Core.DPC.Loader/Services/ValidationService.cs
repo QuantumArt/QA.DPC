@@ -107,6 +107,15 @@ namespace QA.Core.DPC.Loader.Services
                 }
             }
         }
+        public void ValidateAndUpdate(int[] productIds, Dictionary<int, string> errors)
+        {
+            errors.Add(productIds[0], "error");
+        }
+
+        public int[] GetProductIds()
+        {
+            return Enumerable.Range(0, 100000).ToArray();
+        }
         #endregion
 
         #region Private methods
