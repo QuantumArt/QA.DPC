@@ -48,6 +48,17 @@ namespace QA.Core.DPC.Loader.Services
             set @query = left(@query, len(@query) - len('union'))
             exec sp_executesql @query, N'@ids Ids readonly', @ids
         end";
+
+        private const string AllProductsQuery = @"
+        select
+	        a.CONTENT_ITEM_ID Id
+        from content_item a
+	        join CONTENT_ATTRIBUTE publicationFailed on a.CONTENT_ID = publicationFailed.CONTENT_ID
+	        join CONTENT_ATTRIBUTE validationMessage on a.CONTENT_ID = validationMessage.CONTENT_ID
+        where
+	        publicationFailed.ATTRIBUTE_NAME = @validationFailedField and
+	        validationMessage.ATTRIBUTE_NAME = @validationMessageField and
+	        a.ARCHIVE = 0";
         #endregion
 
         private const int UpdateChunkSize = 1000;
@@ -70,11 +81,10 @@ namespace QA.Core.DPC.Loader.Services
 
         #region IValidationService implementation
         public void UpdateValidationInfo(int[] productIds, ConcurrentDictionary<int, string> errors)
-        {
-            var dbConnector = GetConnector();
-
+        {            
             if (!string.IsNullOrEmpty(PublicationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))
             {
+                var dbConnector = GetConnector();
                 int userId = _userProvider.GetUserId();
                 var products = GetProducts(dbConnector, productIds)
                     .Where(p => errors.ContainsKey(p.Id) || p.PublicationFailed || !p.ValidationMessageIsEmpty)
@@ -109,12 +119,35 @@ namespace QA.Core.DPC.Loader.Services
         }
         public void ValidateAndUpdate(int[] productIds, Dictionary<int, string> errors)
         {
+            var dbConnector = GetConnector();
+            int userId = _userProvider.GetUserId();
+            var products = GetProducts(dbConnector, productIds);
+
             errors.Add(productIds[0], "error");
         }
 
         public int[] GetProductIds()
         {
-            return Enumerable.Range(0, 100000).ToArray();
+            if (!string.IsNullOrEmpty(ValidationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))
+            {
+                var sqlCommand = new SqlCommand(ProductQuery);
+
+                sqlCommand.Parameters.AddWithValue("@validationFailedField", ValidationFailedField);
+                sqlCommand.Parameters.AddWithValue("@validationMessageField", ValidationMessageField);
+
+                var dt = GetConnector().GetRealData(sqlCommand);
+
+                var products = dt.AsEnumerable()
+                    .Select(r => (int)(decimal)r["Id"])
+                    .ToArray();
+
+                return products;
+            }
+            else
+            {
+                return new int[0];
+            }
+
         }
         #endregion
 
