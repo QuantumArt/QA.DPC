@@ -1,13 +1,11 @@
 ﻿using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
     public class ValidationAction : ActionTaskBase
     {
-        private const int UpdateChunkSize = 1000;
+        private const int DefaultUpdateChunkSize = 100;
         private readonly IValidationService _validationService;        
 
         public ValidationAction(IValidationService validationService)
@@ -17,24 +15,15 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
         public override string Process(ActionContext context)
         {
-            var errors = new Dictionary<int, string>();
-            var productIds = _validationService.GetProductIds();
-            int page = 0;
+            int updateChunkSize = DefaultUpdateChunkSize;
 
-            foreach (var batch in productIds.Section(UpdateChunkSize))
+            if (context.Parameters.TryGetValue("UpdateChunkSize", out string value))
             {
-                if (TaskContext.IsCancellationRequested)
-                {
-                    TaskContext.IsCancelled = true;
-                    break;
-                }
-
-                _validationService.ValidateAndUpdate(batch.ToArray(), errors);
-
-                byte progress = (byte)(++page * UpdateChunkSize * 100 / productIds.Length);
+                int.TryParse(value, out updateChunkSize);
             }
 
-            return $"{productIds.Length} products are validated; {errors.Keys.Count} products are invalid";
+             var report =_validationService.ValidateAndUpdate(updateChunkSize, TaskContext);
+            return $"Products: {report.TotalProductsCount}; Updated products: {report.UpdatedProductsCount}; Validated products: {report.ValidatedProductsCount}; Invalid products: {report.InvalidProductsCount}, Validation errors: {report.ValidationErrorsCount}";           
         }
     }
 }

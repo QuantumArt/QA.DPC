@@ -1,6 +1,5 @@
 ﻿using QA.ProductCatalog.Infrastructure;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {
@@ -15,8 +14,9 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
         {
         }
 
-        public void ValidateAndUpdate(int[] productIds, Dictionary<int, string> errors)
+        public ValidationReport ValidateAndUpdate(int updateChunkSize, ITaskExecutionContext context)
         {
+            throw new System.NotImplementedException();
         }
     }
 }

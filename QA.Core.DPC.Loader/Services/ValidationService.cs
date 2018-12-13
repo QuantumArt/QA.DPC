@@ -5,6 +5,7 @@ using Quantumart.QP8.BLL;
 using Quantumart.QP8.Constants;
 using Quantumart.QP8.Utils;
 using Quantumart.QPublishing.Database;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Data;
@@ -27,25 +28,30 @@ namespace QA.Core.DPC.Loader.Services
 	        select
 		        ' + cast(a.CONTENT_ID as nvarchar(100)) + ' ContentId,
 		        a.CONTENT_ITEM_ID Id,
-		        a.[' + @publicationFailedField + '] PublicationFailed,
+		        a.[' + @validationFailedField + '] PublicationFailed,
 		        CONVERT(BIT, (CASE WHEN a.[' + @validationMessageField + '] IS NULL THEN 1 ELSE 0 END)) ValidationMessageIsEmpty
 	        from
 		        content_' + cast(a.CONTENT_ID as nvarchar(100)) +'_united a
 		        join @ids ids on a.CONTENT_ITEM_ID = ids.ID
-	        union'
+            where
+	            a.ARCHIVE = 0 and
+	            a.VISIBLE = 1
+	        union all'
         from content_item a
 	        join @ids ids on a.CONTENT_ITEM_ID = ids.ID
 	        join CONTENT_ATTRIBUTE publicationFailed on a.CONTENT_ID = publicationFailed.CONTENT_ID
 	        join CONTENT_ATTRIBUTE validationMessage on a.CONTENT_ID = validationMessage.CONTENT_ID
         where
-	        publicationFailed.ATTRIBUTE_NAME = @publicationFailedField and
-	        validationMessage.ATTRIBUTE_NAME = @validationMessageField
+	        publicationFailed.ATTRIBUTE_NAME = @validationFailedField and
+	        validationMessage.ATTRIBUTE_NAME = @validationMessageField and
+	        a.ARCHIVE = 0 and
+	        a.VISIBLE = 1
         group by
 	        a.CONTENT_ID
    
         if @query<> ''
         begin
-            set @query = left(@query, len(@query) - len('union'))
+            set @query = left(@query, len(@query) - len('union all'))
             exec sp_executesql @query, N'@ids Ids readonly', @ids
         end";
 
@@ -58,23 +64,26 @@ namespace QA.Core.DPC.Loader.Services
         where
 	        publicationFailed.ATTRIBUTE_NAME = @validationFailedField and
 	        validationMessage.ATTRIBUTE_NAME = @validationMessageField and
-	        a.ARCHIVE = 0";
+	        a.ARCHIVE = 0 and
+            a.VISIBLE = 1";
         #endregion
 
         private const int UpdateChunkSize = 1000;
         private readonly ISettingsService _settingsService;
-        private IUserProvider _userProvider;
-        private ILogger _logger;
-        private string _connectionString;
+        private readonly IUserProvider _userProvider;
+        private readonly IArticleService _articleService;
+        private readonly ILogger _logger;
+        private readonly string _connectionString;
 
         public string PublicationFailedField => _settingsService.GetSetting(SettingsTitles.PRODUCT_PUBLICATION_FAILED_FIELD_NAME);
         public string ValidationFailedField => _settingsService.GetSetting(SettingsTitles.PRODUCT_VALIDATION_FAILED_FIELD_NAME);
         public string ValidationMessageField => _settingsService.GetSetting(SettingsTitles.PRODUCT_VALIDATION_MSG_FIELD_NAME);
 
-        public ValidationService(ISettingsService settingsService, IUserProvider userProvider, IConnectionProvider connectionProvider, ILogger logger)
+        public ValidationService(ISettingsService settingsService, IUserProvider userProvider, IConnectionProvider connectionProvider, IArticleService articleService, ILogger logger)
         {
             _settingsService = settingsService;
             _userProvider = userProvider;
+            _articleService = articleService;
             _logger = logger;
             _connectionString = connectionProvider.GetConnection();
         }
@@ -84,53 +93,65 @@ namespace QA.Core.DPC.Loader.Services
         {            
             if (!string.IsNullOrEmpty(PublicationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))
             {
-                var dbConnector = GetConnector();
-                int userId = _userProvider.GetUserId();
-                var products = GetProducts(dbConnector, productIds)
-                    .Where(p => errors.ContainsKey(p.Id) || p.PublicationFailed || !p.ValidationMessageIsEmpty)
-                    .ToArray();
-
-                foreach (var g in products.GroupBy(p =>  p.ContentId ))
-                {
-                    var articles = new List<Dictionary<string, string>>();
-
-                    foreach (var product in g)
-                    {
-                        var failed = errors.TryGetValue(product.Id, out string error);
-
-                        var values = new Dictionary<string, string>
-                        {
-                            { FieldName.ContentItemId, product.Id.ToString(CultureInfo.InvariantCulture) },
-                            { PublicationFailedField, failed ? "1" : "0" },
-                            { ValidationMessageField, failed ? error : string.Empty }
-                        };
-
-                        articles.Add(values);
-                    }
-
-                    foreach (var chunk in articles.Section(UpdateChunkSize))
-                    {
-                        dbConnector.MassUpdate(g.Key, chunk, userId);
-                    }
-
-                    _logger.LogInfo(() => $"Update validation statuses for content {g.Key} in articles: {string.Join(", ", productIds)}, validation errors in: {string.Join(", ", errors.Keys)}");
-                }
+                UpdateValidationInfo(productIds, errors, PublicationFailedField, ValidationMessageField);
             }
         }
-        public void ValidateAndUpdate(int[] productIds, Dictionary<int, string> errors)
+        public ValidationReport ValidateAndUpdate(int updateChunkSize, ITaskExecutionContext context)
         {
-            var dbConnector = GetConnector();
-            int userId = _userProvider.GetUserId();
-            var products = GetProducts(dbConnector, productIds);
+            var report = new ValidationReport();
 
-            errors.Add(productIds[0], "error");
+            if (!string.IsNullOrEmpty(ValidationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))
+            {
+                var productIds = GetProductIds();
+
+                foreach (var chunk in productIds.Section(updateChunkSize))
+                {
+                    var errors = new ConcurrentDictionary<int, string>();
+
+                    foreach (var productId in chunk)
+                    {
+                        if (context.IsCancellationRequested)
+                        {
+                            context.IsCancelled = true;
+                            return report;
+                        }
+
+                        try
+                        {
+                            var validation = _articleService.XamlValidationById(productId, true);
+
+                            if (!validation.IsEmpty)
+                            {
+                                var value = string.Join(Environment.NewLine, validation.Errors.Select(s => s.Message));
+                                errors.TryAdd(productId, value);
+                                report.InvalidProductsCount++;
+                            }
+                        }
+                        catch(Exception ex)
+                        {
+                            errors.TryAdd(productId, ex.Message);
+                            report.ValidationErrorsCount++;
+                            _logger.ErrorException($"Error while validating product {productId}", ex);
+                        }
+
+                        byte progress = (byte)(++report.TotalProductsCount * 100 / productIds.Length);
+                        context.SetProgress(progress);
+                    }
+
+                    var updateResult = UpdateValidationInfo(chunk.ToArray(), errors, ValidationFailedField, ValidationMessageField);
+                    report.ValidatedProductsCount += updateResult.ProductsCount;
+                    report.UpdatedProductsCount += updateResult.UpdatedProuctsCount;
+                }
+            }
+
+            return report;
         }
 
-        public int[] GetProductIds()
+        private int[] GetProductIds()
         {
             if (!string.IsNullOrEmpty(ValidationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))
             {
-                var sqlCommand = new SqlCommand(ProductQuery);
+                var sqlCommand = new SqlCommand(AllProductsQuery);
 
                 sqlCommand.Parameters.AddWithValue("@validationFailedField", ValidationFailedField);
                 sqlCommand.Parameters.AddWithValue("@validationMessageField", ValidationMessageField);
@@ -152,12 +173,12 @@ namespace QA.Core.DPC.Loader.Services
         #endregion
 
         #region Private methods
-        private ProductDescriptor[] GetProducts(DBConnector dbConnector, int[] productIds)
+        private ProductDescriptor[] GetProducts(DBConnector dbConnector, int[] productIds, string validationFailedField, string validationMessageField)
         {            
             var sqlCommand = new SqlCommand(ProductQuery);
 
-            sqlCommand.Parameters.AddWithValue("@publicationFailedField", PublicationFailedField);
-            sqlCommand.Parameters.AddWithValue("@validationMessageField", ValidationMessageField);
+            sqlCommand.Parameters.AddWithValue("@validationFailedField", validationFailedField);
+            sqlCommand.Parameters.AddWithValue("@validationMessageField", validationMessageField);
             sqlCommand.Parameters.Add(Common.GetIdsTvp(productIds, "@Ids"));
 
             var dt = dbConnector.GetRealData(sqlCommand);
@@ -167,6 +188,49 @@ namespace QA.Core.DPC.Loader.Services
                 .ToArray();
 
             return products;
+        }
+
+        private ValidationInfo UpdateValidationInfo(int[] productIds, ConcurrentDictionary<int, string> errors, string validationFailedField, string validationMessageField)
+        {
+            var result = new ValidationInfo();
+            var dbConnector = GetConnector();
+            int userId = _userProvider.GetUserId();
+
+            var products = GetProducts(dbConnector, productIds, validationFailedField, validationMessageField);
+            result.ProductsCount = products.Length;
+
+            var productsToUpdate = products
+                .Where(p => errors.ContainsKey(p.Id) || p.PublicationFailed || !p.ValidationMessageIsEmpty)
+                .ToArray();
+            result.UpdatedProuctsCount = productsToUpdate.Length;
+
+            foreach (var g in productsToUpdate.GroupBy(p => p.ContentId))
+            {
+                var articles = new List<Dictionary<string, string>>();
+
+                foreach (var product in g)
+                {
+                    var failed = errors.TryGetValue(product.Id, out string error);
+
+                    var values = new Dictionary<string, string>
+                        {
+                            { FieldName.ContentItemId, product.Id.ToString(CultureInfo.InvariantCulture) },
+                            { PublicationFailedField, failed ? "1" : "0" },
+                            { ValidationMessageField, failed ? error : string.Empty }
+                        };
+
+                    articles.Add(values);
+                }
+
+                foreach (var chunk in articles.Section(UpdateChunkSize))
+                {
+                    dbConnector.MassUpdate(g.Key, chunk, userId);
+                }
+
+                _logger.LogInfo(() => $"Update validation statuses for content {g.Key} in articles: {string.Join(", ", productIds)}, validation errors in: {string.Join(", ", errors.Keys)}");
+            }
+
+            return result;
         }
 
         private DBConnector GetConnector()
@@ -190,6 +254,12 @@ namespace QA.Core.DPC.Loader.Services
             public int Id { get; set; }
             public bool PublicationFailed { get; set; }
             public bool ValidationMessageIsEmpty { get; set; }
+        }
+
+        private class ValidationInfo
+        {
+            public int ProductsCount { get; set; }
+            public int UpdatedProuctsCount { get; set; }
         }
     }
 }
