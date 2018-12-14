@@ -5,7 +5,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 {
     public class ValidationAction : ActionTaskBase
     {
-        private const int DefaultUpdateChunkSize = 100;
+        private const int DefaultChunkSize = 1000;
+        private const int DefaultMaxDegreeOfParallelism = 1;
         private readonly IValidationService _validationService;        
 
         public ValidationAction(IValidationService validationService)
@@ -15,15 +16,27 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
         public override string Process(ActionContext context)
         {
-            int updateChunkSize = DefaultUpdateChunkSize;
+            int chunkSize = GetValue(context, "UpdateChunkSize", DefaultChunkSize);
+            int maxDegreeOfParallelism = GetValue(context, "MaxDegreeOfParallelism", DefaultMaxDegreeOfParallelism);
+            
+            var report =_validationService.ValidateAndUpdate(chunkSize, maxDegreeOfParallelism, TaskContext);
+            return $"Products: {report.TotalProductsCount};" +
+                    $"Updated products: {report.UpdatedProductsCount};" +
+                    $"Validated products: {report.ValidatedProductsCount};" +
+                    $"Invalid products: {report.InvalidProductsCount};" +
+                    $"Validation errors: {report.ValidationErrorsCount}";           
+        }
 
-            if (context.Parameters.TryGetValue("UpdateChunkSize", out string value))
+        private int GetValue(ActionContext context, string key, int defaultValue)
+        {
+            int value = DefaultChunkSize;
+
+            if (context.Parameters.TryGetValue(key, out string setting))
             {
-                int.TryParse(value, out updateChunkSize);
+                int.TryParse(setting, out value);
             }
 
-             var report =_validationService.ValidateAndUpdate(updateChunkSize, TaskContext);
-            return $"Products: {report.TotalProductsCount}; Updated products: {report.UpdatedProductsCount}; Validated products: {report.ValidatedProductsCount}; Invalid products: {report.InvalidProductsCount}, Validation errors: {report.ValidationErrorsCount}";           
+            return value;
         }
     }
 }

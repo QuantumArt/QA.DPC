@@ -5,7 +5,7 @@ namespace QA.ProductCatalog.Infrastructure
     public interface IValidationService
     {
         void UpdateValidationInfo(int[] productIds, ConcurrentDictionary<int, string> errors);
-        ValidationReport ValidateAndUpdate(int updateChunkSize, ITaskExecutionContext context);     
+        ValidationReport ValidateAndUpdate(int chunkSize, int maxDegreeOfParallelism, ITaskExecutionContext context);     
     }
 
     public class ValidationReport

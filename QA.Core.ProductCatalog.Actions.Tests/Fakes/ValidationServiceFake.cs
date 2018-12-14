@@ -14,9 +14,9 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
         {
         }
 
-        public ValidationReport ValidateAndUpdate(int updateChunkSize, ITaskExecutionContext context)
+        public ValidationReport ValidateAndUpdate(int chunkSize, int maxDegreeOfParallelism, ITaskExecutionContext context)
         {
-            throw new System.NotImplementedException();
+            return new ValidationReport();
         }
     }
 }

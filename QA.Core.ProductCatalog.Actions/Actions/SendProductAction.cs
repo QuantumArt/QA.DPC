@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using QA.Core.DPC.Loader.Services;
+﻿using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
-using QA.Core.ProductCatalog.Actions.Exceptions;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

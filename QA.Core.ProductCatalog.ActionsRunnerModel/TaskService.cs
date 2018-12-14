@@ -1,11 +1,11 @@
-﻿using System;
+﻿using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web.Configuration;
 using System.Linq.Expressions;
-using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
+using System.Web.Configuration;
 
 namespace QA.Core.ProductCatalog.ActionsRunnerModel
 {

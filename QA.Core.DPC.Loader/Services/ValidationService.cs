@@ -12,6 +12,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace QA.Core.DPC.Loader.Services
 {
@@ -93,31 +94,47 @@ namespace QA.Core.DPC.Loader.Services
         {            
             if (!string.IsNullOrEmpty(PublicationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))
             {
-                UpdateValidationInfo(productIds, errors, PublicationFailedField, ValidationMessageField);
+                int userId = _userProvider.GetUserId();
+                UpdateValidationInfo(productIds, errors, PublicationFailedField, ValidationMessageField, userId);
             }
         }
-        public ValidationReport ValidateAndUpdate(int updateChunkSize, ITaskExecutionContext context)
+        public ValidationReport ValidateAndUpdate(int chunkSize, int maxDegreeOfParallelism, ITaskExecutionContext context)
         {
+            Console.WriteLine(new{ maxDegreeOfParallelism, chunkSize });
             var report = new ValidationReport();
 
             if (!string.IsNullOrEmpty(ValidationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))
             {
                 var productIds = GetProductIds();
+                int userId = _userProvider.GetUserId();
 
-                foreach (var chunk in productIds.Section(updateChunkSize))
+                if (userId == 0)
+                {
+                    throw new Exception("userId is not defined");
+                }
+
+                Parallel.ForEach(productIds.Section(chunkSize), new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism }, (chunk, state) =>
                 {
                     var errors = new ConcurrentDictionary<int, string>();
+                    int n = 0;
 
                     foreach (var productId in chunk)
                     {
-                        if (context.IsCancellationRequested)
+                        if (state.IsStopped)
+                        {
+                            return;
+                        }
+                        else if (n % maxDegreeOfParallelism == 0 && context.IsCancellationRequested)
                         {
                             context.IsCancelled = true;
-                            return report;
+                            state.Stop();
+                            return;
                         }
 
+                        n++;
+
                         try
-                        {
+                        {                            
                             var validation = _articleService.XamlValidationById(productId, true);
 
                             if (!validation.IsEmpty)
@@ -127,7 +144,7 @@ namespace QA.Core.DPC.Loader.Services
                                 report.InvalidProductsCount++;
                             }
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             errors.TryAdd(productId, ex.Message);
                             report.ValidationErrorsCount++;
@@ -138,10 +155,10 @@ namespace QA.Core.DPC.Loader.Services
                         context.SetProgress(progress);
                     }
 
-                    var updateResult = UpdateValidationInfo(chunk.ToArray(), errors, ValidationFailedField, ValidationMessageField);
+                    var updateResult = UpdateValidationInfo(chunk.ToArray(), errors, ValidationFailedField, ValidationMessageField, userId);
                     report.ValidatedProductsCount += updateResult.ProductsCount;
                     report.UpdatedProductsCount += updateResult.UpdatedProuctsCount;
-                }
+                });
             }
 
             return report;
@@ -190,11 +207,10 @@ namespace QA.Core.DPC.Loader.Services
             return products;
         }
 
-        private ValidationInfo UpdateValidationInfo(int[] productIds, ConcurrentDictionary<int, string> errors, string validationFailedField, string validationMessageField)
+        private ValidationInfo UpdateValidationInfo(int[] productIds, ConcurrentDictionary<int, string> errors, string validationFailedField, string validationMessageField, int userId)
         {
             var result = new ValidationInfo();
-            var dbConnector = GetConnector();
-            int userId = _userProvider.GetUserId();
+            var dbConnector = GetConnector();            
 
             var products = GetProducts(dbConnector, productIds, validationFailedField, validationMessageField);
             result.ProductsCount = products.Length;
@@ -215,8 +231,8 @@ namespace QA.Core.DPC.Loader.Services
                     var values = new Dictionary<string, string>
                         {
                             { FieldName.ContentItemId, product.Id.ToString(CultureInfo.InvariantCulture) },
-                            { PublicationFailedField, failed ? "1" : "0" },
-                            { ValidationMessageField, failed ? error : string.Empty }
+                            { validationFailedField, failed ? "1" : "0" },
+                            { validationMessageField, failed ? error : string.Empty }
                         };
 
                     articles.Add(values);
