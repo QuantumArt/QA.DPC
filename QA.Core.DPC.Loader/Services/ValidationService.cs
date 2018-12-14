@@ -100,7 +100,6 @@ namespace QA.Core.DPC.Loader.Services
         }
         public ValidationReport ValidateAndUpdate(int chunkSize, int maxDegreeOfParallelism, ITaskExecutionContext context)
         {
-            Console.WriteLine(new{ maxDegreeOfParallelism, chunkSize });
             var report = new ValidationReport();
 
             if (!string.IsNullOrEmpty(ValidationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))

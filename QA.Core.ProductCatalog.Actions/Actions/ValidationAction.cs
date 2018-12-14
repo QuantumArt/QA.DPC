@@ -5,6 +5,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 {
     public class ValidationAction : ActionTaskBase
     {
+        private static readonly object Locker = new object();
+        private static bool IsProcessing = false;
         private const int DefaultChunkSize = 1000;
         private const int DefaultMaxDegreeOfParallelism = 1;
         private readonly IValidationService _validationService;        
@@ -16,15 +18,33 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
         public override string Process(ActionContext context)
         {
-            int chunkSize = GetValue(context, "UpdateChunkSize", DefaultChunkSize);
-            int maxDegreeOfParallelism = GetValue(context, "MaxDegreeOfParallelism", DefaultMaxDegreeOfParallelism);
-            
-            var report =_validationService.ValidateAndUpdate(chunkSize, maxDegreeOfParallelism, TaskContext);
-            return $"Products: {report.TotalProductsCount};" +
-                    $"Updated products: {report.UpdatedProductsCount};" +
-                    $"Validated products: {report.ValidatedProductsCount};" +
-                    $"Invalid products: {report.InvalidProductsCount};" +
-                    $"Validation errors: {report.ValidationErrorsCount}";           
+            bool canProcess = false;
+            lock (Locker)
+            {
+                if (!IsProcessing)
+                {
+                    IsProcessing = true;
+                    canProcess = true;
+                }
+            }
+
+            if (canProcess)
+            {
+                int chunkSize = GetValue(context, "UpdateChunkSize", DefaultChunkSize);
+                int maxDegreeOfParallelism = GetValue(context, "MaxDegreeOfParallelism", DefaultMaxDegreeOfParallelism);
+
+                var report = _validationService.ValidateAndUpdate(chunkSize, maxDegreeOfParallelism, TaskContext);
+                IsProcessing = false;
+                return $"Products: {report.TotalProductsCount};" +
+                        $"Updated products: {report.UpdatedProductsCount};" +
+                        $"Validated products: {report.ValidatedProductsCount};" +
+                        $"Invalid products: {report.InvalidProductsCount};" +
+                        $"Validation errors: {report.ValidationErrorsCount}";
+            }
+            else
+            {
+                return "ValidationAction is already running";
+            }
         }
 
         private int GetValue(ActionContext context, string key, int defaultValue)
