@@ -330,6 +330,7 @@
     <Compile Include="Actions\ProductRelevanceAction.cs" />
     <Compile Include="Actions\SendAction.cs" />
     <Compile Include="Actions\UnfreezeAction.cs" />
+    <Compile Include="Actions\ValidationAction.cs" />
     <Compile Include="Container\ActionContainerProfiler.cs" />
     <Compile Include="Decorators\ActionProfiler.cs" />
     <Compile Include="Decorators\ArticleServiceProfiler.cs" />
@@ -397,4 +398,3 @@
   </Target>
   -->
 </Project>
-
