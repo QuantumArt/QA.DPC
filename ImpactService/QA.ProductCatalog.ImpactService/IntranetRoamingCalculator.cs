@@ -130,6 +130,11 @@ namespace QA.ProductCatalog.ImpactService
         
         public IEnumerable<JToken> FilterResultParameters(IEnumerable<JToken> parameters, string region)
         {
+            return parameters == null ? new JToken[] {} : FilterResultParametersInternal(parameters, region);
+        }
+        
+        private IEnumerable<JToken> FilterResultParametersInternal(IEnumerable<JToken> parameters, string region)
+        {
             foreach (var p in parameters)
             {
                 if (p.SelectToken("Zone.Regions") != null)
