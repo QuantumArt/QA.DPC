@@ -67,6 +67,22 @@ namespace QA.Core.DPC.Loader.Services
 	        validationMessage.ATTRIBUTE_NAME = @validationMessageField and
 	        a.ARCHIVE = 0 and
             a.VISIBLE = 1";
+
+        private const string AllProductsConditionQuery = @"
+        select
+	        a.CONTENT_ITEM_ID Id
+        from content_item a
+	        join CONTENT_ATTRIBUTE publicationFailed on a.CONTENT_ID = publicationFailed.CONTENT_ID
+	        join CONTENT_ATTRIBUTE validationMessage on a.CONTENT_ID = validationMessage.CONTENT_ID
+	        join CONTENT_ATTRIBUTE validationConditionField on a.CONTENT_ID = validationMessage.CONTENT_ID
+	        join CONTENT_DATA val on validationConditionField.ATTRIBUTE_ID = val.ATTRIBUTE_ID and a.CONTENT_ITEM_ID = val.CONTENT_ITEM_ID
+        where
+	        publicationFailed.ATTRIBUTE_NAME = @validationFailedField and
+	        validationMessage.ATTRIBUTE_NAME = @validationMessageField and
+	        validationConditionField.ATTRIBUTE_NAME = @validationConditionField and
+	        val.DATA is not null and
+	        a.ARCHIVE = 0 and
+            a.VISIBLE = 1";
         #endregion
 
         private const int UpdateChunkSize = 1000;
@@ -79,6 +95,7 @@ namespace QA.Core.DPC.Loader.Services
         public string PublicationFailedField => _settingsService.GetSetting(SettingsTitles.PRODUCT_PUBLICATION_FAILED_FIELD_NAME);
         public string ValidationFailedField => _settingsService.GetSetting(SettingsTitles.PRODUCT_VALIDATION_FAILED_FIELD_NAME);
         public string ValidationMessageField => _settingsService.GetSetting(SettingsTitles.PRODUCT_VALIDATION_MSG_FIELD_NAME);
+        public string ValidationConditionField => _settingsService.GetSetting(SettingsTitles.PRODUCT_VALIDATION_CONDITION_FIELD_NAME);        
 
         public ValidationService(ISettingsService settingsService, IUserProvider userProvider, IConnectionProvider connectionProvider, IArticleService articleService, ILogger logger)
         {
@@ -167,10 +184,21 @@ namespace QA.Core.DPC.Loader.Services
         {
             if (!string.IsNullOrEmpty(ValidationFailedField) && !string.IsNullOrEmpty(ValidationMessageField))
             {
-                var sqlCommand = new SqlCommand(AllProductsQuery);
+                SqlCommand sqlCommand;
 
-                sqlCommand.Parameters.AddWithValue("@validationFailedField", ValidationFailedField);
-                sqlCommand.Parameters.AddWithValue("@validationMessageField", ValidationMessageField);
+                if (string.IsNullOrEmpty(ValidationConditionField))
+                {
+                    sqlCommand = new SqlCommand(AllProductsQuery);
+                    sqlCommand.Parameters.AddWithValue("@validationFailedField", ValidationFailedField);
+                    sqlCommand.Parameters.AddWithValue("@validationMessageField", ValidationMessageField);
+                }
+                else
+                {
+                    sqlCommand = new SqlCommand(AllProductsConditionQuery);
+                    sqlCommand.Parameters.AddWithValue("@validationFailedField", ValidationFailedField);
+                    sqlCommand.Parameters.AddWithValue("@validationMessageField", ValidationMessageField);
+                    sqlCommand.Parameters.AddWithValue("@validationConditionField", ValidationConditionField);
+                }
 
                 var dt = GetConnector().GetRealData(sqlCommand);
 
