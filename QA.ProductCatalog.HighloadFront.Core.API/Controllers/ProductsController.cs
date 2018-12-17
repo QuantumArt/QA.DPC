@@ -89,6 +89,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("{type}"), HttpPost]
         public async Task<ActionResult> GetByType([FromBody]object json, string type, string language = null, string state = null)
         {
+            var modelStateResult = ModelStateBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+            
             var options = new ProductsOptions(json, _options)
             {
                 Type = type?.TrimStart('@'),
@@ -111,6 +117,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("{id:int}"), HttpPost]
         public async Task<ActionResult> GetById([FromBody]object json, int id, string language = null, string state = null)
         {
+            var modelStateResult = ModelStateBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+            
             var options = new ProductsOptions(json, _options)
             {
                 Id = id,
@@ -157,6 +169,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [ResponseCache(Location = ResponseCacheLocation.None, NoStore = true)]
         public async Task<ActionResult> Search([FromBody]object json, string language = null, string state = null)
         {
+            var modelStateResult = ModelStateBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+            
             var options = new ProductsOptions(json, _options) {CacheForSeconds = 0};
             try
             {
@@ -214,6 +232,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("query/{alias}"), HttpPost]
         public async Task<ActionResult> Query([FromBody]object json, string type, string language = null, string state = null)
         {
+            var modelStateResult = ModelStateBadRequest();
+            if (modelStateResult != null)
+            {
+                return modelStateResult;
+            }
+            
             var options = new ProductsOptions(json, _options) {Type = type?.TrimStart('@')};
             
             try
@@ -420,6 +444,23 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             return result;
 
+        }
+
+        private BadRequestObjectResult ModelStateBadRequest()
+        {
+            BadRequestObjectResult result = null;
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .SelectMany(x => x.Value.Errors, (y, z) => z.Exception?.Message).ToArray();
+                if (errors.Any(n => !String.IsNullOrEmpty(n)))
+                {
+                    result = BadRequest(errors);
+                }
+            }
+            
+            return result; 
         }
 
 
