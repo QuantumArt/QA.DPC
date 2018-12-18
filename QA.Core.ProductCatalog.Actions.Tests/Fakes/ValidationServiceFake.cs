@@ -1,5 +1,6 @@
 ﻿using QA.ProductCatalog.Infrastructure;
 using System.Collections.Concurrent;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {

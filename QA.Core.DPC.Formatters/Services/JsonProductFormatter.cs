@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Routing;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Formatters.Services
 {
