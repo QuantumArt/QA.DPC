@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Logger;
 using QA.Core.Models;
@@ -121,34 +122,38 @@ namespace QA.Core.DPC.API.Update
                 throw new ProductUpdateConcurrencyException(_outdatedArticleIds.ToArray());
             }
 
-            _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
-
-            InsertData[] idMapping = _articleService.BatchUpdate(_updateData);
-
-            _logger.Debug(() => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
-            
-            if (_articlesToDelete.Any())
+            using (var scope = new TransactionScope())
             {
-                _logger.Debug(() => "Start Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
-                foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
+                _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
+
+                InsertData[] idMapping = _articleService.BatchUpdate(_updateData);
+
+                _logger.Debug(() => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
+
+                if (_articlesToDelete.Any())
                 {
-                    try
+                    _logger.Debug(() => "Start Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
+                    foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
                     {
-                        var qpArticle = _articleService.Read(articleToDeleteKv.Key);
+                        try
+                        {
+                            var qpArticle = _articleService.Read(articleToDeleteKv.Key);
 
-                        _deleteAction.DeleteProduct(
-                            qpArticle, new ProductDefinition { StorageSchema = articleToDeleteKv.Value },
-                            true, false, null);
+                            _deleteAction.DeleteProduct(
+                                qpArticle, new ProductDefinition { StorageSchema = articleToDeleteKv.Value },
+                                true, false, null);
+                        }
+                        catch (MessageResultException ex)
+                        {
+                            _logger.ErrorException("Не удалось удалить статью {0}", ex, articleToDeleteKv.Key);
+                        }
                     }
-                    catch (MessageResultException ex)
-                    {
-                        _logger.ErrorException("Не удалось удалить статью {0}", ex, articleToDeleteKv.Key);
-                    }
+                    _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
                 }
-                _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
-            }
 
-            return idMapping;
+                scope.Complete();
+                return idMapping;
+            }
         }
 
         #endregion
