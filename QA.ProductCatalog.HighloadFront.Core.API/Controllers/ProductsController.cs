@@ -13,6 +13,7 @@ using Newtonsoft.Json.Linq;
 using QA.Core;
 using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
+using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Options;
 using ResponseCacheLocation = Microsoft.AspNetCore.Mvc.ResponseCacheLocation;
@@ -215,7 +216,17 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         [Route("query/{alias}")]
         public async Task<ActionResult> Query(string alias, int? id, int? skip, int? take, string language = null, string state = null)
         {
-            var options = new ProductsOptions(GetQueryJson(alias), _options, id, skip, take);
+            JObject json = null;
+            try
+            {
+                json = GetQueryJson(alias);
+            }
+            catch (Exception ex)
+            {
+                return ParseBadRequest(ex);
+            }
+            
+            var options = new ProductsOptions(json, _options, id, skip, take);
             
             try
             {
@@ -344,12 +355,17 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 var constr = m.Groups["constraints"].Value;
                 var constraints = FillConstraints(ConstaintsToProcess.Matches(constr), out var defaultValue);
                 string[] values = requestQuery[name];
-                var replaceValue = GetReplaceValue(values, constraints, defaultValue);
-
-                if (replaceValue != null)
+                var param = String.Join(",", values);
+                var replaceValue = GetReplaceValue(param, constraints, defaultValue);
+                if (replaceValue == null)
                 {
-                    result.Add(key, replaceValue);
+                    string message = !String.IsNullOrEmpty(param) ? 
+                        $"Validation of parameter '{name}' failed and no default value has been provided" : 
+                        $"Neither parameter '{name}' nor default value has been provided";
+                    throw new ParseJsonException(message) { Json = json };
                 }
+
+                result.Add(key, replaceValue);
 
             }
 
@@ -377,12 +393,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             return constraints;
         }
 
-        private string GetReplaceValue(string[] values , Dictionary<string, string> constraints, string defaultValue)
+        private string GetReplaceValue(string param, Dictionary<string, string> constraints, string defaultValue)
         {
-
-            var param = String.Join(",", values);
-
             string replaceValue = null;
+            
             if (!String.IsNullOrEmpty(param) && ValidateParam(param, constraints))
             {
                 replaceValue = param;
@@ -457,12 +471,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 if (errors.Any(n => !String.IsNullOrEmpty(n)))
                 {
                     result = BadRequest(errors);
+                    var errorstr = string.Join(",", errors);
+                    _logger.Error($"Model has errors: {errorstr}");                    
                 }
             }
             
             return result; 
         }
-
 
         private BadRequestObjectResult ElasticBadRequest(ElasticsearchClientException ex, int id = 0)
         {
@@ -473,8 +488,22 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
 
             _logger.ErrorException($"Elastic search error occurred. Debug Info: {ex.DebugInformation}", ex);            
-            return BadRequest($"Elastic search error occurred:: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
+            return BadRequest($"Elastic search error occurred: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
 
+        }
+        
+        private BadRequestObjectResult ParseBadRequest(Exception ex)
+        {
+            if (ex is ParseJsonException pex)
+            {
+                _logger.ErrorException($"Parsing JSON query error for JSON: {pex.Json}", pex);            
+            }
+            else
+            {
+                _logger.ErrorException($"Parsing JSON query error", ex);                 
+            }
+            
+            return BadRequest($"Parsing JSON query error: {ex.Message}");
         }
         
         private BadRequestObjectResult UnexpectedBadRequest(Exception ex)
