@@ -79,6 +79,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             DisableLike = JTokenToStringArray(jobj.SelectToken(DISABLE_LIKE));
             
             Sort = (string) jobj.SelectToken(SORT);
+            OrderDirection = (string) jobj.SelectToken(ORDER);            
             Filters = GetFilters(jobj, Id);
             DataFilters = GetDataFilters(jobj);
         }
@@ -154,7 +155,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public decimal ActualSize => Take ?? PerPage ?? ElasticOptions.DefaultSize;
 
         [BindNever]    
-        public decimal ActualFrom => (Id != 0) ? 0 : (Skip ?? Page ?? 0) * ActualSize;
+        public decimal ActualFrom => (Id != 0) ? 0 : Skip ?? (Page ?? 0) * ActualSize;
         
         [BindNever]    
         public string ActualType
@@ -270,7 +271,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
             {
                 Name = name,
                 Values = values,
-                IsDisjunction = isDisjunction
+                IsDisjunction = isDisjunction,
+                FromJson = true
             };
 
         }

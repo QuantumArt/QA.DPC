@@ -438,7 +438,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             if (simpleFilter != null)
             {
                 result = simpleFilter.Name != Options.TypePath
-                    ? GetSingleFilterWithNot(simpleFilter.Name, simpleFilter.Values, disableOr, disableNot, disableLike)
+                    ? GetSingleFilterWithNot(simpleFilter.Name, simpleFilter.Values, simpleFilter.FromJson, disableOr, disableNot, disableLike)
                     : null;
             }
 
@@ -507,7 +507,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        private JProperty GetSingleFilterWithNot(string field, StringValues values, string[] disabledOrFields, string[] disabledNotFields, string[] disableLikeFields)
+        private JProperty GetSingleFilterWithNot(string field, StringValues values, bool fromJson, string[] disabledOrFields, string[] disabledNotFields, string[] disableLikeFields)
         {
             var conditions = StringValues.IsNullOrEmpty(values)
                 ? null
@@ -515,10 +515,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
             if (conditions == null || conditions.Length == 0)
                 return null;
+            
+            var op = (fromJson) ? "should" : "must";
 
             var result = conditions.Length == 1 ? 
                 conditions.First() : 
-                new JProperty("bool", new JObject(new JProperty("must", JArray.FromObject(conditions.Select(n => new JObject(n))))));
+                new JProperty("bool", new JObject(new JProperty(op, JArray.FromObject(conditions.Select(n => new JObject(n))))));
 
             return result;
         }
