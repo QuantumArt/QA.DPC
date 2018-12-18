@@ -13,6 +13,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public string[] Values { get; set; }
         public string Value => Values.FirstOrDefault();
         public bool IsDisjunction { get; set; }
+        public bool FromJson { get; set; }
+        
     }
 
     public class RangeFilter : IElasticFilter

@@ -271,7 +271,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
             {
                 Name = name,
                 Values = values,
-                IsDisjunction = isDisjunction
+                IsDisjunction = isDisjunction,
+                FromJson = true
             };
 
         }
