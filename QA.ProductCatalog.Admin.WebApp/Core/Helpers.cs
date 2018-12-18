@@ -93,5 +93,21 @@ namespace System.Web.Mvc
 
             return new MvcHtmlString(uriBuilder.ToString());
         }
+
+        public static MvcHtmlString VersionedContent(this UrlHelper urlHelper, string contentPath)
+        {
+            int revision = typeof(Helpers).Assembly.GetName().Version.Revision;
+
+            if (contentPath.Contains("?"))
+            {
+                contentPath += "&v=" + revision;
+            }
+            else
+            {
+                contentPath += "?v=" + revision;
+            }
+
+            return new MvcHtmlString(urlHelper.Content(contentPath));
+        }
     }
 }

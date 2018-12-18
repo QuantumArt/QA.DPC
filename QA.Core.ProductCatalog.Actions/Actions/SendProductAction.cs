@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using QA.Core.DPC.Loader.Services;
+﻿using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Linq;
 using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
-using QA.Core.ProductCatalog.Actions.Exceptions;
+using System;
 using QA.ProductCatalog.ContentProviders;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
@@ -28,6 +28,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
         private readonly ILogger _logger;
         private readonly IFreezeService _freezeService;
         private readonly IConnectionProvider _provider;
+        private readonly IValidationService _validationService;
 
 
         internal class Local
@@ -38,12 +39,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
         }
 
-        public SendProductAction(ISettingsService settingsService, IArticleService articleService, ILogger logger, IFreezeService freezeService, IConnectionProvider provider)
+        public SendProductAction(ISettingsService settingsService, IArticleService articleService, ILogger logger, IFreezeService freezeService, IValidationService validationService, IConnectionProvider provider)
         {
             _settingsService = settingsService;
             _logger = logger;
             _articleService = articleService;
             _freezeService = freezeService;
+            _validationService = validationService;
             _provider = provider;
         }
 
@@ -395,6 +397,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     Task.WhenAll(productsToRemove.Section(20).Select(s => service.DeleteProductsAsync(productService.GetSimpleProductsByIds(s.ToArray()), context.UserName, context.UserId, false))).Wait();
                 }
             }
+
+
+            _validationService.UpdateValidationInfo(productIds, validationErrors);
 
             int[] notFound = missing.Except(productsToRemove).Except(excluded).Except(frozen).Except(validationErrors.Keys).ToArray();
 

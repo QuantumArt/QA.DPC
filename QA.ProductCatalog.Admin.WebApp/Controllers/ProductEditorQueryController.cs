@@ -36,6 +36,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             EditorSchemaService editorSchemaService,
             EditorDataService editorDataService,
             EditorPartialContentService editorPartialContentService,
+            EditorLocaleService editorLocaleService,
             // self dependencies
             PublicationStatusService publicationStatusService,
             EditorPreloadingService editorPreloadingService,
@@ -45,7 +46,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 articleService,
                 editorSchemaService,
                 editorDataService,
-                editorPartialContentService)
+                editorPartialContentService,
+                editorLocaleService)
         {
             _publicationStatusService = publicationStatusService;
             _editorPreloadingService = editorPreloadingService;
@@ -163,10 +165,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Content(json, "application/json");
         }
 
+        /// <summary>
+        /// Получить информацию о CustomAction по его Alias
+        /// <param name="alias">Alias</param>
+        /// <returns>ActionCode и EntityTypeCode для Action</returns>
+        /// </summary>
         [HttpGet]
-        public async Task<ActionResult> GetCustomActionByName(string actionName)
+        public async Task<ActionResult> GetCustomActionByAlias(string alias)
         {
-            CustomActionInfo actionInfo = await _editorCustomActionService.GetCustomActionByName(actionName);
+            CustomActionInfo actionInfo = await _editorCustomActionService.GetCustomActionByAlias(alias);
 
             string json = JsonConvert.SerializeObject(actionInfo);
 

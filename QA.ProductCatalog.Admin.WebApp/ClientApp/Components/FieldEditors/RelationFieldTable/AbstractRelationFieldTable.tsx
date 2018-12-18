@@ -15,13 +15,19 @@ import {
 import "./RelationFieldTable.scss";
 
 export interface RelationFieldTableProps extends FieldEditorProps {
+  /** Предикат фильтрации связанных статей при отображении в таблице */
   filterItems?: (item: EntityObject) => boolean;
+  /** Функция подсветки каждой связанной статьи */
   highlightItems?: (item: EntityObject) => HighlightMode;
+  /** Функция realtime валидации каждой связанной статьи */
   validateItems?: Validator;
+  /** Функция сравнения связанных статей для сортировки */
   sortItems?: EntityComparer;
+  /** Селектор поля для сравнения связанных статей для сортировки */
   sortItemsBy?: string | FieldSelector;
+  /** Селектор полей для отображения в таблице */
   displayFields?: (string | FieldSelector)[];
-  // custom actions
+  /** Render Callback для добавления дополнительных кнопок-действий в редактор поля-связи */
   relationActions?: () => ReactNode;
 }
 

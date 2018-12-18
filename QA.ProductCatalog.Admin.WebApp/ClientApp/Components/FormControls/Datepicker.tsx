@@ -65,7 +65,7 @@ export class DatePicker extends ValidatableInput<DatePickerProps> {
                 disabled,
                 readOnly
               }}
-              locale={locale}
+              locale={(locale && locale.slice(0, 2).toLowerCase()) || "en"}
               dateFormat={type !== "time"}
               timeFormat={type !== "date"}
               value={inputValue}

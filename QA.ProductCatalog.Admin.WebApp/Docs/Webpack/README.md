@@ -65,7 +65,7 @@
 ```html
 <html>
 <head root-url="@Url.Content("~")">
-  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,fetch,Array.prototype.includes,Object.values,Object.entries"></script>
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,fetch,Array.prototype.includes,Object.values,Object.entries,Element.prototype.closest"></script>
 </head>
 <body>
   <div id="container"></div>

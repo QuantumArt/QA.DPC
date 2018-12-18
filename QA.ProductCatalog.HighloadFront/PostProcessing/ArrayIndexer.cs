@@ -13,9 +13,9 @@ namespace QA.ProductCatalog.HighloadFront.PostProcessing
     {
         private readonly ArrayIndexingSettings[] _arrayIndexingSettings;
 
-        public ArrayIndexer(IOptions<SonicElasticStoreOptions> elasticOptions)
+        public ArrayIndexer(SonicElasticStoreOptions elasticOptions)
         {
-            _arrayIndexingSettings = elasticOptions?.Value?.IndexingOptions;
+            _arrayIndexingSettings = elasticOptions.IndexingOptions;
         }
 
         public JObject Process(ProductPostProcessorData data)

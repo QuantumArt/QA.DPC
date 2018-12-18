@@ -28,6 +28,20 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public IServiceProvider ConfigureServices(IServiceCollection services)
         {
+            services.AddOptions();
+            
+            var opts = new HarvesterOptions();
+            Configuration.Bind("Harvester", opts);
+            services.AddSingleton(opts);
+            
+            var opts2 = new SonicElasticStoreOptions();
+            Configuration.Bind("SonicElasticStore", opts2);
+            services.AddSingleton(opts2);
+            
+            var opts3 = new DataOptions();
+            Configuration.Bind("Data", opts3);
+            services.AddSingleton(opts3);
+            
             // Add framework services.
             services.AddMvc(options =>
             {
@@ -38,11 +52,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             });
 
             services.AddMemoryCache();
-
-            services.Configure<HarvesterOptions>(Configuration.GetSection("Harvester"));
-            services.Configure<SonicElasticStoreOptions>(Configuration.GetSection("SonicElasticStore"));
-            services.Configure<DataOptions>(Configuration.GetSection("Data"));
-            services.AddSingleton(Configuration);
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration});

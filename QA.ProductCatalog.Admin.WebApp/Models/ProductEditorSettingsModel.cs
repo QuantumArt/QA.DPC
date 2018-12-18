@@ -14,6 +14,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         /// Id описания продукта
         /// </summary>
         public int ProductDefinitionId { get; set; }
+
+        /// <summary>
+        /// ISO-код локали текущего пользователя
+        /// </summary>
+        public string UserLocale { get; set; }
         
         public MvcHtmlString SerializeSettings()
         {

@@ -10,6 +10,7 @@ using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -24,14 +25,16 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         protected readonly EditorSchemaService _editorSchemaService;
         protected readonly EditorDataService _editorDataService;
         protected readonly EditorPartialContentService _editorPartialContentService;
-        
+        private readonly EditorLocaleService _editorLocaleService;
+
         public ProductEditorController(
             IContentDefinitionService contentDefinitionService,
             IProductService productService,
             IReadOnlyArticleService articleService,
             EditorSchemaService editorSchemaService,
             EditorDataService editorDataService,
-            EditorPartialContentService editorPartialContentService)
+            EditorPartialContentService editorPartialContentService,
+            EditorLocaleService editorLocaleService)
         {
             _contentDefinitionService = contentDefinitionService;
             _productService = productService;
@@ -39,6 +42,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorSchemaService = editorSchemaService;
             _editorDataService = editorDataService;
             _editorPartialContentService = editorPartialContentService;
+            _editorLocaleService = editorLocaleService;
         }
         
         /// <summary>
@@ -58,11 +62,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             string editorViewPath = String.IsNullOrWhiteSpace(definition.EditorViewPath)
                 ? "DefaultEditor"
                 : definition.EditorViewPath;
+
+            CultureInfo currentUserCulture = _editorLocaleService.GetCurrentUserCulture();
             
             return View(editorViewPath, new ProductEditorSettingsModel
             {
                 ArticleId = content_item_id,
                 ProductDefinitionId = definition.ProductDefinitionId,
+                UserLocale = currentUserCulture?.Name,
             });
         }
 
@@ -77,7 +84,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .Select(x => x.Value)
                 .FirstOrDefault();
 
-            int productTypeId = Int32.Parse(productTypeField);
+            Int32.TryParse(productTypeField, out int productTypeId);
 
             return _contentDefinitionService
                 .GetEditorDefinition(productTypeId, qpArticle.ContentId, isLive);

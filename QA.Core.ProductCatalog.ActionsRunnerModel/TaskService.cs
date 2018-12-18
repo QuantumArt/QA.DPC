@@ -1,9 +1,10 @@
-﻿using System;
+﻿using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
-using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
+using System.Web.Configuration;
 
 namespace QA.Core.ProductCatalog.ActionsRunnerModel
 {
@@ -275,15 +276,36 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
 
 		public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFillter, bool? hasSchedule, out int totalCount)
 	    {
-			var tasksFiltered = _dbContext.Tasks.Include("TaskState").Include("Schedule")
-			    .Where(
-				    x =>
-					    (!userIdToFilterBy.HasValue || x.UserID == userIdToFilterBy) &&
-					    (!stateIdToFilterBy.HasValue || x.StateID == stateIdToFilterBy) &&
-					    (nameFillter == null || x.DisplayName.Contains(nameFillter)) &&
-						(!hasSchedule.HasValue || x.Schedule.Enabled == hasSchedule || !hasSchedule.Value && !x.ScheduleID.HasValue ));
+            IQueryable<Task> tasksFiltered = _dbContext.Tasks.Include("TaskState").Include("Schedule");
 
-		    totalCount = tasksFiltered.Count();
+            if (userIdToFilterBy.HasValue)
+            {
+                tasksFiltered = tasksFiltered.Where(x => x.UserID == userIdToFilterBy);
+            }
+
+            if (stateIdToFilterBy.HasValue)
+            {
+                tasksFiltered = tasksFiltered.Where(x => x.StateID == stateIdToFilterBy);
+            }
+
+            if (nameFillter != null)
+            {
+                tasksFiltered = tasksFiltered.Where(x => x.DisplayName.Contains(nameFillter));
+            }
+
+            if (hasSchedule.HasValue)
+            {
+                if (hasSchedule.Value)
+                {
+                    tasksFiltered = tasksFiltered.Where(x => x.Schedule.Enabled == true);
+                }
+                else
+                {
+                    tasksFiltered = tasksFiltered.Where(x => x.Schedule == null || x.Schedule.Enabled == false);
+                }
+            }
+
+            totalCount = tasksFiltered.Count();
 
 			return tasksFiltered
 				.OrderByDescending(x => x.ID)

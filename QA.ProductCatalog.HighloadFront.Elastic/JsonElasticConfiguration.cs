@@ -23,11 +23,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public JsonElasticConfiguration(
             IConfigurationRoot config,
             ILogger logger,
-            IOptions<DataOptions> dataOptions)
+            DataOptions dataOptions)
         {
             _config = config;
             _logger = logger;
-            _dataOptions = dataOptions.Value;
+            _dataOptions = dataOptions;
         }
 
         public IEnumerable<ElasticIndex> GetElasticIndices()

@@ -8,7 +8,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         
         public JObject HomeRegionData { get; set; }
         
-        public string BaseAddress { get; set; }
+        public string[] BaseUrls { get; set; }
 
         public string IndexName { get; set; }
 
@@ -20,7 +20,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             {
                 HomeRegion = HomeRegion,
                 TypeName = TypeName,
-                BaseAddress = BaseAddress,
+                BaseUrls = BaseUrls,
                 IndexName = IndexName,
                 HomeRegionData = (JObject)HomeRegionData?.DeepClone()
             };

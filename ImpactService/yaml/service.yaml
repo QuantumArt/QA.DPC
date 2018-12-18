@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: impact
+spec:
+  type: LoadBalancer
+  selector:
+    app: impact
+  ports:
+  - port: 80

@@ -26,11 +26,11 @@ namespace QA.Core.DPC.Loader.Editor
             _connectionString = connectionProvider.GetConnection();
         }
 
-        public async Task<CustomActionInfo> GetCustomActionByName(string actionName)
+        public async Task<CustomActionInfo> GetCustomActionByAlias(string alias)
         {
-            if (String.IsNullOrWhiteSpace(actionName))
+            if (String.IsNullOrWhiteSpace(alias))
             {
-                throw new ArgumentException(nameof(actionName));
+                throw new ArgumentException(nameof(alias));
             }
 
             using (var connection = new SqlConnection(_connectionString))
@@ -39,13 +39,14 @@ namespace QA.Core.DPC.Loader.Editor
 
                 var actionInfo = await connection.QuerySingleAsync<CustomActionInfo>($@"
                     SELECT TOP (1)
-                        a.CODE AS {nameof(CustomActionInfo.ActionCode)},
-	                    t.CODE AS {nameof(CustomActionInfo.EntityTypeCode)}
-                    FROM dbo.BACKEND_ACTION AS a
-                    INNER JOIN dbo.ENTITY_TYPE AS t ON a.ENTITY_TYPE_ID = t.ID
-                    WHERE a.NAME = @{nameof(actionName)}",
-                    new { actionName });
-
+                        ba.CODE AS {nameof(CustomActionInfo.ActionCode)},
+	                    et.CODE AS {nameof(CustomActionInfo.EntityTypeCode)}
+                    FROM dbo.CUSTOM_ACTION AS ca
+                    INNER JOIN dbo.BACKEND_ACTION AS ba ON ca.ACTION_ID = ba.ID
+                    INNER JOIN dbo.ENTITY_TYPE AS et ON ba.ENTITY_TYPE_ID = et.ID
+                    WHERE ca.ALIAS = @{nameof(alias)}",
+                    new { alias });
+                
                 return actionInfo;
             }
         }

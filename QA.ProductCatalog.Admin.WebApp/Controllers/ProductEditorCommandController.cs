@@ -37,6 +37,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             EditorSchemaService editorSchemaService,
             EditorDataService editorDataService,
             EditorPartialContentService editorPartialContentService,
+            EditorLocaleService editorLocaleService,
             // self dependencies
             IFieldService fieldService,
             IProductUpdateService productUpdateService,
@@ -48,7 +49,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 articleService,
                 editorSchemaService,
                 editorDataService,
-                editorPartialContentService)
+                editorPartialContentService,
+                editorLocaleService)
         {
             _fieldService = fieldService;
             _productUpdateService = productUpdateService;

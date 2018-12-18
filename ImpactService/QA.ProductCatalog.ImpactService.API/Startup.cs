@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using NLog;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using Polly;
+using Polly.Registry;
 using QA.ProductCatalog.ImpactService.API.Services;
 using QA.ProductCatalog.ImpactService.API.Helpers;
 
@@ -26,12 +29,17 @@ namespace QA.ProductCatalog.ImpactService.API
             services.AddOptions();
 
             services.Configure<ConfigurationOptions>(Configuration);
+            
+            services.AddSingleton(new PolicyRegistry());
 
             services.AddMvc();
 
             services.AddMemoryCache();
 
+            services.AddHttpClient();
+
             services.AddScoped(typeof(ISearchRepository), typeof(ElasticSearchRepository));
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline

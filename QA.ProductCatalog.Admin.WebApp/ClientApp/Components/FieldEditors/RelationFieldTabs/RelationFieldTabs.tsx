@@ -21,14 +21,26 @@ import {
 import "./RelationFieldTabs.scss";
 
 interface RelationFieldTabsProps extends ExpandableFieldEditorProps {
+  /** Предикат фильтрации связанных статей при отображении во вкладках */
   filterItems?: (item: EntityObject) => boolean;
+  /** Функция сравнения связанных статей для сортировки */
   sortItems?: EntityComparer;
+  /** Селектор поля для сравнения связанных статей для сортировки */
   sortItemsBy?: string | FieldSelector;
+  /** Селектор поля для заголовка вкладки */
   displayField?: string | FieldSelector;
+  /** Селектор поля для заголовка вутри вложенного @see EntityEditor */
   titleField?: string | FieldSelector;
+  /** Свернуты по-умолчанию */
   collapsed?: boolean;
+  /** Вертикальные вкладки */
   vertical?: boolean;
+  /** Кастомный className, добавляющийся к "relation-field-tabs" */
   className?: string;
+  /**
+   * Отрисовывать сразу все вкладки, или только открытую.
+   * Влияет на производительность и выполнение валидаций, заданных внутри вложенного @see EntityEditor
+   */
   renderAllTabs?: boolean;
 }
 
@@ -41,6 +53,7 @@ interface RelationFieldTabsState {
 const defaultRelationHandler = action => action();
 const defaultEntityHandler = (_entity, action) => action();
 
+/** Отображение множественного поля-связи в виде вкладок (возможно вертикальных) */
 @observer
 export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationFieldTabsProps> {
   static defaultProps = {

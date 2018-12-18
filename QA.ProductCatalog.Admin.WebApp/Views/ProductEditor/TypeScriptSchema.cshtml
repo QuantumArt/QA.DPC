@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
   <title>@(ViewBag.Title ?? "DPC")</title>
-  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,fetch,Array.prototype.includes,Object.values,Object.entries"></script>
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=es6,fetch,Array.prototype.includes,Object.values,Object.entries,Element.prototype.closest"></script>
 </head>
 <body>
   <pre><code id="typeScriptCode">Loading...</code></pre>
@@ -14,6 +14,6 @@
       window.editorSchema = @Html.Raw(Model.EditorSchema);
       window.mergedSchema = @Html.Raw(Model.MergedSchema);
   </script>
-  <script src="~/Scripts/Bundles/ProductEditor/TypeScriptSchema.js"></script>
+  <script src="@Url.VersionedContent("~/Scripts/Bundles/ProductEditor/TypeScriptSchema.js")"></script>
 </body>
 </html>

@@ -42,7 +42,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             var searchOptions = new SearchOptions
             {
-                BaseAddress = ConfigurationOptions.ElasticBaseAddress,
+                BaseUrls = ConfigurationOptions.ElasticUrls,
                 IndexName = ConfigurationOptions.GetIndexName(state, language),
                 HomeRegion = homeRegion
             };
@@ -153,7 +153,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         {
             var searchOptions = new SearchOptions
             {
-                BaseAddress = ConfigurationOptions.ElasticBaseAddress,
+                BaseUrls = ConfigurationOptions.ElasticUrls,
                 IndexName = ConfigurationOptions.GetIndexName(state, language),
                 HomeRegion = homeRegion
             };
@@ -203,7 +203,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             var searchOptions = new SearchOptions
             {
-                BaseAddress = ConfigurationOptions.ElasticBaseAddress,
+                BaseUrls = ConfigurationOptions.ElasticUrls,
                 IndexName = ConfigurationOptions.GetIndexName(state, language),
                 HomeRegion = homeRegion
             };

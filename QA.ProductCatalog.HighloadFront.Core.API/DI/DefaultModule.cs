@@ -49,11 +49,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
             builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityProvider(
                 c.Resolve<IHttpContextAccessor>(), 
-                c.Resolve<IOptions<DataOptions>>().Value.FixedCustomerCode
+                c.Resolve<DataOptions>().FixedCustomerCode
             ));
             builder.RegisterScoped<IConnectionProvider>(c =>
             {
-                var fcnn = c.Resolve<IOptions<DataOptions>>().Value.FixedConnectionString;
+                var fcnn = c.Resolve<DataOptions>().FixedConnectionString;
                 if (!string.IsNullOrEmpty(fcnn) || !IsQpMode)
                     return new ExplicitConnectionProvider(fcnn);
 

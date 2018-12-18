@@ -1,3 +1,5 @@
+@import "~@blueprintjs/core/lib/scss/variables";
+
 .advantages-table {
   &__is-gift {
     margin-left: 10px;
@@ -34,6 +36,13 @@
       max-height: 55px;
     }
   }
+}
+
+.bp3-checkbox.parameter-block__modifier--edited {
+  color: $blue2;
+  text-shadow: 0 0 0 $blue2;
+  text-decoration-line: underline;
+  text-underline-position: under;
 }
 
 .bp3-divider {

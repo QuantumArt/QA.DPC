@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json.Linq;
@@ -34,8 +35,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
         private const string FREE_QUERY = "q";
         private const string OR_QUERY = "or";
         private const string AND_QUERY = "and";
-        
-        private SonicElasticStoreOptions _elasticOptions;
+
+        public SonicElasticStoreOptions ElasticOptions { get; set; }
         private object _json;
 
         private static readonly HashSet<string> FirstLevelReservedKeywords = new HashSet<string>()
@@ -58,7 +59,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public ProductsOptions(object json, SonicElasticStoreOptions options, int? id = null, int? skip = null, int? take = null)
         {
             _json = json;
-            _elasticOptions = options;
+            ElasticOptions = options ?? new SonicElasticStoreOptions();
             
             Filters = new List<IElasticFilter>();
             DataFilters = new Dictionary<string, string>();
@@ -78,8 +79,15 @@ namespace QA.ProductCatalog.HighloadFront.Options
             DisableLike = JTokenToStringArray(jobj.SelectToken(DISABLE_LIKE));
             
             Sort = (string) jobj.SelectToken(SORT);
+            OrderDirection = (string) jobj.SelectToken(ORDER);            
             Filters = GetFilters(jobj, Id);
             DataFilters = GetDataFilters(jobj);
+        }
+
+        public void ApplyQueryCollection(IQueryCollection collection)
+        {
+            Filters = collection.Where(n => !FirstLevelReservedKeywords.Contains(n.Key))
+                .Select(n => ProductOptionsParser.CreateFilter(n, ElasticOptions)).ToArray();
         }
 
         #region Bound properties
@@ -92,8 +100,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public int Id { get; set; }
         
         [ModelBinder(Name = FIELDS)]
-        public IList<string> PropertiesFilter { get; set; }
-
+        public string Fields { get; set; }
+        
         [ModelBinder(Name = PAGE)]
         public decimal? Page { get; set; }
         
@@ -126,7 +134,10 @@ namespace QA.ProductCatalog.HighloadFront.Options
         #region Computed properties
         
         [BindNever]
-        public IList<IElasticFilter> Filters { get; set; } 
+        public IList<IElasticFilter> Filters { get; set; }
+        
+        [BindNever]
+        public IList<string> PropertiesFilter { get; set; }
         
         [BindNever]
         public Dictionary<string, string> DataFilters { get; set; }
@@ -134,14 +145,19 @@ namespace QA.ProductCatalog.HighloadFront.Options
         [BindNever]     
         public decimal CacheForSeconds { get; set; }
 
+        [BindNever]    
         private IList<SimpleFilter> SimpleFilters => Filters.OfType<SimpleFilter>().ToList();
 
+        [BindNever]    
         public bool DirectOrder => OrderDirection == "asc";
 
-        public decimal ActualSize => Take ?? PerPage ?? _elasticOptions.DefaultSize;
+        [BindNever]    
+        public decimal ActualSize => Take ?? PerPage ?? ElasticOptions.DefaultSize;
 
-        public decimal ActualFrom => (Id != 0) ? 0 : (Skip ?? Page ?? 0) * ActualSize;
+        [BindNever]    
+        public decimal ActualFrom => (Id != 0) ? 0 : Skip ?? (Page ?? 0) * ActualSize;
         
+        [BindNever]    
         public string ActualType
         {
             get
@@ -153,7 +169,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
                 }
 
                 return SimpleFilters
-                    .Where(f => f.Name == _elasticOptions.TypePath)
+                    .Where(f => f.Name == ElasticOptions.TypePath)
                     .Select(f => f.Value).FirstOrDefault();
             }
         }
@@ -200,19 +216,20 @@ namespace QA.ProductCatalog.HighloadFront.Options
             return result;
         }
 
-        private string[] JTokenToStringArray(JToken fields)
+        private string[] JTokenToStringArray(JToken valuesToken, bool skipSplit = false)
         {
-            if (fields == null) return new string[] {};
+            if (valuesToken == null) return new string[] {};
             
-            if (fields is JArray array)
+            if (valuesToken is JArray array)
             {
                 return array.Select(n => n.Value<string>()).ToArray();
             }
 
-            return ((string) fields).Split(',').Select(n => n.Trim()).ToArray();
+            var values = (string) valuesToken;
+
+            return skipSplit ? new[] { values } : values.Split(',').Select(n => n.Trim()).ToArray();
         }
-
-
+        
         private IElasticFilter CreateFilter(string key, JToken token)
         {
             var name = GetParameterName(key, out var isDisjunction);
@@ -227,7 +244,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
                 };
             }
 
-            var values = JTokenToStringArray(token);
+            var values = JTokenToStringArray(token, true);
             var value = values.First();
             
             if (name == FREE_QUERY)
@@ -254,7 +271,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
             {
                 Name = name,
                 Values = values,
-                IsDisjunction = isDisjunction
+                IsDisjunction = isDisjunction,
+                FromJson = true
             };
 
         }
@@ -263,15 +281,15 @@ namespace QA.ProductCatalog.HighloadFront.Options
         {
             isDisjunction = false;
 
-            if (key.StartsWith(_elasticOptions.DisjunctionMark))
+            if (key.StartsWith(ElasticOptions.DisjunctionMark))
             {
                 isDisjunction = true;
-                key = key.Substring(_elasticOptions.DisjunctionMark.Length);
+                key = key.Substring(ElasticOptions.DisjunctionMark.Length);
             }
 
-            while (key.StartsWith(_elasticOptions.EscapeCharacter))
+            while (key.StartsWith(ElasticOptions.EscapeCharacter))
             {
-                key = key.Substring(_elasticOptions.EscapeCharacter.Length);
+                key = key.Substring(ElasticOptions.EscapeCharacter.Length);
             }
 
             return key;
@@ -280,6 +298,24 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public string GetKey()
         {
             return _json != null ? $"Id: {Id}, Skip: {Skip}, Take:{Take}" + _json : null;
+        }
+
+        public void ComputeArrays()
+        {
+            PropertiesFilter = Fields?.Split(',').ToArray();
+            
+            DisableOr = (DisableOr == null || !DisableOr.Any())
+                ? new string[] { }
+                : DisableOr.SelectMany(n => n.Split(',')).ToArray();
+            
+            DisableNot = (DisableNot == null || !DisableNot.Any())
+                ? new string[] { }
+                : DisableNot.SelectMany(n => n.Split(',')).ToArray();
+            
+            DisableLike = (DisableLike == null || !DisableLike.Any())
+                ? new string[] { }
+                : DisableLike.SelectMany(n => n.Split(',')).ToArray();             
+         
         }
     }
 };
