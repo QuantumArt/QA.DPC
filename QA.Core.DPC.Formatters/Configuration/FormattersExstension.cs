@@ -58,11 +58,9 @@ namespace QA.Core.DPC.Formatters.Configuration
 		{
 			string data = formatter.Serialize(product, filter, includeRegionTags);
 
-			using (var writer = new StreamWriter(stream))
-			{
-				await writer.WriteAsync(data);
-				await writer.FlushAsync();
-			}
+            var writer = new StreamWriter(stream);
+			await writer.WriteAsync(data);
+			await writer.FlushAsync();
 		}
 
         public static Func<IFormatter<TModel>> GetFactory<TFormatter, TModel>(this IUnityContainer container)
