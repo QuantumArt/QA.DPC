@@ -278,6 +278,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\BinaryModelFormatter.cs" />
     <Compile Include="Services\JsonDefinitionSchemaFormatter.cs" />
+    <Compile Include="Services\JsonProductArrayFormatter.cs" />
     <Compile Include="Services\JsonProductFormatter.cs" />
     <Compile Include="Services\JsonSchemaFormatter.cs" />
     <Compile Include="Services\PdfProductFormatter.cs" />
@@ -317,4 +318,3 @@
   </Target>
   -->
 </Project>
-

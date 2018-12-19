@@ -340,6 +340,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Controllers\StatisticController.cs" />
+    <Compile Include="Filters\ArrayParameterAttribute .cs" />
     <Compile Include="Filters\AuthorizationFilterAttribute.cs" />
     <Compile Include="Filters\DynamicRoutePrefixAttribute.cs" />
     <Compile Include="Filters\ExceptionFormatterFilterAttribute.cs" />
@@ -480,4 +481,3 @@
   </Target>
   -->
 </Project>
-

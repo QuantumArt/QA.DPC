@@ -7,6 +7,8 @@ using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.WebApi.Filters;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Http;
 
@@ -65,6 +67,30 @@ namespace QA.ProductCatalog.WebApi.Controllers
 			return _databaseProductService.SearchProducts(slug, version, query, isLive);
 		}
 
+        /// <summary>
+        /// Get detailed list of products by query
+        /// </summary>
+        /// <param name="slug"></param>
+        /// <param name="version"></param>
+        /// <param name="query"></param>
+        /// <param name="isLive"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{version}/{slug}/search/detail/{format:media_type_mapping}/{query}")]
+        public IEnumerable<Article> SearchDetailed(string slug, string version, string query, bool isLive = false, bool includeRegionTags = false)
+        {
+            _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
+            var ids = _databaseProductService.SearchProducts(slug, version, query, isLive);
+
+            HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+            HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
+
+            foreach (var id in ids)
+            {
+                yield return _databaseProductService.GetProduct(slug, version, id, isLive);
+            }
+        }
+
 
         /// <summary>
         /// Get product by id. Supports differrent formats (json, xml, xaml, binary)
@@ -87,8 +113,44 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             var product = _databaseProductService.GetProduct(slug, version, id, isLive);
 
+            if (product == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
             return product;
 		}
+
+
+        /// <summary>
+        /// Get product by list of ids.
+        /// </summary>
+        /// <param name="slug">Product type as configured in services content</param>
+        /// <param name="version">Version of the definition</param>
+        /// <param name="ids">Indentifiers of the product separated with ","</param>
+        /// <param name="isLive"></param>
+        /// <param name="includeRegionTags"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("{version}/{slug}/list/{format:media_type_mapping}/{ids}")]
+        [ArrayParameter("ids")]
+        public IEnumerable<Article> GetProductList(string slug, string version, int[] ids, bool isLive = false, bool includeRegionTags = false)
+        {
+            _logger.LogDebug(() => new { slug, version, ids, isLive }.ToString());
+
+            HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+            HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
+
+            foreach (var id in ids.Distinct())
+            {
+                var product = _databaseProductService.GetProduct(slug, version, id, isLive);
+
+                if (product != null)
+                {
+                    yield return product;
+                }
+            }
+        }
 
         /// <summary>
         /// Get product built on raw data using tarantool cache
@@ -136,7 +198,6 @@ namespace QA.ProductCatalog.WebApi.Controllers
         {
             _autopublishProcessor.Publish(item, localize);
         }
-
 
         /// <summary>
         /// Create or update product

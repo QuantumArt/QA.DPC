@@ -70,6 +70,8 @@ namespace QA.ProductCatalog.WebApi
             config.Formatters.AddModelMediaTypeFormatter<JsonDefinitionSchemaFormatter, Content>(container, JsonDefinitionMappingValue, JsonMediaType, RegisterMediaTypeMappings);
             config.Formatters.AddModelMediaTypeFormatter<JsonDefinitionSchemaClassifiersAsBackwardsFormatter, Content>(container, JsonDefinition2MappingValue, JsonMediaType, RegisterMediaTypeMappings);
 
+            config.Formatters.AddModelMediaTypeFormatter<JsonProductArrayFormatter, IEnumerable<Article>>(container, JsonMappingValue, JsonMediaType, RegisterMediaTypeMappings);
+
             var unsupportedMediatypeFormatter = new ResponseExceptionMediaTypeFormatter(HttpStatusCode.UnsupportedMediaType, PdfMediaType);
             config.Formatters.Add(unsupportedMediatypeFormatter);
             config.Formatters.Add(new XmlMediaTypeFormatter());
