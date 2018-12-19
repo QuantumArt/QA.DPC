@@ -21,8 +21,6 @@ namespace QA.ProductCatalog.WebApi.Filters
         {
             if (actionContext.ActionArguments.ContainsKey(_parameterName))
             {
-                var rr = HttpUtility.ParseQueryString("");
-
                 string parameters = string.Empty;
 
                 if (actionContext.ControllerContext.RouteData.Values.ContainsKey(_parameterName))
