@@ -272,7 +272,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             bool readData = true;
             ActionResult result = null; 
             var key = options.GetKey();
-            if (options.CacheForSeconds > 0 && key != null && _cache.TryGetValue(key, out var value))
+            var useCaching = options.CacheForSeconds > 0 && key != null;
+            if (useCaching && _cache.TryGetValue(key, out var value))
             {
                 result = (ActionResult)value;
                 readData = false;
@@ -280,7 +281,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             if (readData)
             {
-                if (options.DataFilters.Any())
+                if (options.DataFilters.Any() || useCaching)
                 {
                     var searchResult = await _manager.SearchAsync(options, language, state);
                     result = PostProcess(searchResult, options.DataFilters);
@@ -291,7 +292,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                     result = await GetResponse(stream);
                 }
 
-                if (options.CacheForSeconds > 0 && key != null)
+                if (useCaching)
                 {
                     _cache.Set(key, result, GetCacheOptions((int)options.CacheForSeconds));
                 }
