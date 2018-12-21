@@ -7,6 +7,7 @@ declare @updateChunkSize int = 1000
 declare @maxDegreeOfParallelism int = 4
 declare @schedule nvarchar(100) = '0 8 * * *'
 declare @customerCode nvarchar(100) = 'dpc_catalog'
+declare @iconUrl nvarchar(100) = 'http://static.host.ru/dpc_upload/icons/check.png'
 
 declare @taskContext nvarchar(max) =
 '{
@@ -21,7 +22,7 @@ declare @taskContext nvarchar(max) =
     "Parameters": { "UpdateChunkSize": "' + ltrim(str(@updateChunkSize)) + '", "MaxDegreeOfParallelism": "' + ltrim(str(@maxDegreeOfParallelism)) + '" }
   },
   "Description": null,
-  "IconUrl": "http://static.mts.ru/dpc_upload/icons/check.png"
+  "IconUrl": "' + @iconUrl + '"
 }'
 
 
