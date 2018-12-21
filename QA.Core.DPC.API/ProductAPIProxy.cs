@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 
@@ -35,7 +36,14 @@ namespace QA.Core.DPC.API
 			return result;
 		}
 
-		public Article GetProduct(string slug, string version, int id, bool isLive = false)
+        public int[] ExtendedSearchProducts(string slug, string version, JToken query, bool isLive = false)
+        {
+            string url = _configuration.Host + "/" + version + "/" + slug + "/search/extended/binary/" + query + "?isLive=" + isLive;
+            var result = Get<int[]>(url);
+            return result;
+        }
+
+        public Article GetProduct(string slug, string version, int id, bool isLive = false)
 		{
 			string url = _configuration.Host + "/" + version + "/" + slug + "/binary/" + id + "?isLive=" + isLive;
 			var result = Get<Article>(url);
@@ -268,6 +276,6 @@ namespace QA.Core.DPC.API
 
 			throw ex;
 		}
-		#endregion	
-	}
+        #endregion
+    }
 }
