@@ -1,4 +1,5 @@
-﻿using QA.Core.DPC.QP.Autopublish.Models;
+﻿using Newtonsoft.Json.Linq;
+using QA.Core.DPC.QP.Autopublish.Models;
 using QA.Core.DPC.QP.Autopublish.Services;
 using QA.Core.Logger;
 using QA.Core.Models;
@@ -74,6 +75,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="version"></param>
         /// <param name="query"></param>
         /// <param name="isLive"></param>
+        /// <param name="includeRegionTags"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("{version}/{slug}/search/detail/{format:media_type_mapping}/{query}")]
@@ -91,6 +93,46 @@ namespace QA.ProductCatalog.WebApi.Controllers
             }
         }
 
+        /// <summary>
+        /// Get list of products by extended query.
+        /// </summary>
+        /// <param name="slug">Product type as configured in services content</param>
+        /// <param name="version">Version of the definition</param>
+        /// <param name="query">A part of SQL query (where clause)</param>
+        /// <param name="isLive"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("{version}/{slug}/search/{format:media_type_mapping}")]
+        public int[] ExtendedSearch(string slug, string version,[FromBody] JToken query, bool isLive = false)
+        {
+            _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
+            return _databaseProductService.ExtendedSearchProducts(slug, version, query, isLive);
+        }
+
+        /// <summary>
+        /// Get detailed list of products by extended query.
+        /// </summary>
+        /// <param name="slug">Product type as configured in services content</param>
+        /// <param name="version">Version of the definition</param>
+        /// <param name="query">A part of SQL query (where clause)</param>
+        /// <param name="isLive"></param>
+        /// <param name="includeRegionTags"></param>
+        /// <returns></returns>
+        [HttpPost]
+        [Route("{version}/{slug}/search/detail/{format:media_type_mapping}")]
+        public IEnumerable<Article> ExtendedSearchDetailed(string slug, string version, [FromBody] JToken query, bool isLive = false, bool includeRegionTags = false)
+        {
+            _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
+            var ids = _databaseProductService.ExtendedSearchProducts(slug, version, query, isLive);
+
+            HttpContext.Current.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
+            HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
+
+            foreach (var id in ids)
+            {
+                yield return _databaseProductService.GetProduct(slug, version, id, isLive);
+            }
+        }
 
         /// <summary>
         /// Get product by id. Supports differrent formats (json, xml, xaml, binary)
@@ -120,7 +162,6 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             return product;
 		}
-
 
         /// <summary>
         /// Get product by list of ids.
