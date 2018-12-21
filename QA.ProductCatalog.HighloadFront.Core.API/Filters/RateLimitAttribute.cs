@@ -15,12 +15,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
     public class RateLimitAttribute : Attribute, IAsyncActionFilter
     {
 
-        private readonly IElasticConfiguration _configuration;
+        private readonly ElasticConfiguration _configuration;
         private readonly IVersionedCacheProvider2 _cacheProvider;
 
         public string Profile { get; set; }
 
-        public RateLimitAttribute(IElasticConfiguration configuration, IVersionedCacheProvider2 cacheProvider,
+        public RateLimitAttribute(ElasticConfiguration configuration, IVersionedCacheProvider2 cacheProvider,
             string profile)
         {
             _configuration = configuration;
@@ -51,7 +51,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
             {
                 context.Result = new ContentResult()
                 {
-                    Content = $@"{{""message"":""API rate limit exceeded for {ip}"",""documentation_url"":""docurl""}}",
+                    Content = $@"{{""message"":""API rate limit exceeded for {ip}""}}",
                     ContentType = "application/json",
                     StatusCode = StatusCodes.Status403Forbidden
                 };

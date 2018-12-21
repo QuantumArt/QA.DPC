@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Elasticsearch.Net;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using QA.Core;
-using QA.Core.Logger;
+using Microsoft.Extensions.Logging;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
 using QA.ProductCatalog.HighloadFront.Core.API.Helpers;
 using QA.ProductCatalog.HighloadFront.Elastic;
@@ -36,7 +33,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         Route("api/{customerCode}/{version:decimal}/{language}/{state}/products"),
     ]
     [OnlyAuthUsers]
-    public class ProductsController : Controller
+    public class ProductsController : BaseController
     {
         private static readonly Regex ParamsToReplace = new Regex(
             @"\|\|(?<name>[\w]+)\:*(?<constraints>(?:[^|]|\|(?!\|))+)?\|\|", 
@@ -48,23 +45,20 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             RegexOptions.Compiled | RegexOptions.Singleline
         );
 
-        private readonly ProductManager _manager;
-
         private readonly SonicElasticStoreOptions _options;
-
-        private readonly ILogger _logger;
-
-        private readonly IElasticConfiguration _configuration;
 
         private readonly IMemoryCache _cache;
         
 
-        public ProductsController(ProductManager manager, SonicElasticStoreOptions options, ILogger logger, IElasticConfiguration configuration, IMemoryCache cache)
+        public ProductsController(
+            ProductManager manager, 
+            SonicElasticStoreOptions options, 
+            ILoggerFactory loggerFactory, 
+            ElasticConfiguration configuration, 
+            IMemoryCache cache
+        ) : base(manager, loggerFactory, configuration)
         {
-            _manager = manager;
             _options = options;
-            _logger = logger;
-            _configuration = configuration;
             _cache = cache;
         }
 
@@ -79,7 +73,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return await GetSearchActionResult(options, language, state);
             }
-            catch (ElasticsearchClientException ex)
+            catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
             }
@@ -105,7 +99,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return await GetSearchActionResult(options, language, state);
             }
-            catch (ElasticsearchClientException ex)
+            catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
             }
@@ -133,7 +127,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return await GetByIdActionResult(options, language, state);
             }
-            catch (ElasticsearchClientException ex)
+            catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex, id);
             }
@@ -153,10 +147,9 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return await GetByIdActionResult(options, language, state);
             }
-            catch (ElasticsearchClientException ex)
+            catch (ElasticClientException ex)
             {
-                return ElasticBadRequest(ex, options.Id);
-
+                return ElasticBadRequest(ex);
             }
             catch (Exception ex)
             {
@@ -181,7 +174,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return await GetSearchActionResult(options, language, state);
             }
-            catch (ElasticsearchClientException ex)
+            catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
             }
@@ -197,7 +190,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return await GetSearchActionResult(options, language, state);
             }
-            catch (ElasticsearchClientException ex)
+            catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
             }
@@ -232,7 +225,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return await GetSearchActionResult(options, language, state);
             }
-            catch (ElasticsearchClientException ex)
+            catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
             }
@@ -255,7 +248,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 return await GetSearchActionResult(options, language, state);
             }
-            catch (ElasticsearchClientException ex)
+            catch (ElasticClientException ex)
             {
                 return ElasticBadRequest(ex);
             }
@@ -263,8 +256,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private async Task<ActionResult> GetByIdActionResult(ProductsOptions options, string language, string state)
         {
-            var stream = await _manager.FindStreamByIdAsync(options, language, state);
-            return await GetResponse(stream.Body, false);
+            var result = await Manager.FindByIdAsync(options, language, state);
+            return Content(result, "application/json");
         }
         
         private async Task<ActionResult> GetSearchActionResult(ProductsOptions options, string language, string state)
@@ -272,7 +265,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             bool readData = true;
             ActionResult result = null; 
             var key = options.GetKey();
-            if (options.CacheForSeconds > 0 && key != null && _cache.TryGetValue(key, out var value))
+            var useCaching = options.CacheForSeconds > 0 && key != null;
+            if (useCaching && _cache.TryGetValue(key, out var value))
             {
                 result = (ActionResult)value;
                 readData = false;
@@ -280,18 +274,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             if (readData)
             {
+                var searchResult = await Manager.SearchAsync(options, language, state);
+                
                 if (options.DataFilters.Any())
                 {
-                    var searchResult = await _manager.SearchAsync(options, language, state);
                     result = PostProcess(searchResult, options.DataFilters);
                 }
                 else
                 {
-                    var stream = await _manager.SearchStreamAsync(options, language, state);
-                    result = await GetResponse(stream);
+                    result = await GetResponse(searchResult);
                 }
 
-                if (options.CacheForSeconds > 0 && key != null)
+                if (useCaching)
                 {
                     _cache.Set(key, result, GetCacheOptions((int)options.CacheForSeconds));
                 }
@@ -331,7 +325,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private JObject GetQueryJson(string alias)
         {
-            var json = _configuration.GetJsonByAlias(alias);
+            var json = Configuration.GetJsonByAlias(alias);
             var dict = GetParametersToReplace(json, HttpContext.Request.Query);
             foreach (var kv in dict)
             {
@@ -472,35 +466,29 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 {
                     result = BadRequest(errors);
                     var errorstr = string.Join(",", errors);
-                    _logger.Error($"Model has errors: {errorstr}");                    
+                    Logger.LogError($"Model has errors: {errorstr}");                    
                 }
             }
             
             return result; 
         }
 
-        private BadRequestObjectResult ElasticBadRequest(ElasticsearchClientException ex, int id = 0)
+        private BadRequestObjectResult ElasticBadRequest(ElasticClientException ex, int id = 0)
         {
-            if (ex.Response.HttpStatusCode == 404 && id != 0)
-            {
-                _logger.ErrorException($"Product with id = {id} not found", ex);
-                return BadRequest($"Product with id = {id} not found");
-            }
 
-            _logger.ErrorException($"Elastic search error occurred. Debug Info: {ex.DebugInformation}", ex);            
-            return BadRequest($"Elastic search error occurred: {ex.Response.HttpStatusCode}. Reason: {ex.Message}");
-
+            LogException(ex, "Elastic Search error occurred: ");
+            return BadRequest($"Elastic search error occurred: Reason: {ex.Message}");
         }
         
         private BadRequestObjectResult ParseBadRequest(Exception ex)
         {
             if (ex is ParseJsonException pex)
             {
-                _logger.ErrorException($"Parsing JSON query error for JSON: {pex.Json}", pex);            
+                LogException(pex, $"Parsing JSON query error for JSON: {pex.Json}");            
             }
             else
             {
-                _logger.ErrorException($"Parsing JSON query error", ex);                 
+                LogException(ex, $"Parsing JSON query error", ex);                 
             }
             
             return BadRequest($"Parsing JSON query error: {ex.Message}");
@@ -508,18 +496,21 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         
         private BadRequestObjectResult UnexpectedBadRequest(Exception ex)
         {
-            _logger.ErrorException("Unexpected error occured", ex);
+            LogException(ex, "Unexpected error occured");
             return BadRequest($"Unexpected error occurred. Reason: {ex.Message}");
         }
 
 
-        private async Task<ActionResult> GetResponse(Stream stream, bool filter = true)
+        private async Task<ActionResult> GetResponse(string text, bool filter = true)
         {
-            if (!filter) return new JsonStreamResult(stream);
-            var ms = new MemoryStream();
-            await JsonFragmentExtractor.ExtractJsonFragment("_source", stream, ms, 4);
-            return new JsonStreamResult(ms);
-
+            var result = text;
+            if (filter)
+            {
+                var sb = new StringBuilder();
+                await JsonFragmentExtractor.ExtractJsonFragment("_source", text, sb, 4);
+                result = sb.ToString();
+            }
+            return Content(result, "application/json");
         }
 
     }

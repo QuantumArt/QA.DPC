@@ -3,7 +3,6 @@ using Autofac;
 using Autofac.Core;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using QA.Core;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
@@ -88,7 +87,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                                 new NamedParameter("customerCode", c.Resolve<IIdentityProvider>().Identity.CustomerCode)
                             );
 
-                            return new ReindexAllTask(importer, manager, c.Resolve<IElasticConfiguration>());
+                            return new ReindexAllTask(importer, manager, c.Resolve<ElasticConfiguration>());
                         }
                     );
                 }
@@ -118,11 +117,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 builder.RegisterScoped<IContentProvider<HighloadApiLimit>, HighloadApiLimitProvider>();
                 builder.RegisterScoped<IContentProvider<HighloadApiUser>, HighloadApiUserProvider>();
                 builder.RegisterScoped<IContentProvider<HighloadApiMethod>, HighloadApiMethodProvider>();                
-                builder.RegisterScoped<IElasticConfiguration, QpElasticConfiguration>();
+                builder.RegisterScoped<ElasticConfiguration, QpElasticConfiguration>();
             }
             else
             {
-                builder.RegisterScoped<IElasticConfiguration, JsonElasticConfiguration>();
+                builder.RegisterScoped<ElasticConfiguration, JsonElasticConfiguration>();
             }
 
 

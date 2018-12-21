@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QA.Core.Logger;
+using Microsoft.Extensions.Logging;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
@@ -18,7 +17,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         private readonly ILogger _logger;
 
-        private readonly IElasticConfiguration _configuration;
+        private readonly ElasticConfiguration _configuration;
 
         private readonly ProductManager _manager;
 
@@ -27,9 +26,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private readonly string _customerCode;
 
-        public ProductImporter(HarvesterOptions options, DataOptions dataOptions, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
+        public ProductImporter(HarvesterOptions options, DataOptions dataOptions, ElasticConfiguration configuration, ProductManager manager, ILoggerFactory loggerFactory, string customerCode)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger(GetType());
             _manager = manager;
             _configuration = configuration;
             _options = options;
@@ -55,12 +54,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 return;
             }
             
-            ThrowIfDisposed();
             var url = _configuration.GetReindexUrl(language, state);
-            _logger.Info("Начинаем импорт данных. Запрашиваем список продуктов...");
+            _logger.LogInformation("Начинаем импорт данных. Запрашиваем список продуктов...");
             var ids = await GetIds(url);
-            _logger.Info($"Получен список продуктов. Количество: {ids.Length}");
-            _logger.Info($"Бьем продукты на порции по {_options.ChunkSize}...");
+            _logger.LogInformation($"Получен список продуктов. Количество: {ids.Length}");
+            _logger.LogInformation($"Бьем продукты на порции по {_options.ChunkSize}...");
             var chunks = ids.Chunk(_options.ChunkSize).ToArray();
             var index = 1;
 
@@ -76,7 +74,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 }
            
 
-                _logger.Info($"Запрашиваем порцию №{index}...");
+                _logger.LogInformation($"Запрашиваем порцию №{index}...");
                 var dataTasks = chunk.Select(n => GetProductById(url, n));
 
                 ProductPostProcessorData[] data;
@@ -87,26 +85,26 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 catch (Exception)
                 {
                     string message = "Не удалось получить продукты от удаленного сервиса.";
-                    _logger.Error(message);
+                    _logger.LogInformation(message);
                     executionContext.Message = message;
                     throw;
                 }
-                _logger.Info("Продукты получены.");
+                _logger.LogInformation("Продукты получены.");
 
 
-                _logger.Info("Начинаем запись...");
+                _logger.LogInformation("Начинаем запись...");
 
                 var result = await _manager.BulkCreateAsync(data, language, state);
 
                 if (result.Succeeded)
                 {
-                    _logger.Info("Запись прошла успешно.");
+                    _logger.LogInformation("Запись прошла успешно.");
                     index++;
                 }
                 else
                 {
                     string message = $"Не удалось импортировать все продукты. {result}";
-                    _logger.Error(message);
+                    _logger.LogInformation(message);
                     executionContext.Message = message;
                     throw result.GetException();
                 }
@@ -153,7 +151,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var obj = JsonConvert.DeserializeObject(result.Item1) as JObject;
             if (obj == null)
             {
-                _logger.Error($"Cannot parse JSON from url {relUri}");
+                _logger.LogError($"Cannot parse JSON from url {relUri}");
                 return null;
             }
             var product = (JObject)obj["product"];
@@ -161,31 +159,5 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return new ProductPostProcessorData(product, regionTags, result.Item2);
         }
 
-
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().Name);
-            }
-        }
-
-        #region IDisposable Support
-        private bool _disposed;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing || _disposed) return;
-            _logger.Debug("Disposing importer");
-            _manager.Dispose();
-            _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

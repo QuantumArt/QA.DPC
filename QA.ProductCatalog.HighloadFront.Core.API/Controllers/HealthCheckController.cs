@@ -15,14 +15,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
     [Route("api/{customerCode}/healthCheck"), Route("api/healthCheck")]
     public class HealthCheckController : Controller
     {
-        private readonly IElasticConfiguration _elasticConfiguration;
+        private readonly ElasticConfiguration _elasticConfiguration;
 
-        private readonly DataOptions _options;
-
-        public HealthCheckController(IElasticConfiguration elasticConfiguration, DataOptions options)
+        public HealthCheckController(ElasticConfiguration elasticConfiguration)
         {
             _elasticConfiguration = elasticConfiguration;
-            _options = options;
         }
 
         public async Task<ActionResult> HealthCheck(bool isSync)
@@ -30,7 +27,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             var sb = new StringBuilder();
             sb.AppendLine("Application: OK");
             var httpClient = new HttpClient();
-            sb.AppendLine(@"Read\Write: " + Status(_options.CanUpdate == isSync));
+            sb.AppendLine(@"Read\Write: " + Status(_elasticConfiguration.DataOptions.CanUpdate == isSync));
             foreach (var option in _elasticConfiguration.GetElasticIndices())
             {
                 var uris = option.Url.Split(';').Select(n => n.Trim()).ToArray();

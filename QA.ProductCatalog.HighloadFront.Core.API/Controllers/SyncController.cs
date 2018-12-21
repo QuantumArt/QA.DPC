@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using QA.Core.Logger;
+using Microsoft.Extensions.Logging;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Models;
@@ -10,52 +10,48 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 {
     [Route("sync"), Route("api/sync"), Route("api/{version:decimal}/sync"), 
         Route("api/{customerCode}/{version:decimal}/sync"), Route("api/{customerCode}/sync")]
-    public class SyncController : Controller
+    public class SyncController : BaseController
     {
-        private ILogger Logger { get; }
-        private ProductManager Manager { get; }
-
-
         private const int LockTimeoutInMs = 1000;
 
-        private readonly IElasticConfiguration _configuration;
         private readonly ITaskService _taskService;
-        private readonly DataOptions _dataOptions;
-
-        public SyncController(ILogger logger, ProductManager manager, IElasticConfiguration configuration, ITaskService taskService, DataOptions options)
+        
+        public SyncController(
+            ILoggerFactory loggerFactory, 
+            ProductManager manager, 
+            ElasticConfiguration configuration, 
+            ITaskService taskService 
+        ) : base(manager, loggerFactory, configuration)
         {
-            Logger = logger;
-            Manager = manager;
-            _configuration = configuration;
             _taskService = taskService;
-            _dataOptions = options;
         }
 
         [HttpPut]
         [Route("{language}/{state}")]
         public async Task<IActionResult> Put([FromBody]PushMessage message, string language, string state, string instanceId = null)
         {
-            if (!ValidateInstance(instanceId, _dataOptions.InstanceId))
+            if (!ValidateInstance(instanceId, Configuration.DataOptions.InstanceId))
             {
-                return CreateUnauthorizedResult(instanceId, _dataOptions.InstanceId);
+                return CreateUnauthorizedResult(instanceId, Configuration.DataOptions.InstanceId);
             }
 
-            var syncer = _configuration.GetSyncer(language, state);
+            var syncer = Configuration.GetSyncer(language, state);
             var product = message.Product;
             string id = Manager.GetProductId(message.Product);
 
-            if (!_dataOptions.CanUpdate)
+            if (!Configuration.DataOptions.CanUpdate)
             {
-                throw new Exception($"Невозможно создать или обновить продукт {id}. Данный экземпляр API предназначен только для чтения.");
+                return BadRequest($"РќРµРІРѕР·РјРѕР¶РЅРѕ СЃРѕР·РґР°С‚СЊ РёР»Рё РѕР±РЅРѕРІРёС‚СЊ РїСЂРѕРґСѓРєС‚ {id}. Р”Р°РЅРЅС‹Р№ СЌРєР·РµРјРїР»СЏСЂ API РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ С‚РѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ.");
             }
 
 
-            Logger.Info($"Получен запрос на обновление/добавление продукта: {id}");
+            Logger.LogInformation($"РџРѕР»СѓС‡РµРЅ Р·Р°РїСЂРѕСЃ РЅР° РѕР±РЅРѕРІР»РµРЅРёРµ/РґРѕР±Р°РІР»РµРЅРёРµ РїСЂРѕРґСѓРєС‚Р°: {id}");
 
             if (await syncer.EnterSingleCrudAsync(LockTimeoutInMs))
             {
@@ -71,29 +67,29 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 }
             }
             else
-                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {LockTimeoutInMs} миллисекунд");
+                return BadRequest($"РќРµ СѓРґР°Р»РѕСЃСЊ РІРѕР№С‚Рё РІ EnterSingleCRUDAsync РІ С‚РµС‡РµРЅРёРµ {LockTimeoutInMs} РјРёР»Р»РёСЃРµРєСѓРЅРґ");
         }
 
         [HttpDelete]
         [Route("{language}/{state}")]
         public async Task<object> Delete([FromBody]PushMessage message, string language, string state, string instanceId = null)
         {
-            if (!ValidateInstance(instanceId, _dataOptions.InstanceId))
+            if (!ValidateInstance(instanceId, Configuration.DataOptions.InstanceId))
             {
-                return CreateUnauthorizedResult(instanceId, _dataOptions.InstanceId);
+                return CreateUnauthorizedResult(instanceId, Configuration.DataOptions.InstanceId);
             }
 
-            var syncer = _configuration.GetSyncer(language, state);
+            var syncer = Configuration.GetSyncer(language, state);
             var product = message.Product;
 
             var id = Manager.GetProductId(message.Product);
 
-            if (!_dataOptions.CanUpdate)
+            if (!Configuration.DataOptions.CanUpdate)
             {
-                throw new Exception($"Невозможно удалить продукт {id}. Данный экземпляр API предназначен только для чтения.");
+                return BadRequest($"РќРµРІРѕР·РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ РїСЂРѕРґСѓРєС‚ {id}. Р”Р°РЅРЅС‹Р№ СЌРєР·РµРјРїР»СЏСЂ API РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ С‚РѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ.");
             }
 
-            Logger.Info("Получен запрос на удаление продукта: " + id);
+            Logger.LogInformation("РџРѕР»СѓС‡РµРЅ Р·Р°РїСЂРѕСЃ РЅР° СѓРґР°Р»РµРЅРёРµ РїСЂРѕРґСѓРєС‚Р°: " + id);
 
             if (await syncer.EnterSingleCrudAsync(LockTimeoutInMs))
             {
@@ -108,29 +104,26 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 }
             }
             else
-                throw new Exception($"Не удалось войти в EnterSingleCRUDAsync в течение {LockTimeoutInMs} миллисекунд");
+                return BadRequest($"РќРµ СѓРґР°Р»РѕСЃСЊ РІРѕР№С‚Рё РІ EnterSingleCRUDAsync РІ С‚РµС‡РµРЅРёРµ {LockTimeoutInMs} РјРёР»Р»РёСЃРµРєСѓРЅРґ");
         }
 
         [Route("{language}/{state}/reset"), HttpPost]
-        public HttpResponseMessage Reset(string language, string state)
+        public ActionResult Reset(string language, string state)
         {
 
-            if (!_dataOptions.CanUpdate)
+            if (!Configuration.DataOptions.CanUpdate)
             {
-                throw new Exception("Невозможно выполнить операцию пересоздания индекса. Данный экземпляр API предназначен только для чтения.");
+                return BadRequest("РќРµРІРѕР·РјРѕР¶РЅРѕ РІС‹РїРѕР»РЅРёС‚СЊ РѕРїРµСЂР°С†РёСЋ РїРµСЂРµСЃРѕР·РґР°РЅРёСЏ РёРЅРґРµРєСЃР°. Р”Р°РЅРЅС‹Р№ СЌРєР·РµРјРїР»СЏСЂ API РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ С‚РѕР»СЊРєРѕ РґР»СЏ С‡С‚РµРЅРёСЏ.");
             }
 
-            var syncer = _configuration.GetSyncer(language, state);
+            var syncer = Configuration.GetSyncer(language, state);
 
             if (!syncer.AnySlotsLeft)
-                throw new Exception("Нет свободных слотов, дождитесь завершения предыдущих операций");
+                return BadRequest("РќРµС‚ СЃРІРѕР±РѕРґРЅС‹С… СЃР»РѕС‚РѕРІ, РґРѕР¶РґРёС‚РµСЃСЊ Р·Р°РІРµСЂС€РµРЅРёСЏ РїСЂРµРґС‹РґСѓС‰РёС… РѕРїРµСЂР°С†РёР№");
 
             int taskId = _taskService.AddTask("ReindexAllTask", $"{language}/{state}", 0, null, "ReindexAllTask");
-
-            return new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = new StringContent("{ \"taskId\":" + taskId + " }")
-            };
+            
+            return Json(new JObject(new JProperty("taskId", taskId)));
         }
 
         [Route("task"), HttpGet]
@@ -147,7 +140,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             var lastTasks = tasks.GroupBy(t => t.Data).Select(g => g.OrderByDescending(t => t.ID).First()).ToArray();
 
             var r =
-                from o in _configuration.GetElasticIndices()
+                from o in Configuration.GetElasticIndices()
                 join t in lastTasks on $"{o.Language}/{o.State}" equals t.Data into ts
                 from t in ts.DefaultIfEmpty()
                 select new TaskItem
@@ -171,7 +164,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
         {
             if (!results.Succeeded)
             {
-                logger.ErrorException(results.ToString(), results.GetException());
+                logger.LogError(results.ToString(), results.GetException());
                 return new ContentResult() { Content = results.ToString(), StatusCode = 500 };
             }
 
@@ -180,7 +173,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private IActionResult CreateUnauthorizedResult(string instanceId, string actualInstanceId)
         {
-            Logger.LogInfo(() => $"InstanceId {instanceId} указан неверно, должен быть {actualInstanceId}");            
+            Logger.LogInformation($"InstanceId {instanceId} СѓРєР°Р·Р°РЅ РЅРµРІРµСЂРЅРѕ, РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ {actualInstanceId}");            
             return new UnauthorizedResult();
         }
 
