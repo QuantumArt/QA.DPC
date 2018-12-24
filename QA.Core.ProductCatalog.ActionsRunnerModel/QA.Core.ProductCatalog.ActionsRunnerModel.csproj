@@ -90,7 +90,7 @@
       </EmbeddedResource>
   </ItemGroup>
     <PropertyGroup>
-        <PreBuildEvent>dotnet "$(MSBuildProjectDirectory)/utils/QA.Core.Splitedmx.dll" "$(MSBuildProjectDirectory)/Model.edmx"</PreBuildEvent>
+        <PreBuildEvent>dotnet "$(MSBuildProjectDirectory)/utils/QA.Core.SplitEdmx.dll" "$(MSBuildProjectDirectory)/Model.edmx"</PreBuildEvent>
     </PropertyGroup>
   <ItemGroup>
     <Folder Include="utils" />

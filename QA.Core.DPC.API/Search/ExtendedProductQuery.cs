@@ -3,7 +3,7 @@ using QA.Core.Models.Configuration;
 
 namespace QA.Core.DPC.API.Search
 {
-    public class ExtendedProductQuery : ProductQuery
+    public class ExtendedProductQuery
 	{
         public JToken Query { get; set; }
         public Content Definition { get; set; }

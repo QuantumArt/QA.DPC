@@ -246,3 +246,5 @@ _Pvt_Extensions
 
 !**/ClientApp/**/Packages/**
 QA.ProductCatalog.Admin.WebApp/Scripts/Bundles
+
+HighloadAPI/src
