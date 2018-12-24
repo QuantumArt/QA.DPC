@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions;
@@ -49,7 +50,12 @@ namespace QA.Core.DPC.API
 			return _productSearchService.SearchProducts(slug, version, query);
 		}
 
-		public Article GetProduct(string slug, string version, int id, bool isLive = false)
+        public int[] ExtendedSearchProducts(string slug, string version, JToken query, bool isLive = false)
+        {
+            return _productSearchService.ExtendedSearchProducts(slug, version, query);
+        }
+
+        public Article GetProduct(string slug, string version, int id, bool isLive = false)
 		{
 			var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
 			var product = _productService.GetProductById(id, isLive, new ProductDefinition { ProdictTypeId = 0, StorageSchema = definition.Content });

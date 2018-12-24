@@ -1,4 +1,5 @@
-﻿using QA.Core.Models.Entities;
+﻿using Newtonsoft.Json.Linq;
+using QA.Core.Models.Entities;
 using System.Collections.Generic;
 
 namespace QA.ProductCatalog.Infrastructure
@@ -7,7 +8,8 @@ namespace QA.ProductCatalog.Infrastructure
 	{
 		Dictionary<string, object>[] GetProductsList(string slug, string version, bool isLive = false, long startRow = 0, long pageSize = int.MaxValue);
 		int[] SearchProducts(string slug, string version, string query, bool isLive = false);
-		Article GetProduct(string slug, string version, int id, bool isLive = false);
+        int[] ExtendedSearchProducts(string slug, string version, JToken query, bool isLive = false);
+        Article GetProduct(string slug, string version, int id, bool isLive = false);
 		void UpdateProduct(string slug, string version, Article product, bool isLive = false);
 		void CustomAction(string actionName, int id, int contentId = default(int));
 		void CustomAction(string actionName, int[] ids, int contentId = default(int));
