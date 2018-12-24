@@ -1,105 +1,114 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Services;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Conditions;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Mappers;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 using Quantumart.QP8.Constants;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace QA.Core.DPC.API.Search
 {
-	public class ExtendedQueryConditionMapper : IConditionMapper<ExtendedProductQuery>
+    public class ExtendedQueryConditionMapper : IConditionMapper<ExtendedProductQuery>
 	{
-		private readonly IFieldService _fieldService;
+        private const string And = "and";
+        private const string Or = "or";
+        private const string Not = "not";
+
+        private readonly IFieldService _fieldService;
 
 		public ExtendedQueryConditionMapper(IFieldService fieldService)
 		{
 			_fieldService = fieldService;
 		}
-        
+
         public ConditionBase Map(ExtendedProductQuery source)
-		{
+        {
+            return MapTree(source);
+        }
+
+        public ConditionBase MapTree(ExtendedProductQuery source, string operation = null)
+        {
             var query = source.Query;
 
-            if (query.Type == JTokenType.String)
+            if (query.Type == JTokenType.Property)
             {
-                var fieldQuery = new ProductQuery
-                {
-                    Definition = source.Definition,
-                    ExstensionContentIds = source.ExstensionContentIds,
-                    Query = query.Value<string>()
-                };
+                var property = (JProperty)query;
+                var name = property.Name.Replace("@", string.Empty);
 
-                return MapFields(fieldQuery);
-            }
-            else if(query.Type == JTokenType.Object)
-            {
-
-                var name = query.Value<string>("name");
-                var subQuery = query["value"];
-                
-                if (new[] { "AND", "OR" }.Contains(name))
+                if (new[] { And, Or, Not }.Contains(name.ToLower()) && property.Value.Type == JTokenType.Object)
                 {
-                    if (subQuery.Type == JTokenType.Array)
+                    return MapTree(source.GetQuery(property.Value), name.ToLower());
+                }
+                else if (property.Value.Type == JTokenType.Array)
+                {
+                    return new LogicalCondition
                     {
-                        var condition = new LogicalCondition() { Operation = name };
+                        Operation = Or,
+                        Conditions = property.Value.Select(v => v.Value<string>())
+                            .Select(v => MapFields(source.GetQuery(new JProperty(name, v))))
+                            .ToArray()
+                    };
+                }                
+                else if (property.Value.Type == JTokenType.String || property.Value.Type == JTokenType.Integer || property.Value.Type == JTokenType.Float)
+                {
+                    return MapFields(source.GetQuery(property));
+                }              
+                else
+                {
+                    throw new Exception($"Property {property.Name} is not valid for query : {query}");
+                }
+            }
+            else if (query.Type == JTokenType.Object)
+            {
+                var obj = (JObject)query;
 
-                        condition.Conditions = subQuery
-                            .Select(q => Map(new ExtendedProductQuery
-                            {
-                                Definition = source.Definition,
-                                ExstensionContentIds = source.ExstensionContentIds,
-                                Query = q
-                            }))
-                            .ToArray();
+                if (new[] { And, Or, null }.Contains(operation))
+                {
+                    var properties = obj.Properties().ToArray();
 
-                                       
-                        return condition;
+                    if (properties.Length == 0)
+                    {
+                        throw new Exception();
+                    }
+                    else if (properties.Length == 1)
+                    {
+                        return MapTree(source.GetQuery(properties[0]));
                     }
                     else
                     {
-                        throw new Exception($"for condition {name} query is not valid: {subQuery}");
+                        return new LogicalCondition
+                        {
+                            Operation = operation ?? And,
+                            Conditions = obj.Properties()
+                                .Select(p => MapTree(source.GetQuery(p)))
+                                .ToArray()
+                        };
                     }
                 }
-                else if (name == "NOT")
+                else if (operation == Not)
                 {
-                    if (subQuery.Type == JTokenType.Object || subQuery.Type == JTokenType.String)
-                    {                        
-                        var condition = new NotCondition(Map(new ExtendedProductQuery
-                        {
-                            Definition = source.Definition,
-                            ExstensionContentIds = source.ExstensionContentIds,
-                            Query = subQuery
-                        }));
-
-                        return condition;
-                    }
-                    else
-                    {
-                        throw new Exception($"for condition {name} query is not valid: {subQuery}");
-                    }
+                    return new NotCondition(MapTree(source.GetQuery(obj), And));
                 }
                 else
                 {
-                    throw new NotImplementedException();
+                    throw new Exception($"Operation {operation} is not valid for query : {query}");
                 }
             }
             else
             {
                 throw new Exception($"query is not valid: {query}");
             }
-		}
+        }
 
-
-        public ComparitionCondition MapFields(ProductQuery source)
+        public ComparitionCondition MapFields(ExtendedProductQuery source)
         {
-            string[] queryParams = source.Query.Split(new[] { '=' }, 2);
-            string[] fields = queryParams[0].Split('_');
-            string stringValue = queryParams[1];
+            var property = (JProperty)source.Query;            
+            string[] fields = property.Name.Replace("@", string.Empty).Split('.');
+            string stringValue = property.Value.Value<string>();
             object value = stringValue;
             var queryFields = new List<QueryField>();
             var definition = source.Definition;
@@ -143,11 +152,15 @@ namespace QA.Core.DPC.API.Search
                             definition = mapping.Content;
                         }
                     }
-                    else
+                    else if (field != null)
                     {
                         fieldId = field.FieldId;
                         queryField = new QueryField { Name = fieldName };
                         definition = null;
+                    }
+                    else
+                    { 
+                        throw new Exception($"{fieldName} in not found in condition {property}");
                     }
                 }
 
@@ -189,7 +202,7 @@ namespace QA.Core.DPC.API.Search
                         }
                     }
                 }
-                
+
                 return new ComparitionCondition(queryFields.ToArray(), value, "="); ;
             }
         }
