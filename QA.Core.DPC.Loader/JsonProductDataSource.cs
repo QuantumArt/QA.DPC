@@ -38,7 +38,7 @@ namespace QA.Core.DPC.Loader
         {
             JToken value = GetJToken(fieldName);
 
-            return value != null ? Convert.ToDateTime(value).ToLocalTime() : (DateTime?)null;
+            return value != null ? Convert.ToDateTime(value) : (DateTime?)null;
         }
 
         public decimal? GetDecimal(string fieldName)
