@@ -51,7 +51,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
 
 
-            Logger.LogInformation($"Получен запрос на обновление/добавление продукта: {id}");
+            Log(LogLevel.Information, "Получен запрос на обновление/добавление продукта: {id}", id);
 
             if (await syncer.EnterSingleCrudAsync(LockTimeoutInMs))
             {
@@ -59,7 +59,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 {
                     var result = await Manager.CreateAsync(product, message.RegionTags, language, state);
 
-                    return CreateResult(result, Logger);
+                    return CreateResult(result);
                 }
                 finally
                 {
@@ -89,14 +89,14 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 return BadRequest($"Невозможно удалить продукт {id}. Данный экземпляр API предназначен только для чтения.");
             }
 
-            Logger.LogInformation("Получен запрос на удаление продукта: " + id);
+            Log(LogLevel.Information, "Получен запрос на удаление продукта: {id} ", id);
 
             if (await syncer.EnterSingleCrudAsync(LockTimeoutInMs))
             {
                 try
                 {
                     var result = await Manager.DeleteAsync(product, language, state);
-                    return CreateResult(result, Logger);
+                    return CreateResult(result);
                 }
                 finally
                 {
@@ -160,11 +160,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             return r.ToArray();
         }
 
-        private static IActionResult CreateResult(SonicResult results, ILogger logger)
+        private IActionResult CreateResult(SonicResult results)
         {
             if (!results.Succeeded)
             {
-                logger.LogError(results.ToString(), results.GetException());
+                LogException(results.GetException(), results.ToString());
                 return new ContentResult() { Content = results.ToString(), StatusCode = 500 };
             }
 
@@ -173,7 +173,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private IActionResult CreateUnauthorizedResult(string instanceId, string actualInstanceId)
         {
-            Logger.LogInformation($"InstanceId {instanceId} указан неверно, должен быть {actualInstanceId}");            
+            Log(LogLevel.Information, $"InstanceId {instanceId} указан неверно, должен быть {actualInstanceId}");            
             return new UnauthorizedResult();
         }
 

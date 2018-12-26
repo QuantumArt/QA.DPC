@@ -122,6 +122,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public async Task<string> DeleteAsync(string id, string type)
         {
             var eparams = CreateElasticRequestParams(HttpMethod.Delete, id, type);
+            eparams.ThrowNotFound = false;
             return await QueryAsync(eparams, null);            
         }
 
@@ -150,9 +151,16 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 var message = !string.IsNullOrEmpty(result) ? result : response.ReasonPhrase;
                 
                 HandleErrorResult(response.StatusCode, message);
-                
+
                 if (response.StatusCode == HttpStatusCode.NotFound)
-                    break;
+                {
+                    if (eparams.ThrowNotFound)
+                    {
+                        break;
+                    }
+
+                    return "Not Found";
+                }
             }
 
             throw GetElasticClientException(eparams, json);

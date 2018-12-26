@@ -488,7 +488,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             }
             else
             {
-                LogException(ex, $"Parsing JSON query error", ex);                 
+                LogException(ex, $"Parsing JSON query error");                 
             }
             
             return BadRequest($"Parsing JSON query error: {ex.Message}");

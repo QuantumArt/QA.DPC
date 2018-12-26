@@ -9,7 +9,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         public ElasticRequestParams(HttpMethod verb, string indexName, string operation, string type)
         {
-            
+            ThrowNotFound = true;
             Verb = verb;
             Operation = operation;
             Type = type;
@@ -25,6 +25,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public HttpMethod Verb { get; set; }
         
         public string IndexName { get; set; }
+        
+        public bool ThrowNotFound { get; set; }
         
 
         public Dictionary<string, string> UrlParams;
