@@ -18,6 +18,7 @@ namespace QA.ProductCatalog.Infrastructure
 
     public class RelevanceInfo
     {
+        public int ProductId { get; set; }
         public CultureInfo Culture { get; set; }
         public ProductRelevance Relevance { get; set; }
         public DateTime? LastPublished { get; set; }

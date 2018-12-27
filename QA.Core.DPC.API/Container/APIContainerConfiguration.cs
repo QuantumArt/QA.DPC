@@ -14,6 +14,7 @@ using Quantumart.QP8.BLL.Services.API;
 using Unity;
 using Unity.Extension;
 using Unity.Injection;
+using QA.ProductCatalog.Integration.DAL;
 
 namespace QA.Core.DPC.API.Container
 {
@@ -29,8 +30,9 @@ namespace QA.Core.DPC.API.Container
             Container.RegisterArticleMatchService<ExtendedProductQuery, ExtendedQueryConditionMapper>(c => c.Resolve<IConnectionProvider>().GetConnection());
             Container.RegisterType<IProductSearchService, ProductSearchService>();
 			Container.RegisterType<IProductUpdateService, ProductUpdateService>();
+            Container.RegisterType<IProductRelevanceService, ProductRelevanceService>();            
 
-			Container.RegisterType<IServiceFactory, ServiceFactory>();
+            Container.RegisterType<IServiceFactory, ServiceFactory>();
 			Container.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
 			Container.RegisterType<IArticleService, ArticleServiceAdapter>();
 			Container.RegisterType<FieldService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetFieldService()));
@@ -39,6 +41,6 @@ namespace QA.Core.DPC.API.Container
 			Container.RegisterType<Func<ITransaction>>(new InjectionFactory(c => new Func<ITransaction>(() => c.Resolve<ITransaction>())));
 			Container.RegisterType<IQPNotificationService, QPNotificationService>();
 			Container.RegisterType<IXmlProductService, XmlProductService>();
-		}
+        }
 	}
 }
