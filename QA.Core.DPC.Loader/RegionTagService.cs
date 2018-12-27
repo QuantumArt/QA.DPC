@@ -8,6 +8,7 @@ using QA.Core.Models.Entities;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.Actions.Services;
+using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Article = Quantumart.QP8.BLL.Article;
 

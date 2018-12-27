@@ -2,6 +2,8 @@
 using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL.Services.API;
 using System;
+using QA.Core.DPC.QP.Cache;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Loader
 {
@@ -13,7 +15,7 @@ namespace QA.Core.DPC.Loader
 		private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
 
 		public SettingsFromQpService(IVersionedCacheProvider cacheProvider, IConnectionProvider connectionProvider)
-            : base(connectionProvider)
+            : base(connectionProvider, cacheProvider)
 		{
 
             _dbService = new DbService(_connectionString, 1);

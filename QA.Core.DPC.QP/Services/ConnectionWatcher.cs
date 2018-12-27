@@ -51,7 +51,6 @@ namespace QA.Core.DPC.QP.Services
             {
                 var codes = _customers.Select(c => c.CustomerCode).ToArray();
                 var actualcodes = actualCustomers.Select(c => c.CustomerCode).ToArray();
-                var deletedCodes = codes.Except(actualcodes).ToArray();
                 var newcodes = actualcodes.Except(actualcodes).ToArray();
                 var modifiedCodes = _customers.Join(
                         actualCustomers,

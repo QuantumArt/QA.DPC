@@ -1,6 +1,6 @@
 ﻿using Dapper;
 using QA.Core.DPC.QP.Services;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 using System.Data.SqlClient;
 using System.Globalization;
 

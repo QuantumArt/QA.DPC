@@ -26,6 +26,8 @@ using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Linq;
 using System.Web.Mvc;
+using QA.Core.DPC.QP.Cache;
+using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Injection;
 using Unity.Lifetime;

@@ -1,8 +1,8 @@
 ﻿using QA.Core.DPC.QP.Autopublish.Models;
 using QA.Core.Logger;
-using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Linq;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.QP.Autopublish.Services
 {

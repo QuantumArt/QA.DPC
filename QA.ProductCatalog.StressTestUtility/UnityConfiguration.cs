@@ -2,11 +2,13 @@
 using QA.Core.Cache;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
+using QA.Core.DPC.QP.Cache;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.Web;
 using QA.Core.Web.Qp;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.StressTestUtility.Services;
@@ -37,7 +39,7 @@ namespace QA.ProductCatalog.StressTestUtility
 			Container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
 			Container.RegisterType<ISettingsService, SettingsFromContentService>();
 			Container.RegisterType<IUserProvider, TestUserProvider>();
-			Container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, Container.Resolve<IContentInvalidator>()));
+			Container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, Container.Resolve<IContentInvalidator>(), Container.Resolve<ILogger>()));
 			Container.RegisterType<IQPNotificationService, QPNotificationService>();
 			Container.RegisterType<IConsumerMonitoringService, ConsumerMonitoringService>();
 			Container.RegisterType<IRegionTagReplaceService, RegionTagService>();

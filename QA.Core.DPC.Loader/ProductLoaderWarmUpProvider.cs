@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using QA.Core.Cache;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;

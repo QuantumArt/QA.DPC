@@ -1,5 +1,5 @@
 ﻿using QA.Configuration;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Notification.Services
 {

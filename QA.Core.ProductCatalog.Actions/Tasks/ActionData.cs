@@ -1,5 +1,5 @@
-﻿
-using System.Web.Script.Serialization;
+﻿using Newtonsoft.Json;
+
 namespace QA.Core.ProductCatalog.Actions.Tasks
 {
 	public class ActionData
@@ -12,12 +12,12 @@ namespace QA.Core.ProductCatalog.Actions.Tasks
 
 		public static ActionData Deserialize(string data)
 		{
-			return new JavaScriptSerializer().Deserialize<ActionData>(data);
+			return JsonConvert.DeserializeObject<ActionData>(data);
 		}
 
 		public static string Serialize(ActionData data)
 		{
-			return new JavaScriptSerializer().Serialize(data);
+			return JsonConvert.SerializeObject(data);
 		}
 	}
 }

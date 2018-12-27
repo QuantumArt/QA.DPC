@@ -1,5 +1,6 @@
 ﻿using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Linq;
 using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
@@ -8,6 +9,7 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using System;
+using QA.ProductCatalog.ContentProviders;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;

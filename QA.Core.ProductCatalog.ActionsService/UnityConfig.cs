@@ -3,7 +3,6 @@ using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Notification.Services;
-using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.Actions.Container;
 using QA.Core.ProductCatalog.ActionsRunner;
@@ -15,6 +14,8 @@ using QA.ProductCatalog.Integration.Configuration;
 using Quartz;
 using System;
 using System.Configuration;
+using QA.Core.DPC.QP.Configuration;
+using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Injection;
 

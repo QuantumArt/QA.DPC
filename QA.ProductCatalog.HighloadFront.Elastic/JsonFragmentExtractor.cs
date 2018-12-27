@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
@@ -7,19 +8,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         public static int ReaderBufferSize { get; set; } = 4096;
 
-        public static async Task<int> ExtractJsonFragment(string textToSearch, Stream requestStream, Stream responseStream, int? depthToSearch = null)
+        public static async Task<int> ExtractJsonFragment(string textToSearch, string text, StringBuilder responseBuilder, int? depthToSearch = null)
         {
-            using (var reader = new StreamReader(requestStream))
+            using (var reader = new StringReader(text))
             {
-                var writer = new StreamWriter(responseStream);
+                var writer = new StringWriter(responseBuilder);
                 var result = await ExtractJsonFragment(textToSearch, reader, writer, depthToSearch);
                 await writer.FlushAsync();
-                responseStream.Position = 0;
                 return result;
             }
         }
 
-        public static async Task<int> ExtractJsonFragment(string textToSearch, TextReader reader, StreamWriter writer, int? depthToSearch = null)
+        public static async Task<int> ExtractJsonFragment(string textToSearch, TextReader reader, StringWriter writer, int? depthToSearch = null)
         {
             bool inside = false, startExport = false, exporting = false, escaped = false;
             int depth = 0, exportDepth = 0, l = 0, batchSize, count = 1, found = 0, entityNumber = 0;

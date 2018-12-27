@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.ProductCatalog.Actions.Tests.Fakes;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests

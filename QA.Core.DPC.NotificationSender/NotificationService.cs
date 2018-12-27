@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using QA.Core.Service.Interaction;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 using System.Xml.XPath;
 using System.IO;
 using System.Collections.Generic;

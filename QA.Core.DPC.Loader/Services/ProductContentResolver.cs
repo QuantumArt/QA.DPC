@@ -3,6 +3,7 @@ using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QPublishing.Database;
 using System.Data.SqlClient;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Loader.Services
 {

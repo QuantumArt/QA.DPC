@@ -5,6 +5,7 @@ using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Tasks;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
 

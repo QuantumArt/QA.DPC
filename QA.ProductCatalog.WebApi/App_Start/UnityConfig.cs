@@ -18,6 +18,8 @@ using QA.ProductCatalog.Integration.Configuration;
 using System;
 using System.Configuration;
 using System.Threading;
+using QA.Core.DPC.QP.Cache;
+using QA.ProductCatalog.ContentProviders;
 using Unity;
 
 namespace QA.ProductCatalog.WebApi.App_Start

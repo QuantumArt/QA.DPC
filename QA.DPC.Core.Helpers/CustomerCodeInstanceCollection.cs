@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using QA.Core.DPC.QP.Services;
 using ILogger = QA.Core.Logger.ILogger;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.DPC.Core.Helpers
 {

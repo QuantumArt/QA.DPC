@@ -1,44 +1,32 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Elasticsearch.Net;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
-using QA.Core.Logger;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 
 namespace QA.ProductCatalog.HighloadFront
 {
-    public class ProductManager: IDisposable
+    public class ProductManager
     {
-        private bool _disposed;
         private readonly IProductPostProcessor _productPostProcessor;
 
         protected IProductStore Store { get; }
 
-        protected ILogger Logger { get; }
-
-        public ProductManager(IProductStore store, ILogger logger, IProductPostProcessor productPostProcessor)
+        public ProductManager(IProductStore store, IProductPostProcessor productPostProcessor)
         {
             Store = store ?? throw new ArgumentNullException(nameof(store));
-            Logger = logger;
             _productPostProcessor = productPostProcessor;
         }
 
-        public Task<ElasticsearchResponse<Stream>> FindStreamByIdAsync(ProductsOptions options, string language, string state)
+        public Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
         {
-            ThrowIfDisposed();
-            var store = GetProductStreamStore();
-            return store.FindStreamByIdAsync(options, language, state);
+            return Store.FindByIdAsync(options, language, state);
         }
 
         public async Task<SonicResult> CreateAsync(JObject product, RegionTag[] regionTags, string language, string state)
         {
-            ThrowIfDisposed();
-
              var data = new ProductPostProcessorData(product);
 
             if (_productPostProcessor != null)
@@ -75,8 +63,6 @@ namespace QA.ProductCatalog.HighloadFront
 
         public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state)
         {
-            ThrowIfDisposed();
-            var store = GetProductBulkStore();
 
             if (_productPostProcessor != null)
             {
@@ -89,7 +75,7 @@ namespace QA.ProductCatalog.HighloadFront
             var regionTagProducts = data.Select(d => GetRegionTagsProduct(d.Product, d.RegionTags)).Where(d => d != null);
             var products = data.Select(d => d.Product).Concat(regionTagProducts);
 
-            return await store.BulkCreateAsync(products, language, state);
+            return await Store.BulkCreateAsync(products, language, state);
         }
 
 
@@ -101,71 +87,17 @@ namespace QA.ProductCatalog.HighloadFront
         
         public Task<string> SearchAsync(ProductsOptions options, string language, string state)
         {
-            ThrowIfDisposed();
-            var store = GetProductSearchStore();
-
-            return store.SearchAsync(options, language, state);
+            return Store.SearchAsync(options, language, state);
         }
 
       
-        public Task<Stream> SearchStreamAsync(ProductsOptions options, string language, string state)
-        {
-            ThrowIfDisposed();
-            var store = GetProductSearchStore();
-
-            return store.SearchStreamAsync(options, language, state);
-        }
-
-        
         public Task<SonicResult> DeleteAllASync(string language, string state)
         {
-            ThrowIfDisposed();
             return Store.ResetAsync(language, state);
-        }
-
-        private IProductTypeStore GetProductTypeStore()
-        {
-            var cast = Store as IProductTypeStore;
-            if (cast == null)
-            {
-                throw new NotSupportedException($"Store does not implement {nameof(IProductTypeStore)}.");
-            }
-            return cast;
-        }
-
-        private IProductSearchStore GetProductSearchStore()
-        {
-            var cast = Store as IProductSearchStore;
-            if (cast == null)
-            {
-                throw new NotSupportedException($"Store does not implement {nameof(IProductSearchStore)}.");
-            }
-            return cast;
-        }
-
-        private IProductBulkStore GetProductBulkStore()
-        {
-            var cast = Store as IProductBulkStore;
-            if (cast == null)
-            {
-                throw new NotSupportedException($"Store does not implement {nameof(IProductBulkStore)}.");
-            }
-            return cast;
-        }
-
-        private IProductStreamStore GetProductStreamStore()
-        {
-            var cast = Store as IProductStreamStore;
-            if (cast == null)
-            {
-                throw new NotSupportedException($"Store does not implement {nameof(IProductBulkStore)}.");
-            }
-            return cast;
         }
 
         public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)
         {
-            ThrowIfDisposed();
 
             var tagsProduct = GetRegionTagsProduct(product, new[] { new RegionTag() });
 
@@ -203,31 +135,5 @@ namespace QA.ProductCatalog.HighloadFront
                 return tags;
             }
         }
-
-        #region IDisposable Support
-
-        public void Dispose()
-        {
-            Logger.Debug("Disposing manager");
-
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing || _disposed) return;
-            Store.Dispose();
-            _disposed = true;
-        }
-
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().Name);
-            }
-        }
-        #endregion
     }
 }

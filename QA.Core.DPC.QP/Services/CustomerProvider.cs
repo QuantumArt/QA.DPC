@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Xml.Linq;
 using QA.Core.DPC.QP.Models;
 using QA.Core.Logger;
-using Quantumart.QP8.Configuration;
 using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.QP.Services
@@ -11,30 +11,36 @@ namespace QA.Core.DPC.QP.Services
     public class CustomerProvider : ICustomerProvider
     {
         private const int Timeout = 2;
-        public QPConfiguration Configuration1 { get; }
         private readonly ILogger _logger;
 
         public CustomerProvider(ILogger logger)
         {
-            Configuration1 = new QPConfiguration();
             _logger = logger;
         }
 
         public string GetConnectionString(string customerCode)
         {
-            return QPConfiguration.GetConnectionString(customerCode);
+            return DBConnector.GetConnectionString(customerCode);
         }
 
         public Customer[] GetCustomers()
         {
-            return QPConfiguration.GetCustomerCodes()
-                .Select(c => new Customer
-                {
-                    ConnectionString = QPConfiguration.GetConnectionString(c),
-                    CustomerCode = c
-                })
-                .Where(IsDpcMode)
-                .ToArray();
+            var result = new Customer[] { };
+            var doc = XDocument.Parse(DBConnector.GetQpConfig().OuterXml);
+            var customer = doc?.Root?.Element("customer");
+            if (customer != null)
+            {
+                result = 
+                    customer.Elements("customers").Select(c => new Customer
+                        {
+                            ConnectionString = c.Element("db")?.Value,
+                            CustomerCode = c.Attribute("customer_name")?.Value
+                        })
+                        .Where(IsDpcMode)
+                        .ToArray();             
+            }
+
+            return result;
         }
 
         public bool IsDpcMode(Customer customer)

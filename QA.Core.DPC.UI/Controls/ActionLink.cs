@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using QA.Core.DPC.UI.Controls.QP;
 using QA.Core.Models.UI;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.UI.Controls
