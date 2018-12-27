@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
-using Quantumart.QP8.BLL;
+
 
 namespace QA.Core.DPC.QP.Cache
 {
@@ -24,16 +25,15 @@ namespace QA.Core.DPC.QP.Cache
 
         protected override void GetData(Dictionary<int, ContentModification> newValues)
         {
-            using (var cs = new QPConnectionScope(ConnectionString))
-            {
-                var con = cs.DbConnection;
 
-                using (SqlCommand cmd = new SqlCommand(_cmdText, con))
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand(_cmdText, conn))
                 {
                     cmd.CommandType = CommandType.Text;
-                    if (con.State != ConnectionState.Open)
+                    if (conn.State != ConnectionState.Open)
                     {
-                        con.Open();
+                        conn.Open();
                     }
                     // производим запрос - без этого не будет работать dependency
                     using (var reader = cmd.ExecuteReader())
@@ -53,8 +53,6 @@ namespace QA.Core.DPC.QP.Cache
                 }
 
             }
-
-            //tsSuppressed.Complete();
         }
     }
 }

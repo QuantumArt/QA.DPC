@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.Core.Web;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers

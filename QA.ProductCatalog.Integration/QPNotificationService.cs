@@ -7,6 +7,7 @@ using QA.Core.Models;
 using QA.Core.Models.Entities;
 using QA.Core.Models.Processors;
 using QA.Core.Service.Interaction;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.Notifications;
 

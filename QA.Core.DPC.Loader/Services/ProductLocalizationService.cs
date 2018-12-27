@@ -6,6 +6,7 @@ using QA.Core.Models.Entities;
 using System.Globalization;
 using QA.Core.Models.Extensions;
 using QA.Core.Cache;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Loader.Services
 {

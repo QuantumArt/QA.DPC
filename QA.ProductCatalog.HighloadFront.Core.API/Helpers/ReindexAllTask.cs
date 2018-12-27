@@ -1,6 +1,6 @@
 ﻿using System;
 using QA.ProductCatalog.HighloadFront.Elastic;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
 {
@@ -8,11 +8,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
     {
         private readonly ProductImporter _importer;
         private readonly ProductManager _manager;
-        private readonly IElasticConfiguration _configuration;
+        private readonly ElasticConfiguration _configuration;
 
         private const int LockTimeoutInMs = 5000;
 
-        public ReindexAllTask(ProductImporter importer, ProductManager manager, IElasticConfiguration configuration)
+        public ReindexAllTask(ProductImporter importer, ProductManager manager, ElasticConfiguration configuration)
         {
             _importer = importer;
             _manager = manager;

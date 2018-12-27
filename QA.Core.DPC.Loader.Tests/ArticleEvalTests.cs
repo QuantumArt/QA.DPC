@@ -25,7 +25,7 @@ namespace QA.Core.DPC.Loader.Tests
             var actualResult = DPathProcessor.VerifyAndParseExpression(expression).ToArray();
 
             // Verify outcome
-            actualResult.ShouldBeEquivalentTo(expectedResult);
+            actualResult.Should().BeEquivalentTo(expectedResult);
         }
 
         [XamlData(TestSampleDataFile, " PDF ")]
@@ -60,14 +60,11 @@ namespace QA.Core.DPC.Loader.Tests
         [Theory, Trait("DPathProcessor", "SingleResult")]
         public void DPathProcessor_WhenProductFounded_ShouldReturnArrayWithSingleElement(string expression, Article product)
         {
-            // Fixture setup
-            const int expectedResult = 1;
-
             // Exercise system
             var actualResult = DPathProcessor.Process(expression, product);
 
             // Verify outcome
-            Assert.Equal(expectedResult, actualResult.Length);
+            Assert.Single(actualResult);
         }
 
         [XamlData(TestGeProductFile, "Parameters[Modifiers/Alias='ExcludeFromPdf']", 0)]

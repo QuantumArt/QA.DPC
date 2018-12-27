@@ -13,6 +13,8 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using QA.Core.Linq;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Loader.Services
 {

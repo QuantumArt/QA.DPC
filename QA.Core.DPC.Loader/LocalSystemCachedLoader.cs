@@ -12,6 +12,7 @@ using System.IO;
 using System.IO.Compression;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Loader
 {

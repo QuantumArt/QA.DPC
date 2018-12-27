@@ -1,5 +1,6 @@
 ﻿using QA.ProductCatalog.Infrastructure;
 using System;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.QP.API.Tests.Providers
 {

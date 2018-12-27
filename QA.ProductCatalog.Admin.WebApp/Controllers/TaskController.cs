@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web.Mvc;
 using QA.Core.Web;
 using QA.ProductCatalog.Admin.WebApp.Models;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers

@@ -1,5 +1,5 @@
 ﻿using QA.Core.DPC.QP.Autopublish.Services;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;
 

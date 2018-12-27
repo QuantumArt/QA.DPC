@@ -6,9 +6,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using QA.Core;
+using QA.Core.Linq;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 

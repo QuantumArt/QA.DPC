@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="Model" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityContainer Name="TaskRunnerEntities" p1:LazyLoadingEnabled="true">
+    <EntitySet Name="Schedules" EntityType="Model.Schedule" />
+    <EntitySet Name="Tasks" EntityType="Model.Task" />
+    <EntitySet Name="TaskStates" EntityType="Model.TaskState" />
+    <AssociationSet Name="FK_Tasks_Schedules" Association="Model.FK_Tasks_Schedules">
+      <End Role="Schedule" EntitySet="Schedules" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Tasks_TaskStates" Association="Model.FK_Tasks_TaskStates">
+      <End Role="TaskState" EntitySet="TaskStates" />
+      <End Role="Task" EntitySet="Tasks" />
+    </AssociationSet>
+    <AssociationSet Name="FK_TasksScheduledFrom_Tasks" Association="Model.FK_TasksScheduledFrom_Tasks">
+      <End Role="Task" EntitySet="Tasks" />
+      <End Role="Task1" EntitySet="Tasks" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Schedule">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Enabled" Type="Boolean" Nullable="false" />
+    <Property Name="CronExpression" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+    <NavigationProperty Name="Tasks" Relationship="Model.FK_Tasks_Schedules" FromRole="Schedule" ToRole="Task" />
+  </EntityType>
+  <EntityType Name="Task">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CreatedTime" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="LastStatusChangeTime" Type="DateTime" Precision="3" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="false" />
+    <Property Name="StateID" Type="Int32" Nullable="false" />
+    <Property Name="Data" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="UserID" Type="Int32" Nullable="false" />
+    <Property Name="UserName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Name="Progress" Type="Byte" />
+    <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="IsCancellationRequested" Type="Boolean" Nullable="false" />
+    <Property Name="IsCancelled" Type="Boolean" Nullable="false" />
+    <Property Name="DisplayName" Type="String" Nullable="false" MaxLength="4000" FixedLength="false" Unicode="true" />
+    <Property Name="ScheduledFromTaskID" Type="Int32" />
+    <Property Name="ScheduleID" Type="Int32" />
+    <NavigationProperty Name="Schedule" Relationship="Model.FK_Tasks_Schedules" FromRole="Task" ToRole="Schedule" />
+    <NavigationProperty Name="TaskState" Relationship="Model.FK_Tasks_TaskStates" FromRole="Task" ToRole="TaskState" />
+    <NavigationProperty Name="SpawnedTasks" Relationship="Model.FK_TasksScheduledFrom_Tasks" FromRole="Task" ToRole="Task1" />
+    <NavigationProperty Name="SheduledFromTask" Relationship="Model.FK_TasksScheduledFrom_Tasks" FromRole="Task1" ToRole="Task" />
+    <Property Name="ExclusiveCategory" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+    <Property Name="Config" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Name="BinData" Type="Binary" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <EntityType Name="TaskState">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Tasks" Relationship="Model.FK_Tasks_TaskStates" FromRole="TaskState" ToRole="Task" />
+  </EntityType>
+  <Association Name="FK_Tasks_Schedules">
+    <End Type="Model.Schedule" Role="Schedule" Multiplicity="0..1" />
+    <End Type="Model.Task" Role="Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Schedule">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="ScheduleID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Tasks_TaskStates">
+    <End Type="Model.TaskState" Role="TaskState" Multiplicity="1" />
+    <End Type="Model.Task" Role="Task" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="TaskState">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task">
+        <PropertyRef Name="StateID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_TasksScheduledFrom_Tasks">
+    <End Type="Model.Task" Role="Task" Multiplicity="0..1" />
+    <End Type="Model.Task" Role="Task1" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Task">
+        <PropertyRef Name="ID" />
+      </Principal>
+      <Dependent Role="Task1">
+        <PropertyRef Name="ScheduledFromTaskID" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

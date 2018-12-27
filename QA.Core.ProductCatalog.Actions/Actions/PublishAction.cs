@@ -12,6 +12,7 @@ using QA.Core.Models;
 using Quantumart.QP8.BLL.Services.DTO;
 using System.Transactions;
 using QA.Core.Logger;
+using QA.ProductCatalog.ContentProviders;
 using System.Collections.Concurrent;
 
 namespace QA.Core.ProductCatalog.Actions
@@ -185,10 +186,9 @@ namespace QA.Core.ProductCatalog.Actions
 			try
 			{
 				var stageProducts = new[] { stageProduct };
-				var liveProducts = new[] { sendSeparateLive ? Productservice.GetProductById(stageProduct.Id, true) : stageProduct };
-
                 using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
+	                var liveProducts = new[] { sendSeparateLive ? Productservice.GetProductById(stageProduct.Id, true) : stageProduct };	                
                     DoWithLogging("NotificationService.SendProducts stage", transactionId, () => NotificationService.SendProducts(stageProducts, true, userName, userId, localize, false, channels));
                     DoWithLogging("NotificationService.SendProducts live", transactionId, () => NotificationService.SendProducts(liveProducts, false, userName, userId, localize, false, channels));
                 }

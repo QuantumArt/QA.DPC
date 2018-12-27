@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.ProductCatalog.Infrastructure
 {

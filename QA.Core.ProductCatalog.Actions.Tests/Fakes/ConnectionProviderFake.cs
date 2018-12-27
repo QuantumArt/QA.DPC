@@ -22,7 +22,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
             return _connection;
         }
 
-        public string GetConnection(Service service)
+        public string GetConnection(DPC.QP.Models.Service service)
         {
             return _connection;
         }
@@ -32,12 +32,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
             throw new NotImplementedException();
         }
 
-        public string GetEFConnection(Service service)
+        public string GetEFConnection(DPC.QP.Models.Service service)
         {
             throw new NotImplementedException();
         }
 
-        public bool HasConnection(Service service)
+        public bool HasConnection(DPC.QP.Models.Service service)
         {
             throw new NotImplementedException();
         }
