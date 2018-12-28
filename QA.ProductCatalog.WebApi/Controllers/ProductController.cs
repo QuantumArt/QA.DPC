@@ -7,6 +7,7 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.WebApi.Filters;
+using QA.ProductCatalog.WebApi.Models;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -76,10 +77,11 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="query"></param>
         /// <param name="isLive"></param>
         /// <param name="includeRegionTags"></param>
+        /// <param name="includeRelevanceInfo"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("{version}/{slug}/search/detail/{format:media_type_mapping}/{query}")]
-        public IEnumerable<Article> SearchDetailed(string slug, string version, string query, bool isLive = false, bool includeRegionTags = false)
+        public IEnumerable<Article> SearchDetailed(string slug, string version, string query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
             _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
             var ids = _databaseProductService.SearchProducts(slug, version, query, isLive);
@@ -89,7 +91,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             foreach (var id in ids)
             {
-                yield return _databaseProductService.GetProduct(slug, version, id, isLive);
+                yield return _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
             }
         }
 
@@ -117,10 +119,11 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="query">A part of SQL query (where clause)</param>
         /// <param name="isLive"></param>
         /// <param name="includeRegionTags"></param>
+        /// <param name="includeRelevanceInfo"></param>
         /// <returns></returns>
         [HttpPost]
         [Route("{version}/{slug}/search/detail/{format:media_type_mapping}")]
-        public IEnumerable<Article> ExtendedSearchDetailed(string slug, string version, [FromBody] JToken query, bool isLive = false, bool includeRegionTags = false)
+        public IEnumerable<Article> ExtendedSearchDetailed(string slug, string version, [FromBody] JToken query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
             _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
             var ids = _databaseProductService.ExtendedSearchProducts(slug, version, query, isLive);
@@ -130,7 +133,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             foreach (var id in ids)
             {
-                yield return _databaseProductService.GetProduct(slug, version, id, isLive);
+                yield return _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
             }
         }
 
@@ -142,10 +145,11 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="id">Indentifier of the product</param>
         /// <param name="isLive"></param>
         /// <param name="includeRegionTags"></param>
+        /// <param name="includeRelevanceInfo"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("{version}/{slug}/{format:media_type_mapping}/{id:int}")]
-        public Article GetProduct(string slug, string version, int id, bool isLive = false, bool includeRegionTags=false)
+        public Article GetProduct(string slug, string version, int id, bool isLive = false, bool includeRegionTags=false, bool includeRelevanceInfo = false)
 		{
 			_logger.LogDebug(() => new { slug, version, id, isLive }.ToString());
 
@@ -153,7 +157,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
 		    HttpContext.Current.Items["includeRegionTags"] = includeRegionTags;
 
-            var product = _databaseProductService.GetProduct(slug, version, id, isLive);
+            var product = _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
 
             if (product == null)
             {
@@ -171,11 +175,12 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="ids">Indentifiers of the product separated with ","</param>
         /// <param name="isLive"></param>
         /// <param name="includeRegionTags"></param>
+        /// <param name="includeRelevanceInfo"></param>
         /// <returns></returns>
         [HttpGet]
         [Route("{version}/{slug}/list/{format:media_type_mapping}/{ids}")]
         [ArrayParameter("ids")]
-        public IEnumerable<Article> GetProductList(string slug, string version, int[] ids, bool isLive = false, bool includeRegionTags = false)
+        public IEnumerable<Article> GetProductList(string slug, string version, int[] ids, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
             _logger.LogDebug(() => new { slug, version, ids, isLive }.ToString());
 
@@ -184,7 +189,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 
             foreach (var id in ids.Distinct())
             {
-                var product = _databaseProductService.GetProduct(slug, version, id, isLive);
+                var product = _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
 
                 if (product != null)
                 {
@@ -192,6 +197,45 @@ namespace QA.ProductCatalog.WebApi.Controllers
                 }
             }
         }
+
+        /// <summary>
+        /// Get product relevance for product
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="isLive"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("relevance/{format:media_type_mapping}/{id:int}")]
+        public Product GetProductRelevance(int id, bool isLive = false)
+        {
+            var relevance = _databaseProductService.GetRelevance(id, isLive);
+
+            if (relevance == null)
+            {
+                throw new HttpResponseException(HttpStatusCode.NotFound);
+            }
+
+            return new Product(relevance);
+        }
+
+        /// <summary>
+        /// Get product relevance for products
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <param name="isLive"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [Route("relevance/{format:media_type_mapping}/{ids}")]
+        [ArrayParameter("ids")]
+        public Product[] GetProductRelevanceList(int[] ids, bool isLive = false)
+        {
+            return ids.Distinct()
+                .Select(id => _databaseProductService.GetRelevance(id, isLive))
+                .Where(r => r != null)
+                .Select(r => new Product(r))
+                .ToArray();
+        }
+
 
         /// <summary>
         /// Get product built on raw data using tarantool cache

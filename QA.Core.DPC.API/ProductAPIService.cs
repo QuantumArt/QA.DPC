@@ -7,6 +7,8 @@ using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QA.Core.Models.Extensions;
+using System.Linq;
 
 namespace QA.Core.DPC.API
 {
@@ -18,15 +20,17 @@ namespace QA.Core.DPC.API
 		private readonly IProductUpdateService _productUpdateService;
 		private readonly IUserProvider _userProvider;
 		private readonly Func<string, IAction> _getAction;
+        private readonly IProductRelevanceService _relevanceService;
 
-		public ProductAPIService
+        public ProductAPIService
 		(
 			IContentDefinitionService contentDefinitionService,
 			IProductService productService,
 			IProductSearchService productSearchService,
 			IProductUpdateService productUpdateService,
 			IUserProvider userProvider,
-			Func<string, IAction> getAction
+			Func<string, IAction> getAction,
+            IProductRelevanceService relevanceService
 		)
 		{
 			_contentDefinitionService = contentDefinitionService;
@@ -35,8 +39,8 @@ namespace QA.Core.DPC.API
 			_productUpdateService = productUpdateService;
 			_userProvider = userProvider;
 			_getAction = getAction;
-		}
-
+            _relevanceService = relevanceService;
+        }
 
 		#region IProductAPIService implementation
 		public Dictionary<string, object>[] GetProductsList(string slug, string version, bool isLive = false, long startRow = 0, long pageSize = int.MaxValue)
@@ -55,11 +59,24 @@ namespace QA.Core.DPC.API
             return _productSearchService.ExtendedSearchProducts(slug, version, query);
         }
 
-        public Article GetProduct(string slug, string version, int id, bool isLive = false)
+        public Article GetProduct(string slug, string version, int id, bool isLive = false, bool includeRelevanceInfo = false)
 		{
 			var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
 			var product = _productService.GetProductById(id, isLive, new ProductDefinition { ProdictTypeId = 0, StorageSchema = definition.Content });
-			return product;
+
+            if (includeRelevanceInfo)
+            {
+                var relevance = _relevanceService.GetProductRelevance(product, isLive, false).FirstOrDefault();
+
+                if (relevance != null)
+                {
+                    product.AddPlainField("Relevance", relevance.Relevance.ToString());
+                    product.AddPlainField("LastPublished", relevance.LastPublished);
+                    product.AddPlainField("LastPublishedUserName", relevance.LastPublishedUserName);
+                }
+            }
+
+            return product;
 		}
 
 		public void UpdateProduct(string slug, string version, Article product, bool isLive = false)
@@ -103,6 +120,21 @@ namespace QA.Core.DPC.API
 		{
 			return _contentDefinitionService.GetServiceDefinition(slug, version, true);
 		}
-		#endregion
-	}
+
+        public RelevanceInfo GetRelevance(int id, bool isLive = false)
+        {
+            var simpleProduct = _productService.GetSimpleProductsByIds(new[] { id }, isLive).FirstOrDefault();
+
+            if (simpleProduct == null || simpleProduct.ContentId == 0)
+            {
+                return null;
+            }
+
+            var definition = _productService.GetProductDefinition(0, simpleProduct.ContentId, isLive);
+            var product = _productService.GetProductById(id, isLive, definition);
+             
+            return _relevanceService.GetProductRelevance(product, isLive, false).FirstOrDefault();
+        }
+        #endregion
+    }
 }

@@ -43,9 +43,9 @@ namespace QA.Core.DPC.API
             return result;
         }
 
-        public Article GetProduct(string slug, string version, int id, bool isLive = false)
+        public Article GetProduct(string slug, string version, int id, bool isLive = false, bool includeRelevanceInfo = false)
 		{
-			string url = _configuration.Host + "/" + version + "/" + slug + "/binary/" + id + "?isLive=" + isLive;
+			string url = _configuration.Host + "/" + version + "/" + slug + "/binary/" + id + "?isLive=" + isLive + "&includeRelevanceInfo" + includeRelevanceInfo;
 			var result = Get<Article>(url);
 			return result;
 		}
@@ -83,10 +83,15 @@ namespace QA.Core.DPC.API
 		{
 			throw new NotImplementedException();
 		}
-		#endregion
 
-		#region Private methods
-		public async Task UpdateAsync<T>(T model, string url)
+        public RelevanceInfo GetRelevance(int id, bool isLive = false)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Private methods
+        public async Task UpdateAsync<T>(T model, string url)
 		{
 			try
 			{
