@@ -9,6 +9,8 @@ using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Extensions;
 using System.Linq;
+using QA.Core.Models.Filters.Base;
+using QA.Core.DPC.Loader;
 
 namespace QA.Core.DPC.API
 {
@@ -123,16 +125,7 @@ namespace QA.Core.DPC.API
 
         public RelevanceInfo GetRelevance(int id, bool isLive = false)
         {
-            var simpleProduct = _productService.GetSimpleProductsByIds(new[] { id }, isLive).FirstOrDefault();
-
-            if (simpleProduct == null || simpleProduct.ContentId == 0)
-            {
-                return null;
-            }
-
-            var definition = _productService.GetProductDefinition(0, simpleProduct.ContentId, isLive);
-            var product = _productService.GetProductById(id, isLive, definition);
-             
+            var product = _productService.GetProductById(id, isLive);
             return _relevanceService.GetProductRelevance(product, isLive, false).FirstOrDefault();
         }
         #endregion

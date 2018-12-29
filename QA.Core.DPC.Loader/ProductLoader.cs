@@ -1,34 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using QA.Core.Cache;
+﻿using QA.Core.Cache;
 using QA.Core.DPC.Loader.Resources;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Cache;
+using QA.Core.DPC.QP.Services;
+using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.Models.Filters;
 using QA.Core.Models.Processors;
 using QA.Core.Models.UI;
 using QA.Core.ProductCatalog.Actions.Services;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QP8.Infrastructure.Extensions;
+using Quantumart.QP8.Constants;
 using Quantumart.QP8.Utils;
 using Quantumart.QPublishing.Database;
 using Quantumart.QPublishing.Info;
-using Content = QA.Core.Models.Configuration.Content;
-using Qp8Bll = Quantumart.QP8.BLL;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using QA.Core.DPC.QP.Cache;
-using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
-using QA.ProductCatalog.ContentProviders;
-using QP8.Infrastructure.Extensions;
-using Quantumart.QP8.Constants;
+using Content = QA.Core.Models.Configuration.Content;
+using Qp8Bll = Quantumart.QP8.BLL;
 
 namespace QA.Core.DPC.Loader
 {
@@ -973,69 +974,52 @@ FROM
 
         private IEnumerable<KeyValuePair<int, ArticleField>> ProcessExtensionField(int fieldId, Qp8Bll.Article[] articles, Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive,
             ArticleCounter counter, Field fieldDef)
-        {
-            var contentMapping = ((ExtensionField) fieldDef).ContentMapping;
+        {            
+            var contentMapping = ((ExtensionField)fieldDef).ContentMapping;
+            var contextMap = new ConcurrentDictionary<int, List<ExtensionContext>>();
 
-            Qp8Bll.FieldValue[] fieldValues = articles.Select(n => n.FieldValues.SingleOrDefault(m => m.Field.Id == fieldId)).ToArray();
-            var fieldValue = fieldValues.First();
-            var articleIds = articles.Select(n => n.Id).ToArray();
-
-            if (contentMapping == null || !contentMapping.Any())
-                throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_EXT_MAP_NOT_EXISTS, fieldId,
-                    articleIds.First()));
-
-            var extContentIds = fieldValues
-                .Where(fv => fv.RelatedItems.Any())
-                .Select(fv => fieldValue.RelatedItems.First())
-                .Distinct()
-                .ToArray();
-
-            foreach (var extContentId in extContentIds)
+            foreach (var article in articles)
             {
-                if (!contentMapping.ContainsKey(extContentId))
-                    throw new Exception(string.Format(ProductLoaderResources.ERR_XML_FIELD_MAP_NOT_EXISTS,
-                        fieldValue.Field.Id, fieldValue.Field.Name, fieldId));
+                var fieldValue = article.FieldValues.FirstOrDefault(fv => fv.Field.Id == fieldId);                
 
-                var extensionsQpData = articles.Select(n => new
+                if (fieldValue != null && int.TryParse(fieldValue.Value, out int exstensionContentId))
                 {
-                    n.Id,
-                    n.FieldValues.Single(k => k.Field.Id == fieldId).Value,
-                    Article = n.AggregatedArticles.FirstOrDefault(x => x.ContentId == extContentId)
-                }).ToArray();
-
-                var extQpNullIds = extensionsQpData.Where(n => n.Article == null).ToArray();
-                if (extQpNullIds.Any())
-                {
-                    var errData = extQpNullIds.First();
-                    _logger.Error(
-                        $"Статья {errData.Id} не имеет расширения, хотя поле {fieldId} классификатора  запонено значением {errData.Value}.");
-                }
-                else
-                {
-                    var extQpArticles = extensionsQpData.Select(n => n.Article).ToArray();
-
-                    var subContentDef = contentMapping[extContentId];
-                    var extArticles =
-                        GetArticlesForQpArticles(extQpArticles, subContentDef, localCache, isLive, counter)
-                            .ToDictionary(n => n.Id, m => m);
-
-
-                    var results = extensionsQpData
-                        .Where(n => extArticles.ContainsKey(n.Article.Id))
-                        .Select(n => new KeyValuePair<int, ArticleField>(
-                            n.Id, 
-                            new ExtensionArticleField()
-                            {
-                                Value = n.Value,
-                                Item = extArticles[n.Article.Id]
-                            })).ToArray();
-
-                    foreach (var result in results)
+                    if (contentMapping.TryGetValue(exstensionContentId, out Content exstensionDef))
                     {
-                        yield return result;
-                    }                   
+                        var exstensionArticle = article.AggregatedArticles.FirstOrDefault(a => a.ContentId == exstensionContentId);
+
+                        if (exstensionArticle != null)
+                        {
+                            var list = contextMap.GetOrAdd(exstensionContentId, key => new List<ExtensionContext>());
+
+                            list.Add(new ExtensionContext
+                            {
+                                ArticleId = article.Id,
+                                ExtensionId = fieldValue.Value,
+                                ExtensionArticle = exstensionArticle
+                            });                       
+                        }
+                    }
                 }
             }
+
+            foreach(var kv in contextMap)
+            {
+                var extensions = kv.Value.Select(x => x.ExtensionArticle).ToArray();
+                var exstensionDef = contentMapping[kv.Key];
+                var extArticles = GetArticlesForQpArticles(extensions, exstensionDef, localCache, isLive, counter);
+
+                foreach(var exstension in kv.Value)
+                {
+                    yield return new KeyValuePair<int, ArticleField>(
+                        exstension.ArticleId,
+                        new ExtensionArticleField
+                        {
+                            Value = exstension.ExtensionId,
+                            Item = extArticles.FirstOrDefault(a => a.Id == exstension.ExtensionArticle.Id)
+                        });
+                }
+            }            
         }
 
         private IEnumerable<KeyValuePair<int, ArticleField>> ProcessManyField(Dictionary<ArticleShapedByDefinitionKey, Article> localCache, bool isLive, ArticleCounter counter, Qp8Bll.FieldValue[] fieldValues,
@@ -1509,5 +1493,12 @@ FROM
         {
             return _articlesLimit > 0;
         }
+    }
+
+    internal class ExtensionContext
+    {
+        public int ArticleId { get; set; }
+        public string ExtensionId { get; set; }
+        public Qp8Bll.Article ExtensionArticle { get; set; }
     }
 }
