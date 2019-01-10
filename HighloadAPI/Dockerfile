@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:2.1-sdk AS build-env
+FROM microsoft/dotnet:2.2-sdk AS build-env
 WORKDIR /app
 
 # Copy csproj and restore as distinct layers
@@ -18,7 +18,7 @@ RUN dotnet restore /app/QA.ProductCatalog.HighloadFront.Core.API/QA.ProductCatal
 RUN dotnet publish /app/QA.ProductCatalog.HighloadFront.Core.API/QA.ProductCatalog.HighloadFront.Core.API.csproj -r linux-x64 -c Release -o out 
 
 # Build runtime image
-FROM microsoft/dotnet:2.1-runtime
+FROM microsoft/dotnet:2.2-runtime
 ARG service_name=dpc_highload_api
 ARG service_version=0.1.1
 ENV SERVICE_NAME=${service_name}
