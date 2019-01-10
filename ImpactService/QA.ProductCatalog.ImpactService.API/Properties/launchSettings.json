@@ -1,28 +1,13 @@
 ﻿{
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:14609/",
-      "sslPort": 0
-    }
-  },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "api/mn/107074",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "QA.ProductCatalog.ImpactService.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "/api/mnr",
+      "launchUrl": "api/mnr/country/AU",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+        "ASPNETCORE_ENVIRONMENT": "Prod"
+      },
+      "applicationUrl": "http://localhost:7805"      
     }
   }
 }
