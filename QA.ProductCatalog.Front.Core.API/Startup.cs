@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,7 +31,7 @@ namespace QA.ProductCatalog.Front.Core.API
             {
                 opts.InputFormatters.RemoveType<JsonInputFormatter>();
                 opts.InputFormatters.Add(new TextUniversalInputFormatter());
-            });
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);;
 
             services.AddScoped<ILogger>(logger => new NLogLogger("NLog.config"));
             services.AddScoped(typeof(IDpcProductService), typeof(DpcProductService));

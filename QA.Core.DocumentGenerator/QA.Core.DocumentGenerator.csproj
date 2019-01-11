@@ -23,8 +23,8 @@
   </ItemGroup>  
   <ItemGroup>
     <PackageReference Include="GemBox.Document" Version="25.3.30.1365" />
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="RazorEngine" Version="3.4.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="RazorEngine" Version="3.4.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
