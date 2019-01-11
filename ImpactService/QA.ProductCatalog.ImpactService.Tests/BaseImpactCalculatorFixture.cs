@@ -27,7 +27,7 @@ namespace QA.ProductCatalog.ImpactService.Tests
 
             var resultOrders = tariff.SelectTokens("Parameters.[?(@.Id)].Id").Select(n => (int) n).ToArray();
 
-            resultOrders.ShouldBeEquivalentTo(orders);
+            resultOrders.Should().BeEquivalentTo(orders);
 
         }
 
@@ -447,8 +447,8 @@ namespace QA.ProductCatalog.ImpactService.Tests
             ((bool)result[0]["Changed"]).Should().BeTrue();
             ((bool)result[1]["Changed"]).Should().BeTrue();
 
-            result[0].Previous.ShouldBeEquivalentTo(result2[0]);
-            result[1].Previous.ShouldBeEquivalentTo(result3[0]);
+            result[0].Previous.Should().BeEquivalentTo(result2[0]);
+            result[1].Previous.Should().BeEquivalentTo(result3[0]);
 
             ((string)result2[0]["Title"]).Should().Be("В пределах пакета 500 минут");
             ((int)result2[0]["Id"]).Should().Be(5000);
