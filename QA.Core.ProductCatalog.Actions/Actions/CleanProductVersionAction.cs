@@ -53,6 +53,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
         #region Constants and fields
         private const int DefaultChunkSize = 100;
+        private const int DefaultTimeout = 30;
 
         private static readonly object Locker = new object();
         private static bool IsProcessing = false;
@@ -90,6 +91,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         chunkSize = DefaultChunkSize;
                     }
 
+                    if (!int.TryParse(_settingsService.GetSetting(SettingsTitles.PRODUCTVERSION_TIMEOUT), out int timeout))
+                    {
+                        timeout = DefaultTimeout;
+                    }
+
                     if (!int.TryParse(_settingsService.GetSetting(SettingsTitles.PRODUCTVERSION_CLEANUP_INTERVAL), out int cleanupInterval))
                     {
                         throw new Exception($"Setting {SettingsTitles.PRODUCTVERSION_CLEANUP_INTERVAL} is not provided or incorrect");
@@ -105,7 +111,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                     do
                     {
-                        currentCount = CleanVersions(date, chunkSize);
+                        currentCount = CleanVersions(date, chunkSize, timeout);
                         processedCount += currentCount;
                         _logger.LogInfo(() => $"Clean {currentCount} product versions");
 
@@ -145,11 +151,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             return (int)data;
         }
 
-        private int CleanVersions(DateTime date, int chunkSize)
+        private int CleanVersions(DateTime date, int chunkSize, int timeout)
         {
             var connector = GetConnector();
             var query = string.Format(ProductVersionCleanQuery, chunkSize);
             var sqlCommand = new SqlCommand(query);
+            sqlCommand.CommandTimeout = timeout;
             sqlCommand.Parameters.AddWithValue("@date", date);
             var data = connector.GetRealScalarData(sqlCommand);
             return (int)data;
