@@ -9,7 +9,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
         private static bool IsProcessing = false;
         private const int DefaultChunkSize = 1000;
         private const int DefaultMaxDegreeOfParallelism = 1;
-        private readonly IValidationService _validationService;        
+        private readonly IValidationService _validationService;
 
         public ValidationAction(IValidationService validationService)
         {
@@ -30,16 +30,22 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             if (canProcess)
             {
-                int chunkSize = GetValue(context, "UpdateChunkSize", DefaultChunkSize);
-                int maxDegreeOfParallelism = GetValue(context, "MaxDegreeOfParallelism", DefaultMaxDegreeOfParallelism);
+                try
+                {
+                    int chunkSize = GetValue(context, "UpdateChunkSize", DefaultChunkSize);
+                    int maxDegreeOfParallelism = GetValue(context, "MaxDegreeOfParallelism", DefaultMaxDegreeOfParallelism);
 
-                var report = _validationService.ValidateAndUpdate(chunkSize, maxDegreeOfParallelism, TaskContext);
-                IsProcessing = false;
-                return $"Products: {report.TotalProductsCount};" +
-                        $"Updated products: {report.UpdatedProductsCount};" +
-                        $"Validated products: {report.ValidatedProductsCount};" +
-                        $"Invalid products: {report.InvalidProductsCount};" +
-                        $"Validation errors: {report.ValidationErrorsCount}";
+                    var report = _validationService.ValidateAndUpdate(chunkSize, maxDegreeOfParallelism, TaskContext);                    
+                    return $"Products: {report.TotalProductsCount};" +
+                            $"Updated products: {report.UpdatedProductsCount};" +
+                            $"Validated products: {report.ValidatedProductsCount};" +
+                            $"Invalid products: {report.InvalidProductsCount};" +
+                            $"Validation errors: {report.ValidationErrorsCount}";
+                }
+                finally
+                {
+                    IsProcessing = false;
+                }
             }
             else
             {
