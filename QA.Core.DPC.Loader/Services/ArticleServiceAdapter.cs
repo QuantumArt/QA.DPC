@@ -60,14 +60,14 @@ namespace QA.Core.DPC.Loader.Services
 			ArticleService.SimpleSetArchiveFlag(articleIds, flag);
 		}
 
-		public InsertData[] BatchUpdate(IEnumerable<ArticleData> articles)
+		public InsertData[] BatchUpdate(IEnumerable<ArticleData> articles, bool createVersions = false)
 		{
-			return ArticleService.BatchUpdate(articles);
+			return ArticleService.BatchUpdate(articles, createVersions);
 		}
 
-		public InsertData[] BatchUpdate(IEnumerable<Article> articles)
+		public InsertData[] BatchUpdate(IEnumerable<Article> articles, bool createVersions = false)
 		{
-			return ArticleService.BatchUpdate(articles);
+			return ArticleService.BatchUpdate(articles, createVersions);
 		}
 
 		public Dictionary<int, bool> CheckRelationSecurity(int contentId, int[] ids, bool isDeletable)

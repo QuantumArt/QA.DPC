@@ -81,10 +81,10 @@ namespace QA.Core.DPC.API
             return product;
 		}
 
-		public void UpdateProduct(string slug, string version, Article product, bool isLive = false)
+		public void UpdateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
 		{
 			var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
-			_productUpdateService.Update(product, new ProductDefinition { ProdictTypeId = 0, StorageSchema = definition.Content }, isLive);
+			_productUpdateService.Update(product, new ProductDefinition { ProdictTypeId = 0, StorageSchema = definition.Content }, isLive, createVersions);
 		}
 
 		public void CustomAction(string actionName, int id, int contentId = default(int))

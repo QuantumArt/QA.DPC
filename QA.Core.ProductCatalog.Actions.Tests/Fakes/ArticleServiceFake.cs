@@ -162,12 +162,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 		public bool IsLive { get; set; }
 
 
-		InsertData[] IArticleService.BatchUpdate(IEnumerable<ArticleData> articles)
+		InsertData[] IArticleService.BatchUpdate(IEnumerable<ArticleData> articles, bool createVersions = false)
 		{
 			throw new NotImplementedException();
 		}
 
-		InsertData[] IArticleService.BatchUpdate(IEnumerable<Article> articles)
+		InsertData[] IArticleService.BatchUpdate(IEnumerable<Article> articles, bool createVersions = false)
 		{
 			throw new NotImplementedException();
 		}

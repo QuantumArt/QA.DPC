@@ -197,13 +197,13 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 		}		
 		#endregion
 
-		public InsertData[] BatchUpdate(IEnumerable<Quantumart.QP8.BLL.Services.API.Models.ArticleData> articles)
+		public InsertData[] BatchUpdate(IEnumerable<Quantumart.QP8.BLL.Services.API.Models.ArticleData> articles, bool createVersions = false)
 		{
 			return null;
 		}
 
 
-		public InsertData[] BatchUpdate(IEnumerable<Article> articles)
+		public InsertData[] BatchUpdate(IEnumerable<Article> articles, bool createVersions = false)
 		{
 			return null;
 		}

@@ -105,7 +105,7 @@ namespace QA.Core.DPC.API.Update
         #region IProductUpdateService
 
         /// <exception cref="ProductUpdateConcurrencyException" />
-        public InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false)
+        public InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false, bool createVersions = false)
         {
             Article oldProduct = _productService.GetProductById(product.Id, isLive, definition);
 
@@ -126,7 +126,7 @@ namespace QA.Core.DPC.API.Update
             {
                 _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
 
-                InsertData[] idMapping = _articleService.BatchUpdate(_updateData);
+                InsertData[] idMapping = _articleService.BatchUpdate(_updateData, createVersions);
 
                 _logger.Debug(() => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
 

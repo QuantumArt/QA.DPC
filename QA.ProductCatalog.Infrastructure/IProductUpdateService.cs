@@ -6,6 +6,6 @@ namespace QA.ProductCatalog.Infrastructure
 {
 	public interface IProductUpdateService
 	{
-		InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false);
+		InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false, bool createVersions = false);
     }
 }
