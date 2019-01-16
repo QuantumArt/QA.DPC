@@ -775,12 +775,12 @@ namespace QA.ProductCatalog.ImpactService
             }
         }
         
-        public int[] FindServicesOnTariff(JObject tariff, string link, string modifier)
+        public int[] FindServicesOnProduct(JObject product, string link, string modifier)
         {
-            return tariff?.SelectTokens($"{link}.[?(@.Service)]")
-                .Where(n => n.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{modifier}')]").Any())
-                .Select(n => (int) n.SelectToken("Service.Id"))
-                .ToArray();
+            return product?.SelectTokens($"{link}.[?(@.Service)]")
+                       .Where(n => n.SelectTokens($"Parent.Modifiers.[?(@.Alias == '{modifier}')]").Any())
+                       .Select(n => (int) n.SelectToken("Service.Id"))
+                       .ToArray() ?? new int[] { };
         }
 
         protected static void ProcessRemoveModifier(JArray scaleParameters)
