@@ -226,9 +226,18 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             result = result ?? await LoadProducts(id, serviceIds, searchOptions);
             SplitLoadedServicesAndTariff(tariffId);
             
-            result = result ?? await FillDefaultHomeRegion(searchOptions, Product);            
-            int[] excludedByTariff = FindServicesOnTariff(Tariff, "ServicesOnTariff", "HideInInternationalRoamingCalculator"); 
-            result = result ?? FilterServicesOnProduct(true, excludedByTariff, searchOptions.HomeRegionData);
+            result = result ?? await FillDefaultHomeRegion(searchOptions, Product);
+            int[] excluded = Calculator.FindServicesOnProduct(Product, "ServicesOnRoamingScale", "HideInInternationalRoamingCalculatorByDefault");
+            if (excluded.Any())
+            {
+                int[] includedByTariff = Calculator.FindServicesOnProduct(Tariff, "ServicesOnTariff", "ShowInInternationalRoamingCalculator");
+                excluded = excluded.Where(n => !includedByTariff.Contains(n)).ToArray();
+            }
+            excluded = excluded.Union(
+                Calculator.FindServicesOnProduct(Tariff, "ServicesOnTariff", "HideInInternationalRoamingCalculator")
+            ).ToArray();
+            
+            result = result ?? FilterServicesOnProduct(true, excluded, searchOptions.HomeRegionData);
 
             LogStartImpact("MNR", id, serviceIds);
 

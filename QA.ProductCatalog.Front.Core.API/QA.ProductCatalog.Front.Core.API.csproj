@@ -2,7 +2,6 @@
   <PropertyGroup>
     <TargetFramework>net471</TargetFramework>
     <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
-    <AspNetCoreHostingModel>inprocess</AspNetCoreHostingModel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugType>full</DebugType>
