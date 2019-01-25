@@ -27,17 +27,17 @@ namespace QA.Core.DPC.QP.Services
         {
             var result = new Customer[] { };
             var doc = XDocument.Parse(DBConnector.GetQpConfig().OuterXml);
-            var customer = doc?.Root?.Element("customer");
+            var customer = doc?.Root?.Element("customers");
             if (customer != null)
             {
-                result = 
-                    customer.Elements("customers").Select(c => new Customer
-                        {
-                            ConnectionString = c.Element("db")?.Value,
-                            CustomerCode = c.Attribute("customer_name")?.Value
-                        })
-                        .Where(IsDpcMode)
-                        .ToArray();             
+                result =
+                    customer.Elements("customer").Select(c => new Customer
+                    {
+                        ConnectionString = c.Element("db")?.Value?.Replace("Provider=SQLOLEDB;", string.Empty),
+                        CustomerCode = c.Attribute("customer_name")?.Value
+                    })
+                    .Where(IsDpcMode)
+                    .ToArray();             
             }
 
             return result;
@@ -57,6 +57,6 @@ namespace QA.Core.DPC.QP.Services
                 _logger.LogError(() => $"Customer code {customer.CustomerCode} is not accessible");
                 return false;
             }
-        }
+        }   
     }
 }
