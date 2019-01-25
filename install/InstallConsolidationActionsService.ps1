@@ -16,17 +16,9 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-$currentPath = split-path -parent $MyInvocation.MyCommand.Definition
-$projectName = "QA.Core.ProductCatalog.ActionsService"
-
-$defaultSource = split-path -parent $currentPath
-$zipPath = Join-Path $currentPath "$projectName.zip"
-if ((Test-Path $zipPath)) { $defaultSource = $zipPath }
-
-$source = Read-Or-Default $source "Please enter path to sources" $defaultSource
-
 Invoke-Expression "InstallService.ps1 -Name '$name' -DisplayName '$displayName' -Description '$description' -ProjectName '$projectName' -InstallRoot '$installRoot' -source '$source' -login '$login' -password '$password' -start `$false"
 
+$projectName = "QA.Core.ProductCatalog.ActionsService"
 $installPath = Join-Path $installRoot $name
 
 $nLogPath = Join-Path $installPath "NLogClient.config"
