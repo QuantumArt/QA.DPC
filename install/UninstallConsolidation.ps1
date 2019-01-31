@@ -2,7 +2,8 @@
     [String] $notificationSender = 'DPC.NotificationSender',
     [String] $actionsService = 'DPC.ActionsService',
     [String] $admin = 'Dpc.Admin',
-    [String] $installRoot = 'C:\QA'
+    [String] $installRoot = 'C:\QA',
+    [string] $customerCode
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -78,3 +79,4 @@ function DeleteSite
 DeleteService -name $notificationSender -installRoot $installRoot
 DeleteService -name $actionsService -installRoot $installRoot
 DeleteSite -qp "QP8" -name $admin
+Remove-CustomerCode -CustomerCode $customerCode
