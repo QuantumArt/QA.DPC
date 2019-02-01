@@ -32,33 +32,28 @@ $adminPath = Join-Path $parentPath "Front"
 
 Copy-Item "$adminPath\*" -Destination $sitePath -Force -Recurse
 
-$nLogPath = Join-Path $sitePath "NLogClient.config"
+$nLogPath = Join-Path $sitePath "NLog.config"
 [xml]$nlog = Get-Content -Path $nLogPath
 $var = $nlog.nlog.variable | Where-Object {$_.name -eq 'logDirectory'}
 $var.value = "C:\Logs\" + $siteName
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
 
-$webConfigPath = Join-Path $sitePath "Web.config"
-[xml]$web = Get-Content -Path $webConfigPath
+$appsettingsPath = Join-Path $sitePath "appsettings.json"
+$appsettings = Get-Content -Path $appsettingsPath  | ConvertFrom-Json
 
-$web.configuration.RemoveChild($web.configuration.connectionStrings)
+$appsettings.Data | Add-Member -Name "UseProductVersions" -Value $False -MemberType NoteProperty
 
-$qpMode = $web.CreateElement('add')
-$qpMode.SetAttribute('key', 'QPMode')
-$qpMode.SetAttribute('value', 'true')
-$web.configuration.appSettings.AppendChild($qpMode)
+Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
+$appsettings | ConvertTo-Json | Set-Content -Path $appsettingsPath
 
-$productSerializer = $web.configuration.unity.container.register | Where-Object {$_.type -eq 'IProductSerializer'}
-$productSerializer.mapTo = "JsonProductSerializer"
 
-Set-ItemProperty $webConfigPath -name IsReadOnly -value $false
-$web.Save($webConfigPath)
-
-Copy-Item $webConfigPath ($webConfigPath -replace ".config", ".config2")
+Copy-Item $appsettingsPath ($appsettingsPath -replace ".json", ".json2")
 Copy-Item $nLogPath ($nLogPath -replace ".config", ".config2")
 Remove-Item -Path (Join-Path $sitePath "*.config") -Force
+Remove-Item -Path (Join-Path $sitePath "*.json") -Force
 Get-ChildItem (Join-Path $sitePath "*.config2") | Rename-Item -newname { $_.name -replace '\.config2','.config' }
+Get-ChildItem (Join-Path $sitePath "*.json2") | Rename-Item -newname { $_.name -replace '\.json2','.json' }
 
 $p = Get-Item "IIS:\AppPools\$siteName" -ErrorAction SilentlyContinue
 
