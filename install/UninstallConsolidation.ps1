@@ -2,6 +2,7 @@
     [String] $notificationSender = 'DPC.NotificationSender',
     [String] $actionsService = 'DPC.ActionsService',
     [String] $admin = 'Dpc.Admin',
+    [String] $siteSync = 'Dpc.SiteSync',
     [String] $installRoot = 'C:\QA',
     [string] $customerCode
 )
@@ -59,8 +60,13 @@ function DeleteSite
   )
 
 
-  $alias = "IIS:\sites\$qp\$name"
-
+  if ($qp){
+    $alias = "IIS:\sites\$qp\$name"
+  }
+  else{
+    $alias = "IIS:\sites\$name"
+  }
+  
   $app = Get-Item $alias -ErrorAction SilentlyContinue
 
   if ($app) {      
@@ -79,4 +85,5 @@ function DeleteSite
 DeleteService -name $notificationSender -installRoot $installRoot
 DeleteService -name $actionsService -installRoot $installRoot
 DeleteSite -qp "QP8" -name $admin
+DeleteSite -name $siteSync
 Remove-CustomerCode -CustomerCode $customerCode
