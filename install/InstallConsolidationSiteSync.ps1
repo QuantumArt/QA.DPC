@@ -40,6 +40,9 @@ Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
 
 $appsettingsPath = Join-Path $sitePath "appsettings.json"
+$exeConfigPath = Join-Path $sitePath "QA.ProductCatalog.Front.Core.API.exe.config"
+$webConfigPath = Join-Path $sitePath "web.config"
+
 $appsettings = Get-Content -Path $appsettingsPath  | ConvertFrom-Json
 
 $appsettings.Data | Add-Member -Name "UseProductVersions" -Value $False -MemberType NoteProperty
@@ -49,6 +52,8 @@ $appsettings | ConvertTo-Json | Set-Content -Path $appsettingsPath
 
 
 Copy-Item $appsettingsPath ($appsettingsPath -replace ".json", ".json2")
+Copy-Item $exeConfigPath ($exeConfigPath -replace ".config", ".config2")
+Copy-Item $webConfigPath ($webConfigPath -replace ".config", ".config2")
 Copy-Item $nLogPath ($nLogPath -replace ".config", ".config2")
 Remove-Item -Path (Join-Path $sitePath "*.config") -Force
 Remove-Item -Path (Join-Path $sitePath "*.json") -Force
