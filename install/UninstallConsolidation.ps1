@@ -3,6 +3,7 @@
     [String] $actionsService = 'DPC.ActionsService',
     [String] $admin = 'Dpc.Admin',
     [String] $siteSync = 'Dpc.SiteSync',
+    [String] $webApi = 'Dpc.WebApi',
     [String] $installRoot = 'C:\QA',
     [string] $customerCode
 )
@@ -86,4 +87,5 @@ DeleteService -name $notificationSender -installRoot $installRoot
 DeleteService -name $actionsService -installRoot $installRoot
 DeleteSite -qp "QP8" -name $admin
 DeleteSite -name $siteSync
+DeleteSite -name $webApi
 Remove-CustomerCode -CustomerCode $customerCode
