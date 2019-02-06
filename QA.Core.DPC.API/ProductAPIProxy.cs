@@ -50,7 +50,7 @@ namespace QA.Core.DPC.API
 			return result;
 		}
 
-		public void UpdateProduct(string slug, string version, Article product, bool isLive = false)
+		public void UpdateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
 		{
 			string url = _configuration.Host + "/" + version + "/" + slug + "/binary/" + product.Id + "?isLive=" + isLive;
 			Update<Article>(product, url);			

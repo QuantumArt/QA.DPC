@@ -291,12 +291,13 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="version">Version of the definition</param>
         /// <param name="product"></param>
         /// <param name="isLive"></param>
+        /// <param name="createVersions"></param>
         [HttpPost]
         [Route("{version}/{slug}/{format:media_type_mapping}/{id:int}")]
-        public void Post(string slug, string version, Article product, bool isLive = false)
+        public void Post(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
 		{
-			_logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId, isLive }.ToString());
-			_databaseProductService.UpdateProduct(slug, version, product, isLive);
+			_logger.LogDebug(() => new { slug, version, productId = product.Id, productContentId = product.ContentId, isLive, createVersions }.ToString());
+			_databaseProductService.UpdateProduct(slug, version, product, isLive, createVersions);
 		}
 
         /// <summary>

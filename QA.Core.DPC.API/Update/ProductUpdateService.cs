@@ -24,6 +24,7 @@ namespace QA.Core.DPC.API.Update
         private readonly IArticleService _articleService;
         private readonly IFieldService _fieldService;
         private readonly DeleteAction _deleteAction;
+        protected Func<ITransaction> _createTransaction;
         private readonly ILogger _logger;
 
         private readonly List<ArticleData> _updateData = new List<ArticleData>();
@@ -37,11 +38,13 @@ namespace QA.Core.DPC.API.Update
             IArticleService articleService,
             IFieldService fieldService,
             DeleteAction deleteAction,
+            Func<ITransaction> createTransaction,
             ILogger logger)
         {
             _productService = productService;
             _articleService = articleService;
             _fieldService = new CachedFieldService(fieldService);
+            _createTransaction = createTransaction;
             _logger = logger;
             _deleteAction = deleteAction;
         }
@@ -105,7 +108,7 @@ namespace QA.Core.DPC.API.Update
         #region IProductUpdateService
 
         /// <exception cref="ProductUpdateConcurrencyException" />
-        public InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false)
+        public InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false, bool createVersions = false)
         {
             Article oldProduct = _productService.GetProductById(product.Id, isLive, definition);
 
@@ -122,11 +125,11 @@ namespace QA.Core.DPC.API.Update
                 throw new ProductUpdateConcurrencyException(_outdatedArticleIds.ToArray());
             }
 
-            using (var scope = new TransactionScope())
+            using (var transaction = _createTransaction())
             {
                 _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
 
-                InsertData[] idMapping = _articleService.BatchUpdate(_updateData);
+                InsertData[] idMapping = _articleService.BatchUpdate(_updateData, createVersions);
 
                 _logger.Debug(() => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
 
@@ -151,7 +154,7 @@ namespace QA.Core.DPC.API.Update
                     _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
                 }
 
-                scope.Complete();
+                transaction.Commit();
                 return idMapping;
             }
         }

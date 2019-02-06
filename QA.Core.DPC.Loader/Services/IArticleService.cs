@@ -15,8 +15,8 @@ namespace QA.Core.DPC.Loader.Services
 		void SimplePublish(int[] articleIds);
 		MessageResult SetArchiveFlag(int contentId, int[] articleIds, bool flag);
 		void SimpleSetArchiveFlag(int[] articleIds, bool flag);
-		InsertData[] BatchUpdate(IEnumerable<ArticleData> articles);
-		InsertData[] BatchUpdate(IEnumerable<Article> articles);
+		InsertData[] BatchUpdate(IEnumerable<ArticleData> articles, bool createVersions = false);
+		InsertData[] BatchUpdate(IEnumerable<Article> articles, bool createVersions = false);
 		Dictionary<int, bool> CheckRelationSecurity(int contentId, int[] ids, bool isDeletable);
 	    RulesException XamlValidationById(int articleId, bool persistChanges);
 	}

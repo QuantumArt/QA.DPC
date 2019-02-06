@@ -10,7 +10,7 @@ namespace QA.ProductCatalog.Infrastructure
 		int[] SearchProducts(string slug, string version, string query, bool isLive = false);
         int[] ExtendedSearchProducts(string slug, string version, JToken query, bool isLive = false);
         Article GetProduct(string slug, string version, int id, bool isLive = false, bool includeRelevanceInfo = false);
-		void UpdateProduct(string slug, string version, Article product, bool isLive = false);
+		void UpdateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false);
 		void CustomAction(string actionName, int id, int contentId = default(int));
 		void CustomAction(string actionName, int[] ids, int contentId = default(int));
 		void CustomAction(string actionName, int id, Dictionary<string, string> parameters, int contentId = default(int));
