@@ -91,6 +91,6 @@ DeleteSite -qp "QP8" -name $admin
 DeleteSite -name $siteSync
 DeleteSite -name $webApi
 DeleteSite -name $syncApi
-DeleteSite -name $serachApi
+DeleteSite -name $searchApi
 
 Remove-CustomerCode -CustomerCode $customerCode
