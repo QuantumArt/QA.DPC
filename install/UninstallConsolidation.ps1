@@ -4,6 +4,8 @@
     [String] $admin = 'Dpc.Admin',
     [String] $siteSync = 'Dpc.SiteSync',
     [String] $webApi = 'Dpc.WebApi',
+    [String] $syncApi = 'Dpc.SyncApi',
+    [String] $searchApi = 'Dpc.SearchApi',
     [String] $installRoot = 'C:\QA',
     [string] $customerCode
 )
@@ -88,4 +90,7 @@ DeleteService -name $actionsService -installRoot $installRoot
 DeleteSite -qp "QP8" -name $admin
 DeleteSite -name $siteSync
 DeleteSite -name $webApi
+DeleteSite -name $syncApi
+DeleteSite -name $serachApi
+
 Remove-CustomerCode -CustomerCode $customerCode
