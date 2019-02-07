@@ -2,8 +2,8 @@
     [String] $qp ='QP8',
     [String] $backend ='Backend',
     [String] $admin ='Dpc.Admin',
-    [String] $notifyPort = '8013',
-    [String] $syncPort = '8012'
+    [int] $notifyPort = 8013,
+    [int] $syncPort = 8012
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))

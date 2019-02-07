@@ -5,7 +5,7 @@
     [String] $installRoot = 'C:\QA',
     [String] $login = 'NT AUTHORITY\SYSTEM',
     [String] $password = 'dummy',
-    [String] $notifyPort = '8013',
+    [int] $notifyPort = 8013,
     [String] $source = 'C:\DPC.MTS\ActionsRunner'
 )
 
