@@ -1,12 +1,20 @@
 ﻿param(
+    [Parameter()]
     [String] $name = 'DPC.ActionsService',
+    [Parameter()]
     [String] $displayName = 'DPC Actions Service',
+    [Parameter()]
     [String] $description = 'Run long tasks for DPC with updating progress',
-    [String] $installRoot = 'C:\QA',
+    [Parameter(Mandatory = $true)]
+    [String] $installRoot,
+    [Parameter()]
     [String] $login = 'NT AUTHORITY\SYSTEM',
+    [Parameter()]
     [String] $password = 'dummy',
-    [int] $notifyPort = 8013,
-    [String] $source = 'C:\DPC.MTS\ActionsRunner'
+    [Parameter(Mandatory = $true)]
+    [int] $notifyPort,
+    [Parameter(Mandatory = $true)]    
+    [String] $source
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))

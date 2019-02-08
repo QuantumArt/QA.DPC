@@ -1,9 +1,14 @@
 ﻿param(
+    [Parameter()]
     [String] $qp ='QP8',
+    [Parameter()]
     [String] $backend ='Backend',
+    [Parameter()]
     [String] $admin ='Dpc.Admin',
-    [int] $notifyPort = 8013,
-    [int] $syncPort = 8012
+    [Parameter(Mandatory = $true)]
+    [int] $notifyPort,
+    [Parameter(Mandatory = $true)]
+    [int] $syncPort
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))

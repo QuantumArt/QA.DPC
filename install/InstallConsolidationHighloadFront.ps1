@@ -52,8 +52,7 @@ $appsettings.Data | Add-Member -Name "ElasticTimeout" -Value $timeout -MemberTyp
 $appsettings.Data.CanUpdate = $canUpdate
 
 Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
-$appsettings | ConvertTo-Json | Set-Content -Path $appsettingsPath
-
+$appsettings | ConvertTo-Json -Depth 3 | Set-Content -Path $appsettingsPath
 
 Copy-Item $appsettingsPath ($appsettingsPath -replace ".json", ".json2")
 Copy-Item $depsPath ($depsPath -replace ".json", ".json2")
