@@ -110,7 +110,7 @@ ReplaceFieldValues -connectionString $connectionString -fieldId $fieldId -placeh
 $fieldId = GetFieldId -connectionString $connectionString -key "ELASTIC_INDEXES_CONTENT_ID" -field "address"
 ReplaceFieldValues -connectionString $connectionString -fieldId $fieldId -placeholder "{elasticsearch}" -value $elasticsearchHost
 
-$validationPlaceholder = "mscdev02:90/Dpc.Admin"
+$validationPlaceholder = "{admin}"
 $validationQuery = "update [site] set XAML_DICTIONARIES = cast(replace(cast(XAML_DICTIONARIES as nvarchar(max)), '$validationPlaceholder', '$adminHost') as ntext) where XAML_DICTIONARIES like '%$validationPlaceholder%'"
 Invoke-Sqlcmd -Query $validationQuery -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop  
  
