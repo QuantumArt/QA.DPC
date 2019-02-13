@@ -1,7 +1,10 @@
 ﻿param(
+    [Parameter()]
     [String] $siteName ='Dpc.WebApi',
-    [int] $port = 93,
-    [int] $notifyPort = 8013
+    [Parameter(Mandatory = $true)]
+    [int] $port,
+    [Parameter(Mandatory = $true)]
+    [int] $notifyPort
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))

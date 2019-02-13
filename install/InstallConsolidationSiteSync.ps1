@@ -1,6 +1,10 @@
 ﻿param(
+    [Parameter()]
     [String] $siteName ='Dpc.SiteSync',
-    [int] $port = 92
+    [Parameter(Mandatory = $true)]
+    [int] $port,
+    [Parameter()]
+    [bool] $useProductVersions = $false
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -45,7 +49,7 @@ $webConfigPath = Join-Path $sitePath "web.config"
 
 $appsettings = Get-Content -Path $appsettingsPath  | ConvertFrom-Json
 
-$appsettings.Data | Add-Member -Name "UseProductVersions" -Value $False -MemberType NoteProperty
+$appsettings.Data | Add-Member -Name "UseProductVersions" -Value $useProductVersions -MemberType NoteProperty
 
 Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
 $appsettings | ConvertTo-Json | Set-Content -Path $appsettingsPath

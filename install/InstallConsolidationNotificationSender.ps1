@@ -1,12 +1,20 @@
 ﻿param(
+    [Parameter()]
     [String] $name = 'DPC.NotificationSender',
+    [Parameter()]
     [String] $displayName = 'DPC Notification Service',
+    [Parameter()]
     [String] $description = 'Puts product updates into the DB queue and sends them to the fronts in a failover manner',
+    [Parameter(Mandatory = $true)]
     [String] $installRoot = 'C:\QA',
+    [Parameter()]
     [String] $login = 'NT AUTHORITY\SYSTEM',
+    [Parameter()]
     [String] $password = 'dummy',
-    [int] $notifyPort = 8013,
-    [String] $source = 'C:\DPC.MTS\NotificationsSender'
+    [Parameter(Mandatory = $true)]
+    [int] $notifyPort,
+    [Parameter(Mandatory = $true)]
+    [String] $source
 )
 
 

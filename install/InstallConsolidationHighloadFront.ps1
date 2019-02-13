@@ -1,7 +1,11 @@
 ﻿param(
-    [String] $siteName ='Dpc.SearchApi',
-    [int] $port = 93,
-    [bool] $canUpdate = $false,
+    [Parameter(Mandatory = $true)]
+    [String] $siteName,
+    [Parameter(Mandatory = $true)]
+    [int] $port,
+    [Parameter(Mandatory = $true)]
+    [bool] $canUpdate,
+    [Parameter()]
     [int] $timeout = 60
 )
 
