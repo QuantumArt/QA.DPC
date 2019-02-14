@@ -61,6 +61,10 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
+$requiredRuintime = '2.2.1'
+$actualRuntime = (dir (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
+If ($actualRuntime -ne $requiredRuintime){ Throw "requared $requiredRuintime NETCore runtime" }
+
 Import-Module WebAdministration
 Import-Module SqlServer
 
