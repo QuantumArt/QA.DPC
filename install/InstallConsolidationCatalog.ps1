@@ -28,12 +28,16 @@
     [Parameter(Mandatory = $true)]
     [int] $webApiPort,
     [Parameter(Mandatory = $true)]
+    [int] $backendPort,
+    [Parameter(Mandatory = $true)]
     [string] $elasticsearchHost,
     [Parameter(Mandatory = $true)]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $installRoot,
     [Parameter()]
     [bool] $useProductVersions = $false,
+    [Parameter()]
+    [string] $qpName = 'QP8',
     [Parameter()]
     [string] $adminName = 'Dpc.Admin',
     [Parameter()]
@@ -60,6 +64,12 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 Import-Module WebAdministration
 Import-Module SqlServer
 
+. .\Modules\Add-DatabaseUser.ps1
+. .\Modules\Restore-Database.ps1
+. .\Modules\Get-ConnectionString.ps1
+. .\Modules\CustomerCode.ps1
+. .\Modules\Get-SiteOrApplication.ps1
+
 $actionsArtifactName = 'ActionsRunner' 
 $adminArtifactName = 'Admin'
 $notificationsArtifactName = 'NotificationsSender'
@@ -70,7 +80,7 @@ $webApiArtifactName = 'WebApi'
 
 $siteSyncHost = "${env:COMPUTERNAME}:$siteSyncPort"
 $syncApiHost = "${env:COMPUTERNAME}:$syncApiPort"
-$adminHost = "${env:COMPUTERNAME}:89/$adminName"
+$adminHost = "${env:COMPUTERNAME}:$backendPort/$adminName"
 
 $currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
@@ -83,7 +93,7 @@ if ($cleanUp){
 }
 
 $installAdminiPath = Join-Path $currentPath "InstallConsolidationAdmin.ps1"
-Invoke-Expression "$installAdminiPath -NotifyPort $notifyPort -SyncPort $syncApiPort -Admin '$adminName'"
+Invoke-Expression "$installAdminiPath -NotifyPort $notifyPort -SyncPort $syncApiPort -Admin '$adminName' -Qp '$qpName'"
 
 $installNotificationSenderPath = Join-Path $currentPath "InstallConsolidationNotificationSender.ps1"
 $source = Join-Path $parentPath $notificationsArtifactName
