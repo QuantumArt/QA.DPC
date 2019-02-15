@@ -65,15 +65,6 @@ $requiredRuintime = '2.2.1'
 $actualRuntime = (dir (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
 If ($actualRuntime -ne $requiredRuintime){ Throw "requared $requiredRuintime NETCore runtime" }
 
-Import-Module WebAdministration
-Import-Module SqlServer
-
-. .\Modules\Add-DatabaseUser.ps1
-. .\Modules\Restore-Database.ps1
-. .\Modules\Get-ConnectionString.ps1
-. .\Modules\CustomerCode.ps1
-. .\Modules\Get-SiteOrApplication.ps1
-
 $actionsArtifactName = 'ActionsRunner' 
 $adminArtifactName = 'Admin'
 $notificationsArtifactName = 'NotificationsSender'
@@ -89,6 +80,14 @@ $adminHost = "${env:COMPUTERNAME}:$backendPort/$adminName"
 $currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
 
+Import-Module WebAdministration
+Import-Module SqlServer
+
+. (Join-Path $currentPath "Modules\Add-DatabaseUser.ps1")
+. (Join-Path $currentPath "Modules\Restore-Database.ps1")
+. (Join-Path $currentPath "Modules\Get-ConnectionString.ps1")
+. (Join-Path $currentPath "Modules\CustomerCode.ps1")
+. (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
 
 if ($cleanUp){
     $uninstallPath = Join-Path $currentPath "UninstallConsolidation.ps1"
@@ -121,5 +120,6 @@ $source = Join-Path $parentPath $webApiArtifactName
 Invoke-Expression "$installWebApiPath -Port $webApiPort -SiteName '$webApiName' -NotifyPort $notifyPort"
 
 $installCustomerCodePath = Join-Path $currentPath "InstallConsolidationCustomerCode.ps1"
-$params = "-DatabaseServer '$databaseServer' -SourceBackupPath '$sourceBackupPath' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -SiteSyncHost '$siteSyncHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost'"
+$params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -SiteSyncHost '$siteSyncHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost'"
+if (-not [string]::IsNullOrEmpty($sourceBackupPath)) { $params = "$params -SourceBackupPath '$sourceBackupPath'" }
 Invoke-Expression "$installCustomerCodePath $params"
