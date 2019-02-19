@@ -4,6 +4,7 @@ using QA.Validation.Xaml.Extensions.Rules;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Validation;
+using Unity;
 using Unity.Exceptions;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers

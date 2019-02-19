@@ -23,8 +23,10 @@ namespace QA.Core.ProductCatalog.Actions.Container
 
 			Container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
 
+#if !NETSTANDARD
 			// устанавливаем фальшивый сервис для загрузки модели
 			Container.RegisterType<IAdministrationSecurityChecker, FakeAdministrationSecurityChecker>();
+#endif			
 
 			// устанавливаем фальшивый сервис для загрузки модели
 				Container

@@ -1,4 +1,5 @@
-﻿using QA.Core.DPC.QP.Models;
+﻿using System;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -11,5 +12,6 @@ namespace QA.Core.DPC.QP.Services
         bool HasConnection(Service service);
         bool QPMode { get; }
         bool UseQPMonitoring { get; }
+        TimeSpan TransactionTimeout { get;  }
     }
 }

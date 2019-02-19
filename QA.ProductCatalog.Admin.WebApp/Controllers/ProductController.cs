@@ -22,6 +22,7 @@ using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Processors;
 using System.Globalization;
 using System.Web;
+using Unity;
 using Unity.Exceptions;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers

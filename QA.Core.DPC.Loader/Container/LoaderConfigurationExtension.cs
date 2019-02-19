@@ -6,17 +6,24 @@ using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
+#if !NETSTANDARD
 using QA.Core.Web;
+#else
+using QA.DPC.Core.Helpers;
+#endif
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using Microsoft.AspNetCore.Http;
+using QA.Core.Web;
 using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;
 using Unity.Injection;
+using Unity.Lifetime;
 
 namespace QA.Core.DPC.Loader.Container
 {
@@ -28,23 +35,32 @@ namespace QA.Core.DPC.Loader.Container
     {
         public const string AlwaysAdminUserProviderName = "AlwaysAdminUserProvider";
 
+        public ITypeLifetimeManager GetHttpContextLifeTimeManager()
+        {
+#if !NETSTANDARD
+            return new HttpContextLifetimeManager();
+#else
+            return new HttpContextCoreLifetimeManager(Container.Resolve<IHttpContextAccessor>());
+#endif
+        }
+
         protected override void Initialize()
         {
             Container.RegisterInstance<ILogger>(new NLogLogger("NLogClient.config"));
             Container.RegisterType<IServiceFactory, ServiceFactory>();
-            Container.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
+            Container.RegisterFactory<ArticleService>(c => c.Resolve<IServiceFactory>().GetArticleService());
             Container.RegisterType<IArticleService, ArticleServiceAdapter>();
-            Container.RegisterType<FieldService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetFieldService()));
-            Container.RegisterType<ContentService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetContentService()));
-            Container.RegisterType<IFieldService, FieldServiceAdapter>(new HttpContextLifetimeManager());
-            Container.RegisterType<IContentService, ContentServiceAdapter>(new HttpContextLifetimeManager());
+            Container.RegisterFactory<FieldService>(c => c.Resolve<IServiceFactory>().GetFieldService());
+            Container.RegisterFactory<ContentService>(c => c.Resolve<IServiceFactory>().GetContentService());
+            Container.RegisterType<IFieldService, FieldServiceAdapter>(GetHttpContextLifeTimeManager());
+            Container.RegisterType<IContentService, ContentServiceAdapter>(GetHttpContextLifeTimeManager());
             Container.RegisterType<IProductContentResolver, ProductContentResolver>();
 
             Container.RegisterType<IFreezeService, FreezeService>();
             Container.RegisterType<IValidationService, ValidationService>();
 
             Container.RegisterType<IFieldService>("FieldServiceAdapterAlwaysAdmin",
-                new HttpContextLifetimeManager(),
+                GetHttpContextLifeTimeManager(),
                 new InjectionFactory(x => new FieldServiceAdapter(new FieldService(x.Resolve<IConnectionProvider>().GetConnection(), 1), x.Resolve<IConnectionProvider>())));
 
             Container.RegisterType<ITransaction>(new InjectionFactory(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>())));
@@ -75,7 +91,7 @@ namespace QA.Core.DPC.Loader.Container
                         new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
                             c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>())));
 
-            Container.RegisterType<IDBConnector, DBConnectorProxy>(new HttpContextLifetimeManager());
+            Container.RegisterType<IDBConnector, DBConnectorProxy>(GetHttpContextLifeTimeManager());
 
             Container.RegisterType<IRegionService>("RegionServiceFakeUser",
                     new InjectionFactory(c => new RegionService(Container.Resolve<IVersionedCacheProvider>(),

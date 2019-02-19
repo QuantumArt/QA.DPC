@@ -39,5 +39,6 @@ namespace QA.Core.DPC.QP.Services
         public bool QPMode => throw new NotImplementedException();
 
         public bool UseQPMonitoring => throw new NotImplementedException();
+        public TimeSpan TransactionTimeout => throw new NotImplementedException();
     }
 }

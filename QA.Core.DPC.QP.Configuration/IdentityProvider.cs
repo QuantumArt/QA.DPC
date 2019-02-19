@@ -12,11 +12,12 @@ namespace QA.Core.DPC.QP.Services
             get
             {
                 var identity = Thread.CurrentPrincipal.Identity as Identity;
-
+#if !NETSTANDARD
                 if (identity == null && HttpContext.Current != null)
                 {
                     identity = HttpContext.Current.User?.Identity as Identity;
                 }
+#endif                
 
                 return identity;
             }
@@ -25,11 +26,13 @@ namespace QA.Core.DPC.QP.Services
             {
                 var principal = new GenericPrincipal(value, new string[0]);
 
+#if !NETSTANDARD
                 if (HttpContext.Current != null)
                 {
                     
                     HttpContext.Current.User = principal;
                 }
+#endif
 
                 Thread.CurrentPrincipal = principal;
             }

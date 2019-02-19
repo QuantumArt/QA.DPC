@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net471</TargetFramework>
+    <TargetFrameworks>net471;netstandard2.0</TargetFrameworks>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
@@ -15,16 +15,21 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <DefineConstants>NETSTANDARD</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
+    <Reference Include="System.Web" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
-    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.5.11" />
     <PackageReference Include="Quantumart.AspNetCore" Version="3.3.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
     <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
-    <PackageReference Include="Unity" Version="5.8.13" />
+    <PackageReference Include="Unity" Version="5.9.4" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />

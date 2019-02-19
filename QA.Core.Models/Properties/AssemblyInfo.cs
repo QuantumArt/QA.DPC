@@ -1,21 +1,10 @@
-﻿using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
+#if NETSTANDARD
+using Portable.Xaml.Markup;
+#else
 using System.Windows.Markup;
+#endif
 
-[assembly: AssemblyTitle("QA.Core.Models")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("QA.Core.Models")]
-[assembly: AssemblyCopyright("Copyright ©  2014")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-[assembly: ComVisible(false)]
-[assembly: Guid("34e66442-e80e-4d8f-a7f2-3668b75c7d31")]
-
-[assembly: AssemblyVersion("1.0.0.0")]
 [assembly: XmlnsDefinition("http://artq.com/configuration", "QA.Core.Models")]
 [assembly: XmlnsDefinition("http://artq.com/configuration", "QA.Core.Models.Configuration")]
 [assembly: XmlnsDefinition("http://artq.com/configuration", "QA.Core.Models.ConceptModel")]

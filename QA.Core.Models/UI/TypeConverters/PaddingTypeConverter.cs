@@ -1,5 +1,4 @@
-﻿using QA.Core.Extensions;
-using System;
+﻿using System;
 using System.ComponentModel;
 
 namespace QA.Core.Models.UI.TypeConverters
@@ -27,7 +26,7 @@ namespace QA.Core.Models.UI.TypeConverters
           
             if (value is string)
             {              
-                var components = ((string)value).SplitString(';', ' ');
+                var components = ((string)value).Split(new []{ ';', ' '}, StringSplitOptions.RemoveEmptyEntries);
                 Rectangle result = new Rectangle(components);
                 return result;
             }

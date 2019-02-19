@@ -75,7 +75,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
                 // AppDataProductControlProvider does not cache reads from disk
                 .RegisterType<IProductControlProvider, AppDataProductControlProvider>();
 
-            container.RegisterType<CustomActionService>(new InjectionFactory(c => new CustomActionService(c.Resolve<IConnectionProvider>().GetConnection(), 1)));
+            container.RegisterFactory<CustomActionService>(c => new CustomActionService(c.Resolve<IConnectionProvider>().GetConnection(), 1));
 
             container.RegisterType<IRegionTagReplaceService, RegionTagService>();
             container.RegisterType<IRegionService, RegionService>();
@@ -90,7 +90,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             // регистрируем типы для MVC
             container.RegisterType<IControllerActivator, IdentityControllerActivator>(new ContainerControlledLifetimeManager());
 
-            container.RegisterType<TaskRunnerEntities>(new InjectionFactory(c => new TaskRunnerEntities(c.Resolve<IConnectionProvider>().GetEFConnection(Service.Actions))));
+            container.RegisterFactory<TaskRunnerEntities>(c => new TaskRunnerEntities(c.Resolve<IConnectionProvider>().GetEFConnection(Service.Actions)));
             container.RegisterType<ITaskService, TaskService>(new InjectionConstructor(typeof(TaskRunnerEntities)));
 
             container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
@@ -104,9 +104,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
             container.RegisterType<IProductChangeSubscriber, RelevanceUpdaterOnProductChange>("RelevanceUpdaterOnProductChange");
 
 
-            container.RegisterType<IProductChangeNotificator>(
-		        new ContainerControlledLifetimeManager(),
-		        new InjectionFactory(x =>
+            container.RegisterFactory<IProductChangeNotificator>(x =>
 		        {
 					var notificator = new ProductChangeNotificator(x.Resolve<ILogger>());
 
@@ -114,7 +112,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Start
 
 
 			        return notificator;
-		        }));
+		        }, new ContainerControlledLifetimeManager());
 
 			container.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			container.AddNewExtension<FormattersContainerConfiguration>();

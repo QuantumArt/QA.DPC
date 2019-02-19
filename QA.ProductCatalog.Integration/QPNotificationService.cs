@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.ServiceModel;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models;
@@ -23,13 +25,21 @@ namespace QA.ProductCatalog.Integration
         private readonly Func<string, IArticleFormatter> _getFormatter;
         private readonly IProductLocalizationService _localizationService;
         private readonly IIdentityProvider _identityProvider;
+        private readonly IntegrationProperties _integrationProperties;
 
-        public QPNotificationService(IContentProvider<NotificationChannel> channelProvider, Func<string, IArticleFormatter> getFormatter, IProductLocalizationService localizationService, IIdentityProvider identityProvider)
+        public QPNotificationService(
+            IContentProvider<NotificationChannel> channelProvider, 
+            Func<string, IArticleFormatter> getFormatter, 
+            IProductLocalizationService localizationService, 
+            IIdentityProvider identityProvider,
+            IOptions<IntegrationProperties> integrationProps
+        )
         {
             _channelProvider = channelProvider;
             _getFormatter = getFormatter;
             _localizationService = localizationService;
             _identityProvider = identityProvider;
+            _integrationProperties = integrationProps.Value;
         }
 
         protected override void OnInitializeClient(object service)
@@ -75,7 +85,9 @@ namespace QA.ProductCatalog.Integration
 
         private int[] PushProducts(Article[] products, bool isStage, string userName, int userId, string method, bool localize, bool autopublish, string[] forcedСhannels)
         {
-            var service = new NotificationServiceClient();
+            var myBinding = new BasicHttpBinding();
+            var myEndpoint = new EndpointAddress(_integrationProperties.WcfNotificationUrl);
+            var service = new NotificationServiceClient(myBinding, myEndpoint);
             var notifications = GetNotifications(products, isStage, forcedСhannels, localize, autopublish);
             if (notifications == null)
             {
@@ -93,7 +105,10 @@ namespace QA.ProductCatalog.Integration
 
         private async Task<int[]> PushProductsAsync(Article[] products, bool isStage, string userName, int userId, string method, bool localize, bool autopublish, string[] forcedСhannels)
         {
-            var service = new NotificationServiceClient();
+            
+            var myBinding = new BasicHttpBinding();
+            var myEndpoint = new EndpointAddress(_integrationProperties.WcfNotificationUrl);
+            var service = new NotificationServiceClient(myBinding, myEndpoint);
             var notifications = GetNotifications(products, isStage, forcedСhannels, localize, autopublish);
 
             if (notifications == null)

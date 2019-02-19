@@ -14,17 +14,8 @@ namespace QA.Core.ProductCatalog.Actions.Services
 
         public Transaction(IConnectionProvider connectionProvider, ILogger logger)
         {
-            TimeSpan timeout;
-            var connectionString = connectionProvider.GetConnection();
-            string configTimeout = ConfigurationManager.AppSettings["ProductCatalog.Actions.TransactionTimeout"];
-
-            if (!TimeSpan.TryParse(configTimeout, out timeout))
-            {
-                timeout = TimeSpan.FromMinutes(3);
-            }
-
             _transactionScope = new TransactionScope(TransactionScopeOption.Required,
-                new TransactionOptions { Timeout = timeout, IsolationLevel = IsolationLevel.ReadUncommitted });
+                new TransactionOptions { Timeout = connectionProvider.TransactionTimeout, IsolationLevel = IsolationLevel.ReadUncommitted });
             var current = QPConnectionScope.Current;
 
             if (current != null && current.DbConnection != null)
@@ -32,7 +23,7 @@ namespace QA.Core.ProductCatalog.Actions.Services
                 logger.Error("Попытка создать транзакцию на существующем подключении к БД. Статус подключения: " + current.DbConnection.State);
             }
 
-            _connectionScope = new QPConnectionScope(connectionString);
+            _connectionScope = new QPConnectionScope(connectionProvider.GetConnection());
         }
 
         #region ITransaction implementation

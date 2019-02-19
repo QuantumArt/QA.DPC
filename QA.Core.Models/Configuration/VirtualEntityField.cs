@@ -1,6 +1,10 @@
 ﻿using QA.Core.Models.Tools;
 using System.Linq;
+#if NETSTANDARD
+using Portable.Xaml.Markup;
+#else
 using System.Windows.Markup;
+#endif
 
 namespace QA.Core.Models.Configuration
 {

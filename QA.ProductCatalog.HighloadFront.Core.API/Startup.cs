@@ -11,6 +11,7 @@ using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using Polly.Registry;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.DI;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
@@ -43,6 +44,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             var opts3 = new DataOptions();
             Configuration.Bind("Data", opts3);
             services.AddSingleton(opts3);
+            
+            var opts4 = new TaskRunnerDelays();
+            Configuration.Bind("ReindexDelays", opts4);
+            services.AddSingleton(opts4);
             
             services.AddSingleton(new PolicyRegistry());
             

@@ -1,6 +1,10 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+#if !NETSTANDARD
 using System.Xaml;
+#else
+using Portable.Xaml;
+#endif
 using QA.Core.Models.Configuration;
 using QA.ProductCatalog.Infrastructure;
 

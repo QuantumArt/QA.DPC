@@ -7,8 +7,10 @@ using QA.ProductCatalog.Infrastructure;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+#if !NETSTANDARD
 using System.Web;
 using System.Web.Http.Routing;
+#endif
 using System.Xml.Linq;
 using System.Xml.XPath;
 using QA.ProductCatalog.ContentProviders;
@@ -30,12 +32,20 @@ namespace QA.Core.DPC.Formatters.Services
             _productContentResolver = productContentResolver;
         }
 
+#if !NETSTANDARD
 		public Task<Article> Read(Stream stream)
 		{
 			var context = HttpContext.Current;
 			return Task.Run<Article>(() => ReadProduct(stream, context));
 		}
+#else		
+		public Task<Article> Read(Stream stream)
+		{
+			return Task.Run<Article>(() => ReadProduct(stream));
+		}	
+#endif
 
+#if !NETSTANDARD
         public Article ReadProduct(Stream stream, HttpContext context)
         {
             var subroutes = ((IHttpRouteData[])context.Request.RequestContext.RouteData.Values["MS_SubRoutes"]).FirstOrDefault();
@@ -58,6 +68,17 @@ namespace QA.Core.DPC.Formatters.Services
 
             return ReadProduct(productXml, definition);
         }
+#else
+        public Article ReadProduct(Stream stream)
+        {
+            var productXml = XDocument.Load(stream);
+            Content definition = null;
+            var type = GetTypeName(productXml);
+            var contentId = _productContentResolver.GetContentIdByType(type);
+            definition = _contentDefinitionService.GetDefinitionForContent(0, contentId);
+            return ReadProduct(productXml, definition);
+        }
+#endif
 
         private string GetTypeName(XDocument productXml)
         {

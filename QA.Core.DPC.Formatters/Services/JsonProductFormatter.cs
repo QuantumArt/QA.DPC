@@ -9,8 +9,10 @@ using QA.ProductCatalog.Infrastructure;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+#if !NETSTANDARD
 using System.Web;
 using System.Web.Http.Routing;
+#endif
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Formatters.Services
@@ -31,6 +33,7 @@ namespace QA.Core.DPC.Formatters.Services
             _productContentResolver = productContentResolver;
         }
 
+        #if !NETSTANDARD
         public async Task<Article> Read(Stream stream)
         {
             using (var reader = new StreamReader(stream))
@@ -57,19 +60,39 @@ namespace QA.Core.DPC.Formatters.Services
                 return _jsonProductService.DeserializeProduct(line, definition);
             }
         }
+#else
+        public async Task<Article> Read(Stream stream)
+        {
+            using (var reader = new StreamReader(stream))
+            {
+                var line = await reader.ReadToEndAsync();
+                var type = GetTypeName(line);
+                var contentId = _productContentResolver.GetContentIdByType(type);
+                var definition = _contentDefinitionService.GetDefinitionForContent(0, contentId);
+                return _jsonProductService.DeserializeProduct(line, definition);
+            }
+        }
+#endif
 
         private string GetTypeName(string product)
         {
             var json = JsonConvert.DeserializeObject<JObject>(product);
             return json.SelectToken("product.Type")?.Value<string>();
         }
-
+        
+#if !NETSTANDARD        
         public async Task Write(Stream stream, Article product)
 		{
 			var articleFilter = (IArticleFilter)HttpContext.Current.Items["ArticleFilter"];
 			bool includeRegionTags = (bool)HttpContext.Current.Items["includeRegionTags"];
 			await this.WriteAsync(stream, product, articleFilter, includeRegionTags);
 		}
+#else
+        public async Task Write(Stream stream, Article product)
+		{
+			await this.WriteAsync(stream, product, null, false);
+		}
+#endif
 
 		public string Serialize(Article product, IArticleFilter filter, bool includeRegionTags)
 			{

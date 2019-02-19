@@ -25,7 +25,7 @@ namespace QA.Scheduler.Core.Configuration
 
 			foreach (var service in services)
 			{
-				Container.RegisterType<Func<IUnityContainer>>(service, new InjectionFactory(parent =>
+				Container.RegisterFactory<Func<IUnityContainer>>(service, parent =>
 				{
 					Func<IUnityContainer> factory = () =>
 					{
@@ -40,20 +40,20 @@ namespace QA.Scheduler.Core.Configuration
 						{
 						}
 
-						container.RegisterType<ILogger>(new InjectionFactory(c => c.Resolve<ILogger>(service)));
-						container.RegisterType<ServiceDescriptor>(new InjectionFactory(c => c.Resolve<ServiceDescriptor>(service)));
-						container.RegisterType<IScheduler>(new HierarchicalLifetimeManager(), new InjectionFactory(c => new Scheduler(c.Resolve<IEnumerable<IProcessor>>(), c.Resolve<ILogger>())));
-						Container.RegisterType<IEnumerable<IProcessor>>(new InjectionFactory(c =>
+						container.RegisterFactory<ILogger>(c => c.Resolve<ILogger>(service));
+						container.RegisterFactory<ServiceDescriptor>(c => c.Resolve<ServiceDescriptor>(service));
+						container.RegisterFactory<IScheduler>(c => new Scheduler(c.Resolve<IEnumerable<IProcessor>>(), c.Resolve<ILogger>()), new HierarchicalLifetimeManager());
+						Container.RegisterFactory<IEnumerable<IProcessor>>(c =>
 							from d in descriptors
 							where d.Service == service
 							select new ScheduledProcessor(c.Resolve<Func<IProcessor>>(d.Processor), c.Resolve<Func<ISchedule>>(d.Schedule))
-						));
+						);
 
 						return container;
 					};
 
 					return factory;
-				}));
+				});
 			}
 		}
 	}

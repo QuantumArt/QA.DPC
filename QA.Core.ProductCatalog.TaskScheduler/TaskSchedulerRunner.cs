@@ -10,7 +10,7 @@ using Quartz.Spi;
 
 namespace QA.Core.ProductCatalog.TaskScheduler
 {
-    public class TaskSchedulerRunner
+	public class TaskSchedulerRunner
 	{
 		private readonly ISchedulerFactory _schedulerFactory;
 		private readonly Func<ITaskService> _taskServiceFunc;
@@ -58,13 +58,15 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 		{
 			using (var taskService = _taskServiceFunc())
 			{
+				_scheduler.JobFactory = new TaskServiceJobFactory(taskService);
+				
 				var tasks = taskService.GetScheduledTasks();
 
 				foreach (var task in tasks)
 				{
 					var jobKey = GetJobKey(task);
 
-					var existingJob = _scheduler.GetJobDetail(jobKey);
+					var existingJob = _scheduler.GetJobDetail(jobKey).Result;
 
 					var triggerKey = GetTriggerKey(task);
 
@@ -75,7 +77,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 					}
 					else
 					{
-						var existingTriggers = _scheduler.GetTriggersOfJob(existingJob.Key);
+						var existingTriggers = _scheduler.GetTriggersOfJob(existingJob.Key).Result;
 
 						//джоб уже есть но могли изменить триггер
 						if (existingTriggers == null || !existingTriggers.Any(x => x.Key.Equals(triggerKey)))
@@ -91,7 +93,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 
 				var deletedTriggers =
-					_scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup())
+					_scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup()).Result
 						.Where(x => tasks.All(task => !GetTriggerKey(task).Equals(x)))
 						.ToArray();
 
@@ -104,7 +106,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 		{
 			var triggerForJob = CreateTrigger(task);
 
-			var calendar = triggerForJob.CalendarName == null ? null : _scheduler.GetCalendar(triggerForJob.CalendarName);
+			var calendar = triggerForJob.CalendarName == null ? null : _scheduler.GetCalendar(triggerForJob.CalendarName).Result;
 
 			DateTimeOffset? firstFireDateTimeOffset = ((IOperableTrigger)triggerForJob).ComputeFirstFireTimeUtc(calendar);
 
@@ -131,7 +133,9 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 		private static IJobDetail CreateJob(Task task)
 		{
-			return JobBuilder.Create<TaskJob>().WithIdentity(GetJobKey(task)).UsingJobData("SourceTaskId", task.ID).Build();
+			return JobBuilder.Create<TaskJob>().WithIdentity(GetJobKey(task))
+				.UsingJobData("SourceTaskId", task.ID)
+				.Build();
 		}
 
 		private static ITrigger CreateTrigger(Task task)
@@ -168,7 +172,10 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			lock (_stateLocker)
 			{
 				if (_scheduler == null)
-					_scheduler = _schedulerFactory.GetScheduler();
+				{
+					_scheduler = _schedulerFactory.GetScheduler().Result;
+				}
+				
 				else if (_scheduler.IsStarted)
 					throw new Exception("Scheduler already started");
 

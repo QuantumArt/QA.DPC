@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Globalization;
 using System.Linq;
-using QA.Core.Extensions;
 
 namespace QA.Core.Models.UI
 {
@@ -57,7 +56,7 @@ namespace QA.Core.Models.UI
                 return context;
             }
 
-            var array = targetName.SplitString('.').ToList();
+            var array = targetName.Split(new[] {'.'}, StringSplitOptions.RemoveEmptyEntries);
             var value = context;
             foreach (var memberAccess in array)
             {

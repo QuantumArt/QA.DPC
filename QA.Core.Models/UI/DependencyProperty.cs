@@ -11,7 +11,7 @@ namespace QA.Core.Models.UI
 
         static DependencyProperty() { }
 
-        internal static readonly object UnsetValue = new object();
+        public static object UnsetValue = new object();
 
         #region Fields
 

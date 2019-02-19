@@ -16,7 +16,7 @@ namespace QA.Scheduler.Core.Configuration
 
 			foreach (var descriptor in descriptors)
 			{
-				Container.RegisterType<ServiceBase>(descriptor.Name, new InjectionFactory(c => new SchedulerService(c.Resolve<Func<IUnityContainer>>(descriptor.Key), descriptor)));
+				Container.RegisterFactory<ServiceBase>(descriptor.Name, c => new SchedulerService(c.Resolve<Func<IUnityContainer>>(descriptor.Key), descriptor));
 			}
 		}
 	}

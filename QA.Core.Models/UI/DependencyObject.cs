@@ -18,7 +18,7 @@ namespace QA.Core.Models.UI
             _bindings = new Dictionary<DependencyProperty, BindingExression>();
         }
 
-	    public DependencyObject Parent { get; internal set; }
+	    public DependencyObject Parent { get; set; }
 
         public object DataContext
         {

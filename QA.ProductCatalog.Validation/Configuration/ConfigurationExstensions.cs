@@ -26,7 +26,7 @@ namespace QA.ProductCatalog.Validation.Configuration
 
 		public static IUnityContainer RegisterRemoteValidator(this IUnityContainer container, string key, Func<IUnityContainer, IRemoteValidator2[]> factory)		
 		{
-			return container.RegisterType<IRemoteValidator2>(key, new InjectionFactory(c => new RemoteValidatorDecorator(factory(c))));
+			return container.RegisterFactory<IRemoteValidator2>(key, c => new RemoteValidatorDecorator(factory(c)));
 		}
 	}
 }

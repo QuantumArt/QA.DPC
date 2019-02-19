@@ -5,6 +5,7 @@ using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.ContentProviders;
 using System;
 using System.Threading;
+using Microsoft.Extensions.Options;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {

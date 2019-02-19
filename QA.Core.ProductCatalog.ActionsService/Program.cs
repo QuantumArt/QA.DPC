@@ -1,20 +1,25 @@
-﻿using QA.Validation.Xaml.Extensions.Rules;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-using System.ServiceProcess;
-using System.Threading;
+using System.Collections;
+using System.IO;
+using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
+using NLog.Web;
+using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Unity.Microsoft.DependencyInjection;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
-    static class Program
+    public class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        static void Main()
+        public static void Main(string[] args)
         {
+
+            NLog.LogManager.LoadConfiguration("NLogClient.config");
+                
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {
                 var log = new EventLog { Source = "ActionsService" };
@@ -22,56 +27,52 @@ namespace QA.Core.ProductCatalog.ActionsService
                 log.WriteEntry(string.Join(" -> ", ((Exception)e.ExceptionObject).Flat().Select(x => x.Message)), EventLogEntryType.Error);
             };
 
-            var servicesToRun = new ServiceBase[] 
-            { 
-                new ActionsService() 
-            };
+            var host = BuildWebHost(args);
 
-            if (Environment.UserInteractive)
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                RunInteractive(servicesToRun);
+                if (!(Debugger.IsAttached || ((IList)args).Contains("--console")))
+                {
+                    host.RunAsCustomService();
+                }
+                else
+                {
+                    host.Run();
+                }
+
             }
             else
             {
-                ServiceBase.Run(servicesToRun);
+                host.Run();
             }
         }
 
-        private static void RunInteractive(ServiceBase[] servicesToRun)
+        private static IWebHost BuildWebHost(string[] args)
         {
-            Console.WriteLine(@"1");
-            Console.WriteLine();
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("hosting.json", optional: true, reloadOnChange: true)
+                .Build();
+            
+            var builder = WebHost.CreateDefaultBuilder(args)
+                    .UseConfiguration(config)
+                    .ConfigureLogging((hostingContext, logging) =>
+                    {
+                        logging.ClearProviders();
+                        logging.SetMinimumLevel(LogLevel.Trace);
+                        logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                        if (hostingContext.HostingEnvironment.IsDevelopment())
+                        {
+                            logging.AddConsole();
+                            logging.AddDebug();
+                        }
+                    })
+                    .UseNLog()
+                    .UseUnityServiceProvider()
+                    .UseStartup<Startup>()
+                ;
 
-            var onStartMethod = typeof(ServiceBase).GetMethod("OnStart", BindingFlags.Instance | BindingFlags.NonPublic);
-            foreach (var service in servicesToRun)
-            {
-                Console.Write($@"Starting {service.ServiceName}...");
-                onStartMethod.Invoke(service, new object[] { new string[] { } });
-                Console.Write(@"Started");
-            }
-
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine(@"1");
-            Console.ReadKey();
-            Console.WriteLine();
-
-            var onStopMethod = typeof(ServiceBase).GetMethod("OnStop", BindingFlags.Instance | BindingFlags.NonPublic);
-            foreach (var service in servicesToRun)
-            {
-                Console.Write($@"Stopping {service.ServiceName}...");
-                onStopMethod.Invoke(service, null);
-                Console.WriteLine(@"1");
-            }
-
-            Console.WriteLine(@"1");
-            // Keep the console alive for a second to allow the user to see the message.
-            Thread.Sleep(1000);
-        }
-
-        internal static RemoteValidationResult ProceedRemoteValidation()
-        {
-            return new RemoteValidationResult();
+            return builder.Build();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace QA.Scheduler.Core.Configuration
 	{
 		public const string DefaultScheduleName = "NullSchedule";
 
-		public static void RegisterProcessor<T>(this IUnityContainer container, string service, string schedule, LifetimeManager lifetimeManager)
+		public static void RegisterProcessor<T>(this IUnityContainer container, string service, string schedule, ITypeLifetimeManager lifetimeManager)
 		where T : IProcessor
 		{
 			string name = Guid.NewGuid().ToString();
@@ -29,7 +29,7 @@ namespace QA.Scheduler.Core.Configuration
 			container.RegisterProcessor<T>(service, schedule, new TransientLifetimeManager());
 		}
 
-		public static void RegisterProcessor<T>(this IUnityContainer container, string service, TimeSpan interval, LifetimeManager lifetimeManager)
+		public static void RegisterProcessor<T>(this IUnityContainer container, string service, TimeSpan interval, ITypeLifetimeManager lifetimeManager)
 		where T : IProcessor
 		{
 			string schedule = Guid.NewGuid().ToString();
@@ -43,7 +43,7 @@ namespace QA.Scheduler.Core.Configuration
 			container.RegisterProcessor<T>(service, interval, new TransientLifetimeManager());
 		}
 
-		public static void RegisterProcessor<TProcessor, TSchedule>(this IUnityContainer container, string service, LifetimeManager lifetimeManager)
+		public static void RegisterProcessor<TProcessor, TSchedule>(this IUnityContainer container, string service, ITypeLifetimeManager lifetimeManager)
 			where TProcessor : IProcessor
 			where TSchedule : ISchedule
 		{
@@ -72,7 +72,7 @@ namespace QA.Scheduler.Core.Configuration
 			container.RegisterSchedule<T>(name, new HierarchicalLifetimeManager());
 		}
 
-		public static void RegisterSchedule<T>(this IUnityContainer container, string name, LifetimeManager lifetimeManager)
+		public static void RegisterSchedule<T>(this IUnityContainer container, string name, ITypeLifetimeManager lifetimeManager)
 			where T : ISchedule
 		{
 			container.RegisterType<ISchedule, T>(name, lifetimeManager);
@@ -83,16 +83,16 @@ namespace QA.Scheduler.Core.Configuration
 			container.RegisterSchedule(name, interval, new HierarchicalLifetimeManager());
 		}
 
-		public static void RegisterSchedule(this IUnityContainer container, string name, TimeSpan interval, LifetimeManager lifetimeManager)
+		public static void RegisterSchedule(this IUnityContainer container, string name, TimeSpan interval, IFactoryLifetimeManager lifetimeManager)
 		{
-			container.RegisterType<ISchedule>(name, lifetimeManager, new InjectionFactory(c => new IntervalSchedule(interval)));
+			container.RegisterFactory<ISchedule>(name, c => new IntervalSchedule(interval), lifetimeManager);
 		}
 
 		public static void RegisterService(this IUnityContainer container, string key, string name, string description)
 		{
 			var descriptor = new ServiceDescriptor(key, name, description);
 			container.RegisterInstance<ServiceDescriptor>(descriptor.Key, descriptor);
-			container.RegisterType<ILogger>(key, new HierarchicalLifetimeManager(), new InjectionFactory(c => new NLogLogger(key + ".log.config")));
+			container.RegisterFactory<ILogger>(key, c => new NLogLogger(key + ".log.config"), new HierarchicalLifetimeManager());
 		}
 	}
 }

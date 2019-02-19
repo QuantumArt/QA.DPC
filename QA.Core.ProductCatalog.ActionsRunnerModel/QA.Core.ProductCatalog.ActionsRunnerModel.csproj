@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+<Project>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
@@ -25,7 +27,7 @@
     <PackageReference Include="NLog" Version="4.5.11" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="System.Reflection.Emit" Version="4.3.0" />
-    <PackageReference Include="Unity" Version="5.8.13" />
+    <PackageReference Include="Unity" Version="5.9.4" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
     <PackageReference Include="Z.EntityFramework.Classic.Community" Version="7.0.34" />
   </ItemGroup>
@@ -95,4 +97,9 @@
   <ItemGroup>
     <Folder Include="utils" />
   </ItemGroup>
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Target Name="AfterBuild2" AfterTargets="Build">
+    <Message Text="Hi World 1" Importance="high" />
+  </Target>
+
 </Project>

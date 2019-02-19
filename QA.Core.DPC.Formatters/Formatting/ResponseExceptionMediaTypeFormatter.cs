@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD
+using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -45,3 +46,4 @@ namespace QA.Core.DPC.Formatters.Formatting
 		}
 	}
 }
+#endif

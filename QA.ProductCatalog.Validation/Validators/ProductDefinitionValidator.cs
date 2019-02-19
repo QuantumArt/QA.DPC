@@ -1,7 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+#if NETSTANDARD
+using Portable.Xaml;
+#else
 using System.Xaml;
+#endif
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.Models.Configuration;
 using QA.ProductCatalog.Infrastructure;

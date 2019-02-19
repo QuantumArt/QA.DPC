@@ -24,7 +24,11 @@ namespace QA.Core.DPC.Formatters.Services
 
 		public async Task Write(Stream stream, Content schema)
 		{
-			bool includeRegionTags = (bool)HttpContext.Current.Items["includeRegionTags"];
+#if !NETSTANDARD
+			bool includeRegionTags = (bool) HttpContext.Current.Items["includeRegionTags"];
+#else
+			bool includeRegionTags = false;
+#endif
 
 			string data = _jsonProductService.GetSchema(schema, false, includeRegionTags).ToString();
 

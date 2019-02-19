@@ -17,6 +17,8 @@ namespace QA.Core.DPC.QP.Services
         private readonly Service _defaultService;
         public bool QPMode { get; private set; }
         public bool UseQPMonitoring { get; private set; }
+        
+        public TimeSpan TransactionTimeout { get; private set; }
 
         public ConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, Service defaultService)
         {
@@ -27,6 +29,7 @@ namespace QA.Core.DPC.QP.Services
 
             QPMode = GetQPMode() || defaultService == Service.HighloadAPI;
             UseQPMonitoring = GetUseQPMonitoring();
+            TransactionTimeout = GetTransactionTimeout();
 
             if (!QPMode)
             {
@@ -36,16 +39,29 @@ namespace QA.Core.DPC.QP.Services
             }
         }
 
-        public static bool GetQPMode()
+        public bool GetQPMode()
         {
             var qpMode = ConfigurationManager.AppSettings["QPMode"];
             return !string.IsNullOrEmpty(qpMode) && qpMode.ToLower() == "true";
         }
 
-        public static bool GetUseQPMonitoring()
+        public bool GetUseQPMonitoring()
         {
             var useQpMonitoring = ConfigurationManager.AppSettings["UseQPMonitoring"];
             return !string.IsNullOrEmpty(useQpMonitoring) && useQpMonitoring.ToLower() == "true";
+        }
+
+        public TimeSpan GetTransactionTimeout()
+        {
+            TimeSpan timeout;
+            string configTimeout = ConfigurationManager.AppSettings["ProductCatalog.Actions.TransactionTimeout"];
+
+            if (!TimeSpan.TryParse(configTimeout, out timeout))
+            {
+                timeout = TimeSpan.FromMinutes(3);
+            }
+
+            return timeout;
         }
 
         private void AddConnection(Service service, string key)

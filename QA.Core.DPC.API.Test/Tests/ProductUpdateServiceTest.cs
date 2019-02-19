@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Microsoft.Practices.Unity;
+//using Microsoft.Practices.Unity;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.DPC.API.Test.Fakes;
