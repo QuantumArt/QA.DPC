@@ -1,8 +1,25 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка референсной витрины
+
+.DESCRIPTION
+Референсной витрина Dpc.SiteSync это web приложение, содержит опубликованные продукты, опционально историю публикаций.
+Используется для перестройки индексов Elasticsearch и для отслеживания актуальности продуктов.
+
+.EXAMPLE
+  .\InstallConsolidationSiteSync.ps1 -port 8013
+
+.EXAMPLE
+  .\InstallConsolidationSiteSync.ps1 -port 8012 -siteName 'DPC.SiteSync' -useProductVersions $true
+#>
+param(
+    ## Название Dpc.SiteSync
     [Parameter()]
     [String] $siteName ='Dpc.SiteSync',
+    ## Порт Dpc.SiteSync
     [Parameter(Mandatory = $true)]
     [int] $port,
+    ## Флаг версионности (сохраняется история публикаций)
     [Parameter()]
     [bool] $useProductVersions = $false
 )

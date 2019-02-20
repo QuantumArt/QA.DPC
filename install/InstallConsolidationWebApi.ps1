@@ -1,8 +1,24 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка API каталога
+
+.DESCRIPTION
+API каталога Dpc.WebApi предоставляет программный интерфейс для функционала бэкэнда каталога Dpc.Admin
+
+.EXAMPLE
+  .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012 -siteName 'Dpc.WebApi'
+
+.EXAMPLE
+   .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012
+#>
+param(
+    ## Название Dpc.WebApi
     [Parameter()]
     [String] $siteName ='Dpc.WebApi',
+    ## Порт Dpc.WebApi
     [Parameter(Mandatory = $true)]
     [int] $port,
+    ## Порт DPC.NotificationSender
     [Parameter(Mandatory = $true)]
     [int] $notifyPort
 )

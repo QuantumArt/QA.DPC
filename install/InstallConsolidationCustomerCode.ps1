@@ -1,29 +1,55 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Регистрация кастомер кода
+
+.DESCRIPTION
+Регистрирует в QP кастомер код для нового каталога:
+- Развертывается база данных каталога из бэкапа
+- База каталога обновляется до актуального состояния
+- Регистрируется в QP кастомер код каталога
+
+.EXAMPLE
+  .\InstallConsolidationCustomerCode.ps1 -databaseServer 'dbhost' -targetBackupPath 'c:\temp\catalog_consolidation.bak' -customerCode 'catalog_consolidation' -customerLogin 'login' -customerPassword 'pass' -currentSqlPath '\\storage\current.sql' -siteSyncHost 'http://localhost:8013' -syncApiHost 'http://localhost:8015' -elasticsearchHost 'http://node1:9200; http://node2:9200' -adminHost 'http://localhost:89/Dpc.Admin'
+#>
+param(
+    ## Сервер баз данных
     [Parameter(Mandatory = $true)]
     [string] $databaseServer,
+    ## Путь к бэкапу базы каталога
     [Parameter()]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $sourceBackupPath,
+    ## Локальный путь к бэкапу базы каталога на сервере баз данных
     [Parameter(Mandatory = $true)]
     [string] $targetBackupPath,
+    ## Кастомер код каталога
     [Parameter(Mandatory = $true)]
     [string] $customerCode,
+    ## Хост Dpc.SiteSync
     [Parameter(Mandatory = $true)]
     [string] $siteSyncHost,
+    ## Хост Dpc.SyncApi
     [Parameter(Mandatory = $true)]
     [string] $syncApiHost,
+    ## Хост Dpc.Admin
     [Parameter(Mandatory = $true)]
     [string] $adminHost,
+    ## Хост кластера Elasticsearch
     [Parameter(Mandatory = $true)]
     [string] $elasticsearchHost,
+    ## Путь к скрипту актуализации базы данных каталога
     [Parameter(Mandatory = $true)]
     [string] $currentSqlPath,
+    ## Пользователь для коннекта к базе данных каталога
     [Parameter(Mandatory = $true)]
     [String] $customerLogin,
+    ## Пароль для коннекта к базе данных каталога
     [Parameter(Mandatory = $true)]
     [String] $customerPassword,
     [Parameter()]
+    ## Пользователь для сервера баз данных
     [String] $login,
+    ## Пароль для сервера баз данных
     [Parameter()]
     [String] $password
 )

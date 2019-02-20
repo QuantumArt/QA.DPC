@@ -1,10 +1,30 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка HighloadFront
+
+.DESCRIPTION
+HighloadFront каталога это web приложение, для работы с индексами Elasticsearch.
+Устанавливается в двух вариантах:
+- Dpc.SyncApi: Для обновления индексов Elasticsearch
+- Dpc.SearchApi: Для поиска по индексам Elasticsearch
+
+.EXAMPLE
+  .\InstallConsolidationHighloadFront.ps1 -port 8015 -siteName 'Dpc.SyncApi' -сanUpdate $true
+
+.EXAMPLE
+   .\InstallConsolidationHighloadFront.ps1 -port 8014 -siteName 'Dpc.SearchApi' -сanUpdate $false
+#>
+param(
+    ## Название HighloadFront
     [Parameter(Mandatory = $true)]
     [String] $siteName,
+    ## Порт HighloadFront
     [Parameter(Mandatory = $true)]
     [int] $port,
+    ## Флаг возможности обновлять индексы Elasticsearch
     [Parameter(Mandatory = $true)]
     [bool] $canUpdate,
+    ## Таймаут доступа к Elasticsearch
     [Parameter()]
     [int] $timeout = 60
 )

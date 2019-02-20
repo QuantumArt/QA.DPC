@@ -1,18 +1,40 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка сервиса публикации продуктов
+
+.DESCRIPTION
+Cервис публикации продуктов DPC.NotificationSender это win служба для рассылки публикуемых продуктов по витринам
+
+.EXAMPLE
+  .\InstallConsolidationNotificationSender.ps1 -notifyPort 8012 -installRoot 'C:\QA' -source 'C:\Catalog\NotificationsSender'
+
+.EXAMPLE
+  .\InstallConsolidationNotificationSender.ps1 -notifyPort 8012 -installRoot 'C:\QA' -name 'DPC.NotificationSender' -source 'C:\Catalog\NotificationsSender'
+
+#>
+param(
+    ## Алиас DPC.NotificationSender
     [Parameter()]
     [String] $name = 'DPC.NotificationSender',
+    ## Название DPC.NotificationSender
     [Parameter()]
     [String] $displayName = 'DPC Notification Service',
+    ## Описание DPC.NotificationSender
     [Parameter()]
     [String] $description = 'Puts product updates into the DB queue and sends them to the fronts in a failover manner',
+    ## Путь к каталогу установки сервисов каталога
     [Parameter(Mandatory = $true)]
-    [String] $installRoot = 'C:\QA',
+    [String] $installRoot,
+    ## Пользователь от которого будет запущен сервис
     [Parameter()]
     [String] $login = 'NT AUTHORITY\SYSTEM',
+    ## Пароль пользователя
     [Parameter()]
     [String] $password = 'dummy',
+    ## Порт DPC.NotificationSender
     [Parameter(Mandatory = $true)]
     [int] $notifyPort,
+    ## Путь к сервису, откуда он будет установлен
     [Parameter(Mandatory = $true)]
     [String] $source
 )

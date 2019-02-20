@@ -1,55 +1,106 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка каталога
+
+.DESCRIPTION
+В процессе установки каталога:
+- Провдодится валидация параметров и окружения на возможность установки
+- Опционально очищаются ранее установленные компоненты каталога
+- Устанавливаются сервисы:
+    • Dpc.Admin: Бэкэнд каталога
+    • DPC.ActionsService: Сервис выполнения задач
+    • DPC.NotificationSender: Сервис публикации продуктов
+    • Dpc.SiteSync: Референсная витрина
+    • Dpc.SyncApi: Витрина индексации продуктов в Elasticsearch
+    • Dpc.SearchApi: Поиск продуктов по индексам Elasticsearch
+    • Dpc.WebApi: API каталога      
+- Развертывается база данных каталога из бэкапа
+- База каталога обновляется до актуального состояния
+- Регистрируется в QP кастомер код каталога
+
+.EXAMPLE
+  .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
+
+.EXAMPLE
+  .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -sourceBackupPath \\storage\catalog_consolidation.bak -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
+#>
+param(
+    ## Флаг очистки ранее установленных компонент каталога
     [Parameter()]
     [bool] $cleanUp = $true,
+    ## Сервер баз данных
     [Parameter(Mandatory = $true)]
     [string] $databaseServer,
+    ## Путь к бэкапу базы каталога
     [Parameter()]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $sourceBackupPath,
+    ## Локальный путь к бэкапу базы каталога на сервере баз данных
     [Parameter(Mandatory = $true)]
     [string] $targetBackupPath,
+    ## Пользователь для коннекта к базе данных каталога
     [Parameter(Mandatory = $true)]
     [string] $customerLogin,
+    ## Пароль для коннекта к базе данных каталога
     [Parameter(Mandatory = $true)]
     [string] $customerPassword,
+    ## Путь к скрипту актуализации базы данных каталога
     [Parameter(Mandatory = $true)]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $currentSqlPath,
+    ## Кастомер код каталога
     [Parameter(Mandatory = $true)]
-    [string] $customerCode,    
+    [string] $customerCode, 
+    ## Порт DPC.NotificationSender
     [Parameter(Mandatory = $true)]
     [int] $notifyPort,
+    ## Порт Dpc.SiteSync
     [Parameter(Mandatory = $true)]
     [int] $siteSyncPort,
+    ## Порт Dpc.SearchApi
     [Parameter(Mandatory = $true)]
     [int] $searchApiPort,
+    ## Порт Dpc.SyncApi
     [Parameter(Mandatory = $true)]
     [int] $syncApiPort,
+    ## Порт Dpc.WebApi
     [Parameter(Mandatory = $true)]
     [int] $webApiPort,
+    ## Порт бэкэнда QP
     [Parameter(Mandatory = $true)]
     [int] $backendPort,
+    ## Хост кластера Elasticsearch
     [Parameter(Mandatory = $true)]
     [string] $elasticsearchHost,
+    ## Путь к каталогу установки сервисов каталога
     [Parameter(Mandatory = $true)]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $installRoot,
+    ## Флаг версионности на референсной витрине
     [Parameter()]
     [bool] $useProductVersions = $false,
+    ## Название QP
     [Parameter()]
     [string] $qpName = 'QP8',
+    ## Название Dpc.Admin
     [Parameter()]
     [string] $adminName = 'Dpc.Admin',
+    ## Название DPC.ActionsService
     [Parameter()]
     [string] $actionsName = 'DPC.ActionsService',
+    ## Название Dpc.SearchApi
     [Parameter()]
     [string] $searchApiName = 'Dpc.SearchApi',
+    ## Название DPC.NotificationSender
     [Parameter()]
     [string] $notificationsName = 'DPC.NotificationSender',
+    ## Название Dpc.SiteSync
     [Parameter()]
     [string] $siteSyncName = 'Dpc.SiteSync',
+    ## Название Dpc.WebApi
     [Parameter()]
     [string] $webApiName = 'Dpc.WebApi',
+    ## Название Dpc.SyncApi
     [Parameter()]
     [string] $syncApiName = 'Dpc.SyncApi'
 )
@@ -61,9 +112,6 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-$requiredRuintime = '2.2.1'
-$actualRuntime = (dir (Get-Command dotnet).Path.Replace('dotnet.exe', 'shared\Microsoft.NETCore.App')).Name
-If ($actualRuntime -ne $requiredRuintime){ Throw "requared $requiredRuintime NETCore runtime" }
 
 $actionsArtifactName = 'ActionsRunner' 
 $adminArtifactName = 'Admin'
@@ -88,6 +136,9 @@ Import-Module SqlServer
 . (Join-Path $currentPath "Modules\Get-ConnectionString.ps1")
 . (Join-Path $currentPath "Modules\CustomerCode.ps1")
 . (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
+
+$validationPath = Join-Path $currentPath "ValidateConsolidation.ps1"
+Invoke-Expression "$validationPath -NotifyPort $notifyPort -SiteSyncPort $syncApiPort -SearchApiPort $searchApiPort -SyncApiPort $syncApiPort -WebApiPort $webApiPort"
 
 if ($cleanUp){
     $uninstallPath = Join-Path $currentPath "UninstallConsolidation.ps1"

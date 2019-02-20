@@ -1,18 +1,40 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка сервиса выполнения задач
+
+.DESCRIPTION
+Cервис выполнения задач DPC.ActionsService это win служба для выполнения Custom Actions без блокировки интерфейса бэкэнда и выполнения задач по расписанию
+
+.EXAMPLE
+  .\InstallConsolidationActionsService.ps1 -notifyPort 8012 -installRoot 'C:\QA' -source 'C:\Catalog\ActionsRunner'
+
+.EXAMPLE
+  .\InstallConsolidationActionsService.ps1 -notifyPort 8012 -installRoot 'C:\QA' -name 'DPC.ActionsService' -source 'C:\Catalog\ActionsRunner'
+
+#>
+param(
+    ## Алиас DPC.ActionsService
     [Parameter()]
     [String] $name = 'DPC.ActionsService',
+    ## Название DPC.ActionsService
     [Parameter()]
     [String] $displayName = 'DPC Actions Service',
+    ## Описание DPC.ActionsService
     [Parameter()]
     [String] $description = 'Run long tasks for DPC with updating progress',
+    ## Путь к каталогу установки сервисов каталога
     [Parameter(Mandatory = $true)]
     [String] $installRoot,
+    ## Пользователь от которого будет запущен сервис
     [Parameter()]
     [String] $login = 'NT AUTHORITY\SYSTEM',
+    ## Пароль пользователя
     [Parameter()]
     [String] $password = 'dummy',
+    ## Порт DPC.NotificationSender
     [Parameter(Mandatory = $true)]
     [int] $notifyPort,
+    ## Путь к сервису, откуда он будет установлен
     [Parameter(Mandatory = $true)]    
     [String] $source
 )

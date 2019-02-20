@@ -1,12 +1,38 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Удаление ранее установленных компонент каталога
+
+.DESCRIPTION
+В процессе удуления
+- Для всех сервисов каталога:
+    • сервис останавливается
+    • удаляются его файлы
+- Для всех вею приложений каталога:
+    • удаляется web приложение из IIS
+    • удаляется его файлы
+- Удаляется кастомер код каталога из QP
+
+.EXAMPLE
+  .\UninstallConsolidation.ps1 -customerCode 'catalog_consolidation' -installRoot 'C:\QA' -admin 'Dpc.Admin' -notificationSender 'DPC.NotificationSender' -actionsService 'DPC.ActionsService' -siteSync 'Dpc.SiteSync' -webApi 'Dpc.WebApi' -syncApi 'Dpc.SyncApi' -searchApi 'Dpc.SearchApi'
+#>
+param(
+    ## Название DPC.NotificationSender
     [String] $notificationSender = 'DPC.NotificationSender',
+    ## Название DPC.ActionsService
     [String] $actionsService = 'DPC.ActionsService',
+    ## Название Dpc.Admin
     [String] $admin = 'Dpc.Admin',
+    ## Название Dpc.SiteSync
     [String] $siteSync = 'Dpc.SiteSync',
+    ## Название Dpc.WebApi
     [String] $webApi = 'Dpc.WebApi',
+    ## Название Dpc.SyncApi
     [String] $syncApi = 'Dpc.SyncApi',
+    ## Название Dpc.SearchApi
     [String] $searchApi = 'Dpc.SearchApi',
+    ## Путь к каталогу установки сервисов каталога
     [String] $installRoot = 'C:\QA',
+    ## Кастомер код каталога
     [string] $customerCode
 )
 
@@ -33,6 +59,7 @@ function DeleteService
             Write-Output "* stoping $name"
             $s.Stop()
             $s.WaitForStatus("Stopped", "00:03:00")
+            Start-Sleep -s 10
             Write-Output "* stoped"
         }
 
