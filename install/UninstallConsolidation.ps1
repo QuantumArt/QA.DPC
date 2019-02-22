@@ -30,6 +30,8 @@ param(
     [String] $syncApi = 'Dpc.SyncApi',
     ## Название Dpc.SearchApi
     [String] $searchApi = 'Dpc.SearchApi',
+    ## Название QP
+    [string] $qpName = 'QP8',
     ## Путь к каталогу установки сервисов каталога
     [String] $installRoot = 'C:\QA',
     ## Кастомер код каталога
@@ -114,7 +116,7 @@ function DeleteSite
 
 DeleteService -name $notificationSender -installRoot $installRoot
 DeleteService -name $actionsService -installRoot $installRoot
-DeleteSite -qp "QP8" -name $admin
+DeleteSite -qp $qpName -name $admin
 DeleteSite -name $siteSync
 DeleteSite -name $webApi
 DeleteSite -name $syncApi

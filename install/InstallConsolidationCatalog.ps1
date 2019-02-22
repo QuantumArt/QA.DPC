@@ -112,11 +112,8 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     Break
 }
 
-
 $actionsArtifactName = 'ActionsRunner' 
-$adminArtifactName = 'Admin'
 $notificationsArtifactName = 'NotificationsSender'
-$installArtifactName = 'Install'
 $highloadFrontArtifactName = 'HighloadFront'
 $siteSyncArtifactName = 'Front'
 $webApiArtifactName = 'WebApi'
@@ -138,13 +135,15 @@ Import-Module SqlServer
 . (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
 
 $validationPath = Join-Path $currentPath "ValidateConsolidation.ps1"
-Invoke-Expression "$validationPath -NotifyPort $notifyPort -SiteSyncPort $syncApiPort -SearchApiPort $searchApiPort -SyncApiPort $syncApiPort -WebApiPort $webApiPort"
+Invoke-Expression "$validationPath -DatabaseServer '$databaseServer'"
 
 if ($cleanUp){
     $uninstallPath = Join-Path $currentPath "UninstallConsolidation.ps1"
-    $params = "-CustomerCode '$customerCode' -InstallRoot '$installRoot' -Admin '$adminName' -NotificationSender '$notificationsName' -ActionsService '$actionsName' -SiteSync '$siteSyncName' -WebApi '$webApiName' -SyncApi '$syncApiName' -SearchApi '$searchApiName'"
+    $params = "-CustomerCode '$customerCode' -InstallRoot '$installRoot' -Admin '$adminName' -NotificationSender '$notificationsName' -ActionsService '$actionsName' -SiteSync '$siteSyncName' -WebApi '$webApiName' -SyncApi '$syncApiName' -SearchApi '$searchApiName' -QpName '$qpName'"
     Invoke-Expression "$uninstallPath $params"
 }
+
+Invoke-Expression "$validationPath -NotifyPort $notifyPort -SiteSyncPort $syncApiPort -SearchApiPort $searchApiPort -SyncApiPort $syncApiPort -WebApiPort $webApiPort"
 
 $installAdminiPath = Join-Path $currentPath "InstallConsolidationAdmin.ps1"
 Invoke-Expression "$installAdminiPath -NotifyPort $notifyPort -SyncPort $syncApiPort -Admin '$adminName' -Qp '$qpName'"

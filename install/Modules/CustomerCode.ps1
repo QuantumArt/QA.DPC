@@ -18,10 +18,14 @@ function Get-QPConfigurationPath
         $registryPath = "Registry::HKLM\Software\Quantum Art\Q-Publishing"
     }
 
-    $item = Get-ItemProperty -Path $registryPath
-    return $item."Configuration file"
-}
+    $item = Get-ItemProperty -Path $registryPath -ErrorAction SilentlyContinue
+    $path = $item."Configuration file"
 
+    if ([string]::IsNullOrEmpty($path)) { throw "QP is not installed" }
+    if (-not(Test-Path $path))  { throw "QP configuration $path is missing" }
+
+    return $path
+}
 
 function Get-CustomerCode
 {
@@ -74,7 +78,7 @@ function Add-CustomerCode
 
   $configurationPath = Get-QPConfigurationPath  
   [xml]$xml = Get-Content $configurationPath  
-  $customers = $xml.configuration.customers
+  $customers = $xml.SelectSingleNode('/configuration/customers')
 
   if ($customers)
   {
@@ -132,7 +136,7 @@ function Remove-CustomerCode
 
   $configurationPath = Get-QPConfigurationPath  
   [xml]$xml = Get-Content $configurationPath  
-  $customers = $xml.configuration.customers
+  $customers = $xml.SelectSingleNode('/configuration/customers')
 
   if ($customers)
   {

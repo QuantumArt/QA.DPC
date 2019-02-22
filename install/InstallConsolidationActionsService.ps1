@@ -49,7 +49,10 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 $projectName = "QA.Core.ProductCatalog.ActionsService"
 $installPath = Join-Path $installRoot $name
 
-Invoke-Expression "InstallService.ps1 -Name '$name' -DisplayName '$displayName' -Description '$description' -ProjectName '$projectName' -InstallRoot '$installRoot' -source '$source' -login '$login' -password '$password' -start `$false"
+
+$currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
+$InstallServicePath = Join-Path $currentPath "InstallService.ps1"
+Invoke-Expression "$InstallServicePath -Name '$name' -DisplayName '$displayName' -Description '$description' -ProjectName '$projectName' -InstallRoot '$installRoot' -source '$source' -login '$login' -password '$password' -start `$false"
 
 $nLogPath = Join-Path $installPath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath
