@@ -19,6 +19,9 @@
 - Регистрируется в QP кастомер код каталога
 
 .EXAMPLE
+  .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -backendPort 89
+
+.EXAMPLE
   .\InstallConsolidationCatalog.ps1 -databaseServer dbhost -targetBackupPath c:\temp\catalog_consolidation.bak -customerLogin login -customerPassword pass -currentSqlPath \\storage\current.sql  -installRoot C:\QA  -elasticsearchHost 'http://node1:9200; http://node2:9200' -customerCode catalog_consolidation -notifyPort 8012 -siteSyncPort 8013 -searchApiPort 8014 -syncApiPort 8015 -webApiPort 8016  -backendPort 89
 
 .EXAMPLE
@@ -36,8 +39,8 @@ param(
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $sourceBackupPath,
     ## Локальный путь к бэкапу базы каталога на сервере баз данных
-    [Parameter(Mandatory = $true)]
-    [string] $targetBackupPath,
+    [Parameter()]
+    [string] $targetBackupPath = 'c:\temp\catalog_consolidation.bak',
     ## Пользователь для коннекта к базе данных каталога
     [Parameter()]
     [string] $customerLogin,
@@ -45,27 +48,27 @@ param(
     [Parameter()]
     [string] $customerPassword,
     ## Путь к скрипту актуализации базы данных каталога
-    [Parameter(Mandatory = $true)]
+    [Parameter()]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $currentSqlPath,
     ## Кастомер код каталога
     [Parameter(Mandatory = $true)]
     [string] $customerCode, 
     ## Порт DPC.NotificationSender
-    [Parameter(Mandatory = $true)]
-    [int] $notifyPort,
+    [Parameter()]
+    [int] $notifyPort = 8012,
     ## Порт Dpc.SiteSync
-    [Parameter(Mandatory = $true)]
-    [int] $siteSyncPort,
+    [Parameter()]
+    [int] $siteSyncPort = 8013,
     ## Порт Dpc.SearchApi
-    [Parameter(Mandatory = $true)]
-    [int] $searchApiPort,
+    [Parameter()]
+    [int] $searchApiPort = 8014,
     ## Порт Dpc.SyncApi
-    [Parameter(Mandatory = $true)]
-    [int] $syncApiPort,
+    [Parameter()]
+    [int] $syncApiPort = 8015,
     ## Порт Dpc.WebApi
-    [Parameter(Mandatory = $true)]
-    [int] $webApiPort,
+    [Parameter()]
+    [int] $webApiPort = 8016,
     ## Порт бэкэнда QP
     [Parameter(Mandatory = $true)]
     [int] $backendPort,
@@ -124,6 +127,22 @@ $adminHost = "${env:COMPUTERNAME}:$backendPort/$adminName"
 
 $currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
+
+if (-not $currentSqlPath){
+    $path = Join-Path $currentPath "current.sql"
+    if (Test-Path $path){
+        $currentSqlPath = $path
+    }else{
+        throw "currentSqlPath is not found on $path"
+    }
+}
+
+if (-not $sourceBackupPath){
+    $path = Join-Path $currentPath "catalog_consolidation.bak"
+    if (Test-Path $path){
+        $sourceBackupPath = $path;
+    }
+}
 
 Import-Module WebAdministration
 Import-Module SqlServer
