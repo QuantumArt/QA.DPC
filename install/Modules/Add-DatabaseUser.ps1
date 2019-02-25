@@ -16,6 +16,9 @@ function Add-DatabaseUser
     .PARAMETER userName
     Database user to be added
 
+     .PARAMETER userName
+    Database user password to be added
+
     .PARAMETER login
     Database server login
 
@@ -30,6 +33,8 @@ function Add-DatabaseUser
     [string] $databaseName,
     [Parameter(Mandatory = $true)]
     [string] $userName,
+    [Parameter(Mandatory = $true)]
+    [string] $userPassword,
     [Parameter()]
     [String] $login,
     [Parameter()]
@@ -39,7 +44,18 @@ function Add-DatabaseUser
   Import-Module -Name SqlServer
 
   $connectionString = Get-ConnectionString -ServerInstance $databaseServer -DatabaseName $databaseName -Username $login -Password $password
-  $query = 
+
+  $loginQuery = 
+  "IF NOT EXISTS(SELECT NULL FROM [master].[dbo].[syslogins] WHERE [Name] = '$userName' )
+    BEGIN
+      CREATE LOGIN $userName WITH PASSWORD = N'$userPassword', DEFAULT_DATABASE = master, DEFAULT_LANGUAGE = US_ENGLISH
+      ALTER LOGIN test_log ENABLE
+      SELECT 1 [val]
+    END
+    ELSE
+      SELECT 0 [val]"
+
+  $userQuery = 
     "IF USER_ID('$userName') IS NULL
       BEGIN
         CREATE USER [$userName] FOR LOGIN [$userName] WITH DEFAULT_SCHEMA=[dbo]
@@ -50,7 +66,14 @@ function Add-DatabaseUser
     GO
     sp_addrolemember 'db_owner', '$userName'"
 
-  $res = Invoke-Sqlcmd -Query $query  -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop
+  $res = Invoke-Sqlcmd -Query $loginQuery -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop
+
+  if ($res.val -eq 1)
+  {
+    Write-Verbose "A database $databaseName login $userName is created"  -Verbose
+  }
+
+  $res = Invoke-Sqlcmd -Query $userQuery -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop
 
   if ($res.val -eq 1)
   {

@@ -116,7 +116,7 @@ if (-not [string]::IsNullOrEmpty($sourceBackupPath))
 
 
 Restore-Database -DatabaseServer $databaseServer -DatabaseName $customerCode -BackupPath $targetBackupPath -Login $login -Password $password
-Add-DatabaseUser -DatabaseServer $databaseServer -DatabaseName $customerCode -UserName $customerLogin -Login $login -Password $password
+Add-DatabaseUser -DatabaseServer $databaseServer -DatabaseName $customerCode -UserName $customerLogin -UserPassword $customerPassword -Login $login -Password $password
 
 $connectionString = Get-ConnectionString -ServerInstance $databaseServer -DatabaseName $customerCode -Username $login -Password $password
 
