@@ -143,31 +143,31 @@ if ($cleanUp){
     Invoke-Expression "$uninstallPath $params"
 }
 
-#Invoke-Expression "$validationPath -NotifyPort $notifyPort -SiteSyncPort $syncApiPort -SearchApiPort $searchApiPort -SyncApiPort $syncApiPort -WebApiPort $webApiPort"
+Invoke-Expression "$validationPath -NotifyPort $notifyPort -SiteSyncPort $syncApiPort -SearchApiPort $searchApiPort -SyncApiPort $syncApiPort -WebApiPort $webApiPort"
 
 $installAdminiPath = Join-Path $currentPath "InstallConsolidationAdmin.ps1"
-#Invoke-Expression "$installAdminiPath -NotifyPort $notifyPort -SyncPort $syncApiPort -Admin '$adminName' -Qp '$qpName'"
+Invoke-Expression "$installAdminiPath -NotifyPort $notifyPort -SyncPort $syncApiPort -Admin '$adminName' -Qp '$qpName'"
 
 $installNotificationSenderPath = Join-Path $currentPath "InstallConsolidationNotificationSender.ps1"
 $source = Join-Path $parentPath $notificationsArtifactName
-#Invoke-Expression "$installNotificationSenderPath -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$notificationsName' -Source '$source'"
+Invoke-Expression "$installNotificationSenderPath -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$notificationsName' -Source '$source'"
 
 $installActionsServicePath = Join-Path $currentPath "InstallConsolidationActionsService.ps1"
 $source = Join-Path $parentPath $actionsArtifactName
-#Invoke-Expression "$installActionsServicePath -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$actionsName' -Source '$source'"
+Invoke-Expression "$installActionsServicePath -NotifyPort $notifyPort -InstallRoot $installRoot -Name '$actionsName' -Source '$source'"
 
 $installSiteSyncPath = Join-Path $currentPath "InstallConsolidationSiteSync.ps1"
 $source = Join-Path $parentPath $siteSyncArtifactName
-#Invoke-Expression "$installSiteSyncPath -Port $siteSyncPort -SiteName '$siteSyncName' -UseProductVersions `$$useProductVersions"
+Invoke-Expression "$installSiteSyncPath -Port $siteSyncPort -SiteName '$siteSyncName' -UseProductVersions `$$useProductVersions"
 
 $installHighloadFrontPath = Join-Path $currentPath "InstallConsolidationHighloadFront.ps1"
 $source = Join-Path $parentPath $highloadFrontArtifactName
-#Invoke-Expression "$installHighloadFrontPath -Port $syncApiPort -SiteName '$syncApiName' -CanUpdate `$$true"
-#Invoke-Expression "$installHighloadFrontPath -Port $searchApiPort -SiteName '$searchApiName' -CanUpdate `$$false"
+Invoke-Expression "$installHighloadFrontPath -Port $syncApiPort -SiteName '$syncApiName' -CanUpdate `$$true"
+Invoke-Expression "$installHighloadFrontPath -Port $searchApiPort -SiteName '$searchApiName' -CanUpdate `$$false"
 
 $installWebApiPath = Join-Path $currentPath "InstallConsolidationWebApi.ps1"
 $source = Join-Path $parentPath $webApiArtifactName
-#Invoke-Expression "$installWebApiPath -Port $webApiPort -SiteName '$webApiName' -NotifyPort $notifyPort"
+Invoke-Expression "$installWebApiPath -Port $webApiPort -SiteName '$webApiName' -NotifyPort $notifyPort"
 
 if (-not $customerLogin){
     $customerLogin = "${customerCode}_Login"
@@ -180,4 +180,4 @@ if (-not $customerPassword){
 $installCustomerCodePath = Join-Path $currentPath "InstallConsolidationCustomerCode.ps1"
 $params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -SiteSyncHost '$siteSyncHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost'"
 if (-not [string]::IsNullOrEmpty($sourceBackupPath)) { $params = "$params -SourceBackupPath '$sourceBackupPath'" }
-#Invoke-Expression "$installCustomerCodePath $params"
+Invoke-Expression "$installCustomerCodePath $params"
