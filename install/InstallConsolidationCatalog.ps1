@@ -133,6 +133,7 @@ Import-Module SqlServer
 . (Join-Path $currentPath "Modules\Get-ConnectionString.ps1")
 . (Join-Path $currentPath "Modules\CustomerCode.ps1")
 . (Join-Path $currentPath "Modules\Get-SiteOrApplication.ps1")
+. (Join-Path $currentPath "Modules\Get-DefaultDatabaseDir.ps1")
 
 $validationPath = Join-Path $currentPath "ValidateConsolidation.ps1"
 Invoke-Expression "$validationPath -DatabaseServer '$databaseServer'"
