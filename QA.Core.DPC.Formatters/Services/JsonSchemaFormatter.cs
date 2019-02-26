@@ -4,17 +4,19 @@ using QA.ProductCatalog.Infrastructure;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace QA.Core.DPC.Formatters.Services
 {
 	public class JsonSchemaFormatter : IFormatter<Content>
 	{
 		private readonly IJsonProductService _jsonProductService;
+		private readonly HttpContext _httpContext;
 
-		public JsonSchemaFormatter(IJsonProductService jsonProductService)
+		public JsonSchemaFormatter(IJsonProductService jsonProductService, IHttpContextAccessor httpContextAccessor)
 		{
 			_jsonProductService = jsonProductService;
+			_httpContext = httpContextAccessor.HttpContext;
 		}
 
 		public Task<Content> Read(Stream stream)
@@ -24,19 +26,18 @@ namespace QA.Core.DPC.Formatters.Services
 
 		public async Task Write(Stream stream, Content schema)
 		{
-#if !NETSTANDARD
-			bool includeRegionTags = (bool) HttpContext.Current.Items["includeRegionTags"];
-#else
-			bool includeRegionTags = false;
-#endif
-
-			string data = _jsonProductService.GetSchema(schema, false, includeRegionTags).ToString();
-
+			var data = Serialize(schema);
 			using (var writer = new StreamWriter(stream))
 			{
 				await writer.WriteAsync(data);
 				await writer.FlushAsync();
 			}
+		}
+
+		public string Serialize(Content schema)
+		{
+			bool includeRegionTags = (bool) _httpContext.Items["includeRegionTags"];
+			return _jsonProductService.GetSchema(schema, false, includeRegionTags).ToString();
 		}
 	}
 }

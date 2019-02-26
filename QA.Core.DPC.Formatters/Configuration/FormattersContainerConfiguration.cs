@@ -40,11 +40,16 @@ namespace QA.Core.DPC.Formatters.Configuration
             Container.RegisterFactory<Func<XmlProductFormatter>>(c => new Func<XmlProductFormatter>(() => c.Resolve<XmlProductFormatter>()));
             Container.RegisterFactory<Func<XamlSchemaFormatter>>(c => new Func<XamlSchemaFormatter>(() => c.Resolve<XamlSchemaFormatter>()));
             Container.RegisterFactory<Func<XamlProductFormatter>>(c => new Func<XamlProductFormatter>(() => c.Resolve<XamlProductFormatter>()));
+
+            Container.RegisterType<XmlProductFormatter>();
+            Container.RegisterType<XamlProductFormatter>();
+            
 #if !NETSTANDARD            
             Container.RegisterFactory<Func<PdfProductFormatter>>(c => new Func<PdfProductFormatter>(() => c.Resolve<PdfProductFormatter>()));
 #endif            
             Container.RegisterFactory<Func<JsonSchemaFormatter>>(c => new Func<JsonSchemaFormatter>(() => c.Resolve<JsonSchemaFormatter>()));
             Container.RegisterFactory<Func<JsonProductFormatter>>(c => new Func<JsonProductFormatter>(() => c.Resolve<JsonProductFormatter>()));
+            Container.RegisterType<JsonProductFormatter>();
             Container.RegisterFactory<Func<BinaryModelFormatter<Article>>>(c => new Func<BinaryModelFormatter<Article>>(() => c.Resolve<BinaryModelFormatter<Article>>()));
             Container.RegisterFactory<Func<BinaryModelFormatter<Content>>>(c => new Func<BinaryModelFormatter<Content>>(() => c.Resolve<BinaryModelFormatter<Content>>()));
         }

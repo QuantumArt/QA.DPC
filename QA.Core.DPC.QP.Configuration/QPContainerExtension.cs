@@ -90,5 +90,13 @@ namespace QA.Core.DPC.QP.Configuration
 
             return builder;
         }
+
+
+        public static FactoryBuilder WithCallback(this FactoryBuilder builder, EventHandler<FactoryWatcherEventArgs> eventHandler)
+        {
+            var watcher = builder.Container.Resolve<IFactoryWatcher>(builder.FactoryName);
+            watcher.OnConfigurationModify += eventHandler; 
+            return builder;
+        }
     }
 }

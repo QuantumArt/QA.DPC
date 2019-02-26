@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Models;
 using QA.Core.ProductCatalog.Actions;
 using Unity;
@@ -38,20 +39,14 @@ namespace QA.Core.ProductCatalog.ActionsService
         {
             services.AddOptions();
             services.AddHttpContextAccessor();
-
-//            services.Configure<ConfigurationOptions>(Configuration);
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
             services.Configure<ActionsServiceProperties>(Configuration.GetSection("Properties"));
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             services.AddSingleton<IHostedService, ActionsService>();
-//
-//            services.AddMemoryCache();
-//
-//            services.AddHttpClient();
+
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
 
         }
 

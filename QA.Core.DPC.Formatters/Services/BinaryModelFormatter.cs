@@ -39,5 +39,10 @@ namespace QA.Core.DPC.Formatters.Services
 				};
 			});
 		}
+
+		public string Serialize(T product)
+		{
+			throw new System.NotImplementedException();
+		}
 	}
 }

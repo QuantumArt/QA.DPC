@@ -1,11 +1,11 @@
 ﻿using QA.Core.DPC.QP.Services;
 using System.Linq;
-using System.Web.Http;
+using Microsoft.AspNetCore.Mvc;
 
 namespace QA.ProductCatalog.WebApi.Controllers
 {
-    [RoutePrefix("statistic")]
-    public class StatisticController : ApiController
+    [Route("statistic")]
+    public class StatisticController : Controller
     {
         private readonly IFactory _factory;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -71,7 +72,16 @@ namespace QA.Core.DPC.Formatters.Services
 
             textWriter.Flush();
 
-            return Task.FromResult(0);
+            return Task.CompletedTask;
+        }
+
+        public string Serialize(Content product)
+        {
+            using (var ms = new MemoryStream())
+            {
+                Write(ms, product);
+                return Encoding.UTF8.GetString(ms.ToArray());
+            }
         }
 
 

@@ -16,6 +16,8 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
         public bool QPMode => throw new NotImplementedException();
 
         public bool UseQPMonitoring => throw new NotImplementedException();
+        
+        public TimeSpan TransactionTimeout => throw new NotImplementedException();
 
         public string GetConnection()
         {

@@ -7,12 +7,10 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-#if !NETSTANDARD
-using System.Web;
-using System.Web.Http.Routing;
-#endif
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Formatters.Services
@@ -23,28 +21,36 @@ namespace QA.Core.DPC.Formatters.Services
 		private readonly IContentDefinitionService _contentDefinitionService;
 	    private readonly ISettingsService _settingsService;
         private readonly IProductContentResolver _productContentResolver;
+        private readonly HttpContext _httpContext;
+        private readonly ActionContext _actionContext;
 
 
-        public JsonProductFormatter(IJsonProductService jsonProductService, IContentDefinitionService contentDefinitionService, ISettingsService settingsService, IProductContentResolver productContentResolver)
+        public JsonProductFormatter(
+	        IJsonProductService jsonProductService, 
+	        IContentDefinitionService contentDefinitionService, 
+	        ISettingsService settingsService, 
+	        IProductContentResolver productContentResolver,
+	        IHttpContextAccessor httpContextAccessor,
+	        IActionContextAccessor actionContextAccessor
+	    )
 		{
 			_jsonProductService = jsonProductService;
 			_contentDefinitionService = contentDefinitionService;
 		    _settingsService = settingsService;
             _productContentResolver = productContentResolver;
-        }
+            _httpContext = httpContextAccessor?.HttpContext;
+            _actionContext = actionContextAccessor?.ActionContext;
+		}
 
-        #if !NETSTANDARD
         public async Task<Article> Read(Stream stream)
         {
             using (var reader = new StreamReader(stream))
             {
                 string line = await reader.ReadToEndAsync();
-                var context = HttpContext.Current;
                 Content definition = null;
 
-                var subroutes = ((IHttpRouteData[])context.Request.RequestContext.RouteData.Values["MS_SubRoutes"]).FirstOrDefault();
-                subroutes.Values.TryGetValue("slug", out object slug);
-                subroutes.Values.TryGetValue("version", out object version);
+                _actionContext.RouteData.Values.TryGetValue("slug", out object slug);
+                _actionContext.RouteData.Values.TryGetValue("version", out object version);
 
                 if (slug == null && version == null)
                 {
@@ -60,19 +66,6 @@ namespace QA.Core.DPC.Formatters.Services
                 return _jsonProductService.DeserializeProduct(line, definition);
             }
         }
-#else
-        public async Task<Article> Read(Stream stream)
-        {
-            using (var reader = new StreamReader(stream))
-            {
-                var line = await reader.ReadToEndAsync();
-                var type = GetTypeName(line);
-                var contentId = _productContentResolver.GetContentIdByType(type);
-                var definition = _contentDefinitionService.GetDefinitionForContent(0, contentId);
-                return _jsonProductService.DeserializeProduct(line, definition);
-            }
-        }
-#endif
 
         private string GetTypeName(string product)
         {
@@ -80,19 +73,19 @@ namespace QA.Core.DPC.Formatters.Services
             return json.SelectToken("product.Type")?.Value<string>();
         }
         
-#if !NETSTANDARD        
         public async Task Write(Stream stream, Article product)
 		{
-			var articleFilter = (IArticleFilter)HttpContext.Current.Items["ArticleFilter"];
-			bool includeRegionTags = (bool)HttpContext.Current.Items["includeRegionTags"];
+			var articleFilter = (IArticleFilter)_httpContext.Items["ArticleFilter"];
+			bool includeRegionTags = (bool)_httpContext.Items["includeRegionTags"];
 			await this.WriteAsync(stream, product, articleFilter, includeRegionTags);
 		}
-#else
-        public async Task Write(Stream stream, Article product)
+		
+		public string Serialize(Article product)
 		{
-			await this.WriteAsync(stream, product, null, false);
+			var articleFilter = (IArticleFilter)_httpContext.Items["ArticleFilter"];
+			bool includeRegionTags = (bool)_httpContext.Items["includeRegionTags"];			
+			return Serialize(product, articleFilter, includeRegionTags);
 		}
-#endif
 
 		public string Serialize(Article product, IArticleFilter filter, bool includeRegionTags)
 			{

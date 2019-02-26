@@ -8,7 +8,7 @@ namespace QA.Core.DPC.QP.Models
         {
             UseQpMonitoring = true;
             QpMode = false;
-            TransactionTimeout = TimeSpan.FromMinutes(10);
+            TransactionTimeout = TimeSpan.FromMinutes(3);
         }
         
         public string DpcConnectionString { get; set; }

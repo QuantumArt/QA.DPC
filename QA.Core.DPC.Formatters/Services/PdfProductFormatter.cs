@@ -49,6 +49,11 @@ namespace QA.Core.DPC.Formatters.Services
 				
 			}
 		}
+
+		public string Serialize(Article product)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
 #endif

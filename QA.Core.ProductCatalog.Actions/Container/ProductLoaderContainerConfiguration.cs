@@ -28,7 +28,6 @@ namespace QA.Core.ProductCatalog.Actions.Container
 			Container.RegisterType<IAdministrationSecurityChecker, FakeAdministrationSecurityChecker>();
 #endif			
 
-			// устанавливаем фальшивый сервис для загрузки модели
 				Container
 				.RegisterType<IXmlProductService, XmlProductService>()
 				.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager())

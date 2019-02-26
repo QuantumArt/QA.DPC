@@ -5,14 +5,12 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
-#if !NETSTANDARD
-using System.Web;
-using System.Web.Http.Routing;
-#endif
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Formatters.Services
@@ -23,34 +21,35 @@ namespace QA.Core.DPC.Formatters.Services
 		private readonly IContentDefinitionService _contentDefinitionService;
 	    private readonly ISettingsService _settingsService;
         private readonly IProductContentResolver _productContentResolver;
+        private readonly HttpContext _httpContext;
+        private readonly ActionContext _actionContext;
 
-        public XmlProductFormatter(IXmlProductService xmlProductService, IContentDefinitionService contentDefinitionService, ISettingsService settingsService, IProductContentResolver productContentResolver)
+        public XmlProductFormatter(
+	        IXmlProductService xmlProductService, 
+	        IContentDefinitionService contentDefinitionService, 
+	        ISettingsService settingsService, 
+	        IProductContentResolver productContentResolver,
+	        IHttpContextAccessor httpContextAccessor,
+	        IActionContextAccessor actionContextAccessor
+	    )
 		{
 			_xmlProductService = xmlProductService;
 			_contentDefinitionService = contentDefinitionService;
 		    _settingsService = settingsService;
             _productContentResolver = productContentResolver;
-        }
-
-#if !NETSTANDARD
-		public Task<Article> Read(Stream stream)
-		{
-			var context = HttpContext.Current;
-			return Task.Run<Article>(() => ReadProduct(stream, context));
+            _httpContext = httpContextAccessor?.HttpContext;
+            _actionContext = actionContextAccessor?.ActionContext;
 		}
-#else		
+
 		public Task<Article> Read(Stream stream)
 		{
 			return Task.Run<Article>(() => ReadProduct(stream));
-		}	
-#endif
+		}
 
-#if !NETSTANDARD
-        public Article ReadProduct(Stream stream, HttpContext context)
+        public Article ReadProduct(Stream stream)
         {
-            var subroutes = ((IHttpRouteData[])context.Request.RequestContext.RouteData.Values["MS_SubRoutes"]).FirstOrDefault();
-            subroutes.Values.TryGetValue("slug", out object slug);
-            subroutes.Values.TryGetValue("version", out object version);
+            _actionContext.RouteData.Values.TryGetValue("slug", out object slug);
+            _actionContext.RouteData.Values.TryGetValue("version", out object version);
 
             var productXml = XDocument.Load(stream);
             Content definition = null;
@@ -68,17 +67,6 @@ namespace QA.Core.DPC.Formatters.Services
 
             return ReadProduct(productXml, definition);
         }
-#else
-        public Article ReadProduct(Stream stream)
-        {
-            var productXml = XDocument.Load(stream);
-            Content definition = null;
-            var type = GetTypeName(productXml);
-            var contentId = _productContentResolver.GetContentIdByType(type);
-            definition = _contentDefinitionService.GetDefinitionForContent(0, contentId);
-            return ReadProduct(productXml, definition);
-        }
-#endif
 
         private string GetTypeName(XDocument productXml)
         {
@@ -93,6 +81,16 @@ namespace QA.Core.DPC.Formatters.Services
 		public async Task Write(Stream stream, Article product)
 		{
 			await this.WriteAsync(stream, product, ArticleFilter.DefaultFilter, true);
+		}
+
+		public Article Read(string data)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		public string Serialize(Article product)
+		{
+			return Serialize(product, ArticleFilter.DefaultFilter, true);
 		}
 
 		public string Serialize(Article product, IArticleFilter filter, bool includeRegionTags)

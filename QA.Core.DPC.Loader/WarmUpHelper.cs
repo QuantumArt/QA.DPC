@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Threading;
-using QA.Core;
-using QA.Core.Logger;
+using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.Infrastructure;
 using Unity;
 
-namespace QA.ProductCatalog.Infrastructure
+namespace QA.Core.DPC.Loader
 {
     public class WarmUpHelper
 	{

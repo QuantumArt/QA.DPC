@@ -1,4 +1,4 @@
-﻿namespace QA.ProductCatalog.Infrastructure
+﻿namespace QA.Core.DPC.QP.Services
 {
 	public interface IWarmUpProvider
 	{

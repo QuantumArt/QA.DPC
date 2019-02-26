@@ -47,7 +47,7 @@ namespace QA.Core.DPC
             unityContainer.RegisterType<QA.ProductCatalog.ContentProviders.IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			unityContainer.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
 			unityContainer.RegisterType<IServiceFactory, ServiceFactory>();
-			unityContainer.RegisterType<ArticleService>(new InjectionFactory(c => c.Resolve<IServiceFactory>().GetArticleService()));
+			unityContainer.RegisterFactory<ArticleService>(c => c.Resolve<IServiceFactory>().GetArticleService());
 			unityContainer.RegisterType<IContextStorage, QpCachedContextStorage>();
             unityContainer.RegisterType<INotificationChannelService, NotificationChannelService>(new ContainerControlledLifetimeManager());
             unityContainer.RegisterType<INotificationService, NotificationService>();
@@ -59,7 +59,9 @@ namespace QA.Core.DPC
 
             var connection = unityContainer.Resolve<IConnectionProvider>();
             var logger = unityContainer.Resolve<ILogger>();
-            unityContainer.RegisterType<NotificationsModelDataContext>(new InjectionFactory(c => new NotificationsModelDataContext(c.Resolve<IConnectionProvider>().GetConnection(QP.Models.Service.Notification))));
+            unityContainer.RegisterFactory<NotificationsModelDataContext>(
+	            c => new NotificationsModelDataContext(c.Resolve<IConnectionProvider>().GetConnection(QP.Models.Service.Notification))
+	         );
 
             var autoRegister = true;
             var watcherInterval = TimeSpan.FromMinutes(1);

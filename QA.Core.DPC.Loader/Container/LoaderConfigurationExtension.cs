@@ -6,17 +6,11 @@ using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
-#if !NETSTANDARD
-using QA.Core.Web;
-#else
-using QA.DPC.Core.Helpers;
-#endif
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using Microsoft.AspNetCore.Http;
 using QA.Core.Web;
 using QA.ProductCatalog.ContentProviders;
@@ -63,8 +57,8 @@ namespace QA.Core.DPC.Loader.Container
                 GetHttpContextLifeTimeManager(),
                 new InjectionFactory(x => new FieldServiceAdapter(new FieldService(x.Resolve<IConnectionProvider>().GetConnection(), 1), x.Resolve<IConnectionProvider>())));
 
-            Container.RegisterType<ITransaction>(new InjectionFactory(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>())));
-            Container.RegisterType<Func<ITransaction>>(new InjectionFactory(c => new Func<ITransaction>(() => c.Resolve<ITransaction>())));
+            Container.RegisterFactory<ITransaction>(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>()));
+            Container.RegisterFactory<Func<ITransaction>>(c => new Func<ITransaction>(() => c.Resolve<ITransaction>()));
 
             Container.RegisterType<IJsonProductService, JsonProductService>();
 
@@ -74,37 +68,42 @@ namespace QA.Core.DPC.Loader.Container
 
             //Фейк юзер нужен для работы ремоут валидации. Также нужны варианты сервисов с фейк-юзером
             Container.RegisterType<IUserProvider, AlwaysAdminUserProvider>(AlwaysAdminUserProviderName);
-            Container.RegisterType<IServiceFactory>("ServiceFactoryFakeUser", new InjectionFactory(c => new ServiceFactory(c.Resolve<IConnectionProvider>(), c.Resolve<IUserProvider>(AlwaysAdminUserProviderName))));
-            Container.RegisterType<ArticleService>("ArticleServiceFakeUser", new InjectionFactory(c => c.Resolve<IServiceFactory>("ServiceFactoryFakeUser").GetArticleService()));
-            Container.RegisterType<IArticleService>("ArticleServiceAdapterFakeUser",
-                new InjectionFactory(c => new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(), c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>())));
+            Container.RegisterFactory<IServiceFactory>(
+                "ServiceFactoryFakeUser", 
+                c => new ServiceFactory(c.Resolve<IConnectionProvider>(), c.Resolve<IUserProvider>(AlwaysAdminUserProviderName))
+            );
+            Container.RegisterFactory<ArticleService>(
+                "ArticleServiceFakeUser", 
+                c => c.Resolve<IServiceFactory>("ServiceFactoryFakeUser").GetArticleService()
+             );
+            Container.RegisterFactory<IArticleService>("ArticleServiceAdapterFakeUser",
+                c => new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(), c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>()));
 
-            Container.RegisterType<IReadOnlyArticleService>(
-                new InjectionFactory(
+            Container.RegisterFactory<IReadOnlyArticleService>(
                     c =>
                         new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
-                            c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>())));
+                            c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>()));
 
-            Container.RegisterType<IReadOnlyArticleService>("CachedReadOnlyArticleServiceAdapter",
-                new InjectionFactory(
+            Container.RegisterFactory<IReadOnlyArticleService>("CachedReadOnlyArticleServiceAdapter",
+                
                     c =>
                         new ArticleServiceAdapter(c.Resolve<ArticleService>("ArticleServiceFakeUser"), c.Resolve<IConnectionProvider>(),
-                            c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>())));
+                            c.Resolve<IContextStorage>(), c.Resolve<IIdentityProvider>()));
 
             Container.RegisterType<IDBConnector, DBConnectorProxy>(GetHttpContextLifeTimeManager());
 
-            Container.RegisterType<IRegionService>("RegionServiceFakeUser",
-                    new InjectionFactory(c => new RegionService(Container.Resolve<IVersionedCacheProvider>(),
+            Container.RegisterFactory<IRegionService>("RegionServiceFakeUser",
+                    c => new RegionService(Container.Resolve<IVersionedCacheProvider>(),
                         Container.Resolve<ISettingsService>(),
-                        Container.Resolve<IConnectionProvider>())));
+                        Container.Resolve<IConnectionProvider>()));
 
-            Container.RegisterType<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin",
-                new InjectionFactory(x => new ContentDefinitionService(
+            Container.RegisterFactory<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin",
+                x => new ContentDefinitionService(
                     x.Resolve<ISettingsService>(),
                     x.Resolve<IVersionedCacheProvider>(),
                     x.Resolve<IArticleService>("ArticleServiceAdapterFakeUser"),
                     x.Resolve<ILogger>(),
-                    x.Resolve<IConnectionProvider>())));
+                    x.Resolve<IConnectionProvider>()));
 
 
             //так как лоадер только читает то нет смысла реальный userId получать и передавать
@@ -125,25 +124,12 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<ILocalizationSettingsService, LocalizationSettingsService>();
             Container.RegisterType<IProductLocalizationService, ProductLocalizationService>();
 
-            Container.RegisterType<IArticleDependencyService>(
-                new InjectionFactory(c => new ArticleDependencyService(
+            Container.RegisterFactory<IArticleDependencyService>(c => new ArticleDependencyService(
                     c.Resolve<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin"),
                     c.Resolve<IServiceFactory>("ServiceFactoryFakeUser"),
                     c.Resolve<IVersionedCacheProvider>(),
                     c.Resolve<ISettingsService>(),
-                    c.Resolve<IConnectionProvider>())));
-
-            if (int.TryParse(ConfigurationManager.AppSettings["LoaderWarmUpProductId"], out var loaderWarmUpProductId))
-            {
-                Container.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>("ProductLoaderWarmUpProvider", 
-                    new InjectionConstructor(typeof(ProductLoader), typeof(ILogger), loaderWarmUpProductId));
-
-                if (int.TryParse(ConfigurationManager.AppSettings["LoaderWarmUpRepeatInMinutes"],
-                    out var loaderWarmUpRepeatInMinutes))
-                {
-                    Container.RegisterInstance(new WarmUpRepeater(loaderWarmUpRepeatInMinutes));
-                }
-            }
+                    c.Resolve<IConnectionProvider>()));
         }
     }
 

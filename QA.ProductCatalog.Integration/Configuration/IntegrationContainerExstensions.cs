@@ -15,8 +15,8 @@ namespace QA.ProductCatalog.Integration.Configuration
     {
         public static void RegisterQpMonitoring(this IUnityContainer container)
         {
-            container.RegisterType<Func<bool, IConsumerMonitoringService>>(
-                new InjectionFactory(x =>
+            container.RegisterFactory<Func<bool, IConsumerMonitoringService>>(
+                x =>
                     new Func<bool, IConsumerMonitoringService>(
                         isLive =>
                         {
@@ -24,30 +24,29 @@ namespace QA.ProductCatalog.Integration.Configuration
                             return new ConsumerMonitoringService(repo);
                         }
                     )
-                )
             );
 
-            container.RegisterType<Func<bool, CultureInfo, IConsumerMonitoringService>>(
-                new InjectionFactory(c => new Func<bool, CultureInfo, IConsumerMonitoringService>(
+            container.RegisterFactory<Func<bool, CultureInfo, IConsumerMonitoringService>>(
+                c => new Func<bool, CultureInfo, IConsumerMonitoringService>(
                     (isLive, culture) =>
                     {
                         var repo = new QpMonitoringRepository(container.Resolve<IConnectionProvider>(), container.Resolve<IArticleFormatter>(), isLive, culture.Name);
                         return new ConsumerMonitoringService(repo);
                     }
-                ))
+                )
             );
 
-            container.RegisterType<IConsumerMonitoringService>(
-                new InjectionFactory(c => c.Resolve<Func<bool, IConsumerMonitoringService>>().Invoke(true)));
+            container.RegisterFactory<IConsumerMonitoringService>(
+               c => c.Resolve<Func<bool, IConsumerMonitoringService>>().Invoke(true));
 
-            container.RegisterType<IList<IConsumerMonitoringService>>(
-                new InjectionFactory(c =>
+            container.RegisterFactory<IList<IConsumerMonitoringService>>(
+                c =>
                     new[] { false, true }
                     .SelectMany(isLive =>
                         c.Resolve<IProductLocalizationService>()
                         .GetCultures()
                         .Select(culture => c.Resolve<Func<bool, CultureInfo, IConsumerMonitoringService>>()(isLive, culture))
-                    ).ToList()));
+                    ).ToList());
         }
 
         public static void RegisterNonQpMonitoring(this IUnityContainer container)
@@ -62,8 +61,8 @@ namespace QA.ProductCatalog.Integration.Configuration
                 container.RegisterInstance<IConnectionProvider>(cnn.Name, new ExplicitConnectionProvider(cnn.ConnectionString));
             }
 
-            container.RegisterType<Func<bool, IConsumerMonitoringService>>(
-                new InjectionFactory(x =>
+            container.RegisterFactory<Func<bool, IConsumerMonitoringService>>(
+                x =>
                     new Func<bool, IConsumerMonitoringService>(
                         isLive =>
                         {
@@ -72,28 +71,27 @@ namespace QA.ProductCatalog.Integration.Configuration
                             return new ConsumerMonitoringService(repo);
                         }
                     )
-                )
             );
 
-            container.RegisterType<IList<IConsumerMonitoringService>>(new InjectionFactory(x =>
+            container.RegisterFactory<IList<IConsumerMonitoringService>>(x =>
                 monitoringConnections
                 .Select(cnn => new ConsumerMonitoringService(new MonitoringRepository(x.Resolve<IConnectionProvider>(cnn.Name))) as IConsumerMonitoringService)
-                .ToList())
+                .ToList()
             );
 
-            container.RegisterType<Func<bool, CultureInfo, IConsumerMonitoringService>>(
-                new InjectionFactory(c => new Func<bool, CultureInfo, IConsumerMonitoringService>(
+            container.RegisterFactory<Func<bool, CultureInfo, IConsumerMonitoringService>>(
+                c => new Func<bool, CultureInfo, IConsumerMonitoringService>(
                     (isLive, culture) =>
                     {
                         var key = (isLive ? "consumer_monitoring" : "consumer_monitoringStage") + culture.Name;
                         var repo = new MonitoringRepository(container.Resolve<IConnectionProvider>(key));
                         return new ConsumerMonitoringService(repo);
                     }
-                ))
+                )
             );
 
-            container.RegisterType<IConsumerMonitoringService>(
-                new InjectionFactory(c => c.Resolve<Func<bool, IConsumerMonitoringService>>().Invoke(true)));
+            container.RegisterFactory<IConsumerMonitoringService>(
+                c => c.Resolve<Func<bool, IConsumerMonitoringService>>().Invoke(true));
         }
     }
 }

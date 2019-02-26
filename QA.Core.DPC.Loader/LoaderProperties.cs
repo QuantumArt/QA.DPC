@@ -1,4 +1,4 @@
-namespace QA.Core.ProductCatalog.Actions
+namespace QA.Core.DPC.Loader
 {
     public class LoaderProperties
     {
@@ -12,6 +12,12 @@ namespace QA.Core.ProductCatalog.Actions
         public SettingsSource SettingsSource{ get; set; }
         
         public DefaultSerializer DefaultSerializer { get; set; }
+        
+        
+        public int LoaderWarmUpProductId { get; set; }
+        
+        public int LoaderWarmUpRepeatInMinutes { get; set; }
+        
     }
     
     

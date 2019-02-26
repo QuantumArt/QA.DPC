@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Web.Http.Routing;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {
-    public class MediaTypeMappingConstraint : IHttpRouteConstraint
+    public class MediaTypeMappingConstraint : IRouteConstraint
     {
-        public bool Match(HttpRequestMessage request, IHttpRoute route, string parameterName, IDictionary<string, object> values, HttpRouteDirection routeDirection)
+        public bool Match(HttpContext httpContext, IRouter route, string routeKey, RouteValueDictionary values,
+            RouteDirection routeDirection)
         {
-            if (values.TryGetValue(parameterName, out object value))
+            if (values.TryGetValue(routeKey, out object value))
             {
                 return WebApiConfig.MappingsValues.Any(v => v.Equals(value));
             }

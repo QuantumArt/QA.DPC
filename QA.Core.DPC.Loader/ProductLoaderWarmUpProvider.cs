@@ -1,9 +1,7 @@
-﻿using System;
-using System.Diagnostics;
-using QA.Core.Cache;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
-using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Loader
@@ -11,27 +9,31 @@ namespace QA.Core.DPC.Loader
     public class ProductLoaderWarmUpProvider : IWarmUpProvider
 	{
 		private readonly ProductLoader _productLoader;
-		private readonly int _productIdToLoad;
+		private readonly LoaderProperties _props;
 		private readonly ILogger _logger;
 		
 
-		public ProductLoaderWarmUpProvider(ProductLoader productLoader, ILogger logger, int productIdToLoad)
+		public ProductLoaderWarmUpProvider(ProductLoader productLoader, ILogger logger, IOptions<LoaderProperties> props)
 		{
 			_productLoader = productLoader;
-			_productIdToLoad = productIdToLoad;
+			_props = props.Value;
 			_logger = logger;
 		}
 
 		public void WarmUp()
 		{
-			_logger.Info($"Warming up with product {_productIdToLoad} started.");
+			if (_props.LoaderWarmUpProductId != 0)
+			{
+				_logger.Info($"Warming up with product {_props.LoaderWarmUpProductId} started.");
 
-			var sw = new Stopwatch();
-			sw.Start();
-			_productLoader.GetProductById(_productIdToLoad);
-			sw.Stop();
+				var sw = new Stopwatch();
+				sw.Start();
+				_productLoader.GetProductById(_props.LoaderWarmUpProductId);
+				sw.Stop();
 			
-			_logger.Info($"Warming up with product {_productIdToLoad} finished. Took {sw.Elapsed.TotalSeconds} sec.");
+				_logger.Info($"Warming up with product {_props.LoaderWarmUpProductId} finished. Took {sw.Elapsed.TotalSeconds} sec.");			
+			}
+
 		}
 	}
 }

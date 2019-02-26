@@ -61,6 +61,12 @@ namespace QA.Core.DPC.Formatters.Services
 
             await Task.Yield();
 		}
+
+		public string Serialize(Content product)
+		{
+			throw new NotImplementedException();
+		}
+
 		#endregion
 
 		#region Private methods

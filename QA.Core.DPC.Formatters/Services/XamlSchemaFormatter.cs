@@ -22,6 +22,16 @@ namespace QA.Core.DPC.Formatters.Services
 		{
 			return Task.Run(() => XamlServices.Save(stream, product));
 		}
+
+		public string Serialize(Content product)
+		{
+			using (var stream = new MemoryStream())
+			{
+				XamlServices.Save(stream, product);
+				return new StreamReader(stream).ReadToEnd();
+			}
+		}
+
 		#endregion
 	}
 }

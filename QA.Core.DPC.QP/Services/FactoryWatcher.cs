@@ -14,7 +14,6 @@ namespace QA.Core.DPC.QP.Services
         private readonly IFactory _factory;
         private readonly ICustomerProvider _customerProvider;
         private readonly ILogger _logger;
-
         public event EventHandler<FactoryWatcherEventArgs> OnConfigurationModify;
 
         public FactoryWatcher(TimeSpan interval, IFactory factory, ICustomerProvider customerProvider, ILogger logger)

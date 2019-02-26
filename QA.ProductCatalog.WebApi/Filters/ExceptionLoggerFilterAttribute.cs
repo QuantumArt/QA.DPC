@@ -1,26 +1,26 @@
-﻿using System.Web.Http.Filters;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
 using QA.Core.Logger;
 
 namespace QA.ProductCatalog.WebApi.Filters
 {
     public class ExceptionLoggerFilterAttribute : ExceptionFilterAttribute
 	{
-		private readonly ILogger _loggeer;
+		private readonly ILogger _logger;
 
-		public ExceptionLoggerFilterAttribute(ILogger loggeer)
+		public ExceptionLoggerFilterAttribute(ILogger logger)
 		{
-			_loggeer = loggeer;
+			_logger = logger;
 		}
 
-		public override void OnException(HttpActionExecutedContext context)
+		public override void OnException(ExceptionContext context)
 		{
 			var description = new
 			{
-				controller = context.ActionContext.ControllerContext.ControllerDescriptor.ControllerName,
-				action = context.ActionContext.ActionDescriptor.ActionName
+				controller = context.RouteData.Values["controller"],
+				action = context.RouteData.Values["action"]
 			};
 
-			_loggeer.ErrorException(description.ToString(), context.Exception);
+			_logger.ErrorException(description.ToString(), context.Exception);
 		}
 	}
 }
