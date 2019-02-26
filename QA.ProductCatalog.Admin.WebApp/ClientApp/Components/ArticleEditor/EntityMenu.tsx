@@ -1,9 +1,10 @@
 import React, { ReactNode } from "react";
-import { Button, Menu, MenuItem, Intent, Popover, Position, Icon } from "@blueprintjs/core";
+import { Button, Menu, MenuItem, Intent, Popover, Icon, PopoverPosition } from "@blueprintjs/core";
 import "./ArticleEditor.scss";
 
 interface EntityMenuProps {
   small?: boolean;
+  autoPosition?: boolean;
   onSave?: (e: any) => void;
   onDetach?: (e: any) => void;
   onRemove?: (e: any) => void;
@@ -17,6 +18,7 @@ interface EntityMenuProps {
 /** Выпадающее меню действий со статьей */
 export const EntityMenu = ({
   small,
+  autoPosition,
   onSave,
   onDetach,
   onRemove,
@@ -26,7 +28,10 @@ export const EntityMenu = ({
   onPublish,
   children
 }: EntityMenuProps) => (
-  <Popover position={Position.BOTTOM_RIGHT} interactionKind="hover">
+  <Popover
+    position={autoPosition ? PopoverPosition.AUTO : PopoverPosition.BOTTOM_RIGHT}
+    interactionKind="hover"
+  >
     <Button minimal small={small} icon="caret-down" intent={Intent.PRIMARY}>
       Действия
     </Button>

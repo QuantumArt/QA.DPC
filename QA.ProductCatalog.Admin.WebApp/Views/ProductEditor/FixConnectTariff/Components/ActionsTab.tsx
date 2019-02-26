@@ -257,6 +257,7 @@ export class ActionsTab extends Component<ActionsTabTabProps> {
         {...props}
         vertical
         renderAllTabs
+        autoPositionMenu
         titleField={deviceTitleField}
         displayField={deviceDisplayField}
         fieldOrders={["MarketingDevice", "Parent"]}
