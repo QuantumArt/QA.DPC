@@ -1,10 +1,40 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Удаление ранее установленных компонент каталога
+
+.DESCRIPTION
+В процессе удуления
+- Для всех сервисов каталога:
+    • сервис останавливается
+    • удаляются его файлы
+- Для всех вею приложений каталога:
+    • удаляется web приложение из IIS
+    • удаляется его файлы
+- Удаляется кастомер код каталога из QP
+
+.EXAMPLE
+  .\UninstallConsolidation.ps1 -customerCode 'catalog_consolidation' -installRoot 'C:\QA' -admin 'Dpc.Admin' -notificationSender 'DPC.NotificationSender' -actionsService 'DPC.ActionsService' -siteSync 'Dpc.SiteSync' -webApi 'Dpc.WebApi' -syncApi 'Dpc.SyncApi' -searchApi 'Dpc.SearchApi'
+#>
+param(
+    ## Название DPC.NotificationSender
     [String] $notificationSender = 'DPC.NotificationSender',
+    ## Название DPC.ActionsService
     [String] $actionsService = 'DPC.ActionsService',
+    ## Название Dpc.Admin
     [String] $admin = 'Dpc.Admin',
+    ## Название Dpc.SiteSync
     [String] $siteSync = 'Dpc.SiteSync',
+    ## Название Dpc.WebApi
     [String] $webApi = 'Dpc.WebApi',
+    ## Название Dpc.SyncApi
+    [String] $syncApi = 'Dpc.SyncApi',
+    ## Название Dpc.SearchApi
+    [String] $searchApi = 'Dpc.SearchApi',
+    ## Название QP
+    [string] $qpName = 'QP8',
+    ## Путь к каталогу установки сервисов каталога
     [String] $installRoot = 'C:\QA',
+    ## Кастомер код каталога
     [string] $customerCode
 )
 
@@ -31,6 +61,7 @@ function DeleteService
             Write-Output "* stoping $name"
             $s.Stop()
             $s.WaitForStatus("Stopped", "00:03:00")
+            Start-Sleep -s 10
             Write-Output "* stoped"
         }
 
@@ -58,23 +89,32 @@ function DeleteSite
   param(
      [string] $qp,
      [string] $name
-  )
-
+  )  
 
   if ($qp){
     $alias = "IIS:\sites\$qp\$name"
+    $poolAlias = Get-Item "IIS:\AppPools\$qp.$name"
   }
   else{
     $alias = "IIS:\sites\$name"
+    $poolAlias = Get-Item "IIS:\AppPools\$name"
   }
   
   $app = Get-Item $alias -ErrorAction SilentlyContinue
+  $pool = Get-Item $poolAlias -ErrorAction SilentlyContinue
 
   if ($app) {      
     $path =  $app.PhysicalPath
 
-    Remove-Item $alias -Recurse -Force
+    Remove-Item $alias -Recurse -Force    
     Write-Output "$qp\$name deleted"
+
+    if ($pool){
+        Remove-Item $poolAlias -Recurse -Force
+        Write-Output "pool $poolAlias deleted"
+    }
+
+    Start-Sleep -s 10
 
     if (Test-Path $path){
         Remove-Item $path -Recurse
@@ -85,7 +125,10 @@ function DeleteSite
 
 DeleteService -name $notificationSender -installRoot $installRoot
 DeleteService -name $actionsService -installRoot $installRoot
-DeleteSite -qp "QP8" -name $admin
+DeleteSite -qp $qpName -name $admin
 DeleteSite -name $siteSync
 DeleteSite -name $webApi
+DeleteSite -name $syncApi
+DeleteSite -name $searchApi
+
 Remove-CustomerCode -CustomerCode $customerCode

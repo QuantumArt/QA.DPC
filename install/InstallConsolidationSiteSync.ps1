@@ -1,6 +1,27 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка референсной витрины
+
+.DESCRIPTION
+Референсной витрина Dpc.SiteSync это web приложение, содержит опубликованные продукты, опционально историю публикаций.
+Используется для перестройки индексов Elasticsearch и для отслеживания актуальности продуктов.
+
+.EXAMPLE
+  .\InstallConsolidationSiteSync.ps1 -port 8013
+
+.EXAMPLE
+  .\InstallConsolidationSiteSync.ps1 -port 8012 -siteName 'DPC.SiteSync' -useProductVersions $true
+#>
+param(
+    ## Название Dpc.SiteSync
+    [Parameter()]
     [String] $siteName ='Dpc.SiteSync',
-    [int] $port = 92
+    ## Порт Dpc.SiteSync
+    [Parameter(Mandatory = $true)]
+    [int] $port,
+    ## Флаг версионности (сохраняется история публикаций)
+    [Parameter()]
+    [bool] $useProductVersions = $false
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -45,7 +66,7 @@ $webConfigPath = Join-Path $sitePath "web.config"
 
 $appsettings = Get-Content -Path $appsettingsPath  | ConvertFrom-Json
 
-$appsettings.Data | Add-Member -Name "UseProductVersions" -Value $False -MemberType NoteProperty
+$appsettings.Data | Add-Member -Name "UseProductVersions" -Value $useProductVersions -MemberType NoteProperty
 
 Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
 $appsettings | ConvertTo-Json | Set-Content -Path $appsettingsPath
