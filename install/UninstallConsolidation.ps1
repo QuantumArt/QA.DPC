@@ -89,23 +89,32 @@ function DeleteSite
   param(
      [string] $qp,
      [string] $name
-  )
-
+  )  
 
   if ($qp){
     $alias = "IIS:\sites\$qp\$name"
+    $poolAlias = Get-Item "IIS:\AppPools\$qp.$name"
   }
   else{
     $alias = "IIS:\sites\$name"
+    $poolAlias = Get-Item "IIS:\AppPools\$name"
   }
   
   $app = Get-Item $alias -ErrorAction SilentlyContinue
+  $pool = Get-Item $poolAlias -ErrorAction SilentlyContinue
 
   if ($app) {      
     $path =  $app.PhysicalPath
 
-    Remove-Item $alias -Recurse -Force
+    Remove-Item $alias -Recurse -Force    
     Write-Output "$qp\$name deleted"
+
+    if ($pool){
+        Remove-Item $poolAlias -Recurse -Force
+        Write-Output "pool $poolAlias deleted"
+    }
+
+    Start-Sleep -s 10
 
     if (Test-Path $path){
         Remove-Item $path -Recurse

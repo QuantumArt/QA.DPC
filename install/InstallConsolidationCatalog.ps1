@@ -189,14 +189,6 @@ $installWebApiPath = Join-Path $currentPath "InstallConsolidationWebApi.ps1"
 $source = Join-Path $parentPath $webApiArtifactName
 Invoke-Expression "$installWebApiPath -Port $webApiPort -SiteName '$webApiName' -NotifyPort $notifyPort"
 
-if (-not $customerLogin){
-    $customerLogin = "${customerCode}_Login"
-}
-if (-not $customerPassword){
-
-    $customerPassword = New-Guid
-}
-
 $installCustomerCodePath = Join-Path $currentPath "InstallConsolidationCustomerCode.ps1"
 $params = "-DatabaseServer '$databaseServer' -TargetBackupPath '$targetBackupPath' -CustomerCode '$customerCode' -CustomerLogin '$customerLogin' -CustomerPassword '$customerPassword' -CurrentSqlPath '$currentSqlPath' -SiteSyncHost '$siteSyncHost' -SyncApiHost '$syncApiHost' -ElasticsearchHost '$elasticsearchHost' -AdminHost '$adminHost'"
 if (-not [string]::IsNullOrEmpty($sourceBackupPath)) { $params = "$params -SourceBackupPath '$sourceBackupPath'" }

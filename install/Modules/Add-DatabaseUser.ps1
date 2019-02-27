@@ -16,8 +16,11 @@ function Add-DatabaseUser
     .PARAMETER userName
     Database user to be added
 
-     .PARAMETER userName
+    .PARAMETER userPassword
     Database user password to be added
+
+    .PARAMETER resetUserPassword
+    Reset database user password if user exists
 
     .PARAMETER login
     Database server login
@@ -36,6 +39,8 @@ function Add-DatabaseUser
     [Parameter(Mandatory = $true)]
     [string] $userPassword,
     [Parameter()]
+    [string] $resetUserPassword = $false,
+    [Parameter()]
     [String] $login,
     [Parameter()]
     [String] $password
@@ -45,15 +50,26 @@ function Add-DatabaseUser
 
   $connectionString = Get-ConnectionString -ServerInstance $databaseServer -DatabaseName $databaseName -Username $login -Password $password
 
+  if ($resetUserPassword){
+    $resetPasswordQuery = "
+    ALTER LOGIN $userName WITH PASSWORD = N'$userPassword'
+    ALTER LOGIN $userName ENABLE
+    SELECT 2 [val]"
+  } else {
+    $resetPasswordQuery = "SELECT 0 [val]"
+  }
+
   $loginQuery = 
   "IF NOT EXISTS(SELECT NULL FROM [master].[dbo].[syslogins] WHERE [Name] = '$userName' )
     BEGIN
       CREATE LOGIN $userName WITH PASSWORD = N'$userPassword', DEFAULT_DATABASE = master, DEFAULT_LANGUAGE = US_ENGLISH
-      ALTER LOGIN test_log ENABLE
+      ALTER LOGIN $userName ENABLE
       SELECT 1 [val]
     END
     ELSE
-      SELECT 0 [val]"
+    BEGIN
+      $resetPasswordQuery
+    END"
 
   $userQuery = 
     "IF USER_ID('$userName') IS NULL
@@ -71,6 +87,11 @@ function Add-DatabaseUser
   if ($res.val -eq 1)
   {
     Write-Verbose "A database $databaseName login $userName is created"  -Verbose
+  }
+
+  if ($res.val -eq 2)
+  {
+    Write-Verbose "A database $databaseName login $userName password is reseted" -Verbose
   }
 
   $res = Invoke-Sqlcmd -Query $userQuery -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop

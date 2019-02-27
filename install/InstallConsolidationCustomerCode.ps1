@@ -41,10 +41,10 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $currentSqlPath,
     ## Пользователь для коннекта к базе данных каталога
-    [Parameter(Mandatory = $true)]
+    [Parameter()]
     [String] $customerLogin,
     ## Пароль для коннекта к базе данных каталога
-    [Parameter(Mandatory = $true)]
+    [Parameter()]
     [String] $customerPassword,
     [Parameter()]
     ## Пользователь для сервера баз данных
@@ -97,6 +97,17 @@ if(Get-CustomerCode -CustomerCode $customerCode)
     return
 }
 
+$resetUserPassword = $false
+
+if (-not $customerLogin){
+    $resetUserPassword = $true
+    $customerLogin = "consolidation_${customerCode}_login"
+}
+if (-not $customerPassword){
+
+    $customerPassword = New-Guid
+}
+
 if (-not [string]::IsNullOrEmpty($sourceBackupPath))
 {
     $sharedTargetBackupPath =  "\\" + $databaseServer.Trim() + "\" + $targetBackupPath.Replace(":", "$")
@@ -111,12 +122,12 @@ if (-not [string]::IsNullOrEmpty($sourceBackupPath))
         throw $_.Exception
     }
 
-    Write-Verbose "Backup copied"
+    Write-Verbose "Backup copied" -Verbose
 }
 
 
 Restore-Database -DatabaseServer $databaseServer -DatabaseName $customerCode -BackupPath $targetBackupPath -Login $login -Password $password
-Add-DatabaseUser -DatabaseServer $databaseServer -DatabaseName $customerCode -UserName $customerLogin -UserPassword $customerPassword -Login $login -Password $password
+Add-DatabaseUser -DatabaseServer $databaseServer -DatabaseName $customerCode -UserName $customerLogin -UserPassword $customerPassword -ResetUserPassword $resetUserPassword -Login $login -Password $password
 
 $connectionString = Get-ConnectionString -ServerInstance $databaseServer -DatabaseName $customerCode -Username $login -Password $password
 
