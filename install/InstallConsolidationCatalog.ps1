@@ -105,7 +105,10 @@ param(
     [string] $webApiName = 'Dpc.WebApi',
     ## Название Dpc.SyncApi
     [Parameter()]
-    [string] $syncApiName = 'Dpc.SyncApi'
+    [string] $syncApiName = 'Dpc.SyncApi',
+    ## Путь к файлу логов
+    [Parameter()]
+    [string]$logPath = $false
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -113,6 +116,10 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
     $arguments = "& '" + $myinvocation.mycommand.definition + "'"
     Start-Process powershell -Verb runAs -ArgumentList $arguments
     Break
+}
+
+if ($logPath){
+    Start-Transcript -Path $logPath -Append
 }
 
 $actionsArtifactName = 'ActionsRunner' 
