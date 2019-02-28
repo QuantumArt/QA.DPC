@@ -23,6 +23,7 @@ using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.Loader;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
+using Swashbuckle.AspNetCore.Swagger;
 using Unity;
 
 namespace QA.ProductCatalog.WebApi
@@ -68,6 +69,11 @@ namespace QA.ProductCatalog.WebApi
                 .AddMvc(options => { SetupMvcOptions(options, sp); } )
                 .AddXmlSerializerFormatters()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
            
         }
         
@@ -82,8 +88,17 @@ namespace QA.ProductCatalog.WebApi
             {
                 app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);
             }
+            
+            app.UseSwagger();
 
-            app.UseMvc();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
+            app.UseMvcWithDefaultRoute();
         }
 
         private static void SetupMvcOptions(MvcOptions options, ServiceProvider sp)
