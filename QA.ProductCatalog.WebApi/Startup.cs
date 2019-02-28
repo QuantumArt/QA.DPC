@@ -1,7 +1,9 @@
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -72,7 +74,16 @@ namespace QA.ProductCatalog.WebApi
             
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.SwaggerDoc("v1", new Info
+                {
+                    Title = "DPC Web API", 
+                    Version = "v1",
+                    Description = "This API allows to manipulate products: get schemas, perform CRUD operations"
+                });
+                
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                c.IncludeXmlComments(xmlPath);
             });
            
         }
@@ -95,7 +106,7 @@ namespace QA.ProductCatalog.WebApi
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "DPC Web API");
             });
 
             app.UseMvcWithDefaultRoute();
@@ -103,50 +114,128 @@ namespace QA.ProductCatalog.WebApi
 
         private static void SetupMvcOptions(MvcOptions options, ServiceProvider sp)
         {
-            options.FormatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.XmlMappingValue,
-                MediaTypeHeaderValue.Parse(WebApiConfig.XmlMediaType));
-            options.FormatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.JsonMappingValue,
-                MediaTypeHeaderValue.Parse(WebApiConfig.JsonMediaType));
-            options.FormatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.PdfMappingValue,
-                MediaTypeHeaderValue.Parse(WebApiConfig.PdfMediaType));
-            options.FormatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.XamlMappingValue,
-                MediaTypeHeaderValue.Parse(WebApiConfig.XamlMediaType));
-            options.FormatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.JsonDefinitionMappingValue,
-                MediaTypeHeaderValue.Parse(WebApiConfig.JsonDefinitionMediaType));
-            options.FormatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.JsonDefinition2MappingValue,
-                MediaTypeHeaderValue.Parse(WebApiConfig.JsonDefinition2MediaType));
-            options.FormatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.BinaryMappingValue,
-                MediaTypeHeaderValue.Parse(WebApiConfig.BinaryMediaType));
-            
-            var jsonOutputFormatter = options.OutputFormatters.OfType<JsonOutputFormatter>().FirstOrDefault();
+            RegisterMediaTypes(options.FormatterMappings);
+            RegisterOutputFormatters(options.OutputFormatters);
+            RegisterInputFormatters(options.InputFormatters);
+        }
+        
+        private static void RegisterInputFormatters(FormatterCollection<IInputFormatter> formatters)
+        {
+            formatters.Insert(0,
+                new ModelMediaTypeInputFormatter<Article, JsonProductFormatter>(WebApiConfig.JsonMediaType));
+            formatters.Insert(0,
+                new ModelMediaTypeInputFormatter<Article, XmlProductFormatter>(WebApiConfig.XmlMediaType));
+            formatters.Insert(0,
+                new ModelMediaTypeInputFormatter<Article, XamlProductFormatter>(WebApiConfig.XamlMediaType));
+
+                            
+            formatters.Add(new BinaryInputFormatter(WebApiConfig.BinaryMediaType));
+
+        }
+
+        private static void RegisterOutputFormatters(FormatterCollection<IOutputFormatter> formatters)
+        {
+            var jsonOutputFormatter = RemoveDefaultJsonOutputFormatter(formatters);
+
+            RegisterArticleOutputFormatters(formatters);
+
+            RegisterContentOutputFormatters(formatters);
+
+            RegisterAuxOutputFormatters(formatters);
+
+            RestoreDefaultJsonOutputFormatter(formatters, jsonOutputFormatter);
+        }
+
+        private static void RestoreDefaultJsonOutputFormatter(FormatterCollection<IOutputFormatter> formatters, JsonOutputFormatter jsonOutputFormatter)
+        {
             if (jsonOutputFormatter != null)
             {
-                options.OutputFormatters.Remove(jsonOutputFormatter);
+                formatters.Add(jsonOutputFormatter);
             }
+        }
+
+        private static JsonOutputFormatter RemoveDefaultJsonOutputFormatter(FormatterCollection<IOutputFormatter> formatters)
+        {
+            var jsonOutputFormatter = formatters.OfType<JsonOutputFormatter>().FirstOrDefault();
+            if (jsonOutputFormatter != null)
+            {
+                formatters.Remove(jsonOutputFormatter);
+            }
+
+            return jsonOutputFormatter;
+        }
+
+        private static void RegisterAuxOutputFormatters(FormatterCollection<IOutputFormatter> formatters)
+        {
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<
+                    Dictionary<string, object>[], XmlDataContractFormatter<Dictionary<string, object>[]>
+                >(WebApiConfig.XmlMediaType)
+            );
+
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<
+                    IEnumerable<Article>, JsonProductArrayFormatter
+                >(WebApiConfig.JsonMediaType)
+            );
             
-            options.OutputFormatters.Add(new ModelMediaTypeOutputFormatter<Article, XmlProductFormatter>(WebApiConfig.XmlMediaType));
-            options.OutputFormatters.Add(new ModelMediaTypeOutputFormatter<Article, XamlProductFormatter>(WebApiConfig.XamlMediaType));            
-            options.OutputFormatters.Add(new ModelMediaTypeOutputFormatter<Article, JsonProductFormatter>(WebApiConfig.JsonMediaType));
-#if !NETSTANDARD
-            options.OutputFormatters.Add(new ModelMediaTypeOutputFormatter<Article, PdfProductFormatter>(WebApiConfig.PdfMediaType));
-#endif
-            options.OutputFormatters.Add(new ModelMediaTypeOutputFormatter<IEnumerable<Article>, JsonProductArrayFormatter>(WebApiConfig.JsonMediaType));
-            options.OutputFormatters.Add(new ModelMediaTypeOutputFormatter<Content, XamlSchemaFormatter>(WebApiConfig.XamlMediaType));
-            options.OutputFormatters.Add(new ModelMediaTypeOutputFormatter<Content, XmlSchemaFormatter>(WebApiConfig.XmlMediaType));
-            options.OutputFormatters.Add(new ModelMediaTypeOutputFormatter<Content, JsonSchemaFormatter>(WebApiConfig.JsonMediaType));
-            options.OutputFormatters.Add(
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<
+                    IEnumerable<Article>, XmlDataContractFormatter<IEnumerable<Article>>
+                >(WebApiConfig.XmlMediaType)
+            );
+            
+            formatters.Add(new BinaryOutputFormatter(WebApiConfig.BinaryMediaType));
+        }
+
+        private static void RegisterContentOutputFormatters(FormatterCollection<IOutputFormatter> formatters)
+        {
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<Content, XamlSchemaFormatter>(WebApiConfig.XamlMediaType));
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<Content, XmlSchemaFormatter>(WebApiConfig.XmlMediaType));
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<Content, JsonSchemaFormatter>(WebApiConfig.JsonMediaType));
+            formatters.Add(
                 new ModelMediaTypeOutputFormatter<Content, JsonDefinitionSchemaFormatter>(
                     WebApiConfig.JsonDefinitionMediaType)
-                );
-            options.OutputFormatters.Add(
+            );
+            formatters.Add(
                 new ModelMediaTypeOutputFormatter<Content, JsonDefinitionSchemaClassifiersAsBackwardsFormatter>(
                     WebApiConfig.JsonDefinition2MediaType)
-                );
+            );
+        }
 
-            if (jsonOutputFormatter != null)
-            {
-                options.OutputFormatters.Add(jsonOutputFormatter);             
-            }
+        private static void RegisterArticleOutputFormatters(FormatterCollection<IOutputFormatter> formatters)
+        {
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<Article, XmlProductFormatter>(WebApiConfig.XmlMediaType));
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<Article, XamlProductFormatter>(WebApiConfig.XamlMediaType));
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<Article, JsonProductFormatter>(WebApiConfig.JsonMediaType));
+#if !NETSTANDARD
+            formatters.Add(
+                new ModelMediaTypeOutputFormatter<Article, PdfProductFormatter>(WebApiConfig.PdfMediaType));
+#endif
+        }
+
+        private static void RegisterMediaTypes(FormatterMappings formatterMappings)
+        {
+            formatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.XmlMappingValue,
+                MediaTypeHeaderValue.Parse(WebApiConfig.XmlMediaType));
+            formatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.JsonMappingValue,
+                MediaTypeHeaderValue.Parse(WebApiConfig.JsonMediaType));
+            formatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.PdfMappingValue,
+                MediaTypeHeaderValue.Parse(WebApiConfig.PdfMediaType));
+            formatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.XamlMappingValue,
+                MediaTypeHeaderValue.Parse(WebApiConfig.XamlMediaType));
+            formatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.JsonDefinitionMappingValue,
+                MediaTypeHeaderValue.Parse(WebApiConfig.JsonDefinitionMediaType));
+            formatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.JsonDefinition2MappingValue,
+                MediaTypeHeaderValue.Parse(WebApiConfig.JsonDefinition2MediaType));
+            formatterMappings.SetMediaTypeMappingForFormat(WebApiConfig.BinaryMappingValue,
+                MediaTypeHeaderValue.Parse(WebApiConfig.BinaryMediaType));
         }
     }
 }

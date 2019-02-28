@@ -9,14 +9,12 @@ using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Formatters.Formatting
 {
-    public class ModelMediaTypeInputFormatter<T> : TextInputFormatter
+    public class ModelMediaTypeInputFormatter<T,TF> : TextInputFormatter
         where T : class
+        where TF : class, IFormatter<T>    
     {
-        private readonly Func<IFormatter<T>> _formatterFactory;
-
-        public ModelMediaTypeInputFormatter(Func<IFormatter<T>> formatterFactory, string mediaType)
+        public ModelMediaTypeInputFormatter(string mediaType)
         {
-            _formatterFactory = formatterFactory;
             SupportedMediaTypes.Add(MediaTypeHeaderValue.Parse(mediaType));
             SupportedEncodings.Add(Encoding.UTF8);
         }
@@ -36,12 +34,10 @@ namespace QA.Core.DPC.Formatters.Formatting
                 throw new ArgumentNullException(nameof(context));
             }
 
-            if (encoding == null)
-            {
-                throw new ArgumentNullException(nameof(encoding));
-            }
-
-            var result = await _formatterFactory().Read(context.HttpContext.Request.Body);
+            var request = context.HttpContext.Request;
+            IServiceProvider serviceProvider = context.HttpContext.RequestServices;
+            var formatter = (IFormatter<T>)serviceProvider.GetService(typeof(TF));            
+            var result = await formatter.Read(request.Body);
             return await InputFormatterResult.SuccessAsync(result);
         }
     }

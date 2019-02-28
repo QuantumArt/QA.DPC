@@ -27,6 +27,11 @@ namespace QA.Core.DPC.Formatters.Formatting
 
         public override async Task WriteResponseBodyAsync(OutputFormatterWriteContext context, Encoding selectedEncoding)
         {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+            
             var response = context.HttpContext.Response;
             IServiceProvider serviceProvider = context.HttpContext.RequestServices;
             var formatter = (IFormatter<T>)serviceProvider.GetService(typeof(TF));
