@@ -2,11 +2,13 @@
 using QA.Core.DPC.Loader;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
-using QA.Core.Web;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using System;
 using QA.Core.DPC.QP.Cache;
+#if !NETSTANDARD
+using QA.Core.Web;
+#endif
 using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;

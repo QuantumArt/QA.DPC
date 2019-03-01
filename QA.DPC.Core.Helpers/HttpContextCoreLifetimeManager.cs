@@ -1,22 +1,24 @@
 using System;
 using System.Threading;
-using Unity.Lifetime;
 using Microsoft.AspNetCore.Http;
+using Unity.Lifetime;
 
-namespace QA.Core.Web
+namespace QA.DPC.Core.Helpers
 {
     /// <summary>
     /// Реализует жизненный цикл объекта в текущем запросе.
     /// Если контекст запроса пуст, то используется стратегия ThreadLocal&lt;T&gt;.
     /// </summary>
-    public class HttpContextCoreLifetimeManager : LifetimeManager, IDisposable, ITypeLifetimeManager
+    public class HttpContextCoreLifetimeManager : LifetimeManager, IDisposable, ITypeLifetimeManager, IFactoryLifetimeManager
     {
-
+        
+        private readonly string _itemName;
         private readonly IHttpContextAccessor _httpContextAccessor; 
         
         public HttpContextCoreLifetimeManager(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
+            _itemName = Guid.NewGuid().ToString();
         }
         
         private ThreadLocal<object> _val = new ThreadLocal<object>();
@@ -24,7 +26,7 @@ namespace QA.Core.Web
         /// <summary>
         /// Ключ для хранения в контексте запроса
         /// </summary>
-        protected string Key { get; }
+        protected string Key => _itemName;
 
         /// <summary>
         /// Возвращает значение
@@ -40,6 +42,11 @@ namespace QA.Core.Web
             }
 
             return ctx.Items[Key];
+        }
+
+        protected override LifetimeManager OnCreateLifetimeManager()
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -88,13 +95,5 @@ namespace QA.Core.Web
             RemoveValue();
         }
 
-        /// <summary>
-        /// Создание LifetimeManagera
-        /// </summary>
-        /// <returns></returns>
-        protected override LifetimeManager OnCreateLifetimeManager()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

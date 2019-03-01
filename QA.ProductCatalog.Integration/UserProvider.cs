@@ -1,6 +1,5 @@
 ﻿using System;
 using QA.ProductCatalog.Infrastructure;
-using QA.Core.Web;
 using System.Data;
 using System.Threading;
 using QA.Core.DPC.QP.Services;

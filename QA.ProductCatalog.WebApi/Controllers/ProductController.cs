@@ -57,12 +57,13 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="startRow">Start from product with number</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Product list (untyped)</returns>
-        [HttpGet]
-        [Route("{version}/{slug}/{format:regex(^json|xml|binary$)}")]
+        /// <response code="406">Unsupported format</response>
+        [HttpGet("{version}/{slug}/{format:regex(^json|xml|binary$)}", Name = "List")]
+        [HttpGet("{customerCode}/{version}/{slug}/{format:regex(^json|xml|binary$)}", Name = "List-Consolidate")]
         public ActionResult<Dictionary<string, object>[]> List(string version, string slug, string format, 
 	        bool isLive = false, long startRow = 0, long pageSize = 10)
 		{
-			_logger.LogDebug(() => new { version, slug, isLive, startRow, pageSize }.ToString());
+			_logger.LogDebug(() => new { version, slug, format, isLive, startRow, pageSize }.ToString());
 			var result = _databaseProductService.GetProductsList(slug, version, isLive, startRow, pageSize);
 			return result;
 		}
@@ -76,11 +77,12 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="query">A part of SQL query (where clause)</param>
         /// <param name="isLive">Should we read live or stage data?</param>
         /// <returns>Product ids</returns>
-		[HttpGet]
-        [Route("{version}/{slug}/search/{format:regex(^json|xml|binary$)}/{query}")]
+        /// <response code="406">Unsupported format</response>
+        [HttpGet("{version}/{slug}/search/{format:regex(^json|xml|binary$)}/{query}", Name = "Search")]
+        [HttpGet("{customerCode}/{version}/{slug}/search/{format:regex(^json|xml|binary$)}/{query}", Name = "Search-Consolidate")]
         public ActionResult<int[]> Search(string slug, string version, string format, string query, bool isLive = false)
 		{
-			_logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
+			_logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
 			return _databaseProductService.SearchProducts(slug, version, query, isLive);
 		}
 
@@ -96,12 +98,15 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="includeRegionTags">Include or not region tags in the result</param>
         /// <param name="includeRelevanceInfo">Include or not relevance information in the result</param>
         /// <returns>Product list</returns>
-        [HttpGet]
-        [Route("{version}/{slug}/search/detail/{format:regex(^json|binary$)}/{query}")]
+        /// <response code="406">Unsupported format</response>
+
+        [HttpGet("{version}/{slug}/search/detail/{format:regex(^json|binary$)}/{query}", Name="SearchDetailed")]
+        [HttpGet("{customerCode}/{version}/{slug}/search/detail/{format:regex(^json|binary$)}/{query}", Name="SearchDetailed-Consolidate")]
+        
         public ActionResult<IEnumerable<Article>> SearchDetailed(string slug, string version, string format, 
 	        string query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
-            _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
+            _logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
             var ids = _databaseProductService.SearchProducts(slug, version, query, isLive);
 
             _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
@@ -125,11 +130,13 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="query">A part of SQL query (where clause)</param>
         /// <param name="isLive">Should we read live or stage data?</param>
         /// <returns>Product ids</returns>
-        [HttpPost]
-        [Route("{version}/{slug}/search/{format:regex(^json|xml|binary$)}")]
+        /// <response code="406">Unsupported format</response>
+
+        [HttpPost("{version}/{slug}/search/{format:regex(^json|xml|binary$)}", Name="ExtendedSearch")]
+        [HttpPost("{customerCode}/{version}/{slug}/search/{format:regex(^json|xml|binary$)}", Name="ExtendedSearch-Consolidate")]
         public ActionResult<int[]> ExtendedSearch(string slug, string version, string format, [FromBody] JToken query, bool isLive = false)
         {
-            _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
+            _logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
             return _databaseProductService.ExtendedSearchProducts(slug, version, query, isLive);
         }
 
@@ -144,12 +151,14 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="includeRegionTags">Include or not region tags in the result</param>
         /// <param name="includeRelevanceInfo">Include or not relevance information in the result</param>
         /// <returns>Product list</returns>
-        [HttpPost]
-        [Route("{version}/{slug}/search/detail/{format:regex(^json|binary$)}")]
+        /// <response code="406">Unsupported format</response>
+
+        [HttpPost("{version}/{slug}/search/detail/{format:regex(^json|binary$)}", Name="ExtendedSearchDetailed")]
+        [HttpPost("{customerCode}/{version}/{slug}/search/detail/{format:regex(^json|binary$)}", Name="ExtendedSearchDetailed-Consolidate")]
         public ActionResult<IEnumerable<Article>> ExtendedSearchDetailed(string slug, string version, string format, 
 	        [FromBody] JToken query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
-            _logger.LogDebug(() => new { slug, version, query, isLive }.ToString());
+            _logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
             var ids = _databaseProductService.ExtendedSearchProducts(slug, version, query, isLive);
 
             _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
@@ -175,12 +184,15 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="includeRegionTags">Include or not region tags in the result</param>
         /// <param name="includeRelevanceInfo">Include or not relevance information in the result</param>
         /// <returns>Product</returns>
-        [HttpGet]
-        [Route("{version}/{slug}/{format:regex(^json|xml|xaml|binary$)}/{id:int}")]
+        /// <response code="406">Unsupported format</response>
+
+
+        [HttpGet("{version}/{slug}/{format:regex(^json|xml|xaml|binary$)}/{id:int}", Name="GetProduct")]
+        [HttpGet("{customerCode}/{version}/{slug}/{format:regex(^json|xml|xaml|binary$)}/{id:int}", Name="GetProduct-Consolidate")]
         public ActionResult<Article> GetProduct(string slug, string version, string format, int id, 
 	        bool isLive = false, bool includeRegionTags=false, bool includeRelevanceInfo = false)
 		{
-			_logger.LogDebug(() => new { slug, version, id, isLive }.ToString());
+			_logger.LogDebug(() => new { slug, version, format, id, isLive }.ToString());
 
 			_accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 		    _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
@@ -206,12 +218,14 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="includeRegionTags">Include or not region tags in the result</param>
         /// <param name="includeRelevanceInfo">Include or not relevance information in the result</param>
         /// <returns>Product list</returns>
-        [HttpGet]
-        [Route("{version}/{slug}/list/{format:regex(^json|binary$)}/{ids}")]
+        /// <response code="406">Unsupported format</response>
+
+        [HttpGet("{version}/{slug}/list/{format:regex(^json|binary$)}/{ids}", Name="GetProductList")]
+        [HttpGet("{customerCode}/{version}/{slug}/list/{format:regex(^json|binary$)}/{ids}", Name="GetProductList-Consolidate")]
         public ActionResult<IEnumerable<Article>> GetProductList(string slug, string version, string format, int[] ids, 
 	        bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
-            _logger.LogDebug(() => new { slug, version, ids, isLive }.ToString());
+            _logger.LogDebug(() => new { slug, version, format, ids, isLive }.ToString());
 
             _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
             _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
@@ -233,14 +247,17 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <summary>
         /// Get product relevance for product
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">Product ID</param>
         /// <param name="format">json, xml or binary</param>
         /// <param name="isLive">Should we read live or stage data?</param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("relevance/{format:regex(^json|xml|binary$)}/{id:int}")]
+        /// <returns>Product info</returns>
+        /// <response code="406">Unsupported format</response>
+
+        [HttpGet("relevance/{format:regex(^json|xml|binary$)}/{id:int}", Name="GetProductRelevance")]
+        [HttpGet("{customerCode}/relevance/{format:regex(^json|xml|binary$)}/{id:int}", Name="GetProductRelevance-Consolidate")]
         public ActionResult<Product> GetProductRelevance(int id, string format, bool isLive = false)
         {
+	        _logger.LogDebug(() => new { format, id, isLive }.ToString());
             var relevance = _databaseProductService.GetRelevance(id, isLive);
 
             if (relevance == null)
@@ -254,14 +271,17 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <summary>
         /// Get product relevance for products
         /// </summary>
-        /// <param name="ids"></param>
+        /// <param name="ids">ProductIds (comma-separated)</param>
         /// <param name="format">json, xml or binary</param>
         /// <param name="isLive">Should we read live or stage data?</param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("relevance/{format:regex(^json|xml|binary$)}/{ids}")]
+        /// <returns>Product info array</returns>
+        /// <response code="406">Unsupported format</response>
+ 
+        [HttpGet("relevance/{format:regex(^json|xml|binary$)}/{ids}", Name="GetProductRelevanceList")]
+        [HttpGet("{customerCode}/relevance/{format:regex(^json|xml|binary$)}/{ids}", Name="GetProductRelevanceList-Consolidate")]
         public ActionResult<Product[]> GetProductRelevanceList(int[] ids, string format, bool isLive = false)
         {
+	        _logger.LogDebug(() => new { format, ids, isLive }.ToString());
             return ids.Distinct()
                 .Select(id => _databaseProductService.GetRelevance(id, isLive))
                 .Where(r => r != null)
@@ -280,13 +300,15 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="includeRegionTags">Include or not region tags in the result</param>
         /// <param name="absent"></param>
         /// <param name="type"></param>
-        /// <returns></returns>
-        [HttpGet]
-        [Route("tarantool/{format:regex(^json|xml|xaml|binary$)}/{productId:int}")]        
+        /// <returns>Product</returns>
+        /// <response code="406">Unsupported format</response>
+        
+        [HttpGet("tarantool/{format:regex(^json|xml|xaml|binary$)}/{productId:int}", Name="TarantoolGet")]        
+        [HttpGet("{customerCode}/tarantool/{format:regex(^json|xml|xaml|binary$)}/{productId:int}", Name="TarantoolGet-Consolidate")]        
         public ActionResult<Article> TarantoolGet(string format, int productId, int definitionId, 
 	        bool isLive = false, bool includeRegionTags = false, bool absent = false, string type = null)
         {
-            _logger.LogDebug(() => new { productId, definitionId, isLive }.ToString());
+            _logger.LogDebug(() => new { format, productId, definitionId, isLive, includeRegionTags, absent, type}.ToString());
 
             _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
             _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
@@ -299,17 +321,21 @@ namespace QA.ProductCatalog.WebApi.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Product publishing using Tarantool 
         /// </summary>
-        /// <param name="format">json or xml</param>
-        /// <param name="productId"></param>
-        /// <param name="item"></param>
-        /// <param name="localize"></param>
-        /// <returns></returns>
-        [HttpPost]
-        [Route("tarantool/publish/{format:regex(^json|xml$)}/{productId:int}")]
+        /// <param name="format">json, xml or binary</param>
+        /// <param name="productId">Product Id</param>
+        /// <param name="item">Product info</param>
+        /// <param name="localize">Localize or not?</param>
+        /// <response code="204">Published</response>
+        /// <response code="406">Unsupported format</response>
+        [ProducesResponseType(204)]
+        [ProducesResponseType(406)]       
+        [HttpPost("tarantool/publish/{format:regex(^json|xml|binary$)}/{productId:int}", Name="TarantoolPublish")]
+        [HttpPost("{customerCode}/tarantool/publish/{format:regex(^json|xml|binary$)}/{productId:int}", Name="TarantoolPublish-Consolidate")]
         public ActionResult TarantoolPublish(string format, int productId, [FromBody] ProductItem item, bool localize = true)
         {
+	        _logger.LogDebug(() => new { format, productId, item, localize}.ToString());
             _autopublishProcessor.Publish(item, localize);
             return NoContent();
         }
@@ -323,8 +349,12 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="product">Product in json, xml or xaml format</param>
         /// <param name="isLive">Should we read live or stage data?</param>
         /// <param name="createVersions">Should we create article versions while updating?</param>
-        [HttpPost]
-        [Route("{version}/{slug}/{format:regex(^json|xml|xaml$)}/{id:int}")]
+        /// <response code="204">Created or updated</response>
+        /// <response code="406">Unsupported format</response>
+        [ProducesResponseType(204)]
+        [ProducesResponseType(406)]        
+        [HttpPost("{version}/{slug}/{format:regex(^json|xml|xaml$)}/{id:int}", Name="Post")]
+        [HttpPost("{customerCode}/{version}/{slug}/{format:regex(^json|xml|xaml$)}/{id:int}", Name="Post-Consolidate")]
         public ActionResult Post(string slug, string version, string format, [FromBody] Article product, bool isLive = false, bool createVersions = false)
 		{
 			_logger.LogDebug(() => new { slug, version, format, productId = product.Id, productContentId = product.ContentId, isLive, createVersions }.ToString());
@@ -337,11 +367,15 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="format">json or xml</param>
-        [HttpDelete]
-        [Route("{format:regex(^json|xml$)}/{id:int}")]
+        /// <response code="204">Deleted</response>
+        /// <response code="406">Unsupported format</response>
+        [ProducesResponseType(204)]
+        [ProducesResponseType(406)]
+        [HttpDelete("{format:regex(^json|xml$)}/{id:int}", Name="Delete")]
+        [HttpDelete("{customerCode}/{format:regex(^json|xml$)}/{id:int}", Name="Delete-Consolidate")]
         public ActionResult Delete(int id, string format)
 		{
-			_logger.LogDebug(() => new { id }.ToString());
+			_logger.LogDebug(() => new { id, format }.ToString());
 			_databaseProductService.CustomAction("DeleteAction", id);
 			return NoContent();			
 		}
@@ -353,11 +387,15 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="name">The name of custom action</param>
         /// <param name="id"></param>
         /// <param name="parameters"></param>
-        [HttpPost]
-        [Route("custom/{format:regex(^json|xml$)}/{name}/{id:int}")]
-        public ActionResult CustomAction(string name, int id, string format, Dictionary<string, string> parameters)
+        /// <response code="204">Invoked</response>
+        /// <response code="406">Unsupported format</response>
+        [ProducesResponseType(204)]
+        [ProducesResponseType(406)]
+        [HttpPost("custom/{format:regex(^json|xml|binary$)}/{name}/{id:int}", Name="CustomAction")]
+        [HttpPost("{customerCode}/custom/{format:regex(^json|xml|binary$)}/{name}/{id:int}", Name="CustomAction-Consolidate")]
+        public ActionResult CustomAction(string name, int id, string format, [FromBody] Dictionary<string, string> parameters)
 		{
-			_logger.LogDebug(() => new { name, id }.ToString());
+			_logger.LogDebug(() => new { name, id, format, parameters }.ToString());
 			_databaseProductService.CustomAction(name, id, parameters);
 			return NoContent();				
 		}
@@ -371,11 +409,11 @@ namespace QA.ProductCatalog.WebApi.Controllers
         /// <param name="forList"></param>
         /// <param name="includeRegionTags">Include or not region tags in the result</param>
         /// <returns>Schema</returns>
-		[HttpGet]
-        [Route("{version}/{slug}/schema/{format:regex(^json|xml|xaml|jsonDefinition|jsonDefinition2$)}")]
+        [HttpGet("{version}/{slug}/schema/{format:regex(^json|xml|xaml|jsonDefinition|jsonDefinition2$)}", Name="Schema")]
+        [HttpGet("{customerCode}/{version}/{slug}/schema/{format:regex(^json|xml|xaml|jsonDefinition|jsonDefinition2$)}", Name="Schema-Consolidate")]
         public ActionResult<Content> Schema(string slug, string version, string format, bool forList = false, bool includeRegionTags = false)
 		{
-			_logger.LogDebug(() => new { slug, version, forList }.ToString());
+			_logger.LogDebug(() => new { slug, version, format, forList, includeRegionTags }.ToString());
 
 			var definition = _databaseProductService.GetProductDefinition(slug, version, forList);
 

@@ -33,7 +33,7 @@ namespace QA.ProductCatalog.StressTestUtility
 			Container.RegisterType<IAdministrationSecurityChecker, QPSecurityChecker>();
 			Container.RegisterType<IProductService, ProductLoader>();
 			Container.RegisterType<IXmlProductService, XmlProductService>();
-			Container.RegisterInstance<HttpVersionedCacheProvider>(Container.Resolve<HttpVersionedCacheProvider>());
+			Container.RegisterInstance(Container.Resolve<HttpVersionedCacheProvider>());
 			Container.RegisterInstance<ICacheProvider>(Container.Resolve<HttpVersionedCacheProvider>());
 			Container.RegisterInstance<IVersionedCacheProvider>(Container.Resolve<HttpVersionedCacheProvider>());
 			Container.RegisterType<IContentInvalidator, DpcContentInvalidator>();

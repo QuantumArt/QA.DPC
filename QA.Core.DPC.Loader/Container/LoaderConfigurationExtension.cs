@@ -12,7 +12,10 @@ using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
+#if !NETSTANDARD 
 using QA.Core.Web;
+#endif
+using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;
