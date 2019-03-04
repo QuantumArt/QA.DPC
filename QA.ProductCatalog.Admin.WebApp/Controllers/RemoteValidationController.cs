@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Infrastructure;
@@ -36,7 +37,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 result.Messages.Add(ex.Message);
             }
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return Json(result);
         }
     }
 }

@@ -1,21 +1,20 @@
 ﻿using System;
 using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using QA.Configuration;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Services;
-using QA.Core.Web;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
 using Content = QA.Core.Models.Configuration.Content;
 using Field = QA.Core.Models.Configuration.Field;
+using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [ValidateInput(false)]
 	public class DefinitionEditorController : Controller
 	{
 		private readonly IContentDefinitionService _contentDefinitionService;
@@ -192,7 +191,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			if (skipCdata)
 				defInfo.Field.CustomProperties[QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName] = true;
 
-            var loadLikeImage = Request.Form["loadlikeimage"]?.Contains("true") ?? false;
+            var loadLikeImage = ((string[])Request.Form["loadlikeimage"])?.Contains("true") ?? false;
 
 		    if (loadLikeImage)
 		        defInfo.Field.CustomProperties[QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage] = true;

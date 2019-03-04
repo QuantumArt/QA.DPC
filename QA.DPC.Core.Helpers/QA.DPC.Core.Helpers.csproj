@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
     <PackageReference Include="NLog" Version="4.5.11" />
+    <PackageReference Include="QA.Core" Version="3.5.1-beta2" />    
     <PackageReference Include="QA.Core.Cache" Version="3.5.1-beta2" />
     <PackageReference Include="QA.Core.Logger" Version="3.5.1-beta2" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />

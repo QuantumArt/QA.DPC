@@ -1,4 +1,5 @@
-﻿@model GridColumn
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.Controls.GridColumn
 @if (Model == null || Model.Hidden) { return; }
 @if (Model.CellTemplate == null && Model.CurrentItem != null)
 {
@@ -6,7 +7,7 @@
 }
 else if (Model.CellTemplate != null)
 {
-    @Html.DisplayFor(x => Model.CellTemplate)
+    @Html.DisplayForUIElement(Model.CellTemplate)
 }
 else
 {

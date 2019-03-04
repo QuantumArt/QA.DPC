@@ -3,9 +3,12 @@ using QA.Core.ProductCatalog.Actions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Mvc;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using ActionContext = QA.Core.ProductCatalog.Actions.ActionContext;
 
 namespace QA.ProductCatalog.Admin.WebApp.Binders
 {
@@ -24,8 +27,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Binders
 			var context = new ActionContext
 			{
 				Parameters =
-					controllerContext.RequestContext.HttpContext.Request.Form.AllKeys
-						.ToDictionary(x => x, x => controllerContext.RequestContext.HttpContext.Request.Form[x]),
+					controllerContext.HttpContext.Request.Form.Keys
+						.ToDictionary(x => x, x => controllerContext.HttpContext.Request.Form[x].ToString()),
 				CustomerCode = GetValue(CustomerCodeKey, bindingContext)
 			};
 
@@ -81,7 +84,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Binders
 		private string GetValue(string key, ModelBindingContext bindingContext)
 		{
 			var value = bindingContext.ValueProvider.GetValue(key);
-			return value == null ? null : value.AttemptedValue;
+			return value.FirstValue;
 		}
-	}
+
+        public Task BindModelAsync(ModelBindingContext bindingContext)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

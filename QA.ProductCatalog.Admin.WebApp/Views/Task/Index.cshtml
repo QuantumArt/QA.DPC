@@ -3,16 +3,14 @@
 
 @*переопределяем секцию с jquery*@
 @section jquery{
-	@Scripts.Render("~/bundles/KendoUI")
+	<script src="~/js/bundles/kendo.min.js"></script>
 }
 
 @*добавляем в head  свои стили*@
 @section head{
-	@Styles.Render("~/content/KendoUI/KendoUIStyles")
-
-	@Scripts.Render("~/bundles/Schedule")
-	@Styles.Render("~/content/jqcron.css")
-
+  <link href="~/css/kendo.min.css" rel="stylesheet"/>
+  <script src="~/js/bundles/schedule.min.js"></script>
+  <link href="~/css/jqCron.css" rel="stylesheet"/>
 	<style type="text/css">
 		#TasksGrid .k-loading-mask, .k-filter-menu .k-filter-help-text, .k-filter-menu .k-filter-help-text + span.k-dropdown  {
 			display: none !important;
@@ -76,7 +74,7 @@
 
 @*скрипты добавляются в конец страницы в секцию scripts*@
 @section scripts{
-	@Scripts.Render("~/Scripts/AutoUpdateStrategy.js")
+  <script src="~/js/AutoUpdateStrategy.js"></script>
 
 	<script type="text/javascript">
 
@@ -154,7 +152,7 @@
 						{ title: "Заказчик", field: "UserName", filterable: false },
 						{
 							title: "Статус",
-							template: "<img src='@Url.Content("~/Content/img/TaskStates/")#=IconName#16.png' alt='#=State#'/> #=State#",
+							template: "<img src='@Url.Content("~/images/TaskStates/")#=IconName#16.png' alt='#=State#'/> #=State#",
 							width: 112,
 							field: "StateId",
 							values: [
@@ -399,7 +397,7 @@
 					new Notification("Задача " + task.DisplayName + " обработана",
 					{
 						body: body,
-						icon: '@Url.Content("~/Content/img/TaskStates/")' + task.IconName + '48.png'
+						icon: '@Url.Content("~/images/TaskStates/")' + task.IconName + '48.png'
 					});
 				}
 			}

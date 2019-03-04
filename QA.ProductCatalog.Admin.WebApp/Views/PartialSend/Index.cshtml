@@ -1,8 +1,8 @@
 ﻿@section head{
-    @Styles.Render("~/content/KendoUI/KendoUIStyles")
+  <link href="~/css/kendo.min.css" rel="stylesheet" />
 }
 @section jquery{
-    @Scripts.Render("~/bundles/KendoUI")
+  <script src="~/js/bundles/kendo.min.js"></script>
 }
 
 <div class="formLayout">
@@ -62,7 +62,8 @@
 
 @section scripts{
 
-    @Scripts.Render("~/Scripts/AutoUpdateStrategy.js")
+    <script src="~/js/AutoUpdateStrategy.js"></script>
+
 
     <script>
 

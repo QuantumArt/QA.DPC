@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿#if !NETSTANDARD
+using System.Web.Mvc;
 using System.Web.Routing;
 using QA.Core.Models.UI;
 
@@ -15,3 +16,4 @@ namespace QA.Core.DPC.UI
         }
     }
 }
+#endif

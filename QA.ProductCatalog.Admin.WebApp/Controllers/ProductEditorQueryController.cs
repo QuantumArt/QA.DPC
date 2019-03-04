@@ -5,23 +5,18 @@ using QA.Core.DPC.Loader.Services;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
-using QA.ProductCatalog.Admin.WebApp.Binders;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Net;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
-using System.Web.UI;
-using System.Web.SessionState;
 using System.ComponentModel.DataAnnotations;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [RoutePrefix("ProductEditorQuery")]
-    [SessionState(SessionStateBehavior.ReadOnly)]
+    [Route("ProductEditorQuery")]
     public class ProductEditorQueryController : ProductEditorController
     {
         private readonly PublicationStatusService _publicationStatusService;
@@ -54,11 +49,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorCustomActionService = editorCustomActionService;
         }
 
-        /// <summary>
-        /// Получить JSON схему для редактора продукта.
-        /// </summary>
-        /// <param name="productDefinitionId">Id описания продукта</param>
-        /// <returns>JSON схемы редактора продукта</returns>
         [HttpGet]
         public ContentResult GetEditorSchema(int productDefinitionId, bool isLive = false)
         {
@@ -83,12 +73,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Content(schemaJson, "application/json");
         }
 
-        /// <summary>
-        /// Получить JSON продукта по его <see cref="Article.Id"/>.
-        /// </summary>
-        /// <param name="productDefinitionId">Id описания продукта</param>
-        /// <param name="articleId">Id корневой статьи</param>
-        /// <returns>JSON продукта</returns>
         [HttpGet]
         public ContentResult GetEditorData(int productDefinitionId, int articleId, bool isLive = false)
         {
@@ -121,7 +105,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <returns>Словарь с временами обновления продуктов по Id продукта</returns>
         [HttpPost]
         public async Task<ActionResult> GetPublicationTimestamps(
-            [ModelBinder(typeof(JsonModelBinder))] int[] productIds)
+            [FromBody] int[] productIds)
         {
             var timestamps = await _publicationStatusService.GetProductTimestamps(productIds);
 
@@ -144,10 +128,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </summary>
         /// <param name="updatedSince"> Время предыдущего запроса </param>
         /// <returns>Словарь с временами обновления продуктов по Id продукта</returns>
-        [HttpGet, OutputCache(
+        [HttpGet, ResponseCache(
             Duration = 4,
-            Location = OutputCacheLocation.Server,
-            VaryByParam = "customerCode;updatedSince")]
+            Location = ResponseCacheLocation.None,
+            VaryByQueryKeys = new[] {"customerCode", "updatedSince"})]
         public async Task<ActionResult> GetPublicationTimestamps(DateTime updatedSince)
         {
             var timestamps = await _publicationStatusService.GetProductTimestamps(updatedSince);
@@ -180,18 +164,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Content(json, "application/json");
         }
 
-        /// <summary>
-        /// Загрузить часть продукта начиная с корневого контента,
-        /// описанного путём <see cref="PartialProductRequest.ContentPath"/>
-        /// </summary>
-        /// <returns>JSON части продукта</returns>
         [HttpPost]
         public ActionResult LoadPartialProduct(
-             [ModelBinder(typeof(JsonModelBinder))] LoadPartialProductRequest request, bool isLive = false)
+             [FromBody] LoadPartialProductRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             Content rootContent = _contentDefinitionService
@@ -216,18 +195,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Content(productsJson, "application/json");
         }
 
-        /// <summary>
-        /// Загрузить связь продукта <see cref="LoadProductRelationRequest.RelationFieldName"/>
-        /// начиная с корневого контента, описанного путём <see cref="PartialProductRequest.ContentPath"/>
-        /// </summary>
-        /// <returns>JSON связи продукта</returns>
         [HttpPost]
         public ActionResult LoadProductRelation(
-             [ModelBinder(typeof(JsonModelBinder))] LoadProductRelationRequest request, bool isLive = false)
+             [FromBody] LoadProductRelationRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             Content rootContent = _contentDefinitionService
@@ -254,16 +228,16 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         /// <summary>
         /// Загрузить все возможные статьи для связи продукта <see cref="LoadProductRelationRequest.RelationFieldName"/>
-        /// начиная с корневого контента, описанного путём <see cref="PartialProductRequest.ContentPath"/>
+        /// начиная с корневого контента, описанного путём <see cref="ProductEditorController.PartialProductRequest.ContentPath"/>
         /// </summary>
         /// <returns>JSON статей связи продукта</returns>
         [HttpPost]
         public ActionResult PreloadRelationArticles(
-             [ModelBinder(typeof(JsonModelBinder))] PreloadRelationArticlesRequest request, bool isLive = false)
+             [FromBody] PreloadRelationArticlesRequest request, bool isLive = false)
         {
             if (!ModelState.IsValid)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             Content rootContent = _contentDefinitionService

@@ -23,7 +23,7 @@
                     <td align="center" data-bind="text: ChannelState"></td>
                     <td align="center" data-bind="text: getDate(ChannelDate)"></td>                    
                     <td width="20" align="center">
-                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/Content/img/icons/0.gif" />
+                        <img data-bind="attr: { src: $parent.getStateLogo($data), title: TaskMessage }" src="~/images/icons/0.gif" />
                     </td>
                     <td width="100">
                         <img src="~/Content/KendoUI/Default/loading.gif" style="display:none" />
@@ -40,12 +40,12 @@
 </div>
 
 @section head{
-    @Styles.Render("~/content/KendoUI/KendoUIStyles")
+  <link href="~/css/kendo.min.css" rel="stylesheet" />
 }
 
 @section scripts{
-    @Scripts.Render("~/bundles/moment")
-    @Scripts.Render("~/bundles/knockout")
-    @Scripts.Render("~/bundles/KendoUI")
-    @Scripts.Render("~/Scripts/HighloadFront.js")
+  <script src="~/js/moment-with-locales.min.js"></script>
+  <script src="~/js/bundles/knockout.min.js"></script>
+  <script src="~/js/bundles/kendo.min.js"></script>
+  <script src="~/js/HighloadFront.js"></script>
 }

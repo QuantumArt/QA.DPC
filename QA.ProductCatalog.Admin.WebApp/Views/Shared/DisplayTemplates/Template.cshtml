@@ -1,4 +1,5 @@
-﻿@model Template
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.Controls.Template
 @if (Model == null || Model.Hidden) { return; }
 @if (Model.Content != null)
 {
@@ -7,6 +8,6 @@
 }
 else
 {
-    @Html.DisplayFor(x => Model.CellTemplate)
+    @Html.DisplayForUIElement(Model.CellTemplate)
 }
 

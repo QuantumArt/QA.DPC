@@ -1,16 +1,16 @@
-﻿@using QA.Core.Web
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 	<title>@(ViewBag.Title ?? "DPC")</title>
-	<meta name="app" content="dpc" />
-	@Styles.Render("~/content/site")
+  <meta name="app" content="dpc" />
+  <link href="~/css/site.min.css" rel="stylesheet" />
 
 	@RenderSection("jquery", false)
 
-	@Scripts.Render("~/bundles/scripts")
+  <script src="~/js/Bundles/scripts.min.js"></script>
+  
 	@RenderSection("head", false)
 	<script>
 		Url.SetRootPath("@Url.Content("~/")");
@@ -20,12 +20,12 @@
 			window.console.error = function() {};
 		}
 
-		@if (!string.IsNullOrEmpty(QA.Core.Web.Qp.QpHelper.HostId))
+    @if (!string.IsNullOrEmpty(ViewBag.HostId))
 		{
-			<text>
-		window.name = '@(QA.Core.Web.Qp.QpHelper.HostId)';
-			</text>
-		}
+		<text>
+		  window.name = '@(ViewBag.HostId)';
+		</text>
+		} 
 	</script>
 </head>
 <body>
@@ -37,6 +37,6 @@
 
 @section jquery {
 	<text>
-		@Scripts.Render("~/bundles/jquery")
+    <script src="~/js/jquery.min.js"></script>
 	</text>	
 }

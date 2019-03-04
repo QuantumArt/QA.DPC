@@ -1,5 +1,5 @@
-import "Scripts/pmrpc";
-import QP8 from "Scripts/qp/QP8BackendApi.Interaction";
+import "wwwroot/js/pmrpc";
+import QP8 from "wwwroot/js/qp/QP8BackendApi.Interaction";
 import qs from "qs";
 import React from "react";
 import { inject } from "react-ioc";
@@ -331,7 +331,8 @@ export class EntityController {
       if (this._dataMerger.tablesHasConflicts(dataSnapshot)) {
         const serverWins = await this._overlayPresenter.confirm(
           <>
-            Данные на сервере были изменены другим пользователем.<br />
+            Данные на сервере были изменены другим пользователем.
+            <br />
             Применить изменения с сервера?
           </>,
           "Применить",
@@ -350,7 +351,8 @@ export class EntityController {
         this._dataMerger.mergeTables(dataSnapshot, MergeStrategy.ClientWins);
         await this._overlayPresenter.alert(
           <>
-            Данные на сервере были изменены другим пользователем.<br />
+            Данные на сервере были изменены другим пользователем.
+            <br />
             Пожалуйста, проверьте корректность данных и сохраните статью снова.
           </>,
           "OK"

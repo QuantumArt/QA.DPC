@@ -1,4 +1,6 @@
-﻿@model PropertyDisplay
+﻿@using QA.Core.Models.UI
+@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.Controls.PropertyDisplay
 @{
     if (Model == null || Model.Title == null || Model.Hidden) { return; }
     string title = Model.Title;
@@ -10,14 +12,18 @@
 <dl id="@Model.UId" class="plain-field row">
     <dt title="@(title)" class="plain-field-capture label " style="@(Model.LabelWidth != null ? ("width: "+ Model.LabelWidth) : "")">@Model.ReplaceNotesIfNeeded(title.Length > 50 ? title.Substring(0, 50) + "..." : title)</dt>
     <dd style="@(Model.Padding != null ? Model.Padding.ToString(): "")" class="plain-field-value field">
-        @if (Model.Value is string)
-        {
-			@Model.ReplaceNotesIfNeeded(Model.Value.ToString())
-        }
-        else
-        {
-	        @Html.DisplayFor(x => Model.Value);
-        }
+    @if (Model.Value is string modelString)
+    {
+			@Model.ReplaceNotesIfNeeded(modelString)
+    }
+    else if (Model.Value is UIElement modelValue)
+    {
+      @Html.DisplayForUIElement(modelValue);      
+    }
+    else
+    {
+	    @Html.DisplayFor(x => Model.Value);
+    }
     </dd>
 
 </dl>
@@ -28,10 +34,16 @@
 
         </dt>
         <dd class="field">
-            <div>
-                @Html.DisplayFor(x => Model.Content)
-            </div>
-
+          <div>
+            @if (Model.Content is UIElement ui)
+            {
+              @Html.DisplayForUIElement(ui)
+            }
+            else
+            {
+              @Html.DisplayFor(x => Model.Content)             
+            }
+          </div>
         </dd>
     </dl>
 }

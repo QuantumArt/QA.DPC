@@ -1,4 +1,5 @@
 ﻿@using QA.Core.Models.Configuration
+@using QA.ProductCatalog.Admin.WebApp.Core
 @using Quantumart.QP8.Constants
 
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionFieldInfo
@@ -59,21 +60,33 @@ else
     @Html.LabelFor(x => association.CloningMode)
   </div>
   <div class="editor-field">
-    @Html.EnumDropDownListFor(x => association.CloningMode, new { Name = "Field.CloningMode" })
+    @Html.DropDownListFor(
+      x => association.CloningMode, 
+      Html.GetEnumSelectList(typeof(CloningMode)), 
+      new { Name = "Field.CloningMode" }
+    )
   </div>
 
   <div class="editor-label">
     @Html.LabelFor(x => association.DeletingMode)
   </div>
   <div class="editor-field">
-    @Html.EnumDropDownListFor(x => association.DeletingMode, new { Name = "Field.DeletingMode" })
+    @Html.DropDownListFor(
+      x => association.DeletingMode, 
+      Html.GetEnumSelectList(typeof(DeletingMode)),    
+      new { Name = "Field.DeletingMode" }
+      )
   </div>
 
   <div class="editor-label">
     @Html.LabelFor(x => association.UpdatingMode)
   </div>
   <div class="editor-field">
-    @Html.EnumDropDownListFor(x => association.UpdatingMode, new { Name = "Field.UpdatingMode" })
+    @Html.DropDownListFor(    
+    x => association.UpdatingMode,
+    Html.GetEnumSelectList(typeof(UpdatingMode)),
+    new { Name = "Field.UpdatingMode" }
+    )
   </div>
 
   if (Model.Field is EntityField)
@@ -84,7 +97,11 @@ else
       @Html.LabelFor(x => entity.PreloadingMode)
     </div>
     <div class="editor-field">
-      @Html.EnumDropDownListFor(x => entity.PreloadingMode, new { Name = "Field.PreloadingMode" })
+      @Html.DropDownListFor(    
+        x => entity.PreloadingMode, 
+        Html.GetEnumSelectList(typeof(PreloadingMode)),      
+        new { Name = "Field.PreloadingMode" }
+       )
     </div>
 
     <div class="editor-label">

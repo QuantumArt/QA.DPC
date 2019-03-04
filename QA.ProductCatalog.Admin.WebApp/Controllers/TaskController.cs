@@ -1,13 +1,14 @@
-﻿using System.Web.Script.Serialization;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using System;
 using System.Linq;
-using System.Web.Mvc;
-using QA.Core.Web;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Admin.WebApp.Core;
+using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -16,11 +17,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
     {
         private readonly ITaskService _taskService;
         private readonly IUserProvider _userProvider;
+        private readonly ICompositeViewEngine _viewEngine;
 
-        public TaskController(ITaskService taskService, IUserProvider userProvider)
+        public TaskController(ITaskService taskService, IUserProvider userProvider, ICompositeViewEngine viewEngine)
         {
             _taskService = taskService;
-
+            _viewEngine = viewEngine;
             _userProvider = userProvider;
         }
 
@@ -49,7 +51,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (filterJson != null)
             {
-                var filters = new JavaScriptSerializer().Deserialize<KendoGridFilter[]>(filterJson);
+                var filters = JsonConvert.DeserializeObject<KendoGridFilter[]>(filterJson);
 
                 foreach (var filter in filters)
                 {
@@ -86,7 +88,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     tasks = tasks.Select(x => new TaskModel(x)),
                     totalTasks = totalCount,
-                    myLastTaskHtml = myLastTask == null ? null : this.RenderRazorViewToString("ActionProps", myLastTask)
+                    myLastTaskHtml = myLastTask == null ? null : this.RenderRazorViewToString(_viewEngine, "ActionProps", myLastTask)
                 });
 
             return string.Format("{{\"hashCode\":{1},\"data\":{0}}}", dataJsonStr, dataJsonStr.GetHashCode());
@@ -109,14 +111,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             bool isCancelled = _taskService.Cancel(taskId);
 
-            return Json(isCancelled, JsonRequestBehavior.AllowGet);
+            return Json(isCancelled);
         }
 
         public ActionResult Rerun(int taskId)
         {
             bool success = _taskService.Rerun(taskId);
 
-            return Json(success, JsonRequestBehavior.AllowGet);
+            return Json(success);
         }
 
         public PartialViewResult Schedule(int taskId)

@@ -1,4 +1,5 @@
-﻿@model QA.ProductCatalog.Admin.WebApp.Models.ProductEditorSchemaModel
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.ProductCatalog.Admin.WebApp.Models.ProductEditorSchemaModel
 @{ Layout = null; }
 <!DOCTYPE html>
 <html>
@@ -16,6 +17,6 @@
 <body>
   <div id="translate">Translate...</div>
   <div id="library">Loading...</div>
-  <script src="@Url.VersionedContent("~/Scripts/Bundles/ProductEditor/ComponentLibrary.js")"></script>
+  <script src="@Url.VersionedContent("~/js/Bundles/ProductEditor/ComponentLibrary.js")"></script>
 </body>
 </html>

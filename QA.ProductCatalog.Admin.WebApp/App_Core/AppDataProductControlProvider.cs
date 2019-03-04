@@ -5,7 +5,7 @@ using QA.Core.Models.UI;
 using QA.Core.DPC.UI;
 using QA.Core;
 using System.Collections.Concurrent;
-using System.Web.Hosting;
+using Microsoft.AspNetCore.Hosting;
 
 namespace QA.ProductCatalog.Admin.WebApp.App_Core
 {
@@ -13,6 +13,7 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Core
     {
         private static readonly StackPanel stub;
         private readonly ConcurrentDictionary<string, UIElement> _cache = new ConcurrentDictionary<string, UIElement>();
+        private IHostingEnvironment _hostingEnvironment;
 
         static AppDataProductControlProvider()
         {
@@ -21,11 +22,16 @@ namespace QA.ProductCatalog.Admin.WebApp.App_Core
             stub.DataContext = new object();
         }
 
+        public AppDataProductControlProvider(IHostingEnvironment environment)
+        {
+            _hostingEnvironment = environment;
+        }
+
         public UIElement GetControlForProduct(Article product)
         {
             Throws.IfArgumentNull(product, nameof(product));
 
-            string baseDir = HostingEnvironment.MapPath(@"~/App_Data/");
+            string baseDir = Path.Combine(_hostingEnvironment.WebRootPath, "/App_Data/");
             return GetXaml(Path.Combine(baseDir, $"controls/{product.ContentId}.xaml"));
         }
 

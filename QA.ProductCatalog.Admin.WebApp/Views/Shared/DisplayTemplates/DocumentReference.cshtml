@@ -1,4 +1,5 @@
-﻿@model DocumentReference
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.Controls.DocumentReference
 @if (Model == null || Model.ReferenceTo == null || Model.Hidden) { return; }
 
 @{

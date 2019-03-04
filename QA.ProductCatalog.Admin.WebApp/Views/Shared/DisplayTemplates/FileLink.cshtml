@@ -1,6 +1,6 @@
-﻿@using QA.Core.Web
-@model FileLink
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.Controls.FileLink
 <span title="@Model.Title" class="idLink active">
-	<span class="icon link"><img src="@Url.Content("~/content/img/icons/0.gif")"></span>
+	<span class="icon link"><img src="@Url.Content("~/images/icons/0.gif")"></span>
 	<a class="js" href="@Model.GetFileLink()" target="_blank">@Model.ReplaceNotesIfNeeded(Model.Title)</a>
 </span>

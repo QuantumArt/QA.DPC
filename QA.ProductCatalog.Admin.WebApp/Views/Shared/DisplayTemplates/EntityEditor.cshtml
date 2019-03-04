@@ -1,4 +1,6 @@
-﻿@model  EntityEditor
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@using QA.Core.Models.Entities;
+@model QA.Core.DPC.UI.EntityEditor
 @{
     
     if (Model == null || Model.Hidden) { return; }
@@ -17,7 +19,7 @@
 
     @foreach (var item in Model.GetFieldInfo(Model.CurrentItem))
     {
-     @: @Html.DisplayFor(x => item)
+     @: @Html.DisplayForUIElement(item)
     }
 
     @Html.DisplayFor(x => Model.Content)

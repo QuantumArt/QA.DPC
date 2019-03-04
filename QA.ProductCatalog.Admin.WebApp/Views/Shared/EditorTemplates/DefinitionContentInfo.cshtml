@@ -1,4 +1,5 @@
 ﻿@using QA.Core.Models.Configuration
+@using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionContentInfo
 
 <div class="display-label">
@@ -71,7 +72,10 @@
     @Html.LabelFor(x => x.Content.PublishingMode)
   </div>
   <div class="editor-field">
-    @Html.EnumDropDownListFor(x => x.Content.PublishingMode)
+    @Html.DropDownListFor(
+      x => x.Content.PublishingMode, 
+      Html.GetEnumSelectList(typeof(PublishingMode))
+    )
   </div>
 }
 

@@ -1,5 +1,8 @@
 ﻿@using QA.Core.Models.UI
 @using QA.Core.Extensions
+@using QA.ProductCatalog.Admin.WebApp.Core
+@using QA.Core.DPC.UI
+@using QA.Core.DPC.UI.Controls
 @model TabStrip
 @if (Model == null || Model.Hidden) { return; }
 @{
@@ -37,8 +40,9 @@
                 {
                     defaultItemId = ((TabStripItem)item).IsDefault ? item.UId : (string)null;
                 }
-
-                <li id="@item.UId" data-order="@(i++)" class="tabstrip-header-item">@Html.Raw(item is ITitled<object> ? Html.DisplayFor(x => ((ITitled<object>)item).Title).ToHtmlString() : "не указано")</li>
+              
+                var title = (item as ITitled<object>)?.Title ?? "не указано";
+                <li id="@item.UId" data-order="@(i++)" class="tabstrip-header-item">@title</li>
             }
         }
     </ul>
@@ -47,9 +51,20 @@
     {
         if (!item.Hidden)
         {
-            <div class="tabstip-item @(Model.IsFullSized ? "tabstrip__item_fullsized" : "")">
-                @Html.DisplayFor(x => item)
-            </div>
+          <div class="tabstip-item @(Model.IsFullSized ? "tabstrip__item_fullsized" : "")">
+            @{
+              var tabStripItem = item as TabStripItem;
+              var group = item as Group;
+              if (tabStripItem != null)
+              {
+                @Html.DisplayFor(x => tabStripItem)
+              }
+              else if (group != null)
+              {
+                @Html.DisplayFor(x => group)
+              }
+            }
+          </div>
         }
     }
 </div>

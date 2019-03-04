@@ -2,15 +2,13 @@
 using QA.Core.Extensions;
 using System.Linq;
 using System.Threading;
-using System.Web.Mvc;
-using System.Web.SessionState;
+using Microsoft.AspNetCore.Mvc;
+using QA.ProductCatalog.Admin.WebApp.Filters;
 using QA.ProductCatalog.Admin.WebApp.Models;
-using QA.Core.Web;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
     [RequireCustomAction]
-    [SessionState(SessionStateBehavior.ReadOnly)]
     public class ProductSendController : Controller
     {
         static long numberOfSessions = 0;

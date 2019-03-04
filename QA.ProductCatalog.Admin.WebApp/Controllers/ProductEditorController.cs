@@ -5,18 +5,18 @@ using QA.Core.DPC.Loader.Services;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
-using QA.Core.Web;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [RoutePrefix("ProductEditor")]
+    [Route("ProductEditor")]
     public class ProductEditorController : Controller
     {
         protected readonly IContentDefinitionService _contentDefinitionService;
@@ -45,10 +45,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorLocaleService = editorLocaleService;
         }
         
-        /// <summary>
-        /// CustomAction для редактирования существующего продукта
-        /// </summary>
-        /// <param name="content_item_id">Id корневой статьи</param>
         [HttpGet, RequireCustomAction]
         public ViewResult Edit(int content_item_id, bool isLive = false)
         {
@@ -90,10 +86,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .GetEditorDefinition(productTypeId, qpArticle.ContentId, isLive);
         }
         
-        /// <summary>
-        /// Построить TypeScript-описание схемы для редактора продукта.
-        /// </summary>
-        /// <param name="content_item_id">Id описания продукта</param>
         [HttpGet, RequireCustomAction]
         public ViewResult TypeScriptSchema(int content_item_id, bool isLive = false)
         {

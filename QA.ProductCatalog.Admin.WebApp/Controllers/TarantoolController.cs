@@ -1,25 +1,38 @@
-﻿using QA.Core.Web;
-using System;
+﻿using System;
 using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using QA.ProductCatalog.Admin.WebApp.Filters;
+using QA.ProductCatalog.Integration;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
     [RequireCustomAction]
     public class TarantoolController : Controller
     {
+        
+        private HttpContext _httpContext;
+        
+        private IntegrationProperties _options;
+        
+        public TarantoolController(IHttpContextAccessor httpContextAccessor, IOptions<IntegrationProperties> options)
+        {
+            _httpContext = httpContextAccessor.HttpContext;
+            _options = options.Value;
+        }
+        
         public Uri GetBaseUrl()
         {
-            var key = ConfigurationManager.AppSettings["Tarantool.SyncApi"];
-            if (!String.IsNullOrEmpty(key))
+            var key = _options.TarantoolSyncUrl;
+            
+            if (string.IsNullOrEmpty(key)) return null;
+            
+            if (key.StartsWith("/"))
             {
-                if (key.StartsWith("/"))
-                {
-                    key = $"{HttpContext.Request.Url?.Scheme}://{HttpContext.Request.Url?.Authority}{key}";
-                }
-
+                key = $"{_httpContext.Request.Scheme}://{_httpContext.Request.Host}{key}";
             }
             return new Uri(key);
         }

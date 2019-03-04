@@ -1,4 +1,5 @@
-﻿@model Switcher
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.Controls.Switcher
 @if (Model == null || Model.Hidden) { return; }
 @{var switchOn = Model.SwitchOn;
 QA.Core.Models.UI.UIElement element = null;}
@@ -9,10 +10,10 @@ QA.Core.Models.UI.UIElement element = null;}
 
 @if (Model.Cases.TryGetValue(switchOn, out element))
 {
-    @: @Html.DisplayFor(x => element)
+    @: @Html.DisplayForUIElement(element)
 }
 else
 {
-    @Html.DisplayFor(x => Model.Default)
+    @Html.DisplayForUIElement(Model.Default)
 }
 

@@ -1,5 +1,5 @@
-﻿@using QA.Core.Web
-@model Image
+﻿@using HelperResult = Microsoft.AspNetCore.Mvc.Razor.HelperResult
+@model QA.Core.DPC.UI.Controls.Image
 @{
     var uri = Model.Url ?? Model.TryGetUrl();
     if (string.IsNullOrEmpty(uri))
@@ -10,21 +10,30 @@
 
 @if (Model.DecorateWithLink)
 {
-    <a href="@uri" target="_blank">@RenderImage(uri)</a>
+    <a href="@uri" target="_blank">@RenderImage(uri)(null)</a>
 }
 else
 {
-    @:@RenderImage(uri)
+    @:@RenderImage(uri)(null)
 }
 
-@helper RenderImage(string uri)
-{
-    <div class="control-image__container">
-        <span class="control-image__tooltip hidden"> </span>
-        <img src="@uri" alt="Image is unavailable" title="@Model.Title" class="control-image__img" style="@CheckStyle(Model.MaxWidth, "max-width")
-     @CheckStyle(Model.Height, "height") @CheckStyle(Model.Width, "width") @CheckStyle(Model.MaxHeight, "max-height")" />
-    </div>
+@{
+  Func<dynamic, HelperResult> RenderImage(string imageUri) =>
+  @<div class="control-image__container">
+    <span class="control-image__tooltip hidden"> </span>
+    <img src="@imageUri" alt="Image is unavailable" title="@Model.Title" class="control-image__img" 
+         style="
+          @CheckStyle(Model.MaxWidth, "max-width")(null) 
+          @CheckStyle(Model.Height, "height")(null) 
+          @CheckStyle(Model.Width, "width")(null) 
+          @CheckStyle(Model.MaxHeight, "max-height")(null)"
+    />
+  </div>;
 }
 
-@helper CheckStyle(string model, string css)
-{<text>@(model != null ? (css + ": " + model) + ";" : "")</text>}
+@{
+
+  Func<dynamic, HelperResult> CheckStyle(string model, string css) =>
+    @<text>@( model != null ? (css + ": " + model) + ";" : "")</text>;
+}
+

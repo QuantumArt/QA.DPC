@@ -2,20 +2,18 @@
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
 
 @section jquery{
-	@Scripts.Render("~/bundles/KendoUI")
+  <script src="~/js/bundles/kendo.min.js"></script>
 }
 
 @section head{
-	@Styles.Render("~/content/KendoUI/KendoUIStyles")
-
-	@Scripts.Render("~/bundles/codemirror")
-
-	@Styles.Render("~/content/codemirror")
-
-	@Scripts.Render("~/bundles/jqueryunobtrusive")
-
-    <link href="~/content/definitioneditor.css" rel="stylesheet"/>
-    <script src="~/Scripts/DefinitionEditor.js"></script>
+  
+  <link rel="stylesheet" href="~/css/kendo.min.css">
+  <link href="~/css/definitioneditor.css" rel="stylesheet"/>
+  <link href="~/css/codemirror.min.css" rel="stylesheet"/>
+	
+  <script src="~/js/bundles/codemirror.min.js"></script>
+  <script src="~/js/bundles/jqueryunobtrusive.min.js"></script>
+  <script src="~/js/DefinitionEditor.js"></script>
 }
 
 <div id="verticalRootSplitter">

@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using Microsoft.AspNetCore.Html;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models
@@ -20,10 +21,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
         /// </summary>
         public string UserLocale { get; set; }
         
-        public MvcHtmlString SerializeSettings()
+        public HtmlString SerializeSettings()
         {
             string settings = JsonConvert.SerializeObject(this);
-            return new MvcHtmlString($"<script type=\"text/javascript\">window.ProductEditorSettings={settings}</script>");
+            return new HtmlString($"<script type=\"text/javascript\">window.ProductEditorSettings={settings}</script>");
         }
     }
 }

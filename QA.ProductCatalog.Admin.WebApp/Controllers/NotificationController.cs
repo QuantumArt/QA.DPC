@@ -1,8 +1,8 @@
-﻿using QA.Core.Web;
-using QA.ProductCatalog.Integration.Notifications;
+﻿using QA.ProductCatalog.Integration.Notifications;
 using System.ServiceModel;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {

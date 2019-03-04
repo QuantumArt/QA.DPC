@@ -1,6 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+#if NETSTANDARD
+using Portable.Xaml.Markup;
+#else
 using System.Windows.Markup;
+#endif
 using QA.Core.Models.Entities;
 using QA.Core.Models.UI;
 using QA.Core.Extensions;

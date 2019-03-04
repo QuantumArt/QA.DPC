@@ -1,3 +1,10 @@
-﻿@model QA.Core.DPC.UI.Controls.EntityEditorControls.ArticleInfo
-@if (Model == null || Model.Content == null) { return; }
-@Html.DisplayFor(x => x.Content)
+﻿@using QA.Core.Models.UI
+@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.Controls.EntityEditorControls.ArticleInfo
+@if (Model?.Content == null) { return; }
+
+@if (Model.Content is UIElement ui)
+{
+  @Html.DisplayForUIElement(ui) 
+}
+ 

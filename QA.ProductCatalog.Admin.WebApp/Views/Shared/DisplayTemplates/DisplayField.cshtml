@@ -1,4 +1,5 @@
-﻿@model DisplayField
+﻿@using QA.Core.Models.Entities
+@model QA.Core.DPC.UI.Controls.DisplayField
 <!--asdasd-->
 @if (Model == null) { return; }
 @{ var field = Model.Value; }
@@ -31,14 +32,14 @@
         {
             <input type="text" class="plainfield__text" readonly="readonly" value="@value" />
             <a href="@Model.GetFileUrl(field)" target="_blank" title="Открыть изображение в новой вкладке">
-                <span class="icon image_link"><img src="@Url.Content("~/content/img/icons/0.gif")"></span>
+                <span class="icon image_link"><img src="@Url.Content("~/images/icons/0.gif")"></span>
             </a>
         }
         else if (field.PlainFieldType == PlainFieldType.File)
         {
             <input type="text" class="plainfield__text" readonly="readonly" value="@value" />
             <a href="@Model.GetFileUrl(field)" target="_blank"  title="Открыть файл в новой вкладке">
-                <span class="icon folder_link"><img src="@Url.Content("~/content/img/icons/0.gif")"></span>
+                <span class="icon folder_link"><img src="@Url.Content("~/images/icons/0.gif")"></span>
             </a>
         }
         else

@@ -29,7 +29,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 			expanded = hasChildren = !isFromDictionaries && !notInDefinition;
 
-			imageUrl = "Content/img/icons/content.gif";
+			imageUrl = "images/icons/content.gif";
 
 			NotInDefinition = notInDefinition;
 		}
@@ -44,7 +44,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 			hasChildren = false;
 
-			imageUrl = "Content/img/icons/content.gif";
+			imageUrl = "images/icons/content.gif";
 
 			NotInDefinition = true;
 		}
@@ -70,9 +70,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 			hasChildren = !(fieldFromDef is PlainField) && !notInDefinition && !(fieldFromDef is VirtualField);
 
 			if (fieldFromDef is Association)
-				imageUrl = "Content/img/icons/relation.gif";
+				imageUrl = "images/icons/relation.gif";
 			else if(fieldFromDef is BaseVirtualField)
-				imageUrl = "Content/img/icons/virtualField.gif";
+				imageUrl = "images/icons/virtualField.gif";
 
 			MissingInQp = missingInQp;
 
@@ -104,7 +104,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 			MissingInQp = false;
 
 			if (fieldNotInDef.RelationType != RelationType.None || fieldNotInDef.IsClassifier)
-				imageUrl = "Content/img/icons/relation.gif";
+				imageUrl = "images/icons/relation.gif";
 		}
 
 		

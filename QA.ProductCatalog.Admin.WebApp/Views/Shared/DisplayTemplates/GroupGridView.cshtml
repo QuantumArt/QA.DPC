@@ -1,4 +1,8 @@
-﻿@model GroupGridView
+﻿@using Microsoft.AspNetCore.Html
+@using QA.ProductCatalog.Admin.WebApp.Core
+@using QA.ProductCatalog.Admin.WebApp.Models
+@using QA.Core.DPC.UI.Controls;
+@model QA.Core.DPC.UI.GroupGridView
 @if (Model == null || Model.Hidden) { return; }
 @{
     var firstRow = Model.GetChildren().FirstOrDefault();
@@ -31,7 +35,7 @@
         {
             foreach (var gr in Model.GetGroups())
             {
-                IHtmlString content;
+                IHtmlContent content;
                 if (Model.RowTemplate != null)
                 {
                     if (Model.GetChildren(gr).Select(x =>
@@ -46,7 +50,7 @@
                 if (Model.GroupingTemplate != null && (gr.Key as string) != string.Empty)
                 {
                     Model.GroupingTemplate.DataContext = gr.Key;
-                    content = Html.DisplayFor(x => Model.GroupingTemplate);
+                    content = Html.DisplayForUIElement(Model.GroupingTemplate);
                 }
                 else
                 {
@@ -102,35 +106,13 @@
                 }
                 else
                 {
-                    @: @GetRows(gr)
+                  @await Component.InvokeAsync("GetRows", new GetRowsModel() { GridView = Model, Items = gr});
                 }
             }
         }
         else
         {
-            @: @GetRows(Model.Items)
+          @await Component.InvokeAsync("GetRows", new GetRowsModel() { GridView = Model, Items = Model.Items});
         }
     </table>
 </div>
-
-@helper GetRows(IEnumerable<object> items, bool inner = false)
-{
-foreach (var row in Model.GetChildren(items))
-{
-    if (Model.RowTemplate != null)
-    {
-        Model.RowTemplate.DataContext = row.DataContext;
-    }
-    if (Model.RowTemplate == null || !Model.RowTemplate.Hidden)
-    {
-            <tr class="@(Model.RowTemplate != null ? Model.RowTemplate.ClassName: "")">
-                @foreach (var col in row.Columns)
-                {
-                    <td style="overflow: @col.Overflow.ToString().ToLower(); @(col.Padding!=null?col.Padding.ToString():"")">
-                        @Html.DisplayFor(x => col)
-                    </td>
-                }
-            </tr>
-    }
-}
-}

@@ -5,7 +5,7 @@ using QA.Core.Extensions;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.UI;
 using QA.Core.Models;
@@ -15,15 +15,16 @@ using QA.Core.Models.Filters.Base;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
-using QA.Core.Web;
 using QA.ProductCatalog.Admin.WebApp.Binders;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Processors;
 using System.Globalization;
-using System.Web;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using QA.DPC.Core.Helpers;
 using Unity;
-using Unity.Exceptions;
+using QA.ProductCatalog.Admin.WebApp.Filters;
+using ActionContext = QA.Core.ProductCatalog.Actions.ActionContext;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -36,12 +37,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private readonly Func<string, IArticleFormatter> _getFormatter;
         private readonly IProductLocalizationService _localizationService;
         private readonly IProductService _productService;
+        private readonly QPHelper _qpHelper;
 
         public ProductController(Func<string, string, IAction> getAction,
             IVersionedCacheProvider versionedCacheProvider,
             Func<string, IArticleFormatter> getFormatter, 
             IProductLocalizationService localizationService,
-            IProductService productService
+            IProductService productService,
+            QPHelper helper
             )
         {
             _getAction = getAction;
@@ -49,6 +52,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _getFormatter = getFormatter;
             _localizationService = localizationService;
             _productService = productService;
+            _qpHelper = helper;
         }
 
         [RequireCustomAction]
@@ -60,7 +64,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             bool includeRelevanceInfo = true, 
             bool localize = false,
             string lang = null)
-        {    
+        {
+            ViewBag.HostId = _qpHelper.HostId;
             if (content_item_id <= 0)
             {
                 ViewBag.Message = "Параметры действия некорректны: content_item_id должен быть больше 0.";
@@ -88,13 +93,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     var cookie = Request.Cookies[actionCode + DefaultCultureKey];
 
-                    currentCulture = cookie != null ? CultureInfo.GetCultureInfo(cookie.Value) : cultures[0];
+                    currentCulture = string.IsNullOrEmpty(cookie) ? cultures[0] : CultureInfo.GetCultureInfo(cookie);
                 }
                 else
                 {
                     currentCulture = CultureInfo.GetCultureInfo(lang);
-                    var cookie = new HttpCookie(actionCode + DefaultCultureKey, lang);
-                    Response.AppendCookie(cookie);
+                    Response.Cookies.Append(actionCode + DefaultCultureKey, lang);
                 }
 
                 product = _localizationService.Localize(product, currentCulture);                
@@ -252,15 +256,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             _versionedCacheProvider.Add(true, oneTimeKey, new string[] { }, TimeSpan.FromMinutes(10));
 
-            var urlScheme = Request.Url?.Scheme;
+            var urlScheme = Request.Scheme;
             return
                 Json(
                     new
                     {
                         Type = "Download",
                         Url = Url.Action("DownloadXml", "Product", new { content_item_id, live, oneTimeKey }, urlScheme)
-                    },
-                    JsonRequestBehavior.AllowGet);
+                    });
         }
 
 
@@ -268,14 +271,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         public ActionResult DownloadXml(int content_item_id, string oneTimeKey, bool live = false)
         {
             if (_versionedCacheProvider.Get(oneTimeKey) == null)
-                return new HttpUnauthorizedResult("Access to the file is restricted because of invalid or missing key.");
+                return new UnauthorizedResult();
 
             _versionedCacheProvider.Invalidate(oneTimeKey);
 
             var product = _productService.GetProductById(content_item_id, live);
 
             if (product == null)
-                return HttpNotFound("Продукт не найден.");
+                return NotFound("Продукт не найден.");
 
             var filter = live ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
@@ -393,8 +396,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                          from e in fv.Value.Errors
                          select new { Field = fv.Key, Message = e.ErrorMessage };
 
-            return Json(new {Type = "Error", Text = "Validation", ValidationErrors = errors},
-                JsonRequestBehavior.AllowGet);
+            return Json(new {Type = "Error", Text = "Validation", ValidationErrors = errors});
         }
 
         private JsonResult Error(ActionException exception)
@@ -426,11 +428,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         private JsonResult Error(string text)
         {
-            return Json(new { Type = "Error", Text = text }, JsonRequestBehavior.AllowGet);
+            return Json(new { Type = "Error", Text = text });
         }
         private JsonResult Info(string text)
         {
-            return Json(new { Type = "Info", Text = text }, JsonRequestBehavior.AllowGet);
+            return Json(new { Type = "Info", Text = text });
         }
     }
     #endregion

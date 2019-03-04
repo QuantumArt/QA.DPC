@@ -1,4 +1,5 @@
-﻿@model EntityCollection
+﻿@using QA.ProductCatalog.Admin.WebApp.Core
+@model QA.Core.DPC.UI.EntityCollection
 <!--EntityCollection
 	Items: @Model.Items
 	Template: @Model.ItemTemplate
@@ -25,6 +26,6 @@
 		
 		isFirst = false;
 		
-		@Html.DisplayFor(x => item)
+		@Html.DisplayForUIElement(item)
 	}
 }

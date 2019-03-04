@@ -2,41 +2,41 @@
 
 ## NPM-scripts
 
-* `npm run build-prod` сборка для релиза
-* `npm run build-dev` сборка для отладки
-* `npm run webpack` сборка для отладки с пересборкой при сохранении
-* `precommit` git-hook для форматирования измененных файлов при коммите
+- `npm run build-prod` сборка для релиза
+- `npm run build-dev` сборка для отладки
+- `npm run webpack` сборка для отладки с пересборкой при сохранении
+- `precommit` git-hook для форматирования измененных файлов при коммите
   с помощью [Prettier](https://prettier.io/)
 
 ## Webpack
 
 см. `webpack.config.js` и `tsconfg.json`
 
-* Webpack рекурсивно обходит каталог `~/Views` и находит все пары файлов
+- Webpack рекурсивно обходит каталог `~/Views` и находит все пары файлов
   вида (`[ViewName].cshtml`, `[ViewName].js`) у которых совпадает имя файла.
   Каждая такая пара является отдельной точкой входа (entry) для Webpack.
   Для JavaScript-точек входа также допускаются расширения `.jsx`, `.ts` и `.tsx`.
 
-* Затем Webpack создает бандлы в папке `~/Scripts/Bundles`. Именем каждого бандла является
+- Затем Webpack создает бандлы в папке `~/js/Bundles`. Именем каждого бандла является
   путь к его точке входа `[ViewName].js` относительно папки `~/Views`.
 
-* На странице `[ViewName].cshtml` вручную прописывается путь к созданному бандлу
+- На странице `[ViewName].cshtml` вручную прописывается путь к созданному бандлу
   и скрипт загрузки полифиллов из CDN `cdn.polyfill.io`. Она предоставляет полифиллы
   специфичные для каждого браузера на основе его `User-Agent`. Также в `<head>` страницы
   вручную добавляется атрибут `root-url`, содержащий `@Url.Content("~")`.
 
-* Webpack обрабатывает JavaScript, TypeScript и JSX код, CSS и Sass стили, а также
+- Webpack обрабатывает JavaScript, TypeScript и JSX код, CSS и Sass стили, а также
   статические картинки и шрифты.
 
-* Каждая JavaScript точка входа должна импортировать файл `~/ClientApp/Environment.ts`,
+- Каждая JavaScript точка входа должна импортировать файл `~/ClientApp/Environment.ts`,
   который содержит настройки `__webpack_public_path__` (для динамической загрузки модулей Webpack),
   TypeScript runtime и общие CSS-стили.
 
-* Исходный Javascript-код должен находиться в папках `~/ClientApp` или `~/Views`. При этом локальные
+- Исходный Javascript-код должен находиться в папках `~/ClientApp` или `~/Views`. При этом локальные
   JS-модули можно импортировать не только по отнисительному пути, но и по абсолютному пути начиная от `~/ClientApp`.
   https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping
 
-* В скриптах доступны пременные `process.env.NODE_ENV: "development" | "productiuon"`
+- В скриптах доступны пременные `process.env.NODE_ENV: "development" | "productiuon"`
   и `DEBUG: boolean` для условной компиляции.
 
 ### Пример
@@ -69,7 +69,7 @@
 </head>
 <body>
   <div id="container"></div>
-  <script src="~/Scripts/Bundles/Home/Index.js"></script>
+  <script src="~/js/Bundles/Home/Index.js"></script>
 </body>
 </html>
 ```

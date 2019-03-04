@@ -1,5 +1,5 @@
-import "../../Scripts/pmrpc";
-import QP8 from "../../Scripts/qp/QP8BackendApi.Interaction";
+import "wwwroot/js/pmrpc";
+import QP8 from "wwwroot/js/qp/QP8BackendApi.Interaction";
 import { FileFieldSchema, FieldExactTypes } from "Models/EditorSchemaModels";
 import { ArticleObject } from "Models/EditorDataModels";
 import { untracked, runInAction } from "mobx";

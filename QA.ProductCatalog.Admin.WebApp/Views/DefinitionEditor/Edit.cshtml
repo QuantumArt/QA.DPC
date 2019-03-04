@@ -17,14 +17,12 @@
     actionName = "Save" + actionName;
 }
 
-@using (Ajax.BeginForm(actionName, new AjaxOptions
-{
-    OnSuccess = "DefinitionEditor.UpdateFormAfterSave",
-    OnFailure = "DefinitionEditor.OnTreeNodeSaveError",
-    OnBegin = "DefinitionEditor.onTreeNodeSaveBegin",
-    OnComplete = "DefinitionEditor.onTreeNodeSaveComplete"
-}))
-{
+<form asp-controller="DefinitionEditor" asp-action="@actionName" data-ajax="true" data-ajax-method="POST"
+      data-ajax-success="DefinitionEditor.UpdateFormAfterSave"
+      data-ajax-failure="DefinitionEditor.OnTreeNodeSaveError"
+      data-ajax-begin="DefinitionEditor.onTreeNodeSaveBegin"
+      data-ajax-complete="DefinitionEditor.onTreeNodeSaveComplete">
+
     if (Model is DefinitionFieldInfo || (!Model.InDefinition && !(Model is DefinitionContentInfo && ((DefinitionContentInfo)Model).IsFromDictionaries)))
     {
         <div class="editor-label">
@@ -52,6 +50,7 @@
         <input id="save" type="submit" value="Применить" />
     </p>
 }
+</form>
 
 <script>
     DefinitionEditor.ShowOrHideFieldProps();

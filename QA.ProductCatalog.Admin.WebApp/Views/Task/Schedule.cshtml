@@ -1,24 +1,19 @@
 ﻿@model QA.ProductCatalog.Admin.WebApp.Models.TaskScheduleModel
 
+<script src="~/js/bundles/jqueryunobtrusive.min.js"></script>
+<script src="~/js/bundles/schedule.min.js"></script>
 
-@Scripts.Render("~/bundles/jqueryunobtrusive")
-
-@Scripts.Render("~/bundles/Schedule")
-
-@Styles.Render("~/content/jqcron.css")
-
+<link href="~/css/jqron.min.css" rel="stylesheet">
 <style>
 	.editor-label {
 		width: 100px;
 	}
 </style>
 
-@using (Ajax.BeginForm("SaveShedule", "Task",
-	new AjaxOptions
-	{
-		OnSuccess = ViewBag.OnSuccess,
-		OnFailure = "OnSheduleSaveError"
-	}))
+<form asp-controller="Task" asp-action="SaveShedule" data-ajax="true" data-ajax-method="POST"
+      data-ajax-success=@ViewBag.OnSuccess
+      data-ajax-failure="Task.OnSheduleSaveError">
+
 {
 	@Html.HiddenFor(x => x.TaskId)
 	<div class="editor-label">
@@ -117,4 +112,4 @@
 	<p>
 		<input id="save" type="submit" value="Сохранить" />
 	</p>
-}
+</form>
