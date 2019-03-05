@@ -108,7 +108,7 @@ param(
     [string] $syncApiName = 'Dpc.SyncApi',
     ## Путь к файлу логов
     [Parameter()]
-    [string]$logPath = $false
+    [string]$logPath
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
