@@ -15,6 +15,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 {
     public class ProductImporter
     {
+        private readonly IHttpClientFactory _factory;        
         private readonly ILogger _logger;
 
         private readonly ElasticConfiguration _configuration;
@@ -26,7 +27,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private readonly string _customerCode;
 
-        public ProductImporter(HarvesterOptions options, DataOptions dataOptions, ElasticConfiguration configuration, ProductManager manager, ILoggerFactory loggerFactory, string customerCode)
+        public ProductImporter(
+        HarvesterOptions options, DataOptions dataOptions, ElasticConfiguration configuration, 
+        ProductManager manager, 
+        ILoggerFactory loggerFactory,
+        IHttpClientFactory factory,        
+        string customerCode)
         {
             _logger = loggerFactory.CreateLogger(GetType());
             _manager = manager;
@@ -34,14 +40,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _options = options;
             _dataOptions = dataOptions;
             _customerCode = customerCode;
+            _factory = factory;
         }
 
         public bool ValidateInstance(string language, string state)
         {
             var reindexUrl = _configuration.GetReindexUrl(language, state);
+            _logger.LogInformation($"Checking instance: {language} {state}");            
             var url = $"{reindexUrl}/ValidateInstance";
             var result = GetContent(url).Result;
             var validation = JsonConvert.DeserializeObject<bool>(result.Item1);
+            _logger.LogInformation($"Validation result: {validation}");            
             return validation;
         }
 
@@ -55,10 +64,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
             
             var url = _configuration.GetReindexUrl(language, state);
-            _logger.LogInformation("Начинаем импорт данных. Запрашиваем список продуктов...");
+            _logger.LogInformation("Starting import...");
             var ids = await GetIds(url);
-            _logger.LogInformation($"Получен список продуктов. Количество: {ids.Length}");
-            _logger.LogInformation($"Бьем продукты на порции по {_options.ChunkSize}...");
+            _logger.LogInformation($"Product list received. Length: {ids.Length}. Splitting products into chunks by {_options.ChunkSize}...");
             var chunks = ids.Chunk(_options.ChunkSize).ToArray();
             var index = 1;
 
@@ -72,39 +80,37 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                     return;
                 }
-           
 
-                _logger.LogInformation($"Запрашиваем порцию №{index}...");
-                var dataTasks = chunk.Select(n => GetProductById(url, n));
+
+                var enumerable = chunk as int[] ?? chunk.ToArray();
+                _logger.LogInformation($"Chunk {index} with ids ({string.Join(",", enumerable)}) requested...");
+                var dataTasks = enumerable.Select(n => GetProductById(url, n));
 
                 ProductPostProcessorData[] data;
                 try
                 {
                     data = await Task.WhenAll(dataTasks);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
-                    string message = "Не удалось получить продукты от удаленного сервиса.";
-                    _logger.LogInformation(message);
+                    string message = $"An error occurs while receiving products for chunk {index}";
+                    _logger.LogError(ex, message);
                     executionContext.Message = message;
                     throw;
                 }
-                _logger.LogInformation("Продукты получены.");
-
-
-                _logger.LogInformation("Начинаем запись...");
+                _logger.LogInformation($"Products from chunk {index} received. Starting bulk import...");
 
                 var result = await _manager.BulkCreateAsync(data, language, state);
 
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("Запись прошла успешно.");
+                    _logger.LogInformation($"Bulk import for chunk {index} succeeded.");
                     index++;
                 }
                 else
                 {
-                    string message = $"Не удалось импортировать все продукты. {result}";
-                    _logger.LogInformation(message);
+                    string message = $"Cannot proceed bulk import for chunk {index}: {result}";
+                    _logger.LogError(message);
                     executionContext.Message = message;
                     throw result.GetException();
                 }
@@ -114,26 +120,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 executionContext.SetProgress((byte)progress);
             }
 
-            executionContext.Message = "Продукты проиндексированы";
+            executionContext.Message = "Import completed";
         }
 
         public async Task<Tuple<string, DateTime>> GetContent(string url)
         {
-            DateTime modified;
-            var result = string.Empty;
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Clear();
-                url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
-                var response = await client.GetAsync(url);
-                modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadAsStringAsync();
-                }
-            }
+            url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
+            _logger.LogInformation($"Requesting URL: {url}");
+            var client = _factory.CreateClient();
+            var response = await client.GetAsync(url);
+            var modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
+            var result = (!response.IsSuccessStatusCode) ? "" : await response.Content.ReadAsStringAsync();
+            _logger.LogInformation($"Status code {response.StatusCode} received");
             return new Tuple<string, DateTime>(result, modified);
         }
 

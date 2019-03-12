@@ -17,8 +17,9 @@ namespace QA.Core.DPC.QP.API.Services
 
         private readonly ISettingsService _settingsService;
         private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly IHttpClientFactory _factory;
 
-        public TarantoolJsonService(ISettingsService settingsService, IVersionedCacheProvider cacheProvider)
+        public TarantoolJsonService(ISettingsService settingsService, IVersionedCacheProvider cacheProvider, IHttpClientFactory factory)
         {
             var tntUrl = ConfigurationManager.AppSettings["DPC.Tarantool.Api"];
             _baseUri = !String.IsNullOrEmpty(tntUrl) ? new Uri(tntUrl) : null;
@@ -103,7 +104,7 @@ namespace QA.Core.DPC.QP.API.Services
 
         private T Get<T>(Uri uri)
         {
-            using (var client = new HttpClient())
+            var client = _factory.CreateClient();
             using (var response = client.GetAsync(uri).Result)
             {
                 if (!response.IsSuccessStatusCode) throw new Exception($"unsuccess request: {uri}");

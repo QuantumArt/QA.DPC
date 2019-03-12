@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -20,11 +19,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         private readonly QPHelper _qpHelper;
 
-        public HighloadFrontController(IHttpContextAccessor httpContextAccessor, IOptions<IntegrationProperties> options, QPHelper helper)
+        private readonly IHttpClientFactory _factory;
+
+        public HighloadFrontController(IHttpContextAccessor httpContextAccessor, IOptions<IntegrationProperties> options, QPHelper helper, IHttpClientFactory factory)
         {
             _httpContext = httpContextAccessor.HttpContext;
             _options = options.Value;
             _qpHelper = helper;
+            _factory = factory;
         }
 
         public Uri GetBaseUrl()
@@ -55,10 +57,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             var uri = new Uri(GetBaseUrl(), url);
             var s = $"{uri}?customerCode={customerCode}";
-            using (var client = new HttpClient())
-            {
-                return GetJson(await client.GetStringAsync(s));
-            }
+            var client = _factory.CreateClient();
+            return GetJson(await client.GetStringAsync(s));
         }
 
         [HttpPost]
@@ -66,11 +66,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             var uri = new Uri(GetBaseUrl(), url);
             var s = $"{uri}?customerCode={customerCode}";
-            using (var client = new HttpClient())
-            {
-                var response = await client.PostAsync(s, null);
-                return GetJson(await response.Content.ReadAsStringAsync());
-            }            
+            var client = _factory.CreateClient();
+            var response = await client.PostAsync(s, null);
+            return GetJson(await response.Content.ReadAsStringAsync());
         }
 
         private ContentResult GetJson(string json)

@@ -52,6 +52,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.Configure<QPOptions>(Configuration.GetSection("QP"));        
             
             services.AddDistributedMemoryCache();
+            services.AddHttpClient();
 
             services.AddSession(options =>
             {

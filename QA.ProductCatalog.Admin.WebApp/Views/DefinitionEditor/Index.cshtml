@@ -27,7 +27,7 @@
 	</div>
 	<div id="xamlPane">
 		<div id="dvToolbar"></div>
-		@Html.Partial("XmlViewer", Model.Xml ?? string.Empty )
+		@Html.PartialAsync("XmlViewer", Model.Xml ?? string.Empty )
 	</div>
 </div>
 

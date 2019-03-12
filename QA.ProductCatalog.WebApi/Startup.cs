@@ -56,6 +56,8 @@ namespace QA.ProductCatalog.WebApi
         {
             services.AddOptions();
             services.AddHttpContextAccessor();
+            services.AddHttpClient();
+
             services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
             
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));

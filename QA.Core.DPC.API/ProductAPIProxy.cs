@@ -14,11 +14,13 @@ namespace QA.Core.DPC.API
 	{
 		private readonly IProxyConfiguration _configuration;
 		private readonly Func<Type, MediaTypeFormatter> _getFormatter;
+		private readonly IHttpClientFactory _factory;
 
-		public ProductAPIProxy(IProxyConfiguration configuration, Func<Type, MediaTypeFormatter> getFormatter)
+		public ProductAPIProxy(IProxyConfiguration configuration, Func<Type, MediaTypeFormatter> getFormatter, IHttpClientFactory factory)
 		{
 			_configuration = configuration;
 			_getFormatter = getFormatter;
+			_factory = factory;
 		}
 
 		#region IProductAPIService implementation
@@ -97,7 +99,7 @@ namespace QA.Core.DPC.API
 			{
 				var formatter = _getFormatter(typeof(T));
 
-				using (var client = new HttpClient())
+				var client = _factory.CreateClient();
 				using (var response = await client.PostAsync<T>(url, model, formatter))
 				{
 					await ValidateResponseAsync(response);
@@ -119,7 +121,7 @@ namespace QA.Core.DPC.API
 			{
 				var formatter = _getFormatter(typeof(T));
 
-				using (var client = new HttpClient())
+				var client = _factory.CreateClient();
 				using (var response = client.PostAsync<T>(url, model, formatter).Result)
 				{
 					ValidateResponse(response);
@@ -139,7 +141,7 @@ namespace QA.Core.DPC.API
 		{
 			try
 			{
-				using (var client = new HttpClient())
+				var client = _factory.CreateClient();
 				using (var response = await client.GetAsync(url))
 				{
 					await ValidateResponseAsync(response);
@@ -161,7 +163,7 @@ namespace QA.Core.DPC.API
 		{
 			try
 			{
-				using (var client = new HttpClient())
+				var client = _factory.CreateClient();
 				using (var response = client.GetAsync(url).Result)
 				{
 					ValidateResponse(response);
@@ -183,7 +185,7 @@ namespace QA.Core.DPC.API
 		{
 			try
 			{
-				using (var client = new HttpClient())
+				var client = _factory.CreateClient();
 				using (var response = await client.DeleteAsync(url))
 				{
 					await ValidateResponseAsync(response);
@@ -203,7 +205,7 @@ namespace QA.Core.DPC.API
 		{
 			try
 			{
-				using (var client = new HttpClient())
+				var client = _factory.CreateClient();
 				using (var response = client.DeleteAsync(url).Result)
 				{
 					ValidateResponse(response);
@@ -223,7 +225,7 @@ namespace QA.Core.DPC.API
 		{
 			try
 			{
-				using (var client = new HttpClient())
+				var client = _factory.CreateClient();
 				using (var content = new ByteArrayContent(new byte[0]))
 				using (var response = client.PostAsync(url, content).Result)
 				{
