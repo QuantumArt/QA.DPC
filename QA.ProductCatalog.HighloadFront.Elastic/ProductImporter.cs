@@ -27,6 +27,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private readonly string _customerCode;
 
+        private readonly HttpClient _client;
+
         public ProductImporter(HarvesterOptions options, DataOptions dataOptions, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
         {
             _logger = logger;
@@ -35,6 +37,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _options = options;
             _dataOptions = dataOptions;
             _customerCode = customerCode;
+            _client = new HttpClient();
+            _client.DefaultRequestHeaders.Accept.Clear();            
         }
 
         public bool ValidateInstance(string language, string state)
@@ -121,21 +125,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public async Task<Tuple<string, DateTime>> GetContent(string url)
         {
-            DateTime modified;
-            var result = string.Empty;
-            using (var client = new HttpClient())
-            {
-                client.BaseAddress = new Uri(url);
-                client.DefaultRequestHeaders.Accept.Clear();
-                url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
-                var response = await client.GetAsync(url);
-                modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
-
-                if (response.IsSuccessStatusCode)
-                {
-                    result = await response.Content.ReadAsStringAsync();
-                }
-            }
+            url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
+            var response = await _client.GetAsync(url);
+            var modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
+            var result = (!response.IsSuccessStatusCode) ? "" : await response.Content.ReadAsStringAsync();
             return new Tuple<string, DateTime>(result, modified);
         }
 
