@@ -76,9 +76,9 @@ namespace QA.ProductCatalog.Validation.Validators
                 {
                     //Проверка того, что тарифное направление встречается только один раз в продукте 
                     var contentProductsParametersId = helper.GetSettingValue(SettingsTitles.PRODUCTS_PARAMETERS_CONTENT_ID);
-                    if (parametersIds != null)
+                    if (parametersIds != null && parametersIds.Any())
                     {
-                        var parameters = helper.GetParameters(articleService, contentId, parametersIds, "c.BaseParameter is not null");
+                        var parameters = helper.GetParameters(articleService, contentProductsParametersId, parametersIds, "c.BaseParameter is not null");
                         helper.CheckTariffAreaDuplicateExist(parameters, parametersName);
                     }
 

@@ -1,12 +1,42 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка сервиса публикации продуктов
+
+.DESCRIPTION
+Cервис публикации продуктов DPC.NotificationSender это win служба для рассылки публикуемых продуктов по витринам
+
+.EXAMPLE
+  .\InstallConsolidationNotificationSender.ps1 -notifyPort 8012 -installRoot 'C:\QA' -source 'C:\Catalog\NotificationsSender'
+
+.EXAMPLE
+  .\InstallConsolidationNotificationSender.ps1 -notifyPort 8012 -installRoot 'C:\QA' -name 'DPC.NotificationSender' -source 'C:\Catalog\NotificationsSender'
+
+#>
+param(
+    ## Алиас DPC.NotificationSender
+    [Parameter()]
     [String] $name = 'DPC.NotificationSender',
+    ## Название DPC.NotificationSender
+    [Parameter()]
     [String] $displayName = 'DPC Notification Service',
-    [String] $description = 'Puts product updates into the DB queue and sends them to the fronts in a failover manner', #ns---
-    [String] $installRoot = 'C:\QA',
+    ## Описание DPC.NotificationSender
+    [Parameter()]
+    [String] $description = 'Puts product updates into the DB queue and sends them to the fronts in a failover manner',
+    ## Путь к каталогу установки сервисов каталога
+    [Parameter(Mandatory = $true)]
+    [String] $installRoot,
+    ## Пользователь от которого будет запущен сервис
+    [Parameter()]
     [String] $login = 'NT AUTHORITY\SYSTEM',
+    ## Пароль пользователя
+    [Parameter()]
     [String] $password = 'dummy',
-    [String] $notifyPort = '8013',
-    [String] $source = 'C:\DPC.MTS\NotificationsSender'
+    ## Порт DPC.NotificationSender
+    [Parameter(Mandatory = $true)]
+    [int] $notifyPort,
+    ## Путь к сервису, откуда он будет установлен
+    [Parameter(Mandatory = $true)]
+    [String] $source
 )
 
 
@@ -20,7 +50,10 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 $projectName = "QA.Core.DPC.NotificationSender"
 $installPath = Join-Path $installRoot $name
 
-Invoke-Expression "InstallService.ps1 -Name '$name' -DisplayName '$displayName' -Description '$description' -ProjectName '$projectName' -InstallRoot '$installRoot' -source '$source' -login '$login' -password '$password' -start `$false"
+
+$currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
+$installServicePath = Join-Path $currentPath "InstallService.ps1"
+Invoke-Expression "$installServicePath -Name '$name' -DisplayName '$displayName' -Description '$description' -ProjectName '$projectName' -InstallRoot '$installRoot' -source '$source' -login '$login' -password '$password' -start `$false"
 
 $nLogPath = Join-Path $installPath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath

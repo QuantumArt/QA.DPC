@@ -1,29 +1,55 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Регистрация кастомер кода
+
+.DESCRIPTION
+Регистрирует в QP кастомер код для нового каталога:
+- Развертывается база данных каталога из бэкапа
+- База каталога обновляется до актуального состояния
+- Регистрируется в QP кастомер код каталога
+
+.EXAMPLE
+  .\InstallConsolidationCustomerCode.ps1 -databaseServer 'dbhost' -targetBackupPath 'c:\temp\catalog_consolidation.bak' -customerCode 'catalog_consolidation' -customerLogin 'login' -customerPassword 'pass' -currentSqlPath '\\storage\current.sql' -siteSyncHost 'http://localhost:8013' -syncApiHost 'http://localhost:8015' -elasticsearchHost 'http://node1:9200; http://node2:9200' -adminHost 'http://localhost:89/Dpc.Admin'
+#>
+param(
+    ## Сервер баз данных
     [Parameter(Mandatory = $true)]
     [string] $databaseServer,
+    ## Путь к бэкапу базы каталога
     [Parameter()]
     [ValidateScript({ if (-not [string]::IsNullOrEmpty($_)) { Test-Path $_}})]
     [string] $sourceBackupPath,
+    ## Локальный путь к бэкапу базы каталога на сервере баз данных
     [Parameter(Mandatory = $true)]
     [string] $targetBackupPath,
+    ## Кастомер код каталога
     [Parameter(Mandatory = $true)]
     [string] $customerCode,
+    ## Хост Dpc.SiteSync
     [Parameter(Mandatory = $true)]
     [string] $siteSyncHost,
+    ## Хост Dpc.SyncApi
     [Parameter(Mandatory = $true)]
     [string] $syncApiHost,
+    ## Хост Dpc.Admin
     [Parameter(Mandatory = $true)]
     [string] $adminHost,
+    ## Хост кластера Elasticsearch
     [Parameter(Mandatory = $true)]
     [string] $elasticsearchHost,
+    ## Путь к скрипту актуализации базы данных каталога
     [Parameter(Mandatory = $true)]
     [string] $currentSqlPath,
-    [Parameter(Mandatory = $true)]
+    ## Пользователь для коннекта к базе данных каталога
+    [Parameter()]
     [String] $customerLogin,
-    [Parameter(Mandatory = $true)]
+    ## Пароль для коннекта к базе данных каталога
+    [Parameter()]
     [String] $customerPassword,
     [Parameter()]
+    ## Пользователь для сервера баз данных
     [String] $login,
+    ## Пароль для сервера баз данных
     [Parameter()]
     [String] $password
 )
@@ -71,6 +97,17 @@ if(Get-CustomerCode -CustomerCode $customerCode)
     return
 }
 
+$resetUserPassword = $false
+
+if (-not $customerLogin){
+    $resetUserPassword = $true
+    $customerLogin = "consolidation_${customerCode}_login"
+}
+if (-not $customerPassword){
+
+    $customerPassword = New-Guid
+}
+
 if (-not [string]::IsNullOrEmpty($sourceBackupPath))
 {
     $sharedTargetBackupPath =  "\\" + $databaseServer.Trim() + "\" + $targetBackupPath.Replace(":", "$")
@@ -85,12 +122,12 @@ if (-not [string]::IsNullOrEmpty($sourceBackupPath))
         throw $_.Exception
     }
 
-    Write-Verbose "Backup copied"
+    Write-Verbose "Backup copied" -Verbose
 }
 
 
 Restore-Database -DatabaseServer $databaseServer -DatabaseName $customerCode -BackupPath $targetBackupPath -Login $login -Password $password
-Add-DatabaseUser -DatabaseServer $databaseServer -DatabaseName $customerCode -UserName $customerLogin -Login $login -Password $password
+Add-DatabaseUser -DatabaseServer $databaseServer -DatabaseName $customerCode -UserName $customerLogin -UserPassword $customerPassword -ResetUserPassword $resetUserPassword -Login $login -Password $password
 
 $connectionString = Get-ConnectionString -ServerInstance $databaseServer -DatabaseName $customerCode -Username $login -Password $password
 
@@ -110,7 +147,7 @@ ReplaceFieldValues -connectionString $connectionString -fieldId $fieldId -placeh
 $fieldId = GetFieldId -connectionString $connectionString -key "ELASTIC_INDEXES_CONTENT_ID" -field "address"
 ReplaceFieldValues -connectionString $connectionString -fieldId $fieldId -placeholder "{elasticsearch}" -value $elasticsearchHost
 
-$validationPlaceholder = "mscdev02:90/Dpc.Admin"
+$validationPlaceholder = "adminhost"
 $validationQuery = "update [site] set XAML_DICTIONARIES = cast(replace(cast(XAML_DICTIONARIES as nvarchar(max)), '$validationPlaceholder', '$adminHost') as ntext) where XAML_DICTIONARIES like '%$validationPlaceholder%'"
 Invoke-Sqlcmd -Query $validationQuery -ConnectionString $connectionString -Verbose -Querytimeout 0 -ErrorAction Stop  
  

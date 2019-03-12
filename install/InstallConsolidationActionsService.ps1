@@ -1,12 +1,42 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка сервиса выполнения задач
+
+.DESCRIPTION
+Cервис выполнения задач DPC.ActionsService это win служба для выполнения Custom Actions без блокировки интерфейса бэкэнда и выполнения задач по расписанию
+
+.EXAMPLE
+  .\InstallConsolidationActionsService.ps1 -notifyPort 8012 -installRoot 'C:\QA' -source 'C:\Catalog\ActionsRunner'
+
+.EXAMPLE
+  .\InstallConsolidationActionsService.ps1 -notifyPort 8012 -installRoot 'C:\QA' -name 'DPC.ActionsService' -source 'C:\Catalog\ActionsRunner'
+
+#>
+param(
+    ## Алиас DPC.ActionsService
+    [Parameter()]
     [String] $name = 'DPC.ActionsService',
+    ## Название DPC.ActionsService
+    [Parameter()]
     [String] $displayName = 'DPC Actions Service',
+    ## Описание DPC.ActionsService
+    [Parameter()]
     [String] $description = 'Run long tasks for DPC with updating progress',
-    [String] $installRoot = 'C:\QA',
+    ## Путь к каталогу установки сервисов каталога
+    [Parameter(Mandatory = $true)]
+    [String] $installRoot,
+    ## Пользователь от которого будет запущен сервис
+    [Parameter()]
     [String] $login = 'NT AUTHORITY\SYSTEM',
+    ## Пароль пользователя
+    [Parameter()]
     [String] $password = 'dummy',
-    [String] $notifyPort = '8013',
-    [String] $source = 'C:\DPC.MTS\ActionsRunner'
+    ## Порт DPC.NotificationSender
+    [Parameter(Mandatory = $true)]
+    [int] $notifyPort,
+    ## Путь к сервису, откуда он будет установлен
+    [Parameter(Mandatory = $true)]    
+    [String] $source
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -19,7 +49,10 @@ If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 $projectName = "QA.Core.ProductCatalog.ActionsService"
 $installPath = Join-Path $installRoot $name
 
-Invoke-Expression "InstallService.ps1 -Name '$name' -DisplayName '$displayName' -Description '$description' -ProjectName '$projectName' -InstallRoot '$installRoot' -source '$source' -login '$login' -password '$password' -start `$false"
+
+$currentPath = Split-path -parent $MyInvocation.MyCommand.Definition
+$InstallServicePath = Join-Path $currentPath "InstallService.ps1"
+Invoke-Expression "$InstallServicePath -Name '$name' -DisplayName '$displayName' -Description '$description' -ProjectName '$projectName' -InstallRoot '$installRoot' -source '$source' -login '$login' -password '$password' -start `$false"
 
 $nLogPath = Join-Path $installPath "NLogClient.config"
 [xml]$nlog = Get-Content -Path $nLogPath
