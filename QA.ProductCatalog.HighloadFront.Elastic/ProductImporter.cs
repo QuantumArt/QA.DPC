@@ -44,11 +44,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public bool ValidateInstance(string language, string state)
         {
             var reindexUrl = _configuration.GetReindexUrl(language, state);
-            _logger.Info($"Checking instance: {language} {state}");            
+            _logger.Info($"Checking instance ({language}, {state}) ...");            
             var url = $"{reindexUrl}/ValidateInstance";
             var result = GetContent(url).Result;
             var validation = JsonConvert.DeserializeObject<bool>(result.Item1);
-            _logger.Info($"Validation result: {validation}");            
+            _logger.Info($"Validation result for instance ({language}, {state}): {validation}");            
             return validation;
         }
 
@@ -125,11 +125,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public async Task<Tuple<string, DateTime>> GetContent(string url)
         {
             url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
-            _logger.Info($"Requesting URL: {url}");
+            _logger.Debug($"Requesting URL: {url}");
             var response = await _client.GetAsync(url);
             var modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
             var result = (!response.IsSuccessStatusCode) ? "" : await response.Content.ReadAsStringAsync();
-            _logger.Info($"Status code {response.StatusCode} received");
+            _logger.Debug($"Received {response.StatusCode} for URL: {url}");
             return new Tuple<string, DateTime>(result, modified);
         }
 
