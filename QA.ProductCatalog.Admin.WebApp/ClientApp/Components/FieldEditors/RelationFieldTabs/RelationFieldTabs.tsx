@@ -42,6 +42,8 @@ interface RelationFieldTabsProps extends ExpandableFieldEditorProps {
    * Влияет на производительность и выполнение валидаций, заданных внутри вложенного @see EntityEditor
    */
   renderAllTabs?: boolean;
+  /** Автопозиционирование меню в заголовке */
+  autoPositionMenu?: boolean;
 }
 
 interface RelationFieldTabsState {
@@ -337,6 +339,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
 
   renderField(model: ArticleObject, fieldSchema: MultiRelationFieldSchema) {
     const {
+      autoPositionMenu,
       skipOtherFields,
       fieldOrders,
       fieldEditors,
@@ -405,6 +408,7 @@ export class RelationFieldTabs extends AbstractRelationFieldEditor<RelationField
                       fieldEditors={fieldEditors}
                       titleField={titleField}
                       withHeader
+                      autoPositionMenu={autoPositionMenu}
                       onMountEntity={onMountEntity}
                       onUnmountEntity={onUnmountEntity}
                       onSaveEntity={onSaveEntity}

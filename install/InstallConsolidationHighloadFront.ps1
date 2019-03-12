@@ -1,26 +1,32 @@
 ﻿<#
 .SYNOPSIS
-Установка API каталога
+Установка HighloadFront
 
 .DESCRIPTION
-API каталога Dpc.WebApi предоставляет программный интерфейс для функционала бэкэнда каталога Dpc.Admin
+HighloadFront каталога это web приложение, для работы с индексами Elasticsearch.
+Устанавливается в двух вариантах:
+- Dpc.SyncApi: Для обновления индексов Elasticsearch
+- Dpc.SearchApi: Для поиска по индексам Elasticsearch
 
 .EXAMPLE
-  .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012 -siteName 'Dpc.WebApi'
+  .\InstallConsolidationHighloadFront.ps1 -port 8015 -siteName 'Dpc.SyncApi' -сanUpdate $true
 
 .EXAMPLE
-   .\InstallConsolidationWebApi.ps1 -port 8016 -notifyPort 8012
+   .\InstallConsolidationHighloadFront.ps1 -port 8014 -siteName 'Dpc.SearchApi' -сanUpdate $false
 #>
 param(
-    ## Название Dpc.WebApi
-    [Parameter()]
-    [String] $siteName ='Dpc.WebApi',
-    ## Порт Dpc.WebApi
+    ## Название HighloadFront
+    [Parameter(Mandatory = $true)]
+    [String] $siteName,
+    ## Порт HighloadFront
     [Parameter(Mandatory = $true)]
     [int] $port,
-    ## Порт DPC.NotificationSender
+    ## Флаг возможности обновлять индексы Elasticsearch
     [Parameter(Mandatory = $true)]
-    [int] $notifyPort
+    [bool] $canUpdate,
+    ## Таймаут доступа к Elasticsearch
+    [Parameter()]
+    [int] $timeout = 60
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
@@ -48,50 +54,39 @@ New-Item -Path $sitePath -ItemType Directory -Force
 
 $currentPath = Split-Path -parent $MyInvocation.MyCommand.Definition
 $parentPath = Split-Path -parent $currentPath
-$adminPath = Join-Path $parentPath "WebApi"
+$adminPath = Join-Path $parentPath "HighloadFront"
 
 Copy-Item "$adminPath\*" -Destination $sitePath -Force -Recurse
 
-$projectName = "QA.ProductCatalog.WebApi"
-$nLogPath = Join-Path $sitePath "NLogClient.config"
-$webConfigPath = Join-Path $sitePath "web.config"
-
+$nLogPath = Join-Path $sitePath "NLog.config"
 [xml]$nlog = Get-Content -Path $nLogPath
-$var = $nlog.nlog.targets.target | where {$_.name -eq 'fileinfo'}
-$var2 = $nlog.nlog.targets.target | where {$_.name -eq 'fileexception'}
-$var.fileName = $var.fileName -Replace $projectName, $siteName
-$var.archiveFileName = $var.archiveFileName -Replace $projectName, $siteName
-$var2.fileName = $var2.fileName -Replace $projectName, $siteName
-$var2.archiveFileName = $var2.archiveFileName -Replace $projectName, $siteName
+$var = $nlog.nlog.variable | Where-Object {$_.name -eq 'logDirectory'}
+$var.value = "C:\Logs\" + $siteName
 Set-ItemProperty $nLogPath -name IsReadOnly -value $false
 $nlog.Save($nLogPath)
 
-[xml]$web = Get-Content -Path $webConfigPath
+$appsettingsPath = Join-Path $sitePath "appsettings.json"
+$depsPath = Join-Path $sitePath "QA.ProductCatalog.HighloadFront.Core.API.deps.json"
+$runtimeconfigPath = Join-Path $sitePath "QA.ProductCatalog.HighloadFront.Core.API.runtimeconfig.json"
+$webConfigPath = Join-Path $sitePath "web.config"
 
-$web.configuration.RemoveChild($web.configuration.connectionStrings)
+$appsettings = Get-Content -Path $appsettingsPath  | ConvertFrom-Json
 
-$endpoint = $web.configuration.'system.serviceModel'.client.endpoint
-$endpoint.address = "http://${env:COMPUTERNAME}:$notifyPort/DpcNotificationService"
+$appsettings.Data | Add-Member -Name "ElasticTimeout" -Value $timeout -MemberType NoteProperty
+$appsettings.Data.CanUpdate = $canUpdate
 
-$qpMode = $web.CreateElement('add')
-$qpMode.SetAttribute('key', 'QPMode')
-$qpMode.SetAttribute('value', 'true')
-$web.configuration.appSettings.AppendChild($qpMode)
+Set-ItemProperty $appsettingsPath -name IsReadOnly -value $false
+$appsettings | ConvertTo-Json -Depth 5 | Set-Content -Path $appsettingsPath
 
-$container = $web.configuration.unity.container
-$settingsService = $container.register | Where-Object {$_.type -eq 'ISettingsService'}
-$settingsService.mapTo = "SettingsFromQpService";
-$articleFormatter = $container.register | Where-Object {$_.type -eq 'IArticleFormatter'}
-$articleFormatter.mapTo = "JsonProductFormatter";
-
-Set-ItemProperty $webConfigPath -name IsReadOnly -value $false
-$web.Save($webConfigPath)
-
-
+Copy-Item $appsettingsPath ($appsettingsPath -replace ".json", ".json2")
+Copy-Item $depsPath ($depsPath -replace ".json", ".json2")
+Copy-Item $runtimeconfigPath ($runtimeconfigPath -replace ".json", ".json2")
 Copy-Item $webConfigPath ($webConfigPath -replace ".config", ".config2")
 Copy-Item $nLogPath ($nLogPath -replace ".config", ".config2")
 Remove-Item -Path (Join-Path $sitePath "*.config") -Force
+Remove-Item -Path (Join-Path $sitePath "*.json") -Force
 Get-ChildItem (Join-Path $sitePath "*.config2") | Rename-Item -newname { $_.name -replace '\.config2','.config' }
+Get-ChildItem (Join-Path $sitePath "*.json2") | Rename-Item -newname { $_.name -replace '\.json2','.json' }
 
 $p = Get-Item "IIS:\AppPools\$siteName" -ErrorAction SilentlyContinue
 

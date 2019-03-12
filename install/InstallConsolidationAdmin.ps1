@@ -1,9 +1,34 @@
-﻿param(
+﻿<#
+.SYNOPSIS
+Установка бэкэнда каталога
+
+.DESCRIPTION
+Бэкэнда каталога Dpc.Admin это web приложение, содержит компоненты:
+- Custom Actions для обработки продуктов
+- Remote validation для продуктов
+
+.EXAMPLE
+  .\InstallConsolidationAdmin.ps1 -notifyPort 8012 -syncPort 8013
+
+.EXAMPLE
+  .\InstallConsolidationAdmin.ps1 -notifyPort 8012 -syncPort 8013 -admin 'Dpc.Admin' -qp 'QP8' -backend 'Backend'
+#>
+param(
+    ## Название QP
+    [Parameter()]
     [String] $qp ='QP8',
+    ## Название бэкэнда QP
+    [Parameter()]
     [String] $backend ='Backend',
+    ## Название Dpc.Admin
+    [Parameter()]
     [String] $admin ='Dpc.Admin',
-    [String] $notifyPort = '8013',
-    [String] $syncPort = '8012'
+    ## Порт DPC.NotificationSender
+    [Parameter(Mandatory = $true)]
+    [int] $notifyPort,
+    ## Порт Dpc.SiteSync
+    [Parameter(Mandatory = $true)]
+    [int] $syncPort
 )
 
 If (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator"))
