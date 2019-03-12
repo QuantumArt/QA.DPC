@@ -46,11 +46,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public bool ValidateInstance(string language, string state)
         {
             var reindexUrl = _configuration.GetReindexUrl(language, state);
-            _logger.LogInformation($"Checking instance: {language} {state}");            
+            _logger.LogInformation($"Checking instance: {language}, {state}");            
             var url = $"{reindexUrl}/ValidateInstance";
             var result = GetContent(url).Result;
             var validation = JsonConvert.DeserializeObject<bool>(result.Item1);
-            _logger.LogInformation($"Validation result: {validation}");            
+            _logger.LogInformation($"Validation result for instance ({language}, {state}): {validation}");
             return validation;
         }
 
@@ -123,26 +123,26 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             executionContext.Message = "Import completed";
         }
 
-        public async Task<Tuple<string, DateTime>> GetContent(string url)
+        private async Task<Tuple<string, DateTime>> GetContent(string url)
         {
             url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
-            _logger.LogInformation($"Requesting URL: {url}");
+            _logger.LogDebug($"Requesting URL: {url}", url);
             var client = _factory.CreateClient();
             var response = await client.GetAsync(url);
             var modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
             var result = (!response.IsSuccessStatusCode) ? "" : await response.Content.ReadAsStringAsync();
-            _logger.LogInformation($"Status code {response.StatusCode} received");
+            _logger.LogDebug($"Received {response.StatusCode} for URL: {url}");
             return new Tuple<string, DateTime>(result, modified);
         }
 
-        public async Task<int[]> GetIds(string reindexUrl)
+        private async Task<int[]> GetIds(string reindexUrl)
         {
             var result = await GetContent(reindexUrl);
             var arr = JsonConvert.DeserializeObject(result.Item1) as JArray;
             return arr?.Select(n => (int) n).ToArray();
         }
 
-        public async Task<ProductPostProcessorData> GetProductById(string reindexUrl, int id)
+        private async Task<ProductPostProcessorData> GetProductById(string reindexUrl, int id)
         {
             var relUri = $"{reindexUrl}/{id}";
             var result = await GetContent(relUri);
