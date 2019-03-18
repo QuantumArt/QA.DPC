@@ -55,7 +55,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         [HttpGet]
         public async Task<ActionResult> GetSettings(string url, string customerCode)
         {
-            var uri = new Uri(GetBaseUrl(), url);
+            var baseUrl = GetBaseUrl();
+            if (baseUrl == null) return GetJson(null);
+            var uri = new Uri(baseUrl, url);
             var s = $"{uri}?customerCode={customerCode}";
             var client = _factory.CreateClient();
             return GetJson(await client.GetStringAsync(s));
@@ -64,7 +66,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         [HttpPost]
         public async Task<ActionResult> IndexChanel(string url, string customerCode)
         {
-            var uri = new Uri(GetBaseUrl(), url);
+            var baseUrl = GetBaseUrl();
+            if (baseUrl == null) return GetJson(null);
+            var uri = new Uri(baseUrl, url);
             var s = $"{uri}?customerCode={customerCode}";
             var client = _factory.CreateClient();
             var response = await client.PostAsync(s, null);

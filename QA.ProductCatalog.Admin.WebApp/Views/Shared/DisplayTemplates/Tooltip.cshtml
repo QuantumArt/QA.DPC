@@ -1,7 +1,7 @@
 ﻿@using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.Core.DPC.UI.Controls.Tooltip
 
-@if (Model == null || Model.Hidden || Model.Content == null || Model.Target == null) { return; }
+@if (Model == null || (Model.Hidden ?? false) || Model.Content == null || Model.Target == null) { return; }
 
 @{ string id = Html.GetUniqueId("Tooltip");}
 

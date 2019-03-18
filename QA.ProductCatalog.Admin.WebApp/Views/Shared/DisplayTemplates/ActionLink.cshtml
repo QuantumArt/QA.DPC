@@ -4,7 +4,7 @@
 @model QA.Core.DPC.UI.Controls.ActionLink
 
 @{
-  if (Model == null || Model.Hidden)
+  if (Model == null || (Model.Hidden ?? false))
   {
     return;
   }

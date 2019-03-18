@@ -16,6 +16,7 @@ using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
+    [RequireCustomAction]
     [Route("ProductEditor")]
     public class ProductEditorController : Controller
     {
@@ -45,8 +46,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorLocaleService = editorLocaleService;
         }
         
-        [HttpGet, RequireCustomAction]
-        public ViewResult Edit(int content_item_id, bool isLive = false)
+        [HttpGet("Edit")]
+        public ActionResult Edit(int content_item_id, bool isLive = false)
         {
             EditorDefinition definition = GetEditorDefinitionByArticleId(content_item_id, isLive);
 
@@ -86,8 +87,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .GetEditorDefinition(productTypeId, qpArticle.ContentId, isLive);
         }
         
-        [HttpGet, RequireCustomAction]
-        public ViewResult TypeScriptSchema(int content_item_id, bool isLive = false)
+        [HttpGet("TypeScriptSchema")]
+        public ActionResult TypeScriptSchema(int content_item_id, bool isLive = false)
         {
             Content rootContent = _contentDefinitionService.GetDefinitionById(content_item_id, isLive);
 
@@ -133,8 +134,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
 #if DEBUG
-        [HttpGet]
-        public ViewResult ComponentLibrary()
+        [HttpGet("ComponentLibrary")]
+        public ActionResult ComponentLibrary()
         {
             return View();
         }

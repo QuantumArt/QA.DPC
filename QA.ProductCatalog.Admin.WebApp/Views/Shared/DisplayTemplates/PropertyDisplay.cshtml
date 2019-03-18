@@ -2,7 +2,7 @@
 @using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.Core.DPC.UI.Controls.PropertyDisplay
 @{
-    if (Model == null || Model.Title == null || Model.Hidden) { return; }
+    if (Model == null || Model.Title == null || (Model.Hidden ?? false)) { return; }
     string title = Model.Title;
 }
 <!--

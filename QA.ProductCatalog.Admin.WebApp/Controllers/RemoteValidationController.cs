@@ -11,17 +11,19 @@ using Unity.Exceptions;
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
     [AllowAnonymous]
+    [Route("RemoteValidation")]
     public class RemoteValidationController : Controller
     {
         private readonly Func<string, IRemoteValidator2> _validationFactory;
 
         public RemoteValidationController(Func<string, IRemoteValidator2> validationFactory)
         {
-            UserProvider.ForcedUserId = 1;
+            HttpContextUserProvider.ForcedUserId = 1;
             _validationFactory = validationFactory;
         }
-
-        public ActionResult Validate(string validatorKey, RemoteValidationContext context)
+        
+        [Route("{validatorKey}")]
+        public ActionResult Validate(string validatorKey, [FromBody] RemoteValidationContext context)
         {
             var result = new RemoteValidationResult();
             try

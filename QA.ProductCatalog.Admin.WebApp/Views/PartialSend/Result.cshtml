@@ -1,4 +1,5 @@
-﻿@{
+﻿
+@{
     Layout = null;
 }
 <html>
@@ -32,7 +33,7 @@
 
         function UpdateForm() {
             $.ajax({
-                url: '@Url.Action("UserTask", new { taskId = Model })',
+                url: '@Url.Action("Task", new { taskId = Model })',
                 type: "GET",
                 cache: false
             }).done(

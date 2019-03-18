@@ -7,7 +7,7 @@
     {
       Model.GridView.RowTemplate.DataContext = row.DataContext;
     }
-    if (Model.GridView.RowTemplate == null || !Model.GridView.RowTemplate.Hidden)
+    if (Model.GridView.RowTemplate == null || !(Model.GridView.RowTemplate.Hidden ?? false))
     {
       <tr class="@(Model.GridView.RowTemplate != null ? Model.GridView.RowTemplate.ClassName: "")">
         @foreach (var col in row.Columns)

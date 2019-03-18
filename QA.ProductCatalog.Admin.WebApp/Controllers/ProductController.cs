@@ -29,7 +29,7 @@ using ActionContext = QA.Core.ProductCatalog.Actions.ActionContext;
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
 
-    public class ProductController : Controller
+    public class ProductController : BaseController
     {
         private const string DefaultCultureKey = "_default_culture";
         private readonly Func<string, string, IAction> _getAction;
@@ -290,40 +290,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
         [RequireCustomAction]
-        public async Task<ActionResult> Action(string command, [ModelBinder(typeof(ActionContextModelBinder))] ActionContext context, string adapter)
-        {
-            if (!ModelState.IsValid)
-            {
-                return Error(ModelState);
-            }
-
-            try
-            {
-                var action = _getAction(command, adapter);
-                string message;
-
-                if (action is IAsyncAction asyncAction)
-                {
-                    message = await asyncAction.Process(context);
-                }
-                else
-                {
-                    message = action.Process(context);
-                }
-
-                return Info(message);
-            }
-            catch (ActionException ex)
-            {
-                return Error(ex);
-            }
-            catch (ResolutionFailedException)
-            {
-                return Error("Не удалось найти обработчик для команды " + command);
-            }
-        }
-
-        [RequireCustomAction]
         [HttpGet]
         public ActionResult Send()
         {
@@ -390,50 +356,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 .AddPlainField("ConsumerLastPublishedUserName", relevanceInfo.LastPublishedUserName, "Опубликовал");
         }
 
-        private JsonResult Error(ModelStateDictionary modelstate)
-        {
-            var errors = from fv in modelstate
-                         from e in fv.Value.Errors
-                         select new { Field = fv.Key, Message = e.ErrorMessage };
 
-            return Json(new {Type = "Error", Text = "Validation", ValidationErrors = errors});
-        }
-
-        private JsonResult Error(ActionException exception)
-        {
-            if (exception.InnerExceptions.Any())
-            {
-                var sb = new StringBuilder("Не удалось обработать продукты:");
-
-                foreach (var exception1 in exception.InnerExceptions)
-                {
-                    var ex = (ProductException) exception1;
-                    sb.AppendLine();
-
-                    var exText = ex.Message;
-
-                    if (ex.InnerException != null)
-                        exText += ". " + ex.InnerException.Message;
-
-                    sb.AppendFormat("{0}: {1}", ex.ProductId, exText);
-                }
-
-                return Error(sb.ToString());
-            }
-            else
-            {
-                return Error(exception.Message);
-            }
-        }
-
-        private JsonResult Error(string text)
-        {
-            return Json(new { Type = "Error", Text = text });
-        }
-        private JsonResult Info(string text)
-        {
-            return Json(new { Type = "Info", Text = text });
-        }
     }
     #endregion
 }

@@ -5,7 +5,7 @@
 
 @model Group
 @{
-	if (Model == null || Model.Hidden || Model.Title == null)
+	if (Model == null || (Model.Hidden ?? false) || Model.Title == null)
 	{
 		return;
 	}

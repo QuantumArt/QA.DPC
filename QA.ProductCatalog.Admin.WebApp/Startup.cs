@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
@@ -33,9 +34,12 @@ namespace QA.ProductCatalog.Admin.WebApp
             Configuration.Bind("Loader", loaderProps);
             
             var props = new Properties();
-            Configuration.Bind("Properties", props);            
+            Configuration.Bind("Properties", props);
             
-            UnityConfig.Configure(container, loaderProps, props);
+            var integrationProps = new IntegrationProperties();
+            Configuration.Bind("Integration", integrationProps);
+            
+            UnityConfig.Configure(container, loaderProps, integrationProps, props);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container
@@ -53,23 +57,23 @@ namespace QA.ProductCatalog.Admin.WebApp
             
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
-
+            
             services.AddSession(options =>
             {
-                // Set a short timeout for easy testing.
-                options.IdleTimeout = TimeSpan.FromSeconds(10);
-                options.Cookie.HttpOnly = true;
+                options.Cookie.IsEssential = true;
+                options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+                options.Cookie.SameSite = SameSiteMode.None;
             });
 
-            
+            services.AddResponseCaching();
             services
                 .AddMvc(options =>
                     {
-                        options.ModelBinderProviders.Insert(0, new RemoteValidationContextModelBinderProvider());
                         options.ModelBinderProviders.Insert(0, new ContentBinderProvider());
+                        options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
                 .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1); 
            
         }
         
@@ -85,17 +89,13 @@ namespace QA.ProductCatalog.Admin.WebApp
                 app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);            }
 
             app.UseStaticFiles();
+            app.UseCookiePolicy();
             app.UseSession();
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute("1", "{controller=Home}/publicate/preaction/{id?}");
-                routes.MapRoute("2", "{controller=Home}/clone/preaction/{id?}");
-                routes.MapRoute("3", "{controller=Home}/send/preaction/{id?}");
-                routes.MapRoute("NonInterfaceAction", "Action/{command}");
-                routes.MapRoute("RemoteValidation", "RemoteValidation/{validatorKey}");
-                routes.MapRoute("Default", "{controller=Home}/{action=Index}/{id?}");
-            });
+            app.UseResponseCaching();
+            
+            app.UseMvcWithDefaultRoute();
         }
 
     }
+
 }

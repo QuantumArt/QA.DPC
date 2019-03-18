@@ -1,6 +1,6 @@
 ﻿@using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.Core.DPC.UI.Controls.Switcher
-@if (Model == null || Model.Hidden) { return; }
+@if (Model == null || (Model.Hidden ?? false)) { return; }
 @{var switchOn = Model.SwitchOn;
 QA.Core.Models.UI.UIElement element = null;}
 @if (switchOn == null /*|| (switchOn.GetType().IsValueType && switchOn == Activator.CreateInstance(switchOn.GetType()))*/)

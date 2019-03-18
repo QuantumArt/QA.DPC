@@ -1,6 +1,6 @@
 ﻿@using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.Core.DPC.UI.Controls.GridColumn
-@if (Model == null || Model.Hidden) { return; }
+@if (Model == null || (Model.Hidden ?? false)) { return; }
 @if (Model.CellTemplate == null && Model.CurrentItem != null)
 {
     @Html.DisplayFor(x => Model.CurrentItem)

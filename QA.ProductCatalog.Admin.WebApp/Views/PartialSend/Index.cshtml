@@ -16,90 +16,83 @@
             <br />
             В поле следует вводить список Id региональных продуктов (возможные разделители: "," ";" пробел, с новой строки)
         </p>
-
-
-        <div id="SendDiv" style="display: none">
-            @using (Html.BeginForm("Send", "PartialSend"))
-            {
-                @Html.ValidationSummary()
-
-                <div>
-                    @Html.TextArea("idsStr", new { cols = 125, rows = 10 })
-                </div>
-                <p>
-                    <div id="proceedIgnoredStatusDiv">
-                        @Html.CheckBox("proceedIgnoredStatus", new Dictionary<string, object>() { { "id", "proceedIgnoredStatus" } })
-                        <label for="proceedIgnoredStatus">Обрабатывать статьи со специальными статусами</label>
-                    </div>
-                    @Html.CheckBox("stageOnly", false, new { id = "stageOnlyCb", onchange="$('#proceedIgnoredStatusDiv').toggle()" })
-                    <label for="stageOnlyCb">Отправлять только на stage без публикации</label>
-
-                    @foreach (var st in ViewBag.IgnoredStatus)
-                    {
-                        <input type="hidden" name="IgnoredStatus" value="@st" />
-                    }
-
-                    <input type="hidden" name="Localize" value="@ViewBag.Localize.ToString()" />
-                </p>
-                <p>
-                    <input id="save" type="submit" value="Отправить продукты" />
-                </p>
-            }
-        </div>
-
-        <div id="CurrentTaskDiv" style="display: none">
-            <div style="color: red; font-weight: bold;">Одновременно может выполняться только одна задача на отправку. Дождитесь завершения данной.</div>
-            <div class="formLayout">
-                <fieldset>
-                    <legend>Текущая задача на частичную отправку</legend>
-                    <div id="ActionTaskPropsDiv">
-                    </div>
-                </fieldset>
+      <div id="SendDiv" style="display: none">
+        <form action="@Url.Action("Send")" method="post">
+          @Html.ValidationSummary()
+          @Html.TextArea("idsStr", new { cols = 125, rows = 10 })
+        
+          <p>
+            <div id="proceedIgnoredStatusDiv">
+              @Html.CheckBox("proceedIgnoredStatus", new Dictionary<string, object>() { { "id", "proceedIgnoredStatus" } })
+              <label for="proceedIgnoredStatus">Обрабатывать статьи со специальными статусами</label>
             </div>
+            @Html.CheckBox("stageOnly", false, new { id = "stageOnlyCb", onchange="$('#proceedIgnoredStatusDiv').toggle()" })
+            <label for="stageOnlyCb">Отправлять только на stage без публикации</label>
+
+            @foreach (var st in ViewBag.IgnoredStatus)
+            {
+              <input type="hidden" name="IgnoredStatus" value="@st" />
+            }
+
+            <input type="hidden" name="Localize" value="@ViewBag.Localize.ToString()" />
+          </p>
+          <p>
+            <input id="save" type="submit" value="Отправить продукты" />
+          </p>         
+        </form>
+      </div>
+      
+      <div id="CurrentTaskDiv" style="display: none">
+        <div style="color: red; font-weight: bold;">Одновременно может выполняться только одна задача на отправку. Дождитесь завершения данной.</div>
+        <div class="formLayout">
+          <fieldset>
+            <legend>Текущая задача на частичную отправку</legend>
+            <div id="ActionTaskPropsDiv">
+            </div>
+          </fieldset>
         </div>
+      </div>
     </fieldset>
 </div>
 
 @section scripts{
-
     <script src="~/js/AutoUpdateStrategy.js"></script>
-
-
+    
     <script>
-
-        AutoUpdateStrategy.updateRequestFunction = UpdateForm;
-
-        $(document).ready(function () { UpdateForm(); });
-
-        function UpdateForm() {
-            $.ajax({
-                url: "@Url.Action("CurrentActiveTask")",
-                type: "GET",
-                cache: false
-            }).done(
-            function (actionPropsHtml) {
-
-                if (actionPropsHtml == "") {
-                    $("#CurrentTaskDiv").hide();
-
-                    $("#SendDiv").show();
-                } else {
-                    $("#CurrentTaskDiv").show();
-
-                    $("#ActionTaskPropsDiv").html(actionPropsHtml);
-
-                    $("#SendDiv").hide();
-                }
-
-                AutoUpdateStrategy.notifyUpdateRequestEnded();
-            })
-            .fail(
-                    function (jqXHR) {
-                        AutoUpdateStrategy.notifyUpdateRequestFailed(jqXHR.status);
+    
+            AutoUpdateStrategy.updateRequestFunction = UpdateForm;
+    
+            $(document).ready(function () { UpdateForm(); });
+    
+            function UpdateForm() {
+                $.ajax({
+                    url: "@Url.Action("Active")",
+                    type: "GET",
+                    cache: false
+                }).done(
+                function (actionPropsHtml) {
+    
+                    if (actionPropsHtml == "") {
+                        $("#CurrentTaskDiv").hide();
+    
+                        $("#SendDiv").show();
+                    } else {
+                        $("#CurrentTaskDiv").show();
+    
+                        $("#ActionTaskPropsDiv").html(actionPropsHtml);
+    
+                        $("#SendDiv").hide();
                     }
-                );
-        }
-
-    </script>
+    
+                    AutoUpdateStrategy.notifyUpdateRequestEnded();
+                })
+                .fail(
+                        function (jqXHR) {
+                            AutoUpdateStrategy.notifyUpdateRequestFailed(jqXHR.status);
+                        }
+                    );
+            }
+    
+     </script>
 }
 

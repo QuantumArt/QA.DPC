@@ -8,6 +8,8 @@ namespace QA.ProductCatalog.Integration
         
         public string HighloadFrontSyncUrl { get; set; }
         
-        public string TarantoolSyncUrl { get; set; }        
+        public string TarantoolSyncUrl { get; set; } 
+        
+        public string[] ExtraValidationLibraries { get; set; }
     }
 }

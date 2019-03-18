@@ -44,7 +44,7 @@ namespace QA.Core.Models.UI
             set { SetValue(ClassNameProperty, value); }
         }
 
-        public bool Hidden
+        public bool? Hidden
         {
             get { return (bool)GetValue(HiddenProperty); }
             set { SetValue(HiddenProperty, value); }

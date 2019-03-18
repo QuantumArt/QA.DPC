@@ -11,7 +11,7 @@ using Quantumart.QPublishing.OnScreen;
 
 namespace QA.DPC.Core.Helpers
 {
-    public class QPCoreSecurityChecker
+    public class QPCoreSecurityChecker: ISecurityChecker
     {
     
         private enum QpLanguage : byte
@@ -55,7 +55,7 @@ namespace QA.DPC.Core.Helpers
             }
 
             var lm = httpContext.Session.GetInt32(AuthenticationKey);
-            if (lm != null)
+            if (lm.HasValue && lm == 1)
             {
                 httpContext.Items[DBConnector.LastModifiedByKey] =
                     httpContext.Session.GetInt32(DBConnector.LastModifiedByKey);
@@ -99,6 +99,7 @@ namespace QA.DPC.Core.Helpers
 
             return found;
         }
+        
 
         private static DataTable GetUserInfo(int userId, DBConnector dBConnector)
         {

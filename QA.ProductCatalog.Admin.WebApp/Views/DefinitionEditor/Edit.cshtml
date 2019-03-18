@@ -1,6 +1,6 @@
 ﻿@using QA.ProductCatalog.Admin.WebApp.Models
-
 @model DefinitionElement
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
     string actionName;
@@ -23,7 +23,7 @@
       data-ajax-begin="DefinitionEditor.onTreeNodeSaveBegin"
       data-ajax-complete="DefinitionEditor.onTreeNodeSaveComplete">
 
-    if (Model is DefinitionFieldInfo || (!Model.InDefinition && !(Model is DefinitionContentInfo && ((DefinitionContentInfo)Model).IsFromDictionaries)))
+    @if (Model is DefinitionFieldInfo || (!Model.InDefinition && !(Model is DefinitionContentInfo && ((DefinitionContentInfo)Model).IsFromDictionaries)))
     {
         <div class="editor-label">
             @Html.LabelFor(x => x.InDefinition, new { @for = "inDefinitionCheckbox" })
@@ -49,7 +49,7 @@
     <p style="clear: both">
         <input id="save" type="submit" value="Применить" />
     </p>
-}
+
 </form>
 
 <script>

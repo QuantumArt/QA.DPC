@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using QA.Configuration;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
@@ -59,15 +62,16 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			return Json("Ok");
 		}
 
-		public JsonResult GetDefinitionLevel(DefinitionPathInfo defInfo)
+		public ActionResult GetDefinitionLevel(DefinitionPathInfo defInfo)
 		{
 			var content = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
-
-			return Json(DefinitionTreeNode.GetObjectsFromPath(content, defInfo.Path, _fieldService, _definitionEditorService, _contentService));
+            var objects = DefinitionTreeNode.GetObjectsFromPath(content, defInfo.Path, _fieldService,
+                _definitionEditorService, _contentService);
+			return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(objects)};
 		}
 
 
-		public JsonResult GetSingleNode(DefinitionPathInfo defInfo)
+		public ActionResult GetSingleNode(DefinitionPathInfo defInfo)
 		{
 			var content = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
@@ -99,8 +103,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 				resultObj = new DefinitionTreeNode((Field)objFromDef, null, defInfo.Path, !existsInQp, notFoundInDef);
 			}
 
-
-			return Json(resultObj);
+            return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(resultObj)};
 		}
 
 		public ActionResult Edit(DefinitionPathInfo defInfo)

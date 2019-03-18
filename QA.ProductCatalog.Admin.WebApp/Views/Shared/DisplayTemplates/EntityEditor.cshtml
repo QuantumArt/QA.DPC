@@ -3,7 +3,7 @@
 @model QA.Core.DPC.UI.EntityEditor
 @{
     
-    if (Model == null || Model.Hidden) { return; }
+    if (Model == null || (Model.Hidden ?? false)) { return; }
     var article = Model.CurrentItem as Article;
     var id = "a_" + Guid.NewGuid();
     bool editable = Model.Behavior != null && Model.Behavior.Editable && article != null;

@@ -20,8 +20,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _jsonProductService = jsonProductService;
         }
         
-        [HttpGet, RequireCustomAction]
-        public ViewResult TypeScriptSchema(int content_item_id, bool isLive = false)
+        [HttpGet("TypeScriptSchema"), RequireCustomAction]
+        public ActionResult TypeScriptSchema(int content_item_id, bool isLive = false)
         {
             Content rootContent = _contentDefinitionService.GetDefinitionById(content_item_id, isLive);
 

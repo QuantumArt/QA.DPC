@@ -1,7 +1,7 @@
 ﻿@using QA.ProductCatalog.Admin.WebApp.Core
 @using HelperResult = Microsoft.AspNetCore.Mvc.Razor.HelperResult
 @model QA.Core.DPC.UI.Controls.Label
-@if (Model == null || Model.Hidden) { return; }
+@if (Model == null || (Model.Hidden ?? false)) { return; }
 @{
     var title = Model.Title;
     if (string.IsNullOrEmpty(title)) { return; }

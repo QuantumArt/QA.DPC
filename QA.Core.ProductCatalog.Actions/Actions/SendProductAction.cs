@@ -129,7 +129,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             Parallel.ForEach(parts, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
                 () =>
                 {
-                    UserProvider.ForcedUserId = context.UserId;
+                    HttpContextUserProvider.ForcedUserId = context.UserId;
                     return new Local
                     {
                         ProductService = ObjectFactoryBase.Resolve<IProductService>(),

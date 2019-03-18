@@ -1,23 +1,35 @@
-﻿using QA.Core.DPC.QP.Models;
-using System.Security.Principal;
+﻿using System.Security.Principal;
 using System.Threading;
-using System.Web;
+using Microsoft.AspNetCore.Http;
+using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 
-namespace QA.Core.DPC.QP.Services
+namespace QA.Core.DPC.QP.Configuration
 {
     public class IdentityProvider : IIdentityProvider
     {
+
+        private readonly HttpContext _httpContext;
+        public IdentityProvider(IHttpContextAccessor httpContextAccessor)
+        {
+            _httpContext = httpContextAccessor.HttpContext;
+        }
+        
+        public IdentityProvider(HttpContext httpContext)
+        {
+            _httpContext = httpContext;
+        }
+        
         public Identity Identity
         {
             get
             {
-                var identity = Thread.CurrentPrincipal.Identity as Identity;
-#if !NETSTANDARD
-                if (identity == null && HttpContext.Current != null)
+                var identity = Thread.CurrentPrincipal?.Identity as Identity;
+
+                if (identity == null && _httpContext != null)
                 {
-                    identity = HttpContext.Current.User?.Identity as Identity;
+                    identity = _httpContext.User?.Identity as Identity;
                 }
-#endif                
 
                 return identity;
             }
@@ -26,13 +38,11 @@ namespace QA.Core.DPC.QP.Services
             {
                 var principal = new GenericPrincipal(value, new string[0]);
 
-#if !NETSTANDARD
-                if (HttpContext.Current != null)
+                if (_httpContext != null)
                 {
                     
-                    HttpContext.Current.User = principal;
+                    _httpContext.User = principal;
                 }
-#endif
 
                 Thread.CurrentPrincipal = principal;
             }

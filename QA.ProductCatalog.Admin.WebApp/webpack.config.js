@@ -5,7 +5,8 @@ const TerserPlugin = require("terser-webpack-plugin");
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 
-const outDir = "Scripts/Bundles";
+const outDir = "wwwroot/js/Bundles";
+const relOutDir = "js/Bundles";
 
 const outPath = path.resolve(__dirname, outDir);
 
@@ -88,7 +89,7 @@ module.exports = (env, argv) => ({
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /ru|kk/),
     new webpack.DefinePlugin({
       "process.env.NODE_ENV": JSON.stringify(argv.mode),
-      "process.env.OUT_DIR": JSON.stringify(outDir),
+      "process.env.OUT_DIR": JSON.stringify(relOutDir),
       DEBUG: JSON.stringify(argv.mode !== "production")
     })
   ],

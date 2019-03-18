@@ -5,6 +5,7 @@ using QA.Core.ProductCatalog.Actions.Tasks;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using QA.ProductCatalog.Admin.WebApp.Models;
@@ -14,6 +15,7 @@ using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
+    [Route("PartialSend")]
     [RequireCustomAction]
     public class PartialSendController : Controller
     {
@@ -27,33 +29,37 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _viewEngine = viewEngine;
             _userProvider = userProvider;
         }
-
-        public ViewResult Index(string[] ignoredStatus, bool localize = false)
+        
+        [HttpGet("")]
+        public ActionResult Index(string[] ignoredStatus, bool localize = false)
         {
             ViewBag.Localize = localize;
             ViewBag.IgnoredStatus = ignoredStatus ?? Enumerable.Empty<string>().ToArray();  
 			return View();
         }
 
-        public PartialViewResult CurrentActiveTask()
+        [HttpGet("Active")]
+        public ActionResult Active()
         {
 			var task = _taskService.GetLastTask(null, State.Running, typeof(SendProductAction).Name);
 
             if (task != null)
                 return PartialView("ActionProps", new TaskModel(task));
             else
-                return null;
+                return Content("");
         }
 
-        public ActionResult UserTask(int taskId)
+        [HttpGet("Task")]
+        public async Task<ActionResult> Task(int taskId)
         {
             var task = _taskService.GetTask(taskId);
 
             bool taskProcessingFinished = task.StateID != (byte)State.Running && task.StateID != (byte)State.New;
 
-            return Json(new { taskProcessingFinished, taskHtml = this.RenderRazorViewToString(_viewEngine, "ActionProps", new TaskModel(task)) });
+            return Json(new { taskProcessingFinished, taskHtml = await this.RenderRazorViewToString(_viewEngine, "ActionProps", new TaskModel(task)) });
         }
 
+        [HttpPost("Send")]
         public ActionResult Send(string idsStr, bool proceedIgnoredStatus, string[] ignoredStatus, bool stageOnly, bool localize = false)
         {
             int[] ids = null;

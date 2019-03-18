@@ -6,7 +6,7 @@
 	SeparatorTemplate: @Model.SeparatorTemplate
 	-->
 @{
-	if (Model == null || Model.Hidden) {return;}
+	if (Model == null || (Model.Hidden ?? false)) {return;}
 	
 	bool isFirst = true;
 

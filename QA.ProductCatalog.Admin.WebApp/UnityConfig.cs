@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Practices.Unity.Configuration;
 using QA.Core;
 using QA.Core.DPC.API.Update;
@@ -26,25 +28,38 @@ using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Integration.Configuration;
-using QA.ProductCatalog.Validation.Configuration;
+using QA.Validation.Xaml;
+using QA.Validation.Xaml.Extensions.Rules;
 using Quantumart.QP8.BLL.Services.API;
 using Unity;
 using Unity.Injection;
 using Unity.Lifetime;
+using ValidationConfiguration = QA.ProductCatalog.Validation.Configuration.ValidationConfiguration;
+using System.Reflection;
 
 namespace QA.ProductCatalog.Admin.WebApp
 {
     public static class UnityConfig
     {
-        public static IUnityContainer Configure(IUnityContainer container, LoaderProperties loaderProperties, Properties properties)
+        public static IUnityContainer Configure(
+            IUnityContainer container, 
+            LoaderProperties loaderProperties, 
+            IntegrationProperties integrationProperties, 
+            Properties properties)
         {
-            container = RegisterTypes(container, loaderProperties, properties);
+            container = RegisterTypes(container, loaderProperties, integrationProperties, properties);
             ObjectFactoryConfigurator.DefaultContainer = container;
 	        return container;
         }
 
-        public static IUnityContainer RegisterTypes(IUnityContainer container, LoaderProperties loaderProperties, Properties properties)
+        public static IUnityContainer RegisterTypes(
+            IUnityContainer container, 
+            LoaderProperties loaderProperties,
+            IntegrationProperties integrationProperties,             
+            Properties properties)
         {
+            container.RegisterType<DynamicResourceDictionaryContainer>();
+            container.RegisterType<ProcessRemoteValidationIf>();
 
             container.AddNewExtension<LoaderConfigurationExtension>();
             container.AddNewExtension<ActionContainerConfiguration>();
@@ -53,23 +68,20 @@ namespace QA.ProductCatalog.Admin.WebApp
 			
             container.RegisterType<IConnectionProvider, CoreConnectionProvider>();
             container.RegisterType<ICustomerProvider, CustomerProvider>();
-            container.RegisterType<IIdentityProvider, IdentityProvider>();
-
+            container.RegisterType<IIdentityProvider, CoreIdentityWithSessionProvider>();
 
             // логируем в консоль
             //container.RegisterInstance<ILogger>(new TextWriterLogger(Console.Out));
             container.RegisterInstance<ILogger>(new NLogLogger("NLogClient.config"));
 
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
-
-
-            container.RegisterType<QPCoreSecurityChecker>();
+            container.RegisterType<ISecurityChecker, QpUserProviderSecurityChecker>();
 	        
 	        container.RegisterType<DefinitionEditorService>();
 
             container
                 .RegisterType<IXmlProductService, XmlProductService>()
-                .RegisterType<IUserProvider, UserProvider>()
+                .RegisterType<IUserProvider, HttpContextUserProvider>()
                 .RegisterType<IQPNotificationService, QPNotificationService>()
                 // change default provider to filesystem-based one since it does not require app to recompile on changes.
                 // AppDataProductControlProvider does not cache reads from disk
@@ -173,9 +185,34 @@ namespace QA.ProductCatalog.Admin.WebApp
                 container.RegisterNonQpMonitoring();
             }
 
+            RegisterExtraValidation(container, integrationProperties);
+
             return container;
         }
-        
+
+        private static void RegisterExtraValidation(IUnityContainer container, IntegrationProperties integrationProperties)
+        {
+            var extra = integrationProperties.ExtraValidationLibraries;
+            if (extra != null)
+            {
+                foreach (var library in extra)
+                {
+                    var assembly = Assembly.LoadFile(Path.Combine(
+                        AppDomain.CurrentDomain.BaseDirectory,
+                        library + ".dll")
+                    );
+
+                    foreach (var t in assembly.GetExportedTypes())
+                    {
+                        if (typeof(IRemoteValidator2).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+                        {
+                            container.RegisterType(typeof(IRemoteValidator2), t, t.Name);
+                        }
+                    }
+                }
+            }
+        }
+
         private static void _factoryWatcher_OnConfigurationModify(object sender, FactoryWatcherEventArgs e)
         {
             WarmUpHelper.WarmUp();

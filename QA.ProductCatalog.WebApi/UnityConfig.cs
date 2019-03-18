@@ -24,7 +24,10 @@ using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Models;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.ActionsRunner;
+using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
+using QA.Validation.Xaml;
+using QA.Validation.Xaml.Extensions.Rules;
 using Unity;
 using Unity.Extension;
 using Unity.Injection;
@@ -48,6 +51,9 @@ namespace QA.ProductCatalog.WebApi.App_Start
 			if (props == null)
 				throw new ArgumentNullException(nameof(props));
 			
+			unityContainer.RegisterType<DynamicResourceDictionaryContainer>();
+			unityContainer.RegisterType<ProcessRemoteValidationIf>();
+			
 			unityContainer.AddNewExtension<LoaderConfigurationExtension>();
 			unityContainer.AddNewExtension<QPAutopublishContainerConfiguration>();
             unityContainer.AddNewExtension<FormattersContainerConfiguration>();
@@ -56,7 +62,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
 
             unityContainer.RegisterType<IConnectionProvider, CoreConnectionProvider>();
             unityContainer.RegisterType<ICustomerProvider, CustomerProvider>();
-            unityContainer.RegisterType<IIdentityProvider, IdentityProvider>();
+            unityContainer.RegisterType<IIdentityProvider, CoreIdentityProvider>();
 			
 			if (props.UseAuthorization)
 			{

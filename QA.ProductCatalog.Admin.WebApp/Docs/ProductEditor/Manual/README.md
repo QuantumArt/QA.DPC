@@ -66,7 +66,7 @@
 </head>
 <body>
   <div id="editor"></div>
-  <script src="@Url.VersionedContent("~/Scripts/Bundles/ProductEditor/MyEditor/Index.js")"></script>
+  <script src="@Url.VersionedContent("~/js/Bundles/ProductEditor/MyEditor/Index.js")"></script>
 </body>
 </html>
 ```

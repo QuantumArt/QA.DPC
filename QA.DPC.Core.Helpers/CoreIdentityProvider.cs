@@ -11,37 +11,76 @@ namespace QA.DPC.Core.Helpers
     public class CoreIdentityProvider : IIdentityProvider
     {
         private readonly HttpContext _context;
-        private readonly string _fixedCustomerCode;
 
         private readonly string CustomerCodeKey = "customerCode";
 
-        public CoreIdentityProvider(IHttpContextAccessor accessor, string fixedCustomerCode)
+        protected bool useSession;
+        
+        protected string _fixedCustomerCode;
+
+
+        public CoreIdentityProvider(IHttpContextAccessor accessor)
         {
             _context = accessor.HttpContext;
-            _fixedCustomerCode = fixedCustomerCode;
         }
 
         public Identity Identity
-    {
-        get
         {
-            var identity = _context.User.Identity as Identity;
-            if (identity == null)
+            get
             {
-                var code = _fixedCustomerCode;
-                code = (!string.IsNullOrEmpty(code)) ? code : _context.Request.Query[CustomerCodeKey].FirstOrDefault();
-                code = (!string.IsNullOrEmpty(code)) ? code : _context.GetRouteValue(CustomerCodeKey) as string;
-                if (code == null)
+                var identity = _context.User.Identity as Identity;
+                if (identity == null)
                 {
-                    throw new ApplicationException("Customer code is not defined");
+                    var code = GetCode();
+                    identity = new Identity(code);
+                    _context.User = new GenericPrincipal(identity, new string[0]);
+    
+                    if (useSession)
+                    {
+                        _context.Session.SetString(CustomerCodeKey, code);
+                    }
                 }
-                identity = new Identity(code);
-                _context.User = new GenericPrincipal(identity, new string[0]);
+                 return identity;
             }
-             return identity;
+    
+            set => _context.User = new GenericPrincipal(value, new string[0]);
         }
 
-        set => _context.User = new GenericPrincipal(value, new string[0]);
+        private string GetCode()
+        {
+            var code = _fixedCustomerCode;
+            if (!string.IsNullOrEmpty(code)) return code;
+
+            code = _context.Request.Query[CustomerCodeKey].FirstOrDefault();
+            if (!string.IsNullOrEmpty(code)) return code;
+
+            code = _context.GetRouteValue(CustomerCodeKey) as string;
+            if (!string.IsNullOrEmpty(code)) return code;
+            
+            if (useSession)
+            {
+                code = (!string.IsNullOrEmpty(code)) ? code : _context.Session.GetString(CustomerCodeKey);
+                if (!string.IsNullOrEmpty(code)) return code;
+            }
+            
+            code = SingleCustomerCoreProvider.Key;
+            return code;    
+        }
     }
+
+    public class CoreIdentityWithSessionProvider : CoreIdentityProvider
+    {
+        public CoreIdentityWithSessionProvider(IHttpContextAccessor accessor) : base(accessor)
+        {
+            useSession = true;
+        }
+    }
+    
+    public class CoreIdentityFixedProvider : CoreIdentityProvider
+    {
+        public CoreIdentityFixedProvider(IHttpContextAccessor accessor, string fixedCustomerCode) : base(accessor)
+        {
+            _fixedCustomerCode = fixedCustomerCode;
+        }
     }
 }

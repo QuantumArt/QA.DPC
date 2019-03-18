@@ -46,7 +46,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
         
 
             builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
-            builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityProvider(
+            builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityFixedProvider(
                 c.Resolve<IHttpContextAccessor>(), 
                 c.Resolve<DataOptions>().FixedCustomerCode
             ));

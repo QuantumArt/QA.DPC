@@ -47,12 +47,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
 	        string userName = userProvider.GetUserName();
 
-            UserProvider.ForcedUserId = userId;
+            HttpContextUserProvider.ForcedUserId = userId;
 
             Parallel.ForEach(parts, new ParallelOptions { MaxDegreeOfParallelism = 12 },
                 () =>
                 {
-                    UserProvider.ForcedUserId = userId;
+                    HttpContextUserProvider.ForcedUserId = userId;
                     return new TLocal
                     {
                         ProductService = ObjectFactoryBase.Resolve<IProductService>(),

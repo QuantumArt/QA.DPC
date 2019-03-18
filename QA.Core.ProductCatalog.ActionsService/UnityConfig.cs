@@ -19,6 +19,7 @@ using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions;
+using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Injection;
@@ -44,13 +45,13 @@ namespace QA.Core.ProductCatalog.ActionsService
             
             container.RegisterType<IConnectionProvider, CoreConnectionProvider>();
             container.RegisterType<ICustomerProvider, CustomerProvider>();
-            container.RegisterType<IIdentityProvider, IdentityProvider>();
+            container.RegisterType<IIdentityProvider, CoreIdentityProvider>();
 
             container.AddNewExtension<ActionContainerConfiguration>();
             container.AddNewExtension<LoaderConfigurationExtension>();
 
             container.RegisterType<ITasksRunner, TasksRunner>();
-	        container.RegisterType<IUserProvider, UserProvider>();
+	        container.RegisterType<IUserProvider, HttpContextUserProvider>();
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
 
             container.RegisterFactory<TaskRunnerEntities>(x => new TaskRunnerEntities(x.Resolve<IConnectionProvider>().GetEFConnection(DPC.QP.Models.Service.Actions)));
@@ -110,7 +111,7 @@ namespace QA.Core.ProductCatalog.ActionsService
 
         private static ITask GetTaskByKey(string key, int userId, IUnityContainer container)
         {
-	        UserProvider.ForcedUserId = userId;
+	        HttpContextUserProvider.ForcedUserId = userId;
 
 			if (container.IsRegistered<ITask>(key))
 				return container.Resolve<ITask>(key);

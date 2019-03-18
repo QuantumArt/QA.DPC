@@ -3,7 +3,7 @@
 @using QA.ProductCatalog.Admin.WebApp.Models
 @using QA.Core.DPC.UI.Controls;
 @model QA.Core.DPC.UI.GroupGridView
-@if (Model == null || Model.Hidden) { return; }
+@if (Model == null || (Model.Hidden ?? false)) { return; }
 @{
     var firstRow = Model.GetChildren().FirstOrDefault();
     if (firstRow == null)
@@ -42,7 +42,7 @@
                     {
                         Model.RowTemplate.DataContext = x.DataContext;
                         return Model.RowTemplate;
-                    }).All(x => x.Hidden))
+                    }).All(x => x.Hidden ?? false))
                     {
                         continue;
                     }
@@ -84,7 +84,7 @@
                                     {
                                         Model.RowTemplate.DataContext = row.DataContext;
                                     }
-                                    if (Model.RowTemplate == null || !Model.RowTemplate.Hidden)
+                                    if (Model.RowTemplate == null || !(Model.RowTemplate.Hidden ?? false))
                                     {
                                         t++;
                                         <tr class="@(Model.RowTemplate != null ? Model.RowTemplate.ClassName: "")">

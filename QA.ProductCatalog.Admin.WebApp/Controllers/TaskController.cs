@@ -2,6 +2,8 @@
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using System;
 using System.Linq;
+using System.Net.Mime;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using QA.ProductCatalog.Admin.WebApp.Models;
@@ -12,6 +14,7 @@ using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
+    [Route("Task")]
     [RequireCustomAction]
     public class TaskController : Controller
     {
@@ -26,7 +29,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _userProvider = userProvider;
         }
 
-        public ViewResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false)
+        [HttpGet]
+        public ActionResult Index(bool? showOnlyMine, bool? notify, bool allowSchedule = false)
         {
             var tasksPageInfo = new TasksPageInfo { ShowOnlyMine = showOnlyMine == true, Notify = notify == true, States = _taskService.GetAllStates(), AllowSchedule = allowSchedule };
 
@@ -41,7 +45,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <param name="showOnlyMine"></param>
         /// <param name="filterJson">типа такого [{"field":"StateId","operator":"eq","value":"3"},{"field":"DisplayName","operator":"contains","value":"asdfsdf"}]</param>
         /// <returns></returns>
-        public string TasksData(int skip, int take, bool showOnlyMine, string filterJson)
+        [HttpGet("TasksData")]
+        public async Task<ActionResult> TasksData(int skip, int take, bool showOnlyMine, string filterJson)
         {
             int? stateIdToFilterBy = null;
 
@@ -88,10 +93,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 {
                     tasks = tasks.Select(x => new TaskModel(x)),
                     totalTasks = totalCount,
-                    myLastTaskHtml = myLastTask == null ? null : this.RenderRazorViewToString(_viewEngine, "ActionProps", myLastTask)
+                    myLastTaskHtml = myLastTask == null ? null : await this.RenderRazorViewToString(_viewEngine, "ActionProps", myLastTask)
                 });
 
-            return string.Format("{{\"hashCode\":{1},\"data\":{0}}}", dataJsonStr, dataJsonStr.GetHashCode());
+            return new ContentResult() { 
+                ContentType = "application/json", 
+                Content= $"{{\"hashCode\":{dataJsonStr.GetHashCode()},\"data\":{dataJsonStr}}}"
+            };
         }
 
         public ActionResult MyLastTaskInfo()
@@ -107,6 +115,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                         : new TaskModel(task));
         }
 
+        [HttpPost("Cancel")]
         public ActionResult Cancel(int taskId)
         {
             bool isCancelled = _taskService.Cancel(taskId);
@@ -114,6 +123,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Json(isCancelled);
         }
 
+        [HttpPost("Rerun")]
         public ActionResult Rerun(int taskId)
         {
             bool success = _taskService.Rerun(taskId);
@@ -121,7 +131,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Json(success);
         }
 
-        public PartialViewResult Schedule(int taskId)
+        [HttpGet("Schedule")]
+        public ActionResult Schedule(int taskId)
         {
             var task = _taskService.GetTask(taskId);
 
@@ -133,7 +144,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     : new TaskScheduleModel(task.Schedule));
         }
 
-        public string SaveShedule(TaskScheduleModel schedule)
+        [HttpPost("SaveSchedule")]
+        public string SaveSchedule(TaskScheduleModel schedule)
         {
             _taskService.SaveSchedule(schedule.TaskId, schedule.Enabled, schedule.CronExpression);
 

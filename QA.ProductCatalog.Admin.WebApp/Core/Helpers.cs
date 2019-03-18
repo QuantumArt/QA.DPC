@@ -109,7 +109,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
 
         public static HtmlString ReplaceNotesIfNeeded(this DependencyObject model, string text, bool htmlEncode = true)
         {
-            return ReplaceNotesIfNeeded(model, new HtmlString(htmlEncode ? HtmlEncoder.Default.Encode(text) : text));
+            return ReplaceNotesIfNeeded(model, new HtmlString((htmlEncode && text != null) ? HtmlEncoder.Default.Encode(text) : text));
         }
 
         public static HtmlString Current(this IUrlHelper helper, object substitutes)

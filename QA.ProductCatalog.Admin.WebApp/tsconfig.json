@@ -26,7 +26,7 @@
     "paths": {
       "*": ["*", "ClientApp/*", "ClientApp/Packages/*"]
     },
-    "outDir": "Scripts/Bundles"
+    "outDir": "wwwroot/js/Bundles"
   },
   "include": ["ClientApp/**/*", "Views/**/*", "../QA.Core.DPC.API/Search/ExtendedQueryConditionMapper.cs", "../QA.Core.DPC.API/Search/ExtendedProductQuery.cs"]
 }

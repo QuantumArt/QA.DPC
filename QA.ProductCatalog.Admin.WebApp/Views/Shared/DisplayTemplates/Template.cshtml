@@ -1,6 +1,6 @@
 ﻿@using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.Core.DPC.UI.Controls.Template
-@if (Model == null || Model.Hidden) { return; }
+@if (Model == null || (Model.Hidden ?? false)) { return; }
 @if (Model.Content != null)
 {
     Model.DataContext = (object)Model.Items ?? (object)Model.CurrentItem;        

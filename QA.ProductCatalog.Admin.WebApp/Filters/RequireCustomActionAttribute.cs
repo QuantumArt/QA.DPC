@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using QA.DPC.Core.Helpers;
@@ -12,10 +13,10 @@ namespace QA.ProductCatalog.Admin.WebApp.Filters
 
         private class RequireCustomActionImpl : IAuthorizationFilter
         {
-            private readonly QPCoreSecurityChecker _checker;
+            private readonly ISecurityChecker _checker;
 
             public RequireCustomActionImpl(
-                QPCoreSecurityChecker checker
+                ISecurityChecker checker
             )
             {
                 _checker = checker;

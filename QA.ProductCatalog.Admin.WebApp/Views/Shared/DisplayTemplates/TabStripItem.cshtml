@@ -1,7 +1,7 @@
 ﻿@using QA.Core.Models.UI
 @using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.Core.DPC.UI.TabStripItem
-@if (Model == null || Model.Hidden) { return; }
+@if (Model == null || (Model.Hidden ?? false)) { return; }
 @{
   if (Model.Content is UIElement item)
   {

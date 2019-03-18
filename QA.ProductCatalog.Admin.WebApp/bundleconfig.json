@@ -94,13 +94,6 @@
       "wwwroot/js/jqcron.en.js",
       "wwwroot/js/Schedule.js"
     ]
-  },
-  
-  {
-    "outputFileName": "wwwroot/js/bundles/jqueryunobtrusive.min.js",
-    "inputFiles": [
-      "jquery.unobtrusive*"
-    ]
   }
 ]
 

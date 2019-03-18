@@ -1,20 +1,20 @@
 ﻿@model QA.ProductCatalog.Admin.WebApp.Models.TaskScheduleModel
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
-<script src="~/js/bundles/jqueryunobtrusive.min.js"></script>
+<script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
 <script src="~/js/bundles/schedule.min.js"></script>
 
-<link href="~/css/jqron.min.css" rel="stylesheet">
+<link href="~/css/jqCron.css" rel="stylesheet">
 <style>
 	.editor-label {
 		width: 100px;
 	}
 </style>
 
-<form asp-controller="Task" asp-action="SaveShedule" data-ajax="true" data-ajax-method="POST"
+<form asp-controller="Task" asp-action="SaveSchedule" data-ajax="true" data-ajax-method="POST"
       data-ajax-success=@ViewBag.OnSuccess
       data-ajax-failure="Task.OnSheduleSaveError">
 
-{
 	@Html.HiddenFor(x => x.TaskId)
 	<div class="editor-label">
 		@Html.LabelFor(x => x.TaskId)

@@ -12,7 +12,7 @@
   <link href="~/css/codemirror.min.css" rel="stylesheet"/>
 	
   <script src="~/js/bundles/codemirror.min.js"></script>
-  <script src="~/js/bundles/jqueryunobtrusive.min.js"></script>
+  <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
   <script src="~/js/DefinitionEditor.js"></script>
 }
 
@@ -27,7 +27,7 @@
 	</div>
 	<div id="xamlPane">
 		<div id="dvToolbar"></div>
-		@Html.PartialAsync("XmlViewer", Model.Xml ?? string.Empty )
+		@await Html.PartialAsync("XmlViewer", Model.Xml ?? string.Empty )
 	</div>
 </div>
 

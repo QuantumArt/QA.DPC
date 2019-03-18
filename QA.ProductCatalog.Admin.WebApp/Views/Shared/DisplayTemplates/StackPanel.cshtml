@@ -1,6 +1,6 @@
 ﻿@using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.Core.DPC.UI.StackPanel
-@if (Model == null || Model.Hidden) { return; }
+@if (Model == null || (Model.Hidden ?? false)) { return; }
 <div id="@Model.UId" class="stack-panel@(Model.IsHorizontal? " is-horizontal": "" )@(Model.ShowBorder ? " dashed-border" : "") @Model.DisplayMode"
      >@for (int i = 0; i < Model.Items.Count; i++)
   {

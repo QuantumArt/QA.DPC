@@ -19,7 +19,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _userProvider = userProvider;
         }
 
-        public ViewResult Index()
+        public ActionResult Index()
         {
             return View();
         }

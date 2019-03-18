@@ -4,7 +4,7 @@
 @using QA.Core.DPC.UI
 @using QA.Core.DPC.UI.Controls
 @model TabStrip
-@if (Model == null || Model.Hidden) { return; }
+@if (Model == null || (Model.Hidden ?? false)) { return; }
 @{
     var items = Model.GetChildren();
     string defaultItemId = null;
@@ -34,7 +34,7 @@
     <ul class="tabstrip-header">
         @foreach (var item in items)
         {
-            if (!item.Hidden)
+            if (!(item.Hidden ?? false))
             {
                 if (defaultItemId == null && item is TabStripItem)
                 {
@@ -49,7 +49,7 @@
 
     @foreach (var item in items)
     {
-        if (!item.Hidden)
+        if (!(item.Hidden ?? false))
         {
           <div class="tabstip-item @(Model.IsFullSized ? "tabstrip__item_fullsized" : "")">
             @{
