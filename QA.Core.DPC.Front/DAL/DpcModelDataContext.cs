@@ -1,11 +1,47 @@
 ﻿using System;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace QA.Core.DPC.Front.DAL
 {
-    public partial class DpcModelDataContext
+    
+    public partial class DpcModelDataContext : DbContext
     {
-        public Product GetProduct(ProductLocator locator, int id)
+        public DpcModelDataContext()
+        {
+        }
+
+        public DpcModelDataContext(DbContextOptions<DpcModelDataContext> options)
+            : base(options)
+        {
+        }
+
+        public virtual DbSet<Product> Products { get; set; }
+        public virtual DbSet<ProductRegion> ProductRegions { get; set; }
+        public virtual DbSet<ProductVersion> ProductVersions { get; set; }
+        
+        public virtual DbSet<ProductRegionVersion> ProductRegionVersions { get; set; } 
+
+        public virtual DbSet<RegionUpdate> RegionUpdates { get; set; }
+        
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ProductRegion>(entity =>
+            {
+                entity.HasOne(d => d.Product)
+                    .WithMany(p => p.ProductRegions)
+                    .HasForeignKey(d => d.ProductId);
+            });
+            
+            modelBuilder.Entity<ProductRegionVersion>(entity =>
+            {
+                entity.HasOne(d => d.ProductVersion)
+                    .WithMany(p => p.ProductRegionVersions)
+                    .HasForeignKey(d => d.ProductVersionId);
+            });
+        }
+        
+               public Product GetProduct(ProductLocator locator, int id)
         {
             return GetProducts(locator).FirstOrDefault(m => id == m.DpcId);
             

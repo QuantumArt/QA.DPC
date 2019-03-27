@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Transactions;
+using Microsoft.EntityFrameworkCore;
 using QA.Core.DPC.Front.DAL;
 using QA.Core.Logger;
 using QA.Core.Service.Interaction;
@@ -21,7 +22,7 @@ namespace QA.Core.DPC.Front
         {
             return Run(new UserContext(), null, () =>
             {
-                using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+                using (var ctx = new DpcModelDataContext())
                 {
                     var p = ctx.GetProduct(locator, id);
                     if (p?.Hash == null) return true;
@@ -53,7 +54,9 @@ namespace QA.Core.DPC.Front
         {
             return RunAction(new UserContext(), null, () =>
             {
-                using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+                var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
+                optionsBuilder.UseSqlServer(locator.GetConnectionString());
+                using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
                 {
                     var p = ctx.GetProduct(locator, product.Id);
                     var isNew = p == null;
@@ -103,7 +106,7 @@ namespace QA.Core.DPC.Front
                                 if (!product.Regions.Select(x => x.Id).Contains(pr.RegionId))
                                 {
                                     regionIds.Add(pr.RegionId);
-                                    ctx.ProductRegions.DeleteOnSubmit(pr);
+                                    ctx.ProductRegions.Remove(pr);
 
                                 }
                             }
@@ -118,7 +121,7 @@ namespace QA.Core.DPC.Front
                                         Product = p
                                     };
 
-                                    ctx.ProductRegions.InsertOnSubmit(pr);
+                                    ctx.ProductRegions.Add(pr);
                                 }
                             }
                         }
@@ -132,7 +135,7 @@ namespace QA.Core.DPC.Front
                                     Product = p
                                 };
 
-                                ctx.ProductRegions.InsertOnSubmit(pr);
+                                ctx.ProductRegions.Add(pr);
                             }
 
                         }
@@ -142,7 +145,7 @@ namespace QA.Core.DPC.Front
 
                     if (isNew)
                     {
-                        ctx.Products.InsertOnSubmit(p);
+                        ctx.Products.Add(p);
                     }
 
                     if (locator.UseProductVersions)
@@ -150,11 +153,16 @@ namespace QA.Core.DPC.Front
                         UpdateExistingProductVersion(ctx, p, product.Regions?.Select(r => r.Id), now);
                     }
 
-                    ctx.SubmitChanges();
+                    ctx.SaveChanges();
                     regionIds.AddRange(p.ProductRegions.Select(x => x.RegionId));
-                    foreach (var r in regionIds)
+                    foreach (var rid in regionIds)
                     {
-                        ctx.RegionUpdated(r);
+                        var ru = ctx.RegionUpdates.SingleOrDefault(n => n.RegionId == rid) ?? new RegionUpdate() { RegionId = rid };
+                        ru.Updated = DateTime.Now;
+                        if (ru.Id <= 0)
+                        {
+                            ctx.Add(ru);
+                        }
                     }
                 }
             });
@@ -164,19 +172,25 @@ namespace QA.Core.DPC.Front
         {
             return RunAction(new UserContext(), null, () =>
             {
-                using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+                var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
+                optionsBuilder.UseSqlServer(locator.GetConnectionString());
+                using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
                 {
                     var p = ctx.GetProduct(locator, id);
                     if (p != null)
                     {
-                        ctx.DeleteProduct(p.Id);
+                        foreach (var pr in p.ProductRegions)
+                        {
+                            ctx.Remove(pr);
+                        }
+                        ctx.Remove(p);
 
                         if (locator.UseProductVersions)
                         {
                             UpdateDeletedProductVersion(ctx, p, data);
                         }
 
-                        ctx.SubmitChanges();
+                        ctx.SaveChanges();
                     }
                 }
             });
@@ -187,7 +201,7 @@ namespace QA.Core.DPC.Front
             var pv = MapProductVersion(p, modification);
             pv.Deleted = false;
 
-            ctx.ProductVersions.InsertOnSubmit(pv);        
+            ctx.ProductVersions.Add(pv);        
         }
 
         private void UpdateDeletedProductVersion(DpcModelDataContext ctx, DAL.Product p, string data)
@@ -196,7 +210,7 @@ namespace QA.Core.DPC.Front
             pv.Deleted = true;
             pv.Data = data;
 
-            ctx.ProductVersions.InsertOnSubmit(pv);
+            ctx.ProductVersions.Add(pv);
         }
 
         private ProductVersion MapProductVersion(DAL.Product p, DateTime modification)
@@ -241,7 +255,9 @@ namespace QA.Core.DPC.Front
 
         public int[] GetAllProductId(ProductLocator locator, int page, int pageSize)
         {
-            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
+            optionsBuilder.UseSqlServer(locator.GetConnectionString());
+            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
             {
                 return ctx.GetProducts(locator)
                     .OrderBy(x => x.DpcId).Skip(page * pageSize).Take(pageSize)
@@ -251,7 +267,9 @@ namespace QA.Core.DPC.Front
 
         public int[] GetLastProductId(ProductLocator locator, int page, int pageSize, DateTime date)
         {
-            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
+            optionsBuilder.UseSqlServer(locator.GetConnectionString());
+            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
             {
                 return ctx.GetProducts(locator)
                     .Where(x => x.Updated > date)
@@ -262,7 +280,9 @@ namespace QA.Core.DPC.Front
 
         public string GetProduct(ProductLocator locator, int id)
         {
-            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
+            optionsBuilder.UseSqlServer(locator.GetConnectionString());
+            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
             {
                 var p = ctx.GetProduct(locator, id);
                 return p != null ? p.Data : "";
@@ -272,7 +292,9 @@ namespace QA.Core.DPC.Front
         public ProductData GetProductData(ProductLocator locator, int id)
         {
             ProductData result = null;
-            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
+            optionsBuilder.UseSqlServer(locator.GetConnectionString());
+            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
             {
                 var p = ctx.GetProduct(locator, id);
                 if (p != null)
@@ -291,7 +313,9 @@ namespace QA.Core.DPC.Front
         public ProductData GetProductVersionData(ProductLocator locator, int id, DateTime date)
         {
             ProductData result = null;
-            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
+            optionsBuilder.UseSqlServer(locator.GetConnectionString());
+            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
             {
                 var p = ctx.GetProductVersion(locator, id, date);
                 if (p != null)
@@ -309,7 +333,9 @@ namespace QA.Core.DPC.Front
 
         public int[] GetAllProductVersionId(ProductLocator locator, int page, int pageSize, DateTime date)
         {
-            using (var ctx = new DpcModelDataContext(locator.GetConnectionString()))
+            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
+            optionsBuilder.UseSqlServer(locator.GetConnectionString());
+            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
             using (new TransactionScope(TransactionScopeOption.Required, new TransactionOptions() { IsolationLevel = IsolationLevel.ReadUncommitted }))
             {
                 var productVersions = ctx.GetProductVersions(locator, date);

@@ -155,11 +155,11 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Validation.Xaml, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\QA.Validation.Xaml.1.3.0-portable2\lib\net471\QA.Validation.Xaml.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.1.3.0-portable2\lib\net471\QA.Validation.Xaml.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Validation.Xaml.Extensions, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\QA.Validation.Xaml.Extensions.1.3.0-portable2\lib\net471\QA.Validation.Xaml.Extensions.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.Extensions.1.3.0-portable2\lib\net471\QA.Validation.Xaml.Extensions.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QP.ConfigurationService.Client, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -220,9 +220,6 @@
     <Reference Include="Quantumart.QP8.Validators, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.4-beta3\lib\net471\Quantumart.QP8.Validators.dll</HintPath>
       <Private>True</Private>
-    </Reference>
-    <Reference Include="Refit, Version=4.6.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Refit.4.6.58\lib\net461\Refit.dll</HintPath>
     </Reference>
     <Reference Include="SixLabors.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>$(SolutionDir)packages\SixLabors.Core.1.0.0-beta0007\lib\netstandard2.0\SixLabors.Core.dll</HintPath>
@@ -472,15 +469,11 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="$(SolutionDir)\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets" Condition="Exists('$(SolutionDir)\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('$(SolutionDir)\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
-    <Error Condition="!Exists('$(SolutionDir)packages\Refit.4.6.58\build\net461\refit.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)packages\Refit.4.6.58\build\net461\refit.targets'))" />
   </Target>
-  <Import Project="$(SolutionDir)packages\Refit.4.6.58\build\net461\refit.targets" Condition="Exists('$(SolutionDir)packages\Refit.4.6.58\build\net461\refit.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
@@ -488,5 +481,6 @@
   <Target Name="AfterBuild">
   </Target> -->
 </Project>
+
 
 

@@ -10,11 +10,13 @@ namespace QA.Core.DPC.Service
 {
 	public class MessageService : QAServiceBase, IMessageService
     {
-        ILogger _logger;
+        private ILogger _logger;
+        private readonly NotificationsModelDataContext _ctx;
 
-        public MessageService(ILogger logger)
+        public MessageService(ILogger logger, NotificationsModelDataContext ctx)
         {
             _logger = logger;
+            _ctx = ctx;
         }
 
         public ServiceResult<List<Message>> GetMessagesToSend(string channel, int maxCount)
@@ -25,16 +27,13 @@ namespace QA.Core.DPC.Service
                 Throws.IfArgumentNull(maxCount, _ => maxCount);
 
                 List<Message> res;
-
-                using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
-                {
                     using (var t = new TransactionScope(TransactionScopeOption.Required,
                             new TransactionOptions
                             {
                                 IsolationLevel = IsolationLevel.ReadUncommitted
                             }))
                     {						
-                        res = ctx.Messages
+                        res = _ctx.Messages
                             .Where(x => x.Channel == channel && x.Created <= DateTime.Now.AddSeconds(-10)) //чтобы не читать данные которые сейчас пишут
                             .OrderBy(x => x.Created)
                             .Take(maxCount)
@@ -42,7 +41,6 @@ namespace QA.Core.DPC.Service
                             .Select(x => new Message { Channel = x.Channel, Created = x.Created, Id = x.Id, Method = x.Method, Xml = x.Data,UserId = x.UserId, UserName = x.UserName, Key = x.DataKey}).ToList();
 
                     }
-                }
                 return res;
             });
         }
@@ -53,15 +51,12 @@ namespace QA.Core.DPC.Service
             {
                 Throws.IfArgumentNull(id, _ => id);
 
-                using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
-                {
-                    var m = ctx.Messages.FirstOrDefault(x => x.Id == id);
+                var m = _ctx.Messages.FirstOrDefault(x => x.Id == id);
                     
-					if (m != null)
-                    {
-                        ctx.Messages.DeleteOnSubmit(m);
-                        ctx.SubmitChanges();
-                    }
+				if (m != null)
+                {
+                    _ctx.Messages.Remove(m);
+                    _ctx.SaveChanges();
                 }
             });
         }

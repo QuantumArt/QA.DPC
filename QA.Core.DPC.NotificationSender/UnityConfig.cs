@@ -13,6 +13,7 @@ using QA.Core.ProductCatalog.Actions.Services;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
 using System;
+using Microsoft.EntityFrameworkCore;
 using QA.ProductCatalog.Infrastructure;
 using Unity;
 using Unity.Injection;
@@ -60,7 +61,7 @@ namespace QA.Core.DPC
             var connection = unityContainer.Resolve<IConnectionProvider>();
             var logger = unityContainer.Resolve<ILogger>();
             unityContainer.RegisterFactory<NotificationsModelDataContext>(
-	            c => new NotificationsModelDataContext(c.Resolve<IConnectionProvider>().GetConnection(QP.Models.Service.Notification))
+	            c => GetDataContext(c.Resolve<IConnectionProvider>())
 	         );
 
             var autoRegister = true;
@@ -83,6 +84,13 @@ namespace QA.Core.DPC
             }
 
             return unityContainer;
+		}
+
+		public static NotificationsModelDataContext GetDataContext(IConnectionProvider provider)
+		{
+			var optionsBuilder = new DbContextOptionsBuilder<NotificationsModelDataContext>();
+			optionsBuilder.UseSqlServer(provider.GetConnection(QP.Models.Service.Notification));
+			return new NotificationsModelDataContext(optionsBuilder.Options);
 		}
 	}
 }

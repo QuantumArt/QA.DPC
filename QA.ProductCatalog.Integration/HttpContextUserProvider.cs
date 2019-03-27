@@ -4,7 +4,6 @@ using QA.ProductCatalog.ContentProviders;
 using Quantumart.QPublishing.Database;
 using Quantumart.QPublishing.OnScreen;
 using Microsoft.AspNetCore.Http;
-using Refit;
 
 namespace QA.ProductCatalog.Integration
 {

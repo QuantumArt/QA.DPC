@@ -18,10 +18,26 @@ namespace QA.Core.DPC
 
         private readonly IIdentityProvider _identityProvider;
 
-        public NotificationService()
+        private readonly ILogger _logger;
+
+        private NotificationsModelDataContext _ctx;
+
+        private readonly INotificationProvider _provider;
+        
+        private readonly INotificationChannelService _channelService;
+
+        public NotificationService(INotificationProvider provider, 
+	        IIdentityProvider identityProvider,
+	        INotificationChannelService channelService, 
+	        ILogger logger, 
+	        NotificationsModelDataContext ctx)
 		{
-            _identityProvider = ObjectFactoryBase.Resolve<IIdentityProvider>();
-        }
+            _identityProvider = identityProvider;
+            _logger = logger;
+            _ctx = ctx;
+            _provider = provider;
+            _channelService = channelService;
+		}
 		
 		public void PushNotifications(NotificationItem[] notifications, bool isStage, int userId, string userName, string method, string customerCode)
 		{
@@ -30,22 +46,17 @@ namespace QA.Core.DPC
             RunAction(new UserContext(), null, () =>
 			{
 				Throws.IfArgumentNull(notifications, _ => notifications);
-                var logger = ObjectFactoryBase.Resolve<ILogger>();
-                var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
-
-                using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
-				{
 					bool needSubmit = false;
 					List<NotificationChannel> channels = null;
 
 					if (notifications.Any(n => n.Channels == null))
 					{
-						channels = provider.GetConfiguration().Channels;
+						channels = _provider.GetConfiguration().Channels;
 
 						if (channels == null)
 						{
 							var productIds = notifications.Where(n => n.Channels == null).Select(n => n.ProductId);
-							logger.Error("Продукты {0} не поставлены в очередь т.к. остутствуют каналы для публикации" , string.Join(", ", string.Join(", ", productIds)));
+							_logger.Error("Продукты {0} не поставлены в очередь т.к. остутствуют каналы для публикации" , string.Join(", ", string.Join(", ", productIds)));
 							throw new Exception("Не найдено каналов для публикации");
 						}
 					}
@@ -93,17 +104,16 @@ namespace QA.Core.DPC
 				
 					if (messages.Any())
 					{                     
-						ctx.Messages.InsertAllOnSubmit(messages);
+						_ctx.Messages.AddRange(messages);
 
 						needSubmit = true;
 
 						var productIds = notifications.Select(n => n.ProductId).Distinct();
-						logger.Info("Постановка сообщения {0} для продуктов {1} в очередь, isStage={2}", method, string.Join(", ", productIds), isStage);
+						_logger.Info("Постановка сообщения {0} для продуктов {1} в очередь, isStage={2}", method, string.Join(", ", productIds), isStage);
 					}
 
 					if (needSubmit)
-						ctx.SubmitChanges();
-				}
+						_ctx.SaveChanges();
 			});
 		}
 
@@ -117,22 +127,10 @@ namespace QA.Core.DPC
             _identityProvider.Identity = new Identity(customerCode);
             INotificationProvider provider;
 
-            try
-            {
-                provider = ObjectFactoryBase.Resolve<INotificationProvider>();
-            }
-            catch
-            {
-                return new ConfigurationInfo
-                {
-                    ActualSettings = null,
-                    CurrentSettings = null
-                };
-            }
 
             var channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
             var currentConfiguration = GetCurrentConfiguration(customerCode);
-            var actualConfiguration = provider.GetConfiguration();
+            var actualConfiguration = _provider.GetConfiguration();
 
             var channels = actualConfiguration.Channels.Select(c => c.Name)
                 .Union(currentConfiguration == null ? new string[0] : currentConfiguration.Channels.Select(c => c.Name))
@@ -140,20 +138,17 @@ namespace QA.Core.DPC
 
             Dictionary<string, int> countMap;
 
-            using (var ctx = ObjectFactoryBase.Resolve<NotificationsModelDataContext>())
-            {
-                countMap = ctx.Messages
-                    .GroupBy(m => m.Channel)
-                    .Select(g => new { g.Key, Count = g.Count() })
-                    .ToDictionary(g => g.Key, g => g.Count);
-            }         
+            countMap = _ctx.Messages
+				.GroupBy(m => m.Channel)
+				.Select(g => new { g.Key, Count = g.Count() })
+				.ToDictionary(g => g.Key, g => g.Count);
 
             var chennelsStatistic = channelService.GetNotificationChannels();
 
             return new ConfigurationInfo
             {
                 Started = NotificationSender.Started,
-                NotificationProvider = provider.GetType().Name,
+                NotificationProvider = _provider.GetType().Name,
                 IsActual = actualConfiguration.IsEqualTo(currentConfiguration),
                 ActualSettings = new SettingsInfo
                 {
