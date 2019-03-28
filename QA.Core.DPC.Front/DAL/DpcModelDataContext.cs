@@ -41,10 +41,9 @@ namespace QA.Core.DPC.Front.DAL
             });
         }
         
-               public Product GetProduct(ProductLocator locator, int id)
+        public Product GetProduct(ProductLocator locator, int id)
         {
-            return GetProducts(locator).FirstOrDefault(m => id == m.DpcId);
-            
+            return GetProducts(locator).Include(m => m.ProductRegions).FirstOrDefault(m => id == m.DpcId);
         }
 
         public ProductVersion GetProductVersion(ProductLocator locator, int id, DateTime date)

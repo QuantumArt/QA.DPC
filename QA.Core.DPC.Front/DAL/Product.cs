@@ -12,7 +12,6 @@ namespace QA.Core.DPC.Front.DAL
             ProductRegions = new HashSet<ProductRegion>();
         }
         
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
         public int DpcId { get; set; }

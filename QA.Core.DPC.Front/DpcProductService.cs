@@ -22,7 +22,7 @@ namespace QA.Core.DPC.Front
         {
             return Run(new UserContext(), null, () =>
             {
-                using (var ctx = new DpcModelDataContext())
+                using (var ctx = GetDbContext(locator))
                 {
                     var p = ctx.GetProduct(locator, id);
                     if (p?.Hash == null) return true;
@@ -50,13 +50,18 @@ namespace QA.Core.DPC.Front
             return null;
         }
 
+        private DpcModelDataContext GetDbContext(ProductLocator locator)
+        {
+            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
+            optionsBuilder.UseSqlServer(locator.FixedConnectionString);
+            return new DpcModelDataContext(optionsBuilder.Options);
+        }
+
         public ServiceResult UpdateProduct(ProductLocator locator, Product product, string data, string userName, int userId)
         {
             return RunAction(new UserContext(), null, () =>
             {
-                var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
-                optionsBuilder.UseSqlServer(locator.GetConnectionString());
-                using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
+                using (var ctx = GetDbContext(locator))
                 {
                     var p = ctx.GetProduct(locator, product.Id);
                     var isNew = p == null;
@@ -172,9 +177,7 @@ namespace QA.Core.DPC.Front
         {
             return RunAction(new UserContext(), null, () =>
             {
-                var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
-                optionsBuilder.UseSqlServer(locator.GetConnectionString());
-                using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
+                using (var ctx = GetDbContext(locator))
                 {
                     var p = ctx.GetProduct(locator, id);
                     if (p != null)
@@ -255,9 +258,7 @@ namespace QA.Core.DPC.Front
 
         public int[] GetAllProductId(ProductLocator locator, int page, int pageSize)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
-            optionsBuilder.UseSqlServer(locator.GetConnectionString());
-            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
+            using (var ctx = GetDbContext(locator))
             {
                 return ctx.GetProducts(locator)
                     .OrderBy(x => x.DpcId).Skip(page * pageSize).Take(pageSize)
@@ -267,9 +268,7 @@ namespace QA.Core.DPC.Front
 
         public int[] GetLastProductId(ProductLocator locator, int page, int pageSize, DateTime date)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
-            optionsBuilder.UseSqlServer(locator.GetConnectionString());
-            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
+            using (var ctx = GetDbContext(locator))
             {
                 return ctx.GetProducts(locator)
                     .Where(x => x.Updated > date)
@@ -280,9 +279,7 @@ namespace QA.Core.DPC.Front
 
         public string GetProduct(ProductLocator locator, int id)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
-            optionsBuilder.UseSqlServer(locator.GetConnectionString());
-            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
+            using (var ctx = GetDbContext(locator))
             {
                 var p = ctx.GetProduct(locator, id);
                 return p != null ? p.Data : "";
@@ -292,9 +289,7 @@ namespace QA.Core.DPC.Front
         public ProductData GetProductData(ProductLocator locator, int id)
         {
             ProductData result = null;
-            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
-            optionsBuilder.UseSqlServer(locator.GetConnectionString());
-            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
+            using (var ctx = GetDbContext(locator))
             {
                 var p = ctx.GetProduct(locator, id);
                 if (p != null)
@@ -313,9 +308,7 @@ namespace QA.Core.DPC.Front
         public ProductData GetProductVersionData(ProductLocator locator, int id, DateTime date)
         {
             ProductData result = null;
-            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
-            optionsBuilder.UseSqlServer(locator.GetConnectionString());
-            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
+            using (var ctx = GetDbContext(locator))
             {
                 var p = ctx.GetProductVersion(locator, id, date);
                 if (p != null)
@@ -333,9 +326,7 @@ namespace QA.Core.DPC.Front
 
         public int[] GetAllProductVersionId(ProductLocator locator, int page, int pageSize, DateTime date)
         {
-            var optionsBuilder = new DbContextOptionsBuilder<DpcModelDataContext>();
-            optionsBuilder.UseSqlServer(locator.GetConnectionString());
-            using (var ctx = new DpcModelDataContext(optionsBuilder.Options))
+            using (var ctx = GetDbContext(locator))
             using (new TransactionScope(TransactionScopeOption.Required, new TransactionOptions() { IsolationLevel = IsolationLevel.ReadUncommitted }))
             {
                 var productVersions = ctx.GetProductVersions(locator, date);

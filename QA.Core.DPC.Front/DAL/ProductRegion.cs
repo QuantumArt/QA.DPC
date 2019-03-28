@@ -4,7 +4,6 @@ namespace QA.Core.DPC.Front.DAL
 {
     public partial class ProductRegion
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]        
         public int Id { get; set; }
         
         public int ProductId { get; set; }

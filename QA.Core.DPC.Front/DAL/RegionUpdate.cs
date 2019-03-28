@@ -5,7 +5,6 @@ namespace QA.Core.DPC.Front.DAL
 {
     public class RegionUpdate
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]        
         public int Id { get; set; }
         
         public DateTime Updated { get; set; }

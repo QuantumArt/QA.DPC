@@ -12,7 +12,6 @@ namespace QA.Core.DPC.Front
             ProductRegionVersions = new HashSet<ProductRegionVersion>();
         }
         
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         
         public bool Deleted { get; set; }
