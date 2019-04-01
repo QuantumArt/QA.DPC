@@ -36,7 +36,7 @@ namespace QA.ProductCatalog.Validation.Validators
             var regionsContentId = helper.GetSettingValue(SettingsTitles.REGIONS_CONTENT_ID);
 
             var contentId = model.ContentId;
-            int productId = helper.GetValue<int>(Constants.FieldId); 
+            int productId = helper.GetValue<int>(Constants.FieldId);
 
             using (new QPConnectionScope(helper.ConnectionString))
             {
@@ -55,91 +55,118 @@ namespace QA.ProductCatalog.Validation.Validators
 
                 var parametersName = helper.GetRelatedFieldName(product, parametersContentId);
 
-                int[] regionsIds = helper.GetValue<ListOfInt>(regionsName).ToArray(); 
-                int[] parametersIds = helper.GetValue<ListOfInt>(parametersName)?.ToArray(); 
+                int[] regionsIds = helper.GetValue<ListOfInt>(regionsName).ToArray();
+                int[] parametersIds = helper.GetValue<ListOfInt>(parametersName)?.ToArray();
 
 
                 helper.CheckSiteId(productTypesContentId);
 
                 //Проверка того, что продукт не имеет общих регионов с другими региональными продуктами этого МП
-                 var productsIds = markProduct
-               .FieldValues.Where(a => a.Field.Name == productsName) 
-               .SelectMany(a => a.RelatedItems)
-               .ToArray();
+                var productsIds = markProduct
+                    .FieldValues.Where(a => a.Field.Name == productsName)
+                    .SelectMany(a => a.RelatedItems)
+                    .ToArray();
 
-                 helper.IsProductsRegionsWithModifierIntersectionsExist(articleService, productId, regionsIds, productsIds,
-                     regionsName, Constants.FieldProductModifiers, 0);
-
+                helper.IsProductsRegionsWithModifierIntersectionsExist(articleService, productId, regionsIds,
+                    productsIds,
+                    regionsName, Constants.FieldProductModifiers, 0);
 
 
                 if (productId > 0)
                 {
                     //Проверка того, что тарифное направление встречается только один раз в продукте 
-                    var contentProductsParametersId = helper.GetSettingValue(SettingsTitles.PRODUCTS_PARAMETERS_CONTENT_ID);
+                    var contentProductsParametersId =
+                        helper.GetSettingValue(SettingsTitles.PRODUCTS_PARAMETERS_CONTENT_ID);
                     if (parametersIds != null && parametersIds.Any())
                     {
-                        var parameters = helper.GetParameters(articleService, contentProductsParametersId, parametersIds, "c.BaseParameter is not null");
+                        var parameters = helper.GetParameters(articleService, contentProductsParametersId,
+                            parametersIds, "c.BaseParameter is not null");
                         helper.CheckTariffAreaDuplicateExist(parameters, parametersName);
                     }
 
-                    var contentServiceOnTariffId = helper.GetSettingValue(SettingsTitles.SERVICES_ON_TARIFF_CONTENT_ID);
-                    var tariffRelationFieldName = helper.GetSettingStringValue(SettingsTitles.TARIFF_RELATION_FIELD_NAME);
-                    //Получение id поля Tariffs
-                    var fieldService = new FieldService(helper.ConnectionString, 1);
-                    var fieldId = fieldService.List(contentServiceOnTariffId).Where(w => w.Name.Equals(tariffRelationFieldName)).Select(s => s.Id).FirstOrDefault();
-                    //Получение Id услуг из контента "Услуги на тарифах"
-                    var relationsIds = articleService.GetRelatedItems(fieldId, productId, true)?
-                                                     .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                                     .Select(int.Parse)
-                                                     .ToArray();
-                    if (relationsIds != null && relationsIds.Any())
-                    {
-                        //Проверка того, что тарифное направление встречается только один раз в связи продуктов
-                        helper.CheckRelationServicesProductsTariff(articleService, contentServiceOnTariffId,
-                            tariffRelationFieldName, relationsIds, parametersName);
+                    int contentServiceOnTariffId = 0;
+                    string tariffRelationFieldName = null;
+                    bool hasServicesOnTariff = true;
 
-                        //Проверка того, что связь между продуктами встречается единожды
-                        helper.CheckRelationProductsDuplicate(articleService, Constants.FieldId, contentServiceOnTariffId, relationsIds);
+                    try
+                    {
+                        contentServiceOnTariffId = helper.GetSettingValue(SettingsTitles.SERVICES_ON_TARIFF_CONTENT_ID);
+                        tariffRelationFieldName =
+                            helper.GetSettingStringValue(SettingsTitles.TARIFF_RELATION_FIELD_NAME);
                     }
-                    var relatedIds = new List<string>(); 
-
-                    //Проверка того, что сущность с другой стороны связи не в архиве
-                    var productRelationsContentId = helper.GetSettingValue(SettingsTitles.PRODUCT_RELATIONS_CONTENT_ID);
-                    var contentService = new ContentService(helper.ConnectionString, 1);
-                    
-                    //Получение связанных контентов
-                    var contents = contentService.Read(productRelationsContentId)
-                        .AggregatedContents
-                        .Where(w => w.Fields
-                                    .Count(a => a.ExactType == FieldExactTypes.O2MRelation && a.RelateToContentId == product.ContentId) >= 2).ToArray();
-                    foreach (var con in contents)
+                    catch (ValidationException)
                     {
-                        //Получение полей, по которым может быть связь
-                        var productField = con.Fields
-                                                .Where(w => w.ExactType == FieldExactTypes.O2MRelation
-                                                            && w.RelateToContentId == product.ContentId
-                                                            ).ToArray();
-                        foreach (var field in productField)
-                        {
-                            //Получение ids связанных статей
-                            var relatedArticlesId = articleService.GetRelatedItems(field.Id, productId, true)?
-                                                      .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                                                      .Select(int.Parse)
-                                .ToArray();
+                        hasServicesOnTariff = false;
+                    }
 
-                            if (relatedArticlesId != null && relatedArticlesId.Any())
+                    if (hasServicesOnTariff)
+                    {
+                        //Получение id поля Tariffs
+                        var fieldService = new FieldService(helper.ConnectionString, 1);
+                        var fieldId = fieldService.List(contentServiceOnTariffId)
+                            .Where(w => w.Name.Equals(tariffRelationFieldName)).Select(s => s.Id).FirstOrDefault();
+                        //Получение Id услуг из контента "Услуги на тарифах"
+                        var relationsIds = articleService.GetRelatedItems(fieldId, productId, true)?
+                            .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(int.Parse)
+                            .ToArray();
+                        if (relationsIds != null && relationsIds.Any())
+                        {
+                            //Проверка того, что тарифное направление встречается только один раз в связи продуктов
+                            helper.CheckRelationServicesProductsTariff(articleService, contentServiceOnTariffId,
+                                tariffRelationFieldName, relationsIds, parametersName);
+
+                            //Проверка того, что связь между продуктами встречается единожды
+                            helper.CheckRelationProductsDuplicate(articleService, Constants.FieldId,
+                                contentServiceOnTariffId, relationsIds);
+                        }
+
+                        var relatedIds = new List<string>();
+
+                        //Проверка того, что сущность с другой стороны связи не в архиве
+                        var productRelationsContentId =
+                            helper.GetSettingValue(SettingsTitles.PRODUCT_RELATIONS_CONTENT_ID);
+                        var contentService = new ContentService(helper.ConnectionString, 1);
+
+                        //Получение связанных контентов
+                        var contents = contentService.Read(productRelationsContentId)
+                            .AggregatedContents
+                            .Where(w => w.Fields
+                                            .Count(a => a.ExactType == FieldExactTypes.O2MRelation &&
+                                                        a.RelateToContentId == product.ContentId) >= 2).ToArray();
+                        foreach (var con in contents)
+                        {
+                            //Получение полей, по которым может быть связь
+                            var productField = con.Fields
+                                .Where(w => w.ExactType == FieldExactTypes.O2MRelation
+                                            && w.RelateToContentId == product.ContentId
+                                ).ToArray();
+                            foreach (var field in productField)
                             {
-                                var relatedArticles = articleService.List(con.Id, relatedArticlesId, true).Where(w => !w.Archived).Select(s => s).ToList();
-                                var relField = productField.Where(f => f.Name != field.Name).Select(s => s).First();
-                                var rel = relatedArticles.Select(s => s.FieldValues.First(f => f.Field.Name == relField.Name).Value).ToArray();
-                                if (rel.Any())
+                                //Получение ids связанных статей
+                                var relatedArticlesId = articleService.GetRelatedItems(field.Id, productId, true)?
+                                    .Split(new[] {','}, StringSplitOptions.RemoveEmptyEntries)
+                                    .Select(int.Parse)
+                                    .ToArray();
+
+                                if (relatedArticlesId != null && relatedArticlesId.Any())
                                 {
-                                    relatedIds.AddRange(rel);
+                                    var relatedArticles = articleService.List(con.Id, relatedArticlesId, true)
+                                        .Where(w => !w.Archived).Select(s => s).ToList();
+                                    var relField = productField.Where(f => f.Name != field.Name).Select(s => s).First();
+                                    var rel = relatedArticles.Select(s =>
+                                        s.FieldValues.First(f => f.Field.Name == relField.Name).Value).ToArray();
+                                    if (rel.Any())
+                                    {
+                                        relatedIds.AddRange(rel);
+                                    }
                                 }
                             }
                         }
+
+                        helper.CheckArchivedRelatedEntity(articleService, relatedIds, productId, Constants.FieldId,
+                            helper.GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID));
                     }
-                    helper.CheckArchivedRelatedEntity(articleService, relatedIds, productId, Constants.FieldId, helper.GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID));
                 }
 
                 string markProductType =
@@ -149,12 +176,16 @@ namespace QA.ProductCatalog.Validation.Validators
 
                 //Проверка, что тип маркетингового продукта и тип продукта -- сопоставимы
                 if (!articleService.List(productTypesContentId, null, true).Any(x =>
-                                x.FieldValues.FirstOrDefault(a => a.Field.Name == Constants.FieldProductContent)?.Value == typeId.ToString()
-                                && x.FieldValues.FirstOrDefault(a => a.Field.Name == Constants.FieldMarkProductContent)?.Value == markProductType))
+                    x.FieldValues.FirstOrDefault(a => a.Field.Name == Constants.FieldProductContent)?.Value ==
+                    typeId.ToString()
+                    && x.FieldValues.FirstOrDefault(a => a.Field.Name == Constants.FieldMarkProductContent)?.Value ==
+                    markProductType))
                 {
-                    result.AddModelError(helper.GetPropertyName(markProductName), RemoteValidationMessages.SameTypeProductMarketingProduct);
+                    result.AddModelError(helper.GetPropertyName(markProductName),
+                        RemoteValidationMessages.SameTypeProductMarketingProduct);
                 }
             }
+
             return result;
         }
 
