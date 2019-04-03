@@ -100,8 +100,15 @@ namespace QA.ProductCatalog.ImpactService
 
         public JObject FilterScale(string region, JObject[] scales)
         {
-            var defaultScale = scales.FirstOrDefault(n => n.SelectToken("MarketingProduct.Regions") == null);
-            foreach (var scale in scales)
+            var vsrAliases = new[] {"National", "Intranet"};
+
+            var vsrScales = scales.Where(n =>
+                n.SelectTokens("MarketingProduct.Modifiers.[?(@.Alias)].Alias")
+                    .Select(m => m.ToString()).ToArray()
+                    .Intersect(vsrAliases).Any()).ToArray();        
+        
+            var defaultScale = vsrScales.FirstOrDefault(n => n.SelectToken("MarketingProduct.Regions") == null);
+            foreach (var scale in vsrScales)
             {
                 var regionAliases =
                     scale.SelectTokens("MarketingProduct.Regions.[?(@.Region)].Region.Alias")
