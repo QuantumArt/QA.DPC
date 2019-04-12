@@ -1,11 +1,12 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
 using QA.Core.Service.Interaction;
 using QA.ProductCatalog.ContentProviders;
 using System.Xml.XPath;
 using System.IO;
 using System.Collections.Generic;
-using QA.Core.DPC.QP.Models;
+ using Microsoft.Extensions.Options;
+ using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
@@ -20,7 +21,7 @@ namespace QA.Core.DPC
 
         private readonly ILogger _logger;
 
-        private NotificationsModelDataContext _ctx;
+        private readonly IConnectionProvider _connectionProvider;
 
         private readonly INotificationProvider _provider;
         
@@ -30,13 +31,13 @@ namespace QA.Core.DPC
 	        IIdentityProvider identityProvider,
 	        INotificationChannelService channelService, 
 	        ILogger logger, 
-	        NotificationsModelDataContext ctx)
+	        IConnectionProvider connectionProvider)
 		{
             _identityProvider = identityProvider;
             _logger = logger;
-            _ctx = ctx;
             _provider = provider;
             _channelService = channelService;
+            _connectionProvider = connectionProvider;
 		}
 		
 		public void PushNotifications(NotificationItem[] notifications, bool isStage, int userId, string userName, string method, string customerCode)
@@ -46,7 +47,7 @@ namespace QA.Core.DPC
             RunAction(new UserContext(), null, () =>
 			{
 				Throws.IfArgumentNull(notifications, _ => notifications);
-					bool needSubmit = false;
+
 					List<NotificationChannel> channels = null;
 
 					if (notifications.Any(n => n.Channels == null))
@@ -103,17 +104,15 @@ namespace QA.Core.DPC
 					}
 				
 					if (messages.Any())
-					{                     
-						_ctx.Messages.AddRange(messages);
-
-						needSubmit = true;
+					{
+						var ctx = NotificationsModelDataContext.Create(_connectionProvider);
+						ctx.Messages.AddRange(messages);
 
 						var productIds = notifications.Select(n => n.ProductId).Distinct();
 						_logger.Info("Постановка сообщения {0} для продуктов {1} в очередь, isStage={2}", method, string.Join(", ", productIds), isStage);
-					}
 
-					if (needSubmit)
-						_ctx.SaveChanges();
+						ctx.SaveChanges();
+					}
 			});
 		}
 
@@ -125,8 +124,6 @@ namespace QA.Core.DPC
         public ConfigurationInfo GetConfigurationInfo(string customerCode)
         {
             _identityProvider.Identity = new Identity(customerCode);
-            INotificationProvider provider;
-
 
             var channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
             var currentConfiguration = GetCurrentConfiguration(customerCode);
@@ -137,8 +134,8 @@ namespace QA.Core.DPC
                 .Distinct();
 
             Dictionary<string, int> countMap;
-
-            countMap = _ctx.Messages
+            var ctx = NotificationsModelDataContext.Create(_connectionProvider);
+            countMap = ctx.Messages
 				.GroupBy(m => m.Channel)
 				.Select(g => new { g.Key, Count = g.Count() })
 				.ToDictionary(g => g.Key, g => g.Count);

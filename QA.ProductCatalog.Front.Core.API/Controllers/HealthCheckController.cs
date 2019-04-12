@@ -1,5 +1,7 @@
 using System;
+using System.Data.Common;
 using System.Data.SqlClient;
+using Npgsql;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -11,9 +13,9 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
     public class HealthCheckController : Controller
     {
         private DataOptions _options;
-        public HealthCheckController(IOptions<DataOptions> options)
+        public HealthCheckController(DataOptions options)
         {
-            _options = options.Value;
+            _options = options;
         }
 
         [HttpGet("healthcheck", Name="HealthCheck")]
@@ -26,6 +28,13 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var dboKStr = IsDbConnected() ? "OK" : "Error";
             sb.AppendLine("Database: " + dboKStr);
             return Content(sb.ToString(), "text/plain");
+        }
+
+        private DbConnection GetDbConnection(string connectionString)
+        {
+            if (_options.UsePostgres)
+                return new NpgsqlConnection(connectionString);
+            return new SqlConnection(connectionString);
         }
 
         private bool IsDbConnected()
@@ -49,7 +58,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 return false;
             }
             
-            using (var connection = new SqlConnection(connectionString))
+            using (var connection = GetDbConnection(connectionString))
             {
                 try
                 {

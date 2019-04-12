@@ -1,31 +1,32 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
 namespace QA.Core.DPC.Front.DAL
 {
     
-    public partial class DpcModelDataContext : DbContext
+    public class DpcModelDataContext : DbContext
     {
         public DpcModelDataContext()
         {
         }
 
-        public DpcModelDataContext(DbContextOptions<DpcModelDataContext> options)
+        public DpcModelDataContext(DbContextOptions options)
             : base(options)
         {
         }
 
-        public virtual DbSet<Product> Products { get; set; }
-        public virtual DbSet<ProductRegion> ProductRegions { get; set; }
-        public virtual DbSet<ProductVersion> ProductVersions { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductRegion> ProductRegions { get; set; }
+        public DbSet<ProductVersion> ProductVersions { get; set; }
         
-        public virtual DbSet<ProductRegionVersion> ProductRegionVersions { get; set; } 
+        public DbSet<ProductRegionVersion> ProductRegionVersions { get; set; } 
 
-        public virtual DbSet<RegionUpdate> RegionUpdates { get; set; }
+        public DbSet<RegionUpdate> RegionUpdates { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            
             modelBuilder.Entity<ProductRegion>(entity =>
             {
                 entity.HasOne(d => d.Product)

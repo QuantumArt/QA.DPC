@@ -1,4 +1,4 @@
-﻿using QA.Core.DPC.QP.Models;
+﻿﻿using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.Service;
 using QA.Core.Logger;
@@ -10,43 +10,47 @@ using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
-using System.ServiceModel;
-using System.ServiceProcess;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Schedulers;
+using Microsoft.Extensions.Hosting;
+ using Microsoft.Extensions.Options;
 
-namespace QA.Core.DPC
+ namespace QA.Core.DPC
 {
-    public partial class NotificationSender : ServiceBase
+    public partial class NotificationSender : IHostedService
 	{
         private const string AutopublishKey = "Autopublish";
-		public static ConcurrentDictionary<string, NotificationSenderConfig> ConfigDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
-	    public static DateTime Started = DateTime.MinValue;
         private static string KeySeparator = "#~→";
+        private readonly ICustomerProvider _customerProvider;
+        private readonly IConnectionProvider _connectionProvider;
+        private readonly IIdentityProvider _identityProvider;
+        private readonly IFactoryWatcher _configurationWatcher;
+        private readonly NotificationProperties _props;
+        
+        private readonly List<Timer> _senders = new List<Timer>();
+        private static readonly Dictionary<string, ChannelState> _lockers = new Dictionary<string, ChannelState>();
+        
+        public static ConcurrentDictionary<string, NotificationSenderConfig> ConfigDictionary = new ConcurrentDictionary<string, NotificationSenderConfig>();
+        public static DateTime Started = DateTime.MinValue;
 
-        static ICustomerProvider _customerProvider;
-        static IConnectionProvider _connectionProvider;
-        static IIdentityProvider _identityProvider;
-        static IFactoryWatcher _configurationWatcher;
-
-        public ServiceHost serviceHost = null;
-
-		private readonly List<Timer> _senders = new List<Timer>();
-		static readonly Dictionary<string, ChannelState> _lockers = new Dictionary<string, ChannelState>();
-
-		public NotificationSender()
+		public NotificationSender(
+			ICustomerProvider customerProvider, 
+			IConnectionProvider connectionProvider, 
+			IIdentityProvider identityProvider, 
+			IFactoryWatcher factoryWatcher,
+			IOptions<NotificationProperties> propsAccessor
+		)
 		{
-		    InitializeComponent();
-			UnityConfig.Configure();
-            _customerProvider = ObjectFactoryBase.Resolve<ICustomerProvider>();
-            _connectionProvider = ObjectFactoryBase.Resolve<IConnectionProvider>();
-            _identityProvider = ObjectFactoryBase.Resolve<IIdentityProvider>();
-            _configurationWatcher = ObjectFactoryBase.Resolve<IFactoryWatcher>();
-        }
+            _customerProvider = customerProvider;
+            _connectionProvider = connectionProvider;
+            _identityProvider = identityProvider;
+            _configurationWatcher = factoryWatcher;
+            _props = propsAccessor.Value;
+		}
 
-		protected override void OnStart(string[] args)
+		public void Start()
 		{
 		    Started = DateTime.Now;
 
@@ -54,11 +58,6 @@ namespace QA.Core.DPC
             _configurationWatcher.OnConfigurationModify += _configurationWatcher_OnConfigurationModify;
             _configurationWatcher.Start();
 
-            if (serviceHost != null)
-				serviceHost.Close();
-
-			serviceHost = new ServiceHost(typeof(NotificationService));
-			serviceHost.Open();
 		}
 
         private void _configurationWatcher_OnConfigurationModify(object sender, FactoryWatcherEventArgs e)
@@ -80,18 +79,11 @@ namespace QA.Core.DPC
 
         }
 
-        protected override void OnStop()
+        public void Stop()
         {            
             NotificationService.OnUpdateConfiguration -= NotificationService_OnUpdateConfiguration;
             _configurationWatcher.OnConfigurationModify -= _configurationWatcher_OnConfigurationModify;
             _configurationWatcher.Stop();
-
-
-            if (serviceHost != null)
-            {
-                serviceHost.Close();
-                serviceHost = null;
-            }
 
             foreach (var configDictionary in ConfigDictionary.Values)
             {
@@ -139,7 +131,7 @@ namespace QA.Core.DPC
             
             try
             {
-                string instanceId = ConfigurationManager.AppSettings["DPC.InstanceId"];
+                string instanceId = _props.InstanceId;
                 logger.Info("start UpdateConfiguration for {0}; InstanceId = {1}", customerCode, instanceId);
 
                 int delay = 0;
@@ -235,7 +227,7 @@ namespace QA.Core.DPC
             UpdateConfiguration(actualCustomerCode);
         }
 
-        public static void SendToOneChannel(object stateInfo)
+        public void SendToOneChannel(object stateInfo)
         {            
             var descriptor = (ChannelDescriptor)stateInfo;
             _identityProvider.Identity = new Identity(descriptor.CustomerCode);
@@ -304,7 +296,7 @@ namespace QA.Core.DPC
             }
         }
 
-        public static void Autopublish(object stateInfo)
+        public void Autopublish(object stateInfo)
         {
             var customerCode = stateInfo as string;
             var autopublishKey = GetKey(AutopublishKey, customerCode);
@@ -340,7 +332,7 @@ namespace QA.Core.DPC
             }
         }
 
-		private static async Task SendOneMessage(
+		private async Task SendOneMessage(
             string customerCode,
             string instanceId,
             NotificationSenderConfig config,
@@ -475,6 +467,18 @@ namespace QA.Core.DPC
 		private static NotificationChannel GetChannel(NotificationSenderConfig config, string channel)
 		{
 			return config.Channels.FirstOrDefault(x => x.Name == channel);
+		}
+
+		public Task StartAsync(CancellationToken cancellationToken)
+		{
+			Start();
+			return Task.CompletedTask;
+		}
+
+		public Task StopAsync(CancellationToken cancellationToken)
+		{
+			Stop();
+			return Task.CompletedTask;
 		}
 	}
 }

@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,11 +11,11 @@ using QA.Core.ProductCatalog.Actions;
 using Unity;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DPC.Core.Helpers;
-using QA.ProductCatalog.Integration;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Swashbuckle.AspNetCore.Swagger;
 
 
-namespace QA.Core.ProductCatalog.ActionsService
+namespace QA.Core.DPC
 {
     public class Startup
     {
@@ -29,10 +28,9 @@ namespace QA.Core.ProductCatalog.ActionsService
 
         public void ConfigureContainer(IUnityContainer container)
         {
-            var loaderProps = new LoaderProperties();
-            Configuration.Bind("Loader", loaderProps);
-            
-            UnityConfig.Configure(container, loaderProps);
+            var props = new NotificationProperties();
+            Configuration.Bind("Properties", props);
+            UnityConfig.Configure(container, props);
         }
 
         // This method gets called by the runtime. Use this method to add services to the container
@@ -40,15 +38,25 @@ namespace QA.Core.ProductCatalog.ActionsService
         {
             services.AddOptions();
             services.AddHttpContextAccessor();
-            services.AddTransient<IActionContextAccessor, ActionContextAccessor>();            
-            
-            services.Configure<ActionsServiceProperties>(Configuration.GetSection("Properties"));
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
-            services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
-            services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
-            services.AddSingleton<IHostedService, ActionsService>();
+            services.Configure<NotificationProperties>(Configuration.GetSection("Properties"));
+            services.AddSingleton<IHostedService, NotificationSender>();
+            
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info
+                {
+                    Title = "Notification API", 
+                    Version = "v1",
+                    Description = "This API allows to send notifications"
+                });
+            });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services
+                .AddMvc()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            
+            
             
 
         }
@@ -64,8 +72,17 @@ namespace QA.Core.ProductCatalog.ActionsService
             {
                 app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);
             }
+            
+            app.UseSwagger();
 
-            app.UseMvc();
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
+            // specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "DPC Web API");
+            });
+
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

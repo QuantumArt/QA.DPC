@@ -4,6 +4,7 @@ using System.Linq;
 using System.Transactions;
 using QA.Core.Service.Interaction;
 using QA.Core.DPC.DAL;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 
 namespace QA.Core.DPC.Service
@@ -11,12 +12,12 @@ namespace QA.Core.DPC.Service
 	public class MessageService : QAServiceBase, IMessageService
     {
         private ILogger _logger;
-        private readonly NotificationsModelDataContext _ctx;
+        private readonly IConnectionProvider _provider;
 
-        public MessageService(ILogger logger, NotificationsModelDataContext ctx)
+        public MessageService(ILogger logger, IConnectionProvider provider)
         {
             _logger = logger;
-            _ctx = ctx;
+            _provider = provider;
         }
 
         public ServiceResult<List<Message>> GetMessagesToSend(string channel, int maxCount)
@@ -32,8 +33,9 @@ namespace QA.Core.DPC.Service
                             {
                                 IsolationLevel = IsolationLevel.ReadUncommitted
                             }))
-                    {						
-                        res = _ctx.Messages
+                    {
+                        var ctx = NotificationsModelDataContext.Create(_provider);
+                        res = ctx.Messages
                             .Where(x => x.Channel == channel && x.Created <= DateTime.Now.AddSeconds(-10)) //чтобы не читать данные которые сейчас пишут
                             .OrderBy(x => x.Created)
                             .Take(maxCount)
@@ -50,13 +52,13 @@ namespace QA.Core.DPC.Service
             return RunAction(new UserContext(), null, () =>
             {
                 Throws.IfArgumentNull(id, _ => id);
-
-                var m = _ctx.Messages.FirstOrDefault(x => x.Id == id);
+                var ctx = NotificationsModelDataContext.Create(_provider);
+                var m = ctx.Messages.FirstOrDefault(x => x.Id == id);
                     
 				if (m != null)
                 {
-                    _ctx.Messages.Remove(m);
-                    _ctx.SaveChanges();
+                    ctx.Messages.Remove(m);
+                    ctx.SaveChanges();
                 }
             });
         }

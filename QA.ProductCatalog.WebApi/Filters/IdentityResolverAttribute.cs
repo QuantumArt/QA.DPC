@@ -76,7 +76,7 @@ namespace QA.ProductCatalog.WebApi.Filters
 
             public void OnActionExecuting(ActionExecutingContext context)
             {
-                var customerCode = context.RouteData.Values["customerCode"]?.ToString() ?? "current";
+                var customerCode = context.RouteData.Values["customerCode"]?.ToString() ?? SingleCustomerCoreProvider.Key;
                 Identity identity = null;
 
                 if (UseAuthorization())

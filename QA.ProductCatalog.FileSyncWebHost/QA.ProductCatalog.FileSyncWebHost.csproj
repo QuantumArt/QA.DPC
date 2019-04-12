@@ -131,7 +131,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Configuration, Version=1.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QA.Configuration.1.1.0-portable5\lib\net471\QA.Configuration.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Configuration.1.1.0-portable6\lib\net471\QA.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=null">

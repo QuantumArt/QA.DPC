@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.IO;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
@@ -100,8 +100,7 @@ namespace QA.ProductCatalog.Admin.WebApp
             BindingValueProviderFactory.Current = new DefaultBindingValueProviderFactory(new QPModelBindingValueProvider());
 
 
-            container.RegisterFactory<TaskRunnerEntities>(c => new TaskRunnerEntities(c.Resolve<IConnectionProvider>().GetEFConnection(Service.Actions)));
-            container.RegisterType<ITaskService, TaskService>(new InjectionConstructor(typeof(TaskRunnerEntities)));
+            container.RegisterType<ITaskService, TaskService>();
 
             container.RegisterType<IProductRelevanceService, ProductRelevanceService>();
 

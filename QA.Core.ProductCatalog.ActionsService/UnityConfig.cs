@@ -1,4 +1,4 @@
-﻿using Microsoft.Practices.Unity.Configuration;
+﻿﻿using Microsoft.Practices.Unity.Configuration;
 using QA.Core.DPC.Formatters.Configuration;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Container;
@@ -53,12 +53,12 @@ namespace QA.Core.ProductCatalog.ActionsService
             container.RegisterType<ITasksRunner, TasksRunner>();
 	        container.RegisterType<IUserProvider, HttpContextUserProvider>();
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
-
-            container.RegisterFactory<TaskRunnerEntities>(x => new TaskRunnerEntities(x.Resolve<IConnectionProvider>().GetEFConnection(DPC.QP.Models.Service.Actions)));
+            
             container.RegisterFactory<Func<ITaskService>>(x => new Func<ITaskService>(() => x.Resolve<ITaskService>()));
-            container.RegisterType<ITaskService, TaskService>(new InjectionConstructor(typeof(TaskRunnerEntities)));
+            
             container.RegisterFactory<Func<string, int, ITask>>(x => new Func<string, int, ITask>((key, userId) => GetTaskByKey(key, userId,x)));
-
+            container.RegisterType<ITaskService, TaskService>();
+            
             container.RegisterType<IQPNotificationService, QPNotificationService>();
             container.RegisterType<IRegionTagReplaceService, RegionTagService>();
             container.RegisterType<IRegionService, RegionService>();

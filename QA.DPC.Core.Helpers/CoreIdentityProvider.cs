@@ -1,7 +1,8 @@
-﻿using System;
+﻿﻿using System;
 using System.Linq;
 using System.Security.Principal;
-using QA.Core.DPC.QP.Models;
+ using System.Threading;
+ using QA.Core.DPC.QP.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using QA.Core.DPC.QP.Services;
@@ -14,36 +15,75 @@ namespace QA.DPC.Core.Helpers
 
         private readonly string CustomerCodeKey = "customerCode";
 
-        protected bool useSession;
+        protected bool _useSession;
         
         protected string _fixedCustomerCode;
+
+        private static AsyncLocal<Identity> _threadStorage;
 
 
         public CoreIdentityProvider(IHttpContextAccessor accessor)
         {
             _context = accessor.HttpContext;
+            
+            if (_context == null && _threadStorage == null)
+            {
+                _threadStorage = new AsyncLocal<Identity>();
+            }
         }
 
         public Identity Identity
         {
             get
             {
-                var identity = _context.User.Identity as Identity;
+                Identity identity = GetValue();
+                
                 if (identity == null)
                 {
-                    var code = GetCode();
-                    identity = new Identity(code);
-                    _context.User = new GenericPrincipal(identity, new string[0]);
-    
-                    if (useSession)
-                    {
-                        _context.Session.SetString(CustomerCodeKey, code);
-                    }
+                    identity = new Identity(GetCode());
+                    SetValue(identity);
                 }
-                 return identity;
+                
+                return identity;
             }
+
+            set
+            {
+                SetValue(value);
+            } 
+        }
+
+        private Identity GetValue()
+        {
+            Identity identity;
+            
+            if (_context != null)
+            {
+                identity = _context.User.Identity as Identity;
+            }
+            else
+            {
+                identity = _threadStorage.Value;
+            }
+
+            return identity;
+        }
+
+        private void SetValue(Identity identity)
+        {
+            if (_context != null)
+            {
+                _context.User = new GenericPrincipal(identity, new string[0]);
     
-            set => _context.User = new GenericPrincipal(value, new string[0]);
+                if (_useSession)
+                {
+                    _context.Session.SetString(CustomerCodeKey, Identity.CustomerCode);
+                }
+            }
+            else
+            {
+                _threadStorage.Value = identity;
+            }          
         }
 
         private string GetCode()
@@ -51,16 +91,19 @@ namespace QA.DPC.Core.Helpers
             var code = _fixedCustomerCode;
             if (!string.IsNullOrEmpty(code)) return code;
 
-            code = _context.Request.Query[CustomerCodeKey].FirstOrDefault();
-            if (!string.IsNullOrEmpty(code)) return code;
-
-            code = _context.GetRouteValue(CustomerCodeKey) as string;
-            if (!string.IsNullOrEmpty(code)) return code;
-            
-            if (useSession)
+            if (_context != null)
             {
-                code = (!string.IsNullOrEmpty(code)) ? code : _context.Session.GetString(CustomerCodeKey);
+                code = _context.Request.Query[CustomerCodeKey].FirstOrDefault();
                 if (!string.IsNullOrEmpty(code)) return code;
+
+                code = _context.GetRouteValue(CustomerCodeKey) as string;
+                if (!string.IsNullOrEmpty(code)) return code;
+            
+                if (_useSession)
+                {
+                    code = (!string.IsNullOrEmpty(code)) ? code : _context.Session.GetString(CustomerCodeKey);
+                    if (!string.IsNullOrEmpty(code)) return code;
+                }               
             }
             
             code = SingleCustomerCoreProvider.Key;
@@ -72,7 +115,7 @@ namespace QA.DPC.Core.Helpers
     {
         public CoreIdentityWithSessionProvider(IHttpContextAccessor accessor) : base(accessor)
         {
-            useSession = true;
+            _useSession = true;
         }
     }
     

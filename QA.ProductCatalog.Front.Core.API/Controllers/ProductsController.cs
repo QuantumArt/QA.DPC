@@ -24,12 +24,12 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         protected readonly DataOptions Options;
         
-        public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService, IOptions<DataOptions> options)
+        public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService, DataOptions options)
         {
             ProductService = productService;
             Logger = logger;
             DpcService = dpcService;
-            Options = options.Value;
+            Options = options;
         }
 
         [HttpGet("products", Name = "List")]
