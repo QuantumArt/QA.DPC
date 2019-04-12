@@ -40,6 +40,7 @@ namespace QA.Core.ProductCatalog.ActionsService
         {
             services.AddOptions();
             services.AddHttpContextAccessor();
+            services.AddHttpClient();
             services.AddTransient<IActionContextAccessor, ActionContextAccessor>();            
             
             services.Configure<ActionsServiceProperties>(Configuration.GetSection("Properties"));
