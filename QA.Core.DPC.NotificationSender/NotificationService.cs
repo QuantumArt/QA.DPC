@@ -105,7 +105,7 @@ namespace QA.Core.DPC
 				
 					if (messages.Any())
 					{
-						var ctx = NotificationsModelDataContext.Create(_connectionProvider);
+						var ctx = NotificationsModelDataContext.GetOrCreate(_connectionProvider);
 						ctx.Messages.AddRange(messages);
 
 						var productIds = notifications.Select(n => n.ProductId).Distinct();
@@ -134,7 +134,7 @@ namespace QA.Core.DPC
                 .Distinct();
 
             Dictionary<string, int> countMap;
-            var ctx = NotificationsModelDataContext.Create(_connectionProvider);
+            var ctx = NotificationsModelDataContext.GetOrCreate(_connectionProvider);
             countMap = ctx.Messages
 				.GroupBy(m => m.Channel)
 				.Select(g => new { g.Key, Count = g.Count() })

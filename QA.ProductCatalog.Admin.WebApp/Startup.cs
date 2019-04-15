@@ -58,13 +58,19 @@ namespace QA.ProductCatalog.Admin.WebApp
             services.AddDistributedMemoryCache();
             services.AddHttpClient();
             
+            services.Configure<CookiePolicyOptions>(options =>
+            {
+                options.Secure = CookieSecurePolicy.SameAsRequest;
+                options.MinimumSameSitePolicy = SameSiteMode.None; 
+            }); 
+            
             services.AddSession(options =>
             {
                 options.Cookie.IsEssential = true;
                 options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
                 options.Cookie.SameSite = SameSiteMode.None;
             });
-
+            
             services.AddResponseCaching();
             services
                 .AddMvc(options =>

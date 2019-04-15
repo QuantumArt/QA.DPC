@@ -2,9 +2,8 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Threading;
-using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
+using QA.Core.ProductCatalog.ActionsRunner;
 
 namespace QA.Core.ProductCatalog.ActionsRunnerModel
 {
@@ -89,11 +88,6 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
         public Task GetTask(int taskId)
         {
             return _tasks[taskId];
-        }
-
-        public TaskModel GetTask(int id, Expression<Func<Task, TaskModel>> selector)
-        {
-            throw new NotImplementedException();
         }
 
         public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFillter, bool? hasSchedule, out int totalCount)

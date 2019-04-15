@@ -44,16 +44,14 @@ namespace QA.ProductCatalog.Front.Core.API
             services.AddHttpContextAccessor();
             services.AddScoped<ConnectionService>();
 
-            var contexts = new Dictionary<string, DpcModelDataContext>();
-            services.AddSingleton(contexts);            
-            
             services.AddDbContext<NpgSqlDpcModelDataContext>(options =>
                 options.UseNpgsql(dataOptions.DesignConnectionString));
             
             services.AddDbContext<SqlServerDpcModelDataContext>(options =>
                 options.UseSqlServer(dataOptions.DesignConnectionString));
 
-            services.AddScoped(sp =>
+            var contexts = new Dictionary<string, DpcModelDataContext>();
+            services.AddScoped<DpcModelDataContext>(sp =>
                 GetDataContext(contexts, sp.GetRequiredService<ConnectionService>().GetConnectionString(), dataOptions));
 
             services.AddScoped<ILogger>(logger => new NLogLogger("NLog.config"));

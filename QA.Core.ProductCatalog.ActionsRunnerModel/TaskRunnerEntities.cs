@@ -15,12 +15,25 @@
         {
         }
 
-        public static TaskRunnerEntities Create(IConnectionProvider provider)
+        
+        public static TaskRunnerEntities Get(IConnectionProvider provider)
         {
-            DbContextOptionsBuilder<TaskRunnerEntities> builder;
-            builder = new DbContextOptionsBuilder<TaskRunnerEntities>();
-            builder.UseSqlServer(provider.GetConnection(Service.Actions));
-            return new TaskRunnerEntities(builder.Options);
+            TaskRunnerEntities result;
+            var connectionString = provider.GetConnection(Service.Actions);
+                if (provider.UsePostgres)
+                {
+                    var optionsBuilder = new DbContextOptionsBuilder<NpgSqlTaskRunnerEntities>();
+                    optionsBuilder.UseNpgsql(connectionString);
+                    result = new NpgSqlTaskRunnerEntities(optionsBuilder.Options);
+                }
+                else
+                {
+                    var optionsBuilder = new DbContextOptionsBuilder<SqlServerTaskRunnerEntities>();
+                    optionsBuilder.UseSqlServer(connectionString);
+                    result = new SqlServerTaskRunnerEntities(optionsBuilder.Options);
+                }
+            return result;
+
         }
         
         public DbSet<Schedule> Schedules { get; set; }
@@ -44,6 +57,14 @@
                     .WithMany(p => p.Tasks)
                     .HasForeignKey(d => d.ScheduleID);
             });
+            
+            modelBuilder.Entity<TaskState>().HasData(
+                new TaskState {ID = 1, Name = "New"},
+                new TaskState {ID = 2, Name = "Running"},
+                new TaskState {ID = 3, Name = "Completed"},
+                new TaskState {ID = 4, Name = "Error"},
+                new TaskState {ID = 5, Name = "Cancelled"}
+            );           
         }
     }
 }

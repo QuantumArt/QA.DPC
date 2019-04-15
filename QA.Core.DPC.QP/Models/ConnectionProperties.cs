@@ -8,12 +8,15 @@ namespace QA.Core.DPC.QP.Models
         {
             UseQpMonitoring = true;
             QpMode = false;
+            UsePostgres = false;
             TransactionTimeout = TimeSpan.FromMinutes(3);
         }
         
         public string DpcConnectionString { get; set; }
         
         public string TasksConnectionString { get; set; }
+        
+        public string DesignConnectionString { get; set; }
         
         public string NotificationsConnectionString { get; set; }
         
@@ -24,6 +27,8 @@ namespace QA.Core.DPC.QP.Models
         public bool UseQpMonitoring { get; set; }
         
         public bool QpMode { get; set; }
+        
+        public bool UsePostgres { get; set; }
         
         public TimeSpan TransactionTimeout { get; set; }
     }

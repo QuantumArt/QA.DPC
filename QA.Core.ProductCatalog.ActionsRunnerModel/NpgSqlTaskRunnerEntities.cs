@@ -1,18 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using QA.Core.DPC.QP;
 
-namespace QA.Core.DPC.Front.DAL
+namespace QA.Core.ProductCatalog.ActionsRunnerModel
 {
-
-    public class NpgSqlDpcModelDataContext : DpcModelDataContext
-
+    public class NpgSqlTaskRunnerEntities : TaskRunnerEntities
     {
-        
-        public NpgSqlDpcModelDataContext()
+        public NpgSqlTaskRunnerEntities()
         {
         }
 
-        public NpgSqlDpcModelDataContext(DbContextOptions<NpgSqlDpcModelDataContext> options)
+        public NpgSqlTaskRunnerEntities(DbContextOptions<NpgSqlTaskRunnerEntities> options)
             : base(options)
         {
         }
@@ -20,8 +17,8 @@ namespace QA.Core.DPC.Front.DAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
             NpgSqlDataContextHelper.NpgSqlDefaultOptions(modelBuilder);
-        }
-        
+        }       
     }
 }

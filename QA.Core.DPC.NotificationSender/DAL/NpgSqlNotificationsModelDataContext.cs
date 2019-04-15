@@ -1,18 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using QA.Core.DPC.QP;
 
-namespace QA.Core.DPC.Front.DAL
+namespace QA.Core.DPC.DAL
 {
-
-    public class NpgSqlDpcModelDataContext : DpcModelDataContext
-
+    public class NpgSqlNotificationsModelDataContext: NotificationsModelDataContext
     {
-        
-        public NpgSqlDpcModelDataContext()
+        public NpgSqlNotificationsModelDataContext()
         {
         }
 
-        public NpgSqlDpcModelDataContext(DbContextOptions<NpgSqlDpcModelDataContext> options)
+        public NpgSqlNotificationsModelDataContext(DbContextOptions<NpgSqlNotificationsModelDataContext> options)
             : base(options)
         {
         }
@@ -22,6 +19,5 @@ namespace QA.Core.DPC.Front.DAL
             base.OnModelCreating(modelBuilder);
             NpgSqlDataContextHelper.NpgSqlDefaultOptions(modelBuilder);
         }
-        
     }
 }

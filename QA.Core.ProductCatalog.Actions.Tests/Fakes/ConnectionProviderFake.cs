@@ -14,6 +14,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
         }
 
         public bool QPMode => throw new NotImplementedException();
+        public bool UsePostgres { get; }
 
         public bool UseQPMonitoring => throw new NotImplementedException();
         

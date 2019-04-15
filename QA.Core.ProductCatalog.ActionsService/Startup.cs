@@ -1,7 +1,9 @@
+using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -11,6 +13,7 @@ using QA.Core.DPC.QP.Models;
 using QA.Core.ProductCatalog.Actions;
 using Unity;
 using QA.Core.ProductCatalog.ActionsRunner;
+using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Integration;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
@@ -48,6 +51,17 @@ namespace QA.Core.ProductCatalog.ActionsService
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             services.AddSingleton<IHostedService, ActionsService>();
+            
+            var props = new ConnectionProperties();
+            Configuration.Bind("Connection", props);
+            if (!String.IsNullOrEmpty(props.DesignConnectionString))
+            {
+                services.AddDbContext<NpgSqlTaskRunnerEntities>(options =>
+                    options.UseNpgsql(props.DesignConnectionString));
+            
+                services.AddDbContext<SqlServerTaskRunnerEntities>(options =>
+                    options.UseSqlServer(props.DesignConnectionString));
+            }
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             

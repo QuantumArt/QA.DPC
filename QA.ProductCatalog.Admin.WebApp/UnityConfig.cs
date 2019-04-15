@@ -36,8 +36,9 @@ using Unity.Injection;
 using Unity.Lifetime;
 using ValidationConfiguration = QA.ProductCatalog.Validation.Configuration.ValidationConfiguration;
 using System.Reflection;
+ using QA.Core.ProductCatalog.ActionsRunner;
 
-namespace QA.ProductCatalog.Admin.WebApp
+ namespace QA.ProductCatalog.Admin.WebApp
 {
     public static class UnityConfig
     {

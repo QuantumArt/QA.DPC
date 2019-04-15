@@ -1,13 +1,11 @@
-﻿﻿using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
- using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.QP.Services;
+using QA.Core.ProductCatalog.ActionsRunnerModel;
 
- namespace QA.Core.ProductCatalog.ActionsRunnerModel
+namespace QA.Core.ProductCatalog.ActionsRunner
 {
     public class TaskService : ITaskService
     {
@@ -38,8 +36,7 @@ using Microsoft.EntityFrameworkCore;
         int? sourceTaskId = null, string exclusiveCategory = null, string config = null, byte[] binData = null)
         {
             var task = GetTaskObject(key, data, userId, userName, taskDisplayName, sourceTaskId, exclusiveCategory, config, binData);
-
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
                 return AddTask(context, task);
             }
@@ -72,6 +69,25 @@ using Microsoft.EntityFrameworkCore;
             return task.ID;
         }
 
+        private string _sqlUpdateHint => _provider.UsePostgres ? "" : "WITH (ROWLOCK, UPDLOCK)";
+        
+        private string _pgUpdateHint => _provider.UsePostgres ? "FOR UPDATE" : "";
+
+        private string _sqlNolockHint => _provider.UsePostgres ? "" : "WITH (NOLOCK)";
+        
+        private string _stateId => _provider.UsePostgres ? "state_id" : "StateId";
+        
+        private string _exclusiveCategory => _provider.UsePostgres ? "exclusive_category" : "ExclusiveCategory";
+
+        private string _isCancellationRequested => _provider.UsePostgres ? "is_cancellation_requested" : "IsCancellationRequested";
+
+        private string SqlTop(int n) => _provider.UsePostgres ? "" : "TOP " + n;
+        
+        private string PgTop(int n) => _provider.UsePostgres ? $"\nFETCH FIRST {n} ROWS ONLY" : "";
+        
+        
+        
+
         /// <summary>
         /// получение id задачи на исполнение, то что одним запросом получается id ожидающей выполнения и апдейтится как выполняющая гарантирует
         ///что не будет конфликтов если во много потоков будет выполняться или вообще с разных машин в кластере
@@ -79,29 +95,30 @@ using Microsoft.EntityFrameworkCore;
         /// <returns></returns>
         public int? TakeNewTaskForProcessing()
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             using (var tr = context.Database.BeginTransaction())
             {
-                var task = context.Tasks.FromSql($@"SELECT TOP 1 * FROM Tasks WITH (ROWLOCK, UPDLOCK)
-                WHERE StateID = {State.New} AND (
-                    ExclusiveCategory IS NULL OR NOT EXISTS (
-                        SELECT * FROM Tasks t
-                        WHERE t.ExclusiveCategory = Tasks.ExclusiveCategory AND t.StateID = {State.Running}
+                var sql =
+                $@"SELECT {SqlTop(1)} * FROM tasks {_sqlUpdateHint}
+                WHERE {_stateId} = {{0}} AND (
+                    {_exclusiveCategory} IS NULL OR NOT EXISTS (
+                        SELECT * FROM tasks t
+                        WHERE t.{_exclusiveCategory} = tasks.{_exclusiveCategory} AND t.{_stateId} = {{1}}
                     )
                 )
-                ORDER BY ID").SingleOrDefault();
+                ORDER BY ID {_pgUpdateHint} {PgTop(1)}";
+                var task = context.Tasks.FromSql(sql, State.New, State.Running).SingleOrDefault();
 
-                if (task != null)
-                {
-                    context.Database.ExecuteSqlCommand($@"UPDATE Tasks
-                        SET StateID = {State.Running},
-                        LastStatusChangeTime = GETDATE(),
-                        Progress = 0
-                        WHERE ID = {task.ID}");
-                }
+                if (task == null)
+                    return null;
 
+                task.StateID = (byte) State.Running;
+                task.LastStatusChangeTime = DateTime.Now;
+                task.Progress = 0;
+                context.SaveChanges();
                 tr.Commit();
-                return task?.ID;
+                return task.ID;
+                
             }
         }
 
@@ -112,7 +129,7 @@ using Microsoft.EntityFrameworkCore;
         /// <returns>Null, если задача не найдена</returns>
         public Task GetTask(int id)
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
                 return GetTask(context, id);
             }
@@ -122,24 +139,23 @@ using Microsoft.EntityFrameworkCore;
         {
             return ctx.Tasks.SingleOrDefault(x => x.ID == id);
         }
-
-
-        public TaskModel GetTask(int id, Expression<Func<Task, TaskModel>> selector)
+        
+        public Task GetTaskWithUpdateLock(TaskRunnerEntities ctx, int id)
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
-            {
-                var query = context.Tasks.Where(x => x.ID == id).Select(selector);
-                return query.FirstOrDefault();
-            }
+            var sql = $@"SELECT * FROM tasks {_sqlUpdateHint} where id = {{0}} {_pgUpdateHint}";
+            return ctx.Tasks.FromSql(sql, id).SingleOrDefault();
         }
+        
+        public Task GetTaskWithNoLock(TaskRunnerEntities ctx, int id)
+        {
+            var sql = $@"SELECT * FROM tasks {_sqlNolockHint} where id = {{0}}";
+            return ctx.Tasks.FromSql(sql, id).SingleOrDefault();
+        }
+
 
 
         public bool ChangeTaskState(int id, State state, string message, State[] allowedInitialStates = null)
         {
-            string sql = @"UPDATE Tasks 
-                           SET StateID=@StateId, LastStatusChangeTime=GETDATE(), Message=ISNULL(@Message,Message), Progress=@Progress, IsCancellationRequested = 0 
-                           WHERE ID=@ID";
-
             byte? progress = null;
 
             if (state == State.Done)
@@ -147,25 +163,31 @@ using Microsoft.EntityFrameworkCore;
             else if (state == State.Running)
                 progress = 0;
 
-            if (allowedInitialStates != null && allowedInitialStates.Length > 0)
-                sql += string.Format(" AND StateID IN ({0})",
-                    string.Join(",", allowedInitialStates.Select(x => (byte) x)));
-            
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
+            using (var tr = context.Database.BeginTransaction())
             {
-                int rowsAffected = context.Database.ExecuteSqlCommand(sql,
-                    new SqlParameter("@StateId", state),
-                    new SqlParameter("@ID", id),
-                    new SqlParameter("@Message", (object) message ?? DBNull.Value),
-                    new SqlParameter("@Progress", (object) progress ?? DBNull.Value));
+                var task = GetTaskWithUpdateLock(context, id);
+                if (task == null)
+                    return false;
 
-                return rowsAffected == 1;
+                if (allowedInitialStates != null && !allowedInitialStates.Select(x => (int) x).Contains(task.StateID))
+                    return false;
+                
+                task.StateID = (int) state;
+                task.Message = message ?? task.Message;
+                task.Progress = progress ?? task.Progress;
+                task.IsCancellationRequested = false;
+                task.LastStatusChangeTime = DateTime.Now;
+
+                context.SaveChanges();
+                tr.Commit();
+                return true;
             }
         }
 
         public Task GetLastTask(int? userId, State? state = null, string key = null)
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
                 return
                     context.Tasks.Include("TaskState")
@@ -196,7 +218,7 @@ using Microsoft.EntityFrameworkCore;
 
         public void SpawnTask(int sourceTaskId)
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
                 var sourceTask = GetTask(context, sourceTaskId);
 
@@ -207,22 +229,22 @@ using Microsoft.EntityFrameworkCore;
                     sourceTask.Name, sourceTask.Data, sourceTask.UserID, sourceTask.UserName,
                     sourceTask.DisplayName, sourceTaskId);
 
-                AddTask(context, task);                
+                AddTask(context, task);                 
             }
-
         }
 
         public Task[] GetScheduledTasks()
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
-                return context.Tasks.Include("Schedule").Where(x => x.Schedule.Enabled).ToArray();
+                return context.Tasks.Include("Schedule").Where(x => x.Schedule.Enabled).ToArray();              
             }
+
         }
 
         public void SaveSchedule(int taskId, bool enabled, string cronExpression)
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
                 var task = GetTask(context, taskId);
 
@@ -249,14 +271,15 @@ using Microsoft.EntityFrameworkCore;
                     task.Schedule.CronExpression = cronExpression;
                 }
 
-                context.SaveChanges();
+                context.SaveChanges();               
             }
+
         }
 
 
         public Dictionary<int, string> GetAllStates()
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
                 return context.TaskStates.ToDictionary(x => x.ID, x => x.Name);
             }
@@ -265,9 +288,9 @@ using Microsoft.EntityFrameworkCore;
         public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFillter,
             bool? hasSchedule, out int totalCount)
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
-                IQueryable<Task> tasksFiltered = context.Tasks.Include("TaskState").Include("Schedule");
+                IQueryable<Task> tasksFiltered = context.Tasks.Include(n => n.TaskState).Include(n => n.Schedule);
 
                 if (userIdToFilterBy.HasValue)
                 {
@@ -303,41 +326,39 @@ using Microsoft.EntityFrameworkCore;
                     .Skip(skip)
                     .Take(take)
                     .ToArray();               
-            }
 
+            }              
         }
+
 
 
         public bool RequestCancelation(int id)
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
                 int rowsAffected = context.Database.ExecuteSqlCommand(
-                    "UPDATE Tasks SET IsCancellationRequested = 1 WHERE ID=@ID AND StateID=@RunningStateId",
-                    new SqlParameter("@RunningStateId", State.Running),
-                    new SqlParameter("@ID", id));
-
-                return rowsAffected == 1;
+                    $@"UPDATE tasks SET {_isCancellationRequested} = 1 WHERE id={id} AND {_stateId}={State.Running}"
+                );
+                return rowsAffected == 1;            
             }
         }
 
         public void SetTaskProgress(int id, byte progress)
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
                 context.Database.ExecuteSqlCommand(
-                    "UPDATE Tasks SET Progress=@Progress WHERE ID=@ID",
-                    new SqlParameter("@Progress", progress), new SqlParameter("@ID", id));
+                    $@"UPDATE tasks SET progress={progress} WHERE id={id}"
+                );             
             }
         }
 
         public bool GetIsCancellationRequested(int taskId)
         {
-            using (var context = TaskRunnerEntities.Create(_provider))
+            using (var context = TaskRunnerEntities.Get(_provider))
             {
-                return
-                    context.Tasks.FromSql($"SELECT * FROM Tasks WITH (nolock) WHERE ID = {taskId}", taskId)
-                        .SingleOrDefault()?.IsCancellationRequested ?? false;
+                var task = GetTaskWithNoLock(context, taskId);
+                return task?.IsCancellationRequested ?? false;            
             }
         }
 

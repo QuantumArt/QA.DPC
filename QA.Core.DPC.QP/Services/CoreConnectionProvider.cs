@@ -18,6 +18,8 @@ namespace QA.Core.DPC.QP.Services
         
         public bool UseQPMonitoring => _cnnProps.UseQpMonitoring;
 
+        public bool UsePostgres => _cnnProps.UsePostgres;
+
         public TimeSpan TransactionTimeout => _cnnProps.TransactionTimeout;
 
         public CoreConnectionProvider(ICustomerProvider customerProvider, IIdentityProvider identityProvider, IOptions<ConnectionProperties> cnnProps, Service defaultService = Service.Admin)

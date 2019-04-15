@@ -11,6 +11,7 @@ namespace QA.Core.DPC.QP.Services
         string GetEFConnection(Service service);
         bool HasConnection(Service service);
         bool QPMode { get; }
+        bool UsePostgres { get; }
         bool UseQPMonitoring { get; }
         TimeSpan TransactionTimeout { get;  }
     }

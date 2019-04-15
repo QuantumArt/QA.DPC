@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;

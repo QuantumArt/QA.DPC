@@ -1,12 +1,17 @@
+using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using QA.Core.DPC.DAL;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.Actions;
 using Unity;
 using QA.Core.ProductCatalog.ActionsRunner;
@@ -41,6 +46,17 @@ namespace QA.Core.DPC
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<NotificationProperties>(Configuration.GetSection("Properties"));
             services.AddSingleton<IHostedService, NotificationSender>();
+            
+            var props = new ConnectionProperties();
+            Configuration.Bind("Connection", props);
+            if (!String.IsNullOrEmpty(props.DesignConnectionString))
+            {
+                services.AddDbContext<NpgSqlNotificationsModelDataContext>(options =>
+                    options.UseNpgsql(props.DesignConnectionString));
+            
+                services.AddDbContext<SqlServerNotificationsModelDataContext>(options =>
+                    options.UseSqlServer(props.DesignConnectionString));
+            }
             
             services.AddSwaggerGen(c =>
             {

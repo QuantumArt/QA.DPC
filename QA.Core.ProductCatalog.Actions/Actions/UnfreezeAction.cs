@@ -3,6 +3,7 @@ using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.Core.ProductCatalog.Actions.Tasks;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Actions

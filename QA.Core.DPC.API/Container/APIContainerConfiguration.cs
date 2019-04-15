@@ -7,12 +7,13 @@ using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Container;
 using QA.Core.ProductCatalog.Actions.Services;
-using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.Integration;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
 using Unity;
 using Unity.Extension;
+using QA.DPC.Core.Helpers;
+
 #if NETSTANDARD
 using Microsoft.AspNetCore.Http;
 #else

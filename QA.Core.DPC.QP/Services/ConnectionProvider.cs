@@ -16,6 +16,7 @@ namespace QA.Core.DPC.QP.Services
         private Dictionary<Service, string> _defaultConnections;
         private readonly Service _defaultService;
         public bool QPMode { get; private set; }
+        public bool UsePostgres { get; }
         public bool UseQPMonitoring { get; private set; }
         
         public TimeSpan TransactionTimeout { get; private set; }

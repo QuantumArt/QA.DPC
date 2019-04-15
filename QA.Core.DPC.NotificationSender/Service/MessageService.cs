@@ -34,7 +34,7 @@ namespace QA.Core.DPC.Service
                                 IsolationLevel = IsolationLevel.ReadUncommitted
                             }))
                     {
-                        var ctx = NotificationsModelDataContext.Create(_provider);
+                        var ctx = NotificationsModelDataContext.GetOrCreate(_provider);
                         res = ctx.Messages
                             .Where(x => x.Channel == channel && x.Created <= DateTime.Now.AddSeconds(-10)) //чтобы не читать данные которые сейчас пишут
                             .OrderBy(x => x.Created)
@@ -52,7 +52,7 @@ namespace QA.Core.DPC.Service
             return RunAction(new UserContext(), null, () =>
             {
                 Throws.IfArgumentNull(id, _ => id);
-                var ctx = NotificationsModelDataContext.Create(_provider);
+                var ctx = NotificationsModelDataContext.GetOrCreate(_provider);
                 var m = ctx.Messages.FirstOrDefault(x => x.Id == id);
                     
 				if (m != null)

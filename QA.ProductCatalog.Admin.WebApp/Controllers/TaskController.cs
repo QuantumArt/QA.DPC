@@ -6,6 +6,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
@@ -83,9 +84,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 var lastTask = skip == 0 && nameFillter == null && !stateIdToFilterBy.HasValue && tasks.Length > 0 ? tasks.First() : _taskService.GetLastTask(userId);
 
-                myLastTask = Type.GetType(lastTask.Name) == null
+                myLastTask = (lastTask == null) ? null : (Type.GetType(lastTask.Name) == null
                     ? new CustomActionTaskModel(lastTask)
-                    : new TaskModel(lastTask);
+                    : new TaskModel(lastTask));
             }
 
             string dataJsonStr = JsonConvert.SerializeObject(

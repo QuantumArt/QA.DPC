@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Exceptions;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;

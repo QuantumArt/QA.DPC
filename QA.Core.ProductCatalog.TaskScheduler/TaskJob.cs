@@ -1,4 +1,5 @@
-﻿using QA.Core.ProductCatalog.ActionsRunnerModel;
+﻿using QA.Core.ProductCatalog.ActionsRunner;
+using QA.Core.ProductCatalog.ActionsRunnerModel;
 using Quartz;
 using Task = System.Threading.Tasks.Task;
 

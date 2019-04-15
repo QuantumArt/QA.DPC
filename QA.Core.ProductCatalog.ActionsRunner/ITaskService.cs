@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using QA.Core.ProductCatalog.ActionsRunnerModel.EntityModels;
+using QA.Core.ProductCatalog.ActionsRunnerModel;
 
-namespace QA.Core.ProductCatalog.ActionsRunnerModel
+namespace QA.Core.ProductCatalog.ActionsRunner
 {
     public interface ITaskService : IDisposable
     {
@@ -14,8 +13,6 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
         int? TakeNewTaskForProcessing();
 
         Task GetTask(int taskId);
-
-        TaskModel GetTask(int id, Expression<Func<Task, TaskModel>> selector);
 
 		bool ChangeTaskState(int id, State state, string message, State[] allowedInitialStates = null);
 		Task GetLastTask(int? userId, State? state = null, string key = null);
