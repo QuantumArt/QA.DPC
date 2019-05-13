@@ -1,291 +1,32 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D0E2CB2D-042A-4882-8E6D-BBB0966FB47B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QA.Core.DPC.Notification</RootNamespace>
-    <AssemblyName>QA.Core.DPC.Notification</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
-    <TargetFrameworkProfile />
+    <TargetFramework>net471</TargetFramework>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Dev\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=4.8.1.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Autofac.4.8.1\lib\net45\Autofac.dll</HintPath>
-    </Reference>
-    <Reference Include="AutoMapper, Version=1.1.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\AutoMapper.1.1.2\lib\net35\AutoMapper.dll</HintPath>
-    </Reference>
-    <Reference Include="CommonServiceLocator, Version=2.0.4.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0">
-      <HintPath>$(SolutionDir)packages\CommonServiceLocator.2.0.4\lib\net47\CommonServiceLocator.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="EFExtensions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\EFExtensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Flurl, Version=2.8.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Flurl.2.8.0\lib\net40\Flurl.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Flurl.Http, Version=2.4.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Flurl.Http.2.4.0\lib\net46\Flurl.Http.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Irony, Version=1.0.0.0, Culture=neutral, PublicKeyToken=ca48ace7223ead47">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\Irony.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Common, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\EnterpriseLibrary.Common.6.0.1304.0\lib\NET45\Microsoft.Practices.EnterpriseLibrary.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.EnterpriseLibrary.Validation, Version=6.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\EnterpriseLibrary.Validation.6.0.1304.0\lib\NET45\Microsoft.Practices.EnterpriseLibrary.Validation.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-    </Reference>
-    <Reference Include="mscorlib" />
-    <Reference Include="netstandard" />
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
-      <HintPath>$(SolutionDir)packages\NLog.4.5.10\lib\net45\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NLog.Extended, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
-      <HintPath>$(SolutionDir)packages\NLog.Extended.4.5.10\lib\net45\NLog.Extended.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="QA.Configuration, Version=1.0.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\QA.Configuration.1.0.2\lib\net40\QA.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="QA.Core, Version=3.3.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QA.Core.3.3.1\lib\net45\QA.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="QA.Validation.Xaml, Version=1.2.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.1.2.1\lib\net40\QA.Validation.Xaml.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="QA.Validation.Xaml.Extensions, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QA.Validation.Xaml.Extensions.1.2.0\lib\net40\QA.Validation.Xaml.Extensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="QP8.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QP8.Infrastructure.2.1.0\lib\netstandard2.0\QP8.Infrastructure.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="QP8.Infrastructure.Logging, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QP8.Infrastructure.Logging.2.1.0\lib\net471\QP8.Infrastructure.Logging.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="QP8.Infrastructure.Logging.PrtgMonitoring, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QP8.Infrastructure.Logging.PrtgMonitoring.2.1.0\lib\net471\QP8.Infrastructure.Logging.PrtgMonitoring.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.3.2.2\lib\net471\Quantumart.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.Assembling, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.3.2.2\lib\net471\Quantumart.QP8.Assembling.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.BLL, Version=2.9.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\Quantumart.QP8.BLL.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.Configuration, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\Quantumart.QP8.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.Constants, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\Quantumart.QP8.Constants.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.DAL, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\Quantumart.QP8.DAL.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.Merger, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\Quantumart.QP8.Merger.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.Security, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\Quantumart.QP8.Security.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.Utils, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\Quantumart.QP8.Utils.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.Validators, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\Quantumart.QP8.BLL.2.9.0-beta2\lib\net471\Quantumart.QP8.Validators.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Configuration.ConfigurationManager, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>$(SolutionDir)packages\System.Configuration.ConfigurationManager.4.4.1\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Core" />
-    <Reference Include="System.Data.SqlClient, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\System.Data.SqlClient.4.4.0\lib\net461\System.Data.SqlClient.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\System.Diagnostics.DiagnosticSource.4.3.1\lib\net46\System.Diagnostics.DiagnosticSource.dll</HintPath>
-    </Reference>
-    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
-    <Reference Include="System.Messaging" />
-    <Reference Include="System.Net.Http, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Net.Http.Formatting, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebApi.Client.5.2.6\lib\net45\System.Net.Http.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Reflection.TypeExtensions, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\System.Reflection.TypeExtensions.4.1.0\lib\net462\System.Reflection.TypeExtensions.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Runtime.Remoting" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
-      <Private>True</Private>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Transactions" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.Helpers.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Mobile" />
-    <Reference Include="System.Web.Mvc, Version=5.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.Mvc.5.2.6\lib\net45\System.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.Razor.3.2.6\lib\net45\System.Web.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Microsoft.AspNet.WebPages.3.2.6\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Unity.Abstractions, Version=3.3.1.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f">
-      <HintPath>$(SolutionDir)packages\Unity.Abstractions.3.3.1\lib\net47\Unity.Abstractions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.Configuration, Version=5.2.5.0, Culture=neutral, PublicKeyToken=6d32ff45e0ccc69f">
-      <HintPath>$(SolutionDir)packages\Unity.5.8.11\lib\net47\Unity.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.Container, Version=5.8.11.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0">
-      <HintPath>$(SolutionDir)packages\Unity.5.8.11\lib\net47\Unity.Container.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.Interception, Version=5.5.5.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0">
-      <HintPath>$(SolutionDir)packages\Unity.Interception.5.5.5\lib\net47\Unity.Interception.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.Interception.Configuration, Version=5.1.7.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0">
-      <HintPath>$(SolutionDir)packages\Unity.5.8.11\lib\net47\Unity.Interception.Configuration.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.RegistrationByConvention, Version=2.1.9.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0">
-      <HintPath>$(SolutionDir)packages\Unity.5.8.11\lib\net47\Unity.RegistrationByConvention.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Unity.ServiceLocation, Version=2.1.2.0, Culture=neutral, PublicKeyToken=489b6accfaf20ef0">
-      <HintPath>$(SolutionDir)packages\Unity.5.8.11\lib\net47\Unity.ServiceLocation.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
+    <Reference Include="QA.ProductCatalog.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\QA.Core.DPC.QP.Autopublish\bin\Debug\QA.ProductCatalog.Infrastructure.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\NotificationChannelProvider.cs" />
-    <Compile Include="Services\NotificationChannelService.cs" />
-    <Compile Include="Services\NotificationConfigurationProvider.cs" />
-    <Compile Include="Services\NotificationContentProvider.cs" />
+    <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj" />
+    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
+    <ProjectReference Include="..\QA.ProductCatalog.ContentProviders\QA.ProductCatalog.ContentProviders.csproj" />
+    
   </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\QA.Core.DPC.Loader\QA.Core.DPC.Loader.csproj">
-      <Project>{30ce970f-dc61-40b7-9625-44a70e8beaf8}</Project>
-      <Name>QA.Core.DPC.Loader</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj">
-      <Project>{D894F71E-C027-4B58-8930-1D44A65727CB}</Project>
-      <Name>QA.Core.DPC.QP</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj">
-      <Project>{5af860a1-97a7-4c36-9496-21054975e226}</Project>
-      <Name>QA.ProductCatalog.Infrastructure</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
 

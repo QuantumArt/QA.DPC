@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using QA.Core.DPC.QP.Cache;
+using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 
 namespace QA.Core.DPC.Loader.Services

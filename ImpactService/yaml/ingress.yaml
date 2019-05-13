@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: impact
+spec:
+  rules:
+  - host: impact.dev.qsupport.ru
+    http:
+      paths:
+      - backend:
+          serviceName: impact
+          servicePort: 80

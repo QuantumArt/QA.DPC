@@ -20,6 +20,8 @@ interface EntityEditorProps extends ArticleEditorProps {
   className?: string;
   /** Заголовок редактора статьи */
   withHeader?: ReactNode | boolean;
+  /** Автопозиционирование меню в заголовке */
+  autoPositionMenu?: boolean;
   /** Поле статьи для отображения в заголовке */
   titleField?: string | FieldSelector;
   /** Разрешено ли сохранение статьи @default true */
@@ -216,6 +218,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
   private renderButtons() {
     const {
       model,
+      autoPositionMenu,
       customActions,
       canSaveEntity,
       canRefreshEntity,
@@ -230,6 +233,7 @@ export class EntityEditor extends AbstractEditor<EntityEditorProps> {
     return (
       <div className="entity-editor__buttons">
         <EntityMenu
+          autoPosition={autoPositionMenu}
           onSave={canSaveEntity && this.saveEntity}
           onDetach={canDetachEntity && this.detachEntity}
           onRemove={canRemoveEntity && hasServerId && this.removeEntity}

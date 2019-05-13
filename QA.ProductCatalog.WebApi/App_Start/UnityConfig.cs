@@ -18,6 +18,8 @@ using QA.ProductCatalog.Integration.Configuration;
 using System;
 using System.Configuration;
 using System.Threading;
+using QA.Core.DPC.QP.Cache;
+using QA.ProductCatalog.ContentProviders;
 using Unity;
 
 namespace QA.ProductCatalog.WebApi.App_Start
@@ -81,12 +83,19 @@ namespace QA.ProductCatalog.WebApi.App_Start
             if (connection.QPMode)
             {
                 unityContainer.RegisterConsolidationCache(autoRegister).As<IFactory>().With<FactoryWatcher>(watcherInterval).Watch();
-                unityContainer.RegisterQpMonitoring();
             }
             else
             {
                 unityContainer.RegisterType<ICustomerProvider, SingleCustomerProvider>();
                 unityContainer.RegisterConsolidationCache(autoRegister, SingleCustomerProvider.Key).As<IFactory>().With<FactoryWatcher>().Watch();
+            }
+
+            if (connection.QPMode || connection.UseQPMonitoring)
+            {
+                unityContainer.RegisterQpMonitoring();
+            }
+            else
+            {
                 unityContainer.RegisterNonQpMonitoring();
             }
 

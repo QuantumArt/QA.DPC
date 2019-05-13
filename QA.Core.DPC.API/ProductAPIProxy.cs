@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 
@@ -35,14 +36,21 @@ namespace QA.Core.DPC.API
 			return result;
 		}
 
-		public Article GetProduct(string slug, string version, int id, bool isLive = false)
+        public int[] ExtendedSearchProducts(string slug, string version, JToken query, bool isLive = false)
+        {
+            string url = _configuration.Host + "/" + version + "/" + slug + "/search/extended/binary/" + query + "?isLive=" + isLive;
+            var result = Get<int[]>(url);
+            return result;
+        }
+
+        public Article GetProduct(string slug, string version, int id, bool isLive = false, bool includeRelevanceInfo = false)
 		{
-			string url = _configuration.Host + "/" + version + "/" + slug + "/binary/" + id + "?isLive=" + isLive;
+			string url = _configuration.Host + "/" + version + "/" + slug + "/binary/" + id + "?isLive=" + isLive + "&includeRelevanceInfo" + includeRelevanceInfo;
 			var result = Get<Article>(url);
 			return result;
 		}
 
-		public void UpdateProduct(string slug, string version, Article product, bool isLive = false)
+		public void UpdateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
 		{
 			string url = _configuration.Host + "/" + version + "/" + slug + "/binary/" + product.Id + "?isLive=" + isLive;
 			Update<Article>(product, url);			
@@ -75,10 +83,15 @@ namespace QA.Core.DPC.API
 		{
 			throw new NotImplementedException();
 		}
-		#endregion
 
-		#region Private methods
-		public async Task UpdateAsync<T>(T model, string url)
+        public RelevanceInfo GetRelevance(int id, bool isLive = false)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+        #region Private methods
+        public async Task UpdateAsync<T>(T model, string url)
 		{
 			try
 			{
@@ -268,6 +281,6 @@ namespace QA.Core.DPC.API
 
 			throw ex;
 		}
-		#endregion	
-	}
+        #endregion
+    }
 }

@@ -1,13 +1,15 @@
 ﻿using QA.Core.Cache;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.QP.Services;
-using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.Utils;
 using Quantumart.QPublishing.Database;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using QA.Core.DPC.QP.Cache;
+using QA.ProductCatalog.ContentProviders;
+
 
 namespace QA.Core.DPC.QP.API.Services
 {

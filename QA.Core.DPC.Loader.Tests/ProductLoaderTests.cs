@@ -9,6 +9,7 @@ using QA.Core.Cache;
 using QA.Core.Logger;
 using QA.Core.Models;
 using QA.Core.Models.Tools;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;

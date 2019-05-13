@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 using NLog.Web;
 
 namespace QA.ProductCatalog.Front.Core.API
@@ -24,7 +25,8 @@ namespace QA.ProductCatalog.Front.Core.API
                         logging.AddConsole();
                         logging.AddDebug();
                     }
-                })                 
+                })
+
                 .UseStartup<Startup>()
                 .UseNLog()
                 .Build();

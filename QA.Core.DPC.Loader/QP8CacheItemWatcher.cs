@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
+using QA.Core.Logger;
+using QA.Core.Cache;
 using QA.Core.Data;
 using Quantumart.QP8.BLL;
 
@@ -11,15 +13,15 @@ namespace QA.Core.DPC.Loader
     {
         private readonly string _cmdText = @"SELECT [CONTENT_ID], [LIVE_MODIFIED], [STAGE_MODIFIED] FROM [CONTENT_MODIFICATION] WITH (NOLOCK)";
 
-        public QP8CacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, string connectionName = "qp_database")
-            : base(mode, invalidator, connectionName)
+        public QP8CacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, ILogger logger, string connectionName = "qp_database")
+            : base(mode, invalidator, logger, connectionName)
         {
 
         }
 
         protected override void GetData(Dictionary<int, ContentModification> newValues)
         {
-            using (var cs = new QPConnectionScope(_connectionString))
+            using (var cs = new QPConnectionScope(ConnectionString))
             {
                 var con = cs.DbConnection;
 

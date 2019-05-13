@@ -1,9 +1,16 @@
-﻿using QA.ProductCatalog.Infrastructure;
+﻿using QA.ProductCatalog.ContentProviders;
 
 namespace QA.ProductCatalog.HighloadFront.Options
 {
     public class DataOptions
     {
+        public DataOptions()
+        {
+            ElasticTimeout = 15;
+            FailuresBeforeCircuitBreaking = 3;
+            CircuitBreakingInterval = 60;
+        }
+        
         public bool CanUpdate { get; set; }
 
         public string InstanceId { get; set; }
@@ -17,5 +24,9 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public ElasticIndex[] Elastic { get; set; }
 
         public int ElasticTimeout { get; set; }
+
+        public int FailuresBeforeCircuitBreaking { get; set; }
+
+        public int CircuitBreakingInterval { get; set; }
     }
 }

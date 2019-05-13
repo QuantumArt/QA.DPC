@@ -11,6 +11,7 @@ using System;
 using System.Linq;
 using System.Linq.Expressions;
 using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Validation.Resources;
 
 namespace QA.ProductCatalog.Validation.Validators

@@ -7,6 +7,8 @@ namespace QA.Core.DPC.Loader
 {
     public class ArticleFilteredCopier
     {
+        private static IMapper _mapper;
+
         public static Article Copy(Article sourceArticle, IArticleFilter filter)
         {
 	        return CopyIfNeeded(sourceArticle, filter, new Dictionary<Article, Article>());
@@ -17,7 +19,7 @@ namespace QA.Core.DPC.Loader
 		    if (copiedArticles.ContainsKey(sourceArticle))
 			    return copiedArticles[sourceArticle];
 
-			var copiedArticle = Mapper.Map<Article, Article>(sourceArticle);
+            var copiedArticle = _mapper.Map<Article, Article>(sourceArticle);
 
 		    copiedArticles[sourceArticle] = copiedArticle;
 
@@ -29,24 +31,27 @@ namespace QA.Core.DPC.Loader
 
 	    static ArticleFilteredCopier()
 	    {
-		    Mapper.CreateMap<Article, Article>();
+            _mapper = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<Article, Article>();
 
-			Mapper.CreateMap<SingleArticleField, SingleArticleField>();
+                cfg.CreateMap<SingleArticleField, SingleArticleField>();
 
-			Mapper.CreateMap<MultiArticleField, MultiArticleField>();
+                cfg.CreateMap<MultiArticleField, MultiArticleField>();
 
-			Mapper.CreateMap<BackwardArticleField, BackwardArticleField>();
+                cfg.CreateMap<BackwardArticleField, BackwardArticleField>();
 
-			Mapper.CreateMap<ExtensionArticleField, ExtensionArticleField>();
+                cfg.CreateMap<ExtensionArticleField, ExtensionArticleField>();
 
-			Mapper.CreateMap<PlainArticleField, PlainArticleField>();
+                cfg.CreateMap<PlainArticleField, PlainArticleField>();
 
-			Mapper.CreateMap<VirtualArticleField, VirtualArticleField>();
-			Mapper.CreateMap<VirtualMultiArticleField, VirtualMultiArticleField>();
+                cfg.CreateMap<VirtualArticleField, VirtualArticleField>();
+                cfg.CreateMap<VirtualMultiArticleField, VirtualMultiArticleField>();
 
-		    Mapper.CreateMap<IReadOnlyDictionary<string, object>, IReadOnlyDictionary<string, object>>()
-			    .ConvertUsing(
-				    x => x == null ? null : (IReadOnlyDictionary<string, object>) x.ToDictionary(y => y.Key, y => y.Value));
+                cfg.CreateMap<IReadOnlyDictionary<string, object>, IReadOnlyDictionary<string, object>>()
+                    .ConvertUsing(
+                        x => x == null ? null : (IReadOnlyDictionary<string, object>)x.ToDictionary(y => y.Key, y => y.Value));
+            }).CreateMapper();
 	    }
 
 		private static Dictionary<string, ArticleField> CopyArticleFields(Dictionary<string, ArticleField> sourceFields, IArticleFilter filter, Dictionary<Article, Article> copiedArticles)
@@ -55,7 +60,7 @@ namespace QA.Core.DPC.Loader
 
 	        foreach (var articleField in sourceFields.Values)
 	        {
-		        var copiedField = (ArticleField) Mapper.Map(articleField, articleField.GetType(), articleField.GetType());
+		        var copiedField = (ArticleField) _mapper.Map(articleField, articleField.GetType(), articleField.GetType());
 
 		        if (articleField is SingleArticleField)
 		        {

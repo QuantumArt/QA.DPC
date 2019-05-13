@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Logger;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

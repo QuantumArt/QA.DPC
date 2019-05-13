@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using QA.Core.Logger;
+using Microsoft.Extensions.Logging;
 using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -18,20 +18,20 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
     {
         private readonly ILogger _logger;
 
-        private readonly IElasticConfiguration _configuration;
+        private readonly ElasticConfiguration _configuration;
 
         private readonly ProductManager _manager;
+        private HttpClient _client;
 
         private readonly HarvesterOptions _options;
         private readonly DataOptions _dataOptions;
 
         private readonly string _customerCode;
 
-        private readonly HttpClient _client;
+        public ProductImporter(HarvesterOptions options, DataOptions dataOptions, ElasticConfiguration configuration, ProductManager manager, ILoggerFactory loggerFactory, string customerCode)
 
-        public ProductImporter(HarvesterOptions options, DataOptions dataOptions, IElasticConfiguration configuration, ProductManager manager, ILogger logger, string customerCode)
         {
-            _logger = logger;
+            _logger = loggerFactory.CreateLogger(GetType());
             _manager = manager;
             _configuration = configuration;
             _options = options;
@@ -44,11 +44,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public bool ValidateInstance(string language, string state)
         {
             var reindexUrl = _configuration.GetReindexUrl(language, state);
-            _logger.Info($"Checking instance ({language}, {state}) ...");            
+            _logger.LogInformation($"Checking instance ({language}, {state}) ...");            
             var url = $"{reindexUrl}/ValidateInstance";
             var result = GetContent(url).Result;
             var validation = JsonConvert.DeserializeObject<bool>(result.Item1);
-            _logger.Info($"Validation result for instance ({language}, {state}): {validation}");            
+            _logger.LogInformation($"Validation result for instance ({language}, {state}): {validation}");            
             return validation;
         }
 
@@ -61,11 +61,10 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 return;
             }
             
-            ThrowIfDisposed();
             var url = _configuration.GetReindexUrl(language, state);
-            _logger.Info("Starting import...");
+            _logger.LogInformation("Starting import...");
             var ids = await GetIds(url);
-            _logger.Info($"Product list received. Length: {ids.Length}. Splitting products into chunks by {_options.ChunkSize}...");
+            _logger.LogInformation($"Product list received. Length: {ids.Length}. Splitting products into chunks by {_options.ChunkSize}...");
             var chunks = ids.Chunk(_options.ChunkSize).ToArray();
             var index = 1;
 
@@ -82,7 +81,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
 
                 var enumerable = chunk as int[] ?? chunk.ToArray();
-                _logger.Info($"Chunk {index} with ids ({string.Join(",", enumerable)}) requested...");
+                _logger.LogInformation($"Chunk {index} with ids ({string.Join(",", enumerable)}) requested...");
                 var dataTasks = enumerable.Select(n => GetProductById(url, n));
 
                 ProductPostProcessorData[] data;
@@ -93,23 +92,23 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 catch (Exception ex)
                 {
                     string message = $"An error occurs while receiving products for chunk {index}";
-                    _logger.ErrorException(message, ex);
+                    _logger.LogError(ex, message);
                     executionContext.Message = message;
                     throw;
                 }
-                _logger.Info($"Products from chunk {index} received. Starting bulk import...");
+                _logger.LogInformation($"Products from chunk {index} received. Starting bulk import...");
 
                 var result = await _manager.BulkCreateAsync(data, language, state);
 
                 if (result.Succeeded)
                 {
-                    _logger.Info($"Bulk import for chunk {index} succeeded.");
+                    _logger.LogInformation($"Bulk import for chunk {index} succeeded.");
                     index++;
                 }
                 else
                 {
                     string message = $"Cannot proceed bulk import for chunk {index}: {result}";
-                    _logger.Error(message);
+                    _logger.LogInformation(message);
                     executionContext.Message = message;
                     throw result.GetException();
                 }
@@ -125,11 +124,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         public async Task<Tuple<string, DateTime>> GetContent(string url)
         {
             url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
-            _logger.Debug($"Requesting URL: {url}");
+            _logger.LogDebug($"Requesting URL: {url}");
             var response = await _client.GetAsync(url);
             var modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
             var result = (!response.IsSuccessStatusCode) ? "" : await response.Content.ReadAsStringAsync();
-            _logger.Debug($"Received {response.StatusCode} for URL: {url}");
+            _logger.LogDebug($"Received {response.StatusCode} for URL: {url}");
             return new Tuple<string, DateTime>(result, modified);
         }
 
@@ -147,7 +146,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var obj = JsonConvert.DeserializeObject(result.Item1) as JObject;
             if (obj == null)
             {
-                _logger.Error($"Cannot parse JSON from url {relUri}");
+                _logger.LogError($"Cannot parse JSON from url {relUri}");
                 return null;
             }
             var product = (JObject)obj["product"];
@@ -155,31 +154,5 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return new ProductPostProcessorData(product, regionTags, result.Item2);
         }
 
-
-        private void ThrowIfDisposed()
-        {
-            if (_disposed)
-            {
-                throw new ObjectDisposedException(GetType().Name);
-            }
-        }
-
-        #region IDisposable Support
-        private bool _disposed;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing || _disposed) return;
-            _logger.Debug("Disposing importer");
-            _manager.Dispose();
-            _disposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

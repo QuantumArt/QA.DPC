@@ -18,8 +18,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 
         private class OnlyAuthUsersAttributeImpl : Attribute, IAsyncActionFilter
         {
-            private readonly IElasticConfiguration _configuration;
-            public OnlyAuthUsersAttributeImpl(IElasticConfiguration configuration)
+            private readonly ElasticConfiguration _configuration;
+            public OnlyAuthUsersAttributeImpl(ElasticConfiguration configuration)
             {
                 _configuration = configuration;
             }

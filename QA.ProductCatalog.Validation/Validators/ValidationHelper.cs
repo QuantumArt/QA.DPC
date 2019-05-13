@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
 using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.Constants;
 

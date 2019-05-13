@@ -2,7 +2,9 @@
 using QA.Core.Cache;
 using Quantumart.QPublishing.Database;
 using System;
+using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.Loader.Services
 {

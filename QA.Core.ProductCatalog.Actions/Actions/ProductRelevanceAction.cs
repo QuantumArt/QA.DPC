@@ -7,6 +7,8 @@ using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
 using System.Globalization;
 using QA.Core.DPC.QP.Services;
+using QA.Core.Linq;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {

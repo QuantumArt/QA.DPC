@@ -9,6 +9,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Web;
 using System.Web.Http.Routing;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.ProductCatalog.WebApi.App_Start
 {

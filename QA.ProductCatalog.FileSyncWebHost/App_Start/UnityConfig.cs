@@ -1,6 +1,6 @@
 ﻿using Microsoft.Practices.Unity.Configuration;
-using QA.Core;
 using Unity;
+using QA.Core;
 
 namespace QA.ProductCatalog.FileSyncWebHost
 {

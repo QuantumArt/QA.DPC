@@ -1,6 +1,7 @@
 ﻿using System;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL.Services.API;
 

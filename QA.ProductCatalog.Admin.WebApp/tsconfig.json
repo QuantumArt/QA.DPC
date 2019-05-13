@@ -28,5 +28,5 @@
     },
     "outDir": "Scripts/Bundles"
   },
-  "include": ["ClientApp/**/*", "Views/**/*"]
+  "include": ["ClientApp/**/*", "Views/**/*", "../QA.Core.DPC.API/Search/ExtendedQueryConditionMapper.cs", "../QA.Core.DPC.API/Search/ExtendedProductQuery.cs"]
 }

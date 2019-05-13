@@ -6,6 +6,7 @@ using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Services;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;

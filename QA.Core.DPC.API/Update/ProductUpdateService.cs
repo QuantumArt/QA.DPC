@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Transactions;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.Logger;
 using QA.Core.Models;
@@ -23,6 +24,7 @@ namespace QA.Core.DPC.API.Update
         private readonly IArticleService _articleService;
         private readonly IFieldService _fieldService;
         private readonly DeleteAction _deleteAction;
+        protected Func<ITransaction> _createTransaction;
         private readonly ILogger _logger;
 
         private readonly List<ArticleData> _updateData = new List<ArticleData>();
@@ -36,11 +38,13 @@ namespace QA.Core.DPC.API.Update
             IArticleService articleService,
             IFieldService fieldService,
             DeleteAction deleteAction,
+            Func<ITransaction> createTransaction,
             ILogger logger)
         {
             _productService = productService;
             _articleService = articleService;
             _fieldService = new CachedFieldService(fieldService);
+            _createTransaction = createTransaction;
             _logger = logger;
             _deleteAction = deleteAction;
         }
@@ -104,7 +108,7 @@ namespace QA.Core.DPC.API.Update
         #region IProductUpdateService
 
         /// <exception cref="ProductUpdateConcurrencyException" />
-        public InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false)
+        public InsertData[] Update(Article product, ProductDefinition definition, bool isLive = false, bool createVersions = false)
         {
             Article oldProduct = _productService.GetProductById(product.Id, isLive, definition);
 
@@ -121,34 +125,38 @@ namespace QA.Core.DPC.API.Update
                 throw new ProductUpdateConcurrencyException(_outdatedArticleIds.ToArray());
             }
 
-            _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
-
-            InsertData[] idMapping = _articleService.BatchUpdate(_updateData);
-
-            _logger.Debug(() => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
-            
-            if (_articlesToDelete.Any())
+            using (var transaction = _createTransaction())
             {
-                _logger.Debug(() => "Start Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
-                foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
+                _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
+
+                InsertData[] idMapping = _articleService.BatchUpdate(_updateData, createVersions);
+
+                _logger.Debug(() => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
+
+                if (_articlesToDelete.Any())
                 {
-                    try
+                    _logger.Debug(() => "Start Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
+                    foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
                     {
-                        var qpArticle = _articleService.Read(articleToDeleteKv.Key);
+                        try
+                        {
+                            var qpArticle = _articleService.Read(articleToDeleteKv.Key);
 
-                        _deleteAction.DeleteProduct(
-                            qpArticle, new ProductDefinition { StorageSchema = articleToDeleteKv.Value },
-                            true, false, null);
+                            _deleteAction.DeleteProduct(
+                                qpArticle, new ProductDefinition { StorageSchema = articleToDeleteKv.Value },
+                                true, false, null);
+                        }
+                        catch (MessageResultException ex)
+                        {
+                            _logger.ErrorException("Не удалось удалить статью {0}", ex, articleToDeleteKv.Key);
+                        }
                     }
-                    catch (MessageResultException ex)
-                    {
-                        _logger.ErrorException("Не удалось удалить статью {0}", ex, articleToDeleteKv.Key);
-                    }
+                    _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
                 }
-                _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
-            }
 
-            return idMapping;
+                transaction.Commit();
+                return idMapping;
+            }
         }
 
         #endregion

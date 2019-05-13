@@ -7,6 +7,7 @@ using System.Data.SqlClient;
 using Quantumart.QP8.Utils;
 using System.Collections.Generic;
 using QA.Core.DPC.QP.Services;
+using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.Constants;
 using Quantumart.QP8.BLL;
 

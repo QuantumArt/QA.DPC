@@ -2,7 +2,7 @@
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 using System;
 using System.Threading;
 

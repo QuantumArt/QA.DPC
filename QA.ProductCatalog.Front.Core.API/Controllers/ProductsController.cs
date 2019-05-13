@@ -41,19 +41,19 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         [HttpGet("{date}/ValidateInstance")]
         [HttpGet("{language}/{state}/{date}/ValidateInstance")]
-        public bool ValidateInstance(ProductLocator locator, DateTime date)
+        public bool ValidateInstance(ProductLocator locator, DateTime filterDate)
         {
             return ValidateInstance(locator.InstanceId, Options.InstanceId);
         }
 
         [HttpGet]
         [HttpGet("{language}/{state}")]
-        public ActionResult GetProductIds(ProductLocator locator, int page, DateTime? date, int pageSize = Int32.MaxValue)
+        public ActionResult GetProductIds(ProductLocator locator, int page, DateTime? filterDate, int pageSize = Int32.MaxValue)
         {
             ApplyOptions(locator);
-            var ints = (date == null)
+            var ints = (filterDate == null)
                 ? DpcService.GetAllProductId(locator, page, pageSize)
-                : DpcService.GetLastProductId(locator, page, pageSize, date.Value);
+                : DpcService.GetLastProductId(locator, page, pageSize, filterDate.Value);
 
             if (locator.Format == "json")
             {
@@ -69,7 +69,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         [HttpGet("{id:int}")]
         [HttpGet("{language}/{state}/{id:int}")]
-        public ActionResult GetProduct(ProductLocator locator, int id, DateTime? date)
+        public ActionResult GetProduct(ProductLocator locator, int id, DateTime? filterDate)
         {
             ApplyOptions(locator);
             var data = DpcService.GetProductData(locator, id);
@@ -86,10 +86,10 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         [HttpGet]
         [HttpGet("{language}/{state}/{date}")]
-        public ActionResult GetProductVersionIds(ProductLocator locator, int page, DateTime date, int pageSize = Int32.MaxValue)
+        public ActionResult GetProductVersionIds(ProductLocator locator, int page, DateTime filterDate, int pageSize = Int32.MaxValue)
         {
             ApplyOptions(locator);
-            var ints = DpcService.GetAllProductVersionId(locator, page, pageSize, date);
+            var ints = DpcService.GetAllProductVersionId(locator, page, pageSize, filterDate);
 
             if (locator.Format == "json")
             {
@@ -105,10 +105,10 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         [HttpGet("{id:int}")]
         [HttpGet("{language}/{state}/{date}/{id:int}")]
-        public ActionResult GetProductVersion(ProductLocator locator, int id, DateTime date)
+        public ActionResult GetProductVersion(ProductLocator locator, int id, DateTime filterDate)
         {
             ApplyOptions(locator);
-            var data = DpcService.GetProductVersionData(locator, id, date);
+            var data = DpcService.GetProductVersionData(locator, id, filterDate);
 
             if (data == null)
                 return BadRequest($"Product version {id} is not found");

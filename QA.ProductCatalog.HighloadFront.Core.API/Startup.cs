@@ -3,12 +3,14 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
+using Polly.Registry;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.DI;
 using QA.ProductCatalog.HighloadFront.Core.API.Filters;
@@ -42,6 +44,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             Configuration.Bind("Data", opts3);
             services.AddSingleton(opts3);
             
+            services.AddSingleton(new PolicyRegistry());
+            
             // Add framework services.
             services.AddMvc(options =>
             {
@@ -49,9 +53,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             }).AddJsonOptions(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver();
-            });
+            }).SetCompatibilityVersion(CompatibilityVersion.Version_2_2);;
 
             services.AddMemoryCache();
+
+            services.AddHttpClient();
 
             var containerBuilder = new ContainerBuilder();
             containerBuilder.RegisterModule(new DefaultModule() { Configuration = Configuration});
@@ -63,9 +69,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
-            loggerFactory.AddNLog();
-            env.ConfigureNLog("nlog.config");
-
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -74,10 +77,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             {
                 app.UseExceptionHandler(new GlobalExceptionHandler(loggerFactory).Action);
             }
-
-
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
 
             app.UseMvc();
         }

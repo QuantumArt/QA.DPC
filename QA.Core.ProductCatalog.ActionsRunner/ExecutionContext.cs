@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {

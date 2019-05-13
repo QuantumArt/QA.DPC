@@ -3,6 +3,8 @@ using NUnit.Framework;
 using NUnit.Framework.Interfaces;
 using QA.Core.DPC.QP.API.Tests.Providers;
 using System.Collections;
+using System.Data.Linq.Mapping;
+using DataAttribute = System.Data.Linq.Mapping.DataAttribute;
 
 namespace QA.Core.DPC.QP.API.Tests.Attributes
 {

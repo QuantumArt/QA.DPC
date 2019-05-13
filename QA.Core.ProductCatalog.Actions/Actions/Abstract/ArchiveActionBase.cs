@@ -37,24 +37,29 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		#region Overrides
 		protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
 		{
-		    bool excludeArchive = NeedToArchive;
+            Dictionary<int, Product<DeletingMode>> dictionary;
+            QA.Core.Models.Entities.Article[] notificationProducts = null;
+            bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
+            bool excludeArchive = NeedToArchive;
 		    var product = ArticleService.Read(productId, excludeArchive);
 			var definition = Productservice.GetProductDefinition(0, product.ContentId);
-			var dictionary = GetProductsToBeProcessed<DeletingMode>(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, excludeArchive);
-			bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
-			QA.Core.Models.Entities.Article[] notificationProducts = null;
-            if (!doNotSendNotifications)
-                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
-                {
+            using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
+            { 
+                dictionary = GetProductsToBeProcessed<DeletingMode>(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, excludeArchive);
+			
+			    if (!doNotSendNotifications)
                     notificationProducts = PrepareNotification(productId);
-                }
+            }
 
 			ArchiveProducts(dictionary, product);
 
             if (!doNotSendNotifications)
             {
-                string[] channels = actionParameters.GetChannels();
-                SendNotification(notificationProducts, productId, channels);
+                using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
+                {
+                    string[] channels = actionParameters.GetChannels();
+                    SendNotification(notificationProducts, productId, channels);
+                }
             }
 		}
 		#endregion

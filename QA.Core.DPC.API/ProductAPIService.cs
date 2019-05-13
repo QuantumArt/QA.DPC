@@ -1,10 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QA.Core.Models.Extensions;
+using System.Linq;
+using QA.Core.Models.Filters.Base;
+using QA.Core.DPC.Loader;
 
 namespace QA.Core.DPC.API
 {
@@ -16,15 +22,17 @@ namespace QA.Core.DPC.API
 		private readonly IProductUpdateService _productUpdateService;
 		private readonly IUserProvider _userProvider;
 		private readonly Func<string, IAction> _getAction;
+        private readonly IProductRelevanceService _relevanceService;
 
-		public ProductAPIService
+        public ProductAPIService
 		(
 			IContentDefinitionService contentDefinitionService,
 			IProductService productService,
 			IProductSearchService productSearchService,
 			IProductUpdateService productUpdateService,
 			IUserProvider userProvider,
-			Func<string, IAction> getAction
+			Func<string, IAction> getAction,
+            IProductRelevanceService relevanceService
 		)
 		{
 			_contentDefinitionService = contentDefinitionService;
@@ -33,8 +41,8 @@ namespace QA.Core.DPC.API
 			_productUpdateService = productUpdateService;
 			_userProvider = userProvider;
 			_getAction = getAction;
-		}
-
+            _relevanceService = relevanceService;
+        }
 
 		#region IProductAPIService implementation
 		public Dictionary<string, object>[] GetProductsList(string slug, string version, bool isLive = false, long startRow = 0, long pageSize = int.MaxValue)
@@ -48,17 +56,35 @@ namespace QA.Core.DPC.API
 			return _productSearchService.SearchProducts(slug, version, query);
 		}
 
-		public Article GetProduct(string slug, string version, int id, bool isLive = false)
+        public int[] ExtendedSearchProducts(string slug, string version, JToken query, bool isLive = false)
+        {
+            return _productSearchService.ExtendedSearchProducts(slug, version, query);
+        }
+
+        public Article GetProduct(string slug, string version, int id, bool isLive = false, bool includeRelevanceInfo = false)
 		{
 			var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
 			var product = _productService.GetProductById(id, isLive, new ProductDefinition { ProdictTypeId = 0, StorageSchema = definition.Content });
-			return product;
+
+            if (includeRelevanceInfo)
+            {
+                var relevance = _relevanceService.GetProductRelevance(product, isLive, false).FirstOrDefault();
+
+                if (relevance != null)
+                {
+                    product.AddPlainField("Relevance", relevance.Relevance.ToString());
+                    product.AddPlainField("LastPublished", relevance.LastPublished);
+                    product.AddPlainField("LastPublishedUserName", relevance.LastPublishedUserName);
+                }
+            }
+
+            return product;
 		}
 
-		public void UpdateProduct(string slug, string version, Article product, bool isLive = false)
+		public void UpdateProduct(string slug, string version, Article product, bool isLive = false, bool createVersions = false)
 		{
 			var definition = _contentDefinitionService.GetServiceDefinition(slug, version);
-			_productUpdateService.Update(product, new ProductDefinition { ProdictTypeId = 0, StorageSchema = definition.Content }, isLive);
+			_productUpdateService.Update(product, new ProductDefinition { ProdictTypeId = 0, StorageSchema = definition.Content }, isLive, createVersions);
 		}
 
 		public void CustomAction(string actionName, int id, int contentId = default(int))
@@ -96,6 +122,12 @@ namespace QA.Core.DPC.API
 		{
 			return _contentDefinitionService.GetServiceDefinition(slug, version, true);
 		}
-		#endregion
-	}
+
+        public RelevanceInfo GetRelevance(int id, bool isLive = false)
+        {
+            var product = _productService.GetProductById(id, isLive);
+            return _relevanceService.GetProductRelevance(product, isLive, false).FirstOrDefault();
+        }
+        #endregion
+    }
 }

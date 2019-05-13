@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Autopublish.Models;
-using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.QP.Autopublish.Services
 {

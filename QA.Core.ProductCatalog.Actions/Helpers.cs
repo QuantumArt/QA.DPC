@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using QA.Core.DPC.Loader;
 using QA.Core.DPC.Loader.Services;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QPublishing.Database;
 

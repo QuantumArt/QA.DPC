@@ -1,115 +1,87 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{6ED60A9D-75C1-49BF-80F2-89E4F0B304AF}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QA.Core.DPC.QP.API.Tests</RootNamespace>
-    <AssemblyName>QA.Core.DPC.QP.API.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
+    <TargetFramework>net471</TargetFramework>
+    <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <GenerateAssemblyCopyrightAttribute>false</GenerateAssemblyCopyrightAttribute>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+    <GenerateAssemblyFileVersionAttribute>false</GenerateAssemblyFileVersionAttribute>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=3.7.1.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
-      <HintPath>$(SolutionDir)packages\NUnit.3.7.1\lib\net45\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.ComponentModel.Composition" />
-    <Reference Include="System.configuration" />
-    <Reference Include="System.Core" />
+    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="System.Xaml" />
-    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\ParameterAttribute.cs" />
-    <Compile Include="ProductTest.cs" />
-    <Compile Include="Providers\ProviderBase.cs" />
-    <Compile Include="Providers\ProductProvider.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Providers\SettingsService.cs" />
-    <Compile Include="Providers\StatusProvider.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-    <EmbeddedResource Include="Data\tnt_product_106360.json" />
-    <EmbeddedResource Include="Data\tnt_definition.json" />
-    <EmbeddedResource Include="configuration.json" />
-    <EmbeddedResource Include="Data\tnt_product_2051672.json" />
-    <EmbeddedResource Include="Data\TestProduct\definition_testfields_2053235.json" />
-    <EmbeddedResource Include="Data\TestProduct\product_testfields_2053231_tnt.json" />
-    <EmbeddedResource Include="Data\TestProduct\definition_testrelations_2053233.json" />
-    <EmbeddedResource Include="Data\TestProduct\product_testrelations_2053231_tnt.json" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Data\db_product_106360.xaml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Data\db_product_2051672.xaml">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\QA.Core.DPC.QP.API\QA.Core.DPC.QP.API.csproj">
-      <Project>{e4b62953-ca39-4d73-9473-21c64101de17}</Project>
-      <Name>QA.Core.DPC.QP.API</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj">
-      <Project>{d894f71e-c027-4b58-8930-1d44a65727cb}</Project>
-      <Name>QA.Core.DPC.QP</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.Core.Models\QA.Core.Models.csproj">
-      <Project>{4baeae00-da81-49dc-8b75-475724d4c4c2}</Project>
-      <Name>QA.Core.Models</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj">
-      <Project>{5af860a1-97a7-4c36-9496-21054975e226}</Project>
-      <Name>QA.ProductCatalog.Infrastructure</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\QA.Core.DPC.QP.Configuration\QA.Core.DPC.QP.Configuration.csproj" />
+    <ProjectReference Include="..\QA.Core.DPC.QP.API\QA.Core.DPC.QP.API.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Data\TestProduct\product_testfields_2053231_db.xaml">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Data\db_product_106360.xaml" />
+    <EmbeddedResource Include="Data\db_product_106360.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Data\db_product_2051672.xaml" />
+    <EmbeddedResource Include="Data\db_product_2051672.xaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Data\tnt_definition.json" />
+    <EmbeddedResource Include="Data\tnt_definition.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Data\tnt_product_106360.json" />
+    <EmbeddedResource Include="Data\tnt_product_106360.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Data\tnt_product_2051672.json" />
+    <EmbeddedResource Include="Data\tnt_product_2051672.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="configuration.json" />
+    <EmbeddedResource Include="configuration.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Data\TestProduct\definition_testfields_2053235.json" />
+    <EmbeddedResource Include="Data\TestProduct\definition_testfields_2053235.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Data\TestProduct\definition_testrelations_2053233.json" />
+    <EmbeddedResource Include="Data\TestProduct\definition_testrelations_2053233.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Data\TestProduct\product_testfields_2053231_tnt.json" />
+    <EmbeddedResource Include="Data\TestProduct\product_testfields_2053231_tnt.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <None Remove="Data\TestProduct\product_testrelations_2053231_tnt.json" />
+    <EmbeddedResource Include="Data\TestProduct\product_testrelations_2053231_tnt.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Data\TestProduct\product_testrelations_2053231_db.xaml">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="1.4.0" />
+    <PackageReference Include="MSTest.TestFramework" Version="1.4.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.12.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+    <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
 </Project>

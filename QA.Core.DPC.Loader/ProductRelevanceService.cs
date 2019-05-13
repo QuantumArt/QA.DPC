@@ -73,6 +73,7 @@ namespace QA.Core.DPC.Loader
 
             var relevanceInfo = new RelevanceInfo
             {
+                ProductId = localizedProduct.Id,
                 Culture = culture,
                 LastPublished = null,
                 LastPublishedUserName = null,

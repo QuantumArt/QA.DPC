@@ -2,6 +2,7 @@
 using QA.ProductCatalog.Infrastructure;
 using System;
 using QA.Core.Logger;
+using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;
 using Unity.Injection;

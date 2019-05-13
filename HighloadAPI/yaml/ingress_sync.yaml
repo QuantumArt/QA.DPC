@@ -1,0 +1,12 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: dpc-sync-api
+spec:
+  rules:
+  - host: dpcsync.dev.qsupport.ru
+    http:
+      paths:
+      - backend:
+          serviceName: dpc-sync-api
+          servicePort: 80

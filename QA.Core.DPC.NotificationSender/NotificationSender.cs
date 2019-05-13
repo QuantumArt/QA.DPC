@@ -2,7 +2,7 @@
 using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.Service;
 using QA.Core.Logger;
-using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.ContentProviders;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
