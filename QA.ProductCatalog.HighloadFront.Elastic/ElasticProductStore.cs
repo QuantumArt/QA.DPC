@@ -254,7 +254,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
-            return await client.SearchAsync(options.Type, q);
+            return await client.SearchAsync(options.ActualType, q);
         }
 
         private JObject GetQuery(ProductsOptions options)
