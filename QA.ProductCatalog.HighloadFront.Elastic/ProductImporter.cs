@@ -28,7 +28,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private readonly string _customerCode;
 
-        public ProductImporter(HarvesterOptions options, DataOptions dataOptions, ElasticConfiguration configuration, ProductManager manager, ILoggerFactory loggerFactory, string customerCode)
+        public ProductImporter(
+            HarvesterOptions options, 
+            DataOptions dataOptions, 
+            ElasticConfiguration configuration, 
+            ProductManager manager, 
+            ILoggerFactory loggerFactory, 
+            IHttpClientFactory httpClientFactory,
+            string customerCode)
 
         {
             _logger = loggerFactory.CreateLogger(GetType());
@@ -37,7 +44,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _options = options;
             _dataOptions = dataOptions;
             _customerCode = customerCode;
-            _client = new HttpClient();
+            _client = httpClientFactory.CreateClient();
             _client.DefaultRequestHeaders.Accept.Clear();            
         }
 
