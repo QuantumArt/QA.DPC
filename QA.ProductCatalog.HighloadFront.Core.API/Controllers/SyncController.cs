@@ -43,7 +43,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             var syncer = Configuration.GetSyncer(language, state);
             var product = message.Product;
-            string id = Manager.GetProductId(message.Product);
+            string id = Manager.GetProductId(message.Product, language, state);
 
             if (!Configuration.DataOptions.CanUpdate)
             {
@@ -82,7 +82,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             var syncer = Configuration.GetSyncer(language, state);
             var product = message.Product;
 
-            var id = Manager.GetProductId(message.Product);
+            var id = Manager.GetProductId(message.Product, language, state);
 
             if (!Configuration.DataOptions.CanUpdate)
             {

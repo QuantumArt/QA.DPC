@@ -17,9 +17,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private const string BaseSeparator = ",";
         private const string ProductIdField = "ProductId";
 
-        private ElasticConfiguration Configuration { get; }
+        protected ElasticConfiguration Configuration { get; }
 
-        private SonicElasticStoreOptions Options { get; }
+        protected SonicElasticStoreOptions Options { get; }
 
         private ILogger Logger { get; }
 
@@ -32,7 +32,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         {
             Configuration = config;
             Options = options;
-            Logger = loggerFactory.CreateLogger(GetType());;
+            Logger = loggerFactory.CreateLogger(GetType());
         }
 
         public string GetId(JObject product)
@@ -43,14 +43,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return product[Options.IdPath]?.ToString();
         }
 
-        public string GetType(JObject product)
+        public virtual string GetType(JObject product)
         {
             if (product == null) throw new ArgumentNullException(nameof(product));
 
             string type = product[Options.TypePath]?.ToString();
-
             if (type == null) return Options.DefaultType;
-
             return type;
         }
 
@@ -245,19 +243,19 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     new JProperty("max_result_window", Options.MaxResultWindow),
                     new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit)
                 )),
-                new JProperty("mappings", GetMappings(Options.Types, Options.NotAnalyzedFields))
+                new JProperty("mappings", GetMappings(new[] { "_doc" }, Options.NotAnalyzedFields))                
             );
             return indexSettings;
         }
 
-        public async Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        public virtual async Task<string> SearchAsync(ProductsOptions options, string language, string state)
         {
             var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
             return await client.SearchAsync(options.ActualType, q);
         }
 
-        private JObject GetQuery(ProductsOptions options)
+        protected JObject GetQuery(ProductsOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -291,9 +289,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var response = await client.SearchAsync(null, q.ToString());
             return JObject.Parse(response).SelectTokens("aggregations.typesAgg.buckets.[?(@.key)].key").Select(n => n.ToString())
                 .ToArray();
-        }
+        }   
 
-        protected JObject GetDynamicTemplate(string type, string field)
+        protected JObject GetKeywordTemplate(string type, string field)
         {
             return new JObject(
                 new JProperty($"not_analyzed_{type}_{field}", new JObject(
@@ -306,17 +304,16 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             );
         }
 
-        protected JObject GetMapping(string type, string[] fields)
+        protected virtual JObject GetMapping(string type, string[] fields)
         {
-            var templates = new JArray(fields.Select(n => GetDynamicTemplate(type, n)));
-            
+            var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
+
             return new JObject(
                 new JProperty(type, new JObject(
-                    new JProperty("dynamic_templates", templates)
+                    new JProperty("dynamic_templates", templates)                   
                 ))
             );
         }
-
 
         public JObject GetMappings(string[] types, string[] fields)
         {
@@ -331,12 +328,23 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private void SetQuery(JObject json, ProductsOptions productsOptions)
         {
             JProperty query = null;
+            var shouldGroups = new List<List<JProperty>>();
+            var currentGroup = new List<JProperty>();
+            JProperty typeFilter = null;
+
             var filters = productsOptions.Filters;
+
+            if (productsOptions.ActualType != null)
+            {
+                typeFilter = GetSingleFilter(Options.TypePath, productsOptions.ActualType, ",", true);
+                currentGroup.Add(typeFilter);
+            }
+
             if (filters != null)
             {
                 var conditions = filters.Select(n => CreateQueryElem(n, productsOptions.DisableOr, productsOptions.DisableNot, productsOptions.DisableLike));
-                var shouldGroups = new List<List<JProperty>>();
-                var currentGroup = new List<JProperty>();
+                        
+
                 foreach (var condition in conditions)
                 {
                     if (condition == null)
@@ -354,13 +362,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                     currentGroup.Add(condition);
                 }
-                shouldGroups.Add(currentGroup);
-
-                query = shouldGroups.Count == 1 ? Must(currentGroup) : Should(shouldGroups.Select(Must));
+                shouldGroups.Add(currentGroup);                
             }
 
-            if (query != null)
+            if (currentGroup.Any() || shouldGroups.Any())
             {
+                query = shouldGroups.Count <= 1  ? Must(currentGroup) : Should(shouldGroups.Select(Must));
                 json.Add(new JProperty("query", new JObject(query)));
             }
         }

@@ -1,4 +1,5 @@
 ﻿using QA.ProductCatalog.ContentProviders;
+using System;
 
 namespace QA.ProductCatalog.HighloadFront.Options
 {
@@ -9,6 +10,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             ElasticTimeout = 15;
             FailuresBeforeCircuitBreaking = 3;
             CircuitBreakingInterval = 60;
+            VersionCaceExpiration = TimeSpan.FromMinutes(1);
         }
         
         public bool CanUpdate { get; set; }
@@ -28,5 +30,6 @@ namespace QA.ProductCatalog.HighloadFront.Options
         public int FailuresBeforeCircuitBreaking { get; set; }
 
         public int CircuitBreakingInterval { get; set; }
+        public TimeSpan VersionCaceExpiration { get; set; }
     }
 }

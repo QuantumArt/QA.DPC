@@ -29,6 +29,8 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public string[] Types { get; set; }
 
+        public string[] DynamicDateFormats { get; set; }
+
         public string[] NotAnalyzedFields { get; set; }
 
         public string CreationDateField { get; set; }
