@@ -236,14 +236,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        private JObject GetDefaultIndexSettings()
+        protected virtual JObject GetDefaultIndexSettings()
         {
             var indexSettings = new JObject(
                 new JProperty("settings", new JObject(
                     new JProperty("max_result_window", Options.MaxResultWindow),
                     new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit)
                 )),
-                new JProperty("mappings", GetMappings(new[] { "_doc" }, Options.NotAnalyzedFields))                
+                new JProperty("mappings", GetMappings(Options.Types, Options.NotAnalyzedFields))
             );
             return indexSettings;
         }
@@ -325,26 +325,15 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return result;
         }
 
-        private void SetQuery(JObject json, ProductsOptions productsOptions)
+        protected virtual void SetQuery(JObject json, ProductsOptions productsOptions)
         {
             JProperty query = null;
-            var shouldGroups = new List<List<JProperty>>();
-            var currentGroup = new List<JProperty>();
-            JProperty typeFilter = null;
-
             var filters = productsOptions.Filters;
-
-            if (productsOptions.ActualType != null)
-            {
-                typeFilter = GetSingleFilter(Options.TypePath, productsOptions.ActualType, ",", true);
-                currentGroup.Add(typeFilter);
-            }
-
             if (filters != null)
             {
                 var conditions = filters.Select(n => CreateQueryElem(n, productsOptions.DisableOr, productsOptions.DisableNot, productsOptions.DisableLike));
-                        
-
+                var shouldGroups = new List<List<JProperty>>();
+                var currentGroup = new List<JProperty>();
                 foreach (var condition in conditions)
                 {
                     if (condition == null)
@@ -362,17 +351,18 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
                     currentGroup.Add(condition);
                 }
-                shouldGroups.Add(currentGroup);                
+                shouldGroups.Add(currentGroup);
+
+                query = shouldGroups.Count == 1 ? Must(currentGroup) : Should(shouldGroups.Select(Must));
             }
 
-            if (currentGroup.Any() || shouldGroups.Any())
+            if (query != null)
             {
-                query = shouldGroups.Count <= 1  ? Must(currentGroup) : Should(shouldGroups.Select(Must));
                 json.Add(new JProperty("query", new JObject(query)));
             }
         }
 
-        private JProperty CreateQueryElem(IElasticFilter filter, string[] disableOr, string[] disableNot, string[] disableLike)
+        protected JProperty CreateQueryElem(IElasticFilter filter, string[] disableOr, string[] disableNot, string[] disableLike)
         {
             var simpleFilter = filter as SimpleFilter;
             var rangeFilter = filter as RangeFilter;
@@ -418,17 +408,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return result;
         }
 
-        private static JProperty Must(IEnumerable<JProperty> props)
+        protected static JProperty Must(IEnumerable<JProperty> props)
         {
             return Bool(props, false);
         }
 
-        private static JProperty Should(IEnumerable<JProperty> props)
+        protected static JProperty Should(IEnumerable<JProperty> props)
         {
             return Bool(props, true);
         }
 
-        private static JProperty Bool(IEnumerable<JProperty> props, bool isDisjunction)
+        protected static JProperty Bool(IEnumerable<JProperty> props, bool isDisjunction)
         {
             if (props == null) return null;
             var obj = props.Where(n => n != null).Select(n => new JObject(n)).ToArray();
@@ -527,7 +517,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return actualSeparator;
         }
 
-        private JProperty GetSingleFilter(string field, string value, string separator, bool  disableLike)
+        protected JProperty GetSingleFilter(string field, string value, string separator, bool  disableLike)
         {
             var isBaseField = field == Options.IdPath || field.EndsWith("." + Options.IdPath) || field == ProductIdField;
             var separators = (isBaseField) ? new[] {separator, BaseSeparator} : new[] {separator};

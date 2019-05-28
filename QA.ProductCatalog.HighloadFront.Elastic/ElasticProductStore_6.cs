@@ -1,8 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System.Linq;
+﻿using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using QA.ProductCatalog.HighloadFront.Options;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -38,6 +39,65 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     new JProperty("dynamic_templates", templates)
                 ))
             );
+        }
+
+        protected override JObject GetDefaultIndexSettings()
+        {
+            var indexSettings = new JObject(
+                new JProperty("settings", new JObject(
+                    new JProperty("max_result_window", Options.MaxResultWindow),
+                    new JProperty("mapping.total_fields.limit", Options.TotalFieldsLimit)
+                )),
+                new JProperty("mappings", GetMappings(new[] { "_doc" }, Options.NotAnalyzedFields))
+            );
+            return indexSettings;
+        }
+
+        protected override void SetQuery(JObject json, ProductsOptions productsOptions)
+        {
+            JProperty query = null;
+            var shouldGroups = new List<List<JProperty>>();
+            var currentGroup = new List<JProperty>();
+            JProperty typeFilter = null;
+
+            var filters = productsOptions.Filters;
+
+            if (productsOptions.ActualType != null)
+            {
+                typeFilter = GetSingleFilter(Options.TypePath, productsOptions.ActualType, ",", true);
+                currentGroup.Add(typeFilter);
+            }
+
+            if (filters != null)
+            {
+                var conditions = filters.Select(n => CreateQueryElem(n, productsOptions.DisableOr, productsOptions.DisableNot, productsOptions.DisableLike));
+
+
+                foreach (var condition in conditions)
+                {
+                    if (condition == null)
+                        continue;
+
+                    if (condition.Value["or"] != null)
+                    {
+                        if (currentGroup.Any())
+                        {
+                            shouldGroups.Add(currentGroup);
+                        }
+                        condition.Value["or"].Parent.Remove();
+                        currentGroup = new List<JProperty>();
+                    }
+
+                    currentGroup.Add(condition);
+                }
+                shouldGroups.Add(currentGroup);
+            }
+
+            if (currentGroup.Any() || shouldGroups.Any())
+            {
+                query = shouldGroups.Count <= 1 ? Must(currentGroup) : Should(shouldGroups.Select(Must));
+                json.Add(new JProperty("query", new JObject(query)));
+            }
         }
 
         protected JObject GetTextTemplate()
