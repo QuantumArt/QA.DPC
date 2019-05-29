@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
+using Newtonsoft.Json.Converters;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -23,9 +24,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         private ILogger Logger { get; }
 
+        private IsoDateTimeConverter DateTimeConverter { get; }
+
         static ElasticProductStore()
         {
-            
+
         }
         
         public ElasticProductStore(ElasticConfiguration config, SonicElasticStoreOptions options, ILoggerFactory loggerFactory)
@@ -33,6 +36,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             Configuration = config;
             Options = options;
             Logger = loggerFactory.CreateLogger(GetType());
+            DateTimeConverter = new IsoDateTimeConverter() { DateTimeFormat = Options.DateFormat };
         }
 
         public string GetId(JObject product)
@@ -76,7 +80,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     return string.Empty;
                 }
 
-                var json = JsonConvert.SerializeObject(p);
+                var json = JsonConvert.SerializeObject(p, DateTimeConverter);
 
                 return $"{{\"index\":{{\"_index\":\"{index.Name}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}\n{json}\n";
             });
@@ -140,8 +144,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 return SonicResult.Failed(SonicErrorDescriber.StoreFailure($"Product {id} has no type"));
             }
 
-            var client = Configuration.GetElasticClient(language, state); 
-            var json = JsonConvert.SerializeObject(product);
+            var client = Configuration.GetElasticClient(language, state);
+            var json = JsonConvert.SerializeObject(product, DateTimeConverter);
+
             try
             {
                 await client.PutAsync(id, type, json);
