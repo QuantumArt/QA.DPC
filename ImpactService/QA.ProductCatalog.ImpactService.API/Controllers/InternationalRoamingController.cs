@@ -44,8 +44,10 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             {
                 BaseUrls = ConfigurationOptions.ElasticUrls,
                 IndexName = ConfigurationOptions.GetIndexName(state, language),
-                HomeRegion = homeRegion
+                HomeRegion = homeRegion            
             };
+
+            ConfigureOptions(searchOptions);
 
             JObject json = new JObject();
             int[] ids = { 0 };

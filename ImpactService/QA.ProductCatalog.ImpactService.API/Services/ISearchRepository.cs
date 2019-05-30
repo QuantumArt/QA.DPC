@@ -20,5 +20,6 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         
         Task<string> GetDefaultRegionAliasForMnr(SearchOptions options);
 
+        Task<bool> GetIndexIsTyped(SearchOptions options);
     }
 }
