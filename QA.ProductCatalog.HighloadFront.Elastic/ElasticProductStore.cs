@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
+using Newtonsoft.Json.Converters;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -17,22 +18,25 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private const string BaseSeparator = ",";
         private const string ProductIdField = "ProductId";
 
-        private ElasticConfiguration Configuration { get; }
+        protected ElasticConfiguration Configuration { get; }
 
-        private SonicElasticStoreOptions Options { get; }
+        protected SonicElasticStoreOptions Options { get; }
 
         private ILogger Logger { get; }
 
+        private IsoDateTimeConverter DateTimeConverter { get; }
+
         static ElasticProductStore()
         {
-            
+
         }
         
         public ElasticProductStore(ElasticConfiguration config, SonicElasticStoreOptions options, ILoggerFactory loggerFactory)
         {
             Configuration = config;
             Options = options;
-            Logger = loggerFactory.CreateLogger(GetType());;
+            Logger = loggerFactory.CreateLogger(GetType());
+            DateTimeConverter = new IsoDateTimeConverter() { DateTimeFormat = Options.DateFormat };
         }
 
         public string GetId(JObject product)
@@ -43,14 +47,12 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return product[Options.IdPath]?.ToString();
         }
 
-        public string GetType(JObject product)
+        public virtual string GetType(JObject product)
         {
             if (product == null) throw new ArgumentNullException(nameof(product));
 
             string type = product[Options.TypePath]?.ToString();
-
             if (type == null) return Options.DefaultType;
-
             return type;
         }
 
@@ -78,7 +80,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                     return string.Empty;
                 }
 
-                var json = JsonConvert.SerializeObject(p);
+                var json = JsonConvert.SerializeObject(p, DateTimeConverter);
 
                 return $"{{\"index\":{{\"_index\":\"{index.Name}\",\"_type\":\"{type}\",\"_id\":\"{id}\"}}}}\n{json}\n";
             });
@@ -142,8 +144,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 return SonicResult.Failed(SonicErrorDescriber.StoreFailure($"Product {id} has no type"));
             }
 
-            var client = Configuration.GetElasticClient(language, state); 
-            var json = JsonConvert.SerializeObject(product);
+            var client = Configuration.GetElasticClient(language, state);
+            var json = JsonConvert.SerializeObject(product, DateTimeConverter);
+
             try
             {
                 await client.PutAsync(id, type, json);
@@ -238,7 +241,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        private JObject GetDefaultIndexSettings()
+        protected virtual JObject GetDefaultIndexSettings()
         {
             var indexSettings = new JObject(
                 new JProperty("settings", new JObject(
@@ -250,14 +253,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return indexSettings;
         }
 
-        public async Task<string> SearchAsync(ProductsOptions options, string language, string state)
+        public virtual async Task<string> SearchAsync(ProductsOptions options, string language, string state)
         {
             var q = GetQuery(options).ToString();
             var client = Configuration.GetElasticClient(language, state);
             return await client.SearchAsync(options.ActualType, q);
         }
 
-        private JObject GetQuery(ProductsOptions options)
+        protected JObject GetQuery(ProductsOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException(nameof(options));
@@ -291,9 +294,9 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             var response = await client.SearchAsync(null, q.ToString());
             return JObject.Parse(response).SelectTokens("aggregations.typesAgg.buckets.[?(@.key)].key").Select(n => n.ToString())
                 .ToArray();
-        }
+        }   
 
-        protected JObject GetDynamicTemplate(string type, string field)
+        protected JObject GetKeywordTemplate(string type, string field)
         {
             return new JObject(
                 new JProperty($"not_analyzed_{type}_{field}", new JObject(
@@ -306,17 +309,16 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             );
         }
 
-        protected JObject GetMapping(string type, string[] fields)
+        protected virtual JObject GetMapping(string type, string[] fields)
         {
-            var templates = new JArray(fields.Select(n => GetDynamicTemplate(type, n)));
-            
+            var templates = new JArray(fields.Select(n => GetKeywordTemplate(type, n)));
+
             return new JObject(
                 new JProperty(type, new JObject(
-                    new JProperty("dynamic_templates", templates)
+                    new JProperty("dynamic_templates", templates)                   
                 ))
             );
         }
-
 
         public JObject GetMappings(string[] types, string[] fields)
         {
@@ -328,7 +330,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return result;
         }
 
-        private void SetQuery(JObject json, ProductsOptions productsOptions)
+        protected virtual void SetQuery(JObject json, ProductsOptions productsOptions)
         {
             JProperty query = null;
             var filters = productsOptions.Filters;
@@ -365,7 +367,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             }
         }
 
-        private JProperty CreateQueryElem(IElasticFilter filter, string[] disableOr, string[] disableNot, string[] disableLike)
+        protected JProperty CreateQueryElem(IElasticFilter filter, string[] disableOr, string[] disableNot, string[] disableLike)
         {
             var simpleFilter = filter as SimpleFilter;
             var rangeFilter = filter as RangeFilter;
@@ -411,17 +413,17 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return result;
         }
 
-        private static JProperty Must(IEnumerable<JProperty> props)
+        protected static JProperty Must(IEnumerable<JProperty> props)
         {
             return Bool(props, false);
         }
 
-        private static JProperty Should(IEnumerable<JProperty> props)
+        protected static JProperty Should(IEnumerable<JProperty> props)
         {
             return Bool(props, true);
         }
 
-        private static JProperty Bool(IEnumerable<JProperty> props, bool isDisjunction)
+        protected static JProperty Bool(IEnumerable<JProperty> props, bool isDisjunction)
         {
             if (props == null) return null;
             var obj = props.Where(n => n != null).Select(n => new JObject(n)).ToArray();
@@ -520,7 +522,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return actualSeparator;
         }
 
-        private JProperty GetSingleFilter(string field, string value, string separator, bool  disableLike)
+        protected JProperty GetSingleFilter(string field, string value, string separator, bool  disableLike)
         {
             var isBaseField = field == Options.IdPath || field.EndsWith("." + Options.IdPath) || field == ProductIdField;
             var separators = (isBaseField) ? new[] {separator, BaseSeparator} : new[] {separator};

@@ -65,6 +65,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             throw GetElasticClientException(json);
         }
 
+
         private Exception GetElasticClientException(string json)
         {
             var resultEx = (_exceptions.Count > 1)
@@ -80,7 +81,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             _exceptions.Add(new HttpRequestException(message));
             _logger.LogInformation(message);
         }
-
+   
         private async Task<HttpResponseMessage> GetHttpResponse(string baseUri, string type, string json)
         {
             HttpResponseMessage response = null;
@@ -90,7 +91,14 @@ namespace QA.ProductCatalog.ImpactService.API.Services
             var uri = GetUri(type);
             try
             {
-                response = await PostAsync(client, policy, uri, json);
+                if (type == null && json == null)
+                {
+                    response = await GetAsync(client, policy, null);
+                }
+                else
+                {
+                    response = await PostAsync(client, policy, uri, json);
+                }
             }
             catch (HttpRequestException ex)
             {
@@ -108,12 +116,17 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         private static Task<HttpResponseMessage> PostAsync(HttpClient client, IAsyncPolicy<HttpResponseMessage> policy,
             string uri, string json)
-        {
+        {            
             return policy.ExecuteAsync(async () => await client.PostAsync(uri, new StringContent(
                 json,
                 Encoding.UTF8,
                 "application/json")
             ));
+        }
+
+        private static Task<HttpResponseMessage> GetAsync(HttpClient client, IAsyncPolicy<HttpResponseMessage> policy, string uri)
+        {
+            return policy.ExecuteAsync(async () => await client.GetAsync(uri));
         }
 
         private int[] GetRandomIndexes()

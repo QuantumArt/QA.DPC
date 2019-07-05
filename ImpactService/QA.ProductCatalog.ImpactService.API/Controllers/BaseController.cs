@@ -329,6 +329,18 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             return result;
         }
 
+        protected void ConfigureOptions(SearchOptions options)
+        {
+            var key = $"productstore_{options.IndexName}";
+            
+            options.IndexIsTyped = Cache.GetOrCreate(key, c =>
+            {
+                var cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(ConfigurationOptions.CachingInterval));
+                c.SetOptions(cacheOptions);
+                return SearchRepo.GetIndexIsTyped(options).Result;
+            });
+        }
+
         protected void Log(LogLevel level, string message, SearchOptions searchOptions, params object[] args)
         {
             LogExtra(level, message, searchOptions, null, null, args);
