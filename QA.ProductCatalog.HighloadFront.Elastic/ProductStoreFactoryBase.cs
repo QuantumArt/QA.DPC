@@ -18,7 +18,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _versionFactory = versionFactory;
             _configuration = configuration;
             _cache = cache;
-            _cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(options.VersionCaceExpiration);
+            _cacheOptions = new MemoryCacheEntryOptions().SetAbsoluteExpiration(options.VersionCacheExpiration);
         }
 
         public IProductStore GetProductStore(string language, string state)
