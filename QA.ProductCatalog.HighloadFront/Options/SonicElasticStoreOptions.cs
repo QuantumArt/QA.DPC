@@ -9,6 +9,7 @@ namespace QA.ProductCatalog.HighloadFront.Options
             DisjunctionMark = "|";
             NegationMark = "!";
             EscapeCharacter = "@";
+            DateFormat = "yyyy-MM-dd'T'HH:mm:ss.fffzzz";
         }
 
         public int DefaultSize { get; set; }
@@ -29,9 +30,12 @@ namespace QA.ProductCatalog.HighloadFront.Options
 
         public string[] Types { get; set; }
 
+        public string[] DynamicDateFormats { get; set; }
+
         public string[] NotAnalyzedFields { get; set; }
 
         public string CreationDateField { get; set; }
+        public string DateFormat { get; set; }
 
         public string ValueSeparator { get; set; }
 

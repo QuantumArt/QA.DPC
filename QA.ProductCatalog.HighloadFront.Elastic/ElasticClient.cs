@@ -107,6 +107,13 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return await QueryAsync(eparams, null);
         }
 
+        public async Task<string> GetInfo()
+        {
+            var eparams = CreateElasticRequestParams(HttpMethod.Get);
+            eparams.IndexName = null;
+            return await QueryAsync(eparams, null);
+        }
+
         public async Task<string> PutAsync(string id, string type, string json)
         {
             var eparams = CreateElasticRequestParams(HttpMethod.Put, id, type);

@@ -40,6 +40,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 HomeRegion = homeRegion
             };
 
+            ConfigureOptions(searchOptions);
+
             Region = region;
 
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, region, homeRegion, state, language);

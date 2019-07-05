@@ -60,6 +60,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 HomeRegion = homeRegion
             };
 
+            ConfigureOptions(searchOptions);
+
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
             var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
             var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
