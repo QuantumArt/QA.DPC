@@ -1,22 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
+using Npgsql;
+using NpgsqlTypes;
 using QA.Core;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QP.ConfigurationService.Models;
+using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.ContentProviders
 {
     public abstract class SettingsServiceBase : ISettingsService
 	{
 
-		protected readonly string _connectionString;
+		protected readonly Customer _customer;
 		protected readonly ICacheProvider _provider;
 
 		protected SettingsServiceBase(IConnectionProvider connectionProvider, ICacheProvider provider)
 		{
-			_connectionString = connectionProvider.GetConnection();
+			_customer = connectionProvider.GetCustomer();
 			_provider = provider;
 		}
 
@@ -45,32 +51,69 @@ namespace QA.ProductCatalog.ContentProviders
 		private string GetActionCodeInternal(string name)
 		{
 			string sql = @"select  top 1 [CODE], [NAME],[ID] from backend_action where name like @name";
-			using (var con = new SqlConnection(_connectionString))
+			if (_customer.DatabaseType == DatabaseType.SqlServer)
 			{
-				if (con.State != ConnectionState.Open)
-					con.Open();
-				var codes = new List<string>();
-				using (var cmd = new SqlCommand(
-					sql, con))
+				SqlConnection connection = new SqlConnection(_customer.ConnectionString);
+				using (connection)
 				{
-					var idParametr = new SqlParameter();
-					idParametr.ParameterName = "@name"; // Defining Name
-					idParametr.SqlDbType = SqlDbType.NVarChar; // Defining DataType
-					idParametr.Direction = ParameterDirection.Input; // Setting the direction 
-					idParametr.Value = name;
-
-					cmd.Parameters.Add(idParametr);
-
-					using (SqlDataReader rd = cmd.ExecuteReader())
+					if (connection.State != ConnectionState.Open)
+						connection.Open();
+					var codes = new List<string>();
+					using (var cmd = new SqlCommand(sql, connection))
 					{
-						while (rd.Read())
+						var idParameter = new SqlParameter();
+						idParameter.ParameterName = "@name"; // Defining Name
+						idParameter.SqlDbType = SqlDbType.NVarChar; // Defining DataType
+						idParameter.Direction = ParameterDirection.Input; // Setting the direction 
+						idParameter.Value = name;
+
+						cmd.Parameters.Add(idParameter);
+
+						using (SqlDataReader rd = cmd.ExecuteReader())
 						{
-							codes.Add(rd.GetString(0));
+							while (rd.Read())
+							{
+								codes.Add(rd.GetString(0));
+							}
+
+							rd.Close();
 						}
-						rd.Close();
 					}
+
+					return codes.FirstOrDefault();
 				}
-				return codes.FirstOrDefault();
+			}
+			else
+			{
+				NpgsqlConnection connection = new NpgsqlConnection(_customer.ConnectionString);
+				using (connection)
+				{
+					if (connection.State != ConnectionState.Open)
+						connection.Open();
+					var codes = new List<string>();
+					using (var cmd = new NpgsqlCommand(sql, connection))
+					{
+						var idParameter = new NpgsqlParameter();
+						idParameter.ParameterName = "@name"; // Defining Name
+						idParameter.NpgsqlDbType = NpgsqlDbType.Text; // Defining DataType
+						idParameter.Direction = ParameterDirection.Input; // Setting the direction 
+						idParameter.Value = name;
+
+						cmd.Parameters.Add(idParameter);
+
+						using (NpgsqlDataReader rd = cmd.ExecuteReader())
+						{
+							while (rd.Read())
+							{
+								codes.Add(rd.GetString(0));
+							}
+
+							rd.Close();
+						}
+					}
+
+					return codes.FirstOrDefault();
+				}
 			}
 		}
 	}

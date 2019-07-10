@@ -1,6 +1,7 @@
 ﻿﻿using Microsoft.EntityFrameworkCore;
  using QA.Core.DPC.QP.Models;
  using QA.Core.DPC.QP.Services;
+ using QP.ConfigurationService.Models;
 
  namespace QA.Core.ProductCatalog.ActionsRunnerModel
 {
@@ -19,17 +20,17 @@
         public static TaskRunnerEntities Get(IConnectionProvider provider)
         {
             TaskRunnerEntities result;
-            var connectionString = provider.GetConnection(Service.Actions);
-                if (provider.UsePostgres)
+            var customerConfig = provider.GetCustomer(Service.Actions);
+                if (customerConfig.DatabaseType == DatabaseType.Postgres )
                 {
                     var optionsBuilder = new DbContextOptionsBuilder<NpgSqlTaskRunnerEntities>();
-                    optionsBuilder.UseNpgsql(connectionString);
+                    optionsBuilder.UseNpgsql(customerConfig.ConnectionString);
                     result = new NpgSqlTaskRunnerEntities(optionsBuilder.Options);
                 }
                 else
                 {
                     var optionsBuilder = new DbContextOptionsBuilder<SqlServerTaskRunnerEntities>();
-                    optionsBuilder.UseSqlServer(connectionString);
+                    optionsBuilder.UseSqlServer(customerConfig.ConnectionString);
                     result = new SqlServerTaskRunnerEntities(optionsBuilder.Options);
                 }
             return result;

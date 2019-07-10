@@ -4,13 +4,14 @@ using Quantumart.QP8.BLL;
 using Quantumart.QPublishing.Database;
 using System.Data.SqlClient;
 using QA.ProductCatalog.ContentProviders;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.Loader.Services
 {
     public class ProductContentResolver : IProductContentResolver
     {
         private readonly ISettingsService _settingsService;
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
         private const string QueryTemplate =
             @"select	
@@ -27,7 +28,7 @@ namespace QA.Core.DPC.Loader.Services
         public ProductContentResolver(ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _settingsService = settingsService;
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
 
         public int GetContentIdByType(string type)
@@ -40,10 +41,10 @@ namespace QA.Core.DPC.Loader.Services
             {
                 var productDefinitionsContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
 
-                var connector = new DBConnector(_connectionString);
-                var sqlCommand = new SqlCommand(string.Format(QueryTemplate, productDefinitionsContentId));
-                sqlCommand.Parameters.AddWithValue("@type", type);
-                var contentId = connector.GetRealScalarData(sqlCommand);
+                var connector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+                var dbCommand = connector.CreateDbCommand(string.Format(QueryTemplate, productDefinitionsContentId));
+                dbCommand.Parameters.AddWithValue("@type", type);
+                var contentId = connector.GetRealScalarData(dbCommand);
 
                 if (contentId == null)
                 {
@@ -71,7 +72,7 @@ namespace QA.Core.DPC.Loader.Services
             }
             else
             {
-                return new DBConnector(_connectionString);
+                return new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
             }
         }
     }

@@ -18,13 +18,13 @@ namespace QA.Core.DPC.Notification.Services
 				c.Url,
 				c.DegreeOfParallelism,
 				c.Filter,
-				f.Name [Format],
+				f.Name AS Format,
 				f.Formatter,
 				f.MediaType,
                 '' Language
 			FROM
 				CONTENT_{1}_UNITED c
-				join CONTENT_{2}_UNITED f ON c.[Format] = f.CONTENT_ITEM_ID
+				join CONTENT_{2}_UNITED f ON c.Format = f.CONTENT_ITEM_ID
 			WHERE
 				c.ARCHIVE = 0 AND c.VISIBLE = 1 AND f.ARCHIVE = 0 AND f.VISIBLE = 1";
 
@@ -35,17 +35,17 @@ namespace QA.Core.DPC.Notification.Services
 	            c.Url,
 	            c.DegreeOfParallelism,
 	            c.Filter,
-	            f.Name [Format],
+	            f.Name AS Format,
 	            f.Formatter,
 	            f.MediaType,
 	            CASE WHEN l.Code IS NULL
 		            THEN ''
 		            ELSE l.Code
-	            END [Language]
+	            END AS Language
             FROM
 	            CONTENT_{1}_UNITED c
-	            join CONTENT_{2}_UNITED f ON c.[Format] = f.CONTENT_ITEM_ID
-	            join CONTENT_{3}_UNITED l on c.[Language] = l.CONTENT_ITEM_ID
+	            join CONTENT_425_UNITED f ON c.Format = f.CONTENT_ITEM_ID
+        		join CONTENT_449_UNITED l on c.Language = l.CONTENT_ITEM_ID
             WHERE
 	            c.ARCHIVE = 0 AND
 	            c.VISIBLE = 1 AND

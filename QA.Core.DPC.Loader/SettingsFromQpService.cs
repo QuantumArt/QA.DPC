@@ -18,7 +18,7 @@ namespace QA.Core.DPC.Loader
             : base(connectionProvider, cacheProvider)
 		{
 
-            _dbService = new DbService(_connectionString, 1);
+            _dbService = new DbService(_customer.ConnectionString, 1);
 			_cacheProvider = cacheProvider;
 		}
 

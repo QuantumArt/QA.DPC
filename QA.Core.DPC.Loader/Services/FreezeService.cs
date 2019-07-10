@@ -10,6 +10,7 @@ using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.Constants;
 using Quantumart.QP8.BLL;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.Loader.Services
 {
@@ -228,13 +229,13 @@ namespace QA.Core.DPC.Loader.Services
 
         private readonly ISettingsService _settingsService;
         private IUserProvider _userProvider;
-        private string _connectionString;
+        private Customer _customer;
 
         public FreezeService(ISettingsService settingsService, IUserProvider userProvider, IConnectionProvider connectionProvider)
         {
             _settingsService = settingsService;
             _userProvider = userProvider;
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
 
         #region ISettingsService implementation
@@ -389,7 +390,7 @@ namespace QA.Core.DPC.Loader.Services
             }
             else
             {
-                return new DBConnector(_connectionString);
+                return new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
             }
         }
         private string GetFreezeFieldName()

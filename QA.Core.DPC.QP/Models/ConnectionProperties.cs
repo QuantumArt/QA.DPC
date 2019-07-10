@@ -1,4 +1,5 @@
 using System;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.QP.Models
 {
@@ -31,5 +32,11 @@ namespace QA.Core.DPC.QP.Models
         public bool UsePostgres { get; set; }
         
         public TimeSpan TransactionTimeout { get; set; }
+
+        public DatabaseType GetDatabaseType()
+        {
+            return UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer;
+        }
+        
     }
 }

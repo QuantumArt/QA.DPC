@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using QA.Core.Linq;
 using QA.ProductCatalog.ContentProviders;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.Loader.Services
 {
@@ -92,7 +93,7 @@ namespace QA.Core.DPC.Loader.Services
         private readonly IUserProvider _userProvider;
         private readonly IArticleService _articleService;
         private readonly ILogger _logger;
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
         public string PublicationFailedField => _settingsService.GetSetting(SettingsTitles.PRODUCT_PUBLICATION_FAILED_FIELD_NAME);
         public string ValidationFailedField => _settingsService.GetSetting(SettingsTitles.PRODUCT_VALIDATION_FAILED_FIELD_NAME);
@@ -105,7 +106,7 @@ namespace QA.Core.DPC.Loader.Services
             _userProvider = userProvider;
             _articleService = articleService;
             _logger = logger;
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
 
         #region IValidationService implementation
@@ -288,7 +289,7 @@ namespace QA.Core.DPC.Loader.Services
             }
             else
             {
-                return new DBConnector(_connectionString);
+                return new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
             }
         }
         #endregion

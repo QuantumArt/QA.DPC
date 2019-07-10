@@ -32,7 +32,8 @@ namespace QA.Core.DPC.Loader.Editor
             VirtualFieldContextService virtualFieldContextService,
             EditorPreloadingService editorPreloadingService)
         {
-            _dbConnector = new DBConnector(connectionProvider.GetConnection());
+            var customer = connectionProvider.GetCustomer();
+            _dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
             _articleService = articleService;
             _contentService = contentService;
             _fieldService = fieldService;

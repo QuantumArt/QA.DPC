@@ -7,6 +7,7 @@ using QA.Core.Models;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
+using Quantumart.QP8.Constants;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
 {
@@ -66,8 +67,8 @@ namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
         {
             var productService = Container.Resolve<IProductService>();
             var xmlProductService = Container.Resolve<IXmlProductService>();
-
-            using (new QPConnectionScope(Container.GetConnectionString()))
+            var customer = Container.GetCustomer();
+            using (new QPConnectionScope(customer.ConnectionString, (DatabaseType)customer.DatabaseType))
             {
                 using (var ts = new TransactionScope(TransactionScopeOption.Required,
                     new TransactionOptions { Timeout = TimeSpan.FromMinutes(2), IsolationLevel = il }))

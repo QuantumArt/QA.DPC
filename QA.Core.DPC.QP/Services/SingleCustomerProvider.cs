@@ -1,6 +1,7 @@
 ﻿using QA.Core.DPC.QP.Models;
 using System;
 using System.Configuration;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -14,10 +15,22 @@ namespace QA.Core.DPC.QP.Services
             {
                 return ConfigurationManager.ConnectionStrings["qp_database"]?.ConnectionString;
             }
-            else
+
+            throw new InvalidOperationException();
+        }
+
+        public Customer GetCustomer(string customerCode)
+        {
+            if (customerCode == Key)
             {
-                throw new InvalidOperationException();
+                return new Customer
+                {
+                    ConnectionString = ConfigurationManager.ConnectionStrings["qp_database"]?.ConnectionString,
+                    DatabaseType = ConfigurationManager.AppSettings["usePostgres"] == "true" ? DatabaseType.Postgres : DatabaseType.SqlServer
+                };
             }
+
+            throw new InvalidOperationException();
         }
 
         public Customer[] GetCustomers()

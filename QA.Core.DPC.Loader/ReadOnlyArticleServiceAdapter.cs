@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API;
+using Quantumart.QP8.Constants;
 
 namespace QA.Core.DPC.Loader
 {
 	public class ReadOnlyArticleServiceAdapter : IReadOnlyArticleService
 	{
-		protected readonly string QpConnString;
+		protected readonly Customer QpCustomer;
 
 		protected readonly ArticleService ArticleService;
 
@@ -22,14 +24,14 @@ namespace QA.Core.DPC.Loader
 
             ArticleService = articleService;
 
-			QpConnString = connectionProvider.GetConnection();
+            QpCustomer = connectionProvider.GetCustomer();
 
 		    ContextStorage = contextStorage;
         }
 
 		public QPConnectionScope CreateQpConnectionScope()
 		{
-			return new QPConnectionScope(QpConnString);
+			return new QPConnectionScope(QpCustomer.ConnectionString, (DatabaseType)QpCustomer.DatabaseType);
 		}
 
 		public void LoadStructureCache()

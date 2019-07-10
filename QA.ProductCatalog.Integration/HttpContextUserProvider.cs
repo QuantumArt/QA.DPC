@@ -4,6 +4,7 @@ using QA.ProductCatalog.ContentProviders;
 using Quantumart.QPublishing.Database;
 using Quantumart.QPublishing.OnScreen;
 using Microsoft.AspNetCore.Http;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.ProductCatalog.Integration
 {
@@ -14,7 +15,7 @@ namespace QA.ProductCatalog.Integration
 		private const string QpActionCodeKey = "actionCode";
 		private const string QpItemIdKey = "content_item_id";
 		
-		private readonly string _connectionString;
+		private readonly Customer _customer;
 		private readonly IHttpContextAccessor _accessor;
 		
         private static readonly ThreadLocal<int> ForcedUserIdStorage = new ThreadLocal<int>();
@@ -29,7 +30,7 @@ namespace QA.ProductCatalog.Integration
         
         public HttpContextUserProvider(IConnectionProvider connectionProvider, IHttpContextAccessor accessor)
         {
-	        _connectionString = connectionProvider.GetConnection();
+	        _customer = connectionProvider.GetCustomer();
 	        _accessor = accessor;
         }
 
@@ -55,7 +56,8 @@ namespace QA.ProductCatalog.Integration
 	            if (!string.IsNullOrEmpty(newSid) && newSid != sid || userid == 0)
 	            {
 		            var backendSid = newSid?.Replace("'", "''");	     
-		            userid = new QScreen(new DBConnector(_connectionString)).AuthenticateForCustomTab(backendSid);
+		            userid = new QScreen(new DBConnector(_customer.ConnectionString, _customer.DatabaseType))
+			            .AuthenticateForCustomTab(backendSid);
 		            HttpContext.Session.SetInt32(QpUserIdKey, userid);
 	            }      
 
@@ -85,9 +87,9 @@ namespace QA.ProductCatalog.Integration
         {
             var userId = GetUserId();
 
-            var dBConnector = new DBConnector(_connectionString);
+            var dBConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
 
-            var str = string.Concat("select [FIRST_NAME], [LAST_NAME] from users where user_id = ", userId);
+            var str = string.Concat("select FIRST_NAME, LAST_NAME from users where user_id = ", userId);
             
             var cachedData = dBConnector.GetCachedData(str);
 

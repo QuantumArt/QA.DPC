@@ -18,9 +18,6 @@
   <PropertyGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <DefineConstants>NETSTANDARD</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(TargetFramework)' == 'net471' ">
-    <PackageReference Include="QA.Core.Web" Version="3.5.1-beta2" />
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
   </ItemGroup>
@@ -37,15 +34,17 @@
     <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.10" />
     <PackageReference Include="NLog" Version="4.5.11" />
-    <PackageReference Include="QA.Core" Version="3.5.1-beta2" />
-    <PackageReference Include="QA.Core.Data" Version="3.5.1-beta2" />
+    <PackageReference Include="QA.Core" Version="3.5.2-beta4" />
+    <PackageReference Include="QA.Core.Data" Version="3.5.2-beta4" />
+    <PackageReference Include="QP.ConfigurationService.Client" Version="0.2.0" />
+    <PackageReference Include="Quantumart.AspNetCore" Version="4.0.0-beta40" />
     
-    <PackageReference Include="Quantumart.QP8.BLL" Version="2.9.4-beta3" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="3.0.0-beta3" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
     <PackageReference Include="Unity.Abstractions" Version="4.0.3" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
-    <PackageReference Include="QA.Core.Web" Version="3.5.1-beta2" />
+    <PackageReference Include="QA.Core.Web" Version="3.5.2-beta4" />
   </ItemGroup>  
 </Project>

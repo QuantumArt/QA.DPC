@@ -1,4 +1,5 @@
-﻿using QA.Core.DPC.QP.Services;
+﻿using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 using Unity;
 
 namespace QA.Core.ProductCatalog
@@ -14,5 +15,11 @@ namespace QA.Core.ProductCatalog
 		{
 			return container.Resolve<IConnectionProvider>().GetConnection();
 		}
+		
+		public static Customer GetCustomer(this IUnityContainer container)
+		{
+			return container.Resolve<IConnectionProvider>().GetCustomer();
+		}
+		
 	}
 }

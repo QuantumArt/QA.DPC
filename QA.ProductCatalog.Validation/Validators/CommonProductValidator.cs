@@ -38,9 +38,9 @@ namespace QA.ProductCatalog.Validation.Validators
             var contentId = model.ContentId;
             int productId = helper.GetValue<int>(Constants.FieldId); 
 
-            using (new QPConnectionScope(helper.ConnectionString))
+            using (new QPConnectionScope(helper.Customer.ConnectionString, (DatabaseType)helper.Customer.DatabaseType))
             {
-                var articleService = new ArticleService(helper.ConnectionString, 1);
+                var articleService = new ArticleService(helper.Customer.ConnectionString, 1);
 
                 var product = productId > 0 ? articleService.Read(productId) : articleService.New(contentId);
                 var markProductName = helper.GetRelatedFieldName(product, marketingContentId);
@@ -85,7 +85,7 @@ namespace QA.ProductCatalog.Validation.Validators
                     var contentServiceOnTariffId = helper.GetSettingValue(SettingsTitles.SERVICES_ON_TARIFF_CONTENT_ID);
                     var tariffRelationFieldName = helper.GetSettingStringValue(SettingsTitles.TARIFF_RELATION_FIELD_NAME);
                     //Получение id поля Tariffs
-                    var fieldService = new FieldService(helper.ConnectionString, 1);
+                    var fieldService = new FieldService(helper.Customer.ConnectionString, 1);
                     var fieldId = fieldService.List(contentServiceOnTariffId).Where(w => w.Name.Equals(tariffRelationFieldName)).Select(s => s.Id).FirstOrDefault();
                     //Получение Id услуг из контента "Услуги на тарифах"
                     var relationsIds = articleService.GetRelatedItems(fieldId, productId, true)?
@@ -105,7 +105,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
                     //Проверка того, что сущность с другой стороны связи не в архиве
                     var productRelationsContentId = helper.GetSettingValue(SettingsTitles.PRODUCT_RELATIONS_CONTENT_ID);
-                    var contentService = new ContentService(helper.ConnectionString, 1);
+                    var contentService = new ContentService(helper.Customer.ConnectionString, 1);
                     
                     //Получение связанных контентов
                     var contents = contentService.Read(productRelationsContentId)

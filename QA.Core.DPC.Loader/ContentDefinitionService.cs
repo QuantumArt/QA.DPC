@@ -15,6 +15,7 @@ using QA.Core.Logger;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Content = QA.Core.Models.Configuration.Content;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.Loader
 {
@@ -36,7 +37,7 @@ namespace QA.Core.DPC.Loader
 		private readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
 		private readonly ILogger _logger;
 		private readonly IArticleService _articleService;
-		private readonly string _connectionString;
+		private readonly Customer _customer;
 
 		public ContentDefinitionService(ISettingsService settingsService,
 			IVersionedCacheProvider cacheProvider,
@@ -48,7 +49,7 @@ namespace QA.Core.DPC.Loader
 			_settingsService = settingsService;
 			_cacheProvider = cacheProvider;
 			_articleService = articleService;
-			_connectionString = connectionProvider.GetConnection(); 
+			_customer = connectionProvider.GetCustomer(); 
 		}
 
         #region IContentDefinitionService
@@ -115,7 +116,7 @@ namespace QA.Core.DPC.Loader
 			{
 				using (_articleService.CreateQpConnectionScope())
 				{
-					var dbConnector = new DBConnector(_connectionString);
+					var dbConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
 
 					string wherePart = string.Format(
                         "([{0}]='{1}' AND [{2}]='{3}')",

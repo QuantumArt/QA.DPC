@@ -5,6 +5,7 @@ using System.ServiceModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Admin.WebApp.Filters;
 using QA.ProductCatalog.Integration;

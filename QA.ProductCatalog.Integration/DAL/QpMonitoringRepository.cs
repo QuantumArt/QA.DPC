@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using Npgsql;
 using QA.Core;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.Infrastructure;
-using Quantumart.QP8.DAL;
+using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
+using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.Integration.DAL
 {
@@ -19,14 +23,14 @@ namespace QA.ProductCatalog.Integration.DAL
 
         public QpMonitoringRepository(IConnectionProvider connectionProvider, IArticleFormatter formatter, bool state, string language)
         {
-            _connectionString = connectionProvider.GetConnection();
+	        _customer = connectionProvider.GetCustomer();
             _state = state;
             _language = String.IsNullOrEmpty(language) ? "invariant" : language;
             _isJson = formatter is JsonProductFormatter;
         }
 
 
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
         private readonly bool _state;
 
@@ -34,11 +38,11 @@ namespace QA.ProductCatalog.Integration.DAL
 
         private readonly bool _isJson;
 
-        private string GetSqlQuery()
+        private string GetSqlQuery(string idsExpression)
         {
-            return @" 
-            SELECT DpcId as Id, ProductType, Alias, Updated, Hash, MarketingProductId, Title, UserUpdated, UserUpdatedId 
-            FROM [dbo].[Products] p INNER JOIN @ids ids ON ids.Id = p.DpcId 
+            return $@"SELECT DpcId as Id, ProductType, Alias, Updated, Hash, MarketingProductId, Title, UserUpdated, UserUpdatedId 
+            FROM {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.Products p 
+			INNER JOIN (SELECT Id FROM {idsExpression}) AS ids ON ids.Id = p.DpcId 
             WHERE p.IsLive = @isLive AND p.Language = @language 
             AND p.Format = @format AND p.Version = 1 and p.Slug is null";
         }
@@ -47,17 +51,21 @@ namespace QA.ProductCatalog.Integration.DAL
         {
             Throws.IfArrayArgumentNullOrEmpty(productIDs, _ => productIDs);
 
-			using (SqlConnection connection = new SqlConnection(_connectionString))
-            {
-	            using (SqlCommand cmd = new SqlCommand(GetSqlQuery(), connection))
+            DbConnection connection = _customer.DatabaseType == DatabaseType.SqlServer
+	            ? (DbConnection)new SqlConnection(_customer.ConnectionString)
+	            : new NpgsqlConnection(_customer.ConnectionString);
+            
+			using (connection)
+			{
+				var idList = SqlQuerySyntaxHelper.IdList(_customer.DatabaseType, "@ids", "ids");
+				var query = GetSqlQuery(idList);
+				DbCommand cmd = _customer.DatabaseType == DatabaseType.SqlServer
+					? (DbCommand) new SqlCommand(query)
+					: new NpgsqlCommand(query);
+	            cmd.Connection = connection;
+	            using (cmd)
 	            {
-	                var p = new SqlParameter("@ids", SqlDbType.Structured)
-	                {
-	                    TypeName = "Ids",
-	                    Value = Common.IdsToDataTable(productIDs)
-	                };
-
-                    cmd.Parameters.Add(p);
+		            cmd.Parameters.AddWithValue("@ids", productIDs);
                     cmd.Parameters.AddWithValue("@isLive", _state ? 1 : 0);
 	                cmd.Parameters.AddWithValue("@language", _language);
 	                cmd.Parameters.AddWithValue("@format", _isJson ? "json" : "xml");
@@ -98,11 +106,20 @@ namespace QA.ProductCatalog.Integration.DAL
 
 	    public string GetProductXml(int id)
 	    {
-		    using (var connection = new SqlConnection(_connectionString))
+		    DbConnection connection = _customer.DatabaseType == DatabaseType.SqlServer
+			    ? (DbConnection)new SqlConnection(_customer.ConnectionString)
+			    : new NpgsqlConnection(_customer.ConnectionString);
+		    using (connection)
 		    {
-			    using (SqlCommand cmd = new SqlCommand(
-                    "SELECT Data FROM Products p WHERE p.DpcId = @id AND p.IsLive = @isLive AND p.Language = @language " +
-			        "AND p.Format = @format AND p.Version = 1 and p.Slug is null", connection))
+			    var query = @"SELECT Data FROM Products p 
+					WHERE p.DpcId = @id 
+						AND p.IsLive = @isLive AND p.Language = @language 
+				    	AND p.Format = @format AND p.Version = 1 and p.Slug is null";
+			    DbCommand cmd = _customer.DatabaseType == DatabaseType.SqlServer
+				    ? (DbCommand) new SqlCommand(query)
+				    : new NpgsqlCommand(query);
+			    cmd.Connection = connection;
+			    using (cmd)
 			    {
 				    cmd.Parameters.AddWithValue("@id", id);
 			        cmd.Parameters.AddWithValue("@isLive", _state ? 1 : 0);

@@ -28,8 +28,10 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using QA.Core.DPC.QP.Models;
 using Content = QA.Core.Models.Configuration.Content;
 using Qp8Bll = Quantumart.QP8.BLL;
+using ConfigurationService = QP.ConfigurationService;
 
 namespace QA.Core.DPC.Loader
 {
@@ -43,7 +45,7 @@ namespace QA.Core.DPC.Loader
         private int _hits;
         private int _misses;
 
-        private readonly string _connectionString;
+        private readonly Customer _customer;
         private readonly IContentDefinitionService _definitionService;
         private readonly ILogger _logger;
         private readonly IVersionedCacheProvider _cacheProvider;
@@ -71,7 +73,7 @@ namespace QA.Core.DPC.Loader
             _consumerMonitoringServices = consumerMonitoringServices;
             _formatter = formatter;
 
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
         #endregion
 
@@ -88,9 +90,9 @@ namespace QA.Core.DPC.Loader
 
             fieldNames.Add("CONTENT_ITEM_ID");
 
-            using (new Qp8Bll.QPConnectionScope(_connectionString))
+            using (new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
-                var dbConnector = new DBConnector(_connectionString);
+                var dbConnector = new DBConnector(_customer.ConnectionString, (ConfigurationService.Models.DatabaseType)_customer.DatabaseType);
 
                 var dtdefinitionArticles =
                     dbConnector.GetContentData(
@@ -119,7 +121,7 @@ namespace QA.Core.DPC.Loader
         /// </summary>
         public virtual Article[] GetProductsByIds(Content content, int[] articleIds, bool isLive = false)
         {
-            using (new Qp8Bll.QPConnectionScope(_connectionString))
+            using (new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 ArticleService.IsLive = isLive;
 
@@ -208,7 +210,7 @@ namespace QA.Core.DPC.Loader
         /// </summary>
         public virtual Article GetProductById(int id, bool isLive = false, ProductDefinition productDefinition = null)
         {
-            using (new Qp8Bll.QPConnectionScope(_connectionString))
+            using (new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 ArticleService.IsLive = isLive;
 
@@ -287,7 +289,7 @@ namespace QA.Core.DPC.Loader
         
         public virtual Article[] GetProductsByIds(int[] ids, bool isLive = false)
         {
-            var dbConnector = new DBConnector(_connectionString);
+            var dbConnector = new DBConnector(_customer.ConnectionString, (ConfigurationService.Models.DatabaseType)_customer.DatabaseType);
 
             var sqlCommand = new SqlCommand(@"SELECT CONTENT_ID, CONTENT_ITEM_ID FROM CONTENT_ITEM WITH(NOLOCK) WHERE CONTENT_ITEM_ID IN (SELECT ID FROM @Ids)");
 
@@ -305,7 +307,7 @@ namespace QA.Core.DPC.Loader
         public virtual Article[] GetProductsByIds(int contentId, int[] ids, bool isLive = false)
         {
             var res = new List<Article>();
-            using (new Qp8Bll.QPConnectionScope(_connectionString))
+            using (new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 ArticleService.IsLive = isLive;
                 _cacheItemWatcher.TrackChanges();
@@ -497,18 +499,18 @@ namespace QA.Core.DPC.Loader
 
         #region Queries
         private const string GetProductTypesQuery = @"SELECT
-	ids.Id [ProductId],
-	c.CONTENT_ID [ContentId],
-	c.NET_CONTENT_NAME [ContentName],
-	c.CONTENT_NAME [ContentDisplayName],
-	itm.VISIBLE Visible,
-	itm.ARCHIVE Archive,
-	cl.ATTRIBUTE_NAME ExtensionAttributeName,
-	ec.CONTENT_ID [ExtensionContentId],
-	ec.NET_CONTENT_NAME [ExtensionName],
-	ec.CONTENT_NAME [ExtensionDisplayName],
-	ta.ATTRIBUTE_NAME [TypeAttributeName],
-	tv.[DATA] [TypeAttributeValue]
+	ids.Id AS ProductId,
+	c.CONTENT_ID AS ContentId,
+	c.NET_CONTENT_NAME AS ContentName,
+	c.CONTENT_NAME AS ContentDisplayName,
+	itm.VISIBLE AS Visible,
+	itm.ARCHIVE AS Archive,
+	cl.ATTRIBUTE_NAME AS ExtensionAttributeName,
+	ec.CONTENT_ID AS ExtensionContentId,
+	ec.NET_CONTENT_NAME AS ExtensionName,
+	ec.CONTENT_NAME AS ExtensionDisplayName,
+	ta.ATTRIBUTE_NAME AS TypeAttributeName,
+	tv.DATA AS TypeAttributeValue
 FROM
 	@ids ids
 	LEFT JOIN CONTENT_ITEM itm ON ids.Id = itm.CONTENT_ITEM_ID
@@ -516,20 +518,20 @@ FROM
 	LEFT JOIN (select content_id, attribute_id, attribute_name from CONTENT_ATTRIBUTE where is_classifier = 1) cl on c.CONTENT_ID = cl.CONTENT_ID
 	LEFT JOIN CONTENT_DATA cd on cd.CONTENT_ITEM_ID = itm.CONTENT_ITEM_ID and cd.ATTRIBUTE_ID = cl.ATTRIBUTE_ID
 	LEFT JOIN content ec on cd.DATA = ec.CONTENT_ID
-	LEFT JOIN CONTENT_ATTRIBUTE ta ON itm.CONTENT_ID = ta.CONTENT_ID AND ta.[ATTRIBUTE_NAME] = @typeField
-	LEFT JOIN CONTENT_DATA tv ON ta.[ATTRIBUTE_ID] = tv.[ATTRIBUTE_ID] AND itm.[CONTENT_ITEM_ID] = tv.CONTENT_ITEM_ID";
+	LEFT JOIN CONTENT_ATTRIBUTE ta ON itm.CONTENT_ID = ta.CONTENT_ID AND ta.ATTRIBUTE_NAME = @typeField
+	LEFT JOIN CONTENT_DATA tv ON ta.ATTRIBUTE_ID = tv.ATTRIBUTE_ID AND itm.CONTENT_ITEM_ID = tv.CONTENT_ITEM_ID";
 
         public ProductInfo[] GetProductsInfo(int[] productIds)
         {
             var typeField = _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
 
-            using (var cs = new Qp8Bll.QPConnectionScope(_connectionString))
+            using (var cs = new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 var cnn = new DBConnector(cs.DbConnection);
-                using (var cmd = new SqlCommand(GetProductTypesQuery))
+                using (var cmd = cnn.CreateDbCommand(GetProductTypesQuery))
                 {
                     cmd.CommandType = CommandType.Text;
-                    cmd.Parameters.Add(new SqlParameter("@ids", SqlDbType.Structured) { TypeName = "Ids", Value = Quantumart.QP8.DAL.Common.IdsToDataTable(productIds) });
+                    cmd.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", productIds, _customer.DatabaseType));
                     cmd.Parameters.AddWithValue("@typeField", typeField);
                     var data = cnn.GetRealData(cmd);
                     return data.AsEnumerable().Select(Converter.ToModelFromDataRow<ProductInfo>).ToArray();

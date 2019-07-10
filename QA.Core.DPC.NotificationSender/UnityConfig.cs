@@ -48,7 +48,7 @@ namespace QA.Core.DPC
 			unityContainer.RegisterType<IIdentityProvider, CoreIdentityProvider>();
 			
             unityContainer.RegisterInstance<ILogger>(new NLogLogger("NLogClient.config"));
-            unityContainer.RegisterType<QA.ProductCatalog.ContentProviders.IContentProvider<NotificationChannel>, NotificationChannelProvider>();
+            unityContainer.RegisterType<IContentProvider<NotificationChannel>, NotificationChannelProvider>();
 			unityContainer.RegisterType<IUserProvider, AlwaysAdminUserProvider>();
 			unityContainer.RegisterType<IServiceFactory, ServiceFactory>();
 			unityContainer.RegisterFactory<ArticleService>(c => c.Resolve<IServiceFactory>().GetArticleService());

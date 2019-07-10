@@ -12,7 +12,7 @@ using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.Constants;
-
+using QA.Core.DPC.QP.Models;
 
 namespace QA.ProductCatalog.Validation.Validators
 {
@@ -62,7 +62,7 @@ namespace QA.ProductCatalog.Validation.Validators
             return Model.ProvideValueExact<T>(def);
         }
 
-        public string ConnectionString => _provider.GetConnection();
+        public Customer Customer => _provider.GetCustomer();
 
         public string[] GetListOfParametersNames()
         {
@@ -274,7 +274,7 @@ namespace QA.ProductCatalog.Validation.Validators
 
         public void CheckSiteId(int contentId)
         {
-            var siteId = (new ContentService(ConnectionString, 1).Read(contentId)).SiteId;
+            var siteId = new ContentService(Customer.ConnectionString, 1).Read(contentId).SiteId;
             if (Model.SiteId != siteId)
             {
                 throw new ValidationException(RemoteValidationMessages.SiteIdInvalid);

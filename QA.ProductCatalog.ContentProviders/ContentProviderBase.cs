@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Linq;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using Quantumart.QPublishing.Database;
 
@@ -11,19 +12,19 @@ namespace QA.ProductCatalog.ContentProviders
 	{
 		protected ISettingsService SettingsService { get; }
 		private DBConnector Connector { get; set; }
-		private string ConnectionString { get; }
+		private Customer _customer { get; }
 
 		protected ContentProviderBase(ISettingsService settingsService, IConnectionProvider connectionProvider)
 		{
 			SettingsService = settingsService;
-            ConnectionString = connectionProvider.GetConnection();
+			_customer = connectionProvider.GetCustomer();
 		}
 
 		protected abstract string GetQuery();
 
 		public virtual TModel[] GetArticles()
 		{
-			Connector = new DBConnector(ConnectionString);
+			Connector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
 			var query = GetQuery();
 
 			if (query == null)
@@ -53,7 +54,7 @@ namespace QA.ProductCatalog.ContentProviders
 						var columnName = key.ColumnName;
 						if (!string.IsNullOrEmpty(row[columnName].ToString()))
 						{
-							if (property.Name == columnName)
+							if (string.Equals(property.Name, columnName, StringComparison.InvariantCultureIgnoreCase))
 							{
 								var t = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
 								var safeValue = row[columnName] == null ? null : Convert.ChangeType(row[columnName], t);

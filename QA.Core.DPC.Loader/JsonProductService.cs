@@ -48,8 +48,8 @@ namespace QA.Core.DPC.Loader
             _contentService = contentService;
             _fieldService = fieldService;
 
-            var connectionString = connectionProvider.GetConnection();
-            _dbConnector = new DBConnector(connectionString);
+            var customer = connectionProvider.GetCustomer();
+            _dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
 
             _virtualFieldContextService = virtualFieldContextService;
             _regionTagReplaceService = regionTagReplaceService;

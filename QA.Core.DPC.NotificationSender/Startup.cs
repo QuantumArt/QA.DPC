@@ -45,6 +45,7 @@ namespace QA.Core.DPC
             services.AddHttpContextAccessor();
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<NotificationProperties>(Configuration.GetSection("Properties"));
+            services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             services.AddSingleton<IHostedService, NotificationSender>();
             
             var props = new ConnectionProperties();

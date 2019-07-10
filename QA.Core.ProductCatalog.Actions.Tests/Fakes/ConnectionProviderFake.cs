@@ -40,6 +40,16 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
             throw new NotImplementedException();
         }
 
+        public Customer GetCustomer()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Customer GetCustomer(DPC.QP.Models.Service service)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool HasConnection(DPC.QP.Models.Service service)
         {
             throw new NotImplementedException();

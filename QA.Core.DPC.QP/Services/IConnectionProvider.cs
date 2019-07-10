@@ -9,6 +9,9 @@ namespace QA.Core.DPC.QP.Services
         string GetEFConnection();
         string GetConnection(Service service);
         string GetEFConnection(Service service);
+        Customer GetCustomer();
+        Customer GetCustomer(Service service);
+        
         bool HasConnection(Service service);
         bool QPMode { get; }
         bool UsePostgres { get; }

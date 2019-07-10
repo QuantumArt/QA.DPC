@@ -5,6 +5,7 @@ using Quantumart.QP8.BLL;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
+using Quantumart.QP8.Constants;
 
 namespace QA.Core.DPC.Loader
 {
@@ -39,7 +40,7 @@ namespace QA.Core.DPC.Loader
 			{
 				if (QPConnectionScope.Current == null)
 				{
-					using (new QPConnectionScope(_connectionString))
+					using (new QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
 					{
 						return GetSettingValue(title);
 					}
@@ -57,7 +58,7 @@ namespace QA.Core.DPC.Loader
 
 		private string GetSettingValue(string title)
 		{
-			using (new QPConnectionScope(_connectionString))
+			using (new QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
 			{
 				var articleService = _articleService;
 				

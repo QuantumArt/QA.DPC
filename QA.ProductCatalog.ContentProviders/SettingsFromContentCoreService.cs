@@ -38,7 +38,7 @@ namespace QA.ProductCatalog.ContentProviders
 
         private string GetSettingValue(string title)
         {
-            var cnn = new DBConnector(_connectionString);
+            var cnn = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
             var keycolumn = FIELD_NAME_TITLE;
             var valuecolumn = FIELD_NAME_VALUE;
             var keyvalue = title.Replace("'", "''");

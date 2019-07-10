@@ -34,7 +34,7 @@ namespace QA.ProductCatalog.ContentProviders
 
 		private Dictionary<string, string> GetAppSettings()
 		{
-			var cnn = new DBConnector(_connectionString);
+			var cnn = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
 			var query = "select * from app_settings";
 			return cnn.GetRealData(query).AsEnumerable()
 				.ToDictionary(n => n["key"].ToString(), m => m["value"].ToString()

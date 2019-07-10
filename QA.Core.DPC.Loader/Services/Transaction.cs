@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Transactions;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
+using Quantumart.QP8.Constants;
 
 namespace QA.Core.ProductCatalog.Actions.Services
 {
@@ -23,7 +24,8 @@ namespace QA.Core.ProductCatalog.Actions.Services
                 logger.Error("Попытка создать транзакцию на существующем подключении к БД. Статус подключения: " + current.DbConnection.State);
             }
 
-            _connectionScope = new QPConnectionScope(connectionProvider.GetConnection());
+            var customer = connectionProvider.GetCustomer();
+            _connectionScope = new QPConnectionScope(customer.ConnectionString, (DatabaseType)customer.DatabaseType);
         }
 
         #region ITransaction implementation

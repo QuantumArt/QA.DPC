@@ -11,8 +11,9 @@ using Quantumart.QP8.BLL.Services.API;
 using Article = QA.Core.Models.Entities.Article;
 using Field = QA.Core.Models.Configuration.Field;
 using Quantumart.QPublishing.Database;
-using QA.Core.DPC.Loader.Editor;
 using System.Data.SqlClient;
+using Quantumart.QP8.Constants;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.Loader
 {
@@ -27,7 +28,7 @@ namespace QA.Core.DPC.Loader
         private readonly ContentService _contentService;
         private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly IContextStorage _contextStorage;
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
         private const string GetExstensionIdQuery = @"
             declare @query nvarchar(max) = ''
@@ -54,13 +55,13 @@ namespace QA.Core.DPC.Loader
 
             _contextStorage = contextStorage;
 
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
 
 
         public Article Deserialize(IProductDataSource productDataSource, Models.Configuration.Content definition)
         {
-            using (var cs = new QPConnectionScope(_connectionString))
+            using (var cs = new QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 _cacheItemWatcher.TrackChanges();
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -21,6 +22,15 @@ namespace QA.Core.DPC.QP.Services
             return _connection;
         }
 
+        public Customer GetCustomer(Service service)
+        {
+            return new Customer
+            {
+                ConnectionString = _connection,
+                DatabaseType = UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
+            };
+        }
+
         public bool HasConnection(Service service)
         {
             throw new NotImplementedException();
@@ -34,6 +44,15 @@ namespace QA.Core.DPC.QP.Services
         public string GetEFConnection(Service service)
         {
             throw new NotImplementedException();
+        }
+
+        public Customer GetCustomer()
+        {
+            return new Customer
+            {
+                ConnectionString = _connection,
+                DatabaseType = UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
+            };
         }
 
         public bool QPMode => throw new NotImplementedException();

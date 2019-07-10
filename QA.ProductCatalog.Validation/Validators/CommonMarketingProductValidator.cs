@@ -13,6 +13,7 @@ using System.Linq.Expressions;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Validation.Resources;
+using Quantumart.QP8.Constants;
 
 namespace QA.ProductCatalog.Validation.Validators
 {
@@ -35,9 +36,9 @@ namespace QA.ProductCatalog.Validation.Validators
 
 
 
-			using (new QPConnectionScope(helper.ConnectionString))
+			using (new QPConnectionScope(helper.Customer.ConnectionString, (DatabaseType)helper.Customer.DatabaseType ))
 			{
-				var articleSerivce = new ArticleService(helper.ConnectionString, 1);
+				var articleSerivce = new ArticleService(helper.Customer.ConnectionString, 1);
 			    var emptyArticle = articleSerivce.New(model.ContentId);
 
 			    var productsName = helper.GetRelatedFieldName(emptyArticle, helper.GetSettingValue(SettingsTitles.PRODUCTS_CONTENT_ID));
@@ -73,7 +74,7 @@ namespace QA.ProductCatalog.Validation.Validators
 			int marketingProductContentId = helper.GetSettingValue(SettingsTitles.MARKETING_PRODUCT_CONTENT_ID);
 			helper.CheckSiteId(marketingProductContentId);
 
-			var matchService = new ArticleMatchService<Expression<Predicate<IArticle>>>(helper.ConnectionString, new ExpressionConditionMapper());
+			var matchService = new ArticleMatchService<Expression<Predicate<IArticle>>>(helper.Customer.ConnectionString, new ExpressionConditionMapper());
 			object aliasValue = alias;
 			var matchItems = matchService.MatchArticles(marketingProductContentId, article => article[Constants.FieldAlias].Value == aliasValue, MatchMode.Strict);
 			var matchIds = matchItems.Where(itm => itm.Id != id).Select(itm => itm.Id).ToArray();

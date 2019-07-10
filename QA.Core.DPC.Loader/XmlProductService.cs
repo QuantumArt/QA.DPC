@@ -14,8 +14,10 @@ using QA.Core.Models.Entities;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
+using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
 using Article = QA.Core.Models.Entities.Article;
+using QA.Core.DPC.QP.Models;
 
 namespace QA.Core.DPC.Loader
 {
@@ -31,7 +33,7 @@ namespace QA.Core.DPC.Loader
 
         private readonly ILogger _logger;
         private readonly ISettingsService _settingsService;
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 		private readonly IRegionTagReplaceService _regionTagReplaceService;
 
         public XmlProductService(ILogger logger, ISettingsService settingsService, IConnectionProvider connectionProvider, IRegionTagReplaceService regionTagReplaceService)
@@ -39,7 +41,7 @@ namespace QA.Core.DPC.Loader
             _logger = logger;
             _settingsService = settingsService;
 	        _regionTagReplaceService = regionTagReplaceService;	        
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
 
         }
 
@@ -95,7 +97,7 @@ namespace QA.Core.DPC.Loader
 		{
             using (
                 var cs =
-                    new QPConnectionScope(_connectionString))
+                    new QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
 			{
                 var ctx = new CallContext(new DBConnector(cs.DbConnection), filter);
 

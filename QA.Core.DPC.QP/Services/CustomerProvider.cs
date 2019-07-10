@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Xml.Linq;
+using Microsoft.Extensions.Options;
+using Npgsql;
 using QA.Core.DPC.QP.Models;
 using QA.Core.Logger;
+using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.QP.Services
@@ -12,32 +15,57 @@ namespace QA.Core.DPC.QP.Services
     {
         private const int Timeout = 2;
         private readonly ILogger _logger;
+        private readonly IntegrationProperties _integrationProps;
 
-        public CustomerProvider(ILogger logger)
+        public CustomerProvider(ILogger logger, IOptions<IntegrationProperties> integrationProps)
         {
             _logger = logger;
+            _integrationProps = integrationProps.Value;
         }
 
         public string GetConnectionString(string customerCode)
         {
+            DBConnector.ConfigServiceUrl = _integrationProps.ConfigurationServiceUrl;
+            DBConnector.ConfigServiceToken = _integrationProps.ConfigurationServiceToken;
             return DBConnector.GetConnectionString(customerCode);
+        }
+
+        public Customer GetCustomer(string customerCode)
+        {
+            DBConnector.ConfigServiceUrl = _integrationProps.ConfigurationServiceUrl;
+            DBConnector.ConfigServiceToken = _integrationProps.ConfigurationServiceToken;
+            var configuration = DBConnector.GetQpConfiguration().Result;
+            var customerConfiguration = configuration.Customers.FirstOrDefault(c => c.Name == customerCode);
+            if (customerConfiguration == null)
+            {
+                throw new Exception($"Customer code {customerCode} not found");
+            }
+            return new Customer
+            {
+                ConnectionString = customerConfiguration.ConnectionString.Replace("Provider=SQLOLEDB;", ""),
+                CustomerCode = customerConfiguration.Name,
+                DatabaseType = customerConfiguration.DbType
+            };
         }
 
         public Customer[] GetCustomers()
         {
             var result = new Customer[] { };
-            var doc = XDocument.Parse(DBConnector.GetQpConfig().OuterXml);
-            var customer = doc?.Root?.Element("customers");
-            if (customer != null)
+            DBConnector.ConfigServiceUrl = _integrationProps.ConfigurationServiceUrl;
+            DBConnector.ConfigServiceToken = _integrationProps.ConfigurationServiceToken;
+            var configuration = DBConnector.GetQpConfiguration().Result;
+            var customers = configuration.Customers;
+            if (customers != null)
             {
                 result =
-                    customer.Elements("customer").Select(c => new Customer
-                    {
-                        ConnectionString = c.Element("db")?.Value?.Replace("Provider=SQLOLEDB;", string.Empty),
-                        CustomerCode = c.Attribute("customer_name")?.Value
-                    })
-                    .Where(IsDpcMode)
-                    .ToArray();             
+                    customers.Select(c => new Customer
+                        {
+                            ConnectionString = c.ConnectionString.Replace("Provider=SQLOLEDB;", ""),
+                            CustomerCode = c.Name,
+                            DatabaseType = c.DbType
+                        })
+                        .Where(IsDpcMode)
+                        .ToArray();             
             }
 
             return result;
@@ -47,9 +75,12 @@ namespace QA.Core.DPC.QP.Services
         {
             try
             {
-                var builder = new SqlConnectionStringBuilder(customer.ConnectionString) {ConnectTimeout = Timeout};
-                var connector = new DBConnector(builder.ConnectionString);
-                var command = new SqlCommand("SELECT USE_DPC FROM DB");
+                var builder = customer.DatabaseType == DatabaseType.SqlServer
+                    ? (DbConnectionStringBuilder) new SqlConnectionStringBuilder(customer.ConnectionString)
+                        {ConnectTimeout = Timeout}
+                    : new NpgsqlConnectionStringBuilder(customer.ConnectionString) {CommandTimeout = Timeout};
+                var connector = new DBConnector(builder.ConnectionString, customer.DatabaseType);
+                var command =  connector.CreateDbCommand("SELECT USE_DPC FROM DB");
                 return (bool)connector.GetRealScalarData(command);
             }
             catch(Exception)

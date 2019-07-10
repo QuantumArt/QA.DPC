@@ -1,4 +1,4 @@
-namespace QA.ProductCatalog.Integration
+namespace QA.Core.DPC.QP.Models
 {
     public class IntegrationProperties
     {
@@ -11,5 +11,7 @@ namespace QA.ProductCatalog.Integration
         public string TarantoolSyncUrl { get; set; } 
         
         public string[] ExtraValidationLibraries { get; set; }
+        public string ConfigurationServiceUrl { get; set; }
+        public string ConfigurationServiceToken { get; set; }
     }
 }

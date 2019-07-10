@@ -3,6 +3,7 @@ using QA.Core.DPC.QP.Models;
 using System;
 using System.Configuration;
 using Microsoft.Extensions.Options;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.QP.Services
 {
@@ -22,6 +23,22 @@ namespace QA.Core.DPC.QP.Services
             if (customerCode == Key)
             {
                 return _cnnProps.DpcConnectionString;
+            }
+            else
+            {
+                throw new InvalidOperationException();
+            }
+        }
+
+        public Customer GetCustomer(string customerCode)
+        {
+            if (customerCode == Key)
+            {
+                return new Customer
+                {
+                    ConnectionString = _cnnProps.DpcConnectionString,
+                    DatabaseType = _cnnProps.GetDatabaseType()
+                };
             }
             else
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using QA.Core.DPC.QP.Services;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.DAL
 {
@@ -23,22 +24,22 @@ namespace QA.Core.DPC.DAL
 
         public static NotificationsModelDataContext GetOrCreate(IConnectionProvider provider)
         {
-             var connectionString = provider.GetConnection(QP.Models.Service.Notification);
-             if (!_contexts.TryGetValue(connectionString, out var result))
+             var customerConfig = provider.GetCustomer(QP.Models.Service.Notification);
+             if (!_contexts.TryGetValue(customerConfig.ConnectionString, out var result))
              {
-                 if (provider.UsePostgres)
+                 if (customerConfig.DatabaseType == DatabaseType.Postgres)
                  {
                      var optionsBuilder = new DbContextOptionsBuilder<NpgSqlNotificationsModelDataContext>();
-                     optionsBuilder.UseNpgsql(connectionString);
+                     optionsBuilder.UseNpgsql(customerConfig.ConnectionString);
                      result = new NpgSqlNotificationsModelDataContext(optionsBuilder.Options);
                  }
                  else
                  {
                      var optionsBuilder = new DbContextOptionsBuilder<SqlServerNotificationsModelDataContext>();
-                     optionsBuilder.UseSqlServer(connectionString);
+                     optionsBuilder.UseSqlServer(customerConfig.ConnectionString);
                      result = new SqlServerNotificationsModelDataContext(optionsBuilder.Options);
                  }
-                 _contexts[connectionString] = result;
+                 _contexts[customerConfig.ConnectionString] = result;
              }
 
              return result;
