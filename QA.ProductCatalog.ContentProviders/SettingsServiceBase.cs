@@ -50,7 +50,9 @@ namespace QA.ProductCatalog.ContentProviders
 
 		private string GetActionCodeInternal(string name)
 		{
-			string sql = @"select  top 1 [CODE], [NAME],[ID] from backend_action where name like @name";
+			string sql = $@"select {SqlQuerySyntaxHelper.Top(_customer.DatabaseType, "1")} CODE, NAME, ID 
+				FROM backend_action 
+				WHERE name like @name {SqlQuerySyntaxHelper.Limit(_customer.DatabaseType, "1")}";
 			if (_customer.DatabaseType == DatabaseType.SqlServer)
 			{
 				SqlConnection connection = new SqlConnection(_customer.ConnectionString);
