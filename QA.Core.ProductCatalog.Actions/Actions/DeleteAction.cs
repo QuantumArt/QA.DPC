@@ -28,7 +28,7 @@ namespace QA.Core.ProductCatalog.Actions
 		protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
 		{
             string[] channels = actionParameters.GetChannels();
-            var product = ArticleService.Read(productId);
+            var product = ArticleService.Read(productId, false);
             var definition = Productservice.GetProductDefinition(0, product.ContentId);
 			bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
 
