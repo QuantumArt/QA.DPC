@@ -226,6 +226,7 @@ namespace QA.Core.DPC.Loader.Tests
 
             var nService = ObjectFactoryBase.Resolve<IQPNotificationService>();
             var ids = new List<int>();
+            
             using (var con = new SqlConnection(ConfigurationManager.ConnectionStrings["qp_database"].ConnectionString))
             {
                 con.Open();

@@ -2,8 +2,13 @@
 using QA.Core.DPC.QP.Services;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Data.SqlClient;
 using System.Threading.Tasks;
+using Npgsql;
+using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
+using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.Loader.Editor
 {
@@ -19,11 +24,11 @@ namespace QA.Core.DPC.Loader.Editor
 
     public class EditorCustomActionService
     {
-        private readonly string _connectionString;
+        private readonly Customer _customer;
 
         public EditorCustomActionService(IConnectionProvider connectionProvider)
         {
-            _connectionString = connectionProvider.GetConnection();
+            _customer = connectionProvider.GetCustomer();
         }
 
         public async Task<CustomActionInfo> GetCustomActionByAlias(string alias)
@@ -33,18 +38,22 @@ namespace QA.Core.DPC.Loader.Editor
                 throw new ArgumentException(nameof(alias));
             }
 
-            using (var connection = new SqlConnection(_connectionString))
+            DbConnection connection = _customer.DatabaseType == DatabaseType.Postgres
+                ? (DbConnection)new NpgsqlConnection(_customer.ConnectionString)
+                : new SqlConnection(_customer.ConnectionString); 
+            
+            using (connection)
             {
                 await connection.OpenAsync();
 
                 var actionInfo = await connection.QuerySingleAsync<CustomActionInfo>($@"
-                    SELECT TOP (1)
+                    SELECT {SqlQuerySyntaxHelper.Top(_customer.DatabaseType, "1")}
                         ba.CODE AS {nameof(CustomActionInfo.ActionCode)},
 	                    et.CODE AS {nameof(CustomActionInfo.EntityTypeCode)}
                     FROM dbo.CUSTOM_ACTION AS ca
-                    INNER JOIN dbo.BACKEND_ACTION AS ba ON ca.ACTION_ID = ba.ID
-                    INNER JOIN dbo.ENTITY_TYPE AS et ON ba.ENTITY_TYPE_ID = et.ID
-                    WHERE ca.ALIAS = @{nameof(alias)}",
+                    INNER JOIN {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.BACKEND_ACTION AS ba ON ca.ACTION_ID = ba.ID
+                    INNER JOIN {SqlQuerySyntaxHelper.DbSchemaName(_customer.DatabaseType)}.ENTITY_TYPE AS et ON ba.ENTITY_TYPE_ID = et.ID
+                    WHERE ca.ALIAS = @{nameof(alias)} {SqlQuerySyntaxHelper.Limit(_customer.DatabaseType, "1")}",
                     new { alias });
                 
                 return actionInfo;

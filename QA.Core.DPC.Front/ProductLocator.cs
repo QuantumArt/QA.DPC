@@ -17,7 +17,7 @@ namespace QA.Core.DPC.Front
             Slug = String.Empty;
             QueryFormat = "json";
         }
-
+        
         public string InstanceId { get; set; }
 
         public string FixedConnectionString { get; set; }

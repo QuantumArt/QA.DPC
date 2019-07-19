@@ -93,6 +93,12 @@ namespace QA.DPC.Core.Helpers
 
             if (_context != null)
             {
+                if (_context.Request.HasFormContentType && _context.Request.Form.ContainsKey(CustomerCodeKey))
+                {
+                    code = _context.Request.Form[CustomerCodeKey].ToString();
+                }
+                if (!string.IsNullOrEmpty(code)) return code;
+                
                 code = _context.Request.Query[CustomerCodeKey].FirstOrDefault();
                 if (!string.IsNullOrEmpty(code)) return code;
 

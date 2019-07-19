@@ -1,4 +1,4 @@
-﻿using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.ActionsRunnerModel;

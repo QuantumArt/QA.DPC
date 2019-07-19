@@ -37,6 +37,8 @@ using Unity.Lifetime;
 using ValidationConfiguration = QA.ProductCatalog.Validation.Configuration.ValidationConfiguration;
 using System.Reflection;
  using QA.Core.ProductCatalog.ActionsRunner;
+ using Quantumart.QP8.Configuration;
+ using Quantumart.QP8.Constants;
 
  namespace QA.ProductCatalog.Admin.WebApp
 {
@@ -88,7 +90,13 @@ using System.Reflection;
                 // AppDataProductControlProvider does not cache reads from disk
                 .RegisterType<IProductControlProvider, ContentBasedProductControlProvider>();
 
-            container.RegisterFactory<CustomActionService>(c => new CustomActionService(c.Resolve<IConnectionProvider>().GetConnection(), 1));
+            container.RegisterFactory<CustomActionService>(c =>
+            {
+                var customer = c.Resolve<IConnectionProvider>().GetCustomer();
+                return new CustomActionService(
+                    new QpConnectionInfo(customer.ConnectionString, (DatabaseType)customer.DatabaseType),
+                    1);
+            });
 
             container.RegisterType<IRegionTagReplaceService, RegionTagService>();
             container.RegisterType<IRegionService, RegionService>();

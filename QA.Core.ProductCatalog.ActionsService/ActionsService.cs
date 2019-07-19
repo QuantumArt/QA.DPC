@@ -107,8 +107,7 @@ namespace QA.Core.ProductCatalog.ActionsService
         private ITasksRunner StartRunner(string customerCode)
         {
             var runner = ObjectFactoryBase.Resolve<ITasksRunner>();
-            var actionRunnerThread = new Thread(runner.Run);
-            actionRunnerThread.Start(customerCode);
+            ThreadPool.QueueUserWorkItem(runner.Run, customerCode);
             return runner;
         }
 

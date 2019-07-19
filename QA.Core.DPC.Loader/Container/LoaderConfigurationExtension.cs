@@ -17,6 +17,7 @@ using QA.Core.Web;
 #endif
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
+using Quantumart.QP8.Constants;
 using Unity;
 using Unity.Extension;
 using Unity.Injection;
@@ -140,18 +141,18 @@ namespace QA.Core.DPC.Loader.Container
     {
         public static FactoryBuilder RegisterConsolidationCache(this IUnityContainer container, bool autoRegister, string defaultCode = null)
         {
-            return container.RegisterCustomFactory(autoRegister, (context, code, connectionString) =>
+            return container.RegisterCustomFactory(autoRegister, (context, customer) =>
             {
-                var currentCode = defaultCode ?? code;
+                var currentCode = defaultCode ?? customer.CustomerCode;
 
                 var logger = container.Resolve<ILogger>();
                 var cacheProvider = new VersionedCustomerCacheProvider(currentCode);
                 var newCacheProvider = new VersionedCacheProviderBase(logger);
                 
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
-                var connectionProvider = new ExplicitConnectionProvider(connectionString);
-                var tracker = new StructureCacheTracker(connectionProvider);
-                var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger);
+                var connectionProvider = new ExplicitConnectionProvider(customer);
+                var tracker = new StructureCacheTracker(customer.ConnectionString, customer.DatabaseType);
+                var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger, databaseType: (DatabaseType)customer.DatabaseType);
 
                 context.Register<ICacheProvider>(currentCode, cacheProvider);
                 context.Register<IVersionedCacheProvider>(currentCode, cacheProvider);

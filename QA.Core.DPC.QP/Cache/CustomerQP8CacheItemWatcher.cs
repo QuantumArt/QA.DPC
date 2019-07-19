@@ -1,39 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
+using Npgsql;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
+using Quantumart.QP8.Constants;
+using Quantumart.QP8.DAL;
 
 
 namespace QA.Core.DPC.QP.Cache
 {
     public class CustomerQP8CacheItemWatcher : CustomerCacheItemWatcher
     {
-        private readonly string _cmdText = @"SELECT [CONTENT_ID], [LIVE_MODIFIED], [STAGE_MODIFIED] FROM [CONTENT_MODIFICATION] WITH (NOLOCK)";
+        private string GetCmdText(DatabaseType dbType){
+            return $@"SELECT CONTENT_ID, LIVE_MODIFIED, STAGE_MODIFIED FROM CONTENT_MODIFICATION {SqlQuerySyntaxHelper.WithNoLock(dbType)}";
+        }
 
-        public CustomerQP8CacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, IConnectionProvider connectionProvider, ILogger logger)
-            : base(mode, invalidator, connectionProvider, logger)
+        public CustomerQP8CacheItemWatcher(InvalidationMode mode, 
+            IContentInvalidator invalidator, 
+            IConnectionProvider connectionProvider, 
+            ILogger logger,
+            DatabaseType databaseType = DatabaseType.SqlServer)
+            : base(mode, invalidator, connectionProvider, logger, databaseType)
         {
         }
 
-        public CustomerQP8CacheItemWatcher(InvalidationMode mode, IContentInvalidator invalidator, IConnectionProvider connectionProvider, ILogger logger, TimeSpan pollPeriod, int dueTime)
-            : base(mode, pollPeriod, invalidator, connectionProvider, logger, dueTime, true)
+        public CustomerQP8CacheItemWatcher(InvalidationMode mode, 
+            IContentInvalidator invalidator, 
+            IConnectionProvider connectionProvider, 
+            ILogger logger, 
+            TimeSpan pollPeriod, 
+            int dueTime,
+            DatabaseType databaseType = DatabaseType.SqlServer)
+            : base(mode, pollPeriod, invalidator, connectionProvider, logger, dueTime, true, databaseType: databaseType)
         {
         }
 
         protected override void GetData(Dictionary<int, ContentModification> newValues)
         {
+            DatabaseType dbType = (DatabaseType)Enum.Parse(typeof(DatabaseType), DbType);
+            DbConnection connection = dbType == DatabaseType.SqlServer
+                ? (DbConnection)new SqlConnection(ConnectionString)
+                : new NpgsqlConnection(ConnectionString);
 
-            using (var conn = new SqlConnection(ConnectionString))
+            using (connection)
             {
-                using (SqlCommand cmd = new SqlCommand(_cmdText, conn))
+                string query = GetCmdText(dbType);
+                
+                DbCommand cmd = dbType == DatabaseType.SqlServer
+                    ? (DbCommand)new SqlCommand(query)
+                    : new NpgsqlCommand(query);
+                cmd.Connection = connection;
+                using (cmd)
                 {
                     cmd.CommandType = CommandType.Text;
-                    if (conn.State != ConnectionState.Open)
+                    if (connection.State != ConnectionState.Open)
                     {
-                        conn.Open();
+                        connection.Open();
                     }
                     // производим запрос - без этого не будет работать dependency
                     using (var reader = cmd.ExecuteReader())

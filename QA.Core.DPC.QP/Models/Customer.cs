@@ -1,4 +1,7 @@
-﻿using QP.ConfigurationService.Models;
+﻿using System.Data.Common;
+using System.Data.SqlClient;
+using Npgsql;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.QP.Models
 {
@@ -7,5 +10,6 @@ namespace QA.Core.DPC.QP.Models
         public string CustomerCode { get; set;}
         public DatabaseType DatabaseType { get; set;}
         public string ConnectionString { get; set; }
+        
     }
 }

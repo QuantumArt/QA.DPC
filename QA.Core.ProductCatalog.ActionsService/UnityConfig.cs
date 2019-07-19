@@ -92,7 +92,7 @@ namespace QA.Core.ProductCatalog.ActionsService
                     container.RegisterType<ISettingsService, SettingsFromContentService>();
                     break;
                 case SettingsSource.AppSettings:
-                    container.RegisterType<ISettingsService, SettingsFromQpService>();
+                    container.RegisterType<ISettingsService, SettingsFromQpCoreService>();
                     break;
             }
             

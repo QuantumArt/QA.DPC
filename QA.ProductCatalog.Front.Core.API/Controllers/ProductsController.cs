@@ -187,8 +187,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             string format = "json", string instanceId = null            
         )
         {
-            var locator = new ProductLocator(){QueryFormat = format, InstanceId = instanceId };         
-            ApplyOptions(locator); 
+            var locator = new ProductLocator {QueryFormat = format, InstanceId = instanceId };         
             
             if (!ValidateInstanceInternal(locator.InstanceId, Options.InstanceId))
             {
@@ -295,8 +294,10 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             
             var language = ControllerContext.RouteData.Values["language"];
             var state = ControllerContext.RouteData.Values["state"];
-            var customerCode = ControllerContext.RouteData.Values["customerCode"];
-            
+            string customerCode = ControllerContext.RouteData.Values.ContainsKey("customerCode") 
+                ? ControllerContext.RouteData.Values["customerCode"].ToString() 
+                : HttpContext.Request.Query["customerCode"].FirstOrDefault();
+
             locator.HeaderFormat = GetHeaderFormat(HttpContext.Request.ContentType);
             
             if (state != null)
@@ -311,7 +312,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             
             if (customerCode != null)
             {
-                locator.FixedConnectionString = DBConnector.GetConnectionString(customerCode.ToString());
+                locator.FixedConnectionString = DBConnector.GetConnectionString(customerCode);
             }
             
             if (!String.IsNullOrEmpty(Options.FixedConnectionString))

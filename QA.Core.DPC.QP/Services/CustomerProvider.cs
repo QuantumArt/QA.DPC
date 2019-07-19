@@ -2,6 +2,7 @@
 using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.Caching;
 using Microsoft.Extensions.Options;
 using Npgsql;
 using QA.Core.DPC.QP.Models;
@@ -16,6 +17,7 @@ namespace QA.Core.DPC.QP.Services
         private const int Timeout = 2;
         private readonly ILogger _logger;
         private readonly IntegrationProperties _integrationProps;
+        private MemoryCache _cache;
 
         public CustomerProvider(ILogger logger, IOptions<IntegrationProperties> integrationProps)
         {
@@ -38,7 +40,7 @@ namespace QA.Core.DPC.QP.Services
             var customerConfiguration = configuration.Customers.FirstOrDefault(c => c.Name == customerCode);
             if (customerConfiguration == null)
             {
-                throw new Exception($"Customer code {customerCode} not found");
+                throw new Exception($"Customer code '{customerCode}' not found");
             }
             return new Customer
             {

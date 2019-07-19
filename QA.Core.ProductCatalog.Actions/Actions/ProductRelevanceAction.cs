@@ -40,7 +40,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 if (context.ContentId == marketingProductContentId)
                     throw new Exception("Нельзя обрабатывать все маркетинговые продукты сразу, виберите конкретные продукты");
 
-				productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetConnection());
+				productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetCustomer());
             }
 
             object percentLocker = new object();

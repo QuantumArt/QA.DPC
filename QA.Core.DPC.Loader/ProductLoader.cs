@@ -289,13 +289,18 @@ namespace QA.Core.DPC.Loader
         
         public virtual Article[] GetProductsByIds(int[] ids, bool isLive = false)
         {
-            var dbConnector = new DBConnector(_customer.ConnectionString, (ConfigurationService.Models.DatabaseType)_customer.DatabaseType);
+            var dbConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+            var idList = SqlQuerySyntaxHelper.IdList(_customer.DatabaseType, "@ids", "ids");
 
-            var sqlCommand = new SqlCommand(@"SELECT CONTENT_ID, CONTENT_ITEM_ID FROM CONTENT_ITEM WITH(NOLOCK) WHERE CONTENT_ITEM_ID IN (SELECT ID FROM @Ids)");
+            var dbCommand = dbConnector.CreateDbCommand(
+                $@"SELECT CONTENT_ID, CONTENT_ITEM_ID 
+                    FROM CONTENT_ITEM {SqlQuerySyntaxHelper.WithNoLock(_customer.DatabaseType)} 
+                    WHERE CONTENT_ITEM_ID IN (SELECT ID FROM {idList})");
 
-            sqlCommand.Parameters.Add(Common.GetIdsTvp(ids, "@Ids"));
-
-            var dt = dbConnector.GetRealData(sqlCommand);
+            dbCommand.CommandType = CommandType.Text;
+            dbCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", ids, _customer.DatabaseType));
+            
+            var dt = dbConnector.GetRealData(dbCommand);
 
             return dt
                 .AsEnumerable()
@@ -498,28 +503,33 @@ namespace QA.Core.DPC.Loader
         #region Закрытые методы
 
         #region Queries
-        private const string GetProductTypesQuery = @"SELECT
-	ids.Id AS ProductId,
-	c.CONTENT_ID AS ContentId,
-	c.NET_CONTENT_NAME AS ContentName,
-	c.CONTENT_NAME AS ContentDisplayName,
-	itm.VISIBLE AS Visible,
-	itm.ARCHIVE AS Archive,
-	cl.ATTRIBUTE_NAME AS ExtensionAttributeName,
-	ec.CONTENT_ID AS ExtensionContentId,
-	ec.NET_CONTENT_NAME AS ExtensionName,
-	ec.CONTENT_NAME AS ExtensionDisplayName,
-	ta.ATTRIBUTE_NAME AS TypeAttributeName,
-	tv.DATA AS TypeAttributeValue
-FROM
-	@ids ids
-	LEFT JOIN CONTENT_ITEM itm ON ids.Id = itm.CONTENT_ITEM_ID
-	LEFT JOIN Content c ON itm.CONTENT_ID = c.CONTENT_ID
-	LEFT JOIN (select content_id, attribute_id, attribute_name from CONTENT_ATTRIBUTE where is_classifier = 1) cl on c.CONTENT_ID = cl.CONTENT_ID
-	LEFT JOIN CONTENT_DATA cd on cd.CONTENT_ITEM_ID = itm.CONTENT_ITEM_ID and cd.ATTRIBUTE_ID = cl.ATTRIBUTE_ID
-	LEFT JOIN content ec on cd.DATA = ec.CONTENT_ID
-	LEFT JOIN CONTENT_ATTRIBUTE ta ON itm.CONTENT_ID = ta.CONTENT_ID AND ta.ATTRIBUTE_NAME = @typeField
-	LEFT JOIN CONTENT_DATA tv ON ta.ATTRIBUTE_ID = tv.ATTRIBUTE_ID AND itm.CONTENT_ITEM_ID = tv.CONTENT_ITEM_ID";
+
+        private string GetProductTypesQuery(string idsExpression)
+        { 
+                return $@"SELECT
+            ids.Id AS ProductId,
+                c.CONTENT_ID AS ContentId,
+                c.NET_CONTENT_NAME AS ContentName,
+                c.CONTENT_NAME AS ContentDisplayName,
+                itm.VISIBLE AS Visible,
+                itm.ARCHIVE AS Archive,
+                cl.ATTRIBUTE_NAME AS ExtensionAttributeName,
+                ec.CONTENT_ID AS ExtensionContentId,
+                ec.NET_CONTENT_NAME AS ExtensionName,
+                ec.CONTENT_NAME AS ExtensionDisplayName,
+                ta.ATTRIBUTE_NAME AS TypeAttributeName,
+                tv.DATA AS TypeAttributeValue
+            FROM {idsExpression}
+            LEFT JOIN CONTENT_ITEM itm ON ids.Id = itm.CONTENT_ITEM_ID
+            LEFT JOIN Content c ON itm.CONTENT_ID = c.CONTENT_ID
+            LEFT JOIN(select content_id, attribute_id, attribute_name from
+            CONTENT_ATTRIBUTE where is_classifier = {SqlQuerySyntaxHelper.ToBoolSql(_customer.DatabaseType, true)}) cl on c.CONTENT_ID = cl.CONTENT_ID
+            LEFT JOIN CONTENT_DATA cd on cd.CONTENT_ITEM_ID = itm.CONTENT_ITEM_ID and cd.ATTRIBUTE_ID = cl.ATTRIBUTE_ID
+            LEFT JOIN content ec on cd.DATA = CAST(ec.CONTENT_ID as varchar)
+            LEFT JOIN CONTENT_ATTRIBUTE ta ON itm.CONTENT_ID = ta.CONTENT_ID AND ta.ATTRIBUTE_NAME = @typeField
+            LEFT JOIN CONTENT_DATA
+                tv ON ta.ATTRIBUTE_ID = tv.ATTRIBUTE_ID AND itm.CONTENT_ITEM_ID = tv.CONTENT_ITEM_ID";
+        }
 
         public ProductInfo[] GetProductsInfo(int[] productIds)
         {
@@ -528,7 +538,8 @@ FROM
             using (var cs = new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
                 var cnn = new DBConnector(cs.DbConnection);
-                using (var cmd = cnn.CreateDbCommand(GetProductTypesQuery))
+                var idList = SqlQuerySyntaxHelper.IdList(_customer.DatabaseType, "@ids", "ids");
+                using (var cmd = cnn.CreateDbCommand(GetProductTypesQuery(idList)))
                 {
                     cmd.CommandType = CommandType.Text;
                     cmd.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", productIds, _customer.DatabaseType));

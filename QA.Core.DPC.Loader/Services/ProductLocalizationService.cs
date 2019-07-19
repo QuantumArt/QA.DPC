@@ -45,7 +45,7 @@ namespace QA.Core.DPC.Loader.Services
 
                 foreach (var fields in fieldGroups)
                 {
-                    LocalizedField field = null;
+                    LocalizedField field;
                     var currentCulture = culture;
 
                     do
@@ -55,11 +55,8 @@ namespace QA.Core.DPC.Loader.Services
                         if (currentCulture.Equals(CultureInfo.InvariantCulture))
                         {
                             break;
-                        }
-                        else
-                        {
-                            currentCulture = currentCulture.Parent;
-                        }
+                        } 
+                        currentCulture = currentCulture.Parent;
                     }
                     while (field == null);
 
@@ -68,11 +65,8 @@ namespace QA.Core.DPC.Loader.Services
                     {
                         throw new Exception($"Для языка {culture.DisplayName} не задано поле {fields.Key}");
                     }
-                    else
-                    {
-                        var newField = CloneField(field.Field, field.InvariantFieldName, articleMap);
-                        item.Value.Fields[newField.FieldName] = newField;
-                    }
+                    var newField = CloneField(field.Field, field.InvariantFieldName, articleMap);
+                    item.Value.Fields[newField.FieldName] = newField;
                 }
             }
 
@@ -88,9 +82,9 @@ namespace QA.Core.DPC.Loader.Services
         public Dictionary<CultureInfo, Article> SplitLocalizations(Article product, CultureInfo[] cultures,
             bool localize)
         {
-            return (localize) 
+            return localize
                 ? cultures.ToDictionary(c => c, c => Localize(product, c)) 
-                : new Dictionary<CultureInfo, Article>() {{ cultures[0], product }};  
+                : new Dictionary<CultureInfo, Article> {{ cultures[0], product }};  
 
         }
         public CultureInfo[] GetCultures()

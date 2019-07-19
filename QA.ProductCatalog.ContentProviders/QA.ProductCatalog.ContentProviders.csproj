@@ -26,8 +26,8 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.5.11" />
-    <PackageReference Include="QA.Core.Cache" Version="3.5.2-beta4" />
-    <PackageReference Include="Quantumart.AspNetCore" Version="4.0.0-beta40" />
+    <PackageReference Include="QA.Core.Cache" Version="3.5.2-beta5" />
+    <PackageReference Include="Quantumart.AspNetCore" Version="4.0.0-beta50" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />    
   </ItemGroup>

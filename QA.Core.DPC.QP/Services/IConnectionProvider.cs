@@ -14,7 +14,6 @@ namespace QA.Core.DPC.QP.Services
         
         bool HasConnection(Service service);
         bool QPMode { get; }
-        bool UsePostgres { get; }
         bool UseQPMonitoring { get; }
         TimeSpan TransactionTimeout { get;  }
     }

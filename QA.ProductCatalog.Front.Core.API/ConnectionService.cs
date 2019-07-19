@@ -1,5 +1,9 @@
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.Front.Core.API
@@ -17,10 +21,28 @@ namespace QA.ProductCatalog.Front.Core.API
             _options = options;
         }
 
-        public string GetConnectionString()
+        public async Task<Customer> GetCustomer()
         {
-            var cc = _context.GetRouteData().Values["customerCode"]?.ToString();
-            return cc == null ? (_options.DesignConnectionString ?? _options.FixedConnectionString) : DBConnector.GetConnectionString(cc);
+            string customerCode = _context.GetRouteData().Values.ContainsKey("customerCode") 
+                ? _context.GetRouteData().Values["customerCode"].ToString() 
+                : _context.Request.Query["customerCode"].FirstOrDefault();
+            if (customerCode == null)
+            {
+                return new Customer
+                {
+                    ConnectionString = _options.DesignConnectionString ?? _options.FixedConnectionString,
+                    CustomerCode = customerCode,
+                    DatabaseType = _options.UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
+                };
+            }
+
+            var customer = await DBConnector.GetCustomerConfiguration(customerCode);
+            return new Customer
+            {
+                ConnectionString = customer.ConnectionString,
+                CustomerCode = customer.Name,
+                DatabaseType = customer.DbType
+            };
         }
         
         

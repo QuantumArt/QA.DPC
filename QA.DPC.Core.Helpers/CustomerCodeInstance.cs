@@ -22,11 +22,12 @@ namespace QA.DPC.Core.Helpers
             CacheProvider = new VersionedCacheProviderBase(logger);
             Invalidator = new DpcContentInvalidator(CacheProvider, logger);
 
-            if (!String.IsNullOrEmpty(connectionProvider.GetConnection()))
+            var customer = connectionProvider.GetCustomer();
+            if (customer != null)
             {
                 Watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15),
                     Invalidator, connectionProvider, logger);
-                Tracker = new StructureCacheTracker(connectionProvider);
+                Tracker = new StructureCacheTracker(customer.ConnectionString, customer.DatabaseType);
                 Watcher.AttachTracker(Tracker);
                 ((CustomerCacheItemWatcher)Watcher).Start();
             }

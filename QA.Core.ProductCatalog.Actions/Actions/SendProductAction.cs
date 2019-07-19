@@ -66,7 +66,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             if (context.ContentItemIds == null || context.ContentItemIds.Length == 0)
             {
-                productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetConnection());
+                productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetCustomer());
 
                 articleIdsToCheckRelationsByContentId = new Dictionary<int, int[]>
                 {
@@ -77,7 +77,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             {
                 productIds = Helpers.ExtractRegionalProductIdsFromMarketing(context.ContentItemIds, _articleService, marketingProductContentId, productsFieldName);
 
-                articleIdsToCheckRelationsByContentId = Helpers.GetContentIds(productIds, _provider.GetConnection());
+                articleIdsToCheckRelationsByContentId = Helpers.GetContentIds(productIds, _provider.GetCustomer());
             }
 
             if (productIds.Length == 0)

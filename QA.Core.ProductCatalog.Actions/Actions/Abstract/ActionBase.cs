@@ -138,10 +138,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			{
 				throw new ActionException(ActionErrorMessage, exceptions, context);
 			}
-			else
-			{
-				return null;
-			}
+    		return null;
 		}
 	    #endregion
 

@@ -6,11 +6,13 @@ using Quantumart.QPublishing.Database;
 using System.Data.SqlClient;
 using Quantumart.QP8.Utils;
 using System.Collections.Generic;
+using System.Text;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
-using Quantumart.QP8.Constants;
 using Quantumart.QP8.BLL;
 using QA.Core.DPC.QP.Models;
+using Quantumart.QP8.Constants;
+using DatabaseType = QP.ConfigurationService.Models.DatabaseType;
 
 namespace QA.Core.DPC.Loader.Services
 {
@@ -120,8 +122,9 @@ namespace QA.Core.DPC.Loader.Services
          exec sp_executesql @query, N'@date datetime, @ids Ids readonly', @date, @ids
         end";
 
-        private const string FreezeStateQuery =
-        @"declare @query nvarchar(max) = ''
+        private string GetFreezeStateQuery(DatabaseType dbType)
+        {
+		        return @"declare @query nvarchar(max) = ''
 
         declare @contentds Ids
         declare @contentQuery nvarchar(1000) = 'select distinct Content from content_' + cast(@definitionContentId as nvarchar(100)) + '_united where visible = 1 and archive = 0 and content <> @contentId'
@@ -131,13 +134,13 @@ namespace QA.Core.DPC.Loader.Services
 	        @query = @query +
 	        '
 	        select
-		        FreezeDate
+		        ' + @freezeField + '
 	        from
 		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
 	        where
 				visible = 1 and archive = 0 and		        
 				[' + ex.ATTRIBUTE_NAME + '] = @id and
-		        FreezeDate is not null
+		        ' + @freezeField + ' is not null
 	        union'
         from
 	        content_attribute base
@@ -152,13 +155,13 @@ namespace QA.Core.DPC.Loader.Services
 			@query = @query +
 			'
 			select
-				FreezeDate
+				' + @freezeField + '
 			from
 				content_' + cast(c.ID as nvarchar(100)) +'_united
 			where
 				visible = 1 and archive = 0 and		        
 				CONTENT_ITEM_ID = @id and
-				FreezeDate is not null
+				' + @freezeField + ' is not null
 			union'
 		from
 			@contentds c
@@ -171,6 +174,7 @@ namespace QA.Core.DPC.Loader.Services
          set @query = left(@query, len(@query) - len('union'))
          exec sp_executesql @query, N'@id int', @id
         end";
+        }
 
         private const string ResetFreezingQuery =
         @"declare @query nvarchar(max) = ''
@@ -252,33 +256,60 @@ namespace QA.Core.DPC.Loader.Services
             }
 
             var dbConnector = GetConnector();
-            var sqlCommand = new SqlCommand(FreezeStateQuery);
+            string extensionsQuery = @"
+					select ex.CONTENT_ID, ex.ATTRIBUTE_NAME 
+					from content_attribute base
+						join content_attribute ex on ex.CLASSIFIER_ATTRIBUTE_ID = base.ATTRIBUTE_ID
+						join content_attribute f on ex.CONTENT_ID = f.CONTENT_ID
+					where
+						base.content_id = @contentId and
+						base.ATTRIBUTE_NAME = @typeField and
+						f.ATTRIBUTE_NAME = @freezeField";            
+            
+            var dbCommand = dbConnector.CreateDbCommand(extensionsQuery);
+            dbCommand.Parameters.AddWithValue("@contentId", productContentId);
+            dbCommand.Parameters.AddWithValue("@typeField", typeField);
+            dbCommand.Parameters.AddWithValue("@freezeField", freezeField); 
+            
+            var extensionsData = dbConnector.GetRealData(dbCommand);
 
-            sqlCommand.Parameters.AddWithValue("@contentId", productContentId);
-            sqlCommand.Parameters.AddWithValue("@definitionContentId", definitionContentId);
-            sqlCommand.Parameters.AddWithValue("@typeField", typeField);
-            sqlCommand.Parameters.AddWithValue("@freezeField", freezeField);
-            sqlCommand.Parameters.AddWithValue("@id", productId);            
-
-            var dt = dbConnector.GetRealData(sqlCommand);
-            var dates = dt.AsEnumerable().Select(r => (DateTime)r["FreezeDate"]).ToArray();
-
-            if (dates.Any())
+            List<string> freezeFieldQueries = new List<string>();
+            foreach (DataRow row in extensionsData.Rows)
             {
-                var date = dates.First();
-                if (date > DateTime.Now)
-                {
-                    return FreezeState.Frozen;
-                }
-                else
-                {
-                    return FreezeState.Unfrosen;
-                }
+	            freezeFieldQueries.Add($@"select {freezeField} from content_{row["CONTENT_ID"]}_united
+						where visible = 1 and archive = 0 and {row["ATTRIBUTE_NAME"]} = {productId}
+								and {freezeField} is not null");
             }
-            else
+            
+            var contentQuery = $@"select distinct c.Content from 
+				(select distinct Content 
+					from content_{definitionContentId}_united 
+					where visible = 1 and archive = 0 and content <> {productContentId}) as c
+				join content_attribute f on c.Content = f.CONTENT_ID
+				where f.ATTRIBUTE_NAME = '{freezeField}'";
+            dbCommand = dbConnector.CreateDbCommand(contentQuery);
+            var contentData = dbConnector.GetRealData(dbCommand);
+            
+            foreach (DataRow row in contentData.Rows)
             {
-                return FreezeState.Missing;
-            }            
+	            freezeFieldQueries.Add($@"select {freezeField} 
+						from content_{row["Content"]}'_united
+						where visible = 1 and archive = 0 
+							and CONTENT_ITEM_ID = @id
+							and {freezeField} is not null");
+            }
+            
+            dbCommand.Parameters.AddWithValue("@id", productId);            
+
+            dbCommand = dbConnector.CreateDbCommand(string.Join("\nunion all\n", freezeFieldQueries));
+            
+            
+            var freezeDatesData = dbConnector.GetRealData(dbCommand);
+            var dates = freezeDatesData.AsEnumerable().Select(r => (DateTime)r["FreezeDate"]).ToArray();
+
+            if (!dates.Any()) return FreezeState.Missing;
+            var date = dates.First();
+            return date > DateTime.Now ? FreezeState.Frozen : FreezeState.Unfrosen;
         }
 
         public int[] GetFrosenProductIds(int[] productIds)

@@ -14,7 +14,8 @@ using QA.Core.DPC.Front;
 using QA.Core.DPC.Front.DAL;
 using QA.Core.Logger;
 using QA.DPC.Core.Helpers;
-using ILogger = QA.Core.Logger.ILogger;
+ using QP.ConfigurationService.Models;
+ using ILogger = QA.Core.Logger.ILogger;
 using Swashbuckle.AspNetCore.Swagger;
 
 namespace QA.ProductCatalog.Front.Core.API
@@ -50,9 +51,15 @@ namespace QA.ProductCatalog.Front.Core.API
             services.AddDbContext<SqlServerDpcModelDataContext>(options =>
                 options.UseSqlServer(dataOptions.DesignConnectionString));
 
-            var contexts = new Dictionary<string, DpcModelDataContext>();
             services.AddScoped<DpcModelDataContext>(sp =>
-                GetDataContext(contexts, sp.GetRequiredService<ConnectionService>().GetConnectionString(), dataOptions));
+                {
+                    var customer = sp.GetRequiredService<ConnectionService>().GetCustomer().Result;
+                    if (customer.DatabaseType == DatabaseType.Postgres)
+                    {
+                        return GetNpgSqlDpcModelDataContext(customer.ConnectionString);
+                    }
+                    return GetSqlServerDpcModelDataContext(customer.ConnectionString);
+                });
 
             services.AddScoped<ILogger>(logger => new NLogLogger("NLog.config"));
             services.AddScoped(typeof(IDpcProductService), typeof(DpcProductService));
@@ -70,26 +77,6 @@ namespace QA.ProductCatalog.Front.Core.API
                 });
             });            
             
-        }
-
-        private DpcModelDataContext GetDataContext(Dictionary<string, DpcModelDataContext> contexts, string connectionString, DataOptions dataOptions)
-        {
-            
-            if (!contexts.TryGetValue(connectionString, out var context))
-            {
-                if (dataOptions.UsePostgres)
-                {
-                    context = GetNpgSqlDpcModelDataContext(connectionString);
-                }
-                else
-                {
-                    context =  GetSqlServerDpcModelDataContext(connectionString);
-                }
-
-                contexts[connectionString] = context;
-            }
-            
-            return context;
         }
 
         private static DpcModelDataContext GetNpgSqlDpcModelDataContext(string connectionString)

@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {
     public class TaskService : ITaskService
     {
         private readonly IConnectionProvider _provider;
+        private readonly Customer _customer;
         /// <summary>
         /// конструктор
         /// </summary>
@@ -17,6 +20,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         public TaskService(IConnectionProvider provider)
         {
             _provider = provider;
+            _customer = _provider.GetCustomer();
         }
 
         /// <summary>
@@ -69,21 +73,21 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             return task.ID;
         }
 
-        private string _sqlUpdateHint => _provider.UsePostgres ? "" : "WITH (ROWLOCK, UPDLOCK)";
+        private string _sqlUpdateHint => _customer.DatabaseType == DatabaseType.Postgres ? "" : "WITH (ROWLOCK, UPDLOCK)";
         
-        private string _pgUpdateHint => _provider.UsePostgres ? "FOR UPDATE" : "";
+        private string _pgUpdateHint => _customer.DatabaseType == DatabaseType.Postgres ? "FOR UPDATE" : "";
 
-        private string _sqlNolockHint => _provider.UsePostgres ? "" : "WITH (NOLOCK)";
+        private string _sqlNolockHint => _customer.DatabaseType == DatabaseType.Postgres ? "" : "WITH (NOLOCK)";
         
-        private string _stateId => _provider.UsePostgres ? "state_id" : "StateId";
+        private string _stateId => _customer.DatabaseType == DatabaseType.Postgres ? "state_id" : "StateId";
         
-        private string _exclusiveCategory => _provider.UsePostgres ? "exclusive_category" : "ExclusiveCategory";
+        private string _exclusiveCategory => _customer.DatabaseType == DatabaseType.Postgres ? "exclusive_category" : "ExclusiveCategory";
 
-        private string _isCancellationRequested => _provider.UsePostgres ? "is_cancellation_requested" : "IsCancellationRequested";
+        private string _isCancellationRequested => _customer.DatabaseType == DatabaseType.Postgres ? "is_cancellation_requested" : "IsCancellationRequested";
 
-        private string SqlTop(int n) => _provider.UsePostgres ? "" : "TOP " + n;
+        private string SqlTop(int n) => _customer.DatabaseType == DatabaseType.Postgres ? "" : "TOP " + n;
         
-        private string PgTop(int n) => _provider.UsePostgres ? $"\nFETCH FIRST {n} ROWS ONLY" : "";
+        private string PgTop(int n) => _customer.DatabaseType == DatabaseType.Postgres ? $"\nFETCH FIRST {n} ROWS ONLY" : "";
         
         
         
@@ -137,7 +141,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         
         public Task GetTask(TaskRunnerEntities ctx, int id)
         {
-            return ctx.Tasks.SingleOrDefault(x => x.ID == id);
+            return ctx.Tasks.Include(x => x.TaskState).SingleOrDefault(x => x.ID == id);
         }
         
         public Task GetTaskWithUpdateLock(TaskRunnerEntities ctx, int id)

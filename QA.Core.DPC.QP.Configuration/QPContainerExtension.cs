@@ -30,7 +30,7 @@ namespace QA.Core.DPC.QP.Configuration
             };
         }
         
-        public static FactoryBuilder RegisterCustomFactory(this IUnityContainer container, bool autoRegister, Action<IRegistrationContext, string, string> registration)
+        public static FactoryBuilder RegisterCustomFactory(this IUnityContainer container, bool autoRegister, Action<IRegistrationContext, Customer> registration)
         {
             var factoryName = $"{nameof(CustomFactory)}_{Guid.NewGuid()}";
             container.RegisterType<IFactory, CustomFactory>(factoryName, new ContainerControlledLifetimeManager(), new InjectionConstructor(registration, typeof(ICustomerProvider), typeof(ILogger), autoRegister));
@@ -44,7 +44,7 @@ namespace QA.Core.DPC.QP.Configuration
 
         public static FactoryBuilder RegisterNullFactory(this IUnityContainer container)
         {
-            return container.RegisterCustomFactory(false, (context, code, connectionString) => { });
+            return container.RegisterCustomFactory(false, (context, customer) => { });
         }
 
         public static FactoryBuilder For<T>(this FactoryBuilder builder, string code = null)

@@ -17,7 +17,7 @@ namespace QA.Core.DPC.Loader.Services
     {
         private const string QueryTemplate = @"
             SELECT
-                l.Code Language,
+                l.Code AS Language,
                 c.Suffix
             FROM
                 CONTENT_{0}_UNITED c
@@ -63,17 +63,14 @@ namespace QA.Core.DPC.Loader.Services
             {
                 return new SettingItem[0];
             }
-            else
-            {
-                var query = string.Format(QueryTemplate, localizationContentId, languagesContentId, localizationMapContentId);
-                var cmd = new SqlCommand(query);
-                cmd.Parameters.AddWithValue("@contentId", contentId);
+            var query = string.Format(QueryTemplate, localizationContentId, languagesContentId, localizationMapContentId);
+            var cmd = cnn.CreateDbCommand(query);
+            cmd.Parameters.AddWithValue("@contentId", contentId);
 
-                return cnn.GetRealData(cmd)
-                    .AsEnumerable()
-                    .Select(row => Converter.ToModelFromDataRow<SettingItem>(row))
-                    .ToArray();
-            }
+            return cnn.GetRealData(cmd)
+                .AsEnumerable()
+                .Select(row => Converter.ToModelFromDataRow<SettingItem>(row))
+                .ToArray();
         }
     }
 

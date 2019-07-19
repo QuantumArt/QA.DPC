@@ -5,30 +5,36 @@ using QP.ConfigurationService.Models;
 namespace QA.Core.DPC.QP.Services
 {
     public class ExplicitConnectionProvider : IConnectionProvider
-    {     
-        private readonly string _connection;
+    {
+        private readonly Customer _customer;
      
-        public ExplicitConnectionProvider(string connection)
+        public ExplicitConnectionProvider(string connection, DatabaseType dbType = DatabaseType.SqlServer)
         {
-            _connection = connection;
+            _customer = new Customer
+            {
+                ConnectionString = connection,
+                DatabaseType = dbType
+            };
         }
+        
+        public ExplicitConnectionProvider(Customer customer)
+        {
+            _customer = customer;
+        }
+        
 
         public string GetConnection()
         {
-            return _connection;
+            return _customer.ConnectionString;
         }
         public string GetConnection(Service service)
         {
-            return _connection;
+            return _customer.ConnectionString;
         }
 
         public Customer GetCustomer(Service service)
         {
-            return new Customer
-            {
-                ConnectionString = _connection,
-                DatabaseType = UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
-            };
+            return _customer;
         }
 
         public bool HasConnection(Service service)
@@ -48,16 +54,10 @@ namespace QA.Core.DPC.QP.Services
 
         public Customer GetCustomer()
         {
-            return new Customer
-            {
-                ConnectionString = _connection,
-                DatabaseType = UsePostgres ? DatabaseType.Postgres : DatabaseType.SqlServer
-            };
+            return _customer;
         }
 
         public bool QPMode => throw new NotImplementedException();
-        public bool UsePostgres { get; }
-
         public bool UseQPMonitoring => throw new NotImplementedException();
         public TimeSpan TransactionTimeout => throw new NotImplementedException();
     }

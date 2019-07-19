@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.5.11" />
-    <PackageReference Include="QA.Core" Version="3.5.2-beta4" />
+    <PackageReference Include="QA.Core" Version="3.5.2-beta5" />
   </ItemGroup>
 </Project>
 
