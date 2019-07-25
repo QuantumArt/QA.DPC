@@ -81,17 +81,17 @@ namespace QA.Core.DPC.Loader
 
         public virtual Dictionary<string, object>[] GetProductsList(ServiceDefinition definition, long startRow, long pageSize, bool isLive)
         {
-            var fields = _fieldService.List(definition.Content.ContentId).ToArray();
-
-            var fieldNames = definition.Content.Fields
-                .Where(x => x is PlainField field && field.ShowInList)
-                .Select(x => fields.Single(y => y.Id == x.FieldId).Name)
-                .ToList();
-
-            fieldNames.Add("CONTENT_ITEM_ID");
-
             using (new Qp8Bll.QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
             {
+                var fields = _fieldService.List(definition.Content.ContentId).ToArray();
+
+                var fieldNames = definition.Content.Fields
+                    .Where(x => x is PlainField field && field.ShowInList)
+                    .Select(x => fields.Single(y => y.Id == x.FieldId).Name)
+                    .ToList();
+
+                fieldNames.Add("CONTENT_ITEM_ID");
+
                 var dbConnector = new DBConnector(_customer.ConnectionString, (ConfigurationService.Models.DatabaseType)_customer.DatabaseType);
 
                 var dtdefinitionArticles =

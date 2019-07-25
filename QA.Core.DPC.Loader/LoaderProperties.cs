@@ -17,7 +17,7 @@ namespace QA.Core.DPC.Loader
         public int LoaderWarmUpProductId { get; set; }
         
         public int LoaderWarmUpRepeatInMinutes { get; set; }
-        
+        public int SettingsContentId { get; set; }
     }
     
     

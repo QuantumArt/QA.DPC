@@ -103,10 +103,10 @@ namespace QA.ProductCatalog.Integration.DAL
 			    ? GetNpgSqlDpcModelDataContext(_customer.ConnectionString)
 			    : GetSqlServerDpcModelDataContext(_customer.ConnectionString))
 		    {
-			    var product = context.Products.FirstOrDefault(p => p.DpcId == id /*&& p.IsLive == _state
+			    var product = context.Products.FirstOrDefault(p => p.DpcId == id && p.IsLive == _state
 			                                              && p.Language == _language &&
 			                                              p.Format == (_isJson ? "json" : "xml")
-			                                              && p.Version == 1 && !string.IsNullOrEmpty(p.Slug)*/);
+			                                              && p.Version == 1 && !string.IsNullOrEmpty(p.Slug));
 			    return product?.Data;
 		    }
 	    }

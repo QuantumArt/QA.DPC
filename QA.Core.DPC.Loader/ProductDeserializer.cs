@@ -13,8 +13,8 @@ using Article = QA.Core.Models.Entities.Article;
 using Field = QA.Core.Models.Configuration.Field;
 using Quantumart.QPublishing.Database;
 using System.Data.SqlClient;
-using Quantumart.QP8.Constants;
 using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.Loader
 {
@@ -31,12 +31,12 @@ namespace QA.Core.DPC.Loader
         private readonly IContextStorage _contextStorage;
         private readonly Customer _customer;
 
-        private const string GetExstensionIdQuery = @"
+        private string GetExstensionIdQuery(DatabaseType dbType) => $@"
             select ATTRIBUTE_NAME from CONTENT_ATTRIBUTE
             where
 	            CLASSIFIER_ATTRIBUTE_ID = @attributeId and
 	            CONTENT_ID = @contentId and
-	            AGGREGATED = 1";
+	            AGGREGATED = {SqlQuerySyntaxHelper.ToBoolSql(dbType, true)}";
 
         public ProductDeserializer(IFieldService fieldService, IServiceFactory serviceFactory, ICacheItemWatcher cacheItemWatcher, IContextStorage contextStorage, IConnectionProvider connectionProvider)
         {
@@ -54,7 +54,7 @@ namespace QA.Core.DPC.Loader
 
         public Article Deserialize(IProductDataSource productDataSource, Models.Configuration.Content definition)
         {
-            using (var cs = new QPConnectionScope(_customer.ConnectionString, (DatabaseType)_customer.DatabaseType))
+            using (var cs = new QPConnectionScope(_customer.ConnectionString, (Quantumart.QP8.Constants.DatabaseType)_customer.DatabaseType))
             {
                 _cacheItemWatcher.TrackChanges();
 
@@ -323,18 +323,19 @@ namespace QA.Core.DPC.Loader
 
         private int? GetExtensionId(DBConnector connector, int contentId, int attributeId, int articleId)
         {
-            var dbCommand = connector.CreateDbCommand(GetExstensionIdQuery);
+            var dbCommand = connector.CreateDbCommand(GetExstensionIdQuery(connector.DatabaseType));
 
             dbCommand.Parameters.AddWithValue("@contentId", contentId);
             dbCommand.Parameters.AddWithValue("@attributeId", attributeId);
             var dt = connector.GetRealData(dbCommand);
 
             var attributes =  dt.AsEnumerable().Select(x => x["ATTRIBUTE_NAME"]).ToArray();
+            var queries = attributes
+                .Select(a =>
+                    $"select CONTENT_ITEM_ID id from content_{contentId}_united where {a} = @articleId");
             
-            dbCommand = connector.CreateDbCommand(string.Join(" ", attributes
-                .Select(a => "select CONTENT_ITEM_ID id from content_{contentId}_united where a = @articleId")));
+            dbCommand = connector.CreateDbCommand(string.Join(" ", queries));
             dbCommand.Parameters.AddWithValue("@articleId", articleId);
-            dbCommand.Parameters.AddWithValue("@contentId", contentId);
             
             var value = connector.GetRealScalarData(dbCommand);
 

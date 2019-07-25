@@ -42,8 +42,8 @@ namespace QA.ProductCatalog.ContentProviders
             var keycolumn = FIELD_NAME_TITLE;
             var valuecolumn = FIELD_NAME_VALUE;
             var keyvalue = title.Replace("'", "''");
-            var query = $"select [{valuecolumn}] from content_{_settingsContentId}_united" +
-                        $" where archive = 0 and visible = 1 and [{keycolumn}] = '{keyvalue}'";
+            var query = $"select {valuecolumn} from content_{_settingsContentId}_united" +
+                        $" where archive = 0 and visible = 1 and {keycolumn} = '{keyvalue}'";
             var data = cnn.GetData(query);
             return data.Rows.Count > 0 ? data.Rows[0][valuecolumn].ToString() : null;
 

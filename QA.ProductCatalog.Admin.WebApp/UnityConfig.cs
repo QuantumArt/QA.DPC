@@ -36,6 +36,7 @@ using Unity.Injection;
 using Unity.Lifetime;
 using ValidationConfiguration = QA.ProductCatalog.Validation.Configuration.ValidationConfiguration;
 using System.Reflection;
+ using QA.Core.Cache;
  using QA.Core.ProductCatalog.ActionsRunner;
  using Quantumart.QP8.Configuration;
  using Quantumart.QP8.Constants;
@@ -146,7 +147,7 @@ using System.Reflection;
             switch (loaderProperties.SettingsSource)
             {
                 case SettingsSource.Content:
-                    container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
+                    container.RegisterType<ISettingsService, SettingsFromContentCoreService>(new InjectionConstructor(typeof(IVersionedCacheProvider2), typeof(IConnectionProvider), loaderProperties.SettingsContentId));
                     break;
                 case SettingsSource.AppSettings:
                     container.RegisterType<ISettingsService, SettingsFromQpCoreService>();

@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
 using System.Linq;
+using Microsoft.Extensions.Options;
+using QA.Core.DPC.QP.Models;
 using Unity;
 using Unity.Injection;
 
@@ -51,14 +53,16 @@ namespace QA.ProductCatalog.Integration.Configuration
 
         public static void RegisterNonQpMonitoring(this IUnityContainer container)
         {
-            var monitoringConnections = ConfigurationManager.ConnectionStrings
-                .OfType<ConnectionStringSettings>()
-                .Where(c => c.Name.StartsWith("consumer_monitoring"))
-                .ToArray();
-
-            foreach (ConnectionStringSettings cnn in monitoringConnections)
+            IOptions<ConnectionProperties> cnnProps = container.Resolve<IOptions<ConnectionProperties>>();
+            if (!string.IsNullOrEmpty(cnnProps.Value.LiveMonitoringConnectionString))
             {
-                container.RegisterInstance<IConnectionProvider>(cnn.Name, new ExplicitConnectionProvider(cnn.ConnectionString));
+                container.RegisterInstance<IConnectionProvider>("consumer_monitoring",
+                    new ExplicitConnectionProvider(cnnProps.Value.LiveMonitoringConnectionString));
+            }
+            if (!string.IsNullOrEmpty(cnnProps.Value.StageMonitoringConnectionString))
+            {
+                container.RegisterInstance<IConnectionProvider>("consumer_monitoringStage",
+                    new ExplicitConnectionProvider(cnnProps.Value.StageMonitoringConnectionString));
             }
 
             container.RegisterFactory<Func<bool, IConsumerMonitoringService>>(
@@ -73,11 +77,13 @@ namespace QA.ProductCatalog.Integration.Configuration
                     )
             );
 
-            container.RegisterFactory<IList<IConsumerMonitoringService>>(x =>
-                monitoringConnections
-                .Select(cnn => new ConsumerMonitoringService(new MonitoringRepository(x.Resolve<IConnectionProvider>(cnn.Name))) as IConsumerMonitoringService)
-                .ToList()
-            );
+            container.RegisterFactory<IList<IConsumerMonitoringService>>(x => new List<IConsumerMonitoringService>
+            {
+                new ConsumerMonitoringService(new MonitoringRepository(
+                    x.Resolve<IConnectionProvider>("consumer_monitoring"))),
+                new ConsumerMonitoringService(new MonitoringRepository(
+                    x.Resolve<IConnectionProvider>("consumer_monitoringStage")))
+            });
 
             container.RegisterFactory<Func<bool, CultureInfo, IConsumerMonitoringService>>(
                 c => new Func<bool, CultureInfo, IConsumerMonitoringService>(
