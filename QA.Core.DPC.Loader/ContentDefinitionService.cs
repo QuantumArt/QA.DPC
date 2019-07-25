@@ -118,12 +118,9 @@ namespace QA.Core.DPC.Loader
 				{
 					var dbConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
 
-					string wherePart = string.Format(
-                        "([{0}]='{1}' AND [{2}]='{3}')",
-                        FIELD_NAME_SLUG,
-                        slug.Replace("'", ""),
-                        FIELD_NAME_VERSION,
-                        version.Replace("'", ""));
+					string wherePart =
+						$@"({FIELD_NAME_SLUG}='{slug.Replace("'", "")}'
+						AND {FIELD_NAME_VERSION}='{version.Replace("'", "")}')";
 
 					var dtdefinitionArticles = dbConnector.GetContentData(new ContentDataQueryObject(
                         dbConnector,
@@ -133,7 +130,7 @@ namespace QA.Core.DPC.Loader
 
 					if (dtdefinitionArticles.Rows.Count == 0)
                     {
-                        throw new Exception(string.Format("Slug '{0}' с версией '{1}' не найден", slug, version));
+                        throw new Exception($"Slug '{slug}' с версией '{version}' не найден");
                     }
 
 					int definitionArticleId = (int)(decimal)dtdefinitionArticles.Rows[0][FIELD_NAME_DEFINITION];

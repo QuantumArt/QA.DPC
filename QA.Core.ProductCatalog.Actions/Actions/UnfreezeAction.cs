@@ -27,7 +27,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
         }
         public override string Process(ActionContext context)
         {
-            var productIds = _freezeService.GetUnfrosenProductIds();
+            var productIds = _freezeService.GetUnfrozenProductIds();
 
             if (productIds.Any())
             {

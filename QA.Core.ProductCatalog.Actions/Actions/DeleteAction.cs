@@ -5,6 +5,7 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using System.Transactions;

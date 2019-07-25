@@ -2,410 +2,308 @@
 using System.Data;
 using System.Linq;
 using QA.ProductCatalog.Infrastructure;
-using Quantumart.QPublishing.Database;
-using System.Data.SqlClient;
 using Quantumart.QP8.Utils;
 using System.Collections.Generic;
-using System.Text;
+using System.Runtime.Caching;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using QA.Core.DPC.QP.Models;
+using QA.Core.Logger;
 using Quantumart.QP8.Constants;
-using DatabaseType = QP.ConfigurationService.Models.DatabaseType;
+using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.Loader.Services
 {
     public class FreezeService : IFreezeService
     {
-        #region queries
-        private const string UnfrosenProductsQuery =
-        @"declare @query nvarchar(max) = ''
-
-        declare @contentds Ids
-        declare @contentQuery nvarchar(1000) = 'select distinct Content from content_' + cast(@definitionContentId as nvarchar(100)) + '_united where visible = 1 and archive = 0 and content <> @contentId'
-        insert into @contentds exec sp_executesql @contentQuery, N'@contentId int', @contentId
-
-        select
-            @query = @query +
-	        '
-	        select
-                [' + ex.ATTRIBUTE_NAME + '] Id
-            from
-                content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
-            where
-				visible = 1 and archive = 0 and	
-                FreezeDate < @date  and
-               [' + ex.ATTRIBUTE_NAME + '] is not null
-            union'
-        from
-            content_attribute base
-            join content_attribute ex on ex.CLASSIFIER_ATTRIBUTE_ID = base.ATTRIBUTE_ID
-            join content_attribute f on ex.CONTENT_ID = f.CONTENT_ID
-        where
-	        base.content_id = @contentId and
-	        base.ATTRIBUTE_NAME = @typeField and
-            f.ATTRIBUTE_NAME = @freezeField
-
-	    select
-			@query = @query +
-			'
-			select
-				CONTENT_ITEM_ID Id
-			from
-				content_' + cast(c.ID as nvarchar(100)) +'_united
-			where
-				visible = 1 and archive = 0 and
-				FreezeDate < @date
-			union'
-		from
-			@contentds c
-			join content_attribute f on c.ID = f.CONTENT_ID
-		where
-			f.ATTRIBUTE_NAME = @freezeField
+	    
+	    private readonly ISettingsService _settingsService;
+	    private readonly IUserProvider _userProvider;
+	    private readonly Customer _customer;
+	    private readonly string _freezeFieldName;
+	    private readonly string _typeFieldName;
+	    private readonly int _productContentId;
+	    private readonly int _definitionContentId;
+	    private readonly MemoryCache _cache = MemoryCache.Default;
+	    private readonly ILogger _logger;
+	    private const string ExtentionFreezeMetaCacheKey = "extension_freeze_meta";
+	    private const string ProductFreezeMetaCacheKey = "product_freeze_meta";
+	    private const int FreezeMetaCacheDuration = 5;
         
-        if @query<> ''
-        begin
-         set @query = left(@query, len(@query) - len('union'))
-         exec sp_executesql @query, N'@date datetime', @date
-        end";
-
-        private const string FrosenProductsQuery =
-        @"declare @query nvarchar(max) = ''
-
-        declare @contentds Ids
-        declare @contentQuery nvarchar(1000) = 'select distinct Content from content_' + cast(@definitionContentId as nvarchar(100)) + '_united where visible = 1 and archive = 0 and content <> @contentId'
-        insert into @contentds exec sp_executesql @contentQuery, N'@contentId int', @contentId
-
-        select
-	        @query = @query +
-	        '
-	        select
-		        [' + ex.ATTRIBUTE_NAME + '] Id
-	        from
-		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
-	        where
-				visible = 1 and archive = 0 and
-		        FreezeDate >= @date and
-		        [' + ex.ATTRIBUTE_NAME + '] in (select Id from @ids)
-	        union'
-        from
-	        content_attribute base
-	        join content_attribute ex on ex.CLASSIFIER_ATTRIBUTE_ID = base.ATTRIBUTE_ID
-	        join content_attribute f on ex.CONTENT_ID = f.CONTENT_ID
-        where
-	        base.content_id = @contentId and
-	        base.ATTRIBUTE_NAME = @typeField and
-	        f.ATTRIBUTE_NAME = @freezeField
-
-        select
-			@query = @query +
-			'
-			select
-				CONTENT_ITEM_ID Id
-			from
-				content_' + cast(c.ID as nvarchar(100)) +'_united
-			where
-				visible = 1 and archive = 0 and	
-				FreezeDate >= @date and
-		        CONTENT_ITEM_ID in (select Id from @ids)
-			union'
-		from
-			@contentds c
-			join content_attribute f on c.ID = f.CONTENT_ID
-		where
-			f.ATTRIBUTE_NAME = @freezeField
-
-        if @query <> ''
-        begin
-         set @query = left(@query, len(@query) - len('union'))
-         exec sp_executesql @query, N'@date datetime, @ids Ids readonly', @date, @ids
-        end";
-
-        private string GetFreezeStateQuery(DatabaseType dbType)
-        {
-		        return @"declare @query nvarchar(max) = ''
-
-        declare @contentds Ids
-        declare @contentQuery nvarchar(1000) = 'select distinct Content from content_' + cast(@definitionContentId as nvarchar(100)) + '_united where visible = 1 and archive = 0 and content <> @contentId'
-        insert into @contentds exec sp_executesql @contentQuery, N'@contentId int', @contentId
-
-        select
-	        @query = @query +
-	        '
-	        select
-		        ' + @freezeField + '
-	        from
-		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
-	        where
-				visible = 1 and archive = 0 and		        
-				[' + ex.ATTRIBUTE_NAME + '] = @id and
-		        ' + @freezeField + ' is not null
-	        union'
-        from
-	        content_attribute base
-	        join content_attribute ex on ex.CLASSIFIER_ATTRIBUTE_ID = base.ATTRIBUTE_ID
-	        join content_attribute f on ex.CONTENT_ID = f.CONTENT_ID
-        where
-	        base.content_id = @contentId and
-	        base.ATTRIBUTE_NAME = @typeField and
-	        f.ATTRIBUTE_NAME = @freezeField
-
-        select
-			@query = @query +
-			'
-			select
-				' + @freezeField + '
-			from
-				content_' + cast(c.ID as nvarchar(100)) +'_united
-			where
-				visible = 1 and archive = 0 and		        
-				CONTENT_ITEM_ID = @id and
-				' + @freezeField + ' is not null
-			union'
-		from
-			@contentds c
-			join content_attribute f on c.ID = f.CONTENT_ID
-		where
-			f.ATTRIBUTE_NAME = @freezeField
-
-        if @query <> ''
-        begin
-         set @query = left(@query, len(@query) - len('union'))
-         exec sp_executesql @query, N'@id int', @id
-        end";
-        }
-
-        private const string ResetFreezingQuery =
-        @"declare @query nvarchar(max) = ''
-
-        declare @contentds Ids
-        declare @contentQuery nvarchar(1000) = 'select distinct Content from content_' + cast(@definitionContentId as nvarchar(100)) + '_united where visible = 1 and archive = 0 and content <> @contentId'
-        insert into @contentds exec sp_executesql @contentQuery, N'@contentId int', @contentId
-
-        select
-	        @query = @query +
-	        '	
-	        select
-		        ' + cast(ex.CONTENT_ID as nvarchar(100)) + ' ContentId,
-		        CONTENT_ITEM_ID Id,
-		        ' + cast(f.ATTRIBUTE_ID as nvarchar(100)) + ' FieldId
-	        from
-		        content_' + cast(ex.CONTENT_ID as nvarchar(100)) +'_united
-	        where
-				visible = 1 and archive = 0 and		        
-				[' + ex.ATTRIBUTE_NAME + '] in (select Id from @ids)
-	        union'
-        from
-	        content_attribute base
-	        join content_attribute ex on ex.CLASSIFIER_ATTRIBUTE_ID = base.ATTRIBUTE_ID
-	        join content_attribute f on ex.CONTENT_ID = f.CONTENT_ID
-        where
-	        base.content_id = @contentId and
-	        base.ATTRIBUTE_NAME = @typeField and
-	        f.ATTRIBUTE_NAME = @freezeField
-
-        select
-	        @query = @query +
-	        '
-	        select
-		        ' + cast(c.ID as nvarchar(100)) + ' ContentId,
-		        CONTENT_ITEM_ID Id,
-		        ' + cast(f.ATTRIBUTE_ID as nvarchar(100)) + ' FieldId
-	        from
-		        content_' + cast(c.ID as nvarchar(100)) +'_united
-	        where
-				visible = 1 and archive = 0 and		        
-		        CONTENT_ITEM_ID in (select Id from @ids)
-	        union'
-        from
-	        @contentds c
-	        join content_attribute f on c.ID = f.CONTENT_ID
-        where
-	        f.ATTRIBUTE_NAME = @freezeField
-
-        if @query <> ''
-        begin
-         set @query = left(@query, len(@query) - len('union'))
-         exec sp_executesql @query, N'@ids Ids readonly', @ids
-        end";
-        #endregion
-
-        private readonly ISettingsService _settingsService;
-        private IUserProvider _userProvider;
-        private Customer _customer;
-
-        public FreezeService(ISettingsService settingsService, IUserProvider userProvider, IConnectionProvider connectionProvider)
+        public FreezeService(ISettingsService settingsService, IUserProvider userProvider, IConnectionProvider connectionProvider, ILogger logger)
         {
             _settingsService = settingsService;
             _userProvider = userProvider;
             _customer = connectionProvider.GetCustomer();
+            _freezeFieldName = _settingsService.GetSetting(SettingsTitles.PRODUCT_FREEZE_FIELD_NAME);
+            _typeFieldName = _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
+            _productContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCTS_CONTENT_ID));
+            _definitionContentId =
+	            int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
+            _logger = logger;
+        }
+        
+        private class ExtentionFreezeMetaRow
+        {
+	        public int ContentId { get; set; }
+	        public int AttributeId { get; set; }
+	        public string AttributeName { get; set; }
+        }
+
+        private class ProductFreezeMetaRow
+        {
+	        public int ContentId { get; set; }
+	        public int AttributeId { get; set; }
         }
 
         #region ISettingsService implementation
-        public FreezeState GetFreezeState(int productId)
+
+        private IEnumerable<ExtentionFreezeMetaRow> GetExtensionsFreezeMeta()
         {
-            int productContentId = GetProductContentId();
-            int definitionContentId = GetDefinitionContentId();
-            string typeField = GetTypeFieldName();
-            string freezeField = GetFreezeFieldName();
+	        if (_cache.Get(ExtentionFreezeMetaCacheKey) is ExtentionFreezeMetaRow[] meta)
+	        {
+		        return meta;
+	        }
+	        _logger.Debug($"'{ExtentionFreezeMetaCacheKey}' cache miss");
 
-            if (string.IsNullOrEmpty(freezeField))
-            {
-                return FreezeState.Missing;
-            }
-
-            var dbConnector = GetConnector();
-            string extensionsQuery = @"
-					select ex.CONTENT_ID, ex.ATTRIBUTE_NAME 
+	        var query = @"
+					select ex.CONTENT_ID, f.ATTRIBUTE_ID, ex.ATTRIBUTE_NAME 
 					from content_attribute base
 						join content_attribute ex on ex.CLASSIFIER_ATTRIBUTE_ID = base.ATTRIBUTE_ID
 						join content_attribute f on ex.CONTENT_ID = f.CONTENT_ID
 					where
 						base.content_id = @contentId and
 						base.ATTRIBUTE_NAME = @typeField and
-						f.ATTRIBUTE_NAME = @freezeField";            
-            
-            var dbCommand = dbConnector.CreateDbCommand(extensionsQuery);
-            dbCommand.Parameters.AddWithValue("@contentId", productContentId);
-            dbCommand.Parameters.AddWithValue("@typeField", typeField);
-            dbCommand.Parameters.AddWithValue("@freezeField", freezeField); 
-            
-            var extensionsData = dbConnector.GetRealData(dbCommand);
+						f.ATTRIBUTE_NAME = @freezeField";
+	        
+	        var dbConnector = GetConnector();
+	        var dbCommand = dbConnector.CreateDbCommand(query);
+	        dbCommand.Parameters.AddWithValue("@contentId", _productContentId);
+	        dbCommand.Parameters.AddWithValue("@typeField", _typeFieldName);
+	        dbCommand.Parameters.AddWithValue("@freezeField", _freezeFieldName);
+	        var metaData = dbConnector.GetRealData(dbCommand);
+	        List<ExtentionFreezeMetaRow> metaRows = new List<ExtentionFreezeMetaRow>(metaData.Rows.Count);
+	        foreach (DataRow row in metaData.Rows)
+	        {
+		        metaRows.Add(new ExtentionFreezeMetaRow
+		        {
+			        ContentId = int.Parse(row["CONTENT_ID"].ToString()),
+			        AttributeId = int.Parse(row["ATTRIBUTE_ID"].ToString()),
+			        AttributeName = row["ATTRIBUTE_NAME"].ToString()
+		        });
+	        }
+	        _cache.Add(ExtentionFreezeMetaCacheKey, metaRows, DateTimeOffset.UtcNow.AddMinutes(FreezeMetaCacheDuration));
+	        return metaRows;
+        }
+
+        private IEnumerable<ProductFreezeMetaRow> GetProductFreezeMeta()
+        {
+	        
+	        if (_cache.Get(ProductFreezeMetaCacheKey) is ProductFreezeMetaRow[] meta)
+	        {
+		        return meta;
+	        }
+	        _logger.Debug($"'{ProductFreezeMetaCacheKey}' cache miss");
+	        
+	        var query = $@"SELECT c.CONTENT_ID, f.ATTRIBUTE_ID FROM 
+				(SELECT DISTINCT Content AS CONTENT_ID FROM content_{_definitionContentId}_united 
+					WHERE visible = 1 AND archive = 0 AND content <> @contentId) AS c
+				JOIN CONTENT_ATTRIBUTE f ON c.CONTENT_ID = f.CONTENT_ID
+				WHERE f.ATTRIBUTE_NAME = @freezeField";
+	        var dbConnector = GetConnector();
+	        var dbCommand = dbConnector.CreateDbCommand(query);
+	        dbCommand.Parameters.AddWithValue("@contentId", _productContentId);
+	        dbCommand.Parameters.AddWithValue("@freezeField", _freezeFieldName);
+	        var metaData = dbConnector.GetRealData(dbCommand);
+	        List<ProductFreezeMetaRow> metaRows = new List<ProductFreezeMetaRow>(metaData.Rows.Count);
+	        foreach (DataRow row in metaData.Rows)
+	        {
+		        metaRows.Add(new ProductFreezeMetaRow
+		        {
+			        ContentId = int.Parse(row["CONTENT_ID"].ToString()),
+			        AttributeId = int.Parse(row["ATTRIBUTE_ID"].ToString())
+		        });
+	        }
+	        _cache.Add(ProductFreezeMetaCacheKey, metaRows, DateTimeOffset.UtcNow.AddMinutes(FreezeMetaCacheDuration));
+	        return metaRows;
+        }
+        
+        public FreezeState GetFreezeState(int productId)
+        {
+	        if (string.IsNullOrEmpty(_freezeFieldName))
+	        {
+		        return FreezeState.Missing;
+	        }
 
             List<string> freezeFieldQueries = new List<string>();
-            foreach (DataRow row in extensionsData.Rows)
+            var extensionFreezeMeta = GetExtensionsFreezeMeta();
+            foreach (ExtentionFreezeMetaRow row in extensionFreezeMeta)
             {
-	            freezeFieldQueries.Add($@"select {freezeField} from content_{row["CONTENT_ID"]}_united
-						where visible = 1 and archive = 0 and {row["ATTRIBUTE_NAME"]} = {productId}
-								and {freezeField} is not null");
+	            freezeFieldQueries.Add($@"select {_freezeFieldName} from content_{row.ContentId}_united
+						where visible = 1 and archive = 0 and {row.AttributeName} = @id
+								and {_freezeFieldName} is not null");
             }
             
-            var contentQuery = $@"select distinct c.Content from 
-				(select distinct Content 
-					from content_{definitionContentId}_united 
-					where visible = 1 and archive = 0 and content <> {productContentId}) as c
-				join content_attribute f on c.Content = f.CONTENT_ID
-				where f.ATTRIBUTE_NAME = '{freezeField}'";
-            dbCommand = dbConnector.CreateDbCommand(contentQuery);
-            var contentData = dbConnector.GetRealData(dbCommand);
+
+            var productFreezeMeta = GetProductFreezeMeta();
             
-            foreach (DataRow row in contentData.Rows)
+            foreach (ProductFreezeMetaRow row in productFreezeMeta)
             {
-	            freezeFieldQueries.Add($@"select {freezeField} 
-						from content_{row["Content"]}'_united
+	            freezeFieldQueries.Add($@"select {_freezeFieldName} 
+						from content_{row.ContentId}'_united
 						where visible = 1 and archive = 0 
 							and CONTENT_ITEM_ID = @id
-							and {freezeField} is not null");
+							and {_freezeFieldName} is not null");
             }
             
+            var dbConnector = GetConnector();
+            var dbCommand = dbConnector.CreateDbCommand(string.Join("\nunion all\n", freezeFieldQueries));
             dbCommand.Parameters.AddWithValue("@id", productId);            
-
-            dbCommand = dbConnector.CreateDbCommand(string.Join("\nunion all\n", freezeFieldQueries));
-            
             
             var freezeDatesData = dbConnector.GetRealData(dbCommand);
-            var dates = freezeDatesData.AsEnumerable().Select(r => (DateTime)r["FreezeDate"]).ToArray();
+            var dates = freezeDatesData.AsEnumerable().Select(r => (DateTime)r[_freezeFieldName]).ToArray();
 
             if (!dates.Any()) return FreezeState.Missing;
-            var date = dates.First();
-            return date > DateTime.Now ? FreezeState.Frozen : FreezeState.Unfrosen;
+            return dates.First() > DateTime.Now ? FreezeState.Frozen : FreezeState.Unfrosen;
         }
 
-        public int[] GetFrosenProductIds(int[] productIds)
+        public int[] GetFrozenProductIds(int[] productIds)
         {
-            int productContentId = GetProductContentId();
-            int definitionContentId = GetDefinitionContentId();
-            string typeField = GetTypeFieldName();
-            string freezeField = GetFreezeFieldName();
-
-            if (string.IsNullOrEmpty(freezeField))
+            if (string.IsNullOrEmpty(_freezeFieldName))
             {
                 return new int[0];
             }
 
+            List<string> freezeFieldQueries = new List<string>();
+            var extensionFreezeMeta = GetExtensionsFreezeMeta();
             var dbConnector = GetConnector();
-            var sqlCommand = new SqlCommand(FrosenProductsQuery);
 
-            sqlCommand.Parameters.AddWithValue("@contentId", productContentId);
-            sqlCommand.Parameters.AddWithValue("@definitionContentId", definitionContentId);
-            sqlCommand.Parameters.AddWithValue("@typeField", typeField);
-            sqlCommand.Parameters.AddWithValue("@freezeField", freezeField);            
-            sqlCommand.Parameters.AddWithValue("@date", DateTime.Now);
-            sqlCommand.Parameters.Add(Common.GetIdsTvp(productIds, "@Ids"));
-
-            var dt = dbConnector.GetRealData(sqlCommand);
-            var ids = GetIds(dt);
-            return ids;
-        }
-
-        public int[] GetUnfrosenProductIds()
-        {
-            int productContentId = GetProductContentId();
-            int definitionContentId = GetDefinitionContentId();
-            string typeField = GetTypeFieldName();
-            string freezeField = GetFreezeFieldName();
-
-            if (string.IsNullOrEmpty(freezeField))
+            string idsQueryPart = SqlQuerySyntaxHelper.IdList(dbConnector.DatabaseType, "@Ids", "Ids");
+            
+            foreach (ExtentionFreezeMetaRow row in extensionFreezeMeta)
             {
-                return new int[0];
+	            freezeFieldQueries.Add($@"SELECT {row.AttributeName} Id FROM content_{row.ContentId}_united
+						WHERE visible = 1 AND archive = 0
+								AND {_freezeFieldName} >= @date 
+								AND {row.AttributeName} in (
+									SELECT Id 
+									FROM {idsQueryPart})");
             }
+            
+            var productFreezeMeta = GetProductFreezeMeta();
+            
+            foreach (ProductFreezeMetaRow row in productFreezeMeta)
+            {
+	            freezeFieldQueries.Add($@"SELECT CONTENT_ITEM_ID Id FROM content_{row.ContentId}'_united
+						WHERE visible = 1 AND archive = 0 
+								AND {_freezeFieldName} >= @date 
+								AND CONTENT_ITEM_ID in (
+									SELECT Id 
+									FROM {idsQueryPart})");
+            }
+            
+            var dbCommand = dbConnector.CreateDbCommand(string.Join("\nunion all\n", freezeFieldQueries));
+            dbCommand.Parameters.AddWithValue("@date", DateTime.Now);
+            dbCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@Ids", productIds, dbConnector.DatabaseType));
 
-            var dbConnector = GetConnector();
-
-            var sqlCommand = new SqlCommand(UnfrosenProductsQuery);
-
-            sqlCommand.Parameters.AddWithValue("@contentId", productContentId);
-            sqlCommand.Parameters.AddWithValue("@definitionContentId", definitionContentId);
-            sqlCommand.Parameters.AddWithValue("@typeField", typeField);
-            sqlCommand.Parameters.AddWithValue("@freezeField", freezeField);
-            sqlCommand.Parameters.AddWithValue("@date", DateTime.Now);
-
-            var dt = dbConnector.GetRealData(sqlCommand);
-            var ids = GetIds(dt);
+            var freezeDatesData = dbConnector.GetRealData(dbCommand);
+            var ids = GetIds(freezeDatesData);
             return ids;
         }
 
-        public void ResetFreezing(params int[] productIds)
+        public int[] GetUnfrozenProductIds()
         {
-            int userId = _userProvider.GetUserId();
-            int productContentId = GetProductContentId();
-            int definitionContentId = GetDefinitionContentId();
-            string typeField = GetTypeFieldName();
-            string freezeField = GetFreezeFieldName();
+	        if (string.IsNullOrEmpty(_freezeFieldName))
+	        {
+		        return new int[0];
+	        }
 
-            if (string.IsNullOrEmpty(freezeField))
+	        List<string> freezeFieldQueries = new List<string>();
+	        var extensionFreezeMeta = GetExtensionsFreezeMeta();
+	        var dbConnector = GetConnector();
+
+	        foreach (ExtentionFreezeMetaRow row in extensionFreezeMeta)
+	        {
+		        freezeFieldQueries.Add($@"SELECT {row.AttributeName} Id FROM content_{row.ContentId}_united
+						WHERE visible = 1 AND archive = 0
+								AND {_freezeFieldName} < @date 
+								AND {row.AttributeName} IS NOT NULL");
+	        }
+            
+	        var productFreezeMeta = GetProductFreezeMeta();
+            
+	        foreach (ProductFreezeMetaRow row in productFreezeMeta)
+	        {
+		        freezeFieldQueries.Add($@"SELECT CONTENT_ITEM_ID Id FROM content_{row.ContentId}'_united
+						WHERE visible = 1 AND archive = 0 
+								AND {_freezeFieldName} < @date");
+	        }
+            
+	        var dbCommand = dbConnector.CreateDbCommand(string.Join("\nunion all\n", freezeFieldQueries));
+	        dbCommand.Parameters.AddWithValue("@date", DateTime.Now);
+
+	        var freezeDatesData = dbConnector.GetRealData(dbCommand);
+	        var ids = GetIds(freezeDatesData);
+	        return ids;
+        }
+
+        public void ResetFreezing(int[] productIds)
+        {
+            if (string.IsNullOrEmpty(_freezeFieldName))
             {
                 return;
             }
+            int userId = _userProvider.GetUserId();
 
+            List<string> freezeFieldQueries = new List<string>();
+            var extensionFreezeMeta = GetExtensionsFreezeMeta();
             var dbConnector = GetConnector();
-            var sqlCommand = new SqlCommand(ResetFreezingQuery);
 
-            sqlCommand.Parameters.AddWithValue("@contentId", productContentId);
-            sqlCommand.Parameters.AddWithValue("@definitionContentId", definitionContentId);
-            sqlCommand.Parameters.AddWithValue("@typeField", typeField);
-            sqlCommand.Parameters.AddWithValue("@freezeField", freezeField);
-            sqlCommand.Parameters.Add(Common.GetIdsTvp(productIds, "@Ids"));
 
-            var dt = dbConnector.GetRealData(sqlCommand);
+            string idsQueryPart = SqlQuerySyntaxHelper.IdList(dbConnector.DatabaseType, "@Ids", "Ids");
+            
+            foreach (ExtentionFreezeMetaRow row in extensionFreezeMeta)
+            {
+	            freezeFieldQueries.Add($@"SELECT {row.ContentId} AS ContentId, CONTENT_ITEM_ID AS Id, {row.AttributeId} AS FieldId  
+						FROM content_{row.ContentId}_united
+						WHERE visible = 1 AND archive = 0
+								AND {row.AttributeName} in (
+									SELECT Id 
+									FROM {idsQueryPart})");
+            }
 
-            var products = dt.AsEnumerable()
-                .Select(r => Converter.ToModelFromDataRow<ProductDescriptor>(r))
+            var productFreezeMeta = GetProductFreezeMeta();
+            
+            foreach (ProductFreezeMetaRow row in productFreezeMeta)
+            {
+	            freezeFieldQueries.Add($@"SELECT {row.ContentId} AS ContentId, CONTENT_ITEM_ID AS Id, {row.AttributeId} AS FieldId 
+						FROM content_{row.ContentId}'_united
+						WHERE visible = 1 AND archive = 0 
+								AND CONTENT_ITEM_ID in (
+									SELECT Id 
+									FROM {idsQueryPart})");
+            }
+            var dbCommand = dbConnector.CreateDbCommand(string.Join("\nunion all\n", freezeFieldQueries));
+            dbCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@Ids", productIds, dbConnector.DatabaseType));
+
+            var freezeDatesData = dbConnector.GetRealData(dbCommand);
+            var products = freezeDatesData.AsEnumerable()
+                .Select(Converter.ToModelFromDataRow<ProductDescriptor>)
                 .ToArray();
 
             foreach(var g in products.GroupBy(p => new { p.ContentId, p.FieldId }))
             {
-                var exstensionContentId = g.Key.ContentId;
+                var extentionContentId = g.Key.ContentId;
                 var fieldIds = new[] { g.Key.FieldId };
 
                 var values = g.Select(p => new Dictionary<string, string>
                 {
                     { FieldName.ContentItemId, p.Id.ToString() },
-                    { freezeField, string.Empty }
+                    { _freezeFieldName, string.Empty }
                 } ).ToArray();
-
-                dbConnector.ImportToContent(exstensionContentId, values, userId, fieldIds);
+				
+	            dbConnector.ImportToContent(extentionContentId, values, userId, fieldIds);
             }
         }
         #endregion
@@ -415,34 +313,14 @@ namespace QA.Core.DPC.Loader.Services
         {
             var scope = QPConnectionScope.Current;
 
-            if (scope != null && scope.DbConnection != null)
+            if (scope?.DbConnection != null)
             {
-                return new DBConnector(scope.DbConnection);
+                return new DBConnector(scope.DbConnection){WithTransaction = false};
             }
-            else
-            {
-                return new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
-            }
-        }
-        private string GetFreezeFieldName()
-        {
-            return _settingsService.GetSetting(SettingsTitles.PRODUCT_FREEZE_FIELD_NAME);
+            
+            return new DBConnector(_customer.ConnectionString, _customer.DatabaseType){WithTransaction = false};
         }
 
-        private string GetTypeFieldName()
-        {
-            return _settingsService.GetSetting(SettingsTitles.PRODUCT_TYPES_FIELD_NAME);
-        }
-
-        private int GetProductContentId()
-        {
-            return int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCTS_CONTENT_ID));
-        }
-
-        private int GetDefinitionContentId()
-        {
-            return int.Parse(_settingsService.GetSetting(SettingsTitles.PRODUCT_DEFINITIONS_CONTENT_ID));
-        }
 
         private int[] GetIds(DataTable dt)
         {

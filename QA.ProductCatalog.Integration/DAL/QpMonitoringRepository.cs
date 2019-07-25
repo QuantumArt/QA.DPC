@@ -99,30 +99,15 @@ namespace QA.ProductCatalog.Integration.DAL
 
 	    public string GetProductXml(int id)
 	    {
-		    DbConnection connection = _customer.DatabaseType == DatabaseType.SqlServer
-			    ? (DbConnection)new SqlConnection(_customer.ConnectionString)
-			    : new NpgsqlConnection(_customer.ConnectionString);
-		    using (connection)
+		    using(DpcModelDataContext context = _customer.DatabaseType == DatabaseType.Postgres
+			    ? GetNpgSqlDpcModelDataContext(_customer.ConnectionString)
+			    : GetSqlServerDpcModelDataContext(_customer.ConnectionString))
 		    {
-			    var query = @"SELECT Data FROM Products p 
-					WHERE p.DpcId = @id 
-						AND p.IsLive = @isLive AND p.Language = @language 
-				    	AND p.Format = @format AND p.Version = 1 and p.Slug is null";
-			    DbCommand cmd = _customer.DatabaseType == DatabaseType.SqlServer
-				    ? (DbCommand) new SqlCommand(query)
-				    : new NpgsqlCommand(query);
-			    cmd.Connection = connection;
-			    using (cmd)
-			    {
-				    cmd.Parameters.AddWithValue("@id", id);
-			        cmd.Parameters.AddWithValue("@isLive", _state ? 1 : 0);
-			        cmd.Parameters.AddWithValue("@language", _language);
-			        cmd.Parameters.AddWithValue("@format", _isJson ? "json" : "xml");
-
-                    connection.Open();
-
-				    return (string) cmd.ExecuteScalar();
-			    }
+			    var product = context.Products.FirstOrDefault(p => p.DpcId == id /*&& p.IsLive == _state
+			                                              && p.Language == _language &&
+			                                              p.Format == (_isJson ? "json" : "xml")
+			                                              && p.Version == 1 && !string.IsNullOrEmpty(p.Slug)*/);
+			    return product?.Data;
 		    }
 	    }
 

@@ -5,6 +5,7 @@ using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;

@@ -357,43 +357,39 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.AspNetCore.4.0.0-beta50\lib\net471\Quantumart.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Quantumart.QP8.Assembling, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.QP8.Assembling.1.0.0-beta2\lib\net471\Quantumart.QP8.Assembling.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.AspNetCore.4.0.0-beta68\lib\net471\Quantumart.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.BLL, Version=3.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.3\lib\net471\Quantumart.QP8.BLL.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.6\lib\net471\Quantumart.QP8.BLL.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Configuration, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.3\lib\net471\Quantumart.QP8.Configuration.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.6\lib\net471\Quantumart.QP8.Configuration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Constants, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.3\lib\net471\Quantumart.QP8.Constants.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.6\lib\net471\Quantumart.QP8.Constants.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.DAL, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.3\lib\net471\Quantumart.QP8.DAL.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.6\lib\net471\Quantumart.QP8.DAL.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Merger, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.3\lib\net471\Quantumart.QP8.Merger.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.6\lib\net471\Quantumart.QP8.Merger.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Security, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.3\lib\net471\Quantumart.QP8.Security.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.6\lib\net471\Quantumart.QP8.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Utils, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.3\lib\net471\Quantumart.QP8.Utils.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.6\lib\net471\Quantumart.QP8.Utils.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Quantumart.QP8.Validators, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.3\lib\net471\Quantumart.QP8.Validators.dll</HintPath>
+      <HintPath>..\..\packages\Quantumart.QP8.BLL.3.0.0-beta9.6\lib\net471\Quantumart.QP8.Validators.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Refit, Version=4.6.0.0, Culture=neutral, PublicKeyToken=null">

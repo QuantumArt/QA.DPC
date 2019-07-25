@@ -5,9 +5,11 @@ using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
+using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.WebApi.Filters
@@ -23,37 +25,30 @@ namespace QA.ProductCatalog.WebApi.Filters
             private const int DefaultUserId = 1;
 
             private const string CommonQueryTemplate = @"
-            select
-	            [authorization].[QP User] [UserId]
+            select auth.""qp user"" AS UserId
             from
-	            content_{0}_united [authorization]
-	            join content_{1}_united [tokens] on [authorization].[Token User] = [tokens].[CONTENT_ITEM_ID]
+	            content_{0}_united AS auth
+	            join content_{1}_united tokens on auth.""token user"" = tokens.CONTENT_ITEM_ID
             where
-	            (@token is null and [tokens].[Name] = 'Default' or [tokens].[AccessToken] = @token) and
-	            [authorization].[{2}] = 1 and
-                [authorization].Visible = 1 and
-	            [authorization].Archive = 0 and
-	            [tokens].Visible = 1 and
-	            [tokens].Archive = 0";
+	            (@token is null and tokens.Name = 'Default' or tokens.AccessToken = @token) and
+	            auth.{2} = 1 and
+                auth.Visible = 1 and
+	            auth.Archive = 0 and
+	            tokens.Visible = 1 and
+	            tokens.Archive = 0";
 
-            private const string ServiceQueryTemplate = @"
-            select
-	            [authorization].[QP User] [UserId]
-            from
-	            content_{0}_united [authorization]
-	            join content_{1}_united [tokens] on [authorization].[Token User] = [tokens].[CONTENT_ITEM_ID]
-	            join item_to_item [link] on [authorization].[CONTENT_ITEM_ID] = [link].[l_item_id] and [authorization].[{3}] = [link].[link_id]
-	            join content_{2}_united [services] on link.[r_item_id] = [services].[CONTENT_ITEM_ID]
+            private const string ServiceQueryTemplate = @"select
+	            auth.""qp user"" AS UserId
+            from content_{0}_united AS auth
+            join content_{1}_united AS tokens on auth.""token user"" = tokens.CONTENT_ITEM_ID
+            join item_to_item AS link on auth.CONTENT_ITEM_ID = link.l_item_id and auth.""{3}"" = link.link_id
+            join content_{2}_united services on link.r_item_id = services.CONTENT_ITEM_ID
             where
-	            (@token is null and [tokens].[Name] = 'Default' or [tokens].[AccessToken] = @token) and
-	            [services].[Slug] = @slug and
-	            [services].[Version] = @version and
-	            [authorization].Visible = 1 and
-	            [authorization].Archive = 0 and
-	            [tokens].Visible = 1 and
-	            [tokens].Archive = 0 and
-	            [services].Visible = 1 and
-	            [services].Archive = 0";
+            (@token is null and tokens.Name = 'Default' or tokens.AccessToken = @token) 
+            and services.Slug = @slug and services.Version = @version 
+            and auth.Visible = 1 and auth.Archive = 0 
+            and tokens.Visible = 1 and tokens.Archive = 0 
+            and services.Visible = 1 and services.Archive = 0";
 
 
             private readonly IIdentityProvider _identityProvider;
@@ -110,13 +105,13 @@ namespace QA.ProductCatalog.WebApi.Filters
 
             private string GetServiceQuery(string method)
             {
-                int authorizationCoontentId = GetContentId(SettingsTitles.API_AUTHORIZATION_CONTENT_ID);
-                int tokensCoontentId = GetContentId(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID);
-                int servicesCoontentId = GetContentId(SettingsTitles.PRODUCT_SERVICES_CONTENT_ID);
-                string field = method == "GET" ? "Read Service" : "Write Service";
+                int authorizationContentId = GetContentId(SettingsTitles.API_AUTHORIZATION_CONTENT_ID);
+                int tokensContentId = GetContentId(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID);
+                int servicesContentId = GetContentId(SettingsTitles.PRODUCT_SERVICES_CONTENT_ID);
+                string field = method == "GET" ? "read service" : "write service";
 
-                return string.Format(ServiceQueryTemplate, authorizationCoontentId, tokensCoontentId,
-                    servicesCoontentId, field);
+                return string.Format(ServiceQueryTemplate, authorizationContentId, tokensContentId,
+                    servicesContentId, field);
             }
 
             private string GetCommonQuery(string method)
@@ -150,25 +145,26 @@ namespace QA.ProductCatalog.WebApi.Filters
 
             private int? GetUserId(string slug, string version, string token, string method)
             {
-                var connection = _connectionProvider.GetConnection();
-                var dbConnector = new DBConnector(connection);
+                var customer = _connectionProvider.GetCustomer();
+                var dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
 
-                var sqlCommand = new SqlCommand();
+                var dbCommand = dbConnector.CreateDbCommand();
 
                 if (slug == null || version == null)
                 {
-                    sqlCommand.CommandText = GetCommonQuery(method);
+                    dbCommand.CommandText = GetCommonQuery(method);
                 }
                 else
                 {
-                    sqlCommand.CommandText = GetServiceQuery(method);
-                    sqlCommand.Parameters.AddWithValue("@slug", slug);
-                    sqlCommand.Parameters.AddWithValue("@version", version);
+                    dbCommand.CommandText = GetServiceQuery(method);
+                    dbCommand.Parameters.AddWithValue("@slug", slug);
+                    dbCommand.Parameters.AddWithValue("@version", version);
                 }
 
-                sqlCommand.Parameters.AddWithValue("@token", (object) token ?? DBNull.Value);
+                var tokenParameter = dbCommand.Parameters.AddWithValue("@token", (object) token ?? DBNull.Value);
+                tokenParameter.DbType = DbType.String;
 
-                var dt = dbConnector.GetRealData(sqlCommand);
+                var dt = dbConnector.GetRealData(dbCommand);
                 var userIds = dt.AsEnumerable()
                     .Select(row => row["UserId"] == DBNull.Value ? null : (int?) (decimal?) row["UserId"]).ToArray();
 
@@ -176,10 +172,7 @@ namespace QA.ProductCatalog.WebApi.Filters
                 {
                     return userIds.First() ?? GetDefaultUserId();
                 }
-                else
-                {
-                    return null;
-                }
+                return null;
             }
 
             public void OnActionExecuted(ActionExecutedContext context)
@@ -188,16 +181,16 @@ namespace QA.ProductCatalog.WebApi.Filters
 
             private string GetUserName(int userId)
             {
-                var connection = _connectionProvider.GetConnection();
-                var dbConnector = new DBConnector(connection);
+                var customer = _connectionProvider.GetCustomer();
+                var dbConnector = new DBConnector(customer.ConnectionString, customer.DatabaseType);
 
-                var sqlCommand = new SqlCommand();
+                var dbCommand = dbConnector.CreateDbCommand();
 
-                sqlCommand.CommandText =
-                    $" select first_name + ' ' + last_name as name from users where [user_id] = @id";
-                sqlCommand.Parameters.AddWithValue("@id", userId);
+                dbCommand.CommandText = $@"select first_name {(customer.DatabaseType == DatabaseType.Postgres ? "|| ' ' ||" : "+ ' ' +")} last_name as name 
+                    from users where user_id = @id";
+                dbCommand.Parameters.AddWithValue("@id", userId);
 
-                var dt = dbConnector.GetRealData(sqlCommand);
+                var dt = dbConnector.GetRealData(dbCommand);
                 return dt.Rows.Count > 0 ? (string) dt.Rows[0]["name"] : String.Empty;
             }
 

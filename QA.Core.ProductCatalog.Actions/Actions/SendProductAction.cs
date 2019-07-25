@@ -164,7 +164,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                         var frozenIds = skipLive
                             ? new int[0]
-                            : _freezeService.GetFrosenProductIds(prodsStage.Select(p => p.Id).ToArray());
+                            : _freezeService.GetFrozenProductIds(prodsStage.Select(p => p.Id).ToArray());
 
                         prodsStage = prodsStage.Where(p => !frozenIds.Contains(p.Id)).ToArray();
 

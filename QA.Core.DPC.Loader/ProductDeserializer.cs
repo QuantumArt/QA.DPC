@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
@@ -31,19 +32,11 @@ namespace QA.Core.DPC.Loader
         private readonly Customer _customer;
 
         private const string GetExstensionIdQuery = @"
-            declare @query nvarchar(max) = ''
-            select
-	            @query = @query +
-	            'select CONTENT_ITEM_ID id from content_'+ ltrim(str(@contentId)) +'_united where [' + ATTRIBUTE_NAME + '] = @articleId'
-            from
-	            CONTENT_ATTRIBUTE
+            select ATTRIBUTE_NAME from CONTENT_ATTRIBUTE
             where
 	            CLASSIFIER_ATTRIBUTE_ID = @attributeId and
 	            CONTENT_ID = @contentId and
-	            AGGREGATED = 1
-
-            if @query<> ''
-	            exec sp_executesql @query, N'@articleId int', @articleId";
+	            AGGREGATED = 1";
 
         public ProductDeserializer(IFieldService fieldService, IServiceFactory serviceFactory, ICacheItemWatcher cacheItemWatcher, IContextStorage contextStorage, IConnectionProvider connectionProvider)
         {
@@ -260,7 +253,7 @@ namespace QA.Core.DPC.Loader
 
                 if (extensionArticleField.Item.Id == productDataSource.GetArticleId())
                 {
-                    var id = GetExstensionId(connector, valueDef.ContentId, fieldInDef.FieldId, extensionArticleField.Item.Id);
+                    var id = GetExtensionId(connector, valueDef.ContentId, fieldInDef.FieldId, extensionArticleField.Item.Id);
 
                     if (id.HasValue)
                     {
@@ -328,15 +321,22 @@ namespace QA.Core.DPC.Loader
             return articleField;
         }
 
-        private int? GetExstensionId(DBConnector connector, int contentId, int attributeId, int articleId)
+        private int? GetExtensionId(DBConnector connector, int contentId, int attributeId, int articleId)
         {
-            var sqlCommand = new SqlCommand(GetExstensionIdQuery);
+            var dbCommand = connector.CreateDbCommand(GetExstensionIdQuery);
 
-            sqlCommand.Parameters.AddWithValue("@contentId", contentId);
-            sqlCommand.Parameters.AddWithValue("@attributeId", attributeId);
-            sqlCommand.Parameters.AddWithValue("@articleId", articleId);
+            dbCommand.Parameters.AddWithValue("@contentId", contentId);
+            dbCommand.Parameters.AddWithValue("@attributeId", attributeId);
+            var dt = connector.GetRealData(dbCommand);
 
-            var value = connector.GetRealScalarData(sqlCommand);
+            var attributes =  dt.AsEnumerable().Select(x => x["ATTRIBUTE_NAME"]).ToArray();
+            
+            dbCommand = connector.CreateDbCommand(string.Join(" ", attributes
+                .Select(a => "select CONTENT_ITEM_ID id from content_{contentId}_united where a = @articleId")));
+            dbCommand.Parameters.AddWithValue("@articleId", articleId);
+            dbCommand.Parameters.AddWithValue("@contentId", contentId);
+            
+            var value = connector.GetRealScalarData(dbCommand);
 
             return (int?)(decimal?)value;
         }
