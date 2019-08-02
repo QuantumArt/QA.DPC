@@ -39,15 +39,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 
             builder.RegisterScoped<SonicErrorDescriber>();
 
-            builder.RegisterSingleton<Func<string, IProductStore>>(c =>
+            builder.RegisterScoped<Func<string, IProductStore>>(c =>
             {
                 var context = c.Resolve<IComponentContext>();
                 return version => context.ResolveNamed<IProductStore>(version);
             });
             builder.RegisterScoped<IProductStoreFactory, ProductStoreFactory>();
             builder.RegisterType<ProductStoreFactory>().Named<IProductStoreFactory>("ForTask").ExternallyOwned();
-            builder.RegisterType<ElasticProductStore>().Named<IProductStore>("5.*");
-            builder.RegisterType<ElasticProductStore_6>().Named<IProductStore>("6.*");
+            builder.RegisterType<ElasticProductStore>().Named<IProductStore>("5.*").ExternallyOwned();
+            builder.RegisterType<ElasticProductStore_6>().Named<IProductStore>("6.*").ExternallyOwned();
 
             builder.RegisterType<ProductImporter>().ExternallyOwned();        
 
