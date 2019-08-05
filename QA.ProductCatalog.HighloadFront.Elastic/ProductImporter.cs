@@ -11,6 +11,7 @@ using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.HighloadFront.Interfaces;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -59,7 +60,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return validation;
         }
 
-        public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state)
+        public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state, Dictionary<string, IProductStore> stores)
         {
             if(executionContext.IsCancellationRequested)
             {
@@ -105,7 +106,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 }
                 _logger.LogInformation($"Products from chunk {index} received. Starting bulk import...");
 
-                var result = await _manager.BulkCreateAsync(data, language, state);
+                var result = await _manager.BulkCreateAsync(data, language, state, stores);
 
                 if (result.Succeeded)
                 {

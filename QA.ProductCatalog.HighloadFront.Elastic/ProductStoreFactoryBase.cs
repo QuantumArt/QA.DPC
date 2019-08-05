@@ -24,6 +24,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
 
         public IProductStore GetProductStore(string language, string state)
         {
+            return _versionFactory(GetProductStoreVersion(language, state));
+        }
+        
+        public string GetProductStoreVersion(string language, string state)
+        {
             var key = GetKey(language, state);
             var serviceVersion = _cacheProvider.GetOrAdd(key, _expiration,  () =>
             {
@@ -33,9 +38,8 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 return version;
             });
 
-            var clientVersion = MapVersion(serviceVersion);
+            return MapVersion(serviceVersion);
 
-            return _versionFactory(clientVersion);
         }
 
         private string GetKey(string language, string state)
@@ -43,6 +47,11 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             return $"VersionNumber_{language}_{state}";
         }
 
-        protected abstract string MapVersion(string serviceVersion);    
+        protected abstract string MapVersion(string serviceVersion);
+
+        public NotImplementedException ElasticVersionNotSupported(string serviceVersion)
+        {
+            return new NotImplementedException($"Elasticsearch version {serviceVersion} is not supported");
+        }
     }
 }

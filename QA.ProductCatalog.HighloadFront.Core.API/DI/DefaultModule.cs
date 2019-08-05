@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autofac;
 using Autofac.Core;
 using Microsoft.AspNetCore.Http;
@@ -48,7 +49,6 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterType<ProductStoreFactory>().Named<IProductStoreFactory>("ForTask").ExternallyOwned();
             builder.RegisterType<ElasticProductStore>().Named<IProductStore>("5.*").ExternallyOwned();
             builder.RegisterType<ElasticProductStore_6>().Named<IProductStore>("6.*").ExternallyOwned();
-
             builder.RegisterType<ProductImporter>().ExternallyOwned();        
 
             builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
@@ -93,7 +93,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                                 new NamedParameter("customerCode", c.Resolve<IIdentityProvider>().Identity.CustomerCode)
                             );
 
-                            return new ReindexAllTask(importer, manager, c.Resolve<ElasticConfiguration>());
+                            return new ReindexAllTask(importer, manager, c.Resolve<ElasticConfiguration>(), new Dictionary<string, IProductStore>() {
+                                    { "5.*", c.ResolveNamed<IProductStore>("5.*")},
+                                    { "6.*", c.ResolveNamed<IProductStore>("6.*") }
+                            });
                         }
                     );
                 }

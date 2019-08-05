@@ -20,8 +20,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 return "5.*";
             if (serviceVersion.StartsWith("6."))
                 return "6.*";
-            else
-                throw new NotImplementedException($"Elasticsearch version {serviceVersion} is not supported");
+            throw ElasticVersionNotSupported(serviceVersion);
         }
     }
 }

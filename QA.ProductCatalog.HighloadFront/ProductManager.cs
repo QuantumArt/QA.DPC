@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -61,7 +62,7 @@ namespace QA.ProductCatalog.HighloadFront
             return await StoreFactory.GetProductStore(language, state).CreateAsync(product, language, state);
         }
 
-        public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state)
+        public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state, Dictionary<string, IProductStore> stores)
         {
 
             if (_productPostProcessor != null)
@@ -74,8 +75,13 @@ namespace QA.ProductCatalog.HighloadFront
 
             var regionTagProducts = data.Select(d => GetRegionTagsProduct(d.Product, d.RegionTags, language, state)).Where(d => d != null);
             var products = data.Select(d => d.Product).Concat(regionTagProducts);
-
-            return await StoreFactory.GetProductStore(language, state).BulkCreateAsync(products, language, state);
+            
+            var version = StoreFactory.GetProductStoreVersion(language, state);
+            if (stores.TryGetValue(version, out var store))
+            {
+                return await store.BulkCreateAsync(products, language, state);              
+            }
+            throw StoreFactory.ElasticVersionNotSupported(version);
         }
 
 
@@ -91,9 +97,14 @@ namespace QA.ProductCatalog.HighloadFront
         }
 
       
-        public Task<SonicResult> DeleteAllASync(string language, string state)
+        public Task<SonicResult> DeleteAllASync(string language, string state, Dictionary<string, IProductStore> stores)
         {
-            return StoreFactory.GetProductStore(language, state).ResetAsync(language, state);
+            var version = StoreFactory.GetProductStoreVersion(language, state);
+            if (stores.TryGetValue(version, out var store))
+            {
+                return store.ResetAsync(language, state);
+            }
+            throw StoreFactory.ElasticVersionNotSupported(version);
         }
 
         public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)
