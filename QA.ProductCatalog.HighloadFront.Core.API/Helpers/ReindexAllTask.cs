@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.HighloadFront.Interfaces;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
 {
@@ -9,14 +11,16 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
         private readonly ProductImporter _importer;
         private readonly ProductManager _manager;
         private readonly ElasticConfiguration _configuration;
-
+        private readonly Dictionary<string, IProductStore> _stores;        
         private const int LockTimeoutInMs = 5000;
 
-        public ReindexAllTask(ProductImporter importer, ProductManager manager, ElasticConfiguration configuration)
+        
+        public ReindexAllTask(ProductImporter importer, ProductManager manager, ElasticConfiguration configuration, Dictionary<string, IProductStore> stores)
         {
             _importer = importer;
             _manager = manager;
             _configuration = configuration;
+            _stores = stores;
         }
 
         public void Run(string data, string config, byte[] binData, ITaskExecutionContext executionContext)
@@ -33,8 +37,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 {
                     if (_importer.ValidateInstance(language, state))
                     {
-                        _manager.DeleteAllASync(language, state).Wait();
-                        _importer.ImportAsync(executionContext, language, state).Wait();
+                        _manager.DeleteAllASync(language, state, _stores).Wait();
+                        _importer.ImportAsync(executionContext, language, state, _stores).Wait();
                     }
                     else
                     {

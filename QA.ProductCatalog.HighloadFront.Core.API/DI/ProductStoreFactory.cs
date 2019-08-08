@@ -3,12 +3,13 @@ using QA.ProductCatalog.HighloadFront.Elastic;
 using QA.ProductCatalog.HighloadFront.Interfaces;
 using QA.ProductCatalog.HighloadFront.Options;
 using System;
+using QA.Core.Cache;
 
 namespace QA.ProductCatalog.HighloadFront.Core.API.DI
 {
     public class ProductStoreFactory : ProductStoreFactoryBase
     {
-        public ProductStoreFactory(Func<string, IProductStore> versionFactory, ElasticConfiguration configuration, IMemoryCache cache, DataOptions options)
+        public ProductStoreFactory(Func<string, IProductStore> versionFactory, ElasticConfiguration configuration, IVersionedCacheProvider2 cache, DataOptions options)
             : base(versionFactory, configuration, cache, options)
         {    
         }
@@ -19,8 +20,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                 return "5.*";
             if (serviceVersion.StartsWith("6."))
                 return "6.*";
-            else
-                throw new NotImplementedException($"Elasticsearch version {serviceVersion} is not supported");
+            throw ElasticVersionNotSupported(serviceVersion);
         }
     }
 }
