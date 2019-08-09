@@ -42,9 +42,13 @@ namespace QA.Core.DPC.QP.Services
             lock (_locker)
             {
                 _logger.LogInfo(() => $"Start register factory for {key}");
-                var customer = _customerProvider.GetCustomer(key);
-                Invalidator[key] = customer.ConnectionString;
-                OnRegister((IRegistrationContext)this , customer);
+
+                if (!string.IsNullOrEmpty(key))
+                {
+                    var customer = _customerProvider.GetCustomer(key);
+                    Invalidator[key] = customer.ConnectionString;
+                    OnRegister((IRegistrationContext)this , customer);
+                }
                 _logger.LogInfo(() => $"End register for {key}");
             }
         }

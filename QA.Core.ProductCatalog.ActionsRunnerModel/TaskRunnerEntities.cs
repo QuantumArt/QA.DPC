@@ -1,4 +1,5 @@
-﻿﻿using Microsoft.EntityFrameworkCore;
+﻿﻿using System;
+ using Microsoft.EntityFrameworkCore;
  using QA.Core.DPC.QP.Models;
  using QA.Core.DPC.QP.Services;
  using QP.ConfigurationService.Models;
@@ -19,9 +20,11 @@
         
         public static TaskRunnerEntities Get(IConnectionProvider provider)
         {
-            TaskRunnerEntities result;
+            TaskRunnerEntities result = null;
             var customerConfig = provider.GetCustomer(Service.Actions);
-                if (customerConfig.DatabaseType == DatabaseType.Postgres )
+            if (!String.IsNullOrEmpty(customerConfig.ConnectionString))
+            {
+                if (customerConfig.DatabaseType == DatabaseType.Postgres)
                 {
                     var optionsBuilder = new DbContextOptionsBuilder<NpgSqlTaskRunnerEntities>();
                     optionsBuilder.UseNpgsql(customerConfig.ConnectionString);
@@ -33,8 +36,8 @@
                     optionsBuilder.UseSqlServer(customerConfig.ConnectionString);
                     result = new SqlServerTaskRunnerEntities(optionsBuilder.Options);
                 }
+            }
             return result;
-
         }
         
         public DbSet<Schedule> Schedules { get; set; }

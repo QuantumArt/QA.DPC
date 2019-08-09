@@ -28,13 +28,17 @@ namespace QA.Core.DPC.QP.Services
 
         private void OnTick(object state)
         {
+            _logger.LogInfo(() => "CustomOnTick");
             lock (_locker)
             {
+                _logger.LogInfo(() => "In lock");
                 var actualCustomers = new Customer[0];
 
                 try
                 {
+                    _logger.LogInfo(() => "Before getting customers");
                     actualCustomers = _customerProvider.GetCustomers();
+                    _logger.LogInfo(() => "After getting customers: " + actualCustomers.Length);
                 }
                 catch (Exception ex)
                 {
@@ -42,7 +46,11 @@ namespace QA.Core.DPC.QP.Services
                 }
 
                 var codes = _factory.Invalidator.Keys.ToArray();
-                var actualcodes = actualCustomers.Select(c => c.CustomerCode).ToArray();
+                _logger.LogInfo(() => "Codes: " + codes.Length);
+                
+                var actualcodes = actualCustomers.Where(c => !string.IsNullOrEmpty(c.ConnectionString))
+                    .Select(c => c.CustomerCode).ToArray();
+                _logger.LogInfo(() => "Actual codes: " + actualcodes.Length);                
                 var deletedCodes = codes.Except(actualcodes).ToArray();
                 var newcodes = actualcodes.Except(codes).ToArray();
                 var modifiedCodes = _factory.Invalidator.Join(

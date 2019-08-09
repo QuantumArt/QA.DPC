@@ -178,7 +178,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 				}
 				
 				else if (_scheduler.IsStarted)
-					throw new Exception("Scheduler already started");
+					return;
 
 				UpdateJobsAndTriggers();
 

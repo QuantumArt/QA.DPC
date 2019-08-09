@@ -241,7 +241,8 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         {
             using (var context = TaskRunnerEntities.Get(_provider))
             {
-                return context.Tasks.Include("Schedule").Where(x => x.Schedule.Enabled).ToArray();              
+                return (context == null) ? new Task[] {} : 
+                    context.Tasks.Include(x => x.Schedule).Where(x => x.Schedule.Enabled).ToArray();              
             }
 
         }

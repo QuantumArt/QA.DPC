@@ -40,6 +40,10 @@ namespace QA.Core.DPC.QP.Services
             var customerConfiguration = configuration.Customers.FirstOrDefault(c => c.Name == customerCode);
             if (customerConfiguration == null)
             {
+                if (customerCode == SingleCustomerProvider.Key)
+                {
+                    return new Customer() { CustomerCode = SingleCustomerProvider.Key};
+                }
                 throw new Exception($"Customer code '{customerCode}' not found");
             }
             return new Customer
@@ -55,8 +59,10 @@ namespace QA.Core.DPC.QP.Services
             var result = new Customer[] { };
             DBConnector.ConfigServiceUrl = _integrationProps.ConfigurationServiceUrl;
             DBConnector.ConfigServiceToken = _integrationProps.ConfigurationServiceToken;
+            _logger.LogInfo(() => $"Config service url :{DBConnector.ConfigServiceUrl}");
             var configuration = DBConnector.GetQpConfiguration().Result;
             var customers = configuration.Customers;
+            _logger.LogInfo(() => $"Received customers: {customers.Length}");
             if (customers != null)
             {
                 result =
@@ -69,7 +75,8 @@ namespace QA.Core.DPC.QP.Services
                         .Where(IsDpcMode)
                         .ToArray();             
             }
-
+            
+            _logger.LogInfo(() => $"Customers after filtering: {result.Length}");
             return result;
         }
 

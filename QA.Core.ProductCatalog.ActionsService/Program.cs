@@ -27,11 +27,19 @@ namespace QA.Core.ProductCatalog.ActionsService
                 log.WriteEntry(string.Join(" -> ", ((Exception)e.ExceptionObject).Flat().Select(x => x.Message)), EventLogEntryType.Error);
             };
 
+            var isService = !(Debugger.IsAttached || ((IList) args).Contains("--console"));
+            if (isService)
+            {
+                var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
+                var pathToContentRoot = Path.GetDirectoryName(pathToExe);
+                Directory.SetCurrentDirectory(pathToContentRoot);
+            }
+
             var host = BuildWebHost(args);
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                if (!(Debugger.IsAttached || ((IList)args).Contains("--console")))
+                if (isService)
                 {
                     host.RunAsCustomService();
                 }
