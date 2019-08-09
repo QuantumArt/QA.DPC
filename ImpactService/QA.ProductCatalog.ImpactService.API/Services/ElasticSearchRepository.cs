@@ -44,47 +44,47 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         public async Task<DateTimeOffset> GetLastUpdated(int[] productIds, SearchOptions options, DateTimeOffset defaultValue)
         {
-            var result = await GetContent(GetJsonQuery(productIds, true), options);
+            var result = await GetContent(GetJsonQuery(productIds, options.QueryType, true), options);
             var dates = JObject.Parse(result).SelectTokens($"{_sourceQuery}.UpdateDate").Select(n => (DateTimeOffset)n).ToArray();
             return dates.Any() ? dates.Max() : defaultValue;
         }
 
-        private string GetJsonQuery(int[] productIds, bool onlyModified = false)
+        private string GetJsonQuery(int[] productIds, string type, bool onlyModified = false)
         {
             var ids = string.Join(", ", productIds.Select(n => $@"""{n.ToString()}""").ToArray());
             var fieldsFilter = (onlyModified) ? @"""_source"": [""UpdateDate""]," : "";
-            var query = $@"{{ {fieldsFilter} ""size"" : 500, ""query"" : {{ ""ids"" : {{ ""values"" : [{ids}] }}}}}}";
+            var query = $@"{{ {fieldsFilter} ""size"" : 500, ""query"" : {{ {GetTypeQuery(type, $@" ""ids"" : {{ ""values"" : [{ids}] }} ")} }} }}";
             return query;
         }
 
-        private string GetRegionFromRoamingQuery(string regionAlias)
+        private string GetRegionFromRoamingQuery(string regionAlias, string type)
         {
-            return $@"{{ ""_source"": [""Region.Id""], ""query"" : {{ ""term"" : {{ ""Region.Alias"" : ""{regionAlias}"" }}}}}}";
+            return $@"{{ ""_source"": [""Region.Id""], ""query"" : {{ {GetTypeQuery(type, $@" ""term"" : {{ ""Region.Alias"" : ""{regionAlias}"" }} ")} }} }}";
         }
 
-        private string GetRegionQuery(string regionAlias)
+        private string GetRegionQuery(string regionAlias, string type)
         {
-            return $@"{{ ""query"" : {{ ""term"" : {{ ""Alias"" : ""{regionAlias}"" }}}}}}";
+            return $@"{{ ""query"" : {{ {GetTypeQuery(type, $@" ""term"" : {{ ""Alias"" : ""{regionAlias}"" }} ")} }} }}";
         }
         
-        private string GetDefaultRegionForMnrQuery()
+        private string GetDefaultRegionForMnrQuery(string type)
         {
-            return $@"{{ ""_source"": [""Alias""], ""query"" : {{ ""term"" : {{ ""IsDefaultForMnr"": ""true"" }}}}}}";
+            return $@"{{ ""_source"": [""Alias""], ""query"" : {{ {GetTypeQuery(type, $@" ""term"" : {{ ""IsDefaultForMnr"": ""true"" }} ")} }} }}";
         }
 
 
-        private string GetMrQuery(string[] regionAliases)
+        private string GetMrQuery(string[] regionAliases, string type)
         {
             var regions = string.Join(", ", regionAliases.Select(n => $@"""{n.ToString()}""").ToArray());
-            return $@"{{ ""_source"": [""Region.Parent.Alias""], ""query"" : {{ ""terms"" : {{ ""Region.Alias"" : [{regions}] }}}}}}";
+            return $@"{{ ""_source"": [""Region.Parent.Alias""], ""query"" : {{ {GetTypeQuery(type, $@" ""terms"" : {{ ""Region.Alias"" : [{regions}] }} ")} }} }}";
         }
 
-        private string GetRoamingCountryQuery(string code)
+        private string GetRoamingCountryQuery(string code, string type)
         {
-            return 
+            return
                 $@"{{ 
                     ""_source"": [""*""], 
-                    ""query"" : {{ 
+                    ""query"" : {{ {GetTypeQuery(type, $@"
                         ""bool"" : {{ 
                            ""should"" : [
                                 {{ ""term"" : 
@@ -94,12 +94,12 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                                     {{ ""Alias"" : ""{code}"" }}
                                 }}
                             ] 
-                        }} 
+                        }}")}
                     }}
                 }}";
         }
 
-        private string GetRoamingScaleQuery(string code, bool isB2C)
+        private string GetRoamingScaleQuery(string code, bool isB2C, string type)
         {
             var modifier = isB2C ? "IsForMainSite" : "IsForCorpSite";
             return
@@ -115,7 +115,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                             ""Id""
                         ]
                     }},
-                    ""query"": {{
+                    ""query"": {{ {GetTypeQuery(type, $@"
                         ""bool"": {{
                             ""should"": [ 
                                 {{
@@ -147,16 +147,29 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                                     }}
                                 }}
                             ]
-                        }}
+                        }}")}
                     }}
-                }}
             }}";
+        }
+
+        private string GetTypeQuery(string type, string subquery)
+        {
+            if (type == null)
+                return subquery;
+            else
+                return
+                    $@"""bool"" : {{
+                        ""must"" : [
+                            {{ ""term"" : {{ ""Type"" : ""{type}"" }} }},
+                            {{ {subquery} }}
+                        ]
+                    }}";
         }
 
 
         public async Task<JObject[]> GetProducts(int[] productIds, SearchOptions options)
         {
-            var result = await GetContent(GetJsonQuery(productIds), options);
+            var result = await GetContent(GetJsonQuery(productIds, options.QueryType), options);
 
             result = await ProcessRegionTags(productIds, result, options);
 
@@ -169,7 +182,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var newOptions = options.Clone();
             newOptions.TypeName = "RoamingRegion";
-            var regionResult = await GetContent(GetMrQuery(regions), newOptions);
+            var regionResult = await GetContent(GetMrQuery(regions, options.QueryType), newOptions);
             var aliases = JObject.Parse(regionResult)
                 .SelectTokens($"{_sourceQuery}.Region.Parent.Alias").Select(n => n.ToString()).ToArray();
             return aliases.Length > 1 && aliases.Distinct().Count() == 1;
@@ -177,7 +190,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         public async Task<int[]> GetRoamingScaleForCountry(string code, bool isB2C, SearchOptions options)
         {
-            var query = GetRoamingScaleQuery(code, isB2C);
+            var query = GetRoamingScaleQuery(code, isB2C, options.QueryType);
             var country = await GetContent(query, options);
             var countryObj = JObject.Parse(country).SelectToken(_sourceQuery);
             if (countryObj == null)
@@ -198,7 +211,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         public async Task<JObject> GetRoamingCountry(string code, SearchOptions options)
         {
-            var query = GetRoamingCountryQuery(code.ToLowerInvariant());
+            var query = GetRoamingCountryQuery(code.ToLowerInvariant(), options.QueryType);
             var regionResult = await GetContent(query, options);
             var obj = JObject.Parse(regionResult);
             var result = (JObject)obj.SelectToken(_sourceQuery);
@@ -224,13 +237,14 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         private async Task<Dictionary<string, string>> GetTagsToProcess(int[] productIds, SearchOptions options)
         {
             var regionTagIds = productIds.Select(n => 0 - n).ToArray();
-            var tagResult = await GetContent(GetJsonQuery(regionTagIds), options);
+            var tagResult = await GetContent(GetJsonQuery(regionTagIds, options.QueryType), options);
             var documents = JObject.Parse(tagResult).SelectTokens(_sourceQuery).ToArray();
             var tags = documents
                     .SelectMany(n => (JArray)n.SelectToken("RegionTags"))
                     .ToArray();
 
             var homeRegionId = GetHomeRegionId(options.HomeRegionData);
+
 
             var tagsToProcess = new Dictionary<string, string>();
 
@@ -259,7 +273,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
             var newOptions = options.Clone();
             newOptions.TypeName = "Region";
-            var regionResult = await GetContent(GetRegionQuery(newOptions.HomeRegion), newOptions);
+            var regionResult = await GetContent(GetRegionQuery(newOptions.HomeRegion, options.QueryType), newOptions);
             var homeRegionIdToken = JObject.Parse(regionResult)
                 .SelectTokens(_sourceQuery)?.FirstOrDefault();
             return (JObject)homeRegionIdToken;
@@ -269,7 +283,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
         {
             var newOptions = options.Clone();
             newOptions.TypeName = "Region";
-            var regionResult = await GetContent(GetDefaultRegionForMnrQuery(), newOptions);
+            var regionResult = await GetContent(GetDefaultRegionForMnrQuery(options.QueryType), newOptions);
             return JObject.Parse(regionResult)
                 .SelectTokens(_sourceQuery)?.FirstOrDefault()?.SelectToken("Alias")?.ToString();
         }
@@ -296,8 +310,15 @@ namespace QA.ProductCatalog.ImpactService.API.Services
 
         public async Task<string> GetContent(string json, SearchOptions options)
         {
-            return await GetElasticClient(options).SearchAsync(options.TypeName, json);
+            return await GetElasticClient(options).SearchAsync(options.UrlType, json);
         }
 
+        public async Task<bool> GetIndexIsTyped(SearchOptions options)
+        {
+            var client = GetElasticClient(options);
+            var info = await client.SearchAsync(null, null);
+            var version = JObject.Parse(info).SelectToken("version.number").Value<string>();
+            return version[0] <= '5';
+        }
     }
 }

@@ -22,7 +22,8 @@
     <ProjectReference Include="..\QA.Scheduler.API\QA.Scheduler.API.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Quantumart.QP8.BLL" Version="2.9.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="3.0.0-beta98" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
   </ItemGroup>
 </Project>

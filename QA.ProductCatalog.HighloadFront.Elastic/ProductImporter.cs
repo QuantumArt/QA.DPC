@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ using QA.ProductCatalog.HighloadFront.Elastic.Extensions;
 using QA.ProductCatalog.HighloadFront.Models;
 using QA.ProductCatalog.HighloadFront.Options;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.HighloadFront.Interfaces;
 
 namespace QA.ProductCatalog.HighloadFront.Elastic
 {
@@ -21,6 +23,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly ElasticConfiguration _configuration;
 
         private readonly ProductManager _manager;
+        private HttpClient _client;
 
         private readonly HarvesterOptions _options;
         private readonly DataOptions _dataOptions;
@@ -28,11 +31,14 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly string _customerCode;
 
         public ProductImporter(
-        HarvesterOptions options, DataOptions dataOptions, ElasticConfiguration configuration, 
-        ProductManager manager, 
-        ILoggerFactory loggerFactory,
-        IHttpClientFactory factory,        
-        string customerCode)
+            HarvesterOptions options, 
+            DataOptions dataOptions, 
+            ElasticConfiguration configuration, 
+            ProductManager manager, 
+            ILoggerFactory loggerFactory, 
+            IHttpClientFactory httpClientFactory,
+            string customerCode)
+
         {
             _logger = loggerFactory.CreateLogger(GetType());
             _manager = manager;
@@ -40,21 +46,22 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _options = options;
             _dataOptions = dataOptions;
             _customerCode = customerCode;
-            _factory = factory;
+            _client = httpClientFactory.CreateClient();
+            _client.DefaultRequestHeaders.Accept.Clear();            
         }
 
         public bool ValidateInstance(string language, string state)
         {
             var reindexUrl = _configuration.GetReindexUrl(language, state);
-            _logger.LogInformation($"Checking instance: {language}, {state}");            
+            _logger.LogInformation($"Checking instance ({language}, {state}) ...");            
             var url = $"{reindexUrl}/ValidateInstance";
             var result = GetContent(url).Result;
             var validation = JsonConvert.DeserializeObject<bool>(result.Item1);
-            _logger.LogInformation($"Validation result for instance ({language}, {state}): {validation}");
+            _logger.LogInformation($"Validation result for instance ({language}, {state}): {validation}");            
             return validation;
         }
 
-        public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state)
+        public async Task ImportAsync(ITaskExecutionContext executionContext, string language, string state, Dictionary<string, IProductStore> stores)
         {
             if(executionContext.IsCancellationRequested)
             {
@@ -100,7 +107,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 }
                 _logger.LogInformation($"Products from chunk {index} received. Starting bulk import...");
 
-                var result = await _manager.BulkCreateAsync(data, language, state);
+                var result = await _manager.BulkCreateAsync(data, language, state, stores);
 
                 if (result.Succeeded)
                 {

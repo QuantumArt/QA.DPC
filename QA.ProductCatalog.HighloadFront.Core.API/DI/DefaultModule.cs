@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Autofac;
 using Autofac.Core;
 using Microsoft.AspNetCore.Http;
@@ -38,12 +39,17 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterType<ProductManager>().Named<ProductManager>("ForTask").ExternallyOwned();
 
             builder.RegisterScoped<SonicErrorDescriber>();
-            
-            builder.RegisterScoped<IProductStore, ElasticProductStore>();
-            builder.RegisterType<ElasticProductStore>().Named<IProductStore>("ForTask").ExternallyOwned();
 
-            builder.RegisterType<ProductImporter>().ExternallyOwned();
-        
+            builder.RegisterScoped<Func<string, IProductStore>>(c =>
+            {
+                var context = c.Resolve<IComponentContext>();
+                return version => context.ResolveNamed<IProductStore>(version);
+            });
+            builder.RegisterScoped<IProductStoreFactory, ProductStoreFactory>();
+            builder.RegisterType<ProductStoreFactory>().Named<IProductStoreFactory>("ForTask").ExternallyOwned();
+            builder.RegisterType<ElasticProductStore>().Named<IProductStore>("5.*").ExternallyOwned();
+            builder.RegisterType<ElasticProductStore_6>().Named<IProductStore>("6.*").ExternallyOwned();
+            builder.RegisterType<ProductImporter>().ExternallyOwned();        
 
             builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
             builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityFixedProvider(
@@ -77,8 +83,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                         {
                             var manager = c.ResolveNamed<ProductManager>("ForTask",
                                 new ResolvedParameter(
-                                    (p, ctx) => p.ParameterType == typeof(IProductStore),
-                                    (p, ctx) => ctx.ResolveNamed<IProductStore>("ForTask")
+                                    (p, ctx) => p.ParameterType == typeof(IProductStoreFactory),
+                                    (p, ctx) => ctx.ResolveNamed<IProductStoreFactory>("ForTask")
                                 )
                             );
 
@@ -87,7 +93,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
                                 new NamedParameter("customerCode", c.Resolve<IIdentityProvider>().Identity.CustomerCode)
                             );
 
-                            return new ReindexAllTask(importer, manager, c.Resolve<ElasticConfiguration>());
+                            return new ReindexAllTask(importer, manager, c.Resolve<ElasticConfiguration>(), new Dictionary<string, IProductStore>() {
+                                    { "5.*", c.ResolveNamed<IProductStore>("5.*")},
+                                    { "6.*", c.ResolveNamed<IProductStore>("6.*") }
+                            });
                         }
                     );
                 }

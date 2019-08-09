@@ -309,13 +309,15 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
             {
                 foreach (var hit in hits)
                 {
-                    var token = hit.SelectToken(df.Key);
-                    if (token == null || !(token is JArray jArray)) continue;
-                    var relevantTokens = jArray.SelectTokens(df.Value).ToArray();
-                    jArray.Clear();
-                    foreach (var rToken in relevantTokens)
+                    var jArrays = hit.SelectTokens(df.Key).OfType<JArray>().ToArray();
+                    foreach (var jArray in jArrays)
                     {
-                        jArray.Add(rToken);
+                        var relevantTokens = jArray.SelectTokens(df.Value).ToArray();
+                        jArray.Clear();
+                        foreach (var rToken in relevantTokens)
+                        {
+                            jArray.Add(rToken);
+                        }                    
                     }
                 }
             }

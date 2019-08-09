@@ -38,10 +38,10 @@
     <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NLog" Version="4.5.11" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="3.0.0-beta9.6" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="3.0.0-beta98" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="NLog.Extensions.Logging" Version="1.3.0" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.4.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.7.1" />
     <PackageReference Include="Unity.Abstractions" Version="4.0.3" />
     <PackageReference Include="Unity.Configuration" Version="5.9.2" />

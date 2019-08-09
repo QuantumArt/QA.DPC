@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
@@ -12,17 +13,17 @@ namespace QA.ProductCatalog.HighloadFront
     {
         private readonly IProductPostProcessor _productPostProcessor;
 
-        protected IProductStore Store { get; }
+        protected IProductStoreFactory StoreFactory { get; }
 
-        public ProductManager(IProductStore store, IProductPostProcessor productPostProcessor)
+        public ProductManager(IProductStoreFactory storeFactory, IProductPostProcessor productPostProcessor)
         {
-            Store = store ?? throw new ArgumentNullException(nameof(store));
+            StoreFactory = storeFactory ?? throw new ArgumentNullException(nameof(storeFactory));
             _productPostProcessor = productPostProcessor;
         }
 
         public Task<string> FindByIdAsync(ProductsOptions options, string language, string state)
-        {
-            return Store.FindByIdAsync(options, language, state);
+        {            
+            return StoreFactory.GetProductStore(language, state).FindByIdAsync(options, language, state);
         }
 
         public async Task<SonicResult> CreateAsync(JObject product, RegionTag[] regionTags, string language, string state)
@@ -32,11 +33,11 @@ namespace QA.ProductCatalog.HighloadFront
             if (_productPostProcessor != null)
                 product = _productPostProcessor.Process(data);
 
-            var tagsProduct = GetRegionTagsProduct(product, regionTags);
+            var tagsProduct = GetRegionTagsProduct(product, regionTags, language, state);
 
             if (tagsProduct != null)
             {
-                var tagsResult = await Store.CreateAsync(tagsProduct, language, state);
+                var tagsResult = await StoreFactory.GetProductStore(language, state).CreateAsync(tagsProduct, language, state);
 
                 if (!tagsResult.Succeeded)
                 {
@@ -45,11 +46,11 @@ namespace QA.ProductCatalog.HighloadFront
             }
             else
             {
-                tagsProduct = GetRegionTagsProduct(product, new[] { new RegionTag() });
+                tagsProduct = GetRegionTagsProduct(product, new[] { new RegionTag() }, language, state);
 
-                if (await Store.Exists(tagsProduct, language, state))
+                if (await StoreFactory.GetProductStore(language, state).Exists(tagsProduct, language, state))
                 {
-                    var deleteTagsResult = await Store.DeleteAsync(tagsProduct, language, state);
+                    var deleteTagsResult = await StoreFactory.GetProductStore(language, state).DeleteAsync(tagsProduct, language, state);
 
                     if (!deleteTagsResult.Succeeded)
                     {
@@ -58,10 +59,10 @@ namespace QA.ProductCatalog.HighloadFront
                 }
             }
 
-            return await Store.CreateAsync(product, language, state);
+            return await StoreFactory.GetProductStore(language, state).CreateAsync(product, language, state);
         }
 
-        public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state)
+        public async Task<SonicResult> BulkCreateAsync(ProductPostProcessorData[] data, string language, string state, Dictionary<string, IProductStore> stores)
         {
 
             if (_productPostProcessor != null)
@@ -72,38 +73,48 @@ namespace QA.ProductCatalog.HighloadFront
                 }
             }
 
-            var regionTagProducts = data.Select(d => GetRegionTagsProduct(d.Product, d.RegionTags)).Where(d => d != null);
+            var regionTagProducts = data.Select(d => GetRegionTagsProduct(d.Product, d.RegionTags, language, state)).Where(d => d != null);
             var products = data.Select(d => d.Product).Concat(regionTagProducts);
-
-            return await Store.BulkCreateAsync(products, language, state);
+            
+            var version = StoreFactory.GetProductStoreVersion(language, state);
+            if (stores.TryGetValue(version, out var store))
+            {
+                return await store.BulkCreateAsync(products, language, state);              
+            }
+            throw StoreFactory.ElasticVersionNotSupported(version);
         }
 
 
-        public string GetProductId(JObject product)
+        public string GetProductId(JObject product,string language, string state)
         {
-            return Store.GetId(product);
+            return StoreFactory.GetProductStore(language, state).GetId(product);
         }
 
         
         public Task<string> SearchAsync(ProductsOptions options, string language, string state)
         {
-            return Store.SearchAsync(options, language, state);
+            return StoreFactory.GetProductStore(language, state).SearchAsync(options, language, state);
         }
 
       
-        public Task<SonicResult> DeleteAllASync(string language, string state)
+        public Task<SonicResult> DeleteAllASync(string language, string state, Dictionary<string, IProductStore> stores)
         {
-            return Store.ResetAsync(language, state);
+            var version = StoreFactory.GetProductStoreVersion(language, state);
+            if (stores.TryGetValue(version, out var store))
+            {
+                return store.ResetAsync(language, state);
+            }
+            throw StoreFactory.ElasticVersionNotSupported(version);
         }
 
         public async Task<SonicResult> DeleteAsync(JObject product, string language, string state)
         {
 
-            var tagsProduct = GetRegionTagsProduct(product, new[] { new RegionTag() });
+            var tagsProduct = GetRegionTagsProduct(product, new[] { new RegionTag() }, language, state);
 
-            if (await Store.Exists(tagsProduct, language, state))
+            if (await StoreFactory.GetProductStore(language, state).Exists(tagsProduct, language, state))
             {
-                var deleteTagsResult = await Store.DeleteAsync(tagsProduct, language, state);
+                var deleteTagsResult = await StoreFactory.GetProductStore(language, state).DeleteAsync(tagsProduct, language, state);
 
                 if (!deleteTagsResult.Succeeded)
                 {
@@ -111,10 +122,10 @@ namespace QA.ProductCatalog.HighloadFront
                 }
             }
 
-            return await Store.DeleteAsync(product, language, state);
+            return await StoreFactory.GetProductStore(language, state).DeleteAsync(product, language, state);
         }
 
-        JObject GetRegionTagsProduct(JObject product, RegionTag[] regionTags)
+        JObject GetRegionTagsProduct(JObject product, RegionTag[] regionTags, string language, string state)
         {
             if (regionTags == null || !regionTags.Any())
             {
@@ -122,7 +133,7 @@ namespace QA.ProductCatalog.HighloadFront
             }
             else
             {
-                var id = int.Parse(GetProductId(product));
+                var id = int.Parse(GetProductId(product, language, state));
 
                 var tags = JObject.FromObject(new
                 {
