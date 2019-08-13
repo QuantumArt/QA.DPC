@@ -58,7 +58,7 @@ namespace QA.Core.DPC
             unityContainer.RegisterType<IStatusProvider, StatusProvider>();
            
             unityContainer.RegisterType<IConfigurationService, ConfigurationService>(new ContainerControlledLifetimeManager());
-            unityContainer.RegisterType<IMessageService, MessageService>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<IMessageService, MessageService>();
             
             switch (props.SettingsSource)
             {

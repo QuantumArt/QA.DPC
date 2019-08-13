@@ -7,22 +7,29 @@ namespace QA.Core.DPC.Notification.Services
 {
     public class NotificationChannelService : INotificationChannelService
     {
-        private readonly ConcurrentDictionary<string, NotificationChannelDescriptor> _channelRepository;
+        private readonly ConcurrentDictionary<string, ConcurrentDictionary<string, NotificationChannelDescriptor>> _channelRepository;
 
         public NotificationChannelService()
         {
-            _channelRepository = new ConcurrentDictionary<string, NotificationChannelDescriptor>();
-        }      
+            _channelRepository = new ConcurrentDictionary<string, ConcurrentDictionary<string, NotificationChannelDescriptor>>();
+        }
+        
+        private ConcurrentDictionary<string, NotificationChannelDescriptor> GetOrAddCustomerCode(string customerCode)
+        {
+            return _channelRepository.GetOrAdd(customerCode,
+                new ConcurrentDictionary<string, NotificationChannelDescriptor>());
+        }        
 
         #region INotificationChannelService implementation
-        public NotificationChannelDescriptor[] GetNotificationChannels()
+        public NotificationChannelDescriptor[] GetNotificationChannels(string customerCode)
         {
-             return _channelRepository.Values.ToArray();
+            return GetOrAddCustomerCode(customerCode).Values.ToArray();
         }
 
-        public void UpdateNotificationChannel(string name, int productId, DateTime lastQueued, string publicationStatus)
+        public void UpdateNotificationChannel(string customerCode, string name, int productId, DateTime lastQueued, string publicationStatus)
         {
-            var channel = _channelRepository.GetOrAdd(name, new NotificationChannelDescriptor() { Name = name });
+            var channel = GetOrAddCustomerCode(customerCode)
+                .GetOrAdd(name, new NotificationChannelDescriptor() { Name = name });
 
             channel.LastId = productId;
             channel.LastStatus = publicationStatus;

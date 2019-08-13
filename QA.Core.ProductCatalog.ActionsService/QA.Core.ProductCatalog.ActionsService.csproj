@@ -48,7 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="NLogClient.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+    <None Include="*.config" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
     <None Include="appsettings*.json" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
     <None Include="hosting.json" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
   </ItemGroup>

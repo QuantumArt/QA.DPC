@@ -15,11 +15,13 @@ namespace QA.Core.DPC
         protected override void OnStarted()
         {
             _service.Start();
+            base.OnStarted();
         }
 
-        protected override void OnStopped()
+        protected override void OnStopping()
         {
             _service.Stop();
+            base.OnStopping();
         }
     }
 }

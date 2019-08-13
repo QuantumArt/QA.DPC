@@ -11,6 +11,7 @@ using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using Polly.Registry;
+using QA.Core.DPC.QP.Models;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.HighloadFront.Core.API.DI;
@@ -50,6 +51,8 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             services.AddSingleton(opts4);
             
             services.AddSingleton(new PolicyRegistry());
+            
+            services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
             
             // Add framework services.
             services.AddMvc(options =>

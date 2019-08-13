@@ -391,7 +391,7 @@ using Microsoft.Extensions.Hosting;
 						    httpResponse.StatusCode,
 						    message.Id,
 						    timer.ElapsedMilliseconds);
-                        channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
+                        channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
                     };
 					
 					service.RemoveMessage(message.Id);
@@ -418,7 +418,7 @@ using Microsoft.Extensions.Hosting;
 							httpResponse.StatusCode,
 							message.Id,
 							timer.ElapsedMilliseconds);
-                        channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
+                        channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key, message.Created, httpResponse.StatusCode.ToString());
                     }
 					else
 					{
@@ -431,7 +431,7 @@ using Microsoft.Extensions.Hosting;
 							message.Key,
 							message.Id,
 							timer.ElapsedMilliseconds);
-                        channelService.UpdateNotificationChannel(channel.Name, message.Key, message.Created, ex.Status.ToString());
+                        channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key, message.Created, ex.Status.ToString());
                     }
 
                     logger.ErrorException(

@@ -96,7 +96,7 @@ namespace QA.Core.DPC
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "DPC Web API");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "DPC Notification API");
             });
 
             app.UseMvcWithDefaultRoute();

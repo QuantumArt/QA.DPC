@@ -1,10 +1,13 @@
 using System;
+using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
 using Npgsql;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using QA.Core.DPC.QP.Models;
+using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
@@ -13,9 +16,11 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
     public class HealthCheckController : Controller
     {
         private DataOptions _options;
-        public HealthCheckController(DataOptions options)
+        private IntegrationProperties _intOptions;
+        public HealthCheckController(DataOptions options, IOptions<IntegrationProperties> integrationProps)
         {
             _options = options;
+            _intOptions = integrationProps.Value;
         }
 
         [HttpGet("healthcheck", Name="HealthCheck")]
@@ -30,42 +35,49 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             return Content(sb.ToString(), "text/plain");
         }
 
-        private DbConnection GetDbConnection(string connectionString)
+        private DbConnection GetDbConnection(CustomerConfiguration cc)
         {
-            if (_options.UsePostgres)
-                return new NpgsqlConnection(connectionString);
-            return new SqlConnection(connectionString);
+            if (cc.DbType == DatabaseType.Postgres)
+                return new NpgsqlConnection(cc.ConnectionString);
+            return new SqlConnection(cc.ConnectionString);
         }
 
         private bool IsDbConnected()
         {
+            DBConnector.ConfigServiceUrl = _intOptions.ConfigurationServiceUrl;
+            DBConnector.ConfigServiceToken = _intOptions.ConfigurationServiceToken;
             var customerCode = ControllerContext.RouteData.Values["customerCode"];
             string connectionString = _options.FixedConnectionString;
+            var cc = new CustomerConfiguration()
+            {
+                ConnectionString = connectionString,
+                DbType = (_options.UsePostgres) ? DatabaseType.Postgres : DatabaseType.SqlServer
+            };           
             if (string.IsNullOrEmpty(connectionString) && customerCode != null)
             {
                 try
                 {
-                    connectionString = DBConnector.GetConnectionString(customerCode.ToString());
+                    cc = DBConnector.GetCustomerConfiguration(customerCode.ToString()).Result;
                 }
                 catch (Exception)
                 {
                     return false;
                 }    
             }
-            
-            if (string.IsNullOrEmpty(connectionString))
+
+            if (string.IsNullOrEmpty(cc.ConnectionString))
             {
                 return false;
             }
             
-            using (var connection = GetDbConnection(connectionString))
+            using (var connection = GetDbConnection(cc))
             {
                 try
                 {
                     connection.Open();
                     return true;
                 }
-                catch (SqlException)
+                catch (DbException)
                 {
                     return false;
                 }

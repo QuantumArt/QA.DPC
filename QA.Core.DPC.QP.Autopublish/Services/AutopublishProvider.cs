@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
+using Microsoft.Extensions.Options;
+using QA.Core.DPC.QP.Models;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.QP.Autopublish.Services
@@ -22,12 +24,14 @@ namespace QA.Core.DPC.QP.Autopublish.Services
         private readonly Uri _baseWebApiUri;
         private readonly IStatusProvider _statusProvider;
 
-        public AutopublishProvider(ISettingsService settingsService, IStatusProvider statusProvider)
+        public AutopublishProvider(ISettingsService settingsService, IStatusProvider statusProvider, IOptions<IntegrationProperties> intProps)
         {
             _settingsService = settingsService;
             _statusProvider = statusProvider;
-            _baseTntUri = new Uri(ConfigurationManager.AppSettings["DPC.Tarantool.Api"]);
-            _baseWebApiUri = new Uri(ConfigurationManager.AppSettings["DPC.WebApi"]);
+            _baseTntUri = string.IsNullOrEmpty(intProps.Value.TarantoolApiUrl) ? 
+                new Uri(intProps.Value.TarantoolApiUrl) : null;
+            _baseWebApiUri = string.IsNullOrEmpty(intProps.Value.DpcWebApiUrl)
+                ? new Uri(intProps.Value.DpcWebApiUrl) : null;
         }
 
         public ProductItem[] Peek(string customerCode)

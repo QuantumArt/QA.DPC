@@ -4,7 +4,7 @@ namespace QA.ProductCatalog.ContentProviders
 {
     public interface INotificationChannelService
     {
-        NotificationChannelDescriptor[] GetNotificationChannels();
-        void UpdateNotificationChannel(string name, int productId, DateTime created, string publicationStatus);
+        NotificationChannelDescriptor[] GetNotificationChannels(string customerCode);
+        void UpdateNotificationChannel(string customerCode, string name, int productId, DateTime created, string publicationStatus);
     }
 }

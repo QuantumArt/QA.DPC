@@ -6,6 +6,8 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using Microsoft.Extensions.Options;
+using QA.Core.DPC.QP.Models;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.DPC.QP.API.Services
@@ -19,9 +21,10 @@ namespace QA.Core.DPC.QP.API.Services
         private readonly IVersionedCacheProvider _cacheProvider;
         private readonly IHttpClientFactory _factory;
 
-        public TarantoolJsonService(ISettingsService settingsService, IVersionedCacheProvider cacheProvider, IHttpClientFactory factory)
+        public TarantoolJsonService(ISettingsService settingsService, IVersionedCacheProvider cacheProvider, 
+            IHttpClientFactory factory, IOptions<IntegrationProperties> intProps)
         {
-            var tntUrl = ConfigurationManager.AppSettings["DPC.Tarantool.Api"];
+            var tntUrl = intProps.Value.TarantoolApiUrl;
             _baseUri = !String.IsNullOrEmpty(tntUrl) ? new Uri(tntUrl) : null;
             _settingsService = settingsService;
             _cacheProvider = cacheProvider;

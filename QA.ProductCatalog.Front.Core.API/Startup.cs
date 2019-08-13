@@ -12,7 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using QA.Core.DPC.Front;
 using QA.Core.DPC.Front.DAL;
-using QA.Core.Logger;
+ using QA.Core.DPC.QP.Models;
+ using QA.Core.Logger;
 using QA.DPC.Core.Helpers;
  using QP.ConfigurationService.Models;
  using ILogger = QA.Core.Logger.ILogger;
@@ -65,6 +66,7 @@ namespace QA.ProductCatalog.Front.Core.API
             services.AddScoped(typeof(IDpcProductService), typeof(DpcProductService));
             services.AddScoped(typeof(IDpcService), typeof(DpcProductService));
 
+            services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
 
             
             services.AddSwaggerGen(c =>

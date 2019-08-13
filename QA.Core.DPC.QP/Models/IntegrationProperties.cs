@@ -8,7 +8,11 @@ namespace QA.Core.DPC.QP.Models
         
         public string HighloadFrontSyncUrl { get; set; }
         
-        public string TarantoolSyncUrl { get; set; } 
+        public string TarantoolSyncUrl { get; set; }
+        
+        public string DpcWebApiUrl { get; set; }
+        
+        public string TarantoolApiUrl { get; set; }
         
         public string[] ExtraValidationLibraries { get; set; }
         public string ConfigurationServiceUrl { get; set; }

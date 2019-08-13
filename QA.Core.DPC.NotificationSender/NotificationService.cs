@@ -23,10 +23,6 @@ namespace QA.Core.DPC
 
         private readonly IConnectionProvider _connectionProvider;
 
-        private readonly INotificationProvider _provider;
-        
-        private readonly INotificationChannelService _channelService;
-
         public NotificationService(INotificationProvider provider, 
 	        IIdentityProvider identityProvider,
 	        INotificationChannelService channelService, 
@@ -35,8 +31,6 @@ namespace QA.Core.DPC
 		{
             _identityProvider = identityProvider;
             _logger = logger;
-            _provider = provider;
-            _channelService = channelService;
             _connectionProvider = connectionProvider;
 		}
 		
@@ -49,10 +43,10 @@ namespace QA.Core.DPC
 				Throws.IfArgumentNull(notifications, _ => notifications);
 
 					List<NotificationChannel> channels = null;
-
+					var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
 					if (notifications.Any(n => n.Channels == null))
 					{
-						channels = _provider.GetConfiguration().Channels;
+						channels = provider.GetConfiguration().Channels;
 
 						if (channels == null)
 						{
@@ -124,10 +118,10 @@ namespace QA.Core.DPC
         public ConfigurationInfo GetConfigurationInfo(string customerCode)
         {
             _identityProvider.Identity = new Identity(customerCode);
-
+            var provider = ObjectFactoryBase.Resolve<INotificationProvider>();
             var channelService = ObjectFactoryBase.Resolve<INotificationChannelService>();
             var currentConfiguration = GetCurrentConfiguration(customerCode);
-            var actualConfiguration = _provider.GetConfiguration();
+            var actualConfiguration = provider.GetConfiguration();
 
             var channels = actualConfiguration.Channels.Select(c => c.Name)
                 .Union(currentConfiguration == null ? new string[0] : currentConfiguration.Channels.Select(c => c.Name))
@@ -143,12 +137,12 @@ namespace QA.Core.DPC
 		            .ToDictionary(g => g.Key, g => g.Count);
             }
 
-            var chennelsStatistic = channelService.GetNotificationChannels();
+            var chennelsStatistic = channelService.GetNotificationChannels(customerCode);
 
             return new ConfigurationInfo
             {
                 Started = NotificationSender.Started,
-                NotificationProvider = _provider.GetType().Name,
+                NotificationProvider = provider.GetType().Name,
                 IsActual = actualConfiguration.IsEqualTo(currentConfiguration),
                 ActualSettings = new SettingsInfo
                 {

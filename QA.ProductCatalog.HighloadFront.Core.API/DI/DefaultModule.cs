@@ -49,7 +49,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterType<ProductStoreFactory>().Named<IProductStoreFactory>("ForTask").ExternallyOwned();
             builder.RegisterType<ElasticProductStore>().Named<IProductStore>("5.*").ExternallyOwned();
             builder.RegisterType<ElasticProductStore_6>().Named<IProductStore>("6.*").ExternallyOwned();
-            builder.RegisterType<ProductImporter>().ExternallyOwned();        
+            builder.RegisterType<ProductImporter>().ExternallyOwned();
 
             builder.RegisterScoped<ICustomerProvider, CustomerProvider>();
             builder.RegisterScoped<IIdentityProvider>( c => new CoreIdentityFixedProvider(
