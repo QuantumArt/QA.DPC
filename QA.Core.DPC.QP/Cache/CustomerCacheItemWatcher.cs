@@ -3,7 +3,7 @@ using System.Threading;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
-using Quantumart.QP8.Constants;
+using QP.ConfigurationService.Models;
 
 namespace QA.Core.DPC.QP.Cache
 {

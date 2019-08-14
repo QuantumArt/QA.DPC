@@ -26,7 +26,7 @@ namespace QA.DPC.Core.Helpers
             if (customer != null)
             {
                 Watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15),
-                    Invalidator, connectionProvider, logger);
+                    Invalidator, connectionProvider, logger, databaseType: customer.DatabaseType);
                 Tracker = new StructureCacheTracker(customer.ConnectionString, customer.DatabaseType);
                 Watcher.AttachTracker(Tracker);
                 ((CustomerCacheItemWatcher)Watcher).Start();

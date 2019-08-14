@@ -7,8 +7,8 @@ using Npgsql;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
-using Quantumart.QP8.Constants;
-using Quantumart.QP8.DAL;
+using QP.ConfigurationService.Models;
+using Quantumart.QPublishing.Database;
 
 
 namespace QA.Core.DPC.QP.Cache

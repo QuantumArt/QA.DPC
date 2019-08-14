@@ -7,14 +7,14 @@ namespace QA.ProductCatalog.ContentProviders
 		#region Constants
 		private const string QueryTemplate = @"
 			SELECT
-				u.Name as [User],
+				u.Name as User,
                 m.Title as Method,
                 c.Seconds,
                 c.Limit
 			FROM
 				CONTENT_{0}_UNITED c
-				join CONTENT_{1}_UNITED m ON c.[ApiMethod] = m.CONTENT_ITEM_ID
-				join CONTENT_{2}_UNITED u ON c.[User] = u.CONTENT_ITEM_ID
+				join CONTENT_{1}_UNITED m ON c.ApiMethod = m.CONTENT_ITEM_ID
+				join CONTENT_{2}_UNITED u ON c.User = u.CONTENT_ITEM_ID
 
 			WHERE
 				c.ARCHIVE = 0 AND c.VISIBLE = 1 AND m.ARCHIVE = 0 AND m.VISIBLE = 1 AND u.ARCHIVE = 0 AND u.VISIBLE = 1";
