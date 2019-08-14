@@ -23,7 +23,6 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly ElasticConfiguration _configuration;
 
         private readonly ProductManager _manager;
-        private HttpClient _client;
 
         private readonly HarvesterOptions _options;
         private readonly DataOptions _dataOptions;
@@ -46,8 +45,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             _options = options;
             _dataOptions = dataOptions;
             _customerCode = customerCode;
-            _client = httpClientFactory.CreateClient();
-            _client.DefaultRequestHeaders.Accept.Clear();            
+            _factory = httpClientFactory;
         }
 
         public bool ValidateInstance(string language, string state)
@@ -135,6 +133,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             url += $"?customerCode={_customerCode}&instanceId={_dataOptions.InstanceId}";
             _logger.LogDebug($"Requesting URL: {url}", url);
             var client = _factory.CreateClient();
+            client.DefaultRequestHeaders.Accept.Clear();            
             var response = await client.GetAsync(url);
             var modified = response.Content.Headers.LastModified?.DateTime ?? DateTime.Now;
             var result = (!response.IsSuccessStatusCode) ? "" : await response.Content.ReadAsStringAsync();
