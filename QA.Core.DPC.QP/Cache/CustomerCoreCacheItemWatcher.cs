@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.SqlClient;
+using System.Threading;
 using Npgsql;
 using QA.Core.Cache;
 using QA.Core.DPC.QP.Services;
@@ -13,29 +14,30 @@ using Quantumart.QPublishing.Database;
 
 namespace QA.Core.DPC.QP.Cache
 {
-    public class CustomerQP8CacheItemWatcher : CustomerCacheItemWatcher
+    public class CustomerCoreCacheItemWatcher : CacheItemWatcherBase
     {
         private string GetCmdText(DatabaseType dbType){
             return $@"SELECT CONTENT_ID, LIVE_MODIFIED, STAGE_MODIFIED FROM CONTENT_MODIFICATION {SqlQuerySyntaxHelper.WithNoLock(dbType)}";
         }
 
-        public CustomerQP8CacheItemWatcher(InvalidationMode mode, 
+        public CustomerCoreCacheItemWatcher(InvalidationMode mode, 
             IContentInvalidator invalidator, 
             IConnectionProvider connectionProvider, 
             ILogger logger,
             DatabaseType databaseType = DatabaseType.SqlServer)
-            : base(mode, invalidator, connectionProvider, logger, databaseType)
+            : this(mode, Timeout.InfiniteTimeSpan, invalidator, connectionProvider, logger, 0, false, databaseType)
         {
         }
 
-        public CustomerQP8CacheItemWatcher(InvalidationMode mode, 
+        public CustomerCoreCacheItemWatcher(InvalidationMode mode,
+            TimeSpan pollPeriod,
             IContentInvalidator invalidator, 
             IConnectionProvider connectionProvider, 
             ILogger logger, 
-            TimeSpan pollPeriod, 
-            int dueTime,
+            int dueTime = 0,
+            bool useTimer = true,
             DatabaseType databaseType = DatabaseType.SqlServer)
-            : base(mode, pollPeriod, invalidator, connectionProvider, logger, dueTime, true, databaseType: databaseType)
+            : base(mode, pollPeriod, invalidator, connectionProvider?.GetConnection(), logger, dueTime, useTimer, null, databaseType.ToString())
         {
         }
 

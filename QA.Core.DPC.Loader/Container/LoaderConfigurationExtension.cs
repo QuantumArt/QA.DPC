@@ -152,7 +152,7 @@ namespace QA.Core.DPC.Loader.Container
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var connectionProvider = new ExplicitConnectionProvider(customer);
                 var tracker = new StructureCacheTracker(customer.ConnectionString, customer.DatabaseType);
-                var watcher = new CustomerCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger, databaseType: customer.DatabaseType);
+                var watcher = new CustomerCoreCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger, databaseType: customer.DatabaseType);
 
                 context.Register<ICacheProvider>(currentCode, cacheProvider);
                 context.Register<IVersionedCacheProvider>(currentCode, cacheProvider);

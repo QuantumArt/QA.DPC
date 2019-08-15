@@ -63,6 +63,7 @@ namespace QA.ProductCatalog.WebApi
             services.Configure<ConnectionProperties>(Configuration.GetSection("Connection"));
             services.Configure<LoaderProperties>(Configuration.GetSection("Loader"));
             services.Configure<IntegrationProperties>(Configuration.GetSection("Integration"));
+            services.Configure<Properties>(Configuration.GetSection("Properties"));                 
             services.Configure<AuthProperties>(Configuration.GetSection("Properties"));            
             
             var sp = services.BuildServiceProvider();
