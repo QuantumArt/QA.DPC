@@ -1,17 +1,20 @@
-﻿using System;
-using System.Configuration;
+﻿using QA.Core.DPC.QP.Models;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Services
 {
 	public class ConfigurableUserProvider : IUserProvider
 	{
-		private const int DefaultUserId = 1;	 
+		private AuthProperties _properties;
+
+		public ConfigurableUserProvider(AuthProperties properties)
+		{
+			_properties = properties;
+		}
 
 		public int GetUserId()
 		{
-			return int.TryParse(ConfigurationManager.AppSettings["UserId"], out var userId) ? userId : DefaultUserId;
+			return _properties.UserId;
 		}
 
 		public string GetUserName()

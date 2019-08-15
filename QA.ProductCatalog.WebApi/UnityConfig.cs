@@ -12,25 +12,18 @@ using QA.Core.DPC.QP.API.Container;
 using QA.Core.DPC.QP.Autopublish.Configuration;
 using QA.Core.DPC.QP.Configuration;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration.Configuration;
 using System;
-using System.ComponentModel;
-using System.Configuration;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Models;
-using QA.Core.ProductCatalog.Actions;
-using QA.Core.ProductCatalog.ActionsRunner;
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
 using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
 using Unity;
-using Unity.Extension;
-using Unity.Injection;
 using Unity.Lifetime;
 
 namespace QA.ProductCatalog.WebApi.App_Start

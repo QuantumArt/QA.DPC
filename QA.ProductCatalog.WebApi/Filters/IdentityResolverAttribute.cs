@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Options;
-using Npgsql;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
@@ -20,15 +18,15 @@ namespace QA.ProductCatalog.WebApi.Filters
         {
         }
 
-        private class IdentityResolverImpl : IActionFilter
+        private class IdentityResolverImpl : Attribute, IActionFilter
         {
             private const int DefaultUserId = 1;
 
-            private const string CommonQueryTemplate = @"
-            select auth.""qp user"" AS UserId
+            private string CommonQueryTemplate = @"
+            select auth.{3} AS UserId
             from
 	            content_{0}_united AS auth
-	            join content_{1}_united tokens on auth.""token user"" = tokens.CONTENT_ITEM_ID
+	            join content_{1}_united tokens on auth.{4} = tokens.CONTENT_ITEM_ID
             where
 	            (@token is null and tokens.Name = 'Default' or tokens.AccessToken = @token) and
 	            auth.{2} = 1 and
@@ -37,11 +35,11 @@ namespace QA.ProductCatalog.WebApi.Filters
 	            tokens.Visible = 1 and
 	            tokens.Archive = 0";
 
-            private const string ServiceQueryTemplate = @"select
-	            auth.""qp user"" AS UserId
+            private string ServiceQueryTemplate = @"select
+	            auth.{3} AS UserId
             from content_{0}_united AS auth
-            join content_{1}_united AS tokens on auth.""token user"" = tokens.CONTENT_ITEM_ID
-            join item_to_item AS link on auth.CONTENT_ITEM_ID = link.l_item_id and auth.""{3}"" = link.link_id
+            join content_{1}_united AS tokens on auth.{4} = tokens.CONTENT_ITEM_ID
+            join item_to_item AS link on auth.CONTENT_ITEM_ID = link.l_item_id and auth.{5} = link.link_id
             join content_{2}_united services on link.r_item_id = services.CONTENT_ITEM_ID
             where
             (@token is null and tokens.Name = 'Default' or tokens.AccessToken = @token) 
@@ -103,24 +101,29 @@ namespace QA.ProductCatalog.WebApi.Filters
                 _identityProvider.Identity = identity;
             }
 
-            private string GetServiceQuery(string method)
+            private string GetServiceQuery(string method, DatabaseType dbType)
             {
                 int authorizationContentId = GetContentId(SettingsTitles.API_AUTHORIZATION_CONTENT_ID);
                 int tokensContentId = GetContentId(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID);
                 int servicesContentId = GetContentId(SettingsTitles.PRODUCT_SERVICES_CONTENT_ID);
-                string field = method == "GET" ? "read service" : "write service";
-
+                var qp = SqlQuerySyntaxHelper.EscapeEntityName(dbType, "Qp User");
+                var token = SqlQuerySyntaxHelper.EscapeEntityName(dbType, "Token User");
+                var fieldName = method == "GET" ? "Read Service" : "Write Service";
+                var field = SqlQuerySyntaxHelper.EscapeEntityName(dbType, fieldName);
+                
                 return string.Format(ServiceQueryTemplate, authorizationContentId, tokensContentId,
-                    servicesContentId, field);
+                    servicesContentId, qp, token, field);
             }
 
-            private string GetCommonQuery(string method)
+            private string GetCommonQuery(string method, DatabaseType dbType)
             {
                 int authorizationCoontentId = GetContentId(SettingsTitles.API_AUTHORIZATION_CONTENT_ID);
                 int tokensCoontentId = GetContentId(SettingsTitles.HIGHLOAD_API_USERS_CONTENT_ID);
-                string field = method == "GET" ? "Read" : "Write";
-
-                return string.Format(CommonQueryTemplate, authorizationCoontentId, tokensCoontentId, field);
+                var fieldName = method == "GET" ? "Read" : "Write";
+                var field = SqlQuerySyntaxHelper.EscapeEntityName(dbType, fieldName);                
+                var qp = SqlQuerySyntaxHelper.EscapeEntityName(dbType, "Qp User");
+                var token = SqlQuerySyntaxHelper.EscapeEntityName(dbType, "Token User");
+                return string.Format(CommonQueryTemplate, authorizationCoontentId, tokensCoontentId, field, qp, token);
             }
 
             private int GetContentId(SettingsTitles key)
@@ -152,11 +155,11 @@ namespace QA.ProductCatalog.WebApi.Filters
 
                 if (slug == null || version == null)
                 {
-                    dbCommand.CommandText = GetCommonQuery(method);
+                    dbCommand.CommandText = GetCommonQuery(method, customer.DatabaseType);
                 }
                 else
                 {
-                    dbCommand.CommandText = GetServiceQuery(method);
+                    dbCommand.CommandText = GetServiceQuery(method, customer.DatabaseType);
                     dbCommand.Parameters.AddWithValue("@slug", slug);
                     dbCommand.Parameters.AddWithValue("@version", version);
                 }
