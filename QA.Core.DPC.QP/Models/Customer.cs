@@ -1,7 +1,9 @@
-﻿using System.Data.Common;
+﻿using System;
+using System.Data.Common;
 using System.Data.SqlClient;
 using Npgsql;
 using QP.ConfigurationService.Models;
+using C = Quantumart.QP8.Constants;
 
 namespace QA.Core.DPC.QP.Models
 {
@@ -11,5 +13,6 @@ namespace QA.Core.DPC.QP.Models
         public DatabaseType DatabaseType { get; set;}
         public string ConnectionString { get; set; }
         
+        public C.DatabaseType QpDatabaseType => (C.DatabaseType) (int) DatabaseType;
     }
 }
