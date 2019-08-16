@@ -146,8 +146,7 @@ namespace QA.Core.DPC.Loader.Container
                 var currentCode = defaultCode ?? customer.CustomerCode;
 
                 var logger = container.Resolve<ILogger>();
-                var cacheProvider = new VersionedCustomerCacheProvider(currentCode);
-                var newCacheProvider = new VersionedCacheProviderBase(logger);
+                var cacheProvider = new VersionedCacheProviderBase(logger);
                 
                 var invalidator = new DpcContentInvalidator(cacheProvider, logger);
                 var connectionProvider = new ExplicitConnectionProvider(customer);
@@ -156,7 +155,7 @@ namespace QA.Core.DPC.Loader.Container
 
                 context.Register<ICacheProvider>(currentCode, cacheProvider);
                 context.Register<IVersionedCacheProvider>(currentCode, cacheProvider);
-                context.Register<IVersionedCacheProvider2>(currentCode, newCacheProvider);                
+                context.Register<IVersionedCacheProvider2>(currentCode, cacheProvider);                
                 context.Register<IContentInvalidator>(currentCode, invalidator);
                 context.Register<ICacheItemWatcher>(currentCode, watcher);
 
