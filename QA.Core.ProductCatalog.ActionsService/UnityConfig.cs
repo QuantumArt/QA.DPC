@@ -40,6 +40,7 @@ namespace QA.Core.ProductCatalog.ActionsService
 
         public static IUnityContainer RegisterTypes(IUnityContainer container, LoaderProperties loaderProps)
         {
+            container.AddExtension(new Diagnostic());
             container.RegisterType<DynamicResourceDictionaryContainer>();
             container.RegisterType<ProcessRemoteValidationIf>();
             
@@ -77,15 +78,22 @@ namespace QA.Core.ProductCatalog.ActionsService
             if (connection.QPMode)
             {
                 container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>(watcherInterval).As<IFactoryWatcher>();
-                container.RegisterQpMonitoring();
             }
             else
             {                
                 container.RegisterType<ICustomerProvider, SingleCustomerCoreProvider>();
                 container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().As<IFactoryWatcher>();
-                container.RegisterNonQpMonitoring();
             }
-            
+
+            if (connection.QPMode || connection.UseQPMonitoring)
+            {
+                container.RegisterQpMonitoring();
+            }
+            else
+            {
+                container.RegisterNonQpMonitoring();        
+            }
+
             switch (loaderProps.SettingsSource)
             {
                 case SettingsSource.Content:
