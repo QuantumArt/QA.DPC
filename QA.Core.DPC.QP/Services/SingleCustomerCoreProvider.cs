@@ -37,7 +37,8 @@ namespace QA.Core.DPC.QP.Services
                 return new Customer
                 {
                     ConnectionString = _cnnProps.DpcConnectionString,
-                    DatabaseType = _cnnProps.GetDatabaseType()
+                    DatabaseType = _cnnProps.GetDatabaseType(),
+                    CustomerCode = customerCode
                 };
             }
             else
@@ -48,12 +49,13 @@ namespace QA.Core.DPC.QP.Services
 
         public Customer[] GetCustomers()
         {
-            return new Customer[]
+            return new[]
             {
                 new Customer
                 {
-                    CustomerCode = Key,
-                    ConnectionString = GetConnectionString(Key)
+                    ConnectionString = _cnnProps.DpcConnectionString,
+                    DatabaseType = _cnnProps.GetDatabaseType(),
+                    CustomerCode = Key
                 }
             };
         }
