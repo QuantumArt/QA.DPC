@@ -55,7 +55,7 @@ namespace QA.Core.DPC.Notification.Services
 	            l.VISIBLE = 1";
         #endregion
 
-        public NotificationChannelProvider(ISettingsService settingsService, IConnectionProvider connectionProvider, IVersionedCacheProvider2 cacheProvider)
+        public NotificationChannelProvider(ISettingsService settingsService, IConnectionProvider connectionProvider, VersionedCacheProviderBase cacheProvider)
 			: base(settingsService, connectionProvider, cacheProvider)
 		{
 		}

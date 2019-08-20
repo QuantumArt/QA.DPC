@@ -97,7 +97,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             switch (loaderProps.SettingsSource)
             {
                 case SettingsSource.Content:
-                    container.RegisterType<ISettingsService, SettingsFromContentService>();
+                    container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
                     break;
                 case SettingsSource.AppSettings:
                     container.RegisterType<ISettingsService, SettingsFromQpCoreService>();

@@ -9,9 +9,9 @@ namespace QA.ProductCatalog.ContentProviders
         where TModel : class
     {
         private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);	
-        private readonly IVersionedCacheProvider2 _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
 
-        protected ContentProviderBaseCached(ISettingsService settingsService, IConnectionProvider connectionProvider, IVersionedCacheProvider2 cacheProvider) : base(settingsService, connectionProvider)
+        protected ContentProviderBaseCached(ISettingsService settingsService, IConnectionProvider connectionProvider, VersionedCacheProviderBase cacheProvider) : base(settingsService, connectionProvider)
         {
             _cacheProvider = cacheProvider;
         }

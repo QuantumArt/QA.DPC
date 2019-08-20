@@ -31,7 +31,7 @@ namespace QA.Core.DPC.Loader
 
         public LocalSystemCachedLoader(IContentDefinitionService definitionService,
             ILogger logger,
-            IVersionedCacheProvider cacheProvider,
+            VersionedCacheProviderBase cacheProvider,
             ICacheItemWatcher cacheItemWatcher,
             IReadOnlyArticleService articleService,
             IFieldService fieldService,

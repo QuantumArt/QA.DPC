@@ -11,9 +11,9 @@ namespace QA.Core.DPC.Loader.Services
 {
     public class DBConnectorProxy : IDBConnector
     {
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly Customer _customer;
-        public DBConnectorProxy(IConnectionProvider connectionProvider, IVersionedCacheProvider cacheProvider)
+        public DBConnectorProxy(IConnectionProvider connectionProvider, VersionedCacheProviderBase cacheProvider)
         {
             _customer = connectionProvider.GetCustomer();
             _cacheProvider = cacheProvider;

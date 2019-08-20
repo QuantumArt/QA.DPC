@@ -97,14 +97,14 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<IDBConnector, DBConnectorProxy>(GetHttpContextLifeTimeManager());
 
             Container.RegisterFactory<IRegionService>("RegionServiceFakeUser",
-                    c => new RegionService(Container.Resolve<IVersionedCacheProvider>(),
+                    c => new RegionService(Container.Resolve<VersionedCacheProviderBase>(),
                         Container.Resolve<ISettingsService>(),
                         Container.Resolve<IConnectionProvider>()));
 
             Container.RegisterFactory<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin",
                 x => new ContentDefinitionService(
                     x.Resolve<ISettingsService>(),
-                    x.Resolve<IVersionedCacheProvider>(),
+                    x.Resolve<VersionedCacheProviderBase>(),
                     x.Resolve<IArticleService>("ArticleServiceAdapterFakeUser"),
                     x.Resolve<ILogger>(),
                     x.Resolve<IConnectionProvider>()));
@@ -115,7 +115,7 @@ namespace QA.Core.DPC.Loader.Container
                 new InjectionConstructor(
                     new ResolvedParameter<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin"),
                     typeof(ILogger),
-                    typeof(IVersionedCacheProvider),
+                    typeof(VersionedCacheProviderBase),
                     typeof(ICacheItemWatcher),
                     new ResolvedParameter<IReadOnlyArticleService>("CachedReadOnlyArticleServiceAdapter"),
                     new ResolvedParameter<IFieldService>("FieldServiceAdapterAlwaysAdmin"),
@@ -131,7 +131,7 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterFactory<IArticleDependencyService>(c => new ArticleDependencyService(
                     c.Resolve<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin"),
                     c.Resolve<IServiceFactory>("ServiceFactoryFakeUser"),
-                    c.Resolve<IVersionedCacheProvider>(),
+                    c.Resolve<VersionedCacheProviderBase>(),
                     c.Resolve<ISettingsService>(),
                     c.Resolve<IConnectionProvider>()));
         }
@@ -154,8 +154,7 @@ namespace QA.Core.DPC.Loader.Container
                 var watcher = new CustomerCoreCacheItemWatcher(InvalidationMode.All, TimeSpan.FromSeconds(15), invalidator, connectionProvider, logger, databaseType: customer.DatabaseType);
 
                 context.Register<ICacheProvider>(currentCode, cacheProvider);
-                context.Register<IVersionedCacheProvider>(currentCode, cacheProvider);
-                context.Register<IVersionedCacheProvider2>(currentCode, cacheProvider);                
+                context.Register(currentCode, cacheProvider);
                 context.Register<IContentInvalidator>(currentCode, invalidator);
                 context.Register<ICacheItemWatcher>(currentCode, watcher);
 
@@ -163,8 +162,7 @@ namespace QA.Core.DPC.Loader.Container
                 watcher.Start();
             })
             .For<ICacheProvider>(defaultCode)
-            .For<IVersionedCacheProvider>(defaultCode)
-            .For<IVersionedCacheProvider2>(defaultCode)
+            .For<VersionedCacheProviderBase>(defaultCode)
             .For<IContentInvalidator>(defaultCode)
             .For<ICacheItemWatcher>(defaultCode);
         }

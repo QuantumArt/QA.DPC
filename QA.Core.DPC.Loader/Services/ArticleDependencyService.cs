@@ -22,12 +22,12 @@ namespace QA.Core.DPC.Loader.Services
 	{
 		private readonly IContentDefinitionService _contentDefinitionService;
 		private readonly Customer _customer;
-		private readonly IVersionedCacheProvider _cacheProvider;
+		private readonly VersionedCacheProviderBase _cacheProvider;
 		private readonly int _prodDefContentId;
 		private readonly ArticleService _articleService;
 		private readonly FieldService _fieldService;
 
-		public ArticleDependencyService(IContentDefinitionService contentDefinitionService, IServiceFactory serviceFactory, IVersionedCacheProvider cacheProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
+		public ArticleDependencyService(IContentDefinitionService contentDefinitionService, IServiceFactory serviceFactory, VersionedCacheProviderBase cacheProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
 		{
 			_contentDefinitionService = contentDefinitionService;
 

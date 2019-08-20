@@ -105,14 +105,12 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.DI
             builder.RegisterScoped(c => c.Resolve<CustomerCodeInstance>().CacheProvider);
             builder.RegisterScoped(c => c.Resolve<CustomerCodeTaskInstance>().TaskService);
 
-            builder.RegisterScoped<IVersionedCacheProvider>(c => c.Resolve<IVersionedCacheProvider2>());
-
             if (IsQpMode)
             {
                 if (SettingsContentId != 0)
                 {
                     builder.RegisterScoped<ISettingsService>(c => new SettingsFromContentCoreService(
-                        c.Resolve<IVersionedCacheProvider2>(),
+                        c.Resolve<VersionedCacheProviderBase>(),
                         c.Resolve<IConnectionProvider>(),
                         SettingsContentId
                         ));                    

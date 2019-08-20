@@ -28,9 +28,9 @@ namespace QA.Core.Models.Tests
             // устанавливаем фальшивый сервис для загрузки модели
             container.RegisterType<IProductService, FakeProductLoader>();
             container.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager());
-            container.RegisterType<IVersionedCacheProvider, VersionedCacheProviderBase>(new ContainerControlledLifetimeManager());
+            container.RegisterType<VersionedCacheProviderBase>(new ContainerControlledLifetimeManager());
             container.RegisterType<IContentInvalidator, DpcContentInvalidator>();
-			container.RegisterType<ISettingsService, SettingsFromContentService>();
+			container.RegisterType<ISettingsService, SettingsFromContentCoreService>();
 			container.RegisterType<IUserProvider, ProductCatalog.Actions.Services.AlwaysAdminUserProvider>();
             container.RegisterInstance<ICacheItemWatcher>(new QP8CacheItemWatcher(InvalidationMode.All, container.Resolve<IContentInvalidator>(), container.Resolve<ILogger>()));
 

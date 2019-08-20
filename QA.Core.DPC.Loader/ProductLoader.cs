@@ -48,7 +48,7 @@ namespace QA.Core.DPC.Loader
         private readonly Customer _customer;
         private readonly IContentDefinitionService _definitionService;
         private readonly ILogger _logger;
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly ICacheItemWatcher _cacheItemWatcher;
         private readonly IFieldService _fieldService;
         private readonly ISettingsService _settingsService;
@@ -59,7 +59,7 @@ namespace QA.Core.DPC.Loader
 
         #region Конструкторы
         public ProductLoader(IContentDefinitionService definitionService, ILogger logger,
-            IVersionedCacheProvider cacheProvider, ICacheItemWatcher cacheItemWatcher,
+            VersionedCacheProviderBase cacheProvider, ICacheItemWatcher cacheItemWatcher,
             IReadOnlyArticleService articleService, IFieldService fieldService, ISettingsService settingsService,
             IList<IConsumerMonitoringService> consumerMonitoringServices, IArticleFormatter formatter, IConnectionProvider connectionProvider)
         {

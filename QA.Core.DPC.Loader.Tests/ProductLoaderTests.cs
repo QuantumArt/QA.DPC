@@ -84,7 +84,7 @@ namespace QA.Core.DPC.Loader.Tests
             timer.Reset();
 
             _container.RegisterInstance<ICacheProvider>(new CacheProvider());
-            _container.RegisterInstance<IVersionedCacheProvider>(new VersionedCacheProvider3());
+            _container.RegisterSingleton<VersionedCacheProviderBase>();
 
             ObjectFactoryConfigurator.DefaultContainer = _container;
             service = ObjectFactoryBase.Resolve<IProductService>();
@@ -160,7 +160,7 @@ namespace QA.Core.DPC.Loader.Tests
         {
             ObjectFactoryBase.Resolve<IContentDefinitionService>();
             ObjectFactoryBase.Resolve<IRegionService>();
-            ObjectFactoryBase.Resolve<IVersionedCacheProvider>();
+            ObjectFactoryBase.Resolve<VersionedCacheProviderBase>();
             ObjectFactoryBase.Resolve<ICacheItemWatcher>();
             ObjectFactoryBase.Resolve<ISettingsService>();
             ObjectFactoryBase.Resolve<IUserProvider>();

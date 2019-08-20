@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Microsoft.Extensions.Caching.Memory;
-using QA.Core.Cache;
 using QA.Core.DPC.QP.Cache;
 using QA.Core.DPC.QP.Services;
 using Quantumart.QPublishing.Database;
+using QA.Core.Cache;
 
 namespace QA.ProductCatalog.ContentProviders
 {
 	public class SettingsFromQpCoreService : SettingsServiceBase
 	{
-		private readonly IVersionedCacheProvider2 _cacheProvider;
+		private readonly VersionedCacheProviderBase _cacheProvider;
 
 		private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(5);
 
-		public SettingsFromQpCoreService(IVersionedCacheProvider2 cacheProvider, IConnectionProvider connectionProvider)
+		public SettingsFromQpCoreService(VersionedCacheProviderBase cacheProvider, IConnectionProvider connectionProvider)
             : base(connectionProvider, cacheProvider)
 		{
 

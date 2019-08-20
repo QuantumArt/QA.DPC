@@ -62,6 +62,7 @@ using System.Reflection;
             IntegrationProperties integrationProperties,             
             Properties properties)
         {
+            container.AddExtension(new Diagnostic());
             container.RegisterType<DynamicResourceDictionaryContainer>();
             container.RegisterType<ProcessRemoteValidationIf>();
 
@@ -140,14 +141,14 @@ using System.Reflection;
 	        container.RegisterType<StructureCacheTracker>();
 	        
 	                    
-            container.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>("ProductLoaderWarmUpProvider");
+            container.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>();
             
-            container.RegisterType<WarmUpRepeater>(new SingletonLifetimeManager());
+            container.RegisterSingleton<WarmUpRepeater>();
             
             switch (loaderProperties.SettingsSource)
             {
                 case SettingsSource.Content:
-                    container.RegisterType<ISettingsService, SettingsFromContentCoreService>(new InjectionConstructor(typeof(IVersionedCacheProvider2), typeof(IConnectionProvider), loaderProperties.SettingsContentId));
+                    container.RegisterType<ISettingsService, SettingsFromContentCoreService>(new InjectionConstructor(typeof(VersionedCacheProviderBase), typeof(IConnectionProvider), loaderProperties.SettingsContentId));
                     break;
                 case SettingsSource.AppSettings:
                     container.RegisterType<ISettingsService, SettingsFromQpCoreService>();
@@ -172,7 +173,6 @@ using System.Reflection;
                     .RegisterConsolidationCache(properties.AutoRegisterConsolidationCache)
                     .As<IFactory>()
                     .With<FactoryWatcher>(properties.WatcherInterval)
-                    .WithCallback(_factoryWatcher_OnConfigurationModify)
                     .Watch();
             }
             else
@@ -181,7 +181,7 @@ using System.Reflection;
                     .RegisterConsolidationCache(properties.AutoRegisterConsolidationCache, SingleCustomerCoreProvider.Key)
                     .As<IFactory>()
                     .With<FactoryWatcher>()
-                    .WithCallback(_factoryWatcher_OnConfigurationModify)	                
+                    .WithCallback((sender, e) => { container.Resolve<WarmUpRepeater>().Start(); })	                            
                     .Watch();
             }
 
@@ -220,11 +220,6 @@ using System.Reflection;
                     }
                 }
             }
-        }
-
-        private static void _factoryWatcher_OnConfigurationModify(object sender, FactoryWatcherEventArgs e)
-        {
-            WarmUpHelper.WarmUp();
         }
     }
    

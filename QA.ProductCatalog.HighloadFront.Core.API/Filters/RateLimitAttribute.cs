@@ -16,11 +16,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
     {
 
         private readonly ElasticConfiguration _configuration;
-        private readonly IVersionedCacheProvider2 _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
 
         public string Profile { get; set; }
 
-        public RateLimitAttribute(ElasticConfiguration configuration, IVersionedCacheProvider2 cacheProvider,
+        public RateLimitAttribute(ElasticConfiguration configuration, VersionedCacheProviderBase cacheProvider,
             string profile)
         {
             _configuration = configuration;

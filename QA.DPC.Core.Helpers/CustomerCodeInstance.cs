@@ -9,7 +9,7 @@ namespace QA.DPC.Core.Helpers
 {
     public class CustomerCodeInstance
     {
-        public IVersionedCacheProvider2 CacheProvider { get; set; }
+        public VersionedCacheProviderBase CacheProvider { get; set; }
 
         public IContentInvalidator Invalidator { get; set; }
 

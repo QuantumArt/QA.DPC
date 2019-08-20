@@ -18,7 +18,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
         private readonly IContentProvider<HighloadApiLimit> _limitProvider;
         private readonly IContentProvider<HighloadApiMethod> _methodProvider;
        
-        private readonly IVersionedCacheProvider2 _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly TimeSpan _cacheTimeSpan = TimeSpan.FromMinutes(60);
 
         public QpElasticConfiguration(
@@ -26,7 +26,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
             IContentProvider<HighloadApiUser> userProvider,
             IContentProvider<HighloadApiLimit> limitProvider,
             IContentProvider<HighloadApiMethod> methodProvider,
-            IVersionedCacheProvider2 cacheProvider,
+            VersionedCacheProviderBase cacheProvider,
             IHttpClientFactory factory,
             PolicyRegistry registry,
             ILoggerFactory loggerFactory,

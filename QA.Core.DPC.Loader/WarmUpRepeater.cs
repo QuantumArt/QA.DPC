@@ -13,21 +13,24 @@ namespace QA.Core.DPC.Loader
 
         public WarmUpRepeater(IOptions<LoaderProperties> props, IWarmUpProvider provider)
         {
-            if (_props.LoaderWarmUpRepeatInMinutes > 0)
+            _provider = provider;
+            _props = props.Value;
+        }
+        public void Start()
+        {
+            if (_props.LoaderWarmUpProductId != 0)
             {
-                _timer = new Timer(OnTick, null, TimeSpan.Zero, TimeSpan.FromMinutes(_props.LoaderWarmUpRepeatInMinutes));
-                _provider = provider;
-                _props = props.Value;
+                _provider.WarmUp();
+                if (_props.LoaderWarmUpRepeatInMinutes != 0)
+                {
+                    _timer = new Timer(OnTick, null, TimeSpan.Zero, TimeSpan.FromMinutes(_props.LoaderWarmUpRepeatInMinutes));               
+                }
             }
-
         }
 
         private void OnTick(object state)
         {
-            if (_props.LoaderWarmUpRepeatInMinutes > 0)
-            {
-                _provider.WarmUp();
-            }
+            _provider.WarmUp();
         }
 
         public void Stop()

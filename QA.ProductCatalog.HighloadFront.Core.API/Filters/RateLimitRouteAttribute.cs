@@ -6,7 +6,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Filters
 {
     public class RateLimitRouteAttribute : RateLimitAttribute
     {
-        public RateLimitRouteAttribute(ElasticConfiguration configuration, IVersionedCacheProvider2 cacheProvider,
+        public RateLimitRouteAttribute(ElasticConfiguration configuration, VersionedCacheProviderBase cacheProvider,
             string profile) : base(configuration, cacheProvider, profile)
         {
             

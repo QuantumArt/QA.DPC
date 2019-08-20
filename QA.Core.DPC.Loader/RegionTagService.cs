@@ -20,7 +20,7 @@ namespace QA.Core.DPC.Loader
     {
 
         #region Глобальные переменные
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly ISettingsService _settingsService;
         private readonly IRegionService _regionService;
         private static readonly Regex DefaultRegex =
@@ -36,7 +36,7 @@ namespace QA.Core.DPC.Loader
         #endregion
 
         #region Конструкторы
-        public RegionTagService(IVersionedCacheProvider cacheProvider, ISettingsService settingsService,
+        public RegionTagService(VersionedCacheProviderBase cacheProvider, ISettingsService settingsService,
             IRegionService regionService, IArticleService articleService, IFieldService fieldService,
             IConnectionProvider connectionProvider)
         {

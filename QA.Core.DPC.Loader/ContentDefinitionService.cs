@@ -33,14 +33,14 @@ namespace QA.Core.DPC.Loader
 		private const string FIELD_NAME_FILTER = "Filter";
 
 		private readonly ISettingsService _settingsService;
-		private readonly IVersionedCacheProvider _cacheProvider;
+		private readonly VersionedCacheProviderBase _cacheProvider;
 		private readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
 		private readonly ILogger _logger;
 		private readonly IArticleService _articleService;
 		private readonly Customer _customer;
 
 		public ContentDefinitionService(ISettingsService settingsService,
-			IVersionedCacheProvider cacheProvider,
+			VersionedCacheProviderBase cacheProvider,
 			IArticleService articleService,
 			ILogger logger,
             IConnectionProvider connectionProvider)

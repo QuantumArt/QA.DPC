@@ -21,6 +21,7 @@ using QA.ProductCatalog.Infrastructure;
 using QA.Core.Models.Processors;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using QA.Core.Cache;
 using QA.DPC.Core.Helpers;
 using Unity;
 using QA.ProductCatalog.Admin.WebApp.Filters;
@@ -33,14 +34,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
     {
         private const string DefaultCultureKey = "_default_culture";
         private readonly Func<string, string, IAction> _getAction;
-        private readonly IVersionedCacheProvider _versionedCacheProvider;
+        private readonly VersionedCacheProviderBase _versionedCacheProvider;
         private readonly Func<string, IArticleFormatter> _getFormatter;
         private readonly IProductLocalizationService _localizationService;
         private readonly IProductService _productService;
         private readonly QPHelper _qpHelper;
 
         public ProductController(Func<string, string, IAction> getAction,
-            IVersionedCacheProvider versionedCacheProvider,
+            VersionedCacheProviderBase versionedCacheProvider,
             Func<string, IArticleFormatter> getFormatter, 
             IProductLocalizationService localizationService,
             IProductService productService,

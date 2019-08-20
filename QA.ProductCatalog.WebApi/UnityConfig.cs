@@ -66,7 +66,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
 				unityContainer.RegisterType<IUserProvider, ConfigurableUserProvider>();
 			}
 
-			unityContainer.RegisterType<ISettingsService, SettingsFromContentService>();
+			unityContainer.RegisterType<ISettingsService, SettingsFromContentCoreService>();
 
 			unityContainer.RegisterType<IRegionTagReplaceService, RegionTagService>();
 
@@ -88,9 +88,9 @@ namespace QA.ProductCatalog.WebApi.App_Start
 
             unityContainer.RegisterType<StructureCacheTracker>();
             
-            unityContainer.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>("ProductLoaderWarmUpProvider");
+            unityContainer.RegisterType<IWarmUpProvider, ProductLoaderWarmUpProvider>();
             
-            unityContainer.RegisterType<WarmUpRepeater>(new SingletonLifetimeManager());
+            unityContainer.RegisterSingleton<WarmUpRepeater>();
             
             switch (loaderProps.SettingsSource)
             {
@@ -120,7 +120,6 @@ namespace QA.ProductCatalog.WebApi.App_Start
 	                .RegisterConsolidationCache(props.AutoRegisterConsolidationCache)
 	                .As<IFactory>()
 	                .With<FactoryWatcher>(props.WatcherInterval)
-	                .WithCallback(_factoryWatcher_OnConfigurationModify)
 	                .Watch();
             }
             else
@@ -130,7 +129,7 @@ namespace QA.ProductCatalog.WebApi.App_Start
 	                .RegisterConsolidationCache(props.AutoRegisterConsolidationCache, SingleCustomerCoreProvider.Key)
 	                .As<IFactory>()
 	                .With<FactoryWatcher>()
-	                .WithCallback(_factoryWatcher_OnConfigurationModify)	                
+	                .WithCallback((sender, e) => { unityContainer.Resolve<WarmUpRepeater>().Start(); })	                
 	                .Watch();
             }
 
@@ -144,11 +143,6 @@ namespace QA.ProductCatalog.WebApi.App_Start
             }
             
             return unityContainer;
-		}
-		
-		private static void _factoryWatcher_OnConfigurationModify(object sender, FactoryWatcherEventArgs e)
-		{
-			WarmUpHelper.WarmUp();
 		}
 	}
 }

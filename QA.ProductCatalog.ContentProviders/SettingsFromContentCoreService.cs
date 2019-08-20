@@ -9,11 +9,11 @@ namespace QA.ProductCatalog.ContentProviders
 
     public class SettingsFromContentCoreService : SettingsServiceBase
     {
-        private readonly IVersionedCacheProvider2 _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
 
         private readonly int _settingsContentId;
 
-        public SettingsFromContentCoreService(IVersionedCacheProvider2 cacheProvider, 
+        public SettingsFromContentCoreService(VersionedCacheProviderBase cacheProvider, 
             IConnectionProvider connectionProvider, 
             int settingsContentId)
             : base(connectionProvider, cacheProvider)

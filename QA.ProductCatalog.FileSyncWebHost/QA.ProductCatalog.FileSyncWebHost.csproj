@@ -309,23 +309,23 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core, Version=3.5.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QA.Core.3.5.2-beta5\lib\netstandard2.0\QA.Core.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.3.5.2-beta6\lib\netstandard2.0\QA.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Cache, Version=3.5.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QA.Core.Cache.3.5.2-beta5\lib\netstandard2.0\QA.Core.Cache.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Cache.3.5.2-beta6\lib\netstandard2.0\QA.Core.Cache.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Linq, Version=3.5.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QA.Core.Linq.3.5.2-beta5\lib\netstandard2.0\QA.Core.Linq.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Linq.3.5.2-beta6\lib\netstandard2.0\QA.Core.Linq.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Logger, Version=3.5.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QA.Core.Logger.3.5.2-beta5\lib\netstandard2.0\QA.Core.Logger.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Logger.3.5.2-beta6\lib\netstandard2.0\QA.Core.Logger.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Core.Throws, Version=3.5.0.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>$(SolutionDir)packages\QA.Core.Throws.3.5.1\lib\netstandard2.0\QA.Core.Throws.dll</HintPath>
+      <HintPath>$(SolutionDir)packages\QA.Core.Throws.3.5.2-beta6\lib\netstandard2.0\QA.Core.Throws.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QA.Validation.Xaml, Version=1.3.0.0, Culture=neutral, PublicKeyToken=null">

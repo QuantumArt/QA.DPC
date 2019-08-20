@@ -22,7 +22,7 @@
     <ProjectReference Include="..\QA.Core.ProductCatalog.ActionsRunner\QA.Core.ProductCatalog.ActionsRunner.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="QA.Core.Logger" Version="3.5.2-beta5" />
+    <PackageReference Include="QA.Core.Logger" Version="3.5.2-beta6" />
     <PackageReference Include="Quartz" Version="3.0.7" />
   </ItemGroup>
 </Project>

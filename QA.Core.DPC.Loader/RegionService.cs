@@ -18,7 +18,7 @@ namespace QA.Core.DPC.Loader
     public class RegionService : IRegionService
     {
         #region Глобальные переменные
-        private readonly IVersionedCacheProvider _cacheProvider;
+        private readonly VersionedCacheProviderBase _cacheProvider;
         private readonly ISettingsService _settingsService;
         private readonly TimeSpan _cachePeriod = new TimeSpan(0, 10, 0);
         private readonly Customer _customer;
@@ -26,7 +26,7 @@ namespace QA.Core.DPC.Loader
         #endregion
 
         #region Конструкторы
-        public RegionService(IVersionedCacheProvider cacheProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
+        public RegionService(VersionedCacheProviderBase cacheProvider, ISettingsService settingsService, IConnectionProvider connectionProvider)
         {
             _cacheProvider = cacheProvider;
             _settingsService = settingsService;
