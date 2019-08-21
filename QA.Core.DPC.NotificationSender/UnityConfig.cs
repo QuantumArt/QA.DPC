@@ -42,6 +42,7 @@ namespace QA.Core.DPC
 
 		public static IUnityContainer RegisterTypes(IUnityContainer unityContainer, NotificationProperties props)
 		{
+			unityContainer.AddExtension(new Diagnostic());
 			
 			unityContainer.RegisterType<IConnectionProvider, CoreConnectionProvider>();
 			unityContainer.RegisterType<ICustomerProvider, CustomerProvider>();
