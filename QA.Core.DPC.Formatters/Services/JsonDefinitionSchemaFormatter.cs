@@ -57,8 +57,8 @@ namespace QA.Core.DPC.Formatters.Services
             var jObject = new JObject();
 
             jObject["Hash"] = $"{product.GetHashCode()}";
-            var fieldService = _serviceFactory.Resolve<IFieldService>();
-            var contentService = _serviceFactory.Resolve<IContentService>();
+            var fieldService = _serviceFactory.Resolve<IFieldService>("FieldServiceAdapterAlwaysAdmin");
+            var contentService = _serviceFactory.Resolve<IContentService>("ContentServiceAdapterAlwaysAdmin");
 
             using (fieldService.CreateQpConnectionScope())
             {

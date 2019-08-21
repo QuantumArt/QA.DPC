@@ -12,12 +12,8 @@ using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
-#if !NETSTANDARD 
-using QA.Core.Web;
-#endif
 using QA.DPC.Core.Helpers;
 using QA.ProductCatalog.ContentProviders;
-using Quantumart.QP8.Constants;
 using Unity;
 using Unity.Extension;
 using Unity.Injection;
@@ -35,11 +31,7 @@ namespace QA.Core.DPC.Loader.Container
 
         public ITypeLifetimeManager GetHttpContextLifeTimeManager()
         {
-#if !NETSTANDARD
-            return new HttpContextLifetimeManager();
-#else
             return new HttpContextCoreLifetimeManager(Container.Resolve<IHttpContextAccessor>());
-#endif
         }
 
         protected override void Initialize()
@@ -60,6 +52,11 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<IFieldService>("FieldServiceAdapterAlwaysAdmin",
                 GetHttpContextLifeTimeManager(),
                 new InjectionFactory(x => new FieldServiceAdapter(new FieldService(x.Resolve<IConnectionProvider>().GetConnection(), 1), x.Resolve<IConnectionProvider>())));
+            
+            Container.RegisterType<IContentService>("ContentServiceAdapterAlwaysAdmin",
+                GetHttpContextLifeTimeManager(),
+                new InjectionFactory(x => new ContentServiceAdapter(new ContentService(x.Resolve<IConnectionProvider>().GetConnection(), 1), x.Resolve<IConnectionProvider>())));
+            
 
             Container.RegisterFactory<ITransaction>(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>()));
             Container.RegisterFactory<Func<ITransaction>>(c => new Func<ITransaction>(() => c.Resolve<ITransaction>()));

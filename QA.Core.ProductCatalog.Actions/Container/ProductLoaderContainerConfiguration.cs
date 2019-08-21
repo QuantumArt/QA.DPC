@@ -6,9 +6,6 @@ using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using System;
 using QA.Core.DPC.QP.Cache;
-#if !NETSTANDARD
-using QA.Core.Web;
-#endif
 using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;
@@ -25,12 +22,7 @@ namespace QA.Core.ProductCatalog.Actions.Container
 
 			Container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
 
-#if !NETSTANDARD
-			// устанавливаем фальшивый сервис для загрузки модели
-			Container.RegisterType<IAdministrationSecurityChecker, FakeAdministrationSecurityChecker>();
-#endif			
-
-				Container
+			Container
 				.RegisterType<IXmlProductService, XmlProductService>()
 				.RegisterType<ICacheProvider, CacheProvider>(new ContainerControlledLifetimeManager())
 				.RegisterType<VersionedCacheProviderBase>(new ContainerControlledLifetimeManager())

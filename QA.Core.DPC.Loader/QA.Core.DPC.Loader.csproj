@@ -44,7 +44,4 @@
     <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
     <PackageReference Include="Unity.Abstractions" Version="4.0.3" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
-    <PackageReference Include="QA.Core.Web" Version="3.5.2-beta6" />
-  </ItemGroup>  
 </Project>

@@ -13,12 +13,7 @@ using Quantumart.QP8.BLL.Services.API;
 using Unity;
 using Unity.Extension;
 using QA.DPC.Core.Helpers;
-
-#if NETSTANDARD
 using Microsoft.AspNetCore.Http;
-#else
-using QA.Core.Web;
-#endif
 using Unity.Injection;
 using QA.ProductCatalog.Integration.DAL;
 using Unity.Lifetime;
@@ -29,11 +24,7 @@ namespace QA.Core.DPC.API.Container
 	{
 		public ITypeLifetimeManager GetHttpContextLifeTimeManager()
 		{
-#if !NETSTANDARD
-			return new HttpContextLifetimeManager();
-#else
             return new HttpContextCoreLifetimeManager(Container.Resolve<IHttpContextAccessor>());
-#endif
 		}		
 		protected override void Initialize()
 		{
