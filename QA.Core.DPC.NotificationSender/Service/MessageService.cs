@@ -27,22 +27,20 @@ namespace QA.Core.DPC.Service
                 Throws.IfArgumentNull(channel, _ => channel);
                 Throws.IfArgumentNull(maxCount, _ => maxCount);
 
-                var ctx = NotificationsModelDataContext.GetOrCreate(_provider);
-                lock (ctx)
-                {
-                    return ctx.Messages
-                        .Where(x => x.Channel == channel &&
-                                    x.Created <=
-                                    DateTime.Now.AddSeconds(-10)) //чтобы не читать данные которые сейчас пишут
-                        .OrderBy(x => x.Created)
-                        .Take(maxCount)
-                        .ToList()
-                        .Select(x => new Message
-                        {
-                            Channel = x.Channel, Created = x.Created, Id = x.Id, Method = x.Method,
-                            Xml = x.Data, UserId = x.UserId, UserName = x.UserName, Key = x.DataKey
-                        }).ToList();
-                }
+                var ctx = NotificationsModelDataContext.Get(_provider);
+                
+                return ctx.Messages
+                    .Where(x => x.Channel == channel &&
+                                x.Created <=
+                                DateTime.Now.AddSeconds(-10)) //чтобы не читать данные которые сейчас пишут
+                    .OrderBy(x => x.Created)
+                    .Take(maxCount)
+                    .ToList()
+                    .Select(x => new Message
+                    {
+                        Channel = x.Channel, Created = x.Created, Id = x.Id, Method = x.Method,
+                        Xml = x.Data, UserId = x.UserId, UserName = x.UserName, Key = x.DataKey
+                    }).ToList();
             });
         }
 
@@ -51,7 +49,7 @@ namespace QA.Core.DPC.Service
             return RunAction(new UserContext(), null, () =>
             {
                 Throws.IfArgumentNull(id, _ => id);
-                var ctx = NotificationsModelDataContext.GetOrCreate(_provider);
+                var ctx = NotificationsModelDataContext.Get(_provider);
                 var m = ctx.Messages.FirstOrDefault(x => x.Id == id);
                     
 				if (m != null)

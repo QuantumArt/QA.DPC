@@ -22,26 +22,23 @@ namespace QA.Core.DPC.DAL
         {
         }
 
-        public static NotificationsModelDataContext GetOrCreate(IConnectionProvider provider)
+        public static NotificationsModelDataContext Get(IConnectionProvider provider)
         {
              var customerConfig = provider.GetCustomer(QP.Models.Service.Notification);
-             if (!_contexts.TryGetValue(customerConfig.ConnectionString, out var result))
+             NotificationsModelDataContext result;
+             if (customerConfig.DatabaseType == DatabaseType.Postgres)
              {
-                 if (customerConfig.DatabaseType == DatabaseType.Postgres)
-                 {
-                     var optionsBuilder = new DbContextOptionsBuilder<NpgSqlNotificationsModelDataContext>();
-                     optionsBuilder.UseNpgsql(customerConfig.ConnectionString);
-                     result = new NpgSqlNotificationsModelDataContext(optionsBuilder.Options);
-                 }
-                 else
-                 {
-                     var optionsBuilder = new DbContextOptionsBuilder<SqlServerNotificationsModelDataContext>();
-                     optionsBuilder.UseSqlServer(customerConfig.ConnectionString);
-                     result = new SqlServerNotificationsModelDataContext(optionsBuilder.Options);
-                 }
-                 _contexts[customerConfig.ConnectionString] = result;
+                var optionsBuilder = new DbContextOptionsBuilder<NpgSqlNotificationsModelDataContext>();
+                optionsBuilder.UseNpgsql(customerConfig.ConnectionString);
+                result = new NpgSqlNotificationsModelDataContext(optionsBuilder.Options);
              }
-
+             else
+             {
+                var optionsBuilder = new DbContextOptionsBuilder<SqlServerNotificationsModelDataContext>();
+                optionsBuilder.UseSqlServer(customerConfig.ConnectionString);
+                result = new SqlServerNotificationsModelDataContext(optionsBuilder.Options);
+             }
+             
              return result;
 
         }

@@ -99,7 +99,7 @@ namespace QA.Core.DPC
 				
 					if (messages.Any())
 					{
-						var ctx = NotificationsModelDataContext.GetOrCreate(_connectionProvider);
+						var ctx = NotificationsModelDataContext.Get(_connectionProvider);
 						ctx.Messages.AddRange(messages);
 
 						var productIds = notifications.Select(n => n.ProductId).Distinct();
@@ -127,17 +127,13 @@ namespace QA.Core.DPC
                 .Union(currentConfiguration == null ? new string[0] : currentConfiguration.Channels.Select(c => c.Name))
                 .Distinct();
 
-            Dictionary<string, int> countMap;
-            var ctx = NotificationsModelDataContext.GetOrCreate(_connectionProvider);
-            lock (ctx)
-            {
-	            countMap = ctx.Messages
-		            .GroupBy(m => m.Channel)
-		            .Select(g => new {g.Key, Count = g.Count()})
-		            .ToDictionary(g => g.Key, g => g.Count);
-            }
+            var ctx = NotificationsModelDataContext.Get(_connectionProvider);
+	        var countMap = ctx.Messages
+		        .GroupBy(m => m.Channel)
+		        .Select(g => new {g.Key, Count = g.Count()})
+		        .ToDictionary(g => g.Key, g => g.Count);
 
-            var chennelsStatistic = channelService.GetNotificationChannels(customerCode);
+            var channelsStatistic = channelService.GetNotificationChannels(customerCode);
 
             return new ConfigurationInfo
             {
@@ -165,7 +161,7 @@ namespace QA.Core.DPC
                     WaitIntervalAfterErrors = currentConfiguration.WaitIntervalAfterErrors
                 },
                 Channels = (from channel in channels
-                           join s in chennelsStatistic on channel equals s.Name into d
+                           join s in channelsStatistic on channel equals s.Name into d
                            from s in d.DefaultIfEmpty()
                            select new ChannelInfo
                            {
