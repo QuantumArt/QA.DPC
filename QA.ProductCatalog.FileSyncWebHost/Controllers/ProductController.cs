@@ -1,50 +1,70 @@
-﻿using System.Configuration;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
+﻿using System.IO;
+using System.Text;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using QA.Core.Logger;
 
 namespace QA.ProductCatalog.FileSyncWebHost.Controllers
 {
-    public class ProductController : ApiController
+	[Route("Product/Send")]
+    public class ProductController : Controller
 	{
-		private readonly string _path;
+		private readonly DataOptions _opts;
 		private readonly ILogger _logger;
 
-		public ProductController(ILogger logger)
+		public ProductController(ILogger logger, IOptions<DataOptions> opts)
 		{
-			_path = ConfigurationManager.AppSettings["Path"];
+			_opts = opts.Value;
 			_logger = logger;
 		}
 		
-		[HttpPut]
-		[HttpDelete]
-		[HttpGet]
-		public async Task<HttpResponseMessage> Send(string exstension, string format, int productId)
+		[HttpPut("{format}/{extension}")]
+		public ActionResult PutResult([FromBody] string data, string extension, string format, int productId)
 		{
-			string fileName = GetFileName(format, exstension, productId);
-			string filePath = Path.Combine(_path, fileName);
-
-			if (Request.Method == HttpMethod.Put)
+			var fileName = GetFileName(format, extension, productId);
+			var filePath = Path.Combine(_opts.FilePath, fileName);
+			if (!Directory.Exists(_opts.FilePath))
 			{
-				using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-				{
-					await Request.Content.CopyToAsync(fs);
-				};
-				_logger.LogDebug(() => "add file " + fileName);
+				Directory.CreateDirectory(_opts.FilePath);
 			}
-			else if (Request.Method == HttpMethod.Delete)
+			using (var fs = new FileStream(filePath, FileMode.Create, FileAccess.Write))
 			{
-				File.Delete(filePath);
-				_logger.LogDebug(() => "delete file " + fileName);
-			}
-
-			return Request.CreateResponse(HttpStatusCode.OK, filePath);
+				var array = Encoding.UTF8.GetBytes(data);
+				fs.Write(array);
+			};
+			_logger.LogDebug(() => "add file " + fileName);
+			return Content(filePath);
 		}
 
-		private string GetFileName(string format, string exstension, int productId)
+		[HttpDelete("{format}/{extension}")]
+		public ActionResult DeleteResult(string extension, string format, int productId)
+		{
+			var fileName = GetFileName(format, extension, productId);
+			var filePath = Path.Combine(_opts.FilePath, fileName);
+			if (System.IO.File.Exists(filePath))
+			{
+				System.IO.File.Delete(filePath);
+				_logger.LogDebug(() => "delete file " + fileName);
+				return Content(filePath);
+			}
+
+			return NotFound();
+		}
+		
+		[HttpGet("{format}/{extension}")]
+		public ActionResult GetResult(string extension, string format, int productId)
+		{
+			var fileName = GetFileName(format, extension, productId);
+			var filePath = Path.Combine(_opts.FilePath, fileName);
+			if (System.IO.File.Exists(filePath))
+			{
+				return Content(filePath);
+			}
+			return NotFound();
+		}
+		
+
+		private string GetFileName(string format, string extension, int productId)
 		{
 
 			string name;
@@ -58,7 +78,7 @@ namespace QA.ProductCatalog.FileSyncWebHost.Controllers
 				name = format + productId;
 			}
 
-			return string.Format("{0}.{1}", name, exstension);
+			return $"{name}.{extension}";
 		}
 	}
 }
