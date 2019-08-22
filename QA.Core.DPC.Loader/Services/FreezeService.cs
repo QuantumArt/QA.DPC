@@ -151,7 +151,7 @@ namespace QA.Core.DPC.Loader.Services
             foreach (ProductFreezeMetaRow row in productFreezeMeta)
             {
 	            freezeFieldQueries.Add($@"select {_freezeFieldName} 
-						from content_{row.ContentId}'_united
+						from content_{row.ContentId}_united
 						where visible = 1 and archive = 0 
 							and CONTENT_ITEM_ID = @id
 							and {_freezeFieldName} is not null");
@@ -195,7 +195,7 @@ namespace QA.Core.DPC.Loader.Services
             
             foreach (ProductFreezeMetaRow row in productFreezeMeta)
             {
-	            freezeFieldQueries.Add($@"SELECT CONTENT_ITEM_ID Id FROM content_{row.ContentId}'_united
+	            freezeFieldQueries.Add($@"SELECT CONTENT_ITEM_ID Id FROM content_{row.ContentId}_united
 						WHERE visible = 1 AND archive = 0 
 								AND {_freezeFieldName} >= @date 
 								AND CONTENT_ITEM_ID in (
@@ -235,7 +235,7 @@ namespace QA.Core.DPC.Loader.Services
             
 	        foreach (ProductFreezeMetaRow row in productFreezeMeta)
 	        {
-		        freezeFieldQueries.Add($@"SELECT CONTENT_ITEM_ID Id FROM content_{row.ContentId}'_united
+		        freezeFieldQueries.Add($@"SELECT CONTENT_ITEM_ID Id FROM content_{row.ContentId}_united
 						WHERE visible = 1 AND archive = 0 
 								AND {_freezeFieldName} < @date");
 	        }
@@ -278,7 +278,7 @@ namespace QA.Core.DPC.Loader.Services
             foreach (ProductFreezeMetaRow row in productFreezeMeta)
             {
 	            freezeFieldQueries.Add($@"SELECT {row.ContentId} AS ContentId, CONTENT_ITEM_ID AS Id, {row.AttributeId} AS FieldId 
-						FROM content_{row.ContentId}'_united
+						FROM content_{row.ContentId}_united
 						WHERE visible = 1 AND archive = 0 
 								AND CONTENT_ITEM_ID in (
 									SELECT Id 
