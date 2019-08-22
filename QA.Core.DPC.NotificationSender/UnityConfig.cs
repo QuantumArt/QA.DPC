@@ -55,7 +55,7 @@ namespace QA.Core.DPC
 			unityContainer.RegisterFactory<ArticleService>(c => c.Resolve<IServiceFactory>().GetArticleService());
 			unityContainer.RegisterType<IContextStorage, QpCachedContextStorage>();
             unityContainer.RegisterType<INotificationChannelService, NotificationChannelService>(new ContainerControlledLifetimeManager());
-            unityContainer.RegisterType<INotificationService, NotificationService>(new ContainerControlledLifetimeManager());
+            unityContainer.RegisterType<INotificationService, NotificationService>();
             unityContainer.RegisterType<IStatusProvider, StatusProvider>();
            
             unityContainer.RegisterType<IConfigurationService, ConfigurationService>(new ContainerControlledLifetimeManager());
@@ -97,7 +97,7 @@ namespace QA.Core.DPC
             else if (connection.HasConnection(QP.Models.Service.Admin))
             {                
                 unityContainer.RegisterType<ICustomerProvider, SingleCustomerCoreProvider>();
-                unityContainer.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().As<IFactoryWatcher>();
+                unityContainer.RegisterConsolidationCache(autoRegister, SingleCustomerCoreProvider.Key).With<FactoryWatcher>().As<IFactoryWatcher>();
             }
             else
             {

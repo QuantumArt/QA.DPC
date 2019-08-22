@@ -82,7 +82,7 @@ namespace QA.Core.ProductCatalog.ActionsService
             else
             {                
                 container.RegisterType<ICustomerProvider, SingleCustomerCoreProvider>();
-                container.RegisterConsolidationCache(autoRegister).With<FactoryWatcher>().As<IFactoryWatcher>();
+                container.RegisterConsolidationCache(autoRegister, SingleCustomerCoreProvider.Key).With<FactoryWatcher>().As<IFactoryWatcher>();
             }
 
             if (connection.QPMode || connection.UseQPMonitoring)

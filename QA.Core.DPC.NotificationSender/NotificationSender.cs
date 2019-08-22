@@ -96,7 +96,7 @@ using Microsoft.Extensions.Hosting;
 
         private void StopConfiguration(string customerCode)
         {
-            if (customerCode != SingleCustomerProvider.Key)
+            if (customerCode != SingleCustomerCoreProvider.Key)
             {
                 var logger = ObjectFactoryBase.Resolve<ILogger>();
 
@@ -160,7 +160,7 @@ using Microsoft.Extensions.Hosting;
                     delay++;
                 }
 
-                if (customerCode != SingleCustomerProvider.Key)
+                if (customerCode != SingleCustomerCoreProvider.Key)
                 {
                     var autopublishKey = GetKey(AutopublishKey, customerCode);
 
@@ -223,7 +223,7 @@ using Microsoft.Extensions.Hosting;
         }
 		private void NotificationService_OnUpdateConfiguration(object sender, string customerCode)
 		{
-            var actualCustomerCode = _connectionProvider.QPMode ? customerCode : SingleCustomerProvider.Key;
+            var actualCustomerCode = _connectionProvider.QPMode ? customerCode : SingleCustomerCoreProvider.Key;
             UpdateConfiguration(actualCustomerCode);
         }
 

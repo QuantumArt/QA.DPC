@@ -40,9 +40,9 @@ namespace QA.Core.DPC.QP.Services
             var customerConfiguration = configuration.Customers.FirstOrDefault(c => c.Name == customerCode);
             if (customerConfiguration == null)
             {
-                if (customerCode == SingleCustomerProvider.Key)
+                if (customerCode == SingleCustomerCoreProvider.Key)
                 {
-                    return new Customer() { CustomerCode = SingleCustomerProvider.Key};
+                    return new Customer() { CustomerCode = SingleCustomerCoreProvider.Key};
                 }
                 throw new Exception($"Customer code '{customerCode}' not found");
             }

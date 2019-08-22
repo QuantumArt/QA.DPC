@@ -190,7 +190,7 @@ namespace QA.Core.DPC
             {
                 return config;
             }
-            else if (NotificationSender.ConfigDictionary.TryGetValue(SingleCustomerProvider.Key, out config))
+            else if (NotificationSender.ConfigDictionary.TryGetValue(SingleCustomerCoreProvider.Key, out config))
             {
                 return config;
             }
