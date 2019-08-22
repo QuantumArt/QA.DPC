@@ -26,10 +26,10 @@ namespace QA.Core.DPC.Loader.Services
     public class ValidationService : IValidationService
     {
         #region Queries
-        private string GetProductQuery(string ids) =>
+        private string GetProductQuery(string idList) =>
         $@"SELECT DISTINCT a.CONTENT_ID
         FROM content_item a
-	        JOIN (SELECT Id FROM {ids}) AS ids ON a.CONTENT_ITEM_ID = ids.ID
+	        JOIN {idList} ON a.CONTENT_ITEM_ID = ids.ID
 	        JOIN CONTENT_ATTRIBUTE publicationFailed ON a.CONTENT_ID = publicationFailed.CONTENT_ID
 	        JOIN CONTENT_ATTRIBUTE validationMessage ON a.CONTENT_ID = validationMessage.CONTENT_ID
         WHERE
@@ -202,13 +202,13 @@ namespace QA.Core.DPC.Loader.Services
         private ProductDescriptor[] GetProducts(DBConnector dbConnector, int[] productIds, string validationFailedField, string validationMessageField)
         {            
             var idList = SqlQuerySyntaxHelper.IdList(dbConnector.DatabaseType, "@ids", "ids");
-            var dbCommand = dbConnector.CreateDbCommand(GetProductQuery(idList));
+            var productQueryCommand = dbConnector.CreateDbCommand(GetProductQuery(idList));
 
-            dbCommand.Parameters.AddWithValue("@validationFailedField", validationFailedField);
-            dbCommand.Parameters.AddWithValue("@validationMessageField", validationMessageField);
-            dbCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", productIds, dbConnector.DatabaseType));
+            productQueryCommand.Parameters.AddWithValue("@validationFailedField", validationFailedField);
+            productQueryCommand.Parameters.AddWithValue("@validationMessageField", validationMessageField);
+            productQueryCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", productIds, dbConnector.DatabaseType));
 
-            var contentIdsData = dbConnector.GetRealData(dbCommand);
+            var contentIdsData = dbConnector.GetRealData(productQueryCommand);
             if (!contentIdsData.Rows.Any()) return new ProductDescriptor[0];
             List<string> queries = new List<string>(contentIdsData.Rows.Count);
             foreach (DataRow row in contentIdsData.Rows)
@@ -223,8 +223,9 @@ namespace QA.Core.DPC.Loader.Services
                 WHERE a.ARCHIVE = 0 AND a.VISIBLE = 1");
             }
             
-            dbCommand = dbConnector.CreateDbCommand(string.Join("\nUNION ALL\n", queries));
-            var dt = dbConnector.GetRealData(dbCommand);
+            var productCommand = dbConnector.CreateDbCommand(string.Join("\nUNION ALL\n", queries));
+            productCommand.Parameters.Add(SqlQuerySyntaxHelper.GetIdsDatatableParam("@ids", productIds, dbConnector.DatabaseType));            
+            var dt = dbConnector.GetRealData(productCommand);
             var products = dt.AsEnumerable()
                 .Select(Converter.ToModelFromDataRow<ProductDescriptor>)
                 .ToArray();
