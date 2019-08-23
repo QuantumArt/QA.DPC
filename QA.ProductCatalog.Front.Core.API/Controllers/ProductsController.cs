@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using QA.Core.DPC.Front;
+using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.Service.Interaction;
 using QA.ProductCatalog.Front.Core.API.ActionResults;
@@ -310,7 +311,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 locator.Language = language.ToString();
             }
             
-            if (customerCode != null)
+            if (customerCode != null && customerCode != SingleCustomerCoreProvider.Key)
             {
                 locator.FixedConnectionString = DBConnector.GetConnectionString(customerCode);
             }

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.QP.Services;
 using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
 
@@ -31,7 +32,7 @@ namespace QA.ProductCatalog.Front.Core.API
                 ? _context.GetRouteData().Values["customerCode"].ToString() 
                 : _context.Request.Query["customerCode"].FirstOrDefault();
             
-            if (customerCode == null)
+            if (customerCode == null || customerCode == SingleCustomerCoreProvider.Key)
             {
                 return new Customer
                 {

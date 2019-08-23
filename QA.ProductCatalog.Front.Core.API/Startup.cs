@@ -52,7 +52,7 @@ namespace QA.ProductCatalog.Front.Core.API
             services.AddDbContext<SqlServerDpcModelDataContext>(options =>
                 options.UseSqlServer(dataOptions.DesignConnectionString));
 
-            services.AddScoped<DpcModelDataContext>(sp =>
+            services.AddScoped(sp =>
                 {
                     var customer = sp.GetRequiredService<ConnectionService>().GetCustomer().Result;
                     if (customer.DatabaseType == DatabaseType.Postgres)
