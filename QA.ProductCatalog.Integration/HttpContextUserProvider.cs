@@ -18,7 +18,7 @@ namespace QA.ProductCatalog.Integration
 		private readonly Customer _customer;
 		private readonly IHttpContextAccessor _accessor;
 		
-        private static readonly ThreadLocal<int> ForcedUserIdStorage = new ThreadLocal<int>();
+        private static readonly AsyncLocal<int> ForcedUserIdStorage = new AsyncLocal<int>();
 
         public static int ForcedUserId
         {
@@ -60,11 +60,6 @@ namespace QA.ProductCatalog.Integration
 			            .AuthenticateForCustomTab(backendSid);
 		            HttpContext.Session.SetInt32(QpUserIdKey, userid);
 	            }      
-
-				if (userid != 0)
-                {
-					ForcedUserId = userid;
-                }
 				
 				return userid;
             }

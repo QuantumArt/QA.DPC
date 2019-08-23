@@ -120,11 +120,16 @@ namespace QA.Core.ProductCatalog.ActionsService
         private static ITask GetTaskByKey(string key, int userId, IUnityContainer container)
         {
 	        HttpContextUserProvider.ForcedUserId = userId;
-
+            
+            ITask result = null;
 			if (container.IsRegistered<ITask>(key))
-				return container.Resolve<ITask>(key);
+                result = container.Resolve<ITask>(key);
 			else
-                return (ITask)container.Resolve(Type.GetType(key));
+                result = (ITask)container.Resolve(Type.GetType(key));
+
+            HttpContextUserProvider.ForcedUserId = 0;
+
+            return result;
         }
     }
 }

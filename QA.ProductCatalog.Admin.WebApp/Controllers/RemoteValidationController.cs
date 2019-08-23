@@ -18,13 +18,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
         public RemoteValidationController(Func<string, IRemoteValidator2> validationFactory)
         {
-            HttpContextUserProvider.ForcedUserId = 1;
             _validationFactory = validationFactory;
         }
         
         [Route("{validatorKey}")]
         public ActionResult Validate(string validatorKey, [FromBody] RemoteValidationContext context)
         {
+            HttpContextUserProvider.ForcedUserId = 1;
             var result = new RemoteValidationResult();
             try
             {
@@ -38,6 +38,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 result.Messages.Add(ex.Message);
             }
+            HttpContextUserProvider.ForcedUserId = 0;
 
             return Json(result);
         }

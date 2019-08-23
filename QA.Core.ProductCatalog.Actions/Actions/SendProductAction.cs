@@ -363,6 +363,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                         errors.Add(ex);
                     }
+                    
+                    HttpContextUserProvider.ForcedUserId = 0;
                     return tl;
                 }, tt => { });
 

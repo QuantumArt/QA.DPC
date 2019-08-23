@@ -157,6 +157,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
                         errors.Add(ex);
                     }
+
+                    HttpContextUserProvider.ForcedUserId = 0;
+                    
                     return tl;
                 }, tt => { });
 
@@ -181,6 +184,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 						.Wait();
                 }
             }
+
+            HttpContextUserProvider.ForcedUserId = 0;
 
             var products = productsToPublish.ToArray();
 

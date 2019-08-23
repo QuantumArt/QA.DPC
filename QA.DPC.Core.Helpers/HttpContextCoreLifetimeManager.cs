@@ -21,7 +21,7 @@ namespace QA.DPC.Core.Helpers
             _itemName = Guid.NewGuid().ToString();
         }
         
-        private ThreadLocal<object> _val = new ThreadLocal<object>();
+        private AsyncLocal<object> _val = new AsyncLocal<object>();
 
         /// <summary>
         /// Ключ для хранения в контексте запроса
