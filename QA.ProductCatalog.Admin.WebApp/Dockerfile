@@ -8,8 +8,9 @@ RUN apt-get install -y \
 WORKDIR /app
 COPY QA.DPC ./
 
-RUN npm ci --prefix QA.ProductCatalog.Admin.WebApp --production
-#RUN npm run-script build-prod --prefix QA.ProductCatalog.Admin.WebApp
+WORKDIR /app/QA.ProductCatalog.Admin.WebApp
+RUN npm ci
+#RUN npm run-script build-prod
 
 RUN dotnet publish /app/QA.ProductCatalog.Admin.WebApp/QA.ProductCatalog.Admin.WebApp.csproj -c Release -o out -f netcoreapp2.2
 
