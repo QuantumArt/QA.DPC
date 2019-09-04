@@ -1,5 +1,5 @@
-import "wwwroot/js/pmrpc";
-import QP8 from "wwwroot/js/qp/QP8BackendApi.Interaction";
+import "../../wwwroot/js/pmrpc";
+import QP8 from "../../wwwroot/js/qp/QP8BackendApi.Interaction";
 import qs from "qs";
 import React from "react";
 import { inject } from "react-ioc";

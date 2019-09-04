@@ -24,9 +24,9 @@
     "types": ["node", "webpack-env", "jest"],
     "baseUrl": ".",
     "paths": {
-      "*": ["*", "ClientApp/*", "ClientApp/Packages/*"]
+      "*": ["ClientApp/*", "ClientApp/Packages/*"]
     },
     "outDir": "wwwroot/js/Bundles"
   },
-  "include": ["ClientApp/**/*", "Views/**/*", "../QA.Core.DPC.API/Search/ExtendedQueryConditionMapper.cs", "../QA.Core.DPC.API/Search/ExtendedProductQuery.cs"]
+  "include": ["ClientApp/**/*", "Views/**/*"]
 }
