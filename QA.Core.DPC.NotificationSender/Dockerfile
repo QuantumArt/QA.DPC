@@ -17,4 +17,5 @@ ENV SERVICE_VERSION=${SERVICE_VERSION:-0.0.0.0}
 
 WORKDIR /app
 COPY --from=build-env /app/QA.Core.DPC.NotificationSender/out .
+RUN rm -rf /app/hosting.json
 ENTRYPOINT ["dotnet", "QA.Core.DPC.NotificationSender.dll"]
