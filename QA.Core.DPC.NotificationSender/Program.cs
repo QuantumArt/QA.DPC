@@ -10,10 +10,11 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Unity.Microsoft.DependencyInjection;
+using QA.DPC.Core.Helpers;
 
 namespace QA.Core.DPC
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -26,36 +27,11 @@ namespace QA.Core.DPC
 
                 log.WriteEntry(string.Join(" -> ", ((Exception)e.ExceptionObject).Flat().Select(x => x.Message)), EventLogEntryType.Error);
             };
-            
-            var isService = !(Debugger.IsAttached || ((IList) args).Contains("--console"));
-            if (isService)
-            {
-                var pathToExe = Process.GetCurrentProcess().MainModule.FileName;
-                var pathToContentRoot = Path.GetDirectoryName(pathToExe);
-                Directory.SetCurrentDirectory(pathToContentRoot);
-            }
 
-            var host = BuildWebHost(args);
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            {
-                if (isService)
-                {
-                    host.RunAsCustomService();
-                }
-                else
-                {
-                    host.Run();
-                }
-
-            }
-            else
-            {
-                host.Run();
-            }
+            args.SetDirectory().BuildWebHost().RunAdaptive(args);
         }
 
-        private static IWebHost BuildWebHost(string[] args)
+        private static IWebHost BuildWebHost(this string[] args)
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
