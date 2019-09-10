@@ -1,32 +1,27 @@
-using System;
-using System.Buffers;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
-using Newtonsoft.Json;
-using QA.Core.DPC.QP.Models;
-using QA.Core.ProductCatalog.Actions;
-using QA.DPC.Core.Helpers;
-using QA.ProductCatalog.Integration;
-using QA.ProductCatalog.WebApi.App_Start;
 using QA.Core.DPC.Formatters.Formatting;
 using QA.Core.DPC.Formatters.Services;
 using QA.Core.DPC.Loader;
+using QA.Core.DPC.QP.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
+using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.WebApi.App_Start;
 using QA.ProductCatalog.WebApi.Filters;
 using Swashbuckle.AspNetCore.Swagger;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using Unity;
 
 namespace QA.ProductCatalog.WebApi
@@ -81,11 +76,10 @@ namespace QA.ProductCatalog.WebApi
                     Description = "This API allows to manipulate products: get schemas, perform CRUD operations"
                 });
                 
-                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.XML";
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
                 c.IncludeXmlComments(xmlPath);
-            });
-           
+            });         
         }
         
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline
