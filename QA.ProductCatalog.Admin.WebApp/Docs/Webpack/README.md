@@ -69,7 +69,7 @@
 </head>
 <body>
   <div id="container"></div>
-  <script src="~/js/Bundles/Home/Index.js"></script>
+  <script src="~/js/bundles/Home/Index.js"></script>
 </body>
 </html>
 ```
