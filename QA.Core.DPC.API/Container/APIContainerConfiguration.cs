@@ -31,6 +31,7 @@ namespace QA.Core.DPC.API.Container
 			Container.AddNewExtension<ActionContainerConfiguration>();
 
 			Container.RegisterType<IProductAPIService, ProductAPIService>();
+			Container.RegisterFactory<Func<IProductAPIService>>(c => new Func<IProductAPIService>(() => c.Resolve<IProductAPIService>()));
 			Container.RegisterExpressionArticleMatchService();
 			Container.RegisterArticleMatchService<ProductQuery, QueryConditionMapper>(c => c.Resolve<IConnectionProvider>().GetConnection());
             Container.RegisterArticleMatchService<ExtendedProductQuery, ExtendedQueryConditionMapper>(c => c.Resolve<IConnectionProvider>().GetConnection());

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using System;
+using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Autopublish.Models;
 using QA.Core.DPC.QP.Autopublish.Services;
 using QA.Core.Logger;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using QA.ProductCatalog.WebApi.Filters;
 using QA.ProductCatalog.WebApi.Models;
 
@@ -25,21 +27,21 @@ namespace QA.ProductCatalog.WebApi.Controllers
     [FormatFilter]
     public class ProductController : Controller
 	{
-		private readonly IProductAPIService _databaseProductService;
+		private readonly Func<IProductAPIService> _databaseProductServiceFactory;
         private readonly IProductSimpleAPIService _tarantoolProductService;
         private readonly IAutopublishProcessor _autopublishProcessor;
         private readonly ILogger _logger;
         private readonly IHttpContextAccessor _accessor;
 
 		public ProductController(
-			IProductAPIService databaseProductService, 
+			Func<IProductAPIService> databaseProductServiceFactory, 
 			IProductSimpleAPIService tarantoolProductService, 
 			IAutopublishProcessor autopublishProcessor, 
 			ILogger logger,
 			IHttpContextAccessor accessor
 			)
 		{
-			_databaseProductService = databaseProductService;
+			_databaseProductServiceFactory = databaseProductServiceFactory;
             _tarantoolProductService = tarantoolProductService;
             _autopublishProcessor = autopublishProcessor;
             _logger = logger;
@@ -64,7 +66,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 	        bool isLive = false, long startRow = 0, long pageSize = 10)
 		{
 			_logger.LogDebug(() => new { version, slug, format, isLive, startRow, pageSize }.ToString());
-			var result = _databaseProductService.GetProductsList(slug, version, isLive, startRow, pageSize);
+			var result = _databaseProductServiceFactory().GetProductsList(slug, version, isLive, startRow, pageSize);
 			return result;
 		}
 
@@ -83,7 +85,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         public ActionResult<int[]> Search(string slug, string version, string format, string query, bool isLive = false)
 		{
 			_logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
-			return _databaseProductService.SearchProducts(slug, version, query, isLive);
+			return _databaseProductServiceFactory().SearchProducts(slug, version, query, isLive);
 		}
 
         /// <summary>
@@ -106,8 +108,9 @@ namespace QA.ProductCatalog.WebApi.Controllers
         public ActionResult<IEnumerable<Article>> SearchDetailed(string slug, string version, string format, 
 	        string query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
+	        var service = _databaseProductServiceFactory();
             _logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
-            var ids = _databaseProductService.SearchProducts(slug, version, query, isLive);
+            var ids = service.SearchProducts(slug, version, query, isLive);
 
             _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
             _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
@@ -115,7 +118,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 			var result = new List<Article>();				
             foreach (var id in ids)
             {
-	            result.Add(_databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo));
+	            result.Add(service.GetProduct(slug, version, id, isLive, includeRelevanceInfo));
             }
 
             return result;
@@ -137,7 +140,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         public ActionResult<int[]> ExtendedSearch(string slug, string version, string format, [FromBody] JToken query, bool isLive = false)
         {
             _logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
-            return _databaseProductService.ExtendedSearchProducts(slug, version, query, isLive);
+            return _databaseProductServiceFactory().ExtendedSearchProducts(slug, version, query, isLive);
         }
 
         /// <summary>
@@ -158,8 +161,9 @@ namespace QA.ProductCatalog.WebApi.Controllers
         public ActionResult<IEnumerable<Article>> ExtendedSearchDetailed(string slug, string version, string format, 
 	        [FromBody] JToken query, bool isLive = false, bool includeRegionTags = false, bool includeRelevanceInfo = false)
         {
+	        var service = _databaseProductServiceFactory();
             _logger.LogDebug(() => new { slug, version, format, query, isLive }.ToString());
-            var ids = _databaseProductService.ExtendedSearchProducts(slug, version, query, isLive);
+            var ids = service.ExtendedSearchProducts(slug, version, query, isLive);
 
             _accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
             _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
@@ -167,7 +171,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
             var result = new List<Article>();	
             foreach (var id in ids)
             {
-	            result.Add(_databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo));
+	            result.Add(service.GetProduct(slug, version, id, isLive, includeRelevanceInfo));
             }
 
             return result;
@@ -197,7 +201,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 			_accessor.HttpContext.Items["ArticleFilter"] = isLive ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 		    _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
 
-            var product = _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
+            var product = _databaseProductServiceFactory().GetProduct(slug, version, id, isLive, includeRelevanceInfo);
 
             if (product == null)
             {
@@ -231,9 +235,10 @@ namespace QA.ProductCatalog.WebApi.Controllers
             _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
 
 			var result = new List<Article>();
+			var service = _databaseProductServiceFactory();
             foreach (var id in ids.Distinct())
             {
-                var product = _databaseProductService.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
+                var product = service.GetProduct(slug, version, id, isLive, includeRelevanceInfo);
 
                 if (product != null)
                 {
@@ -258,7 +263,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         public ActionResult<Product> GetProductRelevance(int id, string format, bool isLive = false)
         {
 	        _logger.LogDebug(() => new { format, id, isLive }.ToString());
-            var relevance = _databaseProductService.GetRelevance(id, isLive);
+            var relevance = _databaseProductServiceFactory().GetRelevance(id, isLive);
 
             if (relevance == null)
             {
@@ -282,8 +287,9 @@ namespace QA.ProductCatalog.WebApi.Controllers
         public ActionResult<Product[]> GetProductRelevanceList(int[] ids, string format, bool isLive = false)
         {
 	        _logger.LogDebug(() => new { format, ids, isLive }.ToString());
+	        var service = _databaseProductServiceFactory();
             return ids.Distinct()
-                .Select(id => _databaseProductService.GetRelevance(id, isLive))
+                .Select(id => service.GetRelevance(id, isLive))
                 .Where(r => r != null)
                 .Select(r => new Product(r))
                 .ToArray();
@@ -358,7 +364,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         public ActionResult Post(string slug, string version, string format, [FromBody] Article product, bool isLive = false, bool createVersions = false)
 		{
 			_logger.LogDebug(() => new { slug, version, format, productId = product.Id, productContentId = product.ContentId, isLive, createVersions }.ToString());
-			_databaseProductService.UpdateProduct(slug, version, product, isLive, createVersions);
+			_databaseProductServiceFactory().UpdateProduct(slug, version, product, isLive, createVersions);
 			return NoContent();
 		}
 
@@ -376,7 +382,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         public ActionResult Delete(int id, string format)
 		{
 			_logger.LogDebug(() => new { id, format }.ToString());
-			_databaseProductService.CustomAction("DeleteAction", id);
+			_databaseProductServiceFactory().CustomAction("DeleteAction", id);
 			return NoContent();			
 		}
 
@@ -396,7 +402,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
         public ActionResult CustomAction(string name, int id, string format, [FromBody] Dictionary<string, string> parameters)
 		{
 			_logger.LogDebug(() => new { name, id, format, parameters }.ToString());
-			_databaseProductService.CustomAction(name, id, parameters);
+			_databaseProductServiceFactory().CustomAction(name, id, parameters);
 			return NoContent();				
 		}
 
@@ -415,7 +421,7 @@ namespace QA.ProductCatalog.WebApi.Controllers
 		{
 			_logger.LogDebug(() => new { slug, version, format, forList, includeRegionTags }.ToString());
 
-			var definition = _databaseProductService.GetProductDefinition(slug, version, forList);
+			var definition = _databaseProductServiceFactory().GetProductDefinition(slug, version, forList);
 
             _accessor.HttpContext.Items["includeRegionTags"] = includeRegionTags;
 
