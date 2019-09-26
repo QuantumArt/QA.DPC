@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
@@ -141,7 +142,12 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         
         public Task GetTask(TaskRunnerEntities ctx, int id)
         {
-            return ctx.Tasks.Include(x => x.TaskState).SingleOrDefault(x => x.ID == id);
+            var task = ctx.Tasks.Include(x => x.TaskState).SingleOrDefault(x => x.ID == id);
+            if (task?.ScheduleID != null)
+            {
+                task.Schedule = ctx.Schedules.SingleOrDefault(n => n.ID == task.ScheduleID);
+            }
+            return task;
         }
         
         public Task GetTaskWithUpdateLock(TaskRunnerEntities ctx, int id)
@@ -212,7 +218,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 return true;
 
             //если уже выполняется то максимум можно запросить отмену
-            return RequestCancelation(id);
+            return RequestCancellation(id);
         }
 
         public bool Rerun(int id)
@@ -336,14 +342,13 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         }
 
 
-
-        public bool RequestCancelation(int id)
+        private bool RequestCancellation(int id)
         {
             using (var context = TaskRunnerEntities.Get(_provider))
             {
-                int rowsAffected = context.Database.ExecuteSqlCommand(
-                    $@"UPDATE tasks SET {_isCancellationRequested} = 1 WHERE id={id} AND {_stateId}={State.Running}"
-                );
+                var sql = ($@"UPDATE tasks SET {_isCancellationRequested} = 1 WHERE id = {{0}} AND {_stateId}={{1}}");
+                var fString = FormattableStringFactory.Create(sql, id, State.Running);
+                var rowsAffected = context.Database.ExecuteSqlCommand(fString);
                 return rowsAffected == 1;            
             }
         }

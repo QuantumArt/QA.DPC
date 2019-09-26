@@ -70,7 +70,7 @@ namespace QA.ProductCatalog.Integration
         {
 	        var request = HttpContext.Request;
 	        var value = request.Query[key].ToString();
-	        if (string.IsNullOrEmpty(value) && request.Method == "POST")
+	        if (string.IsNullOrEmpty(value) && request.Method == "POST" && (request.ContentLength ?? 0) > 0)
 	        {
 		        value = request.Form[key].ToString();
 	        }
