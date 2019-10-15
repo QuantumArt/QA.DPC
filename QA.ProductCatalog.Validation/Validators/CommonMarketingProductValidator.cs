@@ -76,16 +76,9 @@ namespace QA.ProductCatalog.Validation.Validators
 
 			var matchService = new ArticleMatchService<Expression<Predicate<IArticle>>>(helper.Customer.ConnectionString, new ExpressionConditionMapper());
 			object aliasValue = alias;
-			var matchItems = matchService.MatchArticles(marketingProductContentId, article => article[Constants.FieldAlias].Value == aliasValue, MatchMode.Strict);
-			var matchIds = matchItems.Where(itm => itm.Id != id).Select(itm => itm.Id).ToArray();
-
-		    var ids = "";
-		    var matches = articleSerivce.List(marketingProductContentId, matchIds, true).ToArray();
-		    if (matches.Any())
-		    {
-		        var fieldValues = matches.Select(n => n.FieldValues.Single(m => m.Field.Name == productTypeName)).ToArray();
-		        ids = String.Join(", ", fieldValues.Where(n => int.Parse(n.Value) == marketingProductTypeId).Select(n => n.Article.Id));
-		    }
+			var filter = $"c.{Constants.FieldAlias} = '{aliasValue}' and c.{productTypeName} = {marketingProductTypeId}";
+			var matches = articleSerivce.List(marketingProductContentId, null, true, filter).Where(itm => itm.Id != id);
+		    var ids = string.Join(", ", matches.Select( n => n.Id));
 			return ids;
 		}
 
