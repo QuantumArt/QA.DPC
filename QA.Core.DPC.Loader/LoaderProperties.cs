@@ -18,6 +18,8 @@ namespace QA.Core.DPC.Loader
         
         public int LoaderWarmUpRepeatInMinutes { get; set; }
         public int SettingsContentId { get; set; }
+        
+        public bool UseFileSizeService { get; set; }
     }
     
     

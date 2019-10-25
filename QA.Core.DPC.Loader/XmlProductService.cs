@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using Flurl.Http.Configuration;
+using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
 using QA.Core.Models.Entities;
@@ -18,6 +22,7 @@ using Quantumart.QP8.Constants;
 using Quantumart.QPublishing.Database;
 using Article = QA.Core.Models.Entities.Article;
 using QA.Core.DPC.QP.Models;
+using IHttpClientFactory = System.Net.Http.IHttpClientFactory;
 
 namespace QA.Core.DPC.Loader
 {
@@ -35,14 +40,24 @@ namespace QA.Core.DPC.Loader
         private readonly ISettingsService _settingsService;
         private readonly Customer _customer;
 		private readonly IRegionTagReplaceService _regionTagReplaceService;
+		private readonly LoaderProperties _loaderProperties;
+		private readonly IHttpClientFactory _factory;		
 
-        public XmlProductService(ILogger logger, ISettingsService settingsService, IConnectionProvider connectionProvider, IRegionTagReplaceService regionTagReplaceService)
+        public XmlProductService(
+	        ILogger logger, 
+	        ISettingsService settingsService, 
+	        IConnectionProvider connectionProvider, 
+	        IRegionTagReplaceService regionTagReplaceService, 
+	        IOptions<LoaderProperties> loaderProperties,
+	        IHttpClientFactory factory	        
+	        )
         {
             _logger = logger;
             _settingsService = settingsService;
 	        _regionTagReplaceService = regionTagReplaceService;	        
             _customer = connectionProvider.GetCustomer();
-
+            _loaderProperties = loaderProperties.Value;
+            _factory = factory;
         }
 
         public string GetProductXml(Article article, IArticleFilter filter)
@@ -339,7 +354,8 @@ namespace QA.Core.DPC.Loader
 		{
 		    var renderFileAsImage = GetBoolProperty(article, RenderFileFieldAsImage);
 
-            if (article.PlainFieldType == PlainFieldType.VisualEdit || article.PlainFieldType == PlainFieldType.Textbox)
+		    var value = article.Value;
+		    if (article.PlainFieldType == PlainFieldType.VisualEdit || article.PlainFieldType == PlainFieldType.Textbox)
 			{
                 if (GetBoolProperty(article, RenderTextFieldAsXmlName))
 				{
@@ -347,7 +363,7 @@ namespace QA.Core.DPC.Loader
 
 					try
 					{
-						parsedElement = XElement.Parse("<r>" + article.Value + "</r>");
+						parsedElement = XElement.Parse("<r>" + value + "</r>");
 					}
 					catch (Exception ex)
 					{
@@ -356,15 +372,14 @@ namespace QA.Core.DPC.Loader
 
 					return parsedElement.Nodes();
 				}
-					return new XCData(article.Value);
+                return new XCData(value);
 			}
 				
 			if (article.PlainFieldType == PlainFieldType.DateTime || article.PlainFieldType == PlainFieldType.Date)
 			{
-				if (!string.IsNullOrWhiteSpace(article.Value))
+				if (!string.IsNullOrWhiteSpace(value))
 				{
-					DateTime dt;
-					if (DateTime.TryParse(article.Value, out dt))
+					if (DateTime.TryParse(value, out var dt))
 					{
 						return dt.ToString("yyyy-MM-ddTHH:mm:ss");
 					}
@@ -372,50 +387,44 @@ namespace QA.Core.DPC.Loader
 			}
 			if (article.PlainFieldType == PlainFieldType.Numeric)
 			{
-				if (!string.IsNullOrWhiteSpace(article.Value))
+				if (!string.IsNullOrWhiteSpace(value))
 				{
-					decimal dt;
-					if (decimal.TryParse(article.Value, out dt))
+					if (decimal.TryParse(value, out var dt))
 					{
-						return dt.ToString().Replace(",", ".");
-						//при дисериалтзации всегда нужна точка
+						return dt.ToString(CultureInfo.InvariantCulture).Replace(",", ".");
+						//при десериализации всегда нужна точка
 					}
 				}
 			}
 
-            var fieldId = article.FieldId.Value;
+            var fieldId = article.FieldId ?? 0;
 
-			if (article.PlainFieldType == PlainFieldType.File && !string.IsNullOrWhiteSpace(article.Value) && !renderFileAsImage)
-			{
-                var cnn = ctx.Cnn;
+            if (!string.IsNullOrWhiteSpace(value) && (
+	                article.PlainFieldType == PlainFieldType.Image
+	                || article.PlainFieldType == PlainFieldType.DynamicImage
+	                || article.PlainFieldType == PlainFieldType.File
+                ))
+            {
+	            var cnn = ctx.Cnn;
+	            var fieldUrl = cnn.GetUrlForFileAttribute(fieldId, false, false);
+	            var shortFieldUrl = cnn.GetUrlForFileAttribute(fieldId, true, true);
+	            var valueUrl = $@"{shortFieldUrl}/{value}";
+	            
+	            if (article.PlainFieldType == PlainFieldType.File && !renderFileAsImage)
+	            {
+		            var size = Common.GetFileSize(_factory, _loaderProperties, cnn, fieldId, $@"{fieldUrl}/{value}");
+		            return new[]
+		            {
+			            new XElement("Name", Common.GetFileNameByUrl(cnn, fieldId, valueUrl)),
+			            new XElement("FileSizeBytes", size),
+			            new XElement("AbsoluteUrl", valueUrl)
+		            };
+	            }
 
-                var path = Common.GetFileFromQpFieldPath(cnn, fieldId, article.Value);
+	            return valueUrl;
+            }
 
-                var size = (File.Exists(path)) ? (int)new FileInfo(path).Length : 0;
-
-                return new[]
-                {
-                    new XElement("Name",
-                        article.Value.Contains("/")
-                            ? article.Value.Substring(article.Value.LastIndexOf("/") + 1)
-                            : article.Value),
-                  new XElement("FileSizeBytes", size),
-                    new XElement("AbsoluteUrl", string.Format(@"{0}/{1}", cnn.GetUrlForFileAttribute(fieldId,
-                            true, true), article.Value))
-                };
-			}
-			if ((
-                    article.PlainFieldType == PlainFieldType.Image 
-                    || article.PlainFieldType == PlainFieldType.DynamicImage 
-                    || article.PlainFieldType == PlainFieldType.File && renderFileAsImage
-                ) && !string.IsNullOrWhiteSpace(article.Value))
-			{
-                var cnn = ctx.Cnn;
-
-                return string.Format(@"{0}/{1}", cnn.GetUrlForFileAttribute(fieldId,
-						true, true), article.Value);
-			}
-			return article.Value;
+			return value;
 		}
 
         private object ConvertValue(SingleArticleField article, CallContext ctx)

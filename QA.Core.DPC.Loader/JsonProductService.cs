@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using Flurl.Http.Configuration;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
@@ -20,6 +22,7 @@ using Content = QA.Core.Models.Configuration.Content;
 using Field = QA.Core.Models.Configuration.Field;
 using FieldService = Quantumart.QP8.BLL.Services.API.FieldService;
 using ContentService = Quantumart.QP8.BLL.Services.API.ContentService;
+using IHttpClientFactory = System.Net.Http.IHttpClientFactory;
 
 namespace QA.Core.DPC.Loader
 {
@@ -35,6 +38,8 @@ namespace QA.Core.DPC.Loader
         private readonly DBConnector _dbConnector;
         private readonly VirtualFieldContextService _virtualFieldContextService;
         private readonly IRegionTagReplaceService _regionTagReplaceService;
+        private readonly LoaderProperties _loaderProperties;
+        private readonly IHttpClientFactory _factory;        
 
         public JsonProductService(
             IConnectionProvider connectionProvider,
@@ -42,7 +47,10 @@ namespace QA.Core.DPC.Loader
             ContentService contentService,
             FieldService fieldService,
             VirtualFieldContextService virtualFieldContextService,
-            IRegionTagReplaceService regionTagReplaceService)
+            IRegionTagReplaceService regionTagReplaceService,
+            IOptions<LoaderProperties> loaderProperties,
+            IHttpClientFactory factory            
+            )
         {
             _logger = logger;
             _contentService = contentService;
@@ -53,6 +61,8 @@ namespace QA.Core.DPC.Loader
 
             _virtualFieldContextService = virtualFieldContextService;
             _regionTagReplaceService = regionTagReplaceService;
+            _loaderProperties = loaderProperties.Value;
+            _factory = factory;
         }
 
         public Article DeserializeProduct(string productJson, Content definition)
@@ -747,54 +757,36 @@ namespace QA.Core.DPC.Loader
 
         private object GetPlainArticleFieldValue(PlainArticleField plainArticleField)
         {
-            if (plainArticleField.NativeValue == null)
+            var fieldId = plainArticleField.FieldId ?? 0;
+            var shortFieldUrl = _dbConnector.GetUrlForFileAttribute(fieldId, true, true);
+            var longFieldUrl = _dbConnector.GetUrlForFileAttribute(fieldId, false, false);
+
+            var value = plainArticleField.Value;
+            
+            if (plainArticleField.NativeValue == null || string.IsNullOrWhiteSpace(value))
             {
                 return null;
             }
-
+            
             switch (plainArticleField.PlainFieldType)
             {
                 case PlainFieldType.File:
                 {
-                    if (string.IsNullOrWhiteSpace(plainArticleField.Value))
+                    var valueUrl = $@"{shortFieldUrl}/{value}";
+                    var size = Common.GetFileSize(_factory, _loaderProperties, _dbConnector, fieldId, $"{longFieldUrl}/{value}");
+
+                    return new PlainFieldFileInfo
                     {
-                        return null;
-                    }
-
-                    string path = Common.GetFileFromQpFieldPath(
-                        _dbConnector, plainArticleField.FieldId.Value, plainArticleField.Value);
-
-                    int size = 0;
-                    if (File.Exists(path))
-                    {
-                        size = (int)new FileInfo(path).Length;
-                    }
-
-                        return new PlainFieldFileInfo
-                    {
-                        Name = plainArticleField.Value.Contains("/")
-                            ? plainArticleField.Value.Substring(plainArticleField.Value.LastIndexOf("/") + 1)
-                            : plainArticleField.Value,
-
+                        Name = Common.GetFileNameByUrl(_dbConnector, fieldId, valueUrl),
                         FileSizeBytes = size,
-
-                        AbsoluteUrl = string.Format("{0}/{1}",
-                            _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
-                            plainArticleField.Value)
+                        AbsoluteUrl = valueUrl 
                     };
                 }
 
                 case PlainFieldType.Image:
                 case PlainFieldType.DynamicImage:
                 {
-                    if (string.IsNullOrWhiteSpace(plainArticleField.Value))
-                    {
-                        return null;
-                    }
-
-                    return string.Format(@"{0}/{1}",
-                        _dbConnector.GetUrlForFileAttribute(plainArticleField.FieldId.Value, true, true),
-                        plainArticleField.Value);
+                    return $@"{shortFieldUrl}/{value}";
                 }
 
                 case PlainFieldType.Boolean:
