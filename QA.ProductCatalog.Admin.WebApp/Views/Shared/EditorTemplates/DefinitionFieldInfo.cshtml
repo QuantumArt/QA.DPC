@@ -1,201 +1,109 @@
 ﻿@using QA.Core.Models.Configuration
 @using QA.ProductCatalog.Admin.WebApp.Core
+@using QA.ProductCatalog.Admin.WebApp.Models
 @using Quantumart.QP8.Constants
 
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionFieldInfo
 
-@Html.HiddenFor(x => x.Field.FieldId)
+@Html.HiddenFor(x => x.FieldId)
 
-@if (Model.Field is Dictionaries)
+@if (Model.FieldType == FieldDefinitionType.Dictionaries)
 {
-  <div class="editor-label">
-    @Html.LabelFor(x => ((Dictionaries)x.Field).DefaultCachePeriod)
-  </div>
-  <div class="editor-field">
-    @Html.TextBox("Field.DefaultCachePeriod", ((Dictionaries)Model.Field).DefaultCachePeriod)
-  </div>
+  <div class="editor-label">@Html.LabelFor(x => x.DefaultCachePeriod)</div>
+  <div class="editor-field">@Html.TextBoxFor(x => x.DefaultCachePeriod)</div>
 }
 else
 {
-  if (!(Model.Field is BaseVirtualField))
-  {
-    <div class="display-label">
-      @Html.LabelFor(x => x.Field.FieldId)
-    </div>
-    <div class="display-field">
-      @Html.DisplayFor(x => x.Field.FieldId)
-    </div>
-  }
+  <div class="display-label">@Html.LabelFor(x => x.FieldId)</div>
+  <div class="display-field">@Html.DisplayFor(x => x.FieldId)</div>
 
-  <div class="editor-label">
-    @Html.LabelFor(x => x.Field.FieldName)
-  </div>
-  if (!(Model.Field is BaseVirtualField))
+  <div class="editor-label">@Html.LabelFor(x => x.FieldName)</div>
+  if (Model.FieldType == FieldDefinitionType.VirtualField || Model.FieldType == FieldDefinitionType.VirtualMultiEntityField)
   {
-    <div class="editor-field">
-      @Html.TextBoxFor(x => x.Field.FieldName, new { Placeholder = "Имя поля в JSON" })
-    </div>
+    <div class="display-field">@Html.DisplayFor(x => x.FieldName)</div>
+    @Html.HiddenFor(x => x.FieldName)
   }
   else
   {
-    <div class="display-field">
-      @Html.DisplayFor(x => x.Field.FieldName)
-    </div>
-    @Html.HiddenFor(x => x.Field.FieldName);
+    <div class="editor-field">@Html.TextBoxFor(x => x.FieldName, new {Placeholder = "Имя поля в JSON"})</div>
   }
 
-  <div class="editor-label">
-    @Html.LabelFor(x => x.Field.FieldTitle)
-  </div>
-  <div class="editor-field">
-    @Html.TextBoxFor(x => x.Field.FieldTitle, new { Placeholder = "Текст в <label>" })
-  </div>
+  <div class="editor-label">@Html.LabelFor(x => x.FieldTitle)</div>
+  <div class="editor-field">@Html.TextBoxFor(x => x.FieldTitle, new { Placeholder = "Текст в <label>" })</div>
 }
 
-@if (Model.Field is Association)
+@if (Model.FieldType == FieldDefinitionType.EntityField 
+     || Model.FieldType == FieldDefinitionType.BackwardRelationField 
+     || Model.FieldType == FieldDefinitionType.ExtensionField)
 {
-  var association = (Association)Model.Field;
+  <div class="editor-label">@Html.LabelFor(x => x.CloningMode)</div>
+  <div class="editor-field">@Html.DropDownListFor(x => x.CloningMode, Html.GetEnumSelectList(typeof(CloningMode)))</div>
 
-  <div class="editor-label">
-    @Html.LabelFor(x => association.CloningMode)
-  </div>
-  <div class="editor-field">
-    @Html.DropDownListFor(
-      x => association.CloningMode, 
-      Html.GetEnumSelectList(typeof(CloningMode)), 
-      new { Name = "Field.CloningMode" }
-    )
-  </div>
+  <div class="editor-label">@Html.LabelFor(x => x.DeletingMode)</div>
+  <div class="editor-field">@Html.DropDownListFor(x => x.DeletingMode, Html.GetEnumSelectList(typeof(DeletingMode)))</div>
 
-  <div class="editor-label">
-    @Html.LabelFor(x => association.DeletingMode)
-  </div>
-  <div class="editor-field">
-    @Html.DropDownListFor(
-      x => association.DeletingMode, 
-      Html.GetEnumSelectList(typeof(DeletingMode)),    
-      new { Name = "Field.DeletingMode" }
-      )
-  </div>
+  <div class="editor-label">@Html.LabelFor(x => x.UpdatingMode)</div>
+  <div class="editor-field">@Html.DropDownListFor(x => x.UpdatingMode,Html.GetEnumSelectList(typeof(UpdatingMode)))</div>
 
-  <div class="editor-label">
-    @Html.LabelFor(x => association.UpdatingMode)
-  </div>
-  <div class="editor-field">
-    @Html.DropDownListFor(    
-    x => association.UpdatingMode,
-    Html.GetEnumSelectList(typeof(UpdatingMode)),
-    new { Name = "Field.UpdatingMode" }
-    )
-  </div>
-
-  if (Model.Field is EntityField)
+  if (Model.FieldType == FieldDefinitionType.EntityField || Model.FieldType == FieldDefinitionType.BackwardRelationField)
   {
-    var entity = (EntityField)Model.Field;
+    <div class="editor-label">@Html.LabelFor(x => x.PreloadingMode)</div>
+    <div class="editor-field">@Html.DropDownListFor(x => x.PreloadingMode,Html.GetEnumSelectList(typeof(PreloadingMode)))</div>
 
-    <div class="editor-label">
-      @Html.LabelFor(x => entity.PreloadingMode)
-    </div>
+    <div class="editor-label">@Html.LabelFor(x => x.RelationCondition)</div>
     <div class="editor-field">
-      @Html.DropDownListFor(    
-        x => entity.PreloadingMode, 
-        Html.GetEnumSelectList(typeof(PreloadingMode)),      
-        new { Name = "Field.PreloadingMode" }
-       )
-    </div>
-
-    <div class="editor-label">
-      @Html.LabelFor(x => entity.RelationCondition)
-    </div>
-    <div class="editor-field">
-      @Html.TextAreaFor(x => entity.RelationCondition, new
+      @Html.TextAreaFor(x => x.RelationCondition, new
       {
         Cols = 80,
         Rows = 6,
         Placeholder = "SQL-условие фильтрации списка статей",
-        Name = "Field.RelationCondition",
         Style = "resize: none; font-family: monospace"
       })
     </div>
 
-    <div class="editor-label">
-      @Html.LabelFor(x => entity.ClonePrototypeCondition)
-    </div>
-    <div class="editor-field">
-      @Html.TextAreaFor(x => entity.ClonePrototypeCondition, new
+    <div class="editor-label">@Html.LabelFor(x => x.ClonePrototypeCondition)</div>
+    <div class="editor-field">@Html.TextAreaFor(x => x.ClonePrototypeCondition, new
       {
         Cols = 80,
         Rows = 6,
-        Name = "Field.ClonePrototypeCondition",
         Placeholder = "SQL-условие выбора статьи-прообраза для клонирования",
         Style = "resize: none; font-family: monospace"
       })
     </div>
-  }
-
-  if (Model.Field is BackwardRelationField)
-  {
-    var backwardField = (BackwardRelationField)Model.Field;
 
     <div class="display-label">
-      Ссылается на данный контент из контента
+      @(Model.FieldType == FieldDefinitionType.EntityField ? "Ссылается на контент" : "Ссылается на данный контент из контента ")
     </div>
-    <div class="display-field">
-      @backwardField.Content.ContentName @backwardField.Content.ContentId
-    </div>
+    <div class="display-field">@Model.RelatedContentName @Model.RelatedContentId</div>
   }
-  else if (Model.Field is EntityField && ((EntityField)Model.Field).Content != null)
-  {
-    <div class="display-label">
-      Ссылается на контент
-    </div>
-    <div class="display-field">
-      @(((EntityField)Model.Field).Content.ContentName + " " + ((EntityField)Model.Field).Content.ContentId)
-    </div>
-  }
-  else if (Model.Field is ExtensionField)
+  else if (Model.FieldType == FieldDefinitionType.ExtensionField)
   {
     <div class="display-label">
       <span class="EditorNote">Поле является классификатором</span>
     </div>
   }
 }
-else if (Model.Field is VirtualField || Model.Field is VirtualMultiEntityField)
+else if (Model.FieldType == FieldDefinitionType.VirtualField || Model.FieldType == FieldDefinitionType.VirtualMultiEntityField)
 {
-  <div class="editor-label">
-    Путь
-  </div>
-  <div class="editor-field">
-    @Html.TextBox("Field.Path", Model.Field is VirtualField ? ((VirtualField)Model.Field).Path : ((VirtualMultiEntityField)Model.Field).Path, new { @class = "text-box single-line" })
-  </div>
-  if (Model.Field is VirtualField)
+  <div class="editor-label">Путь</div>
+  <div class="editor-field">@Html.TextBoxFor(x => x.VirtualPath, new { @class = "text-box single-line" })</div>
+  if (Model.FieldType == FieldDefinitionType.VirtualField)
   {
-    <div class="editor-label">
-      Путь по которому надо удалить поле (имеет смысл только если отличается от пути)
-    </div>
-    <div class="editor-field">
-      @Html.TextBox("Field.ObjectToRemovePath", ((VirtualField)Model.Field).ObjectToRemovePath, new { @class = "text-box single-line" })
-    </div>
-    <div class="display-label">
-      Конвертер
-    </div>
-    <div class="display-field">
-      @(((VirtualField)Model.Field).Converter)
-    </div>
+    <div class="editor-label">Путь по которому надо удалить поле (имеет смысл только если отличается от пути)</div>
+    <div class="editor-field">@Html.TextBoxFor(x => x.ObjectToRemovePath, new { @class = "text-box single-line" })</div>
+                                                                                                                  
+    <div class="display-label">Конвертер</div>
+    <div class="display-field">@Model.Converter</div>
   }
 }
-else if (Model.Field is PlainField)
+else if (Model.FieldType == FieldDefinitionType.PlainField)
 {
-  <div class="editor-label">
-    Не оборачивать в CDATA
-  </div>
-  <div class="editor-field">
-    @Html.CheckBox("skipcdata", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName))
-  </div>
-  <div class="editor-label">
-    Загружать как поле типа Image
-  </div>
-  <div class="editor-field">
-    @Html.CheckBox("loadlikeimage", ((PlainField)Model.Field).CustomProperties.ContainsKey(QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage))
-  </div>
+  <div class="editor-label">Не оборачивать в CDATA</div>
+  <div class="editor-field">@Html.CheckBoxFor(x => x.SkipCData)</div>
+                                                               
+  <div class="editor-label">Загружать как поле типа Image</div>
+  <div class="editor-field">@Html.CheckBoxFor(x => x.LoadLikeImage)</div>
 }
+
+@Html.HiddenFor(x => Model.FieldType)
+

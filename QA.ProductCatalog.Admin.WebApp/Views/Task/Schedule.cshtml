@@ -48,7 +48,7 @@
 		$("#" + (isOneTime ? "NonRepeatInput" : "RepeatInput"))[0].checked = true;
 
 		function OnSheduleSaveError(xhr, status, error) {
-			alert('Ошибка' + error);
+			alert('Error: ' + error);
 		}
 
 		function SetSheduleEditingMode(isOneTime) {

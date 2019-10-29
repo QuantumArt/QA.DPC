@@ -236,7 +236,7 @@ namespace QA.Core.DPC.Formatters.Services
 
             foreach (var classifier in classifiers)
             {
-                foreach (var relatedContent in classifier.Contents)
+                foreach (var relatedContent in classifier.GetContents())
                 {
                     var aggField = GetFieldsFromDB(relatedContent, context)
                         .Where(x => x.Aggregated)
@@ -304,7 +304,7 @@ namespace QA.Core.DPC.Formatters.Services
         {
             JObject f = ProcessFieldBase(x);
 
-            f["Contents"] = new JArray(x.Contents.Select(c => VisitDefinition(c, visited, context)));
+            f["Contents"] = new JArray(x.GetContents().Select(c => VisitDefinition(c, visited, context)));
 
             return f;
         }

@@ -353,7 +353,7 @@ namespace QA.Core.DPC.API.Update
 
                 foreach (Article childArticle in GetChildArticles(fieldInfo.field, _filter))
                 {
-                    Content childArticleDef = fieldInfo.fieldDef.Contents
+                    Content childArticleDef = fieldInfo.fieldDef.GetContents()
                         .SingleOrDefault(x => x.ContentId == childArticle.ContentId);
 
                     if (childArticleDef == null)

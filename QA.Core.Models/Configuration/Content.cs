@@ -31,15 +31,12 @@ namespace QA.Core.Models.Configuration
     [TypeConverter(typeof(ContentTypeConverter))]
     public sealed class Content : AttachableConfigurableItem
     {
-        [DisplayName("Только для чтения ")]
         [DefaultValue(false)]
         public bool IsReadOnly { get; set; }
 
-        [DisplayName("Грузить все простые поля")]
         [DefaultValue(true)]
         public bool LoadAllPlainFields { get; set; }
 
-        [DisplayName("Имя контента")]
         [DefaultValue(null)]
         public string ContentName { get; set; }
 
@@ -56,6 +53,9 @@ namespace QA.Core.Models.Configuration
             Fields = new List<Field>();
             LoadAllPlainFields = true;
         }
+        
+        [DefaultValue(null)]
+        public TimeSpan? CachePeriod { get; set; }
 
         public Content ShallowCopy()
         {
@@ -100,7 +100,7 @@ namespace QA.Core.Models.Configuration
 
         public TimeSpan? GetCachePeriodForContent()
         {
-            return XmlMappingBehavior.RetrieveCachePeriod(this);
+            return CachePeriod;
         }
 
         public Content[] GetChildContentsIncludingSelf()

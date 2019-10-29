@@ -75,7 +75,6 @@ namespace QA.ProductCatalog.Admin.WebApp
             services
                 .AddMvc(options =>
                     {
-                        options.ModelBinderProviders.Insert(0, new ContentBinderProvider());
                         options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
                 .AddXmlSerializerFormatters()

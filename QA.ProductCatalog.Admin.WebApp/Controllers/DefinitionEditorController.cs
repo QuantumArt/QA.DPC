@@ -41,23 +41,23 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			_cacheItemWatcher = cacheItemWatcher;
 		}
 
-		public ActionResult Index(int? content_item_id, int? contentId)
+		public ActionResult Index([Bind("content_item_id")] int? contentItemId, int? contentId)
 		{
 			_cacheItemWatcher.TrackChanges();
 
-			string definitionXml = content_item_id.HasValue
-				? _contentDefinitionService.GetDefinitionXml(content_item_id.Value)
+			var definitionXml = contentItemId.HasValue
+				? _contentDefinitionService.GetDefinitionXml(contentItemId.Value)
 				: contentId.HasValue
 					? XamlConfigurationParser.CreateFromObject(new Content {ContentId = contentId.Value})
 					: string.Empty;
 
-			return View(new DefinitionEditor {ContentItemId = content_item_id, Xml = definitionXml});
+			return View(new DefinitionEditor {ContentItemId = contentItemId, Xml = definitionXml});
 		}
 
 		[RequireCustomAction]
-		public ActionResult SaveDefinition(int content_item_id, string xml)
+		public ActionResult SaveDefinition([Bind("content_item_id")] int contentItemId, string xml)
 		{
-			_contentDefinitionService.SaveDefinition(content_item_id, xml);
+			_contentDefinitionService.SaveDefinition(contentItemId, xml);
 
 			return Json("Ok");
 		}
@@ -75,33 +75,33 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 		{
 			var content = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
-			bool notFoundInDef;
-
-			var objFromDef = _definitionEditorService.GetObjectFromPath(content, defInfo.Path, out notFoundInDef);
+            var objFromDef = _definitionEditorService.GetObjectFromPath(content, defInfo.Path, out var notFoundInDef);
 
 			if (objFromDef == null)
 				return Json(new { MissingFieldToDeleteId = defInfo.Path });
 
 			DefinitionTreeNode resultObj = null;
 
-			if (objFromDef is Content)
-			{
-				bool isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(content, defInfo.Path) is Dictionaries;
+			switch (objFromDef)
+            {
+                case Content def:
+                {
+                    var isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(content, defInfo.Path) is Dictionaries;
 
-				resultObj = new DefinitionTreeNode((Content)objFromDef, null, defInfo.Path, isFromDictionaries, notFoundInDef, _contentService);
+                    resultObj = new DefinitionTreeNode(def, null, defInfo.Path, isFromDictionaries, notFoundInDef, _contentService);
+                    break;
+                }
+                case Field field:
+                {
+                    var existsInQp = true;
 
-			}
-			else if (objFromDef is Field)
-			{
-				var field = (Field)objFromDef;
+                    if (!(field is BaseVirtualField))
+                        existsInQp = _fieldService.Read(field.FieldId) != null;
 
-				bool existsInQp = true;
-
-				if (!(field is BaseVirtualField))
-					existsInQp = _fieldService.Read(field.FieldId) != null;
-
-				resultObj = new DefinitionTreeNode((Field)objFromDef, null, defInfo.Path, !existsInQp, notFoundInDef);
-			}
+                    resultObj = new DefinitionTreeNode(field, null, defInfo.Path, !existsInQp, notFoundInDef);
+                    break;
+                }
+            }
 
             return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(resultObj)};
 		}
@@ -110,123 +110,56 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 		{
 			var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
-			bool notFoundInDef;
+            var objectToEdit = _definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var notFoundInDef);
 
-			var objectToEdit = _definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out notFoundInDef);
-
-			if (objectToEdit is Field)
+			if (objectToEdit is Field edit)
 				return
-					PartialView(new DefinitionFieldInfo
+					PartialView(new DefinitionFieldInfo(edit)
 					{
-						Field = (Field)objectToEdit,
 						InDefinition = !notFoundInDef,
 						Path = defInfo.Path,
 						Xml = defInfo.Xml
 					});
-			else
-			{
-				bool isFromDictionaries = false;
+            
+            var isFromDictionaries = false;
 
-				if (rootContent != objectToEdit)
-					isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path) is Dictionaries;
+            if (!Equals(rootContent, objectToEdit))
+                isFromDictionaries = _definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path) is Dictionaries;
 
-				bool alreadyCachedAsDictionary = false;
+            var contentToEdit = (Content)objectToEdit;
 
-				Content contentToEdit = (Content)objectToEdit;
+            return PartialView("Edit",
+                new DefinitionContentInfo
+                {
+                    ContentName = contentToEdit.ContentName,
+                    IsReadOnly = contentToEdit.IsReadOnly,
+                    PublishingMode = contentToEdit.PublishingMode,
+                    ContentId = contentToEdit.ContentId,
+                    LoadAllPlainFields = contentToEdit.LoadAllPlainFields,
+                    CacheEnabled = contentToEdit.CachePeriod.HasValue,
+                    CachePeriod = contentToEdit.CachePeriod ?? new TimeSpan(1, 45, 0),
+                    Path = defInfo.Path,
+                    Xml = defInfo.Xml,
+                    InDefinition = !notFoundInDef,
+                    IsFromDictionaries = isFromDictionaries,
+                });
+        }
 
-				Dictionaries dicSettings = (Dictionaries)rootContent.Fields.SingleOrDefault(x => x is Dictionaries);
-
-				if (!isFromDictionaries)
-					alreadyCachedAsDictionary = dicSettings != null && dicSettings.ContentDictionaries.Any(x => x.Key == contentToEdit.ContentId);
-				else if (!notFoundInDef && XmlMappingBehavior.GetCachePeriod(contentToEdit) == null)
-				{
-					//если внутри словарей не задан явно период кеширования то берем дефолтный
-					XmlMappingBehavior.SetCachePeriod(contentToEdit, dicSettings.DefaultCachePeriod);
-				}
-
-				return PartialView("Edit",
-					new DefinitionContentInfo
-					{
-						Content = contentToEdit,
-						Path = defInfo.Path,
-						Xml = defInfo.Xml,
-						InDefinition = !notFoundInDef,
-						IsFromDictionaries = isFromDictionaries,
-						AlreadyCachedAsDictionary = alreadyCachedAsDictionary
-					});
-			}
-		}
-
-		public ActionResult SaveDictionaries(DefinitionInfoForFieldsSave<Dictionaries> defInfo)
-		{
-			((DefinitionFieldInfo)defInfo).Field = defInfo.Field;
-
-			return SaveField(defInfo);
-		}
-
-		public ActionResult SaveVirtualField(DefinitionInfoForFieldsSave<VirtualField> defInfo)
-		{
-			((DefinitionFieldInfo)defInfo).Field = defInfo.Field;
-
-			return SaveField(defInfo);
-		}
-
-		public ActionResult SaveEntityField(DefinitionInfoForFieldsSave<EntityField> defInfo)
-		{
-			((DefinitionFieldInfo)defInfo).Field = defInfo.Field;
-
-			return SaveField(defInfo);
-		}
-
-		public ActionResult SaveBackwardRelationField(DefinitionInfoForFieldsSave<BackwardRelationField> defInfo)
-		{
-			((DefinitionFieldInfo)defInfo).Field = defInfo.Field;
-
-			return SaveField(defInfo);
-		}
-
-		public ActionResult SavePlainField(DefinitionInfoForFieldsSave<PlainField> defInfo)
-		{
-			((DefinitionFieldInfo)defInfo).Field = defInfo.Field;
-
-			bool skipCdata = Request.Form["skipcdata"] != "false";
-
-			if (skipCdata)
-				defInfo.Field.CustomProperties[QA.Core.DPC.Loader.XmlProductService.RenderTextFieldAsXmlName] = true;
-
-            var loadLikeImage = ((string[])Request.Form["loadlikeimage"])?.Contains("true") ?? false;
-
-		    if (loadLikeImage)
-		        defInfo.Field.CustomProperties[QA.Core.DPC.Loader.XmlProductService.RenderFileFieldAsImage] = true;
-
-            return SaveField(defInfo);
-		}
-
-		public ActionResult SaveExtensionField(DefinitionInfoForFieldsSave<ExtensionField> defInfo)
-		{
-			((DefinitionFieldInfo)defInfo).Field = defInfo.Field;
-
-			return SaveField(defInfo);
-		}
-
-		private ActionResult SaveField(DefinitionFieldInfo defInfo)
+		public ActionResult SaveField(DefinitionFieldInfo defInfo)
 		{
 			var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
-			var savedField = _definitionEditorService.UpdateOrDeleteField(rootContent, defInfo.Field, defInfo.Path, !defInfo.InDefinition);
+			var savedField = _definitionEditorService.UpdateOrDeleteField(rootContent, defInfo.GetField(), defInfo.Path, !defInfo.InDefinition);
 
 			string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
 
 			ModelState.Clear();
 
-			bool junk;
+            Field fieldForEditView = savedField ?? (Field)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out _);
 
-			Field fieldForEditView = savedField ?? (Field)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out junk);
-
-			return PartialView("Edit", new DefinitionFieldInfo
+			return PartialView("Edit", new DefinitionFieldInfo(fieldForEditView)
 			{
 				InDefinition = defInfo.InDefinition,
-				Field = fieldForEditView,
 				Path = defInfo.Path,
 				Xml = resultXml
 			});
@@ -236,30 +169,27 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 		{
 			var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
 
-			bool notFoundInDef;
+            var contentToSave = (Content)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out var notFoundInDef);
 
-			var contentToSave = (Content)_definitionEditorService.GetObjectFromPath(rootContent, defInfo.Path, out notFoundInDef);
-
-			contentToSave.ContentName = defInfo.Content.ContentName;
-
-			TimeSpan? cachePeriod = (TimeSpan?)XmlMappingBehavior.GetCachePeriod(defInfo.Content);
-
-			XmlMappingBehavior.SetCachePeriod(contentToSave, cachePeriod);
+			contentToSave.ContentName = defInfo.ContentName;
+            contentToSave.CachePeriod = defInfo.CacheEnabled ? defInfo.CachePeriod : (TimeSpan?)null;
 
 			if (defInfo.IsFromDictionaries)
 			{
 				var dictionaries = (Dictionaries)_definitionEditorService.GetParentObjectFromPath(rootContent, defInfo.Path);
 
-				if (cachePeriod.HasValue && notFoundInDef)
+				if (contentToSave.CachePeriod != null && notFoundInDef)
 					dictionaries.ContentDictionaries[contentToSave.ContentId] = contentToSave;
-				else if (!cachePeriod.HasValue && !notFoundInDef)
+				else if (contentToSave.CachePeriod == null && !notFoundInDef)
 					dictionaries.ContentDictionaries.Remove(contentToSave.ContentId);
 			}
 			else
 			{
-                contentToSave.IsReadOnly = defInfo.Content.IsReadOnly;
-				contentToSave.LoadAllPlainFields = defInfo.Content.LoadAllPlainFields;
-				contentToSave.PublishingMode = defInfo.Content.PublishingMode;
+                contentToSave.IsReadOnly = defInfo.IsReadOnly;
+				contentToSave.LoadAllPlainFields = defInfo.LoadAllPlainFields;
+				contentToSave.PublishingMode = defInfo.PublishingMode;
+                
+                
 
                 if (notFoundInDef)
 			    {
@@ -270,6 +200,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			}
 
 			string resultXml = XamlConfigurationParser.CreateFromObject(rootContent);
+            
 
 			ModelState.Clear();
 

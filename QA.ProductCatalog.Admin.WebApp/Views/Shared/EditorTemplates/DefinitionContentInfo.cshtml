@@ -3,10 +3,10 @@
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionContentInfo
 
 <div class="display-label">
-  @Html.LabelFor(x => x.Content.ContentId)
+  @Html.LabelFor(x => x.ContentId)
 </div>
 <div class="display-field">
-  @Html.DisplayFor(x => x.Content.ContentId)
+  @Html.DisplayFor(x => x.ContentId)
 </div>
 
 <div class="editor-label">
@@ -19,9 +19,9 @@
   }
   else
   {
-    @Html.CheckBox("Content.CacheEnabled", XmlMappingBehavior.GetCachePeriod(Model.Content) != null, new { onchange = "ChangeCachePeriodTxVisibility()", id = "cbCacheEnabled" })
+    @Html.CheckBoxFor(x => x.CacheEnabled, new { onchange = "ChangeCachePeriodTxVisibility()", id = "cbCacheEnabled" })
     <label for="cbCacheEnabled">Кешировать</label>
-    @Html.TextBox("Content.CachePeriod", XmlMappingBehavior.GetCachePeriod(Model.Content), new { id = "txCachePeriod" })
+    @Html.TextBoxFor(x => x.CachePeriod, new { id = "txCachePeriod" })
 
     <script>
       function ChangeCachePeriodTxVisibility() {
@@ -46,34 +46,34 @@
   }
 </div>
 <div class="editor-label">
-  @Html.LabelFor(x => x.Content.ContentName)
+  @Html.LabelFor(x => x.ContentName)
 </div>
 <div class="editor-field">
-  @Html.EditorFor(x => x.Content.ContentName)
+  @Html.EditorFor(x => x.ContentName)
 </div>
 
 @if (!Model.IsFromDictionaries)
 {
   <div class="editor-label">
-    @Html.LabelFor(x => x.Content.IsReadOnly)
+    @Html.LabelFor(x => x.IsReadOnly)
   </div>
   <div class="editor-field">
-    @Html.EditorFor(x => x.Content.IsReadOnly)
+    @Html.EditorFor(x => x.IsReadOnly)
   </div>
 
   <div class="editor-label">
-    @Html.LabelFor(x => x.Content.LoadAllPlainFields)
+    @Html.LabelFor(x => x.LoadAllPlainFields)
   </div>
   <div class="editor-field">
-    @Html.EditorFor(x => x.Content.LoadAllPlainFields)
+    @Html.EditorFor(x => x.LoadAllPlainFields)
   </div>
 
   <div class="editor-label">
-    @Html.LabelFor(x => x.Content.PublishingMode)
+    @Html.LabelFor(x => x.PublishingMode)
   </div>
   <div class="editor-field">
     @Html.DropDownListFor(
-      x => x.Content.PublishingMode, 
+      x => x.PublishingMode, 
       Html.GetEnumSelectList(typeof(PublishingMode))
     )
   </div>

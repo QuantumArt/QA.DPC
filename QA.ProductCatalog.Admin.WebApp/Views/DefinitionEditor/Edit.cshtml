@@ -3,18 +3,7 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 @{
-    string actionName;
-
-    if (Model is DefinitionFieldInfo)
-    {
-        actionName = ((DefinitionFieldInfo)Model).Field.GetType().Name;
-    }
-    else
-    {
-        actionName = "Content";
-    }
-
-    actionName = "Save" + actionName;
+    var actionName = "Save" + (Model is DefinitionFieldInfo ? "Field" : "Content");
 }
 
 <form asp-controller="DefinitionEditor" asp-action="@actionName" data-ajax="true" data-ajax-method="POST"
@@ -45,6 +34,7 @@
     @Html.HiddenFor(x => Model.Path)
 
     @Html.HiddenFor(x => Model.Xml)
+    
 
     <p style="clear: both">
         <input id="save" type="submit" value="Применить" />

@@ -125,7 +125,7 @@
 
     console.log(xhr);
 
-    alert("Ошибка" + error);
+    alert("Error: " + error);
   },
   UpdateNode: function(path) {
     kendo.ui.progress($("#treeViewContainer"), true);
