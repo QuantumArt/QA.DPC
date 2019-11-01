@@ -5,6 +5,7 @@ using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Integration;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
@@ -60,8 +61,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
             var exceptions = new List<ProductException>();
             int index = 0;
 
+            HttpContextUserProvider.ForcedUserId = context.UserId;
+            
             IAction action = _getService(ActionKey);
-
             foreach (var marketingProduct in marketingProducts)
             {
                 int[] productIds = productsMap[marketingProduct.Id];
@@ -124,6 +126,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
                     SetProgress(++index, count);
                 }
             }
+            HttpContextUserProvider.ForcedUserId = 0;
 
             if (exceptions.Any())
             {
