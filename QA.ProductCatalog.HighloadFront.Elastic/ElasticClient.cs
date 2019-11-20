@@ -214,6 +214,16 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 _logger.LogError($"Circuit broken for {indexUri}", ex);
                 _exceptions.Add(ex);
             }
+            catch (OperationCanceledException ex)
+            {
+                _logger.LogInformation(ex, $"Elastic connection timeout for {indexUri}");
+                _exceptions.Add(ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, $"Unexpected exception for {indexUri}");
+                _exceptions.Add(ex);
+            }
 
             return response;
         }

@@ -110,6 +110,16 @@ namespace QA.ProductCatalog.ImpactService.API.Services
                 _logger.LogInformation(ex, $"Circuit broken for {indexUri}");
                 _exceptions.Add(ex);
             }
+            catch (OperationCanceledException ex)
+            {
+                _logger.LogInformation(ex, $"Elastic connection timeout for {indexUri}");
+                _exceptions.Add(ex);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInformation(ex, $"Unexpected exception for {indexUri}");
+                _exceptions.Add(ex);
+            }
 
             return response;
         }
