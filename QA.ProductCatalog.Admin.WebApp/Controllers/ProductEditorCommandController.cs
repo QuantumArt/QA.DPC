@@ -20,7 +20,6 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [Route("ProductEditorCommand")]
     public class ProductEditorCommandController : ProductEditorController
     {
         private readonly IFieldService _fieldService;

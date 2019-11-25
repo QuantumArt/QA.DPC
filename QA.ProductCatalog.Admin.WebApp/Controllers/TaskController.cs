@@ -15,7 +15,6 @@ using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [Route("Task")]
     [RequireCustomAction]
     public class TaskController : Controller
     {
@@ -46,7 +45,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <param name="showOnlyMine"></param>
         /// <param name="filterJson">типа такого [{"field":"StateId","operator":"eq","value":"3"},{"field":"DisplayName","operator":"contains","value":"asdfsdf"}]</param>
         /// <returns></returns>
-        [HttpGet("TasksData")]
+        [HttpGet]
         public async Task<ActionResult> TasksData(int skip, int take, bool showOnlyMine, string filterJson)
         {
             int? stateIdToFilterBy = null;
@@ -116,7 +115,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                         : new TaskModel(task));
         }
 
-        [HttpPost("Cancel")]
+        [HttpPost]
         public ActionResult Cancel(int taskId)
         {
             bool isCancelled = _taskService.Cancel(taskId);
@@ -124,7 +123,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Json(isCancelled);
         }
 
-        [HttpPost("Rerun")]
+        [HttpPost]
         public ActionResult Rerun(int taskId)
         {
             bool success = _taskService.Rerun(taskId);
@@ -132,7 +131,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Json(success);
         }
 
-        [HttpGet("Schedule")]
+        [HttpGet]
         public ActionResult Schedule(int taskId)
         {
             var task = _taskService.GetTask(taskId);
@@ -145,7 +144,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     : new TaskScheduleModel(task.Schedule));
         }
 
-        [HttpPost("SaveSchedule")]
+        [HttpPost]
         public string SaveSchedule(TaskScheduleModel schedule)
         {
             _taskService.SaveSchedule(schedule.TaskId, schedule.Enabled, schedule.CronExpression);

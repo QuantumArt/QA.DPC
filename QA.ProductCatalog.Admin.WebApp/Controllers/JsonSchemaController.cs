@@ -6,7 +6,6 @@ using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [Route("JsonSchema")]
     public class JsonSchemaController : Controller
     {
         private readonly IContentDefinitionService _contentDefinitionService;
@@ -20,7 +19,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _jsonProductService = jsonProductService;
         }
         
-        [HttpGet("TypeScriptSchema"), RequireCustomAction]
+        [HttpGet, RequireCustomAction]
         public ActionResult TypeScriptSchema(int content_item_id, bool isLive = false)
         {
             Content rootContent = _contentDefinitionService.GetDefinitionById(content_item_id, isLive);

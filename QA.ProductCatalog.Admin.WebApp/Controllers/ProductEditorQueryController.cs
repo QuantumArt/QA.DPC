@@ -16,7 +16,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [Route("ProductEditorQuery")]
     public class ProductEditorQueryController : ProductEditorController
     {
         private readonly PublicationStatusService _publicationStatusService;
@@ -49,7 +48,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _editorCustomActionService = editorCustomActionService;
         }
 
-        [HttpGet("GetEditorSchema")]
+        [HttpGet]
         public ContentResult GetEditorSchema(int productDefinitionId, bool isLive = false)
         {
             Content rootContent = _contentDefinitionService.GetDefinitionById(productDefinitionId, isLive);
@@ -73,7 +72,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Content(schemaJson, "application/json");
         }
 
-        [HttpGet("GetEditorData")]
+        [HttpGet]
         public ContentResult GetEditorData(int productDefinitionId, int articleId, bool isLive = false)
         {
             Content rootContent = _contentDefinitionService.GetDefinitionById(productDefinitionId, isLive);
@@ -88,7 +87,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <summary>
         /// Получить максимальное время обновления продукта глобально по всей витрине
         /// </summary>
-        [HttpGet("GetMaxPublicationTime")]
+        [HttpGet]
         public async Task<ActionResult> GetMaxPublicationTime()
         {
             DateTime? timestamp = await _publicationStatusService.GetMaxPublicationTime();
@@ -103,7 +102,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </summary>
         /// <param name="productIds"> Список Id продуктов </param>
         /// <returns>Словарь с временами обновления продуктов по Id продукта</returns>
-        [HttpPost("GetPublicationTimestamps")]
+        [HttpPost]
         public async Task<ActionResult> GetPublicationTimestamps(
             [FromBody] int[] productIds)
         {
@@ -128,7 +127,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// </summary>
         /// <param name="updatedSince"> Время предыдущего запроса </param>
         /// <returns>Словарь с временами обновления продуктов по Id продукта</returns>
-        [HttpGet("GetPublicationTimestamps"), ResponseCache(
+        [HttpGet, ResponseCache(
             Duration = 4,
             Location = ResponseCacheLocation.None,
             VaryByQueryKeys = new[] {"customerCode", "updatedSince"})]
@@ -154,7 +153,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// <param name="alias">Alias</param>
         /// <returns>ActionCode и EntityTypeCode для Action</returns>
         /// </summary>
-        [HttpGet("GetCustomActionByAlias")]
+        [HttpGet]
         public async Task<ActionResult> GetCustomActionByAlias(string alias)
         {
             CustomActionInfo actionInfo = await _editorCustomActionService.GetCustomActionByAlias(alias);
@@ -164,7 +163,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Content(json, "application/json");
         }
 
-        [HttpPost("LoadPartialProduct")]
+        [HttpPost]
         public ActionResult LoadPartialProduct(
              [FromBody] LoadPartialProductRequest request, bool isLive = false)
         {
@@ -195,7 +194,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Content(productsJson, "application/json");
         }
 
-        [HttpPost("LoadProductRelation")]
+        [HttpPost]
         public ActionResult LoadProductRelation(
              [FromBody] LoadProductRelationRequest request, bool isLive = false)
         {
@@ -231,7 +230,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         /// начиная с корневого контента, описанного путём <see cref="ProductEditorController.PartialProductRequest.ContentPath"/>
         /// </summary>
         /// <returns>JSON статей связи продукта</returns>
-        [HttpPost("PreloadRelationArticles")]
+        [HttpPost]
         public ActionResult PreloadRelationArticles(
              [FromBody] PreloadRelationArticlesRequest request, bool isLive = false)
         {
@@ -261,7 +260,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private static readonly ConcurrentDictionary<string, ContentResult> _cache
             = new ConcurrentDictionary<string, ContentResult>();
 
-        [HttpGet("GetEditorSchema_Test")]
+        [HttpGet]
         public ContentResult GetEditorSchema_Test(int productDefinitionId, bool refresh = false)
         {
             string cacheKey = $"schema/{productDefinitionId}";
@@ -272,7 +271,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return _cache.GetOrAdd(cacheKey, _ => GetEditorSchema(productDefinitionId));
         }
 
-        [HttpGet("GetEditorData_Test")]
+        [HttpGet]
         public ContentResult GetEditorData_Test(int productDefinitionId, int articleId, bool refresh = false)
         {
             string cacheKey = $"data/{productDefinitionId}/{articleId}";

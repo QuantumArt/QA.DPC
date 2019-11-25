@@ -16,7 +16,6 @@ using QA.ProductCatalog.Admin.WebApp.Filters;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
-    [Route("PartialSend")]
     [RequireCustomAction]
     public class PartialSendController : Controller
     {
@@ -31,7 +30,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             _userProvider = userProvider;
         }
         
-        [HttpGet("")]
         public ActionResult Index(string[] ignoredStatus, bool localize = false)
         {
             ViewBag.Localize = localize;
@@ -39,7 +37,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			return View();
         }
 
-        [HttpGet("Active")]
+        [HttpGet]
         public ActionResult Active()
         {
 			var task = _taskService.GetLastTask(null, State.Running, typeof(SendProductAction).Name);
@@ -50,7 +48,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 return Content("");
         }
 
-        [HttpGet("Task")]
+        [HttpGet]
         public async Task<ActionResult> Task(int taskId)
         {
             var task = _taskService.GetTask(taskId);
@@ -60,7 +58,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Json(new { taskProcessingFinished, taskHtml = await this.RenderRazorViewToString(_viewEngine, "ActionProps", new TaskModel(task)) });
         }
 
-        [HttpPost("Send")]
+        [HttpGet]
         public ActionResult Send(string idsStr, bool proceedIgnoredStatus, string[] ignoredStatus, bool stageOnly, bool localize = false)
         {
             int[] ids = null;

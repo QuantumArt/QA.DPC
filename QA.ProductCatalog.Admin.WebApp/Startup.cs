@@ -75,10 +75,11 @@ namespace QA.ProductCatalog.Admin.WebApp
             services
                 .AddMvc(options =>
                     {
+                        options.EnableEndpointRouting = false;
                         options.ModelBinderProviders.Insert(0, new ActionContextModelBinderProvider());
                     })
                 .AddXmlSerializerFormatters()
-                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1); 
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2); 
            
         }
         
