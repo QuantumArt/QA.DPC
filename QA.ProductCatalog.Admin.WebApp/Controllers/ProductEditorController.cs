@@ -133,7 +133,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         }
 
 #if DEBUG
-        [HttpGet("ComponentLibrary")]
+        [HttpGet]
         public ActionResult ComponentLibrary()
         {
             return View();

@@ -58,7 +58,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return Json(new { taskProcessingFinished, taskHtml = await this.RenderRazorViewToString(_viewEngine, "ActionProps", new TaskModel(task)) });
         }
 
-        [HttpGet]
+        [HttpPost]
         public ActionResult Send(string idsStr, bool proceedIgnoredStatus, string[] ignoredStatus, bool stageOnly, bool localize = false)
         {
             int[] ids = null;
