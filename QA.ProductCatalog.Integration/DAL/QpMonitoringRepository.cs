@@ -68,14 +68,13 @@ namespace QA.ProductCatalog.Integration.DAL
 	            {
 		            Language = _language,
 		            IsLive = _state,
-		            Version = 1
+		            Version = 1,
+		            QueryFormat = _isJson ? "json" : "xml"
 	            }).Where(p =>
-					p.Format == (_isJson ? "json" : "xml")
-					&& string.IsNullOrEmpty(p.Slug)
-					&& productIDs.Contains(p.Id)
-	            );
-	            //INNER JOIN (SELECT Id FROM {idsExpression}) AS ids ON ids.Id = p.DpcId 
-                var list = new List<ProductInfo>();
+					productIDs.Contains(p.DpcId)
+	            ).ToArray();
+
+	            var list = new List<ProductInfo>();
                 // производим запрос - без этого не будет работать dependency
                 foreach (var product in products)
                 {
@@ -106,7 +105,7 @@ namespace QA.ProductCatalog.Integration.DAL
 			    var product = context.Products.FirstOrDefault(p => p.DpcId == id && p.IsLive == _state
 			                                              && p.Language == _language &&
 			                                              p.Format == (_isJson ? "json" : "xml")
-			                                              && p.Version == 1 && !string.IsNullOrEmpty(p.Slug));
+			                                              && p.Version == 1 && string.IsNullOrEmpty(p.Slug));
 			    return product?.Data;
 		    }
 	    }
