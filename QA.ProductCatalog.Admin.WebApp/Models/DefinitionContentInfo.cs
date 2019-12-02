@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Configuration;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models
@@ -7,18 +9,18 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
     public class DefinitionContentInfo : DefinitionElement
 	{
         
-        [DisplayName("Только для чтения ")]
+        [Display(Name="IsReadOnly", ResourceType = typeof(ControlStrings))]
         public bool IsReadOnly { get; set; }
         
-        [DisplayName("Грузить все простые поля")]
+        [Display(Name="LoadAllPlainFields", ResourceType = typeof(ControlStrings))]
         public bool LoadAllPlainFields { get; set; }
 
-        [DisplayName("Имя контента")]
+        [Display(Name="ContentName", ResourceType = typeof(ControlStrings))]
         public string ContentName { get; set; }
         
         public int ContentId { get; set; }
         
-        [DisplayName("Поведение при публикации")]
+        [Display(Name="PublishBehaviour", ResourceType = typeof(ControlStrings))]
         public PublishingMode PublishingMode { get; set; }
         
         public bool CacheEnabled { get; set; }

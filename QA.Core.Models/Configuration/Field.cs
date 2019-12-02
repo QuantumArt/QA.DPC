@@ -1,12 +1,10 @@
 ﻿using QA.Core.Models.Tools;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
-#if NETSTANDARD
+using QA.Core.DPC.Resources;
 
-#else
-using System.Windows.Markup;
-#endif
 
 namespace QA.Core.Models.Configuration
 {
@@ -23,10 +21,11 @@ namespace QA.Core.Models.Configuration
             CustomProperties = new Dictionary<string, object>();
         }
 
-        [DisplayName("Имя поля")]
+        [Display(Name = "FieldName", ResourceType = typeof(ControlStrings))]
         public virtual string FieldName { get; set; }
 
-        [DisplayName("Имя поля для карточки")]
+        [Display(Name = "FieldNameForCard", ResourceType = typeof(ControlStrings))]
+
         [DefaultValue(null)]
         public virtual string FieldTitle { get; set; }
 

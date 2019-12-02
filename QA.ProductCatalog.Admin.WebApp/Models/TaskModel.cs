@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models
@@ -9,28 +11,28 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
     {
         public int Id { get; set; }
 
-        [DisplayName("Дата создания")]
+        [Display(Name="CreatedDate", ResourceType = typeof(ControlStrings))]
         public DateTime CreatedTime { get; set; }
 
-        [DisplayName("Последнаяя смена статуса")]
+        [Display(Name="LastStatusChangeTime", ResourceType = typeof(ControlStrings))]
         public DateTime? LastStatusChangeTime { get; set; }
 
-        [DisplayName("Ключ")]
+        [Display(Name="Key", ResourceType = typeof(ControlStrings))]
         public string Name { get; set; }
 
-        [DisplayName("Имя")]
+        [Display(Name="DisplayName", ResourceType = typeof(ControlStrings))]
         public string DisplayName { get; set; }
 
-        [DisplayName("Статус")]
+        [Display(Name="State", ResourceType = typeof(ControlStrings))]
         public string State { get; set; }
 
-        [DisplayName("Заказчик")]
+        [Display(Name="UserName", ResourceType = typeof(ControlStrings))]
         public string UserName { get; set; }
 
-        [DisplayName("Сообщение")]
+        [Display(Name="Message", ResourceType = typeof(ControlStrings))]
         public string Message { get; set; }
 
-        [DisplayName("Процент выполнения")]
+        [Display(Name="Progress", ResourceType = typeof(ControlStrings))]
         public byte? Progress { get; set; }
 
         public string IconName

@@ -41,5 +41,9 @@
   <ItemGroup>
     <Folder Include="Properties" />
   </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\QA.Core.DPC.Resources\QA.Core.DPC.Resources.csproj" />
+  </ItemGroup>
  </Project>
 

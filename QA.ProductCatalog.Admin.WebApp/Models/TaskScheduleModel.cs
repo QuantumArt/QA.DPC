@@ -1,14 +1,16 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using QA.Core.DPC.Resources;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models
 {
     public class TaskScheduleModel
 	{
-		[DisplayName("ID задачи")]
+        [Display(Name="TaskId", ResourceType = typeof(ControlStrings))]
 		public int TaskId { get; set; }
 
-		[DisplayName("Включено")]
+        [Display(Name="Enabled", ResourceType = typeof(ControlStrings))]
 		public bool Enabled { get; set; }
 
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using QA.Core.DPC.Resources;
 #if NETSTANDARD
 using Portable.Xaml.Markup;
 #else
@@ -18,7 +20,7 @@ namespace QA.Core.Models.Configuration
     {
         private Tuple<string> _relationGroupName;
 
-		[DisplayName("Имя поля для карточки")]
+		[Display(Name="FieldNameForCard", ResourceType = typeof(ControlStrings))]
 		[DefaultValue(null)]
 		public string DisplayName
         {

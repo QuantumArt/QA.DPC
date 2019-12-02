@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.DPC.Loader;
+using QA.Core.DPC.Resources;
 
 namespace QA.ProductCatalog.Admin.WebApp.Models
 {
@@ -185,30 +187,34 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         public string RelatedContentId { get; set; }
 
+        [Display(Name="FieldId", ResourceType = typeof(ControlStrings))]
         public int FieldId { get; set; }
         
-        [DisplayName("При клонировании родительской сущности")]
+        [Display(Name="CloningMode", ResourceType = typeof(ControlStrings))]
         public CloningMode CloningMode { get; set; }
 
-        [DisplayName("При создании\\обновлении")]
+        [Display(Name="UpdatingMode", ResourceType = typeof(ControlStrings))]
         public UpdatingMode UpdatingMode { get; set; }
 
-        [DisplayName("При удалении родительской сущности или удалении связи")]
+        [Display(Name="DeletingMode", ResourceType = typeof(ControlStrings))]
         public DeletingMode DeletingMode { get; set; }
         
-        [DisplayName("Период кеширования по умолчанию")]
+        [Display(Name="DefaultCachePeriod", ResourceType = typeof(ControlStrings))]
         public TimeSpan DefaultCachePeriod { get; set; }
         
-        [DisplayName("Имя поля")]
+        [Display(Name="FieldName", ResourceType = typeof(ControlStrings))]
         public string FieldName { get; set; }
 
-        [DisplayName("Имя поля для карточки")]
+        [Display(Name="FieldNameForCard", ResourceType = typeof(ControlStrings))]
         public string FieldTitle { get; set; }
         
+        [Display(Name="PreloadingMode", ResourceType = typeof(ControlStrings))]
         public PreloadingMode PreloadingMode { get; set; }
 
+        [Display(Name="RelationCondition", ResourceType = typeof(ControlStrings))]
         public string RelationCondition { get; set; }
 
+        [Display(Name="ClonePrototypeCondition", ResourceType = typeof(ControlStrings))]
         public string ClonePrototypeCondition { get; set; }
         
         

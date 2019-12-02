@@ -1,4 +1,5 @@
-﻿@using QA.Core.Models.Configuration
+﻿@using QA.Core.DPC.Resources
+@using QA.Core.Models.Configuration
 @using QA.ProductCatalog.Admin.WebApp.Core
 @using QA.ProductCatalog.Admin.WebApp.Models
 @using Quantumart.QP8.Constants
@@ -56,7 +57,7 @@ else
       {
         Cols = 80,
         Rows = 6,
-        Placeholder = "SQL-условие фильтрации списка статей",
+        Placeholder = ControlStrings.RelationConditionDescription,
         Style = "resize: none; font-family: monospace"
       })
     </div>
@@ -66,13 +67,13 @@ else
       {
         Cols = 80,
         Rows = 6,
-        Placeholder = "SQL-условие выбора статьи-прообраза для клонирования",
+        Placeholder = ControlStrings.ClonePrototypeConditionDescription,
         Style = "resize: none; font-family: monospace"
       })
     </div>
 
     <div class="display-label">
-      @(Model.FieldType == FieldDefinitionType.EntityField ? "Ссылается на контент" : "Ссылается на данный контент из контента ")
+      @(Model.FieldType == FieldDefinitionType.EntityField ? ControlStrings.RelateToAnother : ControlStrings.RelateToThis)
     </div>
     <div class="display-field">@Model.RelatedContentName @Model.RelatedContentId</div>
   }

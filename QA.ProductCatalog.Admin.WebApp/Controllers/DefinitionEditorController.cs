@@ -41,6 +41,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			_cacheItemWatcher = cacheItemWatcher;
 		}
 
+        [RequireCustomAction]
 		public ActionResult Index([Bind("content_item_id")] int? contentItemId, int? contentId)
 		{
 			_cacheItemWatcher.TrackChanges();
@@ -106,6 +107,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             return new ContentResult() { ContentType = "application/json", Content = JsonConvert.SerializeObject(resultObj)};
 		}
 
+        [RequireCustomAction]
 		public ActionResult Edit(DefinitionPathInfo defInfo)
 		{
 			var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
@@ -145,6 +147,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 });
         }
 
+        [RequireCustomAction]
 		public ActionResult SaveField(DefinitionFieldInfo defInfo)
 		{
 			var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);
@@ -165,6 +168,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 			});
 		}
         
+        [RequireCustomAction]
 		public ActionResult SaveContent(DefinitionContentInfo defInfo)
 		{
 			var rootContent = (Content)XamlConfigurationParser.CreateFrom(defInfo.Xml);

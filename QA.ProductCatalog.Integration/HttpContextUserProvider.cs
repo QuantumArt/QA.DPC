@@ -106,7 +106,7 @@ namespace QA.ProductCatalog.Integration
 	        if (cachedData == null || cachedData.Rows.Count == 0)
 		        return 1;
 
-	        return (int)cachedData.Rows[0]["LANGUAGE_ID"];
+	        return (int)(decimal)cachedData.Rows[0]["LANGUAGE_ID"];
         }
     }
 }

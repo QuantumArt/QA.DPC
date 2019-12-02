@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 #if NETSTANDARD
 using Portable.Xaml.Markup;
@@ -9,6 +10,7 @@ using System.Windows.Markup;
 #endif
 
 using QA.Configuration;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Tools;
 
 namespace QA.Core.Models.Configuration
@@ -42,7 +44,7 @@ namespace QA.Core.Models.Configuration
 
         public int ContentId { get; set; }
 
-        [DisplayName("Поведение при публикации")]
+        [Display(Name = "PublishBehaviour", ResourceType = typeof(ControlStrings))]
         [DefaultValue(PublishingMode.Publish)]
         public PublishingMode PublishingMode { get; set; }
         

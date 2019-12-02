@@ -1,19 +1,21 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Tools;
 
 namespace QA.Core.Models.Configuration
 {
     public abstract class Association : Field
     {
-        [DisplayName("При клонировании родительской сущности")]
+        [Display(Name="CloningMode", ResourceType = typeof(ControlStrings))]
         [DefaultValue(CloningMode.Ignore)]
         public CloningMode CloningMode { get; set; }
 
-        [DisplayName("При создании\\обновлении")]
+        [Display(Name="UpdatingMode", ResourceType = typeof(ControlStrings))]
         [DefaultValue(UpdatingMode.Ignore)]
         public UpdatingMode UpdatingMode { get; set; }
 
-        [DisplayName("При удалении родительской сущности или удалении связи")]
+        [Display(Name="DeletingMode", ResourceType = typeof(ControlStrings))]
         [DefaultValue(DeletingMode.Keep)]
         public DeletingMode DeletingMode { get; set; }
 
