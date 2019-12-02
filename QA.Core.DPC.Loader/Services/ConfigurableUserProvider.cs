@@ -21,5 +21,10 @@ namespace QA.Core.ProductCatalog.Actions.Services
 		{
 			return "Configured user";
 		}
+
+		public int GetLanguageId()
+		{
+			return 1;
+		}
 	}
 }

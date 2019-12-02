@@ -34,7 +34,6 @@ namespace QA.ProductCatalog.Integration
 	        _accessor = accessor;
         }
 
-
         public int GetUserId()
         {
             if (ForcedUserId > 0)
@@ -81,17 +80,33 @@ namespace QA.ProductCatalog.Integration
         public string GetUserName()
         {
             var userId = GetUserId();
-
-            var dBConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
-
-            var str = string.Concat("select FIRST_NAME, LAST_NAME from users where user_id = ", userId);
+			var dBConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+			
             
-            var cachedData = dBConnector.GetCachedData(str);
+            var cachedData = dBConnector.GetCachedData(
+	            "select FIRST_NAME, LAST_NAME from users where user_id = " + userId
+	        );
 
             if (cachedData == null || cachedData.Rows.Count == 0)
                 return null;
 
             return cachedData.Rows[0]["FIRST_NAME"] + " " + cachedData.Rows[0]["LAST_NAME"];
+        }
+        
+        public int GetLanguageId()
+        {
+	        var userId = GetUserId();
+
+	        var dBConnector = new DBConnector(_customer.ConnectionString, _customer.DatabaseType);
+	        
+	        var cachedData = dBConnector.GetCachedData(
+		        "select LANGUAGE_ID from users where user_id = " + userId
+	        );
+            
+	        if (cachedData == null || cachedData.Rows.Count == 0)
+		        return 1;
+
+	        return (int)cachedData.Rows[0]["LANGUAGE_ID"];
         }
     }
 }

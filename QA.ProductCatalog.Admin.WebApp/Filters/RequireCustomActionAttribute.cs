@@ -1,7 +1,10 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using QA.DPC.Core.Helpers;
+using QA.ProductCatalog.ContentProviders;
+using Quantumart.QP8.Security;
 
 namespace QA.ProductCatalog.Admin.WebApp.Filters
 {
@@ -13,22 +16,27 @@ namespace QA.ProductCatalog.Admin.WebApp.Filters
 
         private class RequireCustomActionImpl : IAuthorizationFilter
         {
-            private readonly ISecurityChecker _checker;
+            private readonly IUserProvider _provider;
 
             public RequireCustomActionImpl(
-                ISecurityChecker checker
+                IUserProvider provider
             )
             {
-                _checker = checker;
+                _provider = provider;
             }
 
 
             public void OnAuthorization(AuthorizationFilterContext context)
             {
-                if (!_checker.CheckAuthorization())
+                if (_provider.GetUserId() <= 0)
                 {
                     context.Result = new UnauthorizedResult();
                 }
+
+                var langId = _provider.GetLanguageId();
+                var ci = new CultureInfo(QpUser.GetCultureNameByLanguageId(langId));
+                CultureInfo.CurrentCulture = ci;
+                CultureInfo.CurrentUICulture = ci;
             }
         }
     }

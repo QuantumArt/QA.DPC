@@ -80,8 +80,7 @@ using System.Reflection;
             container.RegisterInstance<ILogger>(new NLogLogger("NLogClient.config"));
 
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
-            container.RegisterType<ISecurityChecker, QpUserProviderSecurityChecker>();
-	        
+        
 	        container.RegisterType<DefinitionEditorService>();
 
             container

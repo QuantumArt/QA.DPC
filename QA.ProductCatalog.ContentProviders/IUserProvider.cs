@@ -5,5 +5,7 @@
         int GetUserId();
 
         string GetUserName();
+
+        int GetLanguageId();
     }
 }
