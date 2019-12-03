@@ -1,8 +1,6 @@
 ﻿@using QA.Core.DPC.Resources
 @using QA.Core.Models.Configuration
-@using QA.ProductCatalog.Admin.WebApp.Core
 @using QA.ProductCatalog.Admin.WebApp.Models
-@using Quantumart.QP8.Constants
 
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionFieldInfo
 
@@ -26,11 +24,11 @@ else
   }
   else
   {
-    <div class="editor-field">@Html.TextBoxFor(x => x.FieldName, new {Placeholder = "Имя поля в JSON"})</div>
+    <div class="editor-field">@Html.TextBoxFor(x => x.FieldName, new {Placeholder = ControlStrings.JsonFieldName})</div>
   }
 
   <div class="editor-label">@Html.LabelFor(x => x.FieldTitle)</div>
-  <div class="editor-field">@Html.TextBoxFor(x => x.FieldTitle, new { Placeholder = "Текст в <label>" })</div>
+  <div class="editor-field">@Html.TextBoxFor(x => x.FieldTitle, new { Placeholder = ControlStrings.LabelText })</div>
 }
 
 @if (Model.FieldType == FieldDefinitionType.EntityField 
@@ -80,29 +78,29 @@ else
   else if (Model.FieldType == FieldDefinitionType.ExtensionField)
   {
     <div class="display-label">
-      <span class="EditorNote">Поле является классификатором</span>
+      <span class="EditorNote">@ControlStrings.IsClassifier</span>
     </div>
   }
 }
 else if (Model.FieldType == FieldDefinitionType.VirtualField || Model.FieldType == FieldDefinitionType.VirtualMultiEntityField)
 {
-  <div class="editor-label">Путь</div>
+  <div class="editor-label">@ControlStrings.Path</div>
   <div class="editor-field">@Html.TextBoxFor(x => x.VirtualPath, new { @class = "text-box single-line" })</div>
   if (Model.FieldType == FieldDefinitionType.VirtualField)
   {
-    <div class="editor-label">Путь по которому надо удалить поле (имеет смысл только если отличается от пути)</div>
+    <div class="editor-label">@ControlStrings.RemovePath</div>
     <div class="editor-field">@Html.TextBoxFor(x => x.ObjectToRemovePath, new { @class = "text-box single-line" })</div>
                                                                                                                   
-    <div class="display-label">Конвертер</div>
+    <div class="display-label">@ControlStrings.Converter</div>
     <div class="display-field">@Model.Converter</div>
   }
 }
 else if (Model.FieldType == FieldDefinitionType.PlainField)
 {
-  <div class="editor-label">Не оборачивать в CDATA</div>
+  <div class="editor-label">@ControlStrings.DontWrapInCData</div>
   <div class="editor-field">@Html.CheckBoxFor(x => x.SkipCData)</div>
                                                                
-  <div class="editor-label">Загружать как поле типа Image</div>
+  <div class="editor-label">@ControlStrings.LoadAsImage</div>
   <div class="editor-field">@Html.CheckBoxFor(x => x.LoadLikeImage)</div>
 }
 

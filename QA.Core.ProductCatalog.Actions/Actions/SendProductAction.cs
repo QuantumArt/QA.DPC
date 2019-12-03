@@ -13,7 +13,10 @@ using QA.ProductCatalog.ContentProviders;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Irony;
+using QA.Core.DPC.Resources;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
@@ -81,7 +84,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             }
 
             if (productIds.Length == 0)
-                throw new Exception("Не найдено ни одного продукта");
+                throw new Exception(SendProductActionStrings.NotFound);
 
             foreach (var articleIdsWithContentId in articleIdsToCheckRelationsByContentId)
             {
@@ -90,7 +93,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 string idsstr = string.Join(", ", checkResult.Where(n => !n.Value));
 
                 if (!string.IsNullOrEmpty(idsstr))
-                    throw new Exception("Не хватает прав доступа по связям на следующие статьи: " + idsstr);
+                    throw new Exception($"{SendProductActionStrings.NoRelationAccess} {idsstr}");
             }
 
             const string skipPublishingKey = "skipPublishing";
@@ -123,8 +126,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             var invisibleOrArchivedIds = new ConcurrentBag<int>();
             var errors = new ConcurrentBag<Exception>();
             var validationErrors = new ConcurrentDictionary<int, string>();
-
-            const string cancelledMessage = "Действие отменено";
 
             Parallel.ForEach(parts, new ParallelOptions { MaxDegreeOfParallelism = maxDegreeOfParallelism },
                 () =>
@@ -372,7 +373,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             {
                 TaskContext.IsCancelled = true;
 
-                return cancelledMessage;
+                return SendProductActionStrings.Cancelled;
             }
 
             var productsToRemove = missing
@@ -405,53 +406,64 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             int[] notFound = missing.Except(productsToRemove).Except(excluded).Except(frozen).Except(validationErrors.Keys).ToArray();
 
-            string message = "";
+            var sb = new StringBuilder();
+            var writeErrorToLog = false;
+            var notSucceeded = failed.Keys.Concat(notFound).Concat(excluded).Concat(frozen)
+                .Concat(validationErrors.Keys).ToArray();
 
-            if (failed.Count > 0 || errors.Count > 0 || notFound.Length > 0 || excluded.Any() || frozen.Any() || validationErrors.Any())
+            if (notSucceeded.Any())
             {
-                message += string.Format("Обработано {0} из {1}, необработанные продукты: {2}",
-                    productIds.Length - failed.Count - notFound.Length - excluded.Count - frozen.Count - validationErrors.Count,
-                    productIds.Length,
-                    string.Join(", ", failed.Keys.Concat(notFound).Concat(excluded).Concat(frozen).Concat(validationErrors.Keys)));
+                sb.AppendFormat(
+                    SendProductActionStrings.PartiallySucceededResult,  
+                    productIds.Length - notSucceeded.Length, 
+                    productIds.Length
+                );
+                sb.AppendLine(" "  + string.Join(", ", notSucceeded));
             }
+            
             else
-                message += string.Format("Все {0} продуктов успешно обработаны", productIds.Length);
+            {
+                sb.AppendFormat(SendProductActionStrings.SucceededResult, productIds.Length);
+                sb.AppendLine();
+            }
 
-            if (errors.Count > 0)
-                message += Environment.NewLine + "Ошибки: " + string.Join(", ", errors.Select(x => x.Message).Distinct());
+            if (errors.Any())
+            {
+                sb.Append(SendProductActionStrings.Errors);
+                sb.AppendLine(" " + string.Join(", ", errors.Select(x => x.Message).Distinct()));
+            }
 
-            if (excluded.Any())
-                message += Environment.NewLine + "Были исключены по статусу следующие продукты: " + string.Join(", ", excluded);
-
-            if (frozen.Any())
-                message += Environment.NewLine + "Были исключены из-за заморозки следующие продукты: " + string.Join(", ", frozen);
-
-
-            if (notFound.Length > 0)
-                message += Environment.NewLine + "В DPC не были найдены следующие продукты: " + string.Join(", ", notFound);
-
-            if (productsToRemove.Length > 0)
-                message += Environment.NewLine + "Были удалены с витрин следующие продукты: " + string.Join(", ", productsToRemove);
-
-            if (filteredInStage.Any())
-                message += Environment.NewLine + "Продукты не прошли фильтрацию ни по одному из Stage каналов: " + string.Join(", ", filteredInStage);
-
-            if (filteredInLive.Any())
-                message += Environment.NewLine + "Продукты не прошли фильтрацию ни по одному из Live каналов: " + string.Join(", ", filteredInLive);
-
+            AddMessages(sb, SendProductActionStrings.ExcludedByStatus, excluded.ToArray());
+            AddMessages(sb, SendProductActionStrings.ExcludedWithFreezing, frozen.ToArray());
+            AddMessages(sb, SendProductActionStrings.NotFoundInDpc, notFound.ToArray());
+            AddMessages(sb, SendProductActionStrings.RemovedFromFronts, productsToRemove.ToArray());
+            AddMessages(sb, SendProductActionStrings.NotPassedByStageFiltration, filteredInStage.ToArray());
+            AddMessages(sb, SendProductActionStrings.NotPassedByLiveFiltration, filteredInLive.ToArray());
+            
             if (validationErrors.Any())
             {
-                message += Environment.NewLine + "Продукты не прошли валидацю: "
-                           + string.Join(", ", validationErrors.Keys)
-                           + Environment.NewLine
-                           + string.Join("; ", validationErrors.Values);
-
-                _logger.Error(message);
+                writeErrorToLog = true;
+                sb.Append(SendProductActionStrings.NotValidated);
+                sb.AppendLine(" " + string.Join(", ", validationErrors.Keys));
+                sb.AppendLine(string.Join("; ", validationErrors.Values));                
             }
 
+            var message = sb.ToString();
+            if (writeErrorToLog)
+            {
+                _logger.Error(message);
+            }
             TaskContext.Message = message;
-
             return message;
+        }
+
+        private static void AddMessages(StringBuilder sb, string message, int[] ints)
+        {
+            if (ints.Any())
+            {
+                sb.Append(message);
+                sb.AppendLine(" " + string.Join(", ", ints));
+            }
         }
 
         private void UpdateFilteredIds(ConcurrentBag<int> filteredIds, int[] sendedIds, IList<Article> articles, Exception exception, ConcurrentBag<Exception> errors, ConcurrentDictionary<int, object> failedIds)
@@ -467,7 +479,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             {
                 var ids = articles.Select(a => a.Id).ToArray();
 
-                _logger.ErrorException(string.Format("Exception when send products {0}", string.Join(", ", ids)), exception);
+                _logger.ErrorException(string.Format("Exception while sending products: {0}", string.Join(", ", ids)), exception);
 
                 errors.Add(exception.InnerException == null ? exception : exception.InnerException);
 

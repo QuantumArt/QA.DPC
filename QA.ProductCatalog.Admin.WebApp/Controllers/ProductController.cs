@@ -22,6 +22,7 @@ using QA.Core.Models.Processors;
 using System.Globalization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using QA.Core.Cache;
+using QA.Core.DPC.Resources;
 using QA.DPC.Core.Helpers;
 using Unity;
 using QA.ProductCatalog.Admin.WebApp.Filters;
@@ -69,7 +70,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             ViewBag.HostId = _qpHelper.HostId;
             if (content_item_id <= 0)
             {
-                ViewBag.Message = "Параметры действия некорректны: content_item_id должен быть больше 0.";
+                ViewBag.Message = ProductCardStrings.СontentItemIdPositive;
                 return View();
             }
 
@@ -83,7 +84,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (product == null)
             {
-                ViewBag.Message = "Продукт не найден.";
+                ViewBag.Message = ProductCardStrings.ProductNotFound;
                 return View();
             }
             else if (localize)
@@ -111,7 +112,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (control == null)
             {
-                ViewBag.Message = "Для указанного продукта не задано визуальное представление.";
+                ViewBag.Message = ProductCardStrings.ProductIsNotVisual;
                 return View();
             }
 
@@ -157,7 +158,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
                 if (!isRelevant)
                 {
-                    product.AddPlainField("IsRelevant", false, "Актуальность продукта");
+                    product.AddPlainField("IsRelevant", false, ProductCardStrings.ProductRelevance);
                 }
             }
 
@@ -179,14 +180,14 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             product.AddArticle("Diagnostics",
                 new Article()
-                    .AddPlainField("ProductLoaded", productLoadedIn, "Продукт загружен")
-                    .AddPlainField("ProductLocalized", productLocalized, "Продукт локализован")
-                    .AddPlainField("ControlLoaded", controlLoadedIn, "Карточка получена")
-                    .AddPlainField("ProductCopied", productCopied, "Продукт скопирован")                    
-                    .AddPlainField("RelevanceResolved", relevanceResolved, "Сервис актуальности получен")
-                    .AddPlainField("RelevanceLoaded", relevanceLoaded, "Актуальность получена")
-                    .AddPlainField("HierarchySorted", hierarchySorted, "Иерархия отсортирована")
-                    .AddPlainField("Stopwatch", sw));
+                    .AddPlainField("ProductLoaded", productLoadedIn, ProductCardStrings.ProductLoaded)
+                    .AddPlainField("ProductLocalized", productLocalized, ProductCardStrings.ProductLocalized)
+                    .AddPlainField("ControlLoaded", controlLoadedIn, ProductCardStrings.ControlLoaded)
+                    .AddPlainField("ProductCopied", productCopied, ProductCardStrings.ProductCopied)                    
+                    .AddPlainField("RelevanceResolved", relevanceResolved, ProductCardStrings.RelevanceResolved)
+                    .AddPlainField("RelevanceLoaded", relevanceLoaded, ProductCardStrings.RelevanceLoaded)
+                    .AddPlainField("HierarchySorted", hierarchySorted, ProductCardStrings.HierarchySorted)
+                    .AddPlainField("Stopwatch", sw, ProductCardStrings.Stopwatch));
 
 
 
@@ -202,7 +203,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var product = _productService.GetProductById(content_item_id, live);
             if (product == null)
             {
-                ViewBag.Message = "Продукт не найден.";
+                ViewBag.Message = ProductCardStrings.ProductNotFound;
                 return View("GetXml");
             }
 
@@ -222,7 +223,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (product == null)
             {
-                ViewBag.Message = "Продукт не найден.";
+                ViewBag.Message = ProductCardStrings.ProductNotFound;
                 return View(formatter);
             }
 
@@ -279,7 +280,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var product = _productService.GetProductById(content_item_id, live);
 
             if (product == null)
-                return NotFound("Продукт не найден.");
+                return NotFound(ProductCardStrings.ProductNotFound);
 
             var filter = live ? ArticleFilter.LiveFilter : ArticleFilter.DefaultFilter;
 
@@ -308,7 +309,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 var idsList = model.ArticleIds.SplitString(' ', ',', ';', '\n', '\r').Distinct().ToArray();
                 if (idsList.Length > 200)
                 {
-                    ModelState.AddModelError("", @"Слишком много продуктов. Укажите не более 200");
+                    ModelState.AddModelError("", ProductCardStrings.TooMuchProducts);
                     return View("Send", model);
                 }
 
@@ -319,7 +320,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 }
                 catch (Exception ex)
                 {
-                    ModelState.AddModelError("", @"Указаны нечисловые значения. " + ex.Message);
+                    ModelState.AddModelError("", ProductCardStrings.NotNumberValues + ". " + ex.Message);
                     return View("Send", model);
                 }
 
@@ -329,7 +330,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     {
                         var context = new ActionContext { ContentId = 288, ContentItemIds = ids };
                         action.Process(context);
-                        model.Message = "Продукты успешно опубликованы и отправлены";
+                        model.Message = ProductCardStrings.PublishedAndSendSuccess;
                     }
                     catch (ActionException ex)
                     {
@@ -345,19 +346,20 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         private void AddRelevanceData(Article article, RelevanceInfo relevanceInfo)
         {
 
-            var statusText = relevanceInfo.Relevance == ProductRelevance.Missing
-                ? "Отсутствует на витрине"
-                : relevanceInfo.Relevance == ProductRelevance.Relevant ? "Актуален" : "Содержит неотправленные изменения";
+            var statusText = relevanceInfo.Relevance switch
+            {
+                ProductRelevance.Missing => ProductCardStrings.Missing,
+                ProductRelevance.Relevant => ProductCardStrings.Relevant,
+                _ => ProductCardStrings.NotRelevant
+            };
 
             article
-                .AddPlainField("ConsumerCulture", relevanceInfo.Culture.NativeName, "Язык витрины")
-                .AddPlainField("ConsumerStatusText", statusText, "Статус на витрине")
-                .AddPlainField("ConsumerStatusCode", relevanceInfo.Relevance.ToString(), "Код статуса на витрине")
-                .AddPlainField("ConsumerLastPublished", relevanceInfo.LastPublished.ToString(), "Дата последней публикации")
-                .AddPlainField("ConsumerLastPublishedUserName", relevanceInfo.LastPublishedUserName, "Опубликовал");
+                .AddPlainField("ConsumerCulture", relevanceInfo.Culture.NativeName, ProductCardStrings.FrontLanguage)
+                .AddPlainField("ConsumerStatusText", statusText, ProductCardStrings.FrontStatus)
+                .AddPlainField("ConsumerStatusCode", relevanceInfo.Relevance.ToString(), ProductCardStrings.FrontStatusCode)
+                .AddPlainField("ConsumerLastPublished", relevanceInfo.LastPublished.ToString(), ProductCardStrings.Published)
+                .AddPlainField("ConsumerLastPublishedUserName", relevanceInfo.LastPublishedUserName, ProductCardStrings.PublishedBy);
         }
-
-
     }
     #endregion
 }

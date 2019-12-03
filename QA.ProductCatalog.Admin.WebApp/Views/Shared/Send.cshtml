@@ -1,14 +1,13 @@
-﻿@model QA.ProductCatalog.Admin.WebApp.Models.SendProductModel
+﻿@using QA.Core.DPC.Resources
+@model QA.ProductCatalog.Admin.WebApp.Models.SendProductModel
 
 @{
     ViewBag.Title = "Отправка";
 }
 <div class="formLayout">
     <fieldset>
-        <legend>Частичная отправка продуктов на все витрины (live и stage)</legend>
-        <p>Данная утилита позволяет публиковать и отправлять продукты на витрины, <br /> 
-        а также удалять с витрин архивные, невидимые или по ошибке не удаленные продукты. <br />
-        В поле следует вводить список Id региональных продуктов (возможные разделители: "," ";" пробел, новая строчка)</p>
+        <legend>@ControlStrings.PartialSend</legend>
+        <p>@ControlStrings.PartialSendDescription</p>
 
         @Html.ValidationSummary(true)
         @using (Html.BeginForm("send", "productsend"))
@@ -24,7 +23,7 @@
                 </div>
             </div>
             <p>
-                <input id="save" type="submit" value="Отправить продукты" />
+                <input id="save" type="submit" value="@ControlStrings.SendProducts" />
             </p>
         }
 
@@ -34,8 +33,8 @@
             {
                 @Html.AntiForgeryToken()
                 <div>
-                    <h5>Часть продуктов требует публикации перед отправкой на витрины (@Model.NeedPublishing.Length) </h5>
-                    <p>Чтобы опубликовать эти продукты, нажмите кнопку "Публиковать и отправить"</p>
+                    <h5>@ControlStrings.PublicationRequired (@Model.NeedPublishing.Length)</h5>
+                    <p>@ControlStrings.ClickPublishAndSendButton</p>
                     <div class="editor-label">
                         @Html.LabelFor(model => model.ArticleIds)
                     </div>
@@ -47,7 +46,7 @@
                     </div>
                     <p>
                         @Html.HiddenFor(model => model.Ids)
-                        <input id="publish" type="submit" value="Публиковать и отправить" />
+                        <input id="publish" type="submit" value="@ControlStrings.PublishAndSend" />
                     </p>
                 </div>
             }

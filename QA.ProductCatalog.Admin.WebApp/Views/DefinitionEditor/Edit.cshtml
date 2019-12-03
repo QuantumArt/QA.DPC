@@ -1,4 +1,5 @@
-﻿@using QA.ProductCatalog.Admin.WebApp.Models
+﻿@using QA.Core.DPC.Resources
+@using QA.ProductCatalog.Admin.WebApp.Models
 @model DefinitionElement
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
@@ -37,7 +38,7 @@
     
 
     <p style="clear: both">
-        <input id="save" type="submit" value="Применить" />
+        <input id="save" type="submit" value="@ControlStrings.Apply" />
     </p>
 
 </form>

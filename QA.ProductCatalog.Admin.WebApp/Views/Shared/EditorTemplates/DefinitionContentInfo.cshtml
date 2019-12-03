@@ -1,4 +1,5 @@
-﻿@using QA.Core.Models.Configuration
+﻿@using QA.Core.DPC.Resources
+@using QA.Core.Models.Configuration
 @using QA.ProductCatalog.Admin.WebApp.Core
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionContentInfo
 
@@ -10,17 +11,17 @@
 </div>
 
 <div class="editor-label">
-  Настройки кеширования
+  @ControlStrings.CacheSettings
 </div>
 <div class="editor-field">
   @if (Model.AlreadyCachedAsDictionary)
   {
-    <span class="EditorNote">Контент уже кешируется как словарь</span>
+    <span class="EditorNote">@ControlStrings.AlreadyCached</span>
   }
   else
   {
     @Html.CheckBoxFor(x => x.CacheEnabled, new { onchange = "ChangeCachePeriodTxVisibility()", id = "cbCacheEnabled" })
-    <label for="cbCacheEnabled">Кешировать</label>
+    <label for="cbCacheEnabled">@ControlStrings.ProceedCaching</label>
     @Html.TextBoxFor(x => x.CachePeriod, new { id = "txCachePeriod" })
 
     <script>

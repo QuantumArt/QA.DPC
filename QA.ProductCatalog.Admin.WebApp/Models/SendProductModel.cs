@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using QA.Core;
+using QA.Core.DPC.Resources;
 using QA.Core.Linq;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
@@ -20,7 +21,8 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
     public class SendProductModel
     {
         public string Message { get; set; }
-        [Display(Name = "Список ID продуктов, которые следует опубликовать перед отправкой")]
+        
+        [Display(Name = "ProductIdListToPublish", ResourceType = typeof(ControlStrings))]
         public string ArticleIds { get; set; }
 
         public Article[] NeedPublishing { get; set; }
@@ -29,7 +31,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Models
 
         public int[] NotFound { get; set; }
 
-        [Display(Name = "Список ID продуктов")]
+        [Display(Name = "ProductIdList", ResourceType = typeof(ControlStrings))]
         public string Ids { get; set; }
 
         internal static Result Send(int[] ids, int bundleSize)

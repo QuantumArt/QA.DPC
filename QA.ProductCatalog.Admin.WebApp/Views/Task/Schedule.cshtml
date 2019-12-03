@@ -1,4 +1,5 @@
-﻿@model QA.ProductCatalog.Admin.WebApp.Models.TaskScheduleModel
+﻿@using QA.Core.DPC.Resources
+@model QA.ProductCatalog.Admin.WebApp.Models.TaskScheduleModel
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 
 <script src="~/js/jquery.unobtrusive-ajax.min.js"></script>
@@ -110,6 +111,6 @@
 	</script>
 
 	<p>
-		<input id="save" type="submit" value="Сохранить" />
+		<input id="save" type="submit" value="@ControlStrings.Save" />
 	</p>
 </form>
