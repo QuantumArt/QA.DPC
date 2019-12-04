@@ -342,13 +342,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         #region Private methods
         private void AddRelevanceData(Article article, RelevanceInfo relevanceInfo)
         {
-
-            var statusText = relevanceInfo.Relevance switch
+            var statusText = ProductCardStrings.NotRelevant;
+            if (relevanceInfo.Relevance == ProductRelevance.Missing)
             {
-                ProductRelevance.Missing => ProductCardStrings.Missing,
-                ProductRelevance.Relevant => ProductCardStrings.Relevant,
-                _ => ProductCardStrings.NotRelevant
-            };
+                statusText = ProductCardStrings.Missing;
+            }
+            else if (relevanceInfo.Relevance == ProductRelevance.Relevant)
+            {
+                statusText = ProductCardStrings.Relevant;
+            }
 
             article
                 .AddPlainField("ConsumerCulture", relevanceInfo.Culture.NativeName, ProductCardStrings.FrontLanguage)
