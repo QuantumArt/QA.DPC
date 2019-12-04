@@ -78,12 +78,22 @@
     ]
   },
   {
-    "outputFileName": "wwwroot/js/bundles/kendo.min.js",
+    "outputFileName": "wwwroot/js/bundles/kendo.ru-RU.min.js",
     "inputFiles": [
       "wwwroot/js/KendoUI/jquery.min.js",
       "wwwroot/js/KendoUI/kendo.web.min.js",
       "wwwroot/js/KendoUI/kendo.culture.ru-RU.min.js",
       "wwwroot/js/KendoUI/kendo.messages.ru-RU.min.js"
+    ]
+  },
+
+  {
+    "outputFileName": "wwwroot/js/bundles/kendo.en-US.min.js",
+    "inputFiles": [
+      "wwwroot/js/KendoUI/jquery.min.js",
+      "wwwroot/js/KendoUI/kendo.web.min.js",
+      "wwwroot/js/KendoUI/kendo.culture.en-US.min.js",
+      "wwwroot/js/KendoUI/kendo.messages.en-US.min.js"
     ]
   },
 

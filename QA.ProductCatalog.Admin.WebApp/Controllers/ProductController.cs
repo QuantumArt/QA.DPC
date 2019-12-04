@@ -186,10 +186,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     .AddPlainField("ProductCopied", productCopied, ProductCardStrings.ProductCopied)                    
                     .AddPlainField("RelevanceResolved", relevanceResolved, ProductCardStrings.RelevanceResolved)
                     .AddPlainField("RelevanceLoaded", relevanceLoaded, ProductCardStrings.RelevanceLoaded)
-                    .AddPlainField("HierarchySorted", hierarchySorted, ProductCardStrings.HierarchySorted)
-                    .AddPlainField("Stopwatch", sw, ProductCardStrings.Stopwatch));
-
-
+                    .AddPlainField("HierarchySorted", hierarchySorted, ProductCardStrings.HierarchySorted));
 
             control.DataContext = product;
 

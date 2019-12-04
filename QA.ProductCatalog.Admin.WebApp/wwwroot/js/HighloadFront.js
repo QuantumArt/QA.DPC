@@ -28,7 +28,6 @@ ko.bindingHandlers.updateProgress = {
 };
 
 $(document).ready(function() {
-  moment.locale("ru");
   ko.applyBindings(model);
   updateTasks(true);
 });

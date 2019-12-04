@@ -1,22 +1,23 @@
-﻿@using QA.ProductCatalog.Integration.Notifications
+﻿@using QA.Core.DPC.Resources
+@using QA.ProductCatalog.Integration.Notifications
 @model ConfigurationInfo
 
 <div class="formLayout">
     @if (Model == null)
     {
         <fieldset>
-            <legend>Важно</legend>
+            <legend>@ChannelStrings.Important</legend>
             <div class="gr-wrapper">
-                Cервис публикации временно недоступен
+                @ChannelStrings.Unavailable
             </div>
         </fieldset>
     }
     else if (Model.ActualSettings == null && Model.CurrentSettings == null)
     {
         <fieldset>
-            <legend>Важно</legend>
+            <legend>@ChannelStrings.Important</legend>
             <div class="gr-wrapper">
-                Данный кастомер код не работает в режиме консолидации
+                @ChannelStrings.NotConsolidated
             </div>
         </fieldset>
     }
@@ -25,24 +26,24 @@
         if (!Model.IsActual)
         {
             <fieldset>
-                <legend>Важно</legend>
+              <legend>@ChannelStrings.Important</legend>
                 <div class="gr-wrapper">
-                    Настройки сервиса публикации изменены @Html.ActionLink("обновить", "UpdateConfiguration", null, new { @class = "js" })
+                    @ChannelStrings.NotificationSenderChanged @Html.ActionLink(@ChannelStrings.Update, "UpdateConfiguration", null, new { @class = "js" })
                 </div>
             </fieldset>
         }
         <fieldset>
-            <legend>Системные настройки</legend>
+            <legend>@ChannelStrings.SystemSettings</legend>
             <div class="gr-wrapper">
                 <div class="group-panel-item">
                     <dl class="plain-field row">
-                        <dt title="Определяет, где задаются настройки каналов" class="plain-field-capture label " style="">Провайдер каналов</dt>
+                        <dt title="@ChannelStrings.ChannelProviderDesc" class="plain-field-capture label " style="">@ChannelStrings.ChannelProvider</dt>
                         <dd style="" class="plain-field-value field">
                             <span title="" class="label None" style="">@Model.NotificationProvider</span>
                         </dd>
                     </dl>
                     <dl class="plain-field row">
-                        <dt title="Время, когда был запущен сервис NotificationSender" class="plain-field-capture label " style="">Время запуска сервиса</dt>
+                        <dt title="@ChannelStrings.StartTimeDesc" class="plain-field-capture label " style="">@ChannelStrings.StartTime</dt>
                         <dd style="" class="plain-field-value field">
                             <span title="" class="label None" style="">@Model.Started</span>
                         </dd>
@@ -52,17 +53,17 @@
         </fieldset>
 
         <fieldset>
-            <legend>Каналы</legend>
+            <legend>@ChannelStrings.Channels</legend>
             <table class="inner-groupping-table">
                 <thead>
                     <tr>
-                        <th>Канал</th>
-                        <th>Очередь</th>
-                        <th>Время в очереди</th>
-                        <th>Время публикации</th>
-                        <th>Id продукта</th>
-                        <th>Статус публикации</th>
-                        <th>Статус канала</th>
+                        <th>@ChannelStrings.Channel</th>
+                        <th>@ChannelStrings.Queue</th>
+                        <th>@ChannelStrings.EnqueueTime</th>
+                        <th>@ChannelStrings.PublishingTime</th>
+                        <th>@ChannelStrings.ProductId</th>
+                        <th>@ChannelStrings.PublishingStatus</th>
+                        <th>@ChannelStrings.ChannelStatus</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -98,11 +99,11 @@
         </fieldset>
 
         <fieldset>
-            <legend>Общие настройки</legend>
+            <legend>@ChannelStrings.GeneralSettings</legend>
             <div class="gr-wrapper">
                 <div class="group-panel-item">
                     <dl class="plain-field row">
-                        <dt title="Определяет, будут ли изменения в статьях автоматически попадать на витрины" class="plain-field-capture label " style="">Автопубликация</dt>
+                        <dt title="@ChannelStrings.AutoPublicationDesc" class="plain-field-capture label " style="">@ChannelStrings.AutoPublication</dt>
                         <dd style="" class="plain-field-value field">
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.Autopublish)</span>
                         </dd>
@@ -114,7 +115,7 @@
                         }
                     </dl>
                     <dl class="plain-field row">
-                        <dt title="Интервал проверки новых нотификаций для отправки" class="plain-field-capture label " style="">Интервал отправки</dt>
+                        <dt title="@ChannelStrings.SendIntervalDesc" class="plain-field-capture label " style="">@ChannelStrings.SendInterval</dt>
                         <dd style="" class="plain-field-value field">
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.CheckInterval) с</span>
                         </dd>
@@ -126,7 +127,7 @@
                         }
                     </dl>
                     <dl class="plain-field row">
-                        <dt title="Интервал ожидания, когда новых уведомлений не отправляется для этого потребителя" class="plain-field-capture label " style="">Интервал отправки при ошибках</dt>
+                        <dt title="@ChannelStrings.ErrorSendIntervalDesc" class="plain-field-capture label " style="">@ChannelStrings.ErrorSendInterval</dt>
                         <dd style="" class="plain-field-value field">
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.WaitIntervalAfterErrors) с</span>
                         </dd>
@@ -138,7 +139,7 @@
                         }
                     </dl>
                     <dl class="plain-field row">
-                        <dt title="Количество ошибок при отправке перед интервалом ожидания" class="plain-field-capture label " style="">Количество ошибок</dt>
+                        <dt title="@ChannelStrings.ErrNumBeforeWaitDesc" class="plain-field-capture label " style="">@ChannelStrings.ErrNumBeforeWait</dt>
                         <dd style="" class="plain-field-value field">
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.ErrorCountBeforeWait)</span>
                         </dd>
@@ -150,7 +151,7 @@
                         }
                     </dl>
                     <dl class="plain-field row">
-                        <dt title="Количество обрабатываемых сообщений за раз" class="plain-field-capture label " style="">Размер пакета сообщений</dt>
+                        <dt title="@ChannelStrings.PackageSizeDesc" class="plain-field-capture label " style="">@ChannelStrings.PackageSize</dt>
                         <dd style="" class="plain-field-value field">
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.PackageSize)</span>
                         </dd>
@@ -162,7 +163,7 @@
                         }
                     </dl>
                     <dl class="plain-field row">
-                        <dt title="Таймаут для отправки нотификаций" class="plain-field-capture label " style="">Таймаут отправки на витрину</dt>
+                        <dt title="@ChannelStrings.NotifyTimeoutDesc" class="plain-field-capture label " style="">@ChannelStrings.NotifyTimeout</dt>
                         <dd style="" class="plain-field-value field">
                             <span title="" class="label None" style="">@Html.DisplayFor(m => m.CurrentSettings.TimeOut) c</span>
                         </dd>

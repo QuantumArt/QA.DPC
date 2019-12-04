@@ -43,7 +43,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\QA.Core.DPC.Resources\QA.Core.DPC.Resources.csproj" />
+    <ProjectReference Include="..\QA.Core.DPC.Resources\QA.Core.DPC.Resources.csproj" />
   </ItemGroup>
  </Project>
 

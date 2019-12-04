@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.ActionsRunner;
@@ -53,7 +54,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 			{
 				context.ContentItemIds = taskIds.ToArray();
 				RegisterTask(context);
-				return TaskMessage;
+				return TaskStrings.ActionEnqueued;
 			}
 			else
 			{

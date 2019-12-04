@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
@@ -11,11 +12,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
     public abstract class MarketingProductAction : ActionTaskBase
     {
-        #region Constants
-        private const string PRODUCT_ERROR_MESSAGE = "ошибка сервера";
-        private const string ACTION_ERROR_MESSAGE = "Can't process action";
-        #endregion
-
         #region Private fields
         private readonly IArticleService _articleService;
         private readonly ISettingsService _settingsService;
@@ -92,7 +88,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
                     }
                     catch (Exception ex)
                     {
-                        exceptions.Add(new ProductException(productId, PRODUCT_ERROR_MESSAGE, ex));
+                        exceptions.Add(new ProductException(productId, TaskStrings.ServerError, ex));
                         count -= remainingCount;
                         break;
                     }
@@ -120,7 +116,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
                     }
                     catch (Exception ex)
                     {
-                        exceptions.Add(new ProductException(marketingProduct.Id, PRODUCT_ERROR_MESSAGE, ex));
+                        exceptions.Add(new ProductException(marketingProduct.Id, TaskStrings.ServerError, ex));
                     }
 
                     SetProgress(++index, count);
@@ -130,7 +126,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
             if (exceptions.Any())
             {
-                throw new ActionException(ACTION_ERROR_MESSAGE, exceptions, context);
+                throw new ActionException(TaskStrings.ActionErrorMessage, exceptions, context);
             }
             else
             {

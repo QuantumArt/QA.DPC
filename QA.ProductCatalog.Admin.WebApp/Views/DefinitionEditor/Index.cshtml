@@ -1,8 +1,9 @@
-﻿@using QA.ProductCatalog.Admin.WebApp.Models
+﻿@using System.Globalization
+@using QA.Core.DPC.Resources
 @model QA.ProductCatalog.Admin.WebApp.Models.DefinitionEditor
 
 @section jquery{
-  <script src="~/js/bundles/kendo.min.js"></script>
+  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
 }
 
 @section head{
@@ -34,27 +35,32 @@
 <script id="treeNodeTemplate" type="text/x-kendo-template">
 	<span class="#=item.NotInDefinition?'NotInDefinition':''#">
 		#if(item.IsDictionaries){#
-		<span class="IsDictionaries">Настройки кеширования словарей</span>
+		<span class="IsDictionaries">@ControlStrings.DictionaryCachingSettings</span>
 		#}else{#
 		#: item.text #
 		#}#
 		#if(item.MissingInQp && !item.IsDictionaries){#
-		<span class="MissingInQp">поля не существует в QP!</span>
+		<span class="MissingInQp">@ControlStrings.MissingInQp</span>
 		#}#
 	</span>
 </script>
 
 @section scripts{
 
-	<script>
+  
+  
+  <script>
 
 		$(document).ready(function() {
-
 		    DefinitionEditor.init(@(Model.ContentItemId.HasValue ? "true" : "false"),
             '@Url.Action("SaveDefinition", new {content_item_id = Model.ContentItemId})',
             '@Url.Action("GetSingleNode")',
             '@Url.Action("GetDefinitionLevel")',
-            '@Url.Action("Edit")');
+            '@Url.Action("Edit")',
+            '@ControlStrings.Save',
+            '@ControlStrings.EditXml',            
+            '@ControlStrings.EndEditXml',               
+        );
 		});
 	</script>
 }

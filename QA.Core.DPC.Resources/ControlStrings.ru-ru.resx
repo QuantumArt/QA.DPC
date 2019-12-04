@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!--
+    Microsoft ResX Schema
+
+    Version 2.0
+
+    The primary goals of this format is to allow a simple XML format
+    that is mostly human readable. The generation and parsing of the
+    various data types are done through the TypeConverter classes
+    associated with the data types.
+
+    Example:
+
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+
+    There are any number of "resheader" rows that contain simple
+    name/value pairs.
+
+    Each data row contains a name, and value. The row also contains a
+    type or mimetype. Type corresponds to a .NET class that support
+    text/value conversion through the TypeConverter architecture.
+    Classes that don't support this are serialized and stored with the
+    mimetype set.
+
+    The mimetype is used for serialized objects, and tells the
+    ResXResourceReader how to depersist the object. This is currently not
+    extensible. For a given mimetype the value must be set accordingly:
+
+    Note - application/x-microsoft.net.object.binary.base64 is the format
+    that the ResXResourceWriter will generate, however the reader can
+    read any of the formats listed below.
+
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="FieldId" xml:space="preserve">
+    <value>Id поля</value>
+  </data>
+  <data name="FieldName" xml:space="preserve">
+    <value>Имя поля</value>
+  </data>
+  <data name="FieldNameForCard" xml:space="preserve">
+    <value>Имя поля для карточки</value>
+  </data>
+  <data name="PublishBehaviour" xml:space="preserve">
+    <value>Поведение при публикации</value>
+  </data>
+  <data name="CloningMode" xml:space="preserve">
+    <value>При клонировании родительской сущности</value>
+  </data>
+  <data name="UpdatingMode" xml:space="preserve">
+    <value>При создании или обновлении</value>
+  </data>
+  <data name="DeletingMode" xml:space="preserve">
+    <value>При удалении родительской сущности или удалении связи</value>
+  </data>
+  <data name="DefaultCachePeriod" xml:space="preserve">
+    <value>Период кеширования по умолчанию</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Включено</value>
+  </data>
+  <data name="TaskId" xml:space="preserve">
+    <value>ID задачи</value>
+  </data>
+  <data name="IsReadOnly" xml:space="preserve">
+    <value>Только для чтения</value>
+  </data>
+  <data name="LoadAllPlainFields" xml:space="preserve">
+    <value>Грузить все простые поля</value>
+  </data>
+  <data name="ContentName" xml:space="preserve">
+    <value>Имя контента</value>
+  </data>
+  <data name="InDefinition" xml:space="preserve">
+    <value>Включить в описание</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Описание</value>
+  </data>
+  <data name="CreatedDate" xml:space="preserve">
+    <value>Дата создания</value>
+  </data>
+  <data name="LastStatusChangeTime" xml:space="preserve">
+    <value>Последнаяя смена статуса</value>
+  </data>
+  <data name="Key" xml:space="preserve">
+    <value>Ключ</value>
+  </data>
+  <data name="DisplayName" xml:space="preserve">
+    <value>Имя</value>
+  </data>
+  <data name="State" xml:space="preserve">
+    <value>Статус</value>
+  </data>
+  <data name="UserName" xml:space="preserve">
+    <value>Заказчик</value>
+  </data>
+  <data name="Message" xml:space="preserve">
+    <value>Сообщение</value>
+  </data>
+  <data name="Progress" xml:space="preserve">
+    <value>Процент выполнения</value>
+  </data>
+  <data name="PreloadingMode" xml:space="preserve">
+    <value>Режим предзагрузки</value>
+  </data>
+  <data name="RelationCondition" xml:space="preserve">
+    <value>Условие на связь</value>
+  </data>
+  <data name="ClonePrototypeCondition" xml:space="preserve">
+    <value>Условие клонирования прототипа</value>
+  </data>
+  <data name="RelationConditionDescription" xml:space="preserve">
+    <value>SQL-условие фильтрации списка статей</value>
+  </data>
+  <data name="ClonePrototypeConditionDescription" xml:space="preserve">
+    <value>SQL-условие выбора статьи-прообраза для клонирования</value>
+  </data>
+  <data name="RelateToAnother" xml:space="preserve">
+    <value>Ссылается на контент</value>
+  </data>
+  <data name="RelateToThis" xml:space="preserve">
+    <value>Ссылается на данный контент из контента</value>
+  </data>
+  <data name="IgnoreLoading" xml:space="preserve">
+    <value>не загружать</value>
+  </data>
+  <data name="EagerLoading" xml:space="preserve">
+    <value>загружать сразу</value>
+  </data>
+  <data name="LazyLoading" xml:space="preserve">
+    <value>загружать отложенно</value>
+  </data>
+  <data name="Publish" xml:space="preserve">
+    <value>публиковать</value>
+  </data>
+  <data name="DontPublish" xml:space="preserve">
+    <value>не публиковать</value>
+  </data>
+  <data name="Ignore" xml:space="preserve">
+    <value>игнорировать</value>
+  </data>
+  <data name="UpdateOrCreate" xml:space="preserve">
+    <value>обновлять/создавать</value>
+  </data>  
+  <data name="DontRemove" xml:space="preserve">
+    <value>не удалять</value>
+  </data>
+  <data name="Remove" xml:space="preserve">
+    <value>удалять</value>
+  </data>
+  <data name="SetNull" xml:space="preserve">
+    <value>устанавливать пустую ссылку</value>
+  </data>
+  <data name="UseExisting" xml:space="preserve">
+    <value>использовать ссылку на оригинал</value>
+  </data>
+  <data name="Clone" xml:space="preserve">
+    <value>копировать сущность</value>
+  </data>
+  <data name="ProductIdListToPublish" xml:space="preserve">
+    <value>Список ID продуктов, которые следует опубликовать перед отправкой</value>
+  </data>
+  <data name="ProductIdList" xml:space="preserve">
+    <value>Список ID продуктов</value>
+  </data>
+  <data name="PartialSend" xml:space="preserve">
+    <value>Отправка продуктов на все витрины (live и stage)</value>
+  </data>
+  <data name="PartialSendDescription" xml:space="preserve">
+    <value>Данная утилита позволяет публиковать и отправлять продукты на витрины, &lt;br /&gt;
+      а также удалять с витрин архивные, невидимые или по ошибке не удаленные продукты. &lt;br /&gt;
+      В поле следует вводить список Id региональных продуктов (возможные разделители: &quot;,&quot;, &quot;;&quot;, пробел, новая строчка)
+    </value>
+  </data>
+  <data name="SendProducts" xml:space="preserve">
+    <value>Отправить продукты</value>
+  </data>
+  <data name="PublishAndSend" xml:space="preserve">
+    <value>Публиковать и отправить</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Применить</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Сохранить</value>
+  </data>
+  <data name="ProcessSpecialStatuses" xml:space="preserve">
+    <value>Обрабатывать статьи со специальными статусами</value>
+  </data>
+  <data name="SendOnStageOnly" xml:space="preserve">
+    <value>Отправлять только на stage без публикации</value>
+  </data>
+  <data name="CurrentPartialSendTask" xml:space="preserve">
+    <value>Текущая задача на частичную отправку</value>
+  </data>
+  <data name="OnlyOneTask" xml:space="preserve">
+    <value>Одновременно может выполняться только одна задача на отправку. Дождитесь завершения данной.</value>
+  </data>
+  <data name="PublicationRequired" xml:space="preserve">
+    <value>Часть продуктов требует публикации перед отправкой на витрины</value>
+  </data>
+  <data name="ClickPublishAndSendButton" xml:space="preserve">
+    <value>Чтобы опубликовать эти продукты, нажмите кнопку &quot;Публиковать и отправить&quot;</value>
+  </data>
+  <data name="JsonFieldName" xml:space="preserve">
+    <value>Имя поля в JSON</value>
+  </data>
+  <data name="LabelText" xml:space="preserve">
+    <value>Текст в &lt;label&gt;</value>
+  </data>
+  <data name="IsClassifier" xml:space="preserve">
+    <value>Поле является классификатором</value>
+  </data>
+  <data name="Path" xml:space="preserve">
+    <value>Путь</value>
+  </data>
+  <data name="RemovePath" xml:space="preserve">
+    <value>Путь по которому надо удалить поле (имеет смысл только если отличается от значения в поле Путь)</value>
+  </data>
+  <data name="Converter" xml:space="preserve">
+    <value>Конвертер</value>
+  </data>
+  <data name="DontWrapInCData" xml:space="preserve">
+    <value>Не оборачивать в CDATA</value>
+  </data>
+  <data name="LoadAsImage" xml:space="preserve">
+    <value>Загружать как поле типа Image</value>
+  </data>
+  <data name="CacheSettings" xml:space="preserve">
+    <value>Настройки кеширования</value>
+  </data>
+  <data name="AlreadyCached" xml:space="preserve">
+    <value>Настройки кеширования</value>
+  </data>
+  <data name="ProceedCaching" xml:space="preserve">
+    <value>Кешировать</value>  
+  </data>
+  <data name="DictionaryCachingSettings" xml:space="preserve">
+    <value>Настройки кеширования словарей</value>  
+  </data>
+  <data name="MissingInQp" xml:space="preserve">
+    <value>поля не существует в QP!</value>  
+  </data>
+  <data name="EditXml" xml:space="preserve">
+    <value>Править XML</value>  
+  </data>
+  <data name="EndEditXml" xml:space="preserve">
+    <value>Завершить правку XML</value>  
+  </data>
+</root>
+
+
+        
+        
+
+        
+
+        
+
+        
+
+
+
+        

@@ -1,15 +1,16 @@
-﻿@using QA.Core.DPC.Resources
+﻿@using System.Globalization
+@using QA.Core.DPC.Resources
 @section head{
   <link href="~/css/kendo.min.css" rel="stylesheet" />
 }
 @section jquery{
-  <script src="~/js/bundles/kendo.min.js"></script>
+  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
 }
 
 <div class="formLayout">
     <fieldset>
         <legend>@ControlStrings.PartialSend</legend>
-        <p>@ControlStrings.PartialSendDescription</p>
+        <p>@Html.Raw(ControlStrings.PartialSendDescription)</p>
       <div id="SendDiv" style="display: none">
         <form action="@Url.Action("Send")" method="post">
           @Html.ValidationSummary()

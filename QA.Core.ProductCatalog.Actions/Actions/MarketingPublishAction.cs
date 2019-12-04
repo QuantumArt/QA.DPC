@@ -5,6 +5,7 @@ using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.Logger;
 using QA.ProductCatalog.ContentProviders;
 
@@ -16,10 +17,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		private const string PublishActionKey = "PublishAction";
 		private const string IgnoredStatusKey = "IgnoredStatus";
 		private const string AdapterKey = "Adapter";
-		private const string ActionErrorMessage = "Can't process action";
-		private const string ProductErrorMessage = "ошибка сервера";
-		private const string NoProductsToPublishStatusMessage = "Нет доступных продуктов для публикации.";
-		private const string IgnoredStatusMessage = "Продукты [{0}] имеют статус {1}, который не подлежит публикации, либо находятся в архиве, либо невидимы";
 		private const string LoggerErrorMessage = "Can't publish marketing products";
 		#endregion
 
@@ -93,7 +90,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 				}
 				else
 				{
-					message = NoProductsToPublishStatusMessage;
+					message = TaskStrings.NoProductsToPublish;
 				}
 
 				var excludedProductIds = productIds.Except(filteredProductIds).ToArray();
@@ -101,7 +98,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 				if (excludedProductIds.Any())
 				{
 					message = message == null ? "" : message + " ";
-					message += string.Format(IgnoredStatusMessage, string.Join(", ", excludedProductIds), ignoredStatus);
+					message += string.Format(TaskStrings.FilteredProducts, string.Join(", ", excludedProductIds), ignoredStatus);
 				}
 
 				return message;
@@ -113,7 +110,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			catch (Exception ex)
 			{
 				_logger.ErrorException(LoggerErrorMessage, ex);
-				throw new ActionException(ActionErrorMessage, context.ContentItemIds.Select(id => new ProductException(id, ProductErrorMessage, ex)), context);
+				throw new ActionException(TaskStrings.ActionErrorMessage, context.ContentItemIds.Select(id => new ProductException(id, TaskStrings.ServerError, ex)), context);
 			}			
 		}
 

@@ -1,4 +1,5 @@
-﻿@model string
+﻿@using QA.Core.DPC.Resources
+@model string
 @{
 	Layout = null;
 }
@@ -24,7 +25,7 @@
 <body>
 	@if (Model == null)
 	{
-		<h1>Ошибка при отображении xml продукта.</h1>
+	  <h1>@ProductCardStrings.DisplayError</h1>
 		<p>@ViewBag.Message</p>
 	}
 	else

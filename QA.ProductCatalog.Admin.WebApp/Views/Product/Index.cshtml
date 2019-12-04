@@ -1,13 +1,15 @@
-﻿@using QA.ProductCatalog.Admin.WebApp.Core;
+﻿@using System.Globalization
+@using QA.Core.DPC.Resources
+@using QA.ProductCatalog.Admin.WebApp.Core;
 @using QA.Core.DPC.UI;
 
 @model QA.ProductCatalog.Admin.WebApp.Models.CardModel
 @{
-    ViewBag.Title = "Продукт";
+    ViewBag.Title = @ProductCardStrings.Title;
 }
 @if (Model == null)
 {
-    <h1>Ошибка при отображении продукта.</h1>
+    <h1>@ProductCardStrings.DisplayError</h1>
     <p>@ViewBag.Message</p>
     return;
 }
@@ -16,14 +18,14 @@
   <link href="~/css/kendo.min.css" rel="stylesheet" />
 }
 @section jquery{
-  <script src="~/js/bundles/kendo.min.js"></script>
+  <script src="~/js/bundles/kendo.@(CultureInfo.CurrentCulture).min.js"></script>
 }
 
 <div class="formLayout">    
     @if (Model.Cultures.Length > 0)
     {
       <fieldset>
-        <legend>Локализация</legend>
+        <legend>@ProductCardStrings.Localization</legend>
         <div class="gr-wrapper">
           @foreach (var culture in Model.Cultures)
           {

@@ -7,7 +7,7 @@
 <div class="formLayout">
     <fieldset>
         <legend>@ControlStrings.PartialSend</legend>
-        <p>@ControlStrings.PartialSendDescription</p>
+        <p>@Html.Raw(ControlStrings.PartialSendDescription)</p>
 
         @Html.ValidationSummary(true)
         @using (Html.BeginForm("send", "productsend"))

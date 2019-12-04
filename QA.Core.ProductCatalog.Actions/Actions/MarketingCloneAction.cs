@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Quantumart.QP8.BLL;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
@@ -16,8 +17,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 	{
 		#region Constants
 		private const string MarketingMapKey = "MarketingMap";
-		private const string ProductErrorMessage = "ошибка сервера";
-		private const string ActionErrorMessage = "Can't process action";
 		private const string LoggerMarketingErrorMessage = "Can't clone marketing product ";
 		private const string LoggerErrorMessage = "Can't clone product ";
 		private const string FieldIdParameterKey = "FieldId";
@@ -105,7 +104,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
 			if (exceptions.Any())
 			{
-				throw new ActionException(ActionErrorMessage, exceptions, context);
+				throw new ActionException(TaskStrings.ActionErrorMessage, exceptions, context);
 			}
 			else
 			{
@@ -135,7 +134,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			catch (Exception ex)
 			{
 				_logger.ErrorException(LoggerMarketingErrorMessage + marketingProduct.Id, ex);
-				exceptions.Add(new ProductException(marketingProduct.Id, ProductErrorMessage, ex));
+				exceptions.Add(new ProductException(marketingProduct.Id, TaskStrings.ServerError, ex));
 				return 0;
 			}
 		}
@@ -156,7 +155,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			catch (Exception ex)
 			{
 				_logger.ErrorException(LoggerErrorMessage + productId, ex);
-				exceptions.Add(new ProductException(productId, ProductErrorMessage, ex));
+				exceptions.Add(new ProductException(productId, TaskStrings.ServerError, ex));
 			}
 		}
 

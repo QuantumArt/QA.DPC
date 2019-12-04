@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.ContentProviders;
@@ -113,7 +114,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
 				var taskKey = typeof(SendProductAction).Name;
 
-                int taskId = _taskService.AddTask(taskKey, taskData, userId, userName, "Частичная отправка");
+                int taskId = _taskService.AddTask(taskKey, taskData, userId, userName, TaskStrings.PartialSend);
 
 				return View("Result", taskId);
             }

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,52 +117,86 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MissingParam" xml:space="preserve">
-    <value>Field {0} not found</value>
+  <data name="Missing" xml:space="preserve">
+    <value>Missing on front</value>
   </data>
-  <data name="CustomerCodeInvalid" xml:space="preserve">
-    <value>Incorrect customer code. {0} expected, {1} received</value>
+  <data name="Relevant" xml:space="preserve">
+    <value>Relevant</value>
   </data>
-  <data name="EmptyConnectionString" xml:space="preserve">
-    <value>Empty connection string</value>
+  <data name="NotRelevant" xml:space="preserve">
+    <value>Contains unsent changes</value>
   </data>
-  <data name="SiteIdInvalid" xml:space="preserve">
-    <value>Site Id doesn't match (QP and validation)</value>
+  <data name="FrontLanguage" xml:space="preserve">
+    <value>Front language</value>
   </data>
-  <data name="Products_Different_Regions" xml:space="preserve">
-    <value>Some products doesn't have common regions with related products: {0}</value>
+  <data name="FrontStatus" xml:space="preserve">
+    <value>Front status</value>
   </data>
-  <data name="Settings_Missing" xml:space="preserve">
-    <value>Setting {0} is missing</value>
+  <data name="FrontStatusCode" xml:space="preserve">
+    <value>Front status code</value>
   </data>
-  <data name="ProductsRepeatingRegions" xml:space="preserve">
-    <value>Product contains regions from products: {0}</value>
+  <data name="Published" xml:space="preserve">
+    <value>Last published date</value>
   </data>
-  <data name="DuplicateTariffsAreas" xml:space="preserve">
-    <value>Duplicate tariff direction in product parameters: {0}</value>
+  <data name="PublishedBy" xml:space="preserve">
+    <value>Published by</value>
   </data>
-  <data name="DuplicateTariffsAreasMatrix" xml:space="preserve">
-    <value>Duplicate tariff direction in relation matrix parameters: {0}</value>
-  </data>  
-  <data name="DuplicateRelationsProducts" xml:space="preserve">
-    <value>Duplicate product relations: {0} </value>
+  <data name="PublishedAndSendSuccess" xml:space="preserve">
+    <value>Products has been successfully published and sent</value>
   </data>
-  <data name="RelatedEntityIsArchived" xml:space="preserve">
-    <value>Related entity is archived. Product: {0}, related articles: {1}</value>
+  <data name="NotNumberValues" xml:space="preserve">
+    <value>Non-number values specified</value>
   </data>
-  <data name="Cant_Get_Marketing_Products" xml:space="preserve">
-    <value>Couldn't get some of related marketing products</value>
+  <data name="TooMuchProducts" xml:space="preserve">
+    <value>Too much products. Please, specify no more than 200</value>
   </data>
-  <data name="MarketingProduct_Duplicate_Alias" xml:space="preserve">
-    <value>Duplicate Alias for current type. Conflicted Ids: {0}</value>
+  <data name="ProductNotFound" xml:space="preserve">
+    <value>Product not found</value>
   </data>
-  <data name="SameTypeMarketingProductProducts" xml:space="preserve">
-    <value>All regional products for one marketing product should have the same type</value>
+  <data name="ProductLoaded" xml:space="preserve">
+    <value>Product loaded</value>
   </data>
-  <data name="SameTypeProductMarketingProduct" xml:space="preserve">
-    <value>Marketing and regional products types don't match</value>
+  <data name="ProductLocalized" xml:space="preserve">
+    <value>Product localized</value>
   </data>
-  <data name="Same_Marketing_Products" xml:space="preserve">
-    <value>Marketing products should not match</value>
+  <data name="ControlLoaded" xml:space="preserve">
+    <value>Card loaded</value>
   </data>
+  <data name="ProductCopied" xml:space="preserve">
+    <value>Product copied</value>
+  </data>
+  <data name="RelevanceResolved" xml:space="preserve">
+    <value>Relevance service received</value>
+  </data>
+  <data name="RelevanceLoaded" xml:space="preserve">
+    <value>Relevance loaded</value>
+  </data>
+  <data name="HierarchySorted" xml:space="preserve">
+    <value>Hierarchy sorted</value>
+  </data>
+  <data name="Stopwatch" xml:space="preserve">
+    <value>Loading complete</value>
+  </data>
+  <data name="ProductRelevance" xml:space="preserve">
+    <value>Product relevance</value>
+  </data>
+  <data name="ProductIsNotVisual" xml:space="preserve">
+    <value>Product has no visual presentation</value>
+  </data>
+  <data name="СontentItemIdPositive" xml:space="preserve">
+    <value>Incorrect action parameters: content_item_id should be positive</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="Localization" xml:space="preserve">
+    <value>Localization</value>
+  </data>
+  <data name="DisplayError" xml:space="preserve">
+    <value>Product display error.</value>
+  </data>
+  <data name="Title" xml:space="preserve">
+    <value>Product</value>
+  </data>
+
 </root>

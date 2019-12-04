@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
@@ -60,12 +61,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                 string data = ActionData.Serialize(dataForQueue);
 
-                _taskService.AddTask(PublishAction, data, publishContext.UserId, publishContext.UserName, "Разморозка публикации");
+                _taskService.AddTask(PublishAction, data, publishContext.UserId, publishContext.UserName, TaskStrings.Unfreezing);
 
-                return "Отправлены на публикацию размороженные продукты: " + string.Join(",", productIds);
+                return TaskStrings.ProductsUnfreezed + ": " + string.Join(",", productIds);
             }
 
-            return "Продуктов для разморозки не найдено";
+            return TaskStrings.NoProductsToUnfreeze;
         }
     }
 }

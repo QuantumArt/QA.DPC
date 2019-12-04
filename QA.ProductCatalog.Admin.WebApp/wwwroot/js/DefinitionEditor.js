@@ -4,7 +4,10 @@
     saveDefinitionUrl,
     getSingleNodeUrl,
     getDefinitionLevelUrl,
-    editUrl
+    editUrl,
+    saveText,
+    editText,
+    endEditText
   ) {
     DefinitionEditor._saveToDb = saveToDb;
 
@@ -29,27 +32,27 @@
       items: [
         {
           type: "button",
-          text: "Сохранить",
+          text: saveText, 
           enable: false,
           id: "SaveButton",
           click: DefinitionEditor.SaveXml
         },
         {
           type: "button",
-          text: "Править XML",
+          text: editText,
           id: "EditXml",
           click: DefinitionEditor.StartEditXml
         },
         {
           type: "button",
-          text: "Завершить правку XML",
+          text: endEditText,
           id: "EndEditXmlBtn",
           click: DefinitionEditor.EndEditXml,
           hidden: true
         }
       ]
     });
-
+ 
     if (DefinitionEditor._saveToDb) DefinitionEditor.InitTree();
     else {
       pmrpc.register({

@@ -22,7 +22,7 @@ namespace QA.ProductCatalog.Validation.Resources {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class RemoteValidationMessages {
+    public class RemoteValidationMessages {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace QA.ProductCatalog.Validation.Resources {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("QA.ProductCatalog.Validation.Resources.RemoteValidationMessages", typeof(RemoteValidationMessages).Assembly);
@@ -51,7 +51,7 @@ namespace QA.ProductCatalog.Validation.Resources {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,144 +61,144 @@ namespace QA.ProductCatalog.Validation.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не удалось получить один или оба связанных маркетинговых продукта.
+        ///   Looks up a localized string similar to Couldn&apos;t get some of related marketing products.
         /// </summary>
-        internal static string Cant_Get_Marketing_Products {
+        public static string Cant_Get_Marketing_Products {
             get {
                 return ResourceManager.GetString("Cant_Get_Marketing_Products", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Неверно указан customercode. Ожидался {0}, получен {1}.
+        ///   Looks up a localized string similar to Incorrect customer code. {0} expected, {1} received.
         /// </summary>
-        internal static string CustomerCodeInvalid {
+        public static string CustomerCodeInvalid {
             get {
                 return ResourceManager.GetString("CustomerCodeInvalid", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Встречается дублирование связей с продуктами: {0} .
+        ///   Looks up a localized string similar to Duplicate product relations: {0} .
         /// </summary>
-        internal static string DuplicateRelationsProducts {
+        public static string DuplicateRelationsProducts {
             get {
                 return ResourceManager.GetString("DuplicateRelationsProducts", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Тарифное направление встречается больше одного раза в параметрах продукта: {0}.
+        ///   Looks up a localized string similar to Duplicate tariff direction in product parameters: {0}.
         /// </summary>
-        internal static string DuplicateTariffsAreas {
+        public static string DuplicateTariffsAreas {
             get {
                 return ResourceManager.GetString("DuplicateTariffsAreas", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Тарифное направление встречается больше одного раза в параметрах матрицы связей: {0}.
+        ///   Looks up a localized string similar to Duplicate tariff direction in relation matrix parameters: {0}.
         /// </summary>
-        internal static string DuplicateTariffsAreasMatrix {
+        public static string DuplicateTariffsAreasMatrix {
             get {
                 return ResourceManager.GetString("DuplicateTariffsAreasMatrix", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Нет строки подключения.
+        ///   Looks up a localized string similar to Empty connection string.
         /// </summary>
-        internal static string EmptyConnectionString {
+        public static string EmptyConnectionString {
             get {
                 return ResourceManager.GetString("EmptyConnectionString", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Продукт с таким Alias и типом уже существует. Id пересекающихся продуктов: {0}.
+        ///   Looks up a localized string similar to Duplicate Alias for current type. Conflicted Ids: {0}.
         /// </summary>
-        internal static string MarketingProduct_Duplicate_Alias {
+        public static string MarketingProduct_Duplicate_Alias {
             get {
                 return ResourceManager.GetString("MarketingProduct_Duplicate_Alias", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не найдено поле {0}.
+        ///   Looks up a localized string similar to Field {0} not found.
         /// </summary>
-        internal static string MissingParam {
+        public static string MissingParam {
             get {
                 return ResourceManager.GetString("MissingParam", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Некоторые продукты не имеют общих регионов с другими продуктами: {0}.
+        ///   Looks up a localized string similar to Some products doesn&apos;t have common regions with related products: {0}.
         /// </summary>
-        internal static string Products_Different_Regions {
+        public static string Products_Different_Regions {
             get {
                 return ResourceManager.GetString("Products_Different_Regions", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Продукт содержит регионы из продуктов: {0}.
+        ///   Looks up a localized string similar to Product contains regions from products: {0}.
         /// </summary>
-        internal static string ProductsRepeatingRegions {
+        public static string ProductsRepeatingRegions {
             get {
                 return ResourceManager.GetString("ProductsRepeatingRegions", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Связанная сущность заархивирована. Продукт: {0}, связанные статьи: {1}.
+        ///   Looks up a localized string similar to Related entity is archived. Product: {0}, related articles: {1}.
         /// </summary>
-        internal static string RelatedEntityIsArchived {
+        public static string RelatedEntityIsArchived {
             get {
                 return ResourceManager.GetString("RelatedEntityIsArchived", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Маркетинговые продукты не должны совпадать.
+        ///   Looks up a localized string similar to Marketing products should not match.
         /// </summary>
-        internal static string Same_Marketing_Products {
+        public static string Same_Marketing_Products {
             get {
                 return ResourceManager.GetString("Same_Marketing_Products", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Все продукты маркетингового продукта должны иметь тот же тип.
+        ///   Looks up a localized string similar to All regional products for one marketing product should have the same type.
         /// </summary>
-        internal static string SameTypeMarketingProductProducts {
+        public static string SameTypeMarketingProductProducts {
             get {
                 return ResourceManager.GetString("SameTypeMarketingProductProducts", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Тип маркетингового продукта не совпадает с типом продукта.
+        ///   Looks up a localized string similar to Marketing and regional products types don&apos;t match.
         /// </summary>
-        internal static string SameTypeProductMarketingProduct {
+        public static string SameTypeProductMarketingProduct {
             get {
                 return ResourceManager.GetString("SameTypeProductMarketingProduct", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Не задана настройка {0}.
+        ///   Looks up a localized string similar to Setting {0} is missing.
         /// </summary>
-        internal static string Settings_Missing {
+        public static string Settings_Missing {
             get {
                 return ResourceManager.GetString("Settings_Missing", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to SiteId не совпадает в валидации и QP.
+        ///   Looks up a localized string similar to Site Id doesn&apos;t match (QP and validation).
         /// </summary>
-        internal static string SiteIdInvalid {
+        public static string SiteIdInvalid {
             get {
                 return ResourceManager.GetString("SiteIdInvalid", resourceCulture);
             }

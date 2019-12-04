@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
@@ -14,12 +15,6 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 {
 	public abstract class ActionAdapterBase : IAction
 	{
-		#region Constants
-		protected const string TaskMessage = "Действие поставлено в очередь.";
-		private const string ActionErrorMessage = "Can't run task";
-		private const string ProductErrorMessage = "ошибка при постановке действия в очередь";
-		#endregion
-
 		#region Fields and properties
 		private readonly Func<string, ITask> _getTask;
 		private readonly ITaskService _taskService;
@@ -48,7 +43,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 			else
 			{
 				RegisterTask(context);
-				return TaskMessage;
+				return TaskStrings.ActionEnqueued;
 			}
 		}
 
@@ -82,7 +77,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 			}
 			catch (Exception ex)
 			{
-				throw new ActionException(ActionErrorMessage, context.ContentItemIds.Select(id => new ProductException(id, ProductErrorMessage, ex)), context);
+				throw new ActionException(TaskStrings.ActionErrorMessage, context.ContentItemIds.Select(id => new ProductException(id, TaskStrings.ErrorActionEnqueue, ex)), context);
 			}
 		}
 

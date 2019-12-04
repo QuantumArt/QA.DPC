@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,52 +117,28 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MissingParam" xml:space="preserve">
-    <value>Field {0} not found</value>
+  <data name="HighloadFront" xml:space="preserve">
+    <value>Highload Front</value>
   </data>
-  <data name="CustomerCodeInvalid" xml:space="preserve">
-    <value>Incorrect customer code. {0} expected, {1} received</value>
+  <data name="Default" xml:space="preserve">
+    <value>Default</value>
   </data>
-  <data name="EmptyConnectionString" xml:space="preserve">
-    <value>Empty connection string</value>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
   </data>
-  <data name="SiteIdInvalid" xml:space="preserve">
-    <value>Site Id doesn't match (QP and validation)</value>
+  <data name="Type" xml:space="preserve">
+    <value>Тип</value>
   </data>
-  <data name="Products_Different_Regions" xml:space="preserve">
-    <value>Some products doesn't have common regions with related products: {0}</value>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
   </data>
-  <data name="Settings_Missing" xml:space="preserve">
-    <value>Setting {0} is missing</value>
+  <data name="Processing" xml:space="preserve">
+    <value>Processing</value>
   </data>
-  <data name="ProductsRepeatingRegions" xml:space="preserve">
-    <value>Product contains regions from products: {0}</value>
+  <data name="Updating" xml:space="preserve">
+    <value>Updating</value>
   </data>
-  <data name="DuplicateTariffsAreas" xml:space="preserve">
-    <value>Duplicate tariff direction in product parameters: {0}</value>
-  </data>
-  <data name="DuplicateTariffsAreasMatrix" xml:space="preserve">
-    <value>Duplicate tariff direction in relation matrix parameters: {0}</value>
+  <data name="ProceedIndexing" xml:space="preserve">
+    <value>proceed indexing</value>
   </data>  
-  <data name="DuplicateRelationsProducts" xml:space="preserve">
-    <value>Duplicate product relations: {0} </value>
-  </data>
-  <data name="RelatedEntityIsArchived" xml:space="preserve">
-    <value>Related entity is archived. Product: {0}, related articles: {1}</value>
-  </data>
-  <data name="Cant_Get_Marketing_Products" xml:space="preserve">
-    <value>Couldn't get some of related marketing products</value>
-  </data>
-  <data name="MarketingProduct_Duplicate_Alias" xml:space="preserve">
-    <value>Duplicate Alias for current type. Conflicted Ids: {0}</value>
-  </data>
-  <data name="SameTypeMarketingProductProducts" xml:space="preserve">
-    <value>All regional products for one marketing product should have the same type</value>
-  </data>
-  <data name="SameTypeProductMarketingProduct" xml:space="preserve">
-    <value>Marketing and regional products types don't match</value>
-  </data>
-  <data name="Same_Marketing_Products" xml:space="preserve">
-    <value>Marketing products should not match</value>
-  </data>
 </root>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Exceptions;
@@ -20,8 +21,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 	public abstract class ActionBase : ActionTaskBase
 	{
 		#region Constants
-		private const string ActionErrorMessage = "Can't process action";
-		private const string ProductErrorMessage = "ошибка сервера";
 		private const string LoggerMessage = "Can't process product ";
 		#endregion
 
@@ -112,7 +111,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
 						if (ipex == null)
 						{
-							ipex = new ProductException(id, ProductErrorMessage, iex);
+							ipex = new ProductException(id, TaskStrings.ActionErrorMessage, iex);
 						}
 
 						Logger.ErrorException(LoggerMessage + id, ipex);
@@ -122,7 +121,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				catch (Exception ex)
 				{
 					Logger.ErrorException(LoggerMessage + id, ex);
-					exceptions.Add(new ProductException(id, ProductErrorMessage, ex));
+					exceptions.Add(new ProductException(id, TaskStrings.ServerError, ex));
 				}
 			}
 
@@ -137,7 +136,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
             if (exceptions.Any())
 			{
-				throw new ActionException(ActionErrorMessage, exceptions, context);
+				throw new ActionException(TaskStrings.ActionErrorMessage, exceptions, context);
 			}
     		return null;
 		}
