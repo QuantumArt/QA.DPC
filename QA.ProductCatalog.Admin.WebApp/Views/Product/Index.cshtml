@@ -33,12 +33,12 @@
               @if (culture.Equals(Model.CurrentCultute))
               {
                 <b>
-                  <a class="js" href="@Url.Current(new { lang = culture.Name })">@culture.NativeName</a>
+                  <a class="js" href="@Url.Current("lang", culture.Name)">@culture.NativeName</a>
                 </b>
               }
               else
               {
-                <a class="js" href="@Url.Current(new { lang = culture.Name })">@culture.NativeName</a>
+                <a class="js" href="@Url.Current("lang", culture.Name)">@culture.NativeName</a>
               }
             </span>
           }

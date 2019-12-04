@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text.Encodings.Web;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Html;
 using Microsoft.AspNetCore.Http.Extensions;
@@ -21,6 +22,8 @@ using QA.Core.DPC.UI.Controls.EntityEditorControls;
 using QA.Core.Models.UI;
 using Swashbuckle.AspNetCore.Swagger;
 using HtmlString = Microsoft.AspNetCore.Html.HtmlString;
+using Microsoft.AspNetCore.WebUtilities;
+using Group = QA.Core.DPC.UI.Controls.Group;
 
 namespace QA.ProductCatalog.Admin.WebApp.Core
 {
@@ -112,29 +115,20 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
             return ReplaceNotesIfNeeded(model, new HtmlString((htmlEncode && text != null) ? HtmlEncoder.Default.Encode(text) : text));
         }
 
-        public static HtmlString Current(this IUrlHelper helper, object substitutes)
+        public static HtmlString Current(this IUrlHelper helper, string key, string value)
         {
             var uri = helper.ActionContext.HttpContext.Request.GetDisplayUrl();
-            var uriBuilder = new UriBuilder(uri);
-            var query = helper.ActionContext.HttpContext.Request.Query.ToDictionary(n => n.Key, m => m.Value);
-       
-            foreach (PropertyDescriptor property in TypeDescriptor.GetProperties(substitutes.GetType()))
+            var re = new Regex($"{key}=([^&])*");
+            var res = $"{key}={value}";
+            if (re.IsMatch(uri))
             {
-                var value = property.GetValue(substitutes) as string;
-
-                if (value == null)
-                {
-                    query.Remove(property.Name);
-                }
-                else
-                {
-                    query[property.Name] = value;
-                }
+                uri = re.Replace(uri, res);
             }
-
-            uriBuilder.Query = query.ToString();
-
-            return new HtmlString(uriBuilder.ToString());
+            else
+            {
+                uri += "&" + res;
+            }
+            return new HtmlString(uri);
         }
 
         public static HtmlString VersionedContent(this IUrlHelper urlHelper, string contentPath)
