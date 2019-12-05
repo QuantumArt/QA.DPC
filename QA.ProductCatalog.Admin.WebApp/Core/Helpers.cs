@@ -115,19 +115,23 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
             return ReplaceNotesIfNeeded(model, new HtmlString((htmlEncode && text != null) ? HtmlEncoder.Default.Encode(text) : text));
         }
 
-        public static HtmlString Current(this IUrlHelper helper, string key, string value)
+        public static HtmlString Current(this IUrlHelper helper, Dictionary<string, string> values)
         {
             var uri = helper.ActionContext.HttpContext.Request.GetDisplayUrl();
-            var re = new Regex($"{key}=([^&])*");
-            var res = $"{key}={value}";
-            if (re.IsMatch(uri))
+            foreach (var pair in values)
             {
-                uri = re.Replace(uri, res);
+                var re = new Regex($"{pair.Key}=([^&])*");
+                var res = $"{pair.Key}={pair.Value}";
+                if (re.IsMatch(uri))
+                {
+                    uri = re.Replace(uri, res);
+                }
+                else
+                {
+                    uri += "&" + res;
+                }           
             }
-            else
-            {
-                uri += "&" + res;
-            }
+
             return new HtmlString(uri);
         }
 

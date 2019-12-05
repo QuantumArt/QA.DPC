@@ -65,7 +65,9 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             string[] filters = null,
             bool includeRelevanceInfo = true, 
             bool localize = false,
-            string lang = null)
+            string lang = null,
+            bool changeLang = false
+            )
         {
             ViewBag.HostId = _qpHelper.HostId;
             if (content_item_id <= 0)
@@ -87,15 +89,15 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                 ViewBag.Message = ProductCardStrings.ProductNotFound;
                 return View();
             }
-            else if (localize)
+
+            if (localize)
             {
                 cultures = _localizationService.GetCultures();
 
                 if (lang == null)
                 {
                     var cookie = Request.Cookies[actionCode + DefaultCultureKey];
-
-                    currentCulture = string.IsNullOrEmpty(cookie) ? cultures[0] : CultureInfo.GetCultureInfo(cookie);
+                    currentCulture = (string.IsNullOrEmpty(cookie) || changeLang) ? cultures[0] : CultureInfo.GetCultureInfo(cookie);
                 }
                 else
                 {

@@ -29,16 +29,19 @@
         <div class="gr-wrapper">
           @foreach (var culture in Model.Cultures)
           {
+            var url = Url.Current(new Dictionary<string, string>()
+            {
+              {"lang", culture.Name},
+              {"changeLang", "true"}
+            });
             <span style="padding-right:15px;">
               @if (culture.Equals(Model.CurrentCultute))
               {
-                <b>
-                  <a class="js" href="@Url.Current("lang", culture.Name)">@culture.NativeName</a>
-                </b>
+                <b><a class="js" href="@url">@culture.NativeName</a></b>
               }
               else
               {
-                <a class="js" href="@Url.Current("lang", culture.Name)">@culture.NativeName</a>
+                <a class="js" href="@url">@culture.NativeName</a>
               }
             </span>
           }
