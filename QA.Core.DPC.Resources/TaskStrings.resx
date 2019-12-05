@@ -222,4 +222,11 @@
   <data name="NoProductsToUnfreeze" xml:space="preserve">
     <value>Products to unfreeze not found</value>
   </data>
+  <data name="ArticlesProcessed">
+    <value>Articles processed: {0}</value>
+  </data>
+  <data name="ErrorTemplate">
+    <value>{0} : статьи {1}</value>
+  </data>
 </root>
+

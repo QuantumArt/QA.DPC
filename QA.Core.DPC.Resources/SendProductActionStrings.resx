@@ -127,7 +127,7 @@
     <value>Action cancelled</value>
   </data>
   <data name="PartiallySucceededResult" xml:space="preserve">
-    <value>Processed {0} from {1}, Unprocessed products:}</value>
+    <value>Processed {0} from {1}, Unprocessed products:</value>
   </data>
   <data name="SucceededResult" xml:space="preserve">
     <value>All {0} products has been successfully processed</value>

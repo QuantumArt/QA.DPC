@@ -151,7 +151,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Processed {0} from {1}, Unprocessed products:}.
+        ///   Looks up a localized string similar to Processed {0} from {1}, Unprocessed products:.
         /// </summary>
         public static string PartiallySucceededResult {
             get {

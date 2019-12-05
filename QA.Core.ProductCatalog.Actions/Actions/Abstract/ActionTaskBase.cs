@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Tasks;
 using QA.ProductCatalog.ContentProviders;
@@ -11,8 +12,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
 	public abstract class ActionTaskBase : IAction, ITask
 	{
-		private const string StandartMessageTemplate = "Обработаны статьи: {0}";
-
 		protected ITaskExecutionContext TaskContext { get; private set; }
 		protected ActionData ActionData { get; private set; }
 
@@ -63,7 +62,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
 				if (ids.Any())
 				{
-					sb.AppendFormat(StandartMessageTemplate, string.Join(", ", ids));
+					sb.AppendFormat(TaskStrings.ArticlesProcessed, string.Join(", ", ids));
 				}
 
 				if (errors != null)
@@ -71,7 +70,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 					foreach (var err in errors)
 					{
 						sb.AppendLine();
-						sb.AppendFormat("{0} : статьи {1}", err.Key, string.Join(", ", err));
+						sb.AppendFormat(TaskStrings.ErrorTemplate, err.Key, string.Join(", ", err));
 					}
 				}
 				

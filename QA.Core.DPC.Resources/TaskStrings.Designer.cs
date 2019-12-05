@@ -88,6 +88,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Articles processed: {0}.
+        /// </summary>
+        public static string ArticlesProcessed {
+            get {
+                return ResourceManager.GetString("ArticlesProcessed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cancel.
         /// </summary>
         public static string Cancel {
@@ -174,6 +183,15 @@ namespace QA.Core.DPC.Resources {
         public static string ErrorActionEnqueue {
             get {
                 return ResourceManager.GetString("ErrorActionEnqueue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} : статьи {1}.
+        /// </summary>
+        public static string ErrorTemplate {
+            get {
+                return ResourceManager.GetString("ErrorTemplate", resourceCulture);
             }
         }
         

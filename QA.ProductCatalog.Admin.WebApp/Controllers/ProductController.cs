@@ -351,7 +351,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 statusText = ProductCardStrings.Relevant;
             }
-
+  
             article
                 .AddPlainField("ConsumerCulture", relevanceInfo.Culture.NativeName, ProductCardStrings.FrontLanguage)
                 .AddPlainField("ConsumerStatusText", statusText, ProductCardStrings.FrontStatus)
