@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Logger;
@@ -24,14 +25,28 @@ namespace QA.Core.DPC.Loader
 		{
 			if (_props.LoaderWarmUpProductId != 0)
 			{
-				_logger.Info($"Warming up with product {_props.LoaderWarmUpProductId} started.");
+				var warmMessage = $"Warming up with product {_props.LoaderWarmUpProductId}";
+				_logger.Info($"{warmMessage} started.");
 
 				var sw = new Stopwatch();
+				bool warmUpErrorOccurs = false;
 				sw.Start();
-				_productLoader.GetProductById(_props.LoaderWarmUpProductId);
+				try
+				{
+					_productLoader.GetProductById(_props.LoaderWarmUpProductId);
+				}
+				catch (Exception ex)
+				{
+					warmUpErrorOccurs = true;
+					_logger.ErrorException($"{warmMessage} failed", ex);
+				}
+				
 				sw.Stop();
-			
-				_logger.Info($"Warming up with product {_props.LoaderWarmUpProductId} finished. Took {sw.Elapsed.TotalSeconds} sec.");			
+
+				if (!warmUpErrorOccurs)
+				{
+					_logger.Info($"{warmMessage} finished. Took {sw.Elapsed.TotalSeconds} sec.");			
+				}
 			}
 
 		}
