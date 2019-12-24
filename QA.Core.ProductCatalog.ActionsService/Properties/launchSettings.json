@@ -1,27 +1,12 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:25298/",
-      "sslPort": 0
-    }
-  },
   "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
     "QA.Core.ProductCatalog.ActionsService": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
+      "commandLineArgs": "--console",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      },
-      "applicationUrl": "http://localhost:25301/"
+        "ASPNETCORE_ENVIRONMENT": "Dev"
+      }
     }
   }
 }
