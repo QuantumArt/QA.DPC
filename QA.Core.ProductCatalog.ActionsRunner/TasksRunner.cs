@@ -1,17 +1,16 @@
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
+using NLog;
+using NLog.Fluent;
 using QA.ProductCatalog.ContentProviders;
 using System;
 using System.Threading;
-using Microsoft.Extensions.Options;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {
     public class TasksRunner : ITasksRunner
     {
-        public TasksRunner(Func<string, int, ITask> taskFactoryMethod, Func<ITaskService> taskServiceFactoryMethod, ILogger logger, IIdentityProvider identityProvider, TaskRunnerDelays delays)
+        public TasksRunner(Func<string, int, ITask> taskFactoryMethod, Func<ITaskService> taskServiceFactoryMethod, IIdentityProvider identityProvider, TaskRunnerDelays delays)
         {
             State = StateEnum.Stopped;
 
@@ -23,8 +22,6 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
             _taskFactoryMethod = taskFactoryMethod;
             
-            _logger = logger;
-
             _identityProvider = identityProvider;
 
             _delays = delays;
@@ -54,7 +51,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             }
         }
 
-        private readonly ILogger _logger;
+        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         
         private readonly IIdentityProvider _identityProvider;
         private readonly Func<string, int, ITask> _taskFactoryMethod;
@@ -63,7 +60,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         public void Run(object customerCode)
         {
-            _logger?.Info($"Run called for {customerCode}");
+            _logger.Info().Message("Run called for {customerCode}", customerCode).Write();
 
             _identityProvider.Identity = new Identity(customerCode as string);                    
 
@@ -89,7 +86,9 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                         }
                         catch (Exception ex)
                         {
-                            _logger?.ErrorException("Error getting task ID to process", ex);
+                            _logger.Error().Exception(ex)
+                                .Message("Error getting task Id to process")
+                                .Write();
 
                             Thread.Sleep(_delays.MsToSleepIfNoDbAccess);
                             continue;
@@ -103,7 +102,12 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                         }
                         else
                         {
-                            _logger?.Info("Задача {0} принята в работу для {1}", taskIdToRun, customerCode);
+                            _logger.Info()
+                                .Message(
+                                    "Task {taskId} has been started for customerCode {customerCode}", 
+                                    taskIdToRun, customerCode
+                                    )
+                                .Write();
 
                             try
                             {
@@ -136,7 +140,12 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
                                 taskService.ChangeTaskState(taskIdToRun.Value, executionContext.IsCancelled ? ActionsRunnerModel.State.Cancelled : ActionsRunnerModel.State.Done, executionContext.Message);
 
-                                _logger?.Info("Задача {0} для {1} успешно выполнилась. Сообщение: {2}", taskIdToRun, customerCode, executionContext.Message);
+                                _logger.Info()
+                                    .Message(
+                                        "Task {taskId} for customer code {customerCode} successfully completed. Message: {taskMessage}", 
+                                        taskIdToRun, customerCode, executionContext.Message
+                                        )
+                                    .Write();
                             }
                             catch (Exception ex)
                             {
@@ -147,20 +156,24 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
                                 taskService.ChangeTaskState(taskIdToRun.Value, ActionsRunnerModel.State.Failed, errMessage);
 
-                                _logger?.ErrorException("Задача {0} не выполнилась", ex, taskIdToRun);
+                                _logger.Error().Exception(ex)
+                                    .Message("Task {taskId} failed", taskIdToRun)
+                                    .Write();
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger?.ErrorException("Общая ошибка в работе сервиса", ex);
+                    _logger.Error().Exception(ex)
+                        .Message("General service error");
 
                     InitStop();
                 }
             } while (State != StateEnum.WaitingToStop);
 
-            _logger?.Info($"Run stopped for {customerCode}");
+            _logger.Info().Message("Run stopped for {customerCode}", customerCode)
+                .Write();
             State = StateEnum.Stopped;
         }
 
@@ -170,7 +183,8 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             {
                 if (State == StateEnum.Running)
                 {
-                    _logger?.Info($"Run init stop");
+                    _logger.Info().Message("Run init stop")
+                        .Write();
                     State = StateEnum.WaitingToStop;
                     StopTask?.Invoke();
                 }
