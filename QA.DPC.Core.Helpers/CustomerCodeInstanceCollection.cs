@@ -71,7 +71,7 @@ namespace QA.DPC.Core.Helpers
             {
                 if (!_taskList.TryGetValue(customerCode, out result))
                 {
-                    result = new CustomerCodeTaskInstance(provider, reindexAllTaskAccessor(), _logger, delays);
+                    result = new CustomerCodeTaskInstance(provider, reindexAllTaskAccessor(), delays);
                     _taskList.Add(customerCode, result);
                 }
             }
