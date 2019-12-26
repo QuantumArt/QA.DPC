@@ -7,6 +7,9 @@ using QA.Core.Extensions;
 using QA.Core.Logger;
 using QA.Core.Models.Entities;
 using QA.Core.Models.UI;
+using NLog.Fluent;
+using NLog;
+using ILogger = NLog.ILogger;
 
 namespace QA.Core.DPC.UI
 {
@@ -14,21 +17,21 @@ namespace QA.Core.DPC.UI
     {
         static readonly string[] Tokens = new string[] { "/" };
 
+        public static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+
         public static bool ThrowOnErrors = false;
         #region IBindingValueProvider Members
 
         object IBindingValueProvider.GetValue(DependencyProperty prop, BindingExression be, IDataContextProvider source)
         {
-            ILogger logger = null;
-
+            
             try
             {
                 if (be.Log)
                 {
-                    logger = ObjectFactoryBase.Resolve<ILogger>();
-                    logger.Debug(string.Format("Requested binding for {1}.{0} ({2}) expression: '{3}'",
-                        prop.Name, prop.OwnerType, prop.PropertyType, be.Expression));
-                    logger.Debug(string.Format("source: {0}", source));
+                    _logger.Debug("Requested binding for {owner}.{name} ({propertyType}) expression: '{expression}'",
+                        prop.OwnerType, prop.Name, prop.PropertyType, be.Expression);
+                    _logger.Debug("Source: " + source);
                 }
 
                 var value = ProvideValueInternal(prop, be, source);
@@ -37,10 +40,11 @@ namespace QA.Core.DPC.UI
             catch (Exception ex)
             {
                 Debug.WriteLine(ex.Message);
-                logger = logger ?? ObjectFactoryBase.Resolve<ILogger>();
 
-                logger.Error("Ошибка во время биндинга модели для {1}.{0} ({2}) expression: '{3}'", prop.Name, prop.OwnerType, prop.PropertyType, be.Expression);
-                logger.ErrorException("Ошибка во время биндинга модели", ex);
+                _logger.Error().Exception(ex)
+                    .Message("ModelBindingError for {owner}.{name} ({propertyType}) expression: '{expression}'", 
+                        prop.OwnerType, prop.Name, prop.PropertyType, be.Expression)
+                    .Write();
 
                 if (ThrowOnErrors)
                 {
@@ -53,29 +57,27 @@ namespace QA.Core.DPC.UI
 
         private object ProvideValueInternal(DependencyProperty prop, BindingExression be, IDataContextProvider source)
         {
-            ILogger logger = null;
 
             var ctx = source.GetDataContext(be);
 
             if (be.Log)
             {
-                logger = ObjectFactoryBase.Resolve<ILogger>();
-                logger.Debug(string.Format("ctx: {0}", ctx));
+                _logger.Debug("ctx: " + ctx); 
             }
 
             if (!string.IsNullOrEmpty(be.Expression) && ShouldHook(be, ctx))
             {
-                if (be.Log) logger.Debug("!string.IsNullOrEmpty(be.Expression) && ShouldHook(be, ctx)");
+                if (be.Log) _logger.Debug("!string.IsNullOrEmpty(be.Expression) && ShouldHook(be, ctx)");
 
                 var context = ctx as IModelObject;
 
-                if (be.Log) logger.Debug(string.Format("context as IModelObject: {0}", context));
+                if (be.Log) _logger.Debug("context as IModelObject: " + context);
 
                 var segments = GetSegments(be);
 
                 IModelObject current = context;
 
-                if (be.Log) logger.Debug(string.Format("segments: {0}", string.Join("->", segments)));
+                if (be.Log) _logger.Debug("segments: " + string.Join("->", segments));
 
                 foreach (var segment in segments)
                 {
@@ -100,7 +102,7 @@ namespace QA.Core.DPC.UI
 
                             if (value == null)
                             {
-                                if (be.Log) logger.Debug("return null");
+                                if (be.Log) _logger.Debug("return null");
                                 return ConvertToPropertyType(value, prop, be, source); 
                             }
 
@@ -124,7 +126,7 @@ namespace QA.Core.DPC.UI
 
                     if (segment.Latest)
                     {
-                        if (be.Log) logger.Debug(string.Format("latest {0} {1} {2}", segment.Name, prop.PropertyType, current));
+                        if (be.Log) _logger.Debug("latest {name} {propertyType} {current}", segment.Name, prop.PropertyType, current);
 
                         if (prop.PropertyType == typeof(string))
                         {
@@ -154,8 +156,7 @@ namespace QA.Core.DPC.UI
             ILogger logger;
             if (be.Log)
             {
-                logger = ObjectFactoryBase.Resolve<ILogger>();
-                logger.Debug(string.Format("value: {0}", value));
+                _logger.Debug("value: " +  value);
             }
 
             if (be.Converter != null)

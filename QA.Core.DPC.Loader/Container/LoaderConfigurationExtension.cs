@@ -103,7 +103,6 @@ namespace QA.Core.DPC.Loader.Container
                     x.Resolve<ISettingsService>(),
                     x.Resolve<VersionedCacheProviderBase>(),
                     x.Resolve<IArticleService>("ArticleServiceAdapterFakeUser"),
-                    x.Resolve<ILogger>(),
                     x.Resolve<IConnectionProvider>()));
 
 

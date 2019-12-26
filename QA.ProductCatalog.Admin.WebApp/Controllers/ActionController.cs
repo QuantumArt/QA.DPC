@@ -52,7 +52,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             }
             catch (ResolutionFailedException)
             {
-                return Error("Не удалось найти обработчик для команды " + command);
+                return Error("Handler is not found for command: " + command);
             }
         }
     }

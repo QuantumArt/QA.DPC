@@ -102,7 +102,7 @@ namespace QA.Core.DocumentGenerator
 			var rootContextInXml = (XPathNodeIterator)navigator.Evaluate("ProductInfo/Products/Product");
 
 			if (rootContextInXml.Count == 0)
-				throw new Exception("Не найден корневой продукт");
+				throw new Exception("Root product not found");
 
 			_document.MailMerge.ClearOptions = MailMergeClearOptions.RemoveEmptyParagraphs |
 			                                   MailMergeClearOptions.RemoveEmptyRanges |

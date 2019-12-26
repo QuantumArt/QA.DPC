@@ -148,7 +148,7 @@ namespace QA.Core.DPC.API.Update
                         }
                         catch (MessageResultException ex)
                         {
-                            _logger.ErrorException("Не удалось удалить статью {0}", ex, articleToDeleteKv.Key);
+                            _logger.ErrorException("Cannot remove article {0}", ex, articleToDeleteKv.Key);
                         }
                     }
                     _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
@@ -358,9 +358,7 @@ namespace QA.Core.DPC.API.Update
 
                     if (childArticleDef == null)
                     {
-                        throw new InvalidOperationException($@"В описании продукта у поля {fieldInfo.field.FieldId
-                            } не может быть ContentId={childArticle.ContentId
-                            }, который у статьи id={childArticle.Id}");
+                        throw new InvalidOperationException($@"There is an conflict in product definition field {fieldInfo.field.FieldId} between ContentId={childArticle.ContentId} and Articleid={childArticle.Id}");
                     }
 
                     Article oldChildArticle = oldFieldsArticles.SingleOrDefault(x => x.Id == childArticle.Id);

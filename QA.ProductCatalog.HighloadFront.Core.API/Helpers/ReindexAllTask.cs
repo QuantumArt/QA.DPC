@@ -42,7 +42,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                     }
                     else
                     {
-                        throw new Exception($"Не удалось пройти валидацию по InstanceId");
+                        throw new Exception($"Unable to validate InstanceId");
                     }
                 }
                 finally
@@ -51,7 +51,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Helpers
                 }
             }
             else
-                throw new Exception($"Не удалось войти в EnterSyncAll в течение {LockTimeoutInMs} миллисекунд");
+                throw new Exception($"Unable to enter into EnterSyncAll during {LockTimeoutInMs} ms");
         }
     }
 }

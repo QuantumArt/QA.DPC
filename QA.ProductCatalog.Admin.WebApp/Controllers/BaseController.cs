@@ -23,7 +23,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             if (exception.InnerExceptions.Any())
             {
-                var sb = new StringBuilder("Не удалось обработать продукты:");
+                var sb = new StringBuilder("Products have not been processed:");
 
                 foreach (var exception1 in exception.InnerExceptions)
                 {

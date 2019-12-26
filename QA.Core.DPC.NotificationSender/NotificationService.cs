@@ -9,9 +9,10 @@ using System.Collections.Generic;
  using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.DAL;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
+ using NLog;
+ using NLog.Fluent;
 
-namespace QA.Core.DPC
+ namespace QA.Core.DPC
 {
 	public class NotificationService : QAServiceBase, INotificationService
 	{
@@ -19,18 +20,16 @@ namespace QA.Core.DPC
 
         private readonly IIdentityProvider _identityProvider;
 
-        private readonly ILogger _logger;
+        private static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly IConnectionProvider _connectionProvider;
 
         public NotificationService(INotificationProvider provider, 
 	        IIdentityProvider identityProvider,
 	        INotificationChannelService channelService, 
-	        ILogger logger, 
 	        IConnectionProvider connectionProvider)
 		{
             _identityProvider = identityProvider;
-            _logger = logger;
             _connectionProvider = connectionProvider;
 		}
 		
@@ -51,8 +50,11 @@ namespace QA.Core.DPC
 						if (channels == null)
 						{
 							var productIds = notifications.Where(n => n.Channels == null).Select(n => n.ProductId);
-							_logger.Error("Продукты {0} не поставлены в очередь т.к. остутствуют каналы для публикации" , string.Join(", ", string.Join(", ", productIds)));
-							throw new Exception("Не найдено каналов для публикации");
+							_logger.Error(
+								"Products {0} have not been enqueued because there are no channels for publishing" , 
+								string.Join(", ", string.Join(", ", productIds))
+							);
+							throw new Exception("No channels for publishing");
 						}
 					}
 
@@ -103,7 +105,12 @@ namespace QA.Core.DPC
 						ctx.Messages.AddRange(messages);
 
 						var productIds = notifications.Select(n => n.ProductId).Distinct();
-						_logger.Info("Постановка сообщения {0} для продуктов {1} в очередь, isStage={2}", method, string.Join(", ", productIds), isStage);
+						_logger.Info()
+							.Message("Message {message} for products {productIds} is enqueueing",
+								method, string.Join(", ", productIds)
+							)
+							.Property("isStage", isStage)
+							.Write();
 
 						ctx.SaveChanges();
 					}
@@ -230,7 +237,7 @@ namespace QA.Core.DPC
 			var rootProductNavigator = xpathDoc.CreateNavigator().SelectSingleNode(ProductXPathExpression);
 
 			if (rootProductNavigator == null)
-				throw new Exception(string.Format("В xml не найден корневой объект по адресу {0}", ProductXPathExpression.Expression));
+				throw new Exception("No root object found in xml by address: " + ProductXPathExpression.Expression);
 
 			var filterResult = rootProductNavigator.Evaluate(xPathFilter);
 

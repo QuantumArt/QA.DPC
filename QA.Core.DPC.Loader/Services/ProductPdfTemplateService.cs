@@ -35,7 +35,7 @@ namespace QA.Core.DPC.Loader.Services
 				var templateFieldVal = productArticle.FieldValues.SingleOrDefault(x => x.Field.Name == PdfTemplateFieldName);
 
 				if (templateFieldVal == null)
-					throw new Exception(string.Format("В статье {0} не найдено поле {1}", productId, PdfTemplateFieldName));
+					throw new Exception(string.Format("Field {1} is not found in article {0}", productId, PdfTemplateFieldName));
 
 				if (!string.IsNullOrEmpty(templateFieldVal.Value))
 					return File.OpenRead(templateFieldVal.Field.PathInfo.GetPath(templateFieldVal.Value));
@@ -79,12 +79,12 @@ namespace QA.Core.DPC.Loader.Services
 			var templateFieldVal = sharedTemplate.FieldValues.SingleOrDefault(x => x.Field.Name == PdfTemplateFieldName);
 
 			if (templateFieldVal == null)
-				throw new Exception(string.Format("В статье {0} не найдено поле {1}", sharedTemplate.Id, PdfTemplateFieldName));
+				throw new Exception(string.Format("Field {1} is not found in article {0}", sharedTemplate.Id, PdfTemplateFieldName));
 
 			if (!string.IsNullOrEmpty(templateFieldVal.Value))
 				return File.OpenRead(templateFieldVal.Field.PathInfo.GetPath(templateFieldVal.Value));
 			else
-				throw new Exception(string.Format("В статье {0} не заполнено поле {1}", sharedTemplate.Id, PdfTemplateFieldName));
+				throw new Exception(string.Format("Field {1} is not filled in article {0}", sharedTemplate.Id, PdfTemplateFieldName));
 		}
 	}
 }

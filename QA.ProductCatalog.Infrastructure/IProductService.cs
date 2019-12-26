@@ -28,7 +28,7 @@ namespace QA.ProductCatalog.Infrastructure
         /// <returns></returns>
         Article[] GetSimpleProductsByIds(int[] ids, bool isLive = false);
 
-        /// <summary>
+        /// <summar
         /// Получение структуры данных на основе XML с мапингом данных из БД 
         /// </summary>
         /// <param name="productTypeId">Идентификатор типа продукта</param>

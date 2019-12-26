@@ -97,7 +97,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core
 				}
 				catch (Exception ex)
 				{
-					_logger.ErrorException("Ошибка при запуске " + productChangeSubscriber.GetType().Name, ex);
+					_logger.ErrorException("Error while running " + productChangeSubscriber.GetType().Name, ex);
 				}
 				
 		}

@@ -250,7 +250,7 @@ namespace QA.ProductCatalog.Integration
             }
             else if (!autopublish)
             {
-                throw new Exception("Не найдено каналов для публикации");
+                throw new Exception("No channels for publishing");
             }
 
             return notifications;

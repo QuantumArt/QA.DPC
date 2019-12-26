@@ -90,7 +90,7 @@ namespace QA.Core.ProductCatalog.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "не удалось отправить уведомление об удалении", ex);
+				throw new ProductException(productId, "Delete notification sending failed", ex);
 			}
 		}
 		#endregion

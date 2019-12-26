@@ -46,7 +46,7 @@ namespace QA.Core.DPC.UI.Controls
 						_notes[i] = new Note
 						{
 							Id = noteId,
-							Text = foundNotes.ContainsKey(noteId) ? foundNotes[noteId] : "Заметка с id=" + noteId + " не найдена"
+							Text = foundNotes.ContainsKey(noteId) ? foundNotes[noteId] : "Note with id=" + noteId + " not found"
 						};
 					}
 				}

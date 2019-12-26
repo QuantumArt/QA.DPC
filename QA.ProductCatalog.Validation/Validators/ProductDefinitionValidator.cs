@@ -30,7 +30,7 @@ namespace QA.ProductCatalog.Validation.Validators
             var xmlDefinition = context.Definitions.FirstOrDefault(x => x.Alias == FieldXmlDefinition);
             if (xmlDefinition == null)
             {
-                result.Messages.Add("Не найдено поле " + FieldXmlDefinition);
+                result.Messages.Add("Field not found " + FieldXmlDefinition);
             }
 
             var xaml = context.ProvideValueExact<string>(xmlDefinition);
@@ -43,7 +43,7 @@ namespace QA.ProductCatalog.Validation.Validators
                 }
                 catch (Exception ex)
                 {
-                    result.Messages.Add($"Текст не является валидным Xaml-описанием продукта. Ошибка: {ex.Message}");
+                    result.Messages.Add($"Text that have been received is not a valid XAML product definition. Error: {ex.Message}");
                     return result;
                 }
 
@@ -62,7 +62,7 @@ namespace QA.ProductCatalog.Validation.Validators
                             }
                             catch (Exception ex)
                             {
-                                result.Messages.Add($"Возникла ошибка при попытке получить JSON-описание. Ошибка: {ex.Message}");
+                                result.Messages.Add($"An error occurs while receiving JSON-definition. Error: {ex.Message}");
                                 return result;
                             }
                         }

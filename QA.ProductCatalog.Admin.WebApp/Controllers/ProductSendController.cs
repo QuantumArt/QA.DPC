@@ -19,7 +19,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             var n = Interlocked.Read(ref numberOfSessions);
             if (n > 0)
             {
-                ModelState.AddModelError("", "Один запрос на отправку продуктов уже выполняется. Дождитесь окончания.");
+                ModelState.AddModelError("", "A product sending query in running state already exists. Please, wait for completing.");
                 return View(model);
             }
             try
@@ -31,7 +31,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     var idsList = model.Ids.SplitString(' ', ',', ';', '\n', '\r').Distinct().ToArray();
                     if (idsList.Length > 1000)
                     {
-                        ModelState.AddModelError("", "Слишком много продуктов. Укажите не более 1000");
+                        ModelState.AddModelError("", "Too much products. Please, specify no more than 1000");
                         return View(model);
                     }
                     try
@@ -40,7 +40,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     }
                     catch (Exception ex)
                     {
-                        ModelState.AddModelError("", "Указаны нечисловые значения. " + ex.Message);
+                        ModelState.AddModelError("", "Non-number values specified: " + ex.Message);
                         return View(model);
                     }
 
@@ -59,13 +59,13 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
                         if (result.Failed.Length > 0 || result.Errors.Length > 0)
                         {
-                            ModelState.AddModelError("", string.Format("Обработано {0} из {1}, в поле указаны необработанные продукты ({2})",
+                            ModelState.AddModelError("", string.Format("Processed {0} from {1}, unprocessed: {2}",
                                 ids.Length - result.Failed.Length,
                                 ids.Length, result.Failed.Length));
                         }
                         else
                         {
-                            ModelState.AddModelError("", string.Format("Обработано {0} из {1}", ids.Length - result.Failed.Length - result.NeedPublishing.Length, ids.Length));
+                            ModelState.AddModelError("", string.Format("Processed {0} from {1}", ids.Length - result.Failed.Length - result.NeedPublishing.Length, ids.Length));
                         }
                         if (result.Errors.Length > 0)
                         {

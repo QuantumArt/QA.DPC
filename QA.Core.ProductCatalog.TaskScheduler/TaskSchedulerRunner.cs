@@ -144,7 +144,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 			string[] components = task.Schedule.CronExpression.Split(new[] {' '}, StringSplitOptions.RemoveEmptyEntries);
 
 			if (components.Length < 5)
-				throw new Exception("Некорректное выражение. Должно иметь не менее 5 компонентов");
+				throw new Exception("Invalid expression. Should have no less than 5 components.");
 
 			//из http://www.quartz-scheduler.net/documentation/quartz-2.x/tutorial/crontrigger.html
 			//Support for specifying both a day-of-week and a day-of-month value is not complete (you must currently use the '?' character in one of these fields).
@@ -207,7 +207,7 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 				{
 					try
 					{
-						_logger.ErrorException("Ошибка при попытке загрузить актуальные триггеры и джобы из бд", ex);
+						_logger.ErrorException("Error while receiving actual triggers and jobs", ex);
 					}
 					catch
 					{

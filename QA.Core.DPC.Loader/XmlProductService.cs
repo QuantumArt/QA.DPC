@@ -268,7 +268,7 @@ namespace QA.Core.DPC.Loader
 
 			if (string.IsNullOrWhiteSpace(nodeName))
                 throw new Exception(
-                    string.Format("Ошибка при генерации xml: ContentName у article не заполнен. ContentId={0} Id={1}",
+                    string.Format("Error while xml generation: ContentName is not filled in the article. ContentId={0} Id={1}",
                         article.ContentId, article.Id));
 
 			var node = new XElement(nodeName, fs);		

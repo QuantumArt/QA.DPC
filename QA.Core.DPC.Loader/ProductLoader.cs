@@ -339,7 +339,7 @@ namespace QA.Core.DPC.Loader
                     // по идее словари надо предзагружать и следить за их изменением
                     if (productDefinition == null)
                         throw new Exception(
-                            $"Для данныхй статей {string.Join(", ", ids)} не определено описание продукта");
+                            $"Product definitions not found for articles: {string.Join(", ", ids)} ");
 
                     var loadedArticles = InitDictionaries(productDefinition, isLive, GetDictionaryCounter());
 
@@ -494,7 +494,7 @@ namespace QA.Core.DPC.Loader
 
             if (res.StorageSchema == null)
                 throw new Exception(
-                    $"Не найден definition productTypeId={productTypeId} contentId={contentId} isLive={isLive}");
+                    $"Definition not found: productTypeId={productTypeId}, contentId={contentId}, isLive={isLive}");
 
             return res;
         }
@@ -665,7 +665,7 @@ namespace QA.Core.DPC.Loader
             }
             else
             {
-                throw new Exception($"Виртуальное поле типа {virtualField.GetType()} не поддерживается");
+                throw new Exception($"Virtual field type {virtualField.GetType()} is not supported");
             }
 
             return field;
@@ -681,7 +681,7 @@ namespace QA.Core.DPC.Loader
 
             if (articlesWithParents.Any(x => !(x.ModelObject is Article)))
             {
-                throw new Exception("VirtualMultiEntityField требует что бы в Path был фильтр по Article");
+                throw new Exception("VirtualMultiEntityField requires article filter in Path");
             }
 
             foreach (var articleWithParent in articlesWithParents)
@@ -978,7 +978,7 @@ namespace QA.Core.DPC.Loader
                 result.AddRange(ProcessExtensionField(fieldId, articles, localCache, isLive, counter, fieldDef));
             }
             else
-                throw new Exception($"Поле типа {fieldDef.GetType()} не поддерживается");
+                throw new Exception($"Field type {fieldDef.GetType()} is not supported");
 
             AppendCommonProperties(result, fieldValue, fieldDef, fieldName);
 
@@ -1493,7 +1493,7 @@ namespace QA.Core.DPC.Loader
             if (IsExceeded())
             {
                 LogCounter();
-                throw new Exception($"Продукт слишком большой и не подлежит обработке. Превышено ограничение в {_articlesLimit} статей.");
+                throw new Exception($"Product is too big and not going to be processed. Max number of articles ({_articlesLimit}) limitation has been exceeded.");
             }
         }
 

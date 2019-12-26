@@ -143,8 +143,9 @@ namespace QA.Core.DPC.Loader.Editor
 
                 if (qpField == null)
                 {
-                    throw new InvalidOperationException($@"В definition указано поле id={
-                        field.FieldId} которого нет в контенте id={content.ContentId}");
+                    throw new InvalidOperationException(
+                        $@"There is a field id={field.FieldId} specified in the definition and missing in the content id={content.ContentId}"
+                    );
                 }
                 if (qpField.ExactType != FieldExactTypes.DynamicImage)
                 {
@@ -217,7 +218,7 @@ namespace QA.Core.DPC.Loader.Editor
             }
             else
             {
-                throw new NotSupportedException($"Поле типа {field.GetType()} не поддерживается");
+                throw new NotSupportedException($"Field type {field.GetType()} is not supported");
             }
 
             fieldSchema.FieldId = field?.FieldId ?? qpField.Id;
@@ -336,8 +337,7 @@ namespace QA.Core.DPC.Loader.Editor
                     PreloadedArticles = preloadedArticles,
                 };
             }
-
-            throw new NotSupportedException($"Связь типа {qpField.ExactType} не поддерживается");
+            throw new NotSupportedException($"Relation type {qpField.ExactType} is not supported");
         }
         
         /// <exception cref="NotSupportedException" />

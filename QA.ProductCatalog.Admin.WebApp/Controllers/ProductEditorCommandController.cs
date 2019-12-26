@@ -213,7 +213,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             if (clonePrototypeId == 0)
             {
                 throw new InvalidOperationException(
-                    $"Невозможно определить прототип для создания продукта contentId={relationField.Content.ContentId}");
+                    $"Unable to receive prototype for product creating: contentId={relationField.Content.ContentId}");
             }
 
             int clonedProdictId = _cloneBatchAction

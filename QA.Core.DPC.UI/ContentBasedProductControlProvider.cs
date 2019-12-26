@@ -1,5 +1,5 @@
-﻿using QA.Configuration;
-using QA.Core.Logger;
+﻿using NLog;
+using QA.Configuration;
 using QA.Core.Models.Entities;
 using QA.Core.Models.UI;
 using QA.ProductCatalog.Infrastructure;
@@ -13,11 +13,10 @@ namespace QA.Core.DPC.UI
     public class ContentBasedProductControlProvider : IProductControlProvider
     {
         private readonly IContentDefinitionService _service;
-        private ILogger _logger;
-        public ContentBasedProductControlProvider(IContentDefinitionService service, ILogger logger)
+        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
+        public ContentBasedProductControlProvider(IContentDefinitionService service)
         {
             _service = service;
-            _logger = logger;
         }
 
         public UIElement GetControlForProduct(Article product)
@@ -50,7 +49,7 @@ namespace QA.Core.DPC.UI
 
             if (typeId <= 0)
             {
-                _logger.Error("Продукт {0} не имеет тип", product.Id);
+                _logger.Error("Product {productId} has no type", product.Id);
             }
 
             return _service.GetControlDefinition(product.ContentId, typeId);

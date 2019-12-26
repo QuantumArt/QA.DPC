@@ -63,16 +63,16 @@ namespace QA.Core.ProductCatalog.Actions
             ProductIds.Add(product.Id);
 
 			if (ignoredStatuses.Contains(product.Status))
-				ValidateMessageResult(product.Id, MessageResult.Error("продукт исключен по статусу"));
+				ValidateMessageResult(product.Id, MessageResult.Error("product excluded by status"));
 
 			if (!ArticleFilter.DefaultFilter.Matches(product))
-				ValidateMessageResult(product.Id, MessageResult.Error("продукт не подлежит публикации"));
+				ValidateMessageResult(product.Id, MessageResult.Error("product is not going to be published"));
 
             var state = FreezeService.GetFreezeState(product.Id);
 
             if (state == FreezeState.Frozen)
             {
-                ValidateMessageResult(product.Id, MessageResult.Error("продукт заморожен"));
+                ValidateMessageResult(product.Id, MessageResult.Error("product is freezed"));
             }
 
             var xamlValidationErrors = DoWithLogging("ValidateXaml", transactionId, () => ArticleService.XamlValidationById(product.Id, true));

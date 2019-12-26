@@ -63,7 +63,7 @@ namespace QA.Core.DPC.Loader.Services
 
                     if (field == null)
                     {
-                        throw new Exception($"Для языка {culture.DisplayName} не задано поле {fields.Key}");
+                        throw new Exception($"Field {fields.Key} is not specified for language {culture.DisplayName}");
                     }
                     var newField = CloneField(field.Field, field.InvariantFieldName, articleMap);
                     item.Value.Fields[newField.FieldName] = newField;

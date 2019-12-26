@@ -30,7 +30,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "не удалось подготовить уведомление об архивации", ex);
+				throw new ProductException(productId, "Archive notification preparing failed", ex);
 			}
 		}
 
@@ -42,7 +42,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "не удалось отправить уведомление об архивации", ex);
+				throw new ProductException(productId, "Archive notification sending failed", ex);
 			}
 		}
 

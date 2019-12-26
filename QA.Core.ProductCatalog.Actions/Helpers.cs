@@ -77,7 +77,7 @@ namespace QA.Core.ProductCatalog.Actions
 				0);
 
 			if (dtProducts.Rows.Count == 0)
-				throw new Exception("Нет ни одного продукта");
+				throw new Exception("No products found");
 
 			return dtProducts.AsEnumerable().Select(x => (int)(decimal)x["CONTENT_ITEM_ID"]).ToArray();
 		}

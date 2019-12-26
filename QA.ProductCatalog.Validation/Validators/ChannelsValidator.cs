@@ -15,7 +15,7 @@ namespace QA.ProductCatalog.Validation.Validators
             var filterDefinition = context.Definitions.FirstOrDefault(x => x.Alias == FieldFilter);
             if (filterDefinition == null)
             {
-                result.AddErrorMessage("Не найдено поле " + FieldFilter);
+                result.AddErrorMessage("Field not found: " + FieldFilter);
             }
             else
             {
@@ -24,7 +24,7 @@ namespace QA.ProductCatalog.Validation.Validators
                 var normalizedFilter = DPathProcessor.NormalizeExpression(filter);
                 if (!DPathProcessor.IsExpressionValid(normalizedFilter))
                 {
-                    result.AddModelError(filterDefinition.PropertyName, $"Невалидный фильтр: {normalizedFilter}");
+                    result.AddModelError(filterDefinition.PropertyName, $"Invalid filter: {normalizedFilter}");
                 }
             }
 

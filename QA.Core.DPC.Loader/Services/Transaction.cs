@@ -21,7 +21,7 @@ namespace QA.Core.ProductCatalog.Actions.Services
 
             if (current != null && current.DbConnection != null)
             {
-                logger.Error("Попытка создать транзакцию на существующем подключении к БД. Статус подключения: " + current.DbConnection.State);
+                logger.Error("There was a try to create transaction for existing connection. Status: " + current.DbConnection.State);
             }
 
             var customer = connectionProvider.GetCustomer();

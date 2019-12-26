@@ -74,12 +74,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                         .ToArray();
 
 				if (ids.Length == 0)
-					ModelState.AddModelError("idsStr", "Список ID не может быть пустым");
+					ModelState.AddModelError("idsStr", "Ids list should not be empty");
 
             }
             catch
             {
-                ModelState.AddModelError("idsStr", "Введен некорректный список ID");
+                ModelState.AddModelError("idsStr", "Incorrect Ids list");
             }
 
 			ViewBag.IgnoredStatus = ignoredStatus;

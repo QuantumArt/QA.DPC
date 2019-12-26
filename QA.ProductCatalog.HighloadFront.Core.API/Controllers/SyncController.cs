@@ -48,11 +48,11 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             if (!Configuration.DataOptions.CanUpdate)
             {
-                return BadRequest($"Невозможно создать или обновить продукт {id}. Данный экземпляр API предназначен только для чтения.");
+                return BadRequest($"Unable to create/update product {id}. This is read-only instance.");
             }
 
 
-            Log(LogLevel.Information, "Получен запрос на обновление/добавление продукта: {id}", id);
+            Log(LogLevel.Information, "Query received for creating/updating product: {id}", id);
 
             if (await syncer.EnterSingleCrudAsync(LockTimeoutInMs))
             {
@@ -68,7 +68,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 }
             }
             else
-                return BadRequest($"Не удалось войти в EnterSingleCRUDAsync в течение {LockTimeoutInMs} миллисекунд");
+                return BadRequest($"Unable to enter into EnterSingleCRUDAsync during {LockTimeoutInMs} ms");
         }
 
         [HttpDelete]
@@ -87,10 +87,10 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             if (!Configuration.DataOptions.CanUpdate)
             {
-                return BadRequest($"Невозможно удалить продукт {id}. Данный экземпляр API предназначен только для чтения.");
+                return BadRequest($"Unable to remove product {id}. This is read-only instance.");
             }
 
-            Log(LogLevel.Information, "Получен запрос на удаление продукта: {id} ", id);
+            Log(LogLevel.Information, "Получен запрос на удаление продукта: " + id);
 
             if (await syncer.EnterSingleCrudAsync(LockTimeoutInMs))
             {
@@ -105,7 +105,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
                 }
             }
             else
-                return BadRequest($"Не удалось войти в EnterSingleCRUDAsync в течение {LockTimeoutInMs} миллисекунд");
+                return BadRequest($"Unable to enter into EnterSingleCRUDAsync during {LockTimeoutInMs} ms");
         }
 
         [Route("{language}/{state}/reset"), HttpPost]
@@ -114,13 +114,13 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
             if (!Configuration.DataOptions.CanUpdate)
             {
-                return BadRequest("Невозможно выполнить операцию пересоздания индекса. Данный экземпляр API предназначен только для чтения.");
+                return BadRequest("Unable to recreate index. This is read-only instance.");
             }
 
             var syncer = Configuration.GetSyncer(language, state);
 
             if (!syncer.AnySlotsLeft)
-                return BadRequest("Нет свободных слотов, дождитесь завершения предыдущих операций");
+                return BadRequest("There is no available slots. Please, wait for previous operations completing.");
 
             int taskId = _taskService.AddTask("ReindexAllTask", $"{language}/{state}", 0, null, "ReindexAllTask");
             
@@ -174,7 +174,7 @@ namespace QA.ProductCatalog.HighloadFront.Core.API.Controllers
 
         private IActionResult CreateUnauthorizedResult(string instanceId, string actualInstanceId)
         {
-            Log(LogLevel.Information, $"InstanceId {instanceId} указан неверно, должен быть {actualInstanceId}");            
+            Log(LogLevel.Information, $"InstanceId {instanceId} is specified incorrectly, should be {actualInstanceId}");            
             return new UnauthorizedResult();
         }
 

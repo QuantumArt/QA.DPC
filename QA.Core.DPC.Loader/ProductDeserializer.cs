@@ -242,7 +242,8 @@ namespace QA.Core.DPC.Loader
                 Models.Configuration.Content valueDef = fieldInDef.ContentMapping.Values.FirstOrDefault(x => _contentService.Read(x.ContentId).NetName == contentName);
 
                 if (valueDef == null)
-                    throw new Exception(string.Format("Значение '{0}' не найдено в списке допустимых контентов ExtensionField id = {1}", contentName, fieldInDef.FieldId));
+                    throw new Exception(
+                        $"'{contentName}' value is not found in an available extension content list, id = {fieldInDef.FieldId}");
 
                 extensionArticleField.Value = valueDef.ContentId.ToString();
                 extensionArticleField.SubContentId = valueDef.ContentId;
@@ -273,7 +274,7 @@ namespace QA.Core.DPC.Loader
         private ArticleField DeserializeBackwardField(BackwardRelationField fieldInDef, IProductDataSource productDataSource, DBConnector connector, Context context)
         {
             if (string.IsNullOrEmpty(fieldInDef.FieldName))
-                throw new Exception("В описании BackwardArticleField должен быть непустой FieldName");
+                throw new Exception("BackwardArticleField definition should have non-empty FieldName");
 
             IEnumerable<IProductDataSource> containersCollection = productDataSource.GetContainersCollection(fieldInDef.FieldName);
 
@@ -316,7 +317,7 @@ namespace QA.Core.DPC.Loader
 
                 articleField = multiArticleField;
             }
-            else throw new Exception(string.Format("В описании поле id={0} имеет тип EntityField но его RelationType не соответствует требуемым", fieldInDef.FieldId));
+            else throw new Exception(string.Format("Field definition id={0} has EntityField type but its RelationType is not valid", fieldInDef.FieldId));
 
             return articleField;
         }

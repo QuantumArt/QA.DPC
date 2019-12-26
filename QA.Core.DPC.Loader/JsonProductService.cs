@@ -427,8 +427,8 @@ namespace QA.Core.DPC.Loader
 
                     if (qpField == null)
                     {
-                        throw new InvalidOperationException($@"В definition указано поле id={
-                            field.FieldId} которого нет в контенте id={definition.ContentId}");
+                        throw new InvalidOperationException($@"There is a field id={
+                            field.FieldId} which specified in product definition and missing in the content id={definition.ContentId}");
                     }
                     
                     if (field is ExtensionField extensionField)
@@ -632,7 +632,7 @@ namespace QA.Core.DPC.Loader
             }
             else
             {
-                throw new NotSupportedException($"Поля типа {field.GetType()} не поддерживается");
+                throw new NotSupportedException($"Field type {field.GetType()} is not supported");
             }
         }
 
@@ -690,7 +690,7 @@ namespace QA.Core.DPC.Loader
             }
             else
             {
-                throw new NotSupportedException($"Поле типа {baseVirtualField.GetType()} не поддерживается");
+                throw new NotSupportedException($"Field type {baseVirtualField.GetType()} is not supported");
             }
         }
 
@@ -706,7 +706,7 @@ namespace QA.Core.DPC.Loader
             if (type == typeof(int))
                 return JSchemaType.Integer;
 
-            throw new NotSupportedException("Схема не поддерживает конвертер возвращающий тип " + type);
+            throw new NotSupportedException("Converter is not supported for type " + type);
         }
         
         private JSchema GetPlainFieldSchema(Quantumart.QP8.BLL.Field qpField)
@@ -887,7 +887,7 @@ namespace QA.Core.DPC.Loader
                 return virtualMultiArticleField.VirtualArticles.Select(x => ConvertField(x, filter));
             }
 
-            throw new NotSupportedException($"Поле типа {field.GetType()} не поддерживается");
+            throw new NotSupportedException($"Field type {field.GetType()} is not supported");
         }
     }
 }
