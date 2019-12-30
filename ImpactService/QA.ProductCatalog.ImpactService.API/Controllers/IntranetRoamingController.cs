@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using NLog;
 using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
@@ -16,6 +16,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         private readonly IntranetRoamingCalculator _calc;
 
+        protected override Logger Logger { get; } = LogManager.GetCurrentClassLogger();
         protected override BaseImpactCalculator Calculator => _calc;
 
         protected JObject Scale;
@@ -25,7 +26,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         protected string Region;
 
 
-        public InRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
+        public InRoamingController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, cache)
         {
             _calc = new IntranetRoamingCalculator();
         }
@@ -45,8 +46,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             Region = region;
 
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, region, homeRegion, state, language);
-            var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
-            var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            var result = await GetCachedResult(cacheKey, searchOptions, html);
             if (result != null) return result;
 
             result = await FillHomeRegion(searchOptions);
@@ -67,7 +67,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             result = result ?? (html ? TestLayout(Product, serviceIds, state, language, homeRegion, region) : Content(Product.ToString()));
 
-            if (!disableCache)
+            if (!IsCacheDisabled(html))
             {
                 SetCachedResult(id, serviceIds, result, cacheKey);
             }

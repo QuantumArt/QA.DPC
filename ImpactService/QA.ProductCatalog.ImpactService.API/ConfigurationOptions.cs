@@ -14,7 +14,6 @@ namespace QA.ProductCatalog.ImpactService.API
             HttpTimeout = 15;
             FailuresBeforeCircuitBreaking = 3;
             CircuitBreakingInterval = 60;
-
         }
 
         private string[] _elasticUrls;

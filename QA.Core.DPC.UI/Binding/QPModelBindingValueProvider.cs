@@ -153,7 +153,6 @@ namespace QA.Core.DPC.UI
 
         private static object ConvertToPropertyType(object value, DependencyProperty dp, BindingExression be, IDataContextProvider source )
         {
-            ILogger logger;
             if (be.Log)
             {
                 _logger.Debug("value: " +  value);

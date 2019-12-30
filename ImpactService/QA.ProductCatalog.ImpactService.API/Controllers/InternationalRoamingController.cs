@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Linq;
+using NLog;
 using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
@@ -16,6 +16,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
     {
         private readonly InternationalRoamingCalculator _calc;
 
+        protected override Logger Logger { get; } = LogManager.GetCurrentClassLogger();
         protected override BaseImpactCalculator Calculator => _calc;
 
         private JObject Tariff { get; set; }
@@ -24,8 +25,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
         public InternationalRoamingController(
             ISearchRepository searchRepo,
             IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, 
-            ILoggerFactory loggerFactory,
-            IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
+            IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, cache)
         {
             _calc = new InternationalRoamingCalculator();
         }
@@ -55,7 +55,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             var serviceIds = new int[] { };
             var id = Convert.ToInt32(isB2C) * 2 + Convert.ToInt32(calculateImpact);
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
-            var result = (!IsCacheDisabled()) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            var result = await GetCachedResult(cacheKey, searchOptions, false);
             if (result != null) return result;
             
             if (string.IsNullOrEmpty(searchOptions.HomeRegion))
@@ -167,7 +167,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
             var serviceIds = new int[] { };
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
-            var result = (!IsCacheDisabled(html)) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            var result = await GetCachedResult(cacheKey, searchOptions, html);
             if (result != null) return result;
 
             result = await FillHomeRegion(searchOptions);
@@ -184,11 +184,6 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
 
             return result;
-        }
-
-        private bool IsCacheDisabled(bool html = false)
-        {
-            return html || ConfigurationOptions.CachingInterval <= 0;
         }
 
         [HttpGet("{id}")]
@@ -221,7 +216,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             }
             
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
-            var result = (!IsCacheDisabled(html)) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            var result = await GetCachedResult(cacheKey, searchOptions, html);
             if (result != null) return result;
 
             result = await FillHomeRegion(searchOptions);

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using NLog;
 using QA.ProductCatalog.ImpactService.API.Services;
 
 namespace QA.ProductCatalog.ImpactService.API.Controllers
@@ -16,13 +16,13 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         private readonly InternationalCallsCalclulator _calc;
 
+        protected override Logger Logger { get; } = LogManager.GetCurrentClassLogger();
         protected override BaseImpactCalculator Calculator => _calc;
 
         protected override BaseCallsImpactCalculator CallsCalculator => _calc;
 
         private IOptions<ConfigurationOptions> _elasticIndexOptionsAccessor;
 
-        private ILoggerFactory _loggerFactory;
 
         public int[] PreCalcServiceIds { get; private set; }
 
@@ -31,13 +31,12 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
 
         private InternationalCallsController GetAlternateController()
         {
-            return new InternationalCallsController(SearchRepo, _elasticIndexOptionsAccessor, _loggerFactory, Cache);
+            return new InternationalCallsController(SearchRepo, _elasticIndexOptionsAccessor, Cache);
         }
 
-        public InternationalCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, ILoggerFactory loggerFactory, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, loggerFactory, cache)
+        public InternationalCallsController(ISearchRepository searchRepo, IOptions<ConfigurationOptions> elasticIndexOptionsAccessor, IMemoryCache cache) : base(searchRepo, elasticIndexOptionsAccessor, cache)
         {
             _elasticIndexOptionsAccessor = elasticIndexOptionsAccessor;
-            _loggerFactory = loggerFactory;
             _calc = new InternationalCallsCalclulator(ConfigurationOptions.ConsolidateCallGroupsForIcin);
             PreCalcServiceIds = new int[0];
             NoImpactServiceIds = new List<int>();
@@ -63,8 +62,8 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
             ConfigureOptions(searchOptions);
 
             var cacheKey = GetCacheKey(GetType().ToString(), id, serviceIds, countryCode, homeRegion, state, language);
-            var disableCache = html || ConfigurationOptions.CachingInterval <= 0;
-            var result = (!disableCache) ? await GetCachedResult(cacheKey, searchOptions) : null;
+            var result = await GetCachedResult(cacheKey, searchOptions, html);
+            
             if (result != null) return result;
 
             result = await FillHomeRegion(searchOptions);
@@ -108,7 +107,7 @@ namespace QA.ProductCatalog.ImpactService.API.Controllers
                 result = result ?? Content(product.ToString());
             }
 
-            if (!disableCache)
+            if (!IsCacheDisabled(html))
             {
                 SetCachedResult(id, serviceIds, result, cacheKey);
             }

@@ -6,7 +6,7 @@ namespace QA.ProductCatalog.ImpactService.API.Services
     {
         public string HomeRegion { get; set; }
         
-        public JObject HomeRegionData { get; set; }
+        internal JObject HomeRegionData { get; set; }
         
         public string[] BaseUrls { get; set; }
 
