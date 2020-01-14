@@ -127,7 +127,7 @@
     <value>Действие отменено</value>
   </data>
   <data name="PartiallySucceededResult" xml:space="preserve">
-    <value>Обработано {0} из {1}, необработанные продукты:}</value>
+    <value>Обработано {0} из {1}, необработанные продукты:</value>
   </data>
   <data name="SucceededResult" xml:space="preserve">
     <value>Все {0} продуктов успешно обработаны</value>

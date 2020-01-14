@@ -187,7 +187,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} : статьи {1}.
+        ///   Looks up a localized string similar to {0} : articles {1}.
         /// </summary>
         public static string ErrorTemplate {
             get {
@@ -273,6 +273,51 @@ namespace QA.Core.DPC.Resources {
         public static string Processed {
             get {
                 return ResourceManager.GetString("Processed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Product is not found.
+        /// </summary>
+        public static string ProductNotFound {
+            get {
+                return ResourceManager.GetString("ProductNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Products excluded by status: {0}.
+        /// </summary>
+        public static string ProductsExcludedByStatus {
+            get {
+                return ResourceManager.GetString("ProductsExcludedByStatus", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Products are freezed: {0}.
+        /// </summary>
+        public static string ProductsFreezed {
+            get {
+                return ResourceManager.GetString("ProductsFreezed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Some products have not been processed.
+        /// </summary>
+        public static string ProductsNotProcessed {
+            get {
+                return ResourceManager.GetString("ProductsNotProcessed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Products are not going to be published: {0}.
+        /// </summary>
+        public static string ProductsNotToPublish {
+            get {
+                return ResourceManager.GetString("ProductsNotToPublish", resourceCulture);
             }
         }
         
@@ -390,6 +435,51 @@ namespace QA.Core.DPC.Resources {
         public static string YourLastTask {
             get {
                 return ResourceManager.GetString("YourLastTask", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Running.
+        /// </summary>
+        public static string Выполняется {
+            get {
+                return ResourceManager.GetString("Выполняется", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Completed.
+        /// </summary>
+        public static string Завершена {
+            get {
+                return ResourceManager.GetString("Завершена", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to New.
+        /// </summary>
+        public static string Новая {
+            get {
+                return ResourceManager.GetString("Новая", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelled.
+        /// </summary>
+        public static string Отменена {
+            get {
+                return ResourceManager.GetString("Отменена", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error.
+        /// </summary>
+        public static string Ошибка {
+            get {
+                return ResourceManager.GetString("Ошибка", resourceCulture);
             }
         }
     }

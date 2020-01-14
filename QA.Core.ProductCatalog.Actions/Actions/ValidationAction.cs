@@ -1,4 +1,5 @@
 ﻿using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
@@ -16,7 +17,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             _validationService = validationService;
         }
 
-        public override string Process(ActionContext context)
+        public override ActionTaskResult Process(ActionContext context)
         {
             bool canProcess = false;
             lock (Locker)
@@ -36,11 +37,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     int maxDegreeOfParallelism = GetValue(context, "MaxDegreeOfParallelism", DefaultMaxDegreeOfParallelism);
 
                     var report = _validationService.ValidateAndUpdate(chunkSize, maxDegreeOfParallelism, TaskContext);                    
-                    return $"Products: {report.TotalProductsCount};" +
+                    return ActionTaskResult.Success($"Products: {report.TotalProductsCount};" +
                             $"Updated products: {report.UpdatedProductsCount};" +
                             $"Validated products: {report.ValidatedProductsCount};" +
                             $"Invalid products: {report.InvalidProductsCount};" +
-                            $"Validation errors: {report.ValidationErrorsCount}";
+                            $"Validation errors: {report.ValidationErrorsCount}");
                 }
                 finally
                 {
@@ -49,7 +50,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             }
             else
             {
-                return "ValidationAction is already running";
+                return ActionTaskResult.Error("ValidationAction is already running");
             }
         }
 

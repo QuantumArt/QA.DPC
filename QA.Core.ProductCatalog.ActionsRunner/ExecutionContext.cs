@@ -48,12 +48,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 	        }
         }
 
-        /// <summary>
-        /// сообщение при успешном завершении
-        /// не обязательно
-        /// при ошибке в бд пойдет текст из эксепшена, это поле не пойдет
-        /// </summary>
-        public string Message { get; set; }
+        public ActionTaskResult Result { get; set; }
 
 	    private bool _cancellationAlreadyRequested;
         public bool IsCancellationRequested

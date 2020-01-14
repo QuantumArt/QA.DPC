@@ -27,6 +27,7 @@ using QA.DPC.Core.Helpers;
 using Unity;
 using QA.ProductCatalog.Admin.WebApp.Filters;
 using ActionContext = QA.Core.ProductCatalog.Actions.ActionContext;
+using ActionResult = Microsoft.AspNetCore.Mvc.ActionResult;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {

@@ -70,7 +70,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             _logger = logger;
         }
 
-        public override string Process(ActionContext context)
+        public override ActionTaskResult Process(ActionContext context)
         {
             bool canProcess = false;
             lock (Locker)
@@ -128,7 +128,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                     _logger.LogInfo(() => $"End CleanProductVersionAction processedCount={processedCount}");
 
-                    return $"Cleaned {processedCount} product versions earlier than {date} with chunk size = {chunkSize}";
+                    return ActionTaskResult.Error($"Cleaned {processedCount} product versions earlier than {date} with chunk size = {chunkSize}");
                 }
                 finally
                 {
@@ -137,7 +137,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             }
             else
             {
-                return "CleanProductVersionAction is already running";
+                return ActionTaskResult.Error("CleanProductVersionAction is already running");
             }
         }
 

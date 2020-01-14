@@ -27,7 +27,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             _provider = provider;
         }
 
-        public override string Process(ActionContext context)
+        public override ActionTaskResult Process(ActionContext context)
         {
             int marketingProductContentId = int.Parse(_settingsService.GetSetting(SettingsTitles.MARKETING_PRODUCT_CONTENT_ID));
 
@@ -108,7 +108,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             Task.WaitAll(tasks);
 
-            return string.Format("Статусы {0} продуктов успешно обновлены", productIds.Length);
+            return ActionTaskResult.Success($"Статусы {productIds.Length} продуктов успешно обновлены");
         }
     }
 }

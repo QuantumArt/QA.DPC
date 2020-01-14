@@ -7,7 +7,11 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.ProductCatalog.Admin.WebApp.Binders;
 using Unity;
 using QA.ProductCatalog.Admin.WebApp.Filters;
+using QA.ProductCatalog.ContentProviders;
 using ActionContext = QA.Core.ProductCatalog.Actions.ActionContext;
+using ActionResult = Microsoft.AspNetCore.Mvc.ActionResult;
+using A = QA.Core.ProductCatalog.Actions.Actions.Abstract;
+
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -33,18 +37,18 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             try
             {
                 var action = _getAction(command, adapter);
-                string message;
+                ActionTaskResult result;
 
                 if (action is IAsyncAction asyncAction)
                 {
-                    message = await asyncAction.Process(context);
+                    result = await asyncAction.Process(context);
                 }
                 else
                 {
-                    message = action.Process(context);
+                    result = action.Process(context);
                 }
 
-                return Info(message);
+                return Info(result?.ToString());
             }
             catch (ActionException ex)
             {

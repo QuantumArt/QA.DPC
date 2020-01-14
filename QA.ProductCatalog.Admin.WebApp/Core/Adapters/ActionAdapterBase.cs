@@ -34,7 +34,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 		#endregion
 
 		#region IAction implementation
-		public virtual string Process(ActionContext context)
+		public virtual ActionTaskResult Process(ActionContext context)
 		{
 			if (ProcessInstantly(context))
 			{
@@ -43,21 +43,21 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 			else
 			{
 				RegisterTask(context);
-				return TaskStrings.ActionEnqueued;
+				return ActionTaskResult.Success(TaskStrings.ActionEnqueued);
 			}
 		}
 
 		#endregion
 
 		#region Protected methods
-		protected string ProcessTask(ActionContext context)
+		protected ActionTaskResult ProcessTask(ActionContext context)
 		{
 			var task = _getTask(TaskKey);
 			var taskContext = new EmptyTaskExecutionContext();
 			var actionData = new ActionData { ActionContext = context	};
 			
             task.Run(ActionData.Serialize(actionData), null, null, taskContext);
-			return taskContext.Message;
+			return taskContext.Result;
         }
 
 		protected void RegisterTask(ActionContext context)

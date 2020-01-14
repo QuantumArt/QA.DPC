@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.ActionsRunnerModel;
+using QA.ProductCatalog.ContentProviders;
 using QP.ConfigurationService.Models;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
@@ -14,6 +18,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
     {
         private readonly IConnectionProvider _provider;
         private readonly Customer _customer;
+        private readonly ResourceManager _taskRm;
         /// <summary>
         /// конструктор
         /// </summary>
@@ -22,6 +27,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         {
             _provider = provider;
             _customer = _provider.GetCustomer();
+            _taskRm = new ResourceManager(typeof(TaskStrings));
         }
 
         /// <summary>
@@ -199,13 +205,21 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         {
             using (var context = TaskRunnerEntities.Get(_provider))
             {
-                return
+                var result =
                     context.Tasks.Include("TaskState")
                         .OrderByDescending(x => x.ID)
                         .FirstOrDefault(
                             x => (x.UserID == userId || !userId.HasValue)
                                  && (x.StateID == (byte?) state || !state.HasValue)
                                  && (x.Name == key || key == null));
+
+                if (result != null)
+                {
+                    result.Message = MessageToDisplay(result.Message);
+                    result.TaskState.Name = _taskRm.GetString(result.TaskState.Name) ?? result.TaskState.Name;
+                }
+
+                return result;
             }
         }
 
@@ -295,6 +309,19 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 return context.TaskStates.ToDictionary(x => x.ID, x => x.Name);
             }
         }
+        
+        protected string MessageToDisplay(string message)
+        {
+            try
+            {
+                var taskResult = JsonConvert.DeserializeObject<ActionTaskResult>(message);
+                return taskResult.ToString();
+            }
+            catch (Exception e)
+            {
+                return message;
+            }
+        }
 
         public Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFillter,
             bool? hasSchedule, out int totalCount)
@@ -332,12 +359,19 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
                 totalCount = tasksFiltered.Count();
 
-                return tasksFiltered
+                var result = tasksFiltered
                     .OrderByDescending(x => x.ID)
                     .Skip(skip)
                     .Take(take)
-                    .ToArray();               
+                    .ToArray();
 
+                foreach (var task in result)
+                {
+                    task.Message = MessageToDisplay(task.Message);
+                    task.TaskState.Name = _taskRm.GetString(task.TaskState.Name) ?? task.TaskState.Name;
+                }
+
+                return result;
             }              
         }
 

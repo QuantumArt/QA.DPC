@@ -1,10 +1,12 @@
 using System.Linq;
 using System.Net.Mime;
+using System.Resources;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
+using QA.Core.DPC.Resources;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -23,7 +25,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         {
             if (exception.InnerExceptions.Any())
             {
-                var sb = new StringBuilder("Products have not been processed:");
+                var sb = new StringBuilder(TaskStrings.ProductsNotProcessed);
 
                 foreach (var exception1 in exception.InnerExceptions)
                 {
@@ -31,11 +33,22 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
                     sb.AppendLine();
 
                     var exText = ex.Message;
+                    var rm = new ResourceManager(typeof(TaskStrings));
+                    var resource = rm.GetString(exText);
+                    if (resource != null && resource.Contains("{0}"))
+                    {
+                        exText = string.Format(resource, ex.ProductId);
+                    }
+                    else
+                    {
+                        exText = $"{ex.ProductId}: {exText}";
+                        if (ex.InnerException != null)
+                        {
+                            exText += ". " + ex.InnerException.Message;
+                        }
+                    }
 
-                    if (ex.InnerException != null)
-                        exText += ". " + ex.InnerException.Message;
-
-                    sb.AppendFormat("{0}: {1}", ex.ProductId, exText);
+                    sb.AppendFormat(exText);
                 }
 
                 return Error(sb.ToString());

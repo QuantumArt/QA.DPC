@@ -9,7 +9,7 @@ using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-	public class ArchiveAction : ArchiveActionBase
+	public class ArchiveAction : ArchiveProductActionBase
 	{
 		public ArchiveAction(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
 			: base(articleService, fieldService, productservice, logger, createTransaction, notificationService)

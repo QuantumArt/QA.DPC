@@ -226,7 +226,37 @@
     <value>Articles processed: {0}</value>
   </data>
   <data name="ErrorTemplate">
-    <value>{0} : статьи {1}</value>
+    <value>{0} : articles {1}</value>
+  </data>
+  <data name="ProductsFreezed">
+    <value>Products are freezed: {0}</value>
+  </data>
+  <data name="ProductsNotToPublish">
+    <value>Products are not going to be published: {0}</value>
+  </data>
+  <data name="ProductsExcludedByStatus">
+    <value>Products excluded by status: {0}</value>
+  </data>
+  <data name="ProductsNotProcessed">
+    <value>Some products have not been processed</value>
+  </data>
+  <data name="Новая">
+    <value>New</value>
+  </data>
+  <data name="Выполняется">
+    <value>Running</value>
+  </data>
+  <data name="Завершена">
+    <value>Completed</value>
+  </data>
+  <data name="Ошибка">
+    <value>Error</value>
+  </data>
+  <data name="Отменена">
+    <value>Cancelled</value>
+  </data>
+  <data name="ProductNotFound">
+    <value>Product is not found</value>
   </data>
 </root>
 

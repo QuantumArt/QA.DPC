@@ -8,16 +8,18 @@ using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using System.Transactions;
+using QA.Core.DPC.Resources;
 using QA.Core.Logger;
+using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
-	public abstract class ArchiveActionBase : ActionBase
+	public abstract class ArchiveProductActionBase : ProductActionBase
 	{
 		private const string DoNotSendNotificationsKey = "DoNotSendNotifications";
 		protected IQPNotificationService NotificationService { get; private set; }
 
-		protected ArchiveActionBase(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
+		protected ArchiveProductActionBase(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
 			: base(articleService, fieldService, productService, logger, createTransaction)
 		{
 			NotificationService = notificationService;
@@ -43,6 +45,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
             bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
             bool excludeArchive = NeedToArchive;
 		    var product = ArticleService.Read(productId, excludeArchive);
+		    if (product == null)
+		    {
+			    throw new ProductException(productId, TaskStrings.ProductNotFound);
+		    }
 			var definition = Productservice.GetProductDefinition(0, product.ContentId);
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
             { 

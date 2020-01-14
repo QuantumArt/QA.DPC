@@ -7,7 +7,7 @@ using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-	public class RestoreAction : ArchiveActionBase
+	public class RestoreAction : ArchiveProductActionBase
 	{
 		public RestoreAction(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
 			: base(articleService, fieldService, productservice, logger, createTransaction, notificationService)

@@ -10,7 +10,7 @@ using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-	public class TestAction : ActionBase
+	public class TestAction : ProductActionBase
 	{
 		public TestAction(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction)
 			: base(articleService, fieldService, productservice, logger, createTransaction)

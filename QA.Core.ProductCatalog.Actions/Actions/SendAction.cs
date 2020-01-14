@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
@@ -26,7 +27,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             _notificationService = notificationService;
         }
 
-        override public async Task<string> Process(ActionContext context)
+        override public async Task<ActionTaskResult> Process(ActionContext context)
         {
             Throws.IfArgumentNull(context, _ => context);
             string id = "id" + Guid.NewGuid();

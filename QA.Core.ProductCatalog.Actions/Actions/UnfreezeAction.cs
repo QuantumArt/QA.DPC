@@ -26,7 +26,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             _settingsService = settingsService;
             _taskService = taskService;
         }
-        public override string Process(ActionContext context)
+        public override ActionTaskResult Process(ActionContext context)
         {
             var productIds = _freezeService.GetUnfrozenProductIds();
 
@@ -63,10 +63,15 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                 _taskService.AddTask(PublishAction, data, publishContext.UserId, publishContext.UserName, TaskStrings.Unfreezing);
 
-                return TaskStrings.ProductsUnfreezed + ": " + string.Join(",", productIds);
+                return ActionTaskResult.Success(new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = "ProductsUnfreezed",
+                    Extra = ": " + string.Join(",", productIds)
+                });
             }
 
-            return TaskStrings.NoProductsToUnfreeze;
+            return ActionTaskResult.Success(TaskStrings.NoProductsToUnfreeze);
         }
     }
 }

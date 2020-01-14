@@ -204,9 +204,6 @@
   <data name="ServerError" xml:space="preserve">
     <value>Ошибка сервера</value>
   </data>
-  <data name="ServerError" xml:space="preserve">
-    <value>Ошибка сервера</value>
-  </data>
   <data name="NoProductsToPublish" xml:space="preserve">
     <value>Нет доступных продуктов для публикации.</value>
   </data>
@@ -225,11 +222,41 @@
   <data name="NoProductsToUnfreeze" xml:space="preserve">
     <value>Продуктов для разморозки не найдено</value>
   </data>
-  <data name="Processed">
+  <data name="ErrorTemplate">
+    <value>{0} : статьи {1}</value>
+  </data>
+  <data name="ProductsFreezed">
+    <value>Продукты заморожены: {0}</value>
+  </data>
+  <data name="ProductsNotToPublish">
+    <value>Продукты не подлежат обработке: {0}</value>
+  </data>
+  <data name="ProductsExcludedByStatus">
+    <value>Продукты исключены по статусу: {0}</value>
+  </data>
+  <data name="ArticlesProcessed">
     <value>Обработаны статьи: {0}</value>
   </data>
-  <data name="ErrorTemplate">
-    <value>{0} : articles {1}</value>
-  </data>  
+  <data name="ProductsNotProcessed">
+    <value>Не были обработаны некоторые продукты</value>
+  </data>
+  <data name="Новая">
+    <value>Новая</value>
+  </data>
+  <data name="Выполняется">
+    <value>Выполняется</value>
+  </data>
+  <data name="Завершена">
+    <value>Завершена</value>
+  </data>
+  <data name="Ошибка">
+    <value>Ошибка</value>
+  </data>
+  <data name="Отменена">
+    <value>Отменена</value>
+  </data>
+  <data name="ProductNotFound">
+    <value>Продукт не найден</value>
+  </data>
 </root>
 

@@ -100,7 +100,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 {
                     string message = $"An error occurs while receiving products for chunk {index}";
                     _logger.LogError(ex, message);
-                    executionContext.Message = message;
+                    executionContext.Result = ActionTaskResult.Error(message);
                     throw;
                 }
                 _logger.LogInformation($"Products from chunk {index} received. Starting bulk import...");
@@ -116,7 +116,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 {
                     string message = $"Cannot proceed bulk import for chunk {index}: {result}";
                     _logger.LogError(message);
-                    executionContext.Message = message;
+                    executionContext.Result = ActionTaskResult.Error(message);
                     throw result.GetException();
                 }
 
@@ -125,7 +125,7 @@ namespace QA.ProductCatalog.HighloadFront.Elastic
                 executionContext.SetProgress((byte)progress);
             }
 
-            executionContext.Message = "Import completed";
+            executionContext.Result = ActionTaskResult.Success("Import completed");
         }
 
         private async Task<Tuple<string, DateTime>> GetContent(string url)

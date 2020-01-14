@@ -1,6 +1,7 @@
 ﻿using System;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {
@@ -18,7 +19,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 			Service = _action.GetType().Name;
 		} 
 
-		public string Process(ActionContext context)
+		public ActionTaskResult Process(ActionContext context)
 		{
 			var token = CallMethod(
 				"Process", "ContentItemIds = {0}, ContentId = {1}, CustomerCode = {2}, BackendSid = {3}",
@@ -27,7 +28,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 				context.CustomerCode,
 				context.BackendSid);
 
-			string message = _action.Process(context);
+			var message = _action.Process(context);
 
 			EndMethod(token);
 			return message;

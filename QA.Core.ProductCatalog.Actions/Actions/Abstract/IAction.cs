@@ -1,7 +1,9 @@
-﻿namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
+﻿using QA.ProductCatalog.ContentProviders;
+
+namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
 	public interface IAction
 	{
-		string Process(ActionContext context);
+		ActionTaskResult Process(ActionContext context);
 	}
 }

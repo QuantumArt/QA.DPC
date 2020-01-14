@@ -14,7 +14,7 @@ using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions
 {
-	public class DeleteAction : ActionBase
+	public class DeleteAction : ProductActionBase
 	{
 		private const string DoNotSendNotificationsKey = "DoNotSendNotifications";
 		protected IQPNotificationService NotificationService { get; private set; }

@@ -14,7 +14,7 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.Core.ProductCatalog.Actions
 {
-	public class CloneAction : ActionBase
+	public class CloneAction : ProductActionBase
 	{
 		private const string DoNotCloneArchiceKey = "DoNotCloneArchice";
 

@@ -18,7 +18,7 @@ using System.Data;
 
 namespace QA.Core.ProductCatalog.Actions
 {
-    public class PublishAction : ActionBase
+    public class PublishAction : ProductActionBase
     {
         protected IQPNotificationService NotificationService { get; }
         protected IXmlProductService XmlProductService { get; }
@@ -63,16 +63,16 @@ namespace QA.Core.ProductCatalog.Actions
             ProductIds.Add(product.Id);
 
 			if (ignoredStatuses.Contains(product.Status))
-				ValidateMessageResult(product.Id, MessageResult.Error("product excluded by status"));
+				ValidateMessageResult(product.Id, MessageResult.Error("ProductsExcludedByStatus"));
 
 			if (!ArticleFilter.DefaultFilter.Matches(product))
-				ValidateMessageResult(product.Id, MessageResult.Error("product is not going to be published"));
+				ValidateMessageResult(product.Id, MessageResult.Error("ProductsNotToPublish"));
 
             var state = FreezeService.GetFreezeState(product.Id);
 
             if (state == FreezeState.Frozen)
             {
-                ValidateMessageResult(product.Id, MessageResult.Error("product is freezed"));
+                ValidateMessageResult(product.Id, MessageResult.Error("ProductsFreezed"));
             }
 
             var xamlValidationErrors = DoWithLogging("ValidateXaml", transactionId, () => ArticleService.XamlValidationById(product.Id, true));

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
 using System.Linq;
+using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Text;
 using QA.Core.DPC.Loader.Services;
@@ -11,6 +12,7 @@ using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.DTO;
@@ -18,7 +20,7 @@ using Quantumart.QP8.Constants;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
-	public abstract class ActionBase : ActionTaskBase
+	public abstract class ProductActionBase : ActionTaskBase
 	{
 		#region Constants
 		private const string LoggerMessage = "Can't process product ";
@@ -38,7 +40,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		#endregion
 
 		#region Constructors
-		protected ActionBase(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction)
+		protected ProductActionBase(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction)
 			: base()
 		{
 			if (articleService == null)
@@ -62,7 +64,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		#endregion
 
 		#region IAction implementation
-		public override string Process(ActionContext context)
+		public override ActionTaskResult Process(ActionContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
@@ -188,14 +190,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		{
 			if (result != null && (result.Type == ActionMessageType.Error || ( result.FailedIds != null && result.FailedIds.Any())))
 			{
-				string message = result.Text;
-
-				if (result.FailedIds != null && result.FailedIds.Any())
-				{
-					message += " : " + string.Join(",", result.FailedIds);
-				}
-
-				throw new MessageResultException(productId, message, result);
+				throw new MessageResultException(productId, result.Text, result);
 			}
 		}
 

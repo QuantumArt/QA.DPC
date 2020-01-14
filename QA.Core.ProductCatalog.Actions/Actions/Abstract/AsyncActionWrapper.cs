@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using QA.Core.Logger;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
@@ -15,9 +16,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
             Logger = logger;
         }
 
-        public abstract Task<string> Process(ActionContext context);
+        public abstract Task<ActionTaskResult> Process(ActionContext context);
 
-		string IAction.Process(ActionContext context)
+        ActionTaskResult IAction.Process(ActionContext context)
 		{
 			var task = Process(context);
 			Task.WaitAll(task);

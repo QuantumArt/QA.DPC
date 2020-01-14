@@ -8,7 +8,7 @@ using QA.Core.Logger;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 {
-	internal class ActionBaseFake : ActionBase
+	internal class ActionBaseFake : ProductActionBase
 	{
 		public int LastProductId { get; set; }
 		public Exception ExceptionToThrow { get; set; }

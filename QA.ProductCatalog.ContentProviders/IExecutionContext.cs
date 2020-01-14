@@ -13,7 +13,7 @@
         /// не обязательно
         /// при ошибке в бд пойдет текст из эксепшена, это поле не пойдет
         /// </summary>
-        string Message { get; set; }
+        ActionTaskResult Result { get; set; }
 
         bool IsCancellationRequested { get; }
         bool IsCancelled { get; set; }

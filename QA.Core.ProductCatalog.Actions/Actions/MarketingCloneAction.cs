@@ -43,7 +43,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		#endregion
 
 		#region Overrides
-		public override string Process(ActionContext context)
+		public override ActionTaskResult Process(ActionContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");

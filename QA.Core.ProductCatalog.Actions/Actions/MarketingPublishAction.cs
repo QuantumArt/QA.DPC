@@ -40,7 +40,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		#endregion
 
 		#region IAction implementation
-		public string Process(ActionContext context)
+		public ActionTaskResult Process(ActionContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
@@ -69,7 +69,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 										.Select(a => a.Id)
 										.ToArray();
 
-				string message;
+				ActionTaskResult result;
 
 				if (filteredProductIds.Any())
 				{
@@ -86,22 +86,26 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         UserName = context.UserName
 					};
 
-					message = publishService.Process(productContext);
+					result = publishService.Process(productContext);
 				}
 				else
 				{
-					message = TaskStrings.NoProductsToPublish;
+					result = ActionTaskResult.Error(TaskStrings.NoProductsToPublish);
 				}
 
 				var excludedProductIds = productIds.Except(filteredProductIds).ToArray();
 
 				if (excludedProductIds.Any())
 				{
-					message = message == null ? "" : message + " ";
-					message += string.Format(TaskStrings.FilteredProducts, string.Join(", ", excludedProductIds), ignoredStatus);
+					result.Messages.Add(new ActionTaskResultMessage()
+					{
+						ResourceClass = ActionTaskBase.ResourceClass,
+						ResourceName = "FilteredProducts",
+						Parameters = new [] {string.Join(", ", excludedProductIds), ignoredStatus}
+					});
 				}
 
-				return message;
+				return result;
 			}
 			catch (ActionException)
 			{

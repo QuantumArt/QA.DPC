@@ -1,15 +1,13 @@
 ﻿using Newtonsoft.Json;
-using QA.Core.ProductCatalog.ActionsRunnerModel;
 using System;
 using System.Linq;
-using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using QA.Core.ProductCatalog.ActionsRunner;
+using M = QA.Core.ProductCatalog.ActionsRunnerModel;
 using QA.ProductCatalog.Admin.WebApp.Models;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Admin.WebApp.Core;
 using QA.ProductCatalog.Admin.WebApp.Filters;
 
@@ -108,11 +106,12 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
 
             if (task == null)
                 return null;
-            else
-                return
-                    PartialView("ActionProps", Type.GetType(task.Name) == null
-                        ? new CustomActionTaskModel(task)
-                        : new TaskModel(task));
+            
+            return
+                PartialView("ActionProps", Type.GetType(task.Name) == null
+                    ? new CustomActionTaskModel(task)
+                    : new TaskModel(task));
+
         }
 
         [HttpPost]

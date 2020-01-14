@@ -5,6 +5,7 @@ using NLog.Fluent;
 using QA.ProductCatalog.ContentProviders;
 using System;
 using System.Threading;
+using Newtonsoft.Json;
 
 namespace QA.Core.ProductCatalog.ActionsRunner
 {
@@ -138,14 +139,36 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                     }
                                 }
 
-                                taskService.ChangeTaskState(taskIdToRun.Value, executionContext.IsCancelled ? ActionsRunnerModel.State.Cancelled : ActionsRunnerModel.State.Done, executionContext.Message);
+                                var state = executionContext.IsCancelled
+                                    ? ActionsRunnerModel.State.Cancelled
+                                    : (executionContext.Result.IsSuccess
+                                        ? ActionsRunnerModel.State.Done
+                                        : ActionsRunnerModel.State.Failed
+                                    );
 
-                                _logger.Info()
-                                    .Message(
-                                        "Task {taskId} for customer code {customerCode} successfully completed. Message: {taskMessage}", 
-                                        taskIdToRun, customerCode, executionContext.Message
+                                taskService.ChangeTaskState(
+                                    taskIdToRun.Value, 
+                                    state, 
+                                    JsonConvert.SerializeObject(executionContext.Result)
+                                );
+
+                                if (state == ActionsRunnerModel.State.Done)
+                                {
+                                    _logger.Info()
+                                        .Message(
+                                            "Task {taskId} for customer code {customerCode} successfully completed", 
+                                            taskIdToRun, customerCode, executionContext.Result.ToString()
                                         )
-                                    .Write();
+                                        .Property("taskResult", executionContext.Result?.ToString())
+                                        .Write();                                
+                                }
+                                else if (state == ActionsRunnerModel.State.Failed)
+                                {
+                                    _logger.Error()
+                                        .Message("Task {taskId} for customer code {customerCode} failed", taskIdToRun)
+                                        .Property("taskResult", executionContext.Result?.ToString())
+                                        .Write();                                 
+                                }
                             }
                             catch (Exception ex)
                             {

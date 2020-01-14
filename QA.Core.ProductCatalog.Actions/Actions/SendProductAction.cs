@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Irony;
+using Newtonsoft.Json.Linq;
 using QA.Core.DPC.Resources;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
@@ -24,6 +25,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
     {
         private const int DefaultBundleSize = 15;
         private const int DefaultMaxDegreeOfParallelism = 12;
+        public const string ResourceClass = "SendProductActionStrings";
 
 
         private readonly ISettingsService _settingsService;
@@ -52,7 +54,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             _provider = provider;
         }
 
-        public override string Process(ActionContext context)
+        public override ActionTaskResult Process(ActionContext context)
         {
             int bundleSize = GetBundleSize();
             int maxDegreeOfParallelism = GetMaxDegreeOfParallelism();
@@ -373,7 +375,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             {
                 TaskContext.IsCancelled = true;
 
-                return SendProductActionStrings.Cancelled;
+                return ActionTaskResult.Error(SendProductActionStrings.Cancelled);
             }
 
             var productsToRemove = missing
@@ -406,63 +408,79 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             int[] notFound = missing.Except(productsToRemove).Except(excluded).Except(frozen).Except(validationErrors.Keys).ToArray();
 
-            var sb = new StringBuilder();
             var writeErrorToLog = false;
             var notSucceeded = failed.Keys.Concat(notFound).Concat(excluded).Concat(frozen)
                 .Concat(validationErrors.Keys).ToArray();
 
+            var msg = new ActionTaskResultMessage() { ResourceClass = ResourceClass};
+            
             if (notSucceeded.Any())
             {
-                sb.AppendFormat(
-                    SendProductActionStrings.PartiallySucceededResult,  
-                    productIds.Length - notSucceeded.Length, 
-                    productIds.Length
-                );
-                sb.AppendLine(" "  + string.Join(", ", notSucceeded));
+                msg.ResourceName = "PartiallySucceededResult";
+                msg.Extra = string.Join(", ", notSucceeded);
+                msg.Parameters = new object[] {productIds.Length - notSucceeded.Length, productIds.Length};
             }
             
             else
             {
-                sb.AppendFormat(SendProductActionStrings.SucceededResult, productIds.Length);
-                sb.AppendLine();
+                msg.ResourceName = "SucceededResult";
+                msg.Parameters = new object[] {productIds.Length};
             }
+
+            var result = notSucceeded.Any() ? ActionTaskResult.PartialSuccess(msg, notSucceeded) : ActionTaskResult.Success(msg); 
 
             if (errors.Any())
             {
-                sb.Append(SendProductActionStrings.Errors);
-                sb.AppendLine(" " + string.Join(", ", errors.Select(x => x.Message).Distinct()));
+                result.Messages.Add( new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = "Errors",
+                    Extra = string.Join(", ", errors.Select(x => x.Message).Distinct())
+                });
             }
 
-            AddMessages(sb, SendProductActionStrings.ExcludedByStatus, excluded.ToArray());
-            AddMessages(sb, SendProductActionStrings.ExcludedWithFreezing, frozen.ToArray());
-            AddMessages(sb, SendProductActionStrings.NotFoundInDpc, notFound.ToArray());
-            AddMessages(sb, SendProductActionStrings.RemovedFromFronts, productsToRemove.ToArray());
-            AddMessages(sb, SendProductActionStrings.NotPassedByStageFiltration, filteredInStage.ToArray());
-            AddMessages(sb, SendProductActionStrings.NotPassedByLiveFiltration, filteredInLive.ToArray());
+            AddMessages(result, ResourceClass, "ExcludedByStatus", excluded.ToArray());
+            AddMessages(result, ResourceClass, "ExcludedWithFreezing", frozen.ToArray());
+            AddMessages(result, ResourceClass, "NotFoundInDpc", notFound.ToArray());
+            AddMessages(result, ResourceClass, "RemovedFromFronts", productsToRemove.ToArray());
+            AddMessages(result, ResourceClass, "NotPassedByStageFiltration", filteredInStage.ToArray());
+            AddMessages(result, ResourceClass, "NotPassedByLiveFiltration", filteredInLive.ToArray());
             
             if (validationErrors.Any())
             {
                 writeErrorToLog = true;
-                sb.Append(SendProductActionStrings.NotValidated);
-                sb.AppendLine(" " + string.Join(", ", validationErrors.Keys));
-                sb.AppendLine(string.Join("; ", validationErrors.Values));                
+
+                result.Messages.Add( new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = "NotValidated",
+                    Extra = string.Join(", ", validationErrors.Keys) 
+                            + Environment.NewLine 
+                            + string.Join("; ", validationErrors.Values)
+                });
             }
 
-            var message = sb.ToString();
             if (writeErrorToLog)
             {
-                _logger.Error(message);
+                _logger.Error(result.ToString());
             }
-            TaskContext.Message = message;
-            return message;
+            
+            TaskContext.Result = result;
+            
+            return result;
         }
 
-        private static void AddMessages(StringBuilder sb, string message, int[] ints)
+        private void AddMessages(ActionTaskResult result, string resource, string key, int[] ints)
         {
             if (ints.Any())
             {
-                sb.Append(message);
-                sb.AppendLine(" " + string.Join(", ", ints));
+                result.Messages.Add(
+                    new ActionTaskResultMessage()
+                    {
+                        ResourceClass = resource,
+                        ResourceName = key,
+                        Extra = string.Join(", ", ints)
+                    });
             }
         }
 

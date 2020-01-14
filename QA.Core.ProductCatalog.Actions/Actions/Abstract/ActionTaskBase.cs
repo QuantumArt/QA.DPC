@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Newtonsoft.Json.Linq;
 using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Tasks;
@@ -12,6 +13,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
 	public abstract class ActionTaskBase : IAction, ITask
 	{
+		public const string ResourceClass = "TaskStrings";
 		protected ITaskExecutionContext TaskContext { get; private set; }
 		protected ActionData ActionData { get; private set; }
 
@@ -21,7 +23,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		}
 
 		#region IAction implementation
-		public abstract string Process(ActionContext context);
+		public abstract ActionTaskResult Process(ActionContext context);
 		#endregion
 
 		#region ITask implementation
@@ -31,18 +33,18 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			ActionData = ActionData.Deserialize(data);
 
 			var context = ActionData.ActionContext;
-			string messageFromProcess = null;
+			ActionTaskResult processResult = new ActionTaskResult();
 			IEnumerable<IGrouping<string, int>> errors = null;
 			var ids = context.ContentItemIds;
 
 			try
 			{
-				messageFromProcess = Process(context);
+				processResult = Process(context) ?? new ActionTaskResult();
 			}
 			catch (ActionException ex)
 			{
 				var failedIds = ex.InnerExceptions.OfType<ProductException>().Select(x => x.ProductId);
-				ids = ids.Except(failedIds).ToArray();
+				processResult.FailedIds = processResult.FailedIds.Union(failedIds).ToArray();
 
 				errors = ex.InnerExceptions
 					.OfType<ProductException>()
@@ -52,39 +54,37 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 					);
 			}
 
-			if (executionContext.IsCancelled)
+			if (!executionContext.IsCancelled)
 			{
-				executionContext.Message = string.Empty;
-			}
-			else if (string.IsNullOrEmpty(messageFromProcess))
-			{
-				var sb = new StringBuilder();
-
+				ids = ids.Except(processResult.FailedIds).ToArray();
+				
 				if (ids.Any())
 				{
-					sb.AppendFormat(TaskStrings.ArticlesProcessed, string.Join(", ", ids));
+					processResult.IsSuccess = true;
+					
+					var idsStr = string.Join(", ", ids);
+					processResult.Messages.Add(new ActionTaskResultMessage() {
+						ResourceClass = ResourceClass, 
+						ResourceName = "ArticlesProcessed", 
+						Parameters = new object[] {idsStr}
+					});
 				}
 
 				if (errors != null)
 				{
 					foreach (var err in errors)
 					{
-						sb.AppendLine();
-						sb.AppendFormat(TaskStrings.ErrorTemplate, err.Key, string.Join(", ", err));
+						processResult.Messages.Add(new ActionTaskResultMessage() {
+							ResourceClass = ResourceClass, 
+							ResourceName = err.Key, 
+							Parameters = new object[] {String.Join(",", err)}
+						});
 					}
 				}
-				
-				executionContext.Message = sb.ToString();
 			}
-			else
-			{
-				executionContext.Message = messageFromProcess;
-			}
+
+			executionContext.Result = processResult;
 			
-			if (!ids.Any() && errors != null)
-			{
-				throw new ActionException(executionContext.Message, new Exception[0], null);
-			}
 		}
 		#endregion
 

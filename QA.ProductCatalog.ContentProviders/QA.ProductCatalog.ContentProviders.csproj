@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QA.Core.DPC.QP\QA.Core.DPC.QP.csproj" />
+    <ProjectReference Include="..\QA.Core.DPC.Resources\QA.Core.DPC.Resources.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.6.8" />

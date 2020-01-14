@@ -10,7 +10,7 @@ using QA.ProductCatalog.Integration;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
-    public abstract class MarketingProductAction : ActionTaskBase
+    public abstract class MarketingProductActionBase : ActionTaskBase
     {
         #region Private fields
         private readonly IArticleService _articleService;
@@ -21,7 +21,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
         #region Constructor
 
-        protected MarketingProductAction(Func<string, IAction> getService, IArticleService articleService, ISettingsService settingsService)
+        protected MarketingProductActionBase(Func<string, IAction> getService, IArticleService articleService, ISettingsService settingsService)
         {
             _articleService = articleService;
             _settingsService = settingsService;
@@ -34,7 +34,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
         public virtual bool ExcludeArchive => true;
 
         #region Overrides
-        public override string Process(ActionContext context)
+        public override ActionTaskResult Process(ActionContext context)
         {
             if (context == null)
                 throw new ArgumentNullException(nameof(context));

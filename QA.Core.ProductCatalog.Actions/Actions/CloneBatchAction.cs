@@ -14,7 +14,7 @@ using Quantumart.QP8.BLL;
 
 namespace QA.Core.ProductCatalog.Actions
 {
-	public class CloneBatchAction : ActionBase
+	public class CloneBatchAction : ProductActionBase
 	{
 		private const string FieldIdParameterKey = "FieldId";
 		private const string ArticleIdParameterKey = "ArticleId";
