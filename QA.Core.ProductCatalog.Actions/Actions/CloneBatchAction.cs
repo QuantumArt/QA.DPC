@@ -83,8 +83,7 @@ namespace QA.Core.ProductCatalog.Actions
 
             if (!ArticleService.CheckRelationSecurity(article.ContentId, new[] { productId }, false)[productId])
             {
-                throw new ProductException(productId,
-                    "Операция недопустима из-за недостаточных прав доступа по связям");
+	            throw new ProductException(productId, "NoRelationAccess");
             }
 
             if (contentDefinition == null)

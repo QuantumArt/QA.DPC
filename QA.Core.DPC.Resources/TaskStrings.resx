@@ -255,8 +255,12 @@
   <data name="Отменена">
     <value>Cancelled</value>
   </data>
-  <data name="ProductNotFound">
-    <value>Product is not found</value>
+  <data name="ProductsNotFound">
+    <value>Products not found: {0}</value>
   </data>
+  <data name="NoRelationAccess">
+    <value>Not enough access to relations: {0}</value>
+  </data>
+  
 </root>
 

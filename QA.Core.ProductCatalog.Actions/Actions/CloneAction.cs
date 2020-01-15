@@ -42,7 +42,7 @@ namespace QA.Core.ProductCatalog.Actions
 			var article = ArticleService.Read(productId);
 
 			if (!ArticleService.CheckRelationSecurity(article.ContentId, new int[] { productId }, false)[productId])
-				throw new ProductException(productId, "Операция недопустима из-за недостаточных прав доступа по связям");
+				throw new ProductException(productId, "NoRelationAccess");
 
 			var definition = Productservice.GetProductDefinition(0, article.ContentId);
 			var dictionary = GetProductsToBeProcessed(article, definition, ef => ef.CloningMode, CloningMode.Copy, filter, true);

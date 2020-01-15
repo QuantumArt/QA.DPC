@@ -255,8 +255,11 @@
   <data name="Отменена">
     <value>Отменена</value>
   </data>
-  <data name="ProductNotFound">
-    <value>Продукт не найден</value>
+  <data name="ProductsNotFound">
+    <value>Продукты не найдены: {0}</value>
+  </data>
+  <data name="NoRelationAccess">
+    <value>Недостаточно прав доступа по связям: {0}</value>
   </data>
 </root>
 

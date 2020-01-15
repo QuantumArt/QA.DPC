@@ -14,6 +14,7 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
         public DateTime CreatedTime { get; set; }
         public DateTime? LastStatusChangeTime { get; set; }
         public string Name { get; set; }
+        
         public int StateID { get; set; }
         public string Data { get; set; }
         public int UserID { get; set; }

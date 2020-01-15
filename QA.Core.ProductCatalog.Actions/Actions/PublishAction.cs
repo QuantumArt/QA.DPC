@@ -196,7 +196,7 @@ namespace QA.Core.ProductCatalog.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(stageProduct.Id, "Отправка на витрины", ex);
+				throw new ProductException(stageProduct.Id, "Sending to fronts", ex);
 			}		
 		}
 		#endregion

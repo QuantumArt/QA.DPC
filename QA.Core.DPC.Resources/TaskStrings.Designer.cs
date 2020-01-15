@@ -259,6 +259,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Not enough access to relations: {0}.
+        /// </summary>
+        public static string NoRelationAccess {
+            get {
+                return ResourceManager.GetString("NoRelationAccess", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Partial Send.
         /// </summary>
         public static string PartialSend {
@@ -277,15 +286,6 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Product is not found.
-        /// </summary>
-        public static string ProductNotFound {
-            get {
-                return ResourceManager.GetString("ProductNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Products excluded by status: {0}.
         /// </summary>
         public static string ProductsExcludedByStatus {
@@ -300,6 +300,15 @@ namespace QA.Core.DPC.Resources {
         public static string ProductsFreezed {
             get {
                 return ResourceManager.GetString("ProductsFreezed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Products not found: {0}.
+        /// </summary>
+        public static string ProductsNotFound {
+            get {
+                return ResourceManager.GetString("ProductsNotFound", resourceCulture);
             }
         }
         

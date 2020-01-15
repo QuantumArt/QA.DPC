@@ -11,6 +11,7 @@ using System.Transactions;
 using QA.Core.DPC.Resources;
 using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Exceptions;
+using Quantumart.QP8.BLL.Services.DTO;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
@@ -47,7 +48,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		    var product = ArticleService.Read(productId, excludeArchive);
 		    if (product == null)
 		    {
-			    throw new ProductException(productId, TaskStrings.ProductNotFound);
+			    ValidateMessageResult(productId, MessageResult.Error("ProductsNotFound"));
 		    }
 			var definition = Productservice.GetProductDefinition(0, product.ContentId);
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
