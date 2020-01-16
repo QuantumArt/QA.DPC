@@ -6,9 +6,10 @@ using System.Linq;
 using System.Resources;
 using System.Runtime.CompilerServices;
 using System.Text;
+using NLog;
+using NLog.Fluent;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Resources;
-using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
@@ -23,15 +24,16 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 	public abstract class ProductActionBase : ActionTaskBase
 	{
 		#region Constants
-		private const string LoggerMessage = "Can't process product ";
+		private const string LoggerMessage = "Can't process product: ";
 		#endregion
 
 		#region Protected properties
 		protected IArticleService ArticleService { get; private set; }
 		protected IFieldService FieldService { get; private set; }
 		protected IProductService Productservice { get; private set; }		
-		protected ILogger Logger { get; private set; }
 		protected Func<ITransaction> CreateTransaction { get; private set; }
+		
+		protected ResourceManager ResourceManager { get; private set; } = new ResourceManager(typeof(TaskStrings));
 
 		protected int UserId;
 
@@ -40,7 +42,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		#endregion
 
 		#region Constructors
-		protected ProductActionBase(IArticleService articleService, IFieldService fieldService, IProductService productservice, ILogger logger, Func<ITransaction> createTransaction)
+		protected ProductActionBase(IArticleService articleService, IFieldService fieldService, IProductService productservice, Func<ITransaction> createTransaction)
 			: base()
 		{
 			if (articleService == null)
@@ -49,16 +51,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			if (productservice == null)
 				throw new ArgumentNullException("productservice");
 
-			if (logger == null)
-				throw new ArgumentNullException("logger");
-
 			if (createTransaction == null)
 				throw new ArgumentNullException("transactionFactory");
 
 			ArticleService = articleService;
 			FieldService = fieldService;
 			Productservice = productservice;
-			Logger = logger;
+
 			CreateTransaction = createTransaction;
 		}
 		#endregion
@@ -102,7 +101,17 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				}
 				catch (ProductException pex)
 				{
-					Logger.ErrorException(LoggerMessage + id, pex);
+					var builder = Logger.Error().Message(LoggerMessage + id);
+					var msg = ResourceManager.GetString(pex.Message);
+					if (msg != null)
+					{
+						builder.Property("taskResult", string.Format(msg, id));						
+					}
+					else
+					{
+						builder.Exception(pex);
+					}
+					builder.Write();
 					exceptions.Add(pex);
 				}
 				catch (AggregateException aex)
@@ -115,14 +124,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 						{
 							ipex = new ProductException(id, TaskStrings.ActionErrorMessage, iex);
 						}
-
-						Logger.ErrorException(LoggerMessage + id, ipex);
+						Logger.Error().Message(LoggerMessage + id).Exception(ipex).Write();
 						exceptions.Add(ipex);
 					}
 				}
 				catch (Exception ex)
 				{
-					Logger.ErrorException(LoggerMessage + id, ex);
+					Logger.Error().Message(LoggerMessage + id).Exception(ex).Write();
 					exceptions.Add(new ProductException(id, TaskStrings.ServerError, ex));
 				}
 			}

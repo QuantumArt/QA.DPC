@@ -1,7 +1,8 @@
 ﻿using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.QP.Services;
 using QA.Core.Linq;
-using QA.Core.Logger;
+using NLog;
+using NLog.Fluent;
 using QA.Core.Models;
 using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
@@ -25,12 +26,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
     {
         private const int DefaultBundleSize = 15;
         private const int DefaultMaxDegreeOfParallelism = 12;
-        public const string ResourceClass = "SendProductActionStrings";
+        public new const string ResourceClass = "SendProductActionStrings";
 
 
         private readonly ISettingsService _settingsService;
         private readonly IArticleService _articleService;
-        private readonly ILogger _logger;
         private readonly IFreezeService _freezeService;
         private readonly IConnectionProvider _provider;
         private readonly IValidationService _validationService;
@@ -44,10 +44,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
         }
 
-        public SendProductAction(ISettingsService settingsService, IArticleService articleService, ILogger logger, IFreezeService freezeService, IValidationService validationService, IConnectionProvider provider)
+        public SendProductAction(ISettingsService settingsService, IArticleService articleService, IFreezeService freezeService, IValidationService validationService, IConnectionProvider provider)
         {
             _settingsService = settingsService;
-            _logger = logger;
             _articleService = articleService;
             _freezeService = freezeService;
             _validationService = validationService;
@@ -335,7 +334,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                             {
 
                                 var ids = ex.InnerExceptions.OfType<ProductException>().Select(x => x.ProductId);
-                                _logger.ErrorException("ActionException when publish " + string.Join(",", ids), ex);
+                                Logger.Error().Message("ActionException when publish " + string.Join(",", ids)).Exception(ex).Write();                                
 
                                 foreach (var pID in ids)
                                 {
@@ -344,7 +343,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                             }
                             catch (Exception ex)
                             {
-                                _logger.ErrorException("Exception when publish ", ex);
+                                Logger.Error().Message("Exception when publish ").Exception(ex).Write();
                             }
                         }
 
@@ -359,7 +358,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     }
                     catch (Exception ex)
                     {
-                        _logger.ErrorException("Exception when send ", ex);
+                        Logger.Error().Message("Exception when send ").Exception(ex).Write();
 
                         foreach (var item in idsToProcess)
                             failed.TryAdd(item, null);
@@ -462,7 +461,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             if (writeErrorToLog)
             {
-                _logger.Error(result.ToString());
+                Logger.Error(result.ToString());
             }
             
             TaskContext.Result = result;
@@ -497,8 +496,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             {
                 var ids = articles.Select(a => a.Id).ToArray();
 
-                _logger.ErrorException(string.Format("Exception while sending products: {0}", string.Join(", ", ids)), exception);
-
+                Logger.Error().Message($"Exception while sending products: {string.Join(", ", ids)}").Exception(exception).Write();
                 errors.Add(exception.InnerException == null ? exception : exception.InnerException);
 
                 foreach (var id in ids)

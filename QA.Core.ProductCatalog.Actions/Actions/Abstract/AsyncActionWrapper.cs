@@ -2,18 +2,18 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using QA.Core.Logger;
+using NLog;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
     public abstract class AsyncActionWrapper : IAction, IAsyncAction
     {
-        protected readonly ILogger Logger;
+        protected readonly NLog.Logger Logger;
 
-        public AsyncActionWrapper(ILogger logger)
+        public AsyncActionWrapper()
         {
-            Logger = logger;
+            Logger = LogManager.GetLogger(GetType().ToString());
         }
 
         public abstract Task<ActionTaskResult> Process(ActionContext context);
@@ -39,7 +39,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
             finally
             {
                 timer.Stop();
-                Logger.Info(string.Format("{0} {1} {2} Elapsed {3}", transactionId, caller, message, timer.ElapsedMilliseconds));
+                Logger.Info($"{transactionId} {caller} {message} Elapsed {timer.ElapsedMilliseconds}");
             }
         }
 
@@ -55,7 +55,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
             finally
             {
                 timer.Stop();
-                Logger.Info(string.Format("{0} {1} {2} Elapsed {3}", transactionId, caller, message, timer.ElapsedMilliseconds));
+                Logger.Info($"{transactionId} {caller} {message} Elapsed {timer.ElapsedMilliseconds}");
             }
         }
 	}

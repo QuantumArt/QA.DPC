@@ -9,7 +9,7 @@ using System.Data;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using NLog;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.Core.ProductCatalog.Actions
@@ -21,8 +21,8 @@ namespace QA.Core.ProductCatalog.Actions
 		private readonly ICacheItemWatcher _cacheItemWatcher;
         protected int[] ClearFieldIds { get; private set; }
 
-        public CloneAction(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, ICacheItemWatcher cacheItemWatcher)
-			: base(articleService, fieldService, productService, logger, createTransaction)
+        public CloneAction(IArticleService articleService, IFieldService fieldService, IProductService productService, Func<ITransaction> createTransaction, ICacheItemWatcher cacheItemWatcher)
+			: base(articleService, fieldService, productService, createTransaction)
 		{
 			_cacheItemWatcher = cacheItemWatcher;
 		}

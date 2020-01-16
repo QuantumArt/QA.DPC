@@ -2,7 +2,7 @@
 using QA.ProductCatalog.Infrastructure;
 using System;
 using System.Threading.Tasks;
-using QA.Core.Logger;
+using NLog;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {
@@ -10,8 +10,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 	{
 		private readonly IQPNotificationService _notificationService;
 
-		public QPNotificationServiceProfiler(IQPNotificationService notificationService, ILogger logger)
-			: base(logger)
+		public QPNotificationServiceProfiler(IQPNotificationService notificationService)
 		{
 			if (notificationService == null)
 				throw new ArgumentNullException("notificationService");

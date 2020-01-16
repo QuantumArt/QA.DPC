@@ -1,5 +1,5 @@
 ﻿using System;
-using QA.Core.Logger;
+using NLog;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.ContentProviders;
 
@@ -9,8 +9,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 	{
 		private readonly IAction _action;
 
-		public ActionProfiler(IAction action, ILogger logger)
-			: base(logger)
+		public ActionProfiler(IAction action)
 		{
 			if (action == null)
 				throw new ArgumentNullException("action");

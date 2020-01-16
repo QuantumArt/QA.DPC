@@ -1,25 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Newtonsoft.Json.Linq;
-using QA.Core.DPC.Resources;
+using NLog;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Tasks;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Infrastructure;
+
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 {
 	public abstract class ActionTaskBase : IAction, ITask
 	{
 		public const string ResourceClass = "TaskStrings";
+		
+		protected NLog.Logger Logger { get; set; }
 		protected ITaskExecutionContext TaskContext { get; private set; }
 		protected ActionData ActionData { get; private set; }
 
 		public ActionTaskBase()
 		{
 			TaskContext = new EmptyTaskExecutionContext();
+			Logger = LogManager.GetLogger(GetType().ToString());
 		}
 
 		#region IAction implementation

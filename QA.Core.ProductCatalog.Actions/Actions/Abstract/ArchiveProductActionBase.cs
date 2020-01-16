@@ -9,7 +9,7 @@ using QA.ProductCatalog.Infrastructure;
 using Quantumart.QP8.BLL;
 using System.Transactions;
 using QA.Core.DPC.Resources;
-using QA.Core.Logger;
+using NLog;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using Quantumart.QP8.BLL.Services.DTO;
 
@@ -20,8 +20,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		private const string DoNotSendNotificationsKey = "DoNotSendNotifications";
 		protected IQPNotificationService NotificationService { get; private set; }
 
-		protected ArchiveProductActionBase(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
-			: base(articleService, fieldService, productService, logger, createTransaction)
+		protected ArchiveProductActionBase(IArticleService articleService, IFieldService fieldService, IProductService productService, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
+			: base(articleService, fieldService, productService, createTransaction)
 		{
 			NotificationService = notificationService;
 		}

@@ -33,7 +33,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
             ProductService = new ProductServiceFake();
 			Logger = new LoggerFake();
 			TransactionFactory = () => new TransactionFake();
-			Action = new ActionBaseFake(ArticleService, FieldService, ProductService, Logger, TransactionFactory);
+			Action = new ActionBaseFake(ArticleService, FieldService, ProductService, TransactionFactory);
 			Context = new ActionContext {ContentItemIds = new[] {ContentItemId}};
 		}
 		#endregion
@@ -43,28 +43,28 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void Constructor_ArticleServiceIsNull_ThrowException()
 		{
-			var action = new ActionBaseFake(null, FieldService, ProductService, Logger, TransactionFactory);
+			var action = new ActionBaseFake(null, FieldService, ProductService, TransactionFactory);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void Constructor_ProductServiceIsNull_ThrowException()
 		{
-			var action = new ActionBaseFake(ArticleService, FieldService, null, Logger, TransactionFactory);
+			var action = new ActionBaseFake(ArticleService, FieldService, null, TransactionFactory);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void Constructor_LoggerIsNull_ThrowException()
 		{
-			var action = new ActionBaseFake(ArticleService, FieldService, ProductService, null, TransactionFactory);
+			var action = new ActionBaseFake(ArticleService, FieldService, ProductService, TransactionFactory);
 		}
 
 		[TestMethod]
 		[ExpectedException(typeof(ArgumentNullException))]
 		public void Constructor_TransactionFactoryIsNull_ThrowException()
 		{
-			var action = new ActionBaseFake(ArticleService, FieldService, ProductService, Logger, null);
+			var action = new ActionBaseFake(ArticleService, FieldService, ProductService, null);
 		}
 
 		[TestMethod]

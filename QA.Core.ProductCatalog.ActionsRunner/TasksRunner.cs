@@ -157,7 +157,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                     _logger.Info()
                                         .Message(
                                             "Task {taskId} for customer code {customerCode} successfully completed", 
-                                            taskIdToRun, customerCode, executionContext.Result.ToString()
+                                            taskIdToRun, customerCode
                                         )
                                         .Property("taskResult", executionContext.Result?.ToString())
                                         .Write();                                
@@ -165,7 +165,8 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                 else if (state == ActionsRunnerModel.State.Failed)
                                 {
                                     _logger.Error()
-                                        .Message("Task {taskId} for customer code {customerCode} failed", taskIdToRun)
+                                        .Message("Task {taskId} for customer code {customerCode} failed",
+                                            taskIdToRun, customerCode)
                                         .Property("taskResult", executionContext.Result?.ToString())
                                         .Write();                                 
                                 }

@@ -43,7 +43,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         #region Overrides
         protected override void InitializeAction()
         {
-            Action = new DeleteAction(ArticleService, FieldService, ProductService, Logger, CreateTransaction, NotificationService);
+            Action = new DeleteAction(ArticleService, FieldService, ProductService, CreateTransaction, NotificationService);
         }
         #endregion
     }

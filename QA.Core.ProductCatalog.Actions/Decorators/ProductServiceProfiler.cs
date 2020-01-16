@@ -3,7 +3,7 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
 using QA.ProductCatalog.Infrastructure;
 using System;
-using QA.Core.Logger;
+using NLog;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {
@@ -11,8 +11,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
 	{
 		private readonly IProductService _productService;
 
-		public ProductServiceProfiler(IProductService productService, ILogger logger)
-			: base(logger)
+		public ProductServiceProfiler(IProductService productService)
 		{
 			if (productService == null)
 				throw new ArgumentNullException("productService");

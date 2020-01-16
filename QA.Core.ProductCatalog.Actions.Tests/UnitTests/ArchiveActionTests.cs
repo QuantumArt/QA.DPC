@@ -46,7 +46,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 
         protected override void InitializeAction()
         {
-            Action = new ArchiveAction(ArticleService, FieldService, ProductService, Logger, CreateTransaction, NotificationService);
+            Action = new ArchiveAction(ArticleService, FieldService, ProductService, CreateTransaction, NotificationService);
         }
 
         protected override void InitializeArticle(Quantumart.QP8.BLL.Article article)

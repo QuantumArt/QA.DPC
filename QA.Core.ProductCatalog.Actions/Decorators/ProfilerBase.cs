@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using QA.Core.Logger;
+using NLog;
 
 namespace QA.Core.ProductCatalog.Actions.Decorators
 {
     public class ProfilerBase
     {
-        private readonly ILogger _logger;
+        private readonly NLog.Logger Logger;
         protected string Service { get; set; }
 
-        public ProfilerBase(ILogger logger)
+        public ProfilerBase()
         {
-            if (logger == null)
-                throw new ArgumentNullException("logger");
-
-            _logger = logger;
+            Logger = LogManager.GetCurrentClassLogger();
         }
 
 
@@ -24,7 +21,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
             var token = new ProfilerToken() { Service = Service, Method = name };
             token.AddParameters(format, args);
             token.Timer.Start();
-            _logger.Info("Call: " + token.FullName + " " + token.Parameters);
+            Logger.Info("Call: " + token.FullName + " " + token.Parameters);
             return token;
         }
 
@@ -37,7 +34,7 @@ namespace QA.Core.ProductCatalog.Actions.Decorators
         {
             token.Timer.Stop();
             token.AddResult(format, args);
-            _logger.Info("End: {0} Time:{1:s\\.fff} {2}", token.FullName, token.Timer.Elapsed, token.Result);
+            Logger.Info("End: {0} Time:{1:s\\.fff} {2}", token.FullName, token.Timer.Elapsed, token.Result);
         }
 
         protected void EndMethod(ProfilerToken token)

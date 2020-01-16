@@ -53,7 +53,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         {
             NotificationService = new QPNotificationServiceFake();
             XmlProductService = new XmlProductServiceFake();
-            Action = new PublishAction(ArticleService, FieldService, ProductService, Logger, CreateTransaction, NotificationService, XmlProductService, FreezeService, ValidationService);
+            Action = new PublishAction(ArticleService, FieldService, ProductService, CreateTransaction, NotificationService, XmlProductService, FreezeService, ValidationService);
         }
 
         protected override Models.Entities.Article GetProductNoRelation(int productId)

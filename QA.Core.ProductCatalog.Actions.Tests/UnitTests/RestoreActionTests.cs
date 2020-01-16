@@ -49,7 +49,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         #region Overrides
         protected override void InitializeAction()
         {
-            Action = new RestoreAction(ArticleService, FieldService, ProductService, Logger, CreateTransaction, NotificationService);
+            Action = new RestoreAction(ArticleService, FieldService, ProductService, CreateTransaction, NotificationService);
         }
 
         protected override void InitializeArticle(Quantumart.QP8.BLL.Article article)

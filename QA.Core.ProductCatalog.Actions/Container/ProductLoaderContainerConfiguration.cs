@@ -1,11 +1,11 @@
 ﻿using QA.Core.Cache;
 using QA.Core.DPC.Loader;
-using QA.Core.Logger;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 using QA.ProductCatalog.Integration;
 using System;
 using QA.Core.DPC.QP.Cache;
+using QA.Core.Logger;
 using QA.ProductCatalog.ContentProviders;
 using Unity;
 using Unity.Extension;

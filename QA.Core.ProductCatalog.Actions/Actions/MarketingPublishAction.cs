@@ -6,7 +6,8 @@ using System;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Resources;
-using QA.Core.Logger;
+using NLog;
+using NLog.Fluent;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
@@ -17,24 +18,23 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		private const string PublishActionKey = "PublishAction";
 		private const string IgnoredStatusKey = "IgnoredStatus";
 		private const string AdapterKey = "Adapter";
-		private const string LoggerErrorMessage = "Can't publish marketing products";
+		private const string LoggerErrorMessage = "Can't publish marketing products: ";
 		#endregion
 
 		#region Private properties
 		private readonly Func<string, string, IAction> _getPublishService;
 		private readonly  IArticleService _articleService;
 		private readonly  IFieldService _fieldService;
-		private readonly ILogger _logger;
 		private readonly ISettingsService _settingsService;
+		protected readonly NLog.Logger Logger; 
 		#endregion
 
 		#region Constructor
-		public MarketingPublishAction(Func<string, string, IAction> getPublishService, IArticleService articleService, IFieldService fieldService, ILogger logger, ISettingsService settingsService)
+		public MarketingPublishAction(Func<string, string, IAction> getPublishService, IArticleService articleService, IFieldService fieldService, ISettingsService settingsService)
 		{
 			_getPublishService = getPublishService;
 			_articleService = articleService;
 			_fieldService = fieldService;
-			_logger = logger;
 			_settingsService = settingsService;
 		}
 		#endregion
@@ -111,9 +111,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			{
 				throw;
 			}
-			catch (Exception ex)
-			{
-				_logger.ErrorException(LoggerErrorMessage, ex);
+			catch (Exception ex) {
+				Logger.Error().Message(LoggerErrorMessage).Exception(ex).Write();
 				throw new ActionException(TaskStrings.ActionErrorMessage, context.ContentItemIds.Select(id => new ProductException(id, TaskStrings.ServerError, ex)), context);
 			}			
 		}

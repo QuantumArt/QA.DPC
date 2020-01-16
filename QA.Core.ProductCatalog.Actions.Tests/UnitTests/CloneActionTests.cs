@@ -8,7 +8,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 		#region Overrides
 		protected override void InitializeAction()
 		{
-			Action = new CloneAction(ArticleService, FieldService, ProductService, Logger, CreateTransaction, null);
+			Action = new CloneAction(ArticleService, FieldService, ProductService, CreateTransaction, null);
 		}
 		#endregion
 	}

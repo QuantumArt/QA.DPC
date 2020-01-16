@@ -4,12 +4,12 @@ using System.Linq;
 using Quantumart.QP8.BLL;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.DPC.Resources;
-using QA.Core.Logger;
+using NLog;
+using NLog.Fluent;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
@@ -28,17 +28,15 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		private readonly IArticleService _articleService;
 		private readonly ISettingsService _settingsService;
 		private readonly IFieldService _fieldService;
-		private readonly ILogger _logger;
 		#endregion
 
 		#region Constructor
-		public MarketingCloneAction(CloneBatchAction cloneService, IArticleService articleService, ISettingsService settingsService, IFieldService fieldService, ILogger logger)
+		public MarketingCloneAction(CloneBatchAction cloneService, IArticleService articleService, ISettingsService settingsService, IFieldService fieldService)
 		{
 			_cloneService = cloneService;
 			_articleService = articleService;
 			_settingsService = settingsService;
 			_fieldService = fieldService;
-			_logger = logger;
 		}
 		#endregion
 
@@ -127,13 +125,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (ProductException pex)
 			{
-				_logger.ErrorException(LoggerMarketingErrorMessage + marketingProduct.Id, pex);
+				Logger.Error().Message(LoggerMarketingErrorMessage + marketingProduct.Id).Exception(pex).Write();
 				exceptions.Add(pex);
 				return 0;
 			}
 			catch (Exception ex)
 			{
-				_logger.ErrorException(LoggerMarketingErrorMessage + marketingProduct.Id, ex);
+				Logger.Error().Message(LoggerMarketingErrorMessage + marketingProduct.Id).Exception(ex).Write();
 				exceptions.Add(new ProductException(marketingProduct.Id, TaskStrings.ServerError, ex));
 				return 0;
 			}
@@ -149,12 +147,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (ProductException pex)
 			{
-				_logger.ErrorException(LoggerErrorMessage + productId, pex);
+				Logger.Error().Message(LoggerErrorMessage + productId).Exception(pex).Write();
 				exceptions.Add(pex);
 			}
 			catch (Exception ex)
 			{
-				_logger.ErrorException(LoggerErrorMessage + productId, ex);
+				Logger.Error().Message(LoggerErrorMessage + productId).Exception(ex).Write();
 				exceptions.Add(new ProductException(productId, TaskStrings.ServerError, ex));
 			}
 		}

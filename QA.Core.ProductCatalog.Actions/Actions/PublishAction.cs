@@ -11,7 +11,7 @@ using QA.Core.Models.Configuration;
 using QA.Core.Models;
 using Quantumart.QP8.BLL.Services.DTO;
 using System.Transactions;
-using QA.Core.Logger;
+using NLog;
 using QA.ProductCatalog.ContentProviders;
 using System.Collections.Concurrent;
 using System.Data;
@@ -31,14 +31,13 @@ namespace QA.Core.ProductCatalog.Actions
             IArticleService articleService,
             IFieldService fieldService,
             IProductService productservice,
-            ILogger logger,
             Func<ITransaction> createTransaction,
             IQPNotificationService notificationService,
             IXmlProductService xmlProductService,
             IFreezeService freezeService,
             IValidationService validationService
             )
-            : base(articleService, fieldService, productservice, logger, createTransaction)
+            : base(articleService, fieldService, productservice, createTransaction)
         {
             NotificationService = notificationService;
             XmlProductService = xmlProductService;

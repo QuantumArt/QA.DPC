@@ -9,7 +9,7 @@ using System.Data;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using System.Transactions;
-using QA.Core.Logger;
+using NLog;
 using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions
@@ -19,8 +19,8 @@ namespace QA.Core.ProductCatalog.Actions
 		private const string DoNotSendNotificationsKey = "DoNotSendNotifications";
 		protected IQPNotificationService NotificationService { get; private set; }
 
-		public DeleteAction(IArticleService articleService, IFieldService fieldService, IProductService productService, ILogger logger, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
-			: base(articleService, fieldService, productService, logger, createTransaction)
+		public DeleteAction(IArticleService articleService, IFieldService fieldService, IProductService productService, Func<ITransaction> createTransaction, IQPNotificationService notificationService)
+			: base(articleService, fieldService, productService, createTransaction)
 		{
 			NotificationService = notificationService;
 		}

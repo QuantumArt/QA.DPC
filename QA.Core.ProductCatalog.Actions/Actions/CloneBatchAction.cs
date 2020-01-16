@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using NLog;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
@@ -28,11 +28,10 @@ namespace QA.Core.ProductCatalog.Actions
             IArticleService articleService,
             IFieldService fieldService,
             IProductService productService,
-            ILogger logger,
             Func<ITransaction> createTransaction,
             IContentDefinitionService definitionService,
             ICacheItemWatcher cacheItemWatcher)
-			: base(articleService, fieldService, productService, logger, createTransaction)
+			: base(articleService, fieldService, productService, createTransaction)
 		{
             _definitionService = definitionService;
             _cacheItemWatcher = cacheItemWatcher;

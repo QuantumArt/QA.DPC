@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using QA.Core.Logger;
+using NLog;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.ProductCatalog.ContentProviders;
@@ -16,11 +16,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
         private IQPNotificationService _notificationService;
         #region SendAction Members
 
-        public SendAction(ILogger logger,
+        public SendAction(
             IProductService productService,
             IXmlProductService xmlProductService,
             IQPNotificationService notificationService)
-            : base(logger)
         {
             _productService = productService;
             _xmlProductService = xmlProductService;
