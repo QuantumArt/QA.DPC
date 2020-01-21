@@ -15,6 +15,7 @@ using NLog;
 using QA.ProductCatalog.ContentProviders;
 using System.Collections.Concurrent;
 using System.Data;
+using QA.ProductCatalog.Integration;
 
 namespace QA.Core.ProductCatalog.Actions
 {
@@ -94,7 +95,9 @@ namespace QA.Core.ProductCatalog.Actions
 
             if (state == FreezeState.Unfrosen)
             {
+	            HttpContextUserProvider.ForcedUserId = UserId;
                 FreezeService.ResetFreezing(new []{ product.Id} );
+                HttpContextUserProvider.ForcedUserId = 0;
             }
 
             const string doNotSendNotificationsKey = "DoNotSendNotifications";
