@@ -27,12 +27,16 @@ namespace QA.ProductCatalog.ContentProviders
             return result;
         }
 
+        public static ActionTaskResult Error(ActionTaskResultMessage message, int[] failedIds)
+        {
+            var result = new ActionTaskResult {IsSuccess = false, FailedIds = failedIds};
+            result.Messages.Add(message);
+            return result;
+        }
         
         public static ActionTaskResult Error(string message)
         {
-            var result = new ActionTaskResult {IsSuccess = false};
-            result.Messages.Add(new ActionTaskResultMessage() { Message = message});
-            return result;
+            return Error(new ActionTaskResultMessage() { Message = message}, null);
         }
         
         public bool IsSuccess { get; set; }

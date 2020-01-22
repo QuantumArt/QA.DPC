@@ -90,7 +90,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 				}
 				else
 				{
-					result = ActionTaskResult.Error(TaskStrings.NoProductsToPublish);
+					result = ActionTaskResult.Error(new ActionTaskResultMessage()
+					{
+						ResourceClass = ActionTaskBase.ResourceClass,
+						ResourceName = "NoProductsToPublish"
+					}, context.ContentItemIds);      
 				}
 
 				var excludedProductIds = productIds.Except(filteredProductIds).ToArray();

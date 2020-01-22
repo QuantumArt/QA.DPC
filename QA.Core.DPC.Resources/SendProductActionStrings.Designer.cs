@@ -106,7 +106,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Products not found.
+        ///   Looks up a localized string similar to Products not found:.
         /// </summary>
         public static string NotFound {
             get {

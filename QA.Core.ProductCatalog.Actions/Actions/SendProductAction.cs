@@ -85,7 +85,14 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             }
 
             if (productIds.Length == 0)
-                throw new Exception(SendProductActionStrings.NotFound);
+            {
+                return ActionTaskResult.Error(new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = "NotFound",
+                    Extra = string.Join(", ", context.ContentItemIds)
+                }, context.ContentItemIds);         
+            }
 
             foreach (var articleIdsWithContentId in articleIdsToCheckRelationsByContentId)
             {
@@ -94,7 +101,15 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 string idsstr = string.Join(", ", checkResult.Where(n => !n.Value));
 
                 if (!string.IsNullOrEmpty(idsstr))
-                    throw new Exception($"{SendProductActionStrings.NoRelationAccess} {idsstr}");
+                {
+                    return ActionTaskResult.Error(new ActionTaskResultMessage()
+                    {
+                        ResourceClass = ResourceClass,
+                        ResourceName = "NoRelationAccess",
+                        Extra = idsstr
+                    }, context.ContentItemIds);
+                    
+                }
             }
 
             const string skipPublishingKey = "skipPublishing";
@@ -373,8 +388,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             if (TaskContext.IsCancellationRequested)
             {
                 TaskContext.IsCancelled = true;
-
-                return ActionTaskResult.Error(SendProductActionStrings.Cancelled);
+                
+                return ActionTaskResult.Error(new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = "Cancelled"
+                }, context.ContentItemIds);      
             }
 
             var productsToRemove = missing

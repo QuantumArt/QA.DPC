@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="NotFound" xml:space="preserve">
-    <value>Products not found</value>
+    <value>Products not found:</value>
   </data>
   <data name="NoRelationAccess" xml:space="preserve">
     <value>There is no relation access to the following articles:</value>

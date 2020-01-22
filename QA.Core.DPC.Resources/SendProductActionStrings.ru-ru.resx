@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
    <data name="NotFound" xml:space="preserve">
-    <value>Не найдено ни одного продукта</value>
+    <value>Не найдено ни одного продукта:</value>
   </data>
   <data name="NoRelationAccess" xml:space="preserve">
     <value>Не хватает прав доступа по связям на следующие статьи:</value>
