@@ -3,16 +3,16 @@ using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.Validation.Xaml.ListTypes;
 using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Repository.ArticleMatching;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Mappers;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Newtonsoft.Json;
 using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Resources;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Validation.Resources;
 using Quantumart.QP8.Constants;
 
 namespace QA.ProductCatalog.Validation.Validators
@@ -46,8 +46,13 @@ namespace QA.ProductCatalog.Validation.Validators
 			    var productIds = helper.GetValue<ListOfInt>(productsName);
 
                 if (productIds != null && AreTypesIncompatible(helper, articleSerivce, marketingProductTypeId, productIds, productTypeName))
-				{
-					result.AddModelError(helper.GetPropertyName(productsName), RemoteValidationMessages.SameTypeMarketingProductProducts);
+                {
+	                var message = new ActionTaskResultMessage()
+	                {
+		                ResourceClass = ValidationHelper.ResourceClass,
+		                ResourceName = nameof(RemoteValidationMessages.SameTypeMarketingProductProducts),
+	                };
+					result.AddModelError(helper.GetPropertyName(productsName), JsonConvert.SerializeObject(message));
 					return result;
 				}
 
@@ -56,9 +61,15 @@ namespace QA.ProductCatalog.Validation.Validators
 					var ids = CheckAliasUniqueness(helper, marketingProductTypeId, articleSerivce, productTypeName);
 					if (!String.IsNullOrEmpty(ids))
 					{
+						var message = new ActionTaskResultMessage()
+						{
+							ResourceClass = ValidationHelper.ResourceClass,
+							ResourceName = nameof(RemoteValidationMessages.MarketingProduct_Duplicate_Alias),
+							Parameters = new object[] {ids}
+						};
+						
 						result.AddModelError(
-							helper.GetPropertyName(Constants.FieldAlias),
-							string.Format(RemoteValidationMessages.MarketingProduct_Duplicate_Alias, ids)
+								helper.GetPropertyName(Constants.FieldAlias), JsonConvert.SerializeObject(message)
 						);
 					}
 				}

@@ -10,6 +10,7 @@ using System.Linq;
 using QA.Core.DPC.Loader.Services;
 using System.Transactions;
 using NLog;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions
@@ -90,7 +91,7 @@ namespace QA.Core.ProductCatalog.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "Delete notification sending failed", ex);
+				throw new ProductException(productId, nameof(TaskStrings.NotificationSenderError), ex);
 			}
 		}
 		#endregion

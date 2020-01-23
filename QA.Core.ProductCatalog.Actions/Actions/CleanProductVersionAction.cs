@@ -6,6 +6,7 @@ using Quantumart.QP8.BLL;
 using Quantumart.QPublishing.Database;
 using System;
 using System.Data.SqlClient;
+using QA.Core.DPC.Resources;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
@@ -126,17 +127,25 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                     Logger.Info( $"End CleanProductVersionAction processedCount={processedCount}");
 
-                    return ActionTaskResult.Error($"Cleaned {processedCount} product versions earlier than {date} with chunk size = {chunkSize}");
+                    return ActionTaskResult.Success(new ActionTaskResultMessage()
+                        {
+                            ResourceClass = nameof(TaskStrings),
+                            ResourceName = nameof(TaskStrings.VersionsCleaned),
+                            Parameters = new object[] { processedCount, date, chunkSize}
+                        });
                 }
                 finally
                 {
                     IsProcessing = false;
                 }
             }
-            else
+
+            return ActionTaskResult.Error(new ActionTaskResultMessage()
             {
-                return ActionTaskResult.Error("CleanProductVersionAction is already running");
-            }
+                ResourceClass = nameof(TaskStrings),
+                ResourceName = nameof(TaskStrings.ActionRunning),
+                Parameters = new object[] { GetType().Name }
+            });
         }
 
         #region Private methods

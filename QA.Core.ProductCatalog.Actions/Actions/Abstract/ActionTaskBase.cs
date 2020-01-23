@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using NLog;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Tasks;
 using QA.ProductCatalog.ContentProviders;
+using QA.ProductCatalog.Integration;
+using Quantumart.QP8.BLL;
 
 
 namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
@@ -40,7 +44,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
 			try
 			{
+				HttpContextUserProvider.ForcedUserId = context.UserId;
 				processResult = Process(context) ?? new ActionTaskResult();
+				HttpContextUserProvider.ForcedUserId = 0;
 			}
 			catch (ActionException ex)
 			{
@@ -65,8 +71,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 					
 					var idsStr = string.Join(", ", ids);
 					processResult.Messages.Add(new ActionTaskResultMessage() {
-						ResourceClass = ResourceClass, 
-						ResourceName = "ArticlesProcessed", 
+						ResourceClass = nameof(TaskStrings), 
+						ResourceName = nameof(TaskStrings.ArticlesProcessed), 
 						Parameters = new object[] {idsStr}
 					});
 				}
@@ -75,11 +81,22 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				{
 					foreach (var err in errors)
 					{
-						processResult.Messages.Add(new ActionTaskResultMessage() {
-							ResourceClass = ResourceClass, 
-							ResourceName = err.Key, 
-							Parameters = new object[] {String.Join(",", err)}
-						});
+						var result = ActionTaskResult.FromString(err.Key);
+						if (result != null)
+						{
+							if (result.Messages != null && result.Messages.Any())
+							{
+								processResult.Messages.AddRange(result.Messages);
+							}
+						}
+						else
+						{
+							processResult.Messages.Add(new ActionTaskResultMessage() {
+								ResourceClass = nameof(TaskStrings), 
+								ResourceName = err.Key, 
+								Parameters = new object[] {String.Join(",", err)}
+							});		
+						}
 					}
 				}
 			}
@@ -87,8 +104,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			executionContext.Result = processResult;
 			
 		}
+		
 		#endregion
-
+		
 
         public void Run(string data, string config, byte[] binData, ITaskExecutionContext executionContext)
         {

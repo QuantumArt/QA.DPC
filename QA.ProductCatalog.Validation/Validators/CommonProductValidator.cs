@@ -8,10 +8,10 @@ using Quantumart.QP8.Constants;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Resources;
 using QA.ProductCatalog.ContentProviders;
-using QA.ProductCatalog.Validation.Resources;
-
 namespace QA.ProductCatalog.Validation.Validators
 {
     public class CommonProductValidator : IRemoteValidator2
@@ -180,8 +180,15 @@ namespace QA.ProductCatalog.Validation.Validators
                     && x.FieldValues.FirstOrDefault(a => a.Field.Name == Constants.FieldMarkProductContent)?.Value ==
                     markProductType))
                 {
-                    result.AddModelError(helper.GetPropertyName(markProductName),
-                        RemoteValidationMessages.SameTypeProductMarketingProduct);
+                    var message = new ActionTaskResultMessage()
+                    {
+                        ResourceClass = ValidationHelper.ResourceClass,
+                        ResourceName = nameof(RemoteValidationMessages.SameTypeProductMarketingProduct) 
+                    };
+
+                    result.AddModelError(
+                        helper.GetPropertyName(markProductName), JsonConvert.SerializeObject(message)
+                     );
                 }
             }
 

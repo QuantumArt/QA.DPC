@@ -92,8 +92,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 				{
 					result = ActionTaskResult.Error(new ActionTaskResultMessage()
 					{
-						ResourceClass = ActionTaskBase.ResourceClass,
-						ResourceName = "NoProductsToPublish"
+						ResourceClass = nameof(TaskStrings),
+						ResourceName = nameof(TaskStrings.NoProductsToPublish)
 					}, context.ContentItemIds);      
 				}
 
@@ -103,8 +103,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 				{
 					result.Messages.Add(new ActionTaskResultMessage()
 					{
-						ResourceClass = ActionTaskBase.ResourceClass,
-						ResourceName = "FilteredProducts",
+						ResourceClass = nameof(TaskStrings),
+						ResourceName = nameof(TaskStrings.FilteredProducts),
 						Parameters = new [] {string.Join(", ", excludedProductIds), ignoredStatus}
 					});
 				}
@@ -117,7 +117,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (Exception ex) {
 				Logger.Error().Message(LoggerErrorMessage).Exception(ex).Write();
-				throw new ActionException(TaskStrings.ActionErrorMessage, context.ContentItemIds.Select(id => new ProductException(id, TaskStrings.ServerError, ex)), context);
+				throw new ActionException(
+					TaskStrings.ActionErrorMessage, 
+					context.ContentItemIds.Select(
+						id => new ProductException(id, nameof(TaskStrings.ServerError), ex)
+					),
+					context
+				);
 			}			
 		}
 

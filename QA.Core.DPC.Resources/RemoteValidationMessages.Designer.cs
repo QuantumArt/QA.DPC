@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace QA.ProductCatalog.Validation.Resources {
+namespace QA.Core.DPC.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace QA.ProductCatalog.Validation.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("QA.ProductCatalog.Validation.Resources.RemoteValidationMessages", typeof(RemoteValidationMessages).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("QA.Core.DPC.Resources.RemoteValidationMessages", typeof(RemoteValidationMessages).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -75,6 +75,15 @@ namespace QA.ProductCatalog.Validation.Resources {
         public static string CustomerCodeInvalid {
             get {
                 return ResourceManager.GetString("CustomerCodeInvalid", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Definition {0} is not found in the passed context.
+        /// </summary>
+        public static string DefinitionNotFound {
+            get {
+                return ResourceManager.GetString("DefinitionNotFound", resourceCulture);
             }
         }
         
@@ -115,6 +124,33 @@ namespace QA.ProductCatalog.Validation.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Field {0} not found .
+        /// </summary>
+        public static string FieldNotFound {
+            get {
+                return ResourceManager.GetString("FieldNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid filter ({0}).
+        /// </summary>
+        public static string InvalidFilter {
+            get {
+                return ResourceManager.GetString("InvalidFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An error occurs while receiving JSON-definition: {0}.
+        /// </summary>
+        public static string JsonDefinitionError {
+            get {
+                return ResourceManager.GetString("JsonDefinitionError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Duplicate Alias for current type. Conflicted Ids: {0}.
         /// </summary>
         public static string MarketingProduct_Duplicate_Alias {
@@ -129,6 +165,15 @@ namespace QA.ProductCatalog.Validation.Resources {
         public static string MissingParam {
             get {
                 return ResourceManager.GetString("MissingParam", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text that have been received is not a valid XAML product definition. Error: {0}.
+        /// </summary>
+        public static string NotValidXamlDefinition {
+            get {
+                return ResourceManager.GetString("NotValidXamlDefinition", resourceCulture);
             }
         }
         
@@ -196,7 +241,7 @@ namespace QA.ProductCatalog.Validation.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Site Id doesn&apos;t match (QP and validation).
+        ///   Looks up a localized string similar to Site Id doesn&apos;t match: QP ({0}) and validation ({1}).
         /// </summary>
         public static string SiteIdInvalid {
             get {

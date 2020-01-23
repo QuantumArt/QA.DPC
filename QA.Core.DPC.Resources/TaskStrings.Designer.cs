@@ -79,6 +79,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} is already running.
+        /// </summary>
+        public static string ActionRunning {
+            get {
+                return ResourceManager.GetString("ActionRunning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Apply.
         /// </summary>
         public static string Apply {
@@ -268,6 +277,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An error occurs while appending messages into NotificationSender queue: {0}.
+        /// </summary>
+        public static string NotificationSenderError {
+            get {
+                return ResourceManager.GetString("NotificationSenderError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Partial Send.
         /// </summary>
         public static string PartialSend {
@@ -403,6 +421,15 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Product statuses of {0} products successfully updated.
+        /// </summary>
+        public static string StatusesUpdated {
+            get {
+                return ResourceManager.GetString("StatusesUpdated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Task.
         /// </summary>
         public static string Task {
@@ -426,6 +453,24 @@ namespace QA.Core.DPC.Resources {
         public static string UserName {
             get {
                 return ResourceManager.GetString("UserName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Products: {0}. Updated: {1}, Validated: {2}, Invalid: {3}, Errors {4}.
+        /// </summary>
+        public static string ValidationResult {
+            get {
+                return ResourceManager.GetString("ValidationResult", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cleaned {0} product versions earlier than {1} with chunk size = {2}.
+        /// </summary>
+        public static string VersionsCleaned {
+            get {
+                return ResourceManager.GetString("VersionsCleaned", resourceCulture);
             }
         }
         

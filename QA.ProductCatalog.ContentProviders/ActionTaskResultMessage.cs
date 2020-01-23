@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Resources;
 using System.Text;
+using Newtonsoft.Json;
 using QA.Core.DPC.Resources;
 
 namespace QA.ProductCatalog.ContentProviders
@@ -44,6 +45,22 @@ namespace QA.ProductCatalog.ContentProviders
             }
 
             return sb.ToString();
+        }
+        
+        public static ActionTaskResultMessage FromString(string str)
+        {
+            ActionTaskResultMessage result = null;
+
+            try
+            {
+                result = JsonConvert.DeserializeObject<ActionTaskResultMessage>(str);
+            }
+            catch (Exception ex)
+            {
+                result = new ActionTaskResultMessage() {Message = str};
+            }
+
+            return result;
         }
     }
 }

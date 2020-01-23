@@ -127,7 +127,7 @@
     <value>Empty connection string</value>
   </data>
   <data name="SiteIdInvalid" xml:space="preserve">
-    <value>Site Id doesn't match (QP and validation)</value>
+    <value>Site Id doesn't match: QP ({0}) and validation ({1})</value>
   </data>
   <data name="Products_Different_Regions" xml:space="preserve">
     <value>Some products doesn't have common regions with related products: {0}</value>
@@ -165,4 +165,20 @@
   <data name="Same_Marketing_Products" xml:space="preserve">
     <value>Marketing products should not match</value>
   </data>
+  <data name="InvalidFilter" xml:space="preserve">
+    <value>Invalid filter ({0})</value>
+  </data>
+  <data name="FieldNotFound" xml:space="preserve">
+    <value>Field {0} not found </value>
+  </data>
+  <data name="NotValidXamlDefinition" xml:space="preserve">
+    <value>Text that have been received is not a valid XAML product definition. Error: {0}</value>
+  </data>
+  <data name="JsonDefinitionError" xml:space="preserve">
+    <value>An error occurs while receiving JSON-definition: {0}</value>
+  </data>
+  <data name="DefinitionNotFound" xml:space="preserve">
+    <value>Definition {0} is not found in the passed context</value>
+  </data>
+
 </root>

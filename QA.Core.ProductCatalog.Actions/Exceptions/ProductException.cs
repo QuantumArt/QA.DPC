@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 using System.Security.Permissions;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Exceptions
 {
@@ -27,6 +28,11 @@ namespace QA.Core.ProductCatalog.Actions.Exceptions
 			: base(info, context)
 		{
 			ProductId = info.GetInt32(ProductIdKey);
+		}
+
+		public ActionTaskResult GetActionResult()
+		{
+			return new ActionTaskResult();
 		}
 
 		[SecurityPermissionAttribute(SecurityAction.Demand, SerializationFormatter = true)]

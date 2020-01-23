@@ -134,11 +134,11 @@ namespace QA.Core.DPC.Loader.Services
                         try
                         {                            
                             var validation = _articleService.XamlValidationById(productId, true);
+                            var validationResult = ActionTaskResult.FromRulesException(validation, productId);
 
-                            if (!validation.IsEmpty)
+                            if (!validationResult.IsSuccess)
                             {
-                                var value = string.Join(Environment.NewLine, validation.Errors.Select(s => s.Message));
-                                errors.TryAdd(productId, value);
+                                errors.TryAdd(productId, validationResult.ToString());
                                 report.InvalidProductsCount++;
                             }
                         }

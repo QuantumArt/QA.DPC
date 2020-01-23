@@ -5,6 +5,7 @@ using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using NLog;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
@@ -82,7 +83,7 @@ namespace QA.Core.ProductCatalog.Actions
 
             if (!ArticleService.CheckRelationSecurity(article.ContentId, new[] { productId }, false)[productId])
             {
-	            throw new ProductException(productId, "NoRelationAccess");
+	            throw new ProductException(productId, nameof(TaskStrings.NoRelationAccess));
             }
 
             if (contentDefinition == null)

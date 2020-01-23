@@ -55,7 +55,11 @@ namespace QA.ProductCatalog.Admin.WebApp.Core.Adapters
 			{
 				context.ContentItemIds = taskIds.ToArray();
 				RegisterTask(context);
-				return ActionTaskResult.Success(TaskStrings.ActionEnqueued);
+                return ActionTaskResult.Success(new ActionTaskResultMessage()
+                {
+                    ResourceClass = nameof(TaskStrings),
+                    ResourceName = nameof(TaskStrings.ActionEnqueued),
+                });
 			}
 			else
 			{

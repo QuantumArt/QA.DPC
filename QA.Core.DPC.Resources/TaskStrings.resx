@@ -261,6 +261,21 @@
   <data name="NoRelationAccess">
     <value>Not enough access to relations: {0}</value>
   </data>
+  <data name="ValidationResult">
+    <value>Products: {0}. Updated: {1}, Validated: {2}, Invalid: {3}, Errors {4}</value>
+  </data>
+  <data name="StatusesUpdated">
+    <value>Product statuses of {0} products successfully updated</value>
+  </data>
+  <data name="ActionRunning">
+    <value>{0} is already running</value>
+  </data>
+  <data name="VersionsCleaned">
+    <value>Cleaned {0} product versions earlier than {1} with chunk size = {2}</value>
+  </data>
+  <data name="NotificationSenderError">
+    <value>An error occurs while appending messages into NotificationSender queue: {0}</value>  
+  </data>
   
 </root>
 

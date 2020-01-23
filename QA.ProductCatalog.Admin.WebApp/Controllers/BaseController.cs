@@ -7,6 +7,7 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Newtonsoft.Json;
 using QA.Core.DPC.Resources;
+using QA.ProductCatalog.ContentProviders;
 
 namespace QA.ProductCatalog.Admin.WebApp.Controllers
 {
@@ -27,15 +28,19 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
             {
                 var sb = new StringBuilder(TaskStrings.ProductsNotProcessed);
 
-                foreach (var exception1 in exception.InnerExceptions)
+                foreach (var ex in exception.InnerExceptions.OfType<ProductException>())
                 {
-                    var ex = (ProductException) exception1;
                     sb.AppendLine();
 
                     var exText = ex.Message;
                     var rm = new ResourceManager(typeof(TaskStrings));
+                    var result = ActionTaskResult.FromString(exText);
                     var resource = rm.GetString(exText);
-                    if (resource != null && resource.Contains("{0}"))
+                    if (result != null)
+                    {
+                        exText = result.ToString();
+                    }
+                    else if (resource != null && resource.Contains("{0}"))
                     {
                         exText = string.Format(resource, ex.ProductId);
                     }

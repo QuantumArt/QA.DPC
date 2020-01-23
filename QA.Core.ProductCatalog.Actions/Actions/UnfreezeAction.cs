@@ -65,13 +65,18 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                 return ActionTaskResult.Success(new ActionTaskResultMessage()
                 {
-                    ResourceClass = ResourceClass,
-                    ResourceName = "ProductsUnfreezed",
+                    ResourceClass = nameof(TaskStrings),
+                    ResourceName = nameof(TaskStrings.ProductsUnfreezed),
                     Extra = ": " + string.Join(",", productIds)
                 });
             }
+            
+            return ActionTaskResult.Success(new ActionTaskResultMessage()
+            {
+                ResourceClass = nameof(TaskStrings),
+                ResourceName = nameof(TaskStrings.NoProductsToUnfreeze),
+            });
 
-            return ActionTaskResult.Success(TaskStrings.NoProductsToUnfreeze);
         }
     }
 }

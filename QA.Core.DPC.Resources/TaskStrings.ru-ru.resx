@@ -261,5 +261,20 @@
   <data name="NoRelationAccess">
     <value>Недостаточно прав доступа по связям: {0}</value>
   </data>
+  <data name="ValidationResult">
+    <value>Продуктов: {0}. Обновлено: {1}. Провалидировано: {2}. Невалидно: {3}. Ошибок: {4}</value>
+  </data>
+  <data name="StatusesUpdated">
+    <value>Статусы {0} продуктов успешно обновлены</value>
+  </data>
+  <data name="ActionRunning">
+    <value>{0} уже запущено</value>
+  </data>
+  <data name="VersionsCleaned">
+    <value>Очищено {0} версий продуктов, созданных ранее чем {1} с размером пакета = {2}</value>
+  </data>
+  <data name="NotificationSenderError">
+    <value>Возникла ошибка при постановке сообщений в очередь NotificationSender: {0}</value>
+  </data>
 </root>
 

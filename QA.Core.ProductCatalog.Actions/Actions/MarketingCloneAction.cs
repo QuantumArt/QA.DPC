@@ -132,7 +132,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			catch (Exception ex)
 			{
 				Logger.Error().Message(LoggerMarketingErrorMessage + marketingProduct.Id).Exception(ex).Write();
-				exceptions.Add(new ProductException(marketingProduct.Id, TaskStrings.ServerError, ex));
+				exceptions.Add(new ProductException(marketingProduct.Id, nameof(TaskStrings.ServerError), ex));
 				return 0;
 			}
 		}
@@ -153,7 +153,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			catch (Exception ex)
 			{
 				Logger.Error().Message(LoggerErrorMessage + productId).Exception(ex).Write();
-				exceptions.Add(new ProductException(productId, TaskStrings.ServerError, ex));
+				exceptions.Add(new ProductException(productId, nameof(TaskStrings.ServerError), ex));
 			}
 		}
 

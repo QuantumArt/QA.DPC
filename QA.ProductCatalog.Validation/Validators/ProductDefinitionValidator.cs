@@ -1,13 +1,16 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 #if NETSTANDARD
 using Portable.Xaml;
 #else
 using System.Xaml;
 #endif
 using QA.Core.DPC.Formatters.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Configuration;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.Validation.Xaml.Extensions.Rules;
 
@@ -30,7 +33,13 @@ namespace QA.ProductCatalog.Validation.Validators
             var xmlDefinition = context.Definitions.FirstOrDefault(x => x.Alias == FieldXmlDefinition);
             if (xmlDefinition == null)
             {
-                result.Messages.Add("Field not found " + FieldXmlDefinition);
+                var message = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ValidationHelper.ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.FieldNotFound),
+                    Parameters = new object[] {FieldXmlDefinition}
+                };
+                result.Messages.Add(JsonConvert.SerializeObject(message));
             }
 
             var xaml = context.ProvideValueExact<string>(xmlDefinition);
@@ -43,7 +52,13 @@ namespace QA.ProductCatalog.Validation.Validators
                 }
                 catch (Exception ex)
                 {
-                    result.Messages.Add($"Text that have been received is not a valid XAML product definition. Error: {ex.Message}");
+                    var message = new ActionTaskResultMessage()
+                    {
+                        ResourceClass = ValidationHelper.ResourceClass,
+                        ResourceName = nameof(RemoteValidationMessages.NotValidXamlDefinition),
+                        Parameters = new object[] { ex.Message }
+                    };
+                    result.Messages.Add(JsonConvert.SerializeObject(message));
                     return result;
                 }
 
@@ -62,7 +77,13 @@ namespace QA.ProductCatalog.Validation.Validators
                             }
                             catch (Exception ex)
                             {
-                                result.Messages.Add($"An error occurs while receiving JSON-definition. Error: {ex.Message}");
+                                var message = new ActionTaskResultMessage()
+                                {
+                                    ResourceClass = ValidationHelper.ResourceClass,
+                                    ResourceName = nameof(RemoteValidationMessages.JsonDefinitionError),
+                                    Parameters = new object[] { ex.Message }
+                                };
+                                result.Messages.Add(JsonConvert.SerializeObject(message));
                                 return result;
                             }
                         }

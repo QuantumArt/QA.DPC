@@ -10,6 +10,7 @@ using System.Linq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Services;
 using NLog;
+using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 
 namespace QA.Core.ProductCatalog.Actions
@@ -42,7 +43,7 @@ namespace QA.Core.ProductCatalog.Actions
 			var article = ArticleService.Read(productId);
 
 			if (!ArticleService.CheckRelationSecurity(article.ContentId, new int[] { productId }, false)[productId])
-				throw new ProductException(productId, "NoRelationAccess");
+				throw new ProductException(productId, nameof(TaskStrings.NoRelationAccess));
 
 			var definition = Productservice.GetProductDefinition(0, article.ContentId);
 			var dictionary = GetProductsToBeProcessed(article, definition, ef => ef.CloningMode, CloningMode.Copy, filter, true);

@@ -15,6 +15,7 @@ using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Integration;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.DTO;
 using Quantumart.QP8.Constants;
@@ -71,11 +72,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			if (context.ContentItemIds == null || context.ContentItemIds.Length == 0)
 				throw new ArgumentException("ContentItemIds cant be empty", "context.ContentItemIds");
 
-			OnStartProcess();
-
 			UserId = context.UserId;
-
 			UserName = context.UserName;
+			
+			OnStartProcess();
 
 			var exceptions = new List<ProductException>();
 			int index = 0;	
@@ -102,8 +102,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				catch (ProductException pex)
 				{
 					var builder = Logger.Error().Message(LoggerMessage + id);
+					var result = ActionTaskResult.FromString(pex.Message);
 					var msg = ResourceManager.GetString(pex.Message);
-					if (msg != null)
+					if (result != null)
+					{
+						builder.Property("taskResult", result.ToString());
+					}
+					else if (msg != null)
 					{
 						builder.Property("taskResult", string.Format(msg, id));						
 					}
@@ -122,7 +127,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
 						if (ipex == null)
 						{
-							ipex = new ProductException(id, TaskStrings.ActionErrorMessage, iex);
+							ipex = new ProductException(id, nameof(TaskStrings.ActionErrorMessage), iex);
 						}
 						Logger.Error().Message(LoggerMessage + id).Exception(ipex).Write();
 						exceptions.Add(ipex);
@@ -131,7 +136,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				catch (Exception ex)
 				{
 					Logger.Error().Message(LoggerMessage + id).Exception(ex).Write();
-					exceptions.Add(new ProductException(id, TaskStrings.ServerError, ex));
+					exceptions.Add(new ProductException(id, nameof(TaskStrings.ServerError), ex));
 				}
 			}
 
@@ -143,12 +148,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
             {
                 exceptions.Add(new ProductException(0, "OnEndProcess error", ex));
             }
-
+            
             if (exceptions.Any())
 			{
 				throw new ActionException(TaskStrings.ActionErrorMessage, exceptions, context);
 			}
-    		return null;
+     
+            return null;
 		}
 	    #endregion
 

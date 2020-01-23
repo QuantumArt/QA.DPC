@@ -1,5 +1,8 @@
 ﻿using System.Linq;
+using Newtonsoft.Json;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Processors;
+using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
 using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
@@ -15,7 +18,13 @@ namespace QA.ProductCatalog.Validation.Validators
             var filterDefinition = context.Definitions.FirstOrDefault(x => x.Alias == FieldFilter);
             if (filterDefinition == null)
             {
-                result.AddErrorMessage("Field not found: " + FieldFilter);
+                var message = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ValidationHelper.ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.MissingParam),
+                    Parameters = new object[] {FieldFilter}
+                };
+                result.AddErrorMessage(JsonConvert.SerializeObject(message));
             }
             else
             {
@@ -24,7 +33,13 @@ namespace QA.ProductCatalog.Validation.Validators
                 var normalizedFilter = DPathProcessor.NormalizeExpression(filter);
                 if (!DPathProcessor.IsExpressionValid(normalizedFilter))
                 {
-                    result.AddModelError(filterDefinition.PropertyName, $"Invalid filter: {normalizedFilter}");
+                    var message = new ActionTaskResultMessage()
+                    {
+                        ResourceClass = ValidationHelper.ResourceClass,
+                        ResourceName = nameof(RemoteValidationMessages.InvalidFilter),
+                        Parameters = new object[] {normalizedFilter}
+                    };
+                    result.AddModelError(filterDefinition.PropertyName, JsonConvert.SerializeObject(message));
                 }
             }
 

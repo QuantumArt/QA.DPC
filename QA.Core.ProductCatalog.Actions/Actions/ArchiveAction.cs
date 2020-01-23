@@ -5,6 +5,7 @@ using QA.ProductCatalog.Infrastructure;
 using System;
 using QA.Core.DPC.Loader.Services;
 using NLog;
+using QA.Core.DPC.Resources;
 using QA.Core.Models.Entities;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
@@ -22,7 +23,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		}
 
 
-		protected override Article[] PrepareNotification(int productId)
+		protected override Article[] GetNotificationProducts(int productId)
 		{
 			try
 			{
@@ -30,7 +31,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "Archive notification preparing failed", ex);
+				throw new ProductException(productId, "Product notification preparing failed", ex);
 			}
 		}
 
@@ -42,7 +43,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(productId, "Archive notification sending failed", ex);
+				throw new ProductException(productId, nameof(TaskStrings.NotificationSenderError), ex);
 			}
 		}
 

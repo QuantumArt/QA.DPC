@@ -1,23 +1,25 @@
-﻿using QA.ProductCatalog.Infrastructure;
-using QA.ProductCatalog.Validation.Resources;
-using QA.Validation.Xaml;
+﻿using QA.Validation.Xaml;
 using QA.Validation.Xaml.Extensions.Rules;
 using QA.Validation.Xaml.Extensions.Rules.Remote;
 using Quantumart.QP8.BLL.Services.API;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Practices.EnterpriseLibrary.Common.Utility;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using QA.Core.DPC.QP.Services;
 using QA.ProductCatalog.ContentProviders;
 using Quantumart.QP8.BLL;
 using Quantumart.QP8.Constants;
 using QA.Core.DPC.QP.Models;
+using QA.Core.DPC.Resources;
 
 namespace QA.ProductCatalog.Validation.Validators
 {
     public class ValidationHelper
     {
+
+        public static string ResourceClass = nameof(RemoteValidationMessages);
 
         public ValidationHelper(RemoteValidationContext model, RemoteValidationResult result, IConnectionProvider provider, ISettingsService settingsService)
         {
@@ -44,7 +46,13 @@ namespace QA.ProductCatalog.Validation.Validators
             var def = Model.Definitions.FirstOrDefault(x => x.Alias == alias);
             if (def == null && addError)
             {
-                Result.AddErrorMessage(String.Format(RemoteValidationMessages.MissingParam, alias));
+                var result = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.MissingParam),
+                    Parameters = new object[] {alias}
+                };
+                Result.AddErrorMessage(JsonConvert.SerializeObject(result));
             }
             return def;
         }
@@ -58,6 +66,15 @@ namespace QA.ProductCatalog.Validation.Validators
         {
             var def = GetDefinition(alias);
             if (def == null)
+            {
+                var result = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.DefinitionNotFound), 
+                    Parameters = new object[] { alias }
+                };
+                throw new ValidationException(result);
+            }
                 throw new ApplicationException($"Definition {alias} is not found in the passed context");
             return Model.ProvideValueExact<T>(def);
         }
@@ -102,10 +119,14 @@ namespace QA.ProductCatalog.Validation.Validators
             }
             if (resultIds.Any())
             {
-                Result.AddModelError(
-                    GetPropertyName(regionsName), 
-                    string.Format(RemoteValidationMessages.ProductsRepeatingRegions, String.Join(", ", resultIds))
-                );
+                var message = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.ProductsRepeatingRegions),
+                    Parameters = new object[] {String.Join(", ", resultIds)}
+                };
+                
+                Result.AddModelError(GetPropertyName(regionsName), JsonConvert.SerializeObject(message));
             }
         }
 
@@ -143,10 +164,14 @@ namespace QA.ProductCatalog.Validation.Validators
 
             if (!resultIds.Any()) return true;
 
-            Result.AddModelError(
-                GetPropertyName(productsName), 
-                string.Format(RemoteValidationMessages.Products_Different_Regions, String.Join(", ", resultIds))
-            );
+            var result = new ActionTaskResultMessage()
+            {
+                ResourceClass = ResourceClass,
+                ResourceName = nameof(RemoteValidationMessages.Products_Different_Regions), 
+                Parameters = new object[] {string.Join(", ", resultIds)}
+            };
+
+            Result.AddModelError(GetPropertyName(productsName), JsonConvert.SerializeObject(result));
 
             return false;
         }
@@ -238,11 +263,14 @@ namespace QA.ProductCatalog.Validation.Validators
             
             if (resultIds.Any())
             {
-                var errorMessage = isMatrix
-                    ? RemoteValidationMessages.DuplicateTariffsAreasMatrix
-                    : RemoteValidationMessages.DuplicateTariffsAreas;
-                Result.AddModelError(GetPropertyName(parametersFieldName),
-                        string.Format(errorMessage, String.Join(", ", resultIds.Distinct())));
+                var result = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = isMatrix ? nameof(RemoteValidationMessages.DuplicateTariffsAreasMatrix) : nameof(RemoteValidationMessages.DuplicateTariffsAreas), 
+                    Parameters = new object[] {string.Join(", ", resultIds.Distinct())}
+                };
+
+                Result.AddModelError(GetPropertyName(parametersFieldName), JsonConvert.SerializeObject(result));
             }
         }
 
@@ -253,8 +281,14 @@ namespace QA.ProductCatalog.Validation.Validators
             var relIds = articles.Where(w => w.Archived).Select(s => s.Id).ToList();
             if (relIds.Any())
             {
-                Result.AddModelError(GetPropertyName(idFieldName),
-                            string.Format(RemoteValidationMessages.RelatedEntityIsArchived, productId, String.Join(",", relIds)));
+                var result = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.RelatedEntityIsArchived), 
+                    Parameters = new object[] {string.Join(",", relIds.Distinct())}
+                };
+                
+                Result.AddModelError(GetPropertyName(idFieldName), JsonConvert.SerializeObject(result));
             }
         }
 
@@ -267,8 +301,14 @@ namespace QA.ProductCatalog.Validation.Validators
             var duplicateServices = relatedProductsIds.Where(relId => relatedProductsIds.Count(r => r == relId) > 1).Distinct().ToArray();
             if (duplicateServices.Any())
             {
-                Result.AddModelError(GetPropertyName(idFieldName),
-                string.Format(RemoteValidationMessages.DuplicateRelationsProducts, String.Join(", ", duplicateServices)));
+                var result = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.DuplicateRelationsProducts), 
+                    Parameters = new object[] {string.Join(",", duplicateServices)}
+                };
+
+                Result.AddModelError(GetPropertyName(idFieldName), JsonConvert.SerializeObject(result));
             }
         }
 
@@ -277,7 +317,13 @@ namespace QA.ProductCatalog.Validation.Validators
             var siteId = new ContentService(Customer.ConnectionString, 1).Read(contentId).SiteId;
             if (Model.SiteId != siteId)
             {
-                throw new ValidationException(RemoteValidationMessages.SiteIdInvalid);
+                var result = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.SiteIdInvalid), 
+                    Parameters = new object[] { siteId, Model.SiteId }
+                };
+                throw new ValidationException(result);
             }
 
         }
@@ -288,7 +334,13 @@ namespace QA.ProductCatalog.Validation.Validators
             int value;
             if (string.IsNullOrEmpty(valueStr) || !int.TryParse(valueStr, out value))
             {
-                throw new ValidationException(String.Format(RemoteValidationMessages.Settings_Missing, key));
+                var result = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.Settings_Missing), 
+                    Parameters = new object[] { key }
+                };
+                throw new ValidationException(result);
             }
             return value;
         }
@@ -299,7 +351,13 @@ namespace QA.ProductCatalog.Validation.Validators
             var valueStr = _settingsService.GetSetting(key);
             if (string.IsNullOrEmpty(valueStr))
             {
-                throw new ValidationException(String.Format(RemoteValidationMessages.Settings_Missing, key));
+                var result = new ActionTaskResultMessage()
+                {
+                    ResourceClass = ResourceClass,
+                    ResourceName = nameof(RemoteValidationMessages.Settings_Missing), 
+                    Parameters = new object[] { key }
+                };
+                throw new ValidationException(result);
             }
             return valueStr;
         }

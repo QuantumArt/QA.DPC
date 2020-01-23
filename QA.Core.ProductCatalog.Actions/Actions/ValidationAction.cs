@@ -1,6 +1,8 @@
-﻿using QA.Core.ProductCatalog.Actions.Actions.Abstract;
+﻿using QA.Core.DPC.Resources;
+using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.ContentProviders;
 using QA.ProductCatalog.Infrastructure;
+using QA.ProductCatalog.Integration;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
@@ -35,23 +37,33 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 {
                     int chunkSize = GetValue(context, "UpdateChunkSize", DefaultChunkSize);
                     int maxDegreeOfParallelism = GetValue(context, "MaxDegreeOfParallelism", DefaultMaxDegreeOfParallelism);
-
-                    var report = _validationService.ValidateAndUpdate(chunkSize, maxDegreeOfParallelism, TaskContext);                    
-                    return ActionTaskResult.Success($"Products: {report.TotalProductsCount};" +
-                            $"Updated products: {report.UpdatedProductsCount};" +
-                            $"Validated products: {report.ValidatedProductsCount};" +
-                            $"Invalid products: {report.InvalidProductsCount};" +
-                            $"Validation errors: {report.ValidationErrorsCount}");
+                    var report = _validationService.ValidateAndUpdate(chunkSize, maxDegreeOfParallelism, TaskContext);
+                    return ActionTaskResult.Success(new ActionTaskResultMessage()
+                    {
+                        ResourceClass = nameof(TaskStrings),
+                        ResourceName = nameof(TaskStrings.ValidationResult),
+                        Parameters = new object[]
+                        {
+                            report.TotalProductsCount,
+                            report.UpdatedProductsCount,
+                            report.ValidatedProductsCount,
+                            report.InvalidProductsCount,
+                            report.ValidationErrorsCount
+                        }
+                    });
                 }
                 finally
                 {
                     IsProcessing = false;
                 }
             }
-            else
+
+            return ActionTaskResult.Error(new ActionTaskResultMessage()
             {
-                return ActionTaskResult.Error("ValidationAction is already running");
-            }
+                ResourceClass = nameof(TaskStrings),
+                ResourceName = nameof(TaskStrings.ActionRunning),
+                Parameters = new object[] { GetType().Name }
+            });
         }
 
         private int GetValue(ActionContext context, string key, int defaultValue)

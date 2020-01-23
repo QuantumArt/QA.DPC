@@ -29,7 +29,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		#region Abstract and virtual methods
 		protected abstract bool NeedToArchive { get; }
 
-		protected virtual QA.Core.Models.Entities.Article[] PrepareNotification(int productId)
+		protected virtual QA.Core.Models.Entities.Article[] GetNotificationProducts(int productId)
 		{
 			return null;
 		}
@@ -48,7 +48,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		    var product = ArticleService.Read(productId, excludeArchive);
 		    if (product == null)
 		    {
-			    ValidateMessageResult(productId, MessageResult.Error("ProductsNotFound"));
+			    throw new ProductException(productId, nameof(TaskStrings.ProductsNotFound));
 		    }
 			var definition = Productservice.GetProductDefinition(0, product.ContentId);
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
@@ -56,7 +56,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
                 dictionary = GetProductsToBeProcessed<DeletingMode>(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, excludeArchive);
 			
 			    if (!doNotSendNotifications)
-                    notificationProducts = PrepareNotification(productId);
+                    notificationProducts = GetNotificationProducts(productId);
             }
 
 			ArchiveProducts(dictionary, product);

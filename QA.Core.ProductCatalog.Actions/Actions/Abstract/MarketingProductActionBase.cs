@@ -57,8 +57,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
             var exceptions = new List<ProductException>();
             int index = 0;
 
-            HttpContextUserProvider.ForcedUserId = context.UserId;
-            
             IAction action = _getService(ActionKey);
             foreach (var marketingProduct in marketingProducts)
             {
@@ -88,7 +86,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
                     }
                     catch (Exception ex)
                     {
-                        exceptions.Add(new ProductException(productId, TaskStrings.ServerError, ex));
+                        exceptions.Add(new ProductException(productId, nameof(TaskStrings.ServerError), ex));
                         count -= remainingCount;
                         break;
                     }
@@ -116,17 +114,16 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
                     }
                     catch (Exception ex)
                     {
-                        exceptions.Add(new ProductException(marketingProduct.Id, TaskStrings.ServerError, ex));
+                        exceptions.Add(new ProductException(marketingProduct.Id, nameof(TaskStrings.ServerError), ex));
                     }
 
                     SetProgress(++index, count);
                 }
             }
-            HttpContextUserProvider.ForcedUserId = 0;
 
             if (exceptions.Any())
             {
-                throw new ActionException(TaskStrings.ActionErrorMessage, exceptions, context);
+                throw new ActionException(nameof(TaskStrings.ActionErrorMessage), exceptions, context);
             }
             else
             {

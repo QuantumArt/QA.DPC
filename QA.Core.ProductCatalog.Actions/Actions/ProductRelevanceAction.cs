@@ -7,6 +7,7 @@ using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.ProductCatalog.Infrastructure;
 using System.Globalization;
 using QA.Core.DPC.QP.Services;
+using QA.Core.DPC.Resources;
 using QA.Core.Linq;
 using QA.ProductCatalog.ContentProviders;
 
@@ -108,7 +109,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             Task.WaitAll(tasks);
 
-            return ActionTaskResult.Success($"Статусы {productIds.Length} продуктов успешно обновлены");
+            return ActionTaskResult.Success(new ActionTaskResultMessage()
+            {
+                ResourceClass = nameof(TaskStrings),
+                ResourceName = nameof(TaskStrings.StatusesUpdated),
+                Parameters = new object[]{ productIds.Length}
+            });
         }
     }
 }

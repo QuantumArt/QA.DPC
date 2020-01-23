@@ -15,7 +15,12 @@ using NLog;
 using QA.ProductCatalog.ContentProviders;
 using System.Collections.Concurrent;
 using System.Data;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using QA.Core.DPC.Resources;
 using QA.ProductCatalog.Integration;
+using Quantumart.QP8.BLL;
+using Article = QA.Core.Models.Entities.Article;
 
 namespace QA.Core.ProductCatalog.Actions
 {
@@ -62,25 +67,26 @@ namespace QA.Core.ProductCatalog.Actions
             var product = DoWithLogging("Productservice.GetProductById", transactionId, () => Productservice.GetProductById(productId));
             ProductIds.Add(product.Id);
 
-			if (ignoredStatuses.Contains(product.Status))
-				ValidateMessageResult(product.Id, MessageResult.Error("ProductsExcludedByStatus"));
+            if (ignoredStatuses.Contains(product.Status))
+	            throw new ProductException(product.Id, nameof(TaskStrings.ProductsExcludedByStatus));
 
 			if (!ArticleFilter.DefaultFilter.Matches(product))
-				ValidateMessageResult(product.Id, MessageResult.Error("ProductsNotToPublish"));
+				throw new ProductException(product.Id, nameof(TaskStrings.ProductsNotToPublish));
 
             var state = FreezeService.GetFreezeState(product.Id);
 
             if (state == FreezeState.Frozen)
             {
-                ValidateMessageResult(product.Id, MessageResult.Error("ProductsFreezed"));
+	            throw new ProductException(product.Id, nameof(TaskStrings.ProductsFreezed));
             }
 
             var xamlValidationErrors = DoWithLogging("ValidateXaml", transactionId, () => ArticleService.XamlValidationById(product.Id, true));
+            var validationResult = ActionTaskResult.FromRulesException(xamlValidationErrors, product.Id);
 
-            if (!xamlValidationErrors.IsEmpty)
+            if (!validationResult.IsSuccess)
             {
-                ValidationErrors.TryAdd(product.Id, string.Join(Environment.NewLine, xamlValidationErrors.Errors.Select(s => s.Message)));
-                ValidateMessageResult(product.Id, MessageResult.Error(string.Join(@";" + Environment.NewLine, xamlValidationErrors.Errors.Select(s => s.Message))));
+                ValidationErrors.TryAdd(product.Id, validationResult.ToString());
+                throw new ProductException(product.Id, JsonConvert.SerializeObject(validationResult));
             }
 
             var allArticles = GetAllArticles(new[] { product }).ToArray();
@@ -95,9 +101,7 @@ namespace QA.Core.ProductCatalog.Actions
 
             if (state == FreezeState.Unfrosen)
             {
-	            HttpContextUserProvider.ForcedUserId = UserId;
                 FreezeService.ResetFreezing(new []{ product.Id} );
-                HttpContextUserProvider.ForcedUserId = 0;
             }
 
             const string doNotSendNotificationsKey = "DoNotSendNotifications";
@@ -119,6 +123,7 @@ namespace QA.Core.ProductCatalog.Actions
         {
             using (var transaction = CreateTransaction())
             {
+
                 ValidationService.UpdateValidationInfo(ProductIds.ToArray(), ValidationErrors);
                 transaction.Commit();
             }
@@ -198,7 +203,7 @@ namespace QA.Core.ProductCatalog.Actions
 			}
 			catch (Exception ex)
 			{
-				throw new ProductException(stageProduct.Id, "Sending to fronts", ex);
+				throw new ProductException(stageProduct.Id, nameof(TaskStrings.NotificationSenderError), ex);
 			}		
 		}
 		#endregion
