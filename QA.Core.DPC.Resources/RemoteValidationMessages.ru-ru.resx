@@ -130,31 +130,31 @@
     <value>SiteId не совпадает в валидации ({1}) и QP ({0})</value>
   </data>
   <data name="Products_Different_Regions" xml:space="preserve">
-    <value>Некоторые продукты не имеют общих регионов с другими продуктами: {0}</value>
+    <value>Некоторые продукты не имеют общих регионов с другими продуктами ({0})</value>
   </data>
   <data name="Settings_Missing" xml:space="preserve">
     <value>Не задана настройка {0}</value>
   </data>
   <data name="ProductsRepeatingRegions" xml:space="preserve">
-    <value>Продукт содержит регионы из продуктов: {0}</value>
+    <value>Продукт содержит регионы из других продуктов ({0})</value>
   </data>
   <data name="DuplicateTariffsAreas" xml:space="preserve">
-    <value>Тарифное направление встречается больше одного раза в параметрах продукта: {0}</value>
+    <value>Тарифное направление встречается больше одного раза в параметрах продукта ({0})</value>
   </data>
   <data name="DuplicateTariffsAreasMatrix" xml:space="preserve">
-    <value>Тарифное направление встречается больше одного раза в параметрах матрицы связей: {0}</value>
+    <value>Тарифное направление встречается больше одного раза в параметрах матрицы связей ({0})</value>
   </data>
   <data name="DuplicateRelationsProducts" xml:space="preserve">
-    <value>Встречается дублирование связей с продуктами: {0} </value>
+    <value>Встречается дублирование связей с продуктами ({0})</value>
   </data>
   <data name="RelatedEntityIsArchived" xml:space="preserve">
-    <value>Связанная сущность заархивирована. Продукт: {0}, связанные статьи: {1}</value>
+    <value>Связанные продукты заархивированы ({0})</value>
   </data>
   <data name="Cant_Get_Marketing_Products" xml:space="preserve">
     <value>Не удалось получить один или оба связанных маркетинговых продукта</value>
   </data>
   <data name="MarketingProduct_Duplicate_Alias" xml:space="preserve">
-    <value>Продукт с таким Alias и типом уже существует: {0}</value>
+    <value>Продукты с таким Alias и типом уже существуют ({0})</value>
   </data>
   <data name="SameTypeMarketingProductProducts" xml:space="preserve">
     <value>Все продукты маркетингового продукта должны иметь тот же тип</value>

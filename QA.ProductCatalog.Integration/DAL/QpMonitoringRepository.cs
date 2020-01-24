@@ -80,7 +80,7 @@ namespace QA.ProductCatalog.Integration.DAL
                 {
                     var item = new ProductInfo
                     {
-                        Id = product.Id,
+                        Id = product.DpcId,
                         Updated = product.Updated,
                         Alias = product.Alias,
                         Hash = product.Hash,

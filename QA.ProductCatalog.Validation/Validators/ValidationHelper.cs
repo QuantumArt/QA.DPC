@@ -75,7 +75,6 @@ namespace QA.ProductCatalog.Validation.Validators
                 };
                 throw new ValidationException(result);
             }
-                throw new ApplicationException($"Definition {alias} is not found in the passed context");
             return Model.ProvideValueExact<T>(def);
         }
 

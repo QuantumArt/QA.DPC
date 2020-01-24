@@ -130,31 +130,31 @@
     <value>Site Id doesn't match: QP ({0}) and validation ({1})</value>
   </data>
   <data name="Products_Different_Regions" xml:space="preserve">
-    <value>Some products doesn't have common regions with related products: {0}</value>
+    <value>Some products doesn't have common regions with related products ({0})</value>
   </data>
   <data name="Settings_Missing" xml:space="preserve">
     <value>Setting {0} is missing</value>
   </data>
   <data name="ProductsRepeatingRegions" xml:space="preserve">
-    <value>Product contains regions from products: {0}</value>
+    <value>Product contains regions from other products ({0})</value>
   </data>
   <data name="DuplicateTariffsAreas" xml:space="preserve">
-    <value>Duplicate tariff direction in product parameters: {0}</value>
+    <value>Duplicate tariff direction in product parameters ({0})</value>
   </data>
   <data name="DuplicateTariffsAreasMatrix" xml:space="preserve">
-    <value>Duplicate tariff direction in relation matrix parameters: {0}</value>
+    <value>Duplicate tariff direction in relation matrix parameters ({0})</value>
   </data>  
   <data name="DuplicateRelationsProducts" xml:space="preserve">
     <value>Duplicate product relations: {0} </value>
   </data>
   <data name="RelatedEntityIsArchived" xml:space="preserve">
-    <value>Related entity is archived. Product: {0}, related articles: {1}</value>
+    <value>Related products are archived ({0})</value>
   </data>
   <data name="Cant_Get_Marketing_Products" xml:space="preserve">
     <value>Couldn't get some of related marketing products</value>
   </data>
   <data name="MarketingProduct_Duplicate_Alias" xml:space="preserve">
-    <value>Duplicate Alias for current type. Conflicted Ids: {0}</value>
+    <value>Duplicate Alias for products of current type ({0})</value>
   </data>
   <data name="SameTypeMarketingProductProducts" xml:space="preserve">
     <value>All regional products for one marketing product should have the same type</value>

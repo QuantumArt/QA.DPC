@@ -65,8 +65,10 @@ namespace QA.Core.ProductCatalog.Actions
 			var ignoredStatuses = ignoredStatus?.Split(',') ?? Enumerable.Empty<string>().ToArray();
 
             var product = DoWithLogging("Productservice.GetProductById", transactionId, () => Productservice.GetProductById(productId));
+            if (product == null)
+	            throw new ProductException(productId, nameof(TaskStrings.ProductsNotFound));
+            
             ProductIds.Add(product.Id);
-
             if (ignoredStatuses.Contains(product.Status))
 	            throw new ProductException(product.Id, nameof(TaskStrings.ProductsExcludedByStatus));
 

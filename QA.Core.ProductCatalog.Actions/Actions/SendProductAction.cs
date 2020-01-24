@@ -315,12 +315,19 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                                     {
                                         currentPercent += percentsPerTask;
                                     }
-
                                     TaskContext.SetProgress((byte)currentPercent);
                                 }))
                                 .ToArray();
 
                             Task.WaitAll(tasks);
+                        }
+                        else
+                        {
+                            lock (percentLocker)
+                            {
+                                currentPercent += (float)10 / parts.Length;
+                            }
+                            TaskContext.SetProgress((byte)currentPercent);                          
                         }
 
                         if (TaskContext.IsCancellationRequested)
@@ -402,6 +409,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 .Concat(invisibleOrArchivedIds)
                 .Except(excluded)
                 .Except(frozen)
+                .Except(validationErrors.Keys)
                 .ToArray();
 
             if (productsToRemove.Length > 0)
@@ -431,6 +439,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             var notSucceeded = failed.Keys.Concat(notFound).Concat(excluded).Concat(frozen)
                 .Concat(validationErrors.Keys).ToArray();
 
+            var result = new ActionTaskResult() {FailedIds = notSucceeded};
+            
             var msg = new ActionTaskResultMessage() { ResourceClass = nameof(SendProductActionStrings)};
             
             if (notSucceeded.Any())
@@ -446,7 +456,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 msg.Parameters = new object[] {productIds.Length};
             }
 
-            var result = notSucceeded.Any() ? ActionTaskResult.PartialSuccess(msg, notSucceeded) : ActionTaskResult.Success(msg); 
+            result.Messages.Add(msg);
 
             if (errors.Any())
             {
@@ -467,16 +477,9 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             
             if (validationErrors.Any())
             {
-                writeErrorToLog = true;
-
                 result.Messages.AddRange(validationErrors.SelectMany(v => v.Value.Messages));
             }
 
-            if (writeErrorToLog)
-            {
-                Logger.Error(result.ToString());
-            }
-            
             TaskContext.Result = result;
             
             return result;

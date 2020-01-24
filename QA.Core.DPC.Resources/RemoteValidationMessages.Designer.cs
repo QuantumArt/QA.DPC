@@ -97,7 +97,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate tariff direction in product parameters: {0}.
+        ///   Looks up a localized string similar to Duplicate tariff direction in product parameters ({0}).
         /// </summary>
         public static string DuplicateTariffsAreas {
             get {
@@ -106,7 +106,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate tariff direction in relation matrix parameters: {0}.
+        ///   Looks up a localized string similar to Duplicate tariff direction in relation matrix parameters ({0}).
         /// </summary>
         public static string DuplicateTariffsAreasMatrix {
             get {
@@ -151,7 +151,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Duplicate Alias for current type. Conflicted Ids: {0}.
+        ///   Looks up a localized string similar to Duplicate Alias for products of current type ({0}).
         /// </summary>
         public static string MarketingProduct_Duplicate_Alias {
             get {
@@ -178,7 +178,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Some products doesn&apos;t have common regions with related products: {0}.
+        ///   Looks up a localized string similar to Some products doesn&apos;t have common regions with related products ({0}).
         /// </summary>
         public static string Products_Different_Regions {
             get {
@@ -187,7 +187,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Product contains regions from products: {0}.
+        ///   Looks up a localized string similar to Product contains regions from other products ({0}).
         /// </summary>
         public static string ProductsRepeatingRegions {
             get {
@@ -196,7 +196,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Related entity is archived. Product: {0}, related articles: {1}.
+        ///   Looks up a localized string similar to Related products are archived ({0}).
         /// </summary>
         public static string RelatedEntityIsArchived {
             get {
