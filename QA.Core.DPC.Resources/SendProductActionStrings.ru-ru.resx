@@ -118,43 +118,43 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
    <data name="NotFound" xml:space="preserve">
-    <value>Не найдено ни одного продукта:</value>
+    <value>Не найдено ни одного продукта</value>
   </data>
   <data name="NoRelationAccess" xml:space="preserve">
-    <value>Не хватает прав доступа по связям на следующие статьи:</value>
+    <value>Не хватает прав доступа по связям на следующие статьи</value>
   </data>
   <data name="Cancelled" xml:space="preserve">
     <value>Действие отменено</value>
   </data>
   <data name="PartiallySucceededResult" xml:space="preserve">
-    <value>Обработано {0} из {1}, необработанные продукты:</value>
+    <value>Обработано {0} из {1}, необработанные продукты</value>
   </data>
   <data name="SucceededResult" xml:space="preserve">
     <value>Все {0} продуктов успешно обработаны</value>
   </data>
   <data name="Errors" xml:space="preserve">
-    <value>Ошибки:</value>
+    <value>Ошибки</value>
   </data>
   <data name="ExcludedByStatus" xml:space="preserve">
-    <value>Были исключены по статусу следующие продукты:</value>
+    <value>Были исключены по статусу следующие продукты</value>
   </data>
   <data name="ExcludedWithFreezing" xml:space="preserve">
-    <value>Были исключены из-за заморозки следующие продукты:</value>
+    <value>Были исключены из-за заморозки следующие продукты</value>
   </data>
   <data name="NotFoundInDpc" xml:space="preserve">
-    <value>В DPC не были найдены следующие продукты:</value>
+    <value>В DPC не были найдены следующие продукты</value>
   </data>
   <data name="RemovedFromFronts" xml:space="preserve">
-    <value>Были удалены с витрин следующие продукты:</value>
+    <value>Были удалены с витрин следующие продукты</value>
   </data>
   <data name="NotPassedByStageFiltration" xml:space="preserve">
-    <value>Продукты не прошли фильтрацию ни по одному из Stage каналов:</value>
+    <value>Продукты не прошли фильтрацию ни по одному из Stage каналов</value>
   </data>
   <data name="NotValidated" xml:space="preserve">
-    <value>Продукты не прошли валидацию:</value>
+    <value>Продукты не прошли валидацию</value>
   </data>
   <data name="NotPassedByLiveFiltration" xml:space="preserve">
-    <value>Продукты не прошли фильтрацию ни по одному из Live каналов:</value>
+    <value>Продукты не прошли фильтрацию ни по одному из Live каналов</value>
   </data>
   <data name="YourPartialSendTask" xml:space="preserve">
     <value>Ваша задача на частичную отправку</value>

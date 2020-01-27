@@ -40,7 +40,7 @@ namespace QA.ProductCatalog.ContentProviders
 
             if (!string.IsNullOrEmpty(Extra))
             {
-                sb.Append(" ");
+                sb.Append(": ");
                 sb.Append(Extra);
             }
 

@@ -70,7 +70,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Errors:.
+        ///   Looks up a localized string similar to Errors.
         /// </summary>
         public static string Errors {
             get {
@@ -79,7 +79,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Products excluded by status:.
+        ///   Looks up a localized string similar to Products excluded by status.
         /// </summary>
         public static string ExcludedByStatus {
             get {
@@ -88,7 +88,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Products excluded because of freezing:.
+        ///   Looks up a localized string similar to Products excluded because of freezing.
         /// </summary>
         public static string ExcludedWithFreezing {
             get {
@@ -97,7 +97,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to There is no relation access to the following articles:.
+        ///   Looks up a localized string similar to There is no relation access to the following articles.
         /// </summary>
         public static string NoRelationAccess {
             get {
@@ -106,7 +106,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Products not found:.
+        ///   Looks up a localized string similar to Products not found.
         /// </summary>
         public static string NotFound {
             get {
@@ -115,7 +115,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Product not found in DPC:.
+        ///   Looks up a localized string similar to Product not found in DPC.
         /// </summary>
         public static string NotFoundInDpc {
             get {
@@ -124,7 +124,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Products not passed filtration by Live channels:.
+        ///   Looks up a localized string similar to Products not passed filtration by Live channels.
         /// </summary>
         public static string NotPassedByLiveFiltration {
             get {
@@ -133,7 +133,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Products not passed filtration by Stage channels:.
+        ///   Looks up a localized string similar to Products not passed filtration by Stage channels.
         /// </summary>
         public static string NotPassedByStageFiltration {
             get {
@@ -142,7 +142,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Products not passed validation:.
+        ///   Looks up a localized string similar to Products not passed validation.
         /// </summary>
         public static string NotValidated {
             get {
@@ -151,7 +151,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Processed {0} from {1}, Unprocessed products:.
+        ///   Looks up a localized string similar to Processed {0} from {1}, Unprocessed products.
         /// </summary>
         public static string PartiallySucceededResult {
             get {
@@ -160,7 +160,7 @@ namespace QA.Core.DPC.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Products removed from fronts:.
+        ///   Looks up a localized string similar to Products removed from fronts.
         /// </summary>
         public static string RemovedFromFronts {
             get {

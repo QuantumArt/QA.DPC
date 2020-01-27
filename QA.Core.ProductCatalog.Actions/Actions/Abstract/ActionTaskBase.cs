@@ -101,7 +101,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 				}
 			}
 
-			executionContext.Result = processResult;
+			executionContext.Result = processResult.GetMergedResult();
 			
 		}
 		

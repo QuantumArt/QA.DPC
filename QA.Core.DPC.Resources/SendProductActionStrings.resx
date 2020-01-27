@@ -118,43 +118,43 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="NotFound" xml:space="preserve">
-    <value>Products not found:</value>
+    <value>Products not found</value>
   </data>
   <data name="NoRelationAccess" xml:space="preserve">
-    <value>There is no relation access to the following articles:</value>
+    <value>There is no relation access to the following articles</value>
   </data>
   <data name="Cancelled" xml:space="preserve">
     <value>Action cancelled</value>
   </data>
   <data name="PartiallySucceededResult" xml:space="preserve">
-    <value>Processed {0} from {1}, Unprocessed products:</value>
+    <value>Processed {0} from {1}, Unprocessed products</value>
   </data>
   <data name="SucceededResult" xml:space="preserve">
     <value>All {0} products has been successfully processed</value>
   </data>
   <data name="Errors" xml:space="preserve">
-    <value>Errors:</value>
+    <value>Errors</value>
   </data>
   <data name="ExcludedByStatus" xml:space="preserve">
-    <value>Products excluded by status:</value>
+    <value>Products excluded by status</value>
   </data>
   <data name="ExcludedWithFreezing" xml:space="preserve">
-    <value>Products excluded because of freezing:</value>
+    <value>Products excluded because of freezing</value>
   </data>
   <data name="NotFoundInDpc" xml:space="preserve">
-    <value>Product not found in DPC:</value>
+    <value>Product not found in DPC</value>
   </data>
   <data name="RemovedFromFronts" xml:space="preserve">
-    <value>Products removed from fronts:</value>
+    <value>Products removed from fronts</value>
   </data>
   <data name="NotPassedByStageFiltration" xml:space="preserve">
-    <value>Products not passed filtration by Stage channels:</value>
+    <value>Products not passed filtration by Stage channels</value>
   </data>
   <data name="NotValidated" xml:space="preserve">
-    <value>Products not passed validation:</value>
+    <value>Products not passed validation</value>
   </data>
   <data name="NotPassedByLiveFiltration" xml:space="preserve">
-    <value>Products not passed filtration by Live channels:</value>
+    <value>Products not passed filtration by Live channels</value>
   </data>
   <data name="YourPartialSendTask" xml:space="preserve">
     <value>Your partial send task</value>
