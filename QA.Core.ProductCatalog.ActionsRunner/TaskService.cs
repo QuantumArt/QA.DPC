@@ -5,6 +5,8 @@ using System.Resources;
 using System.Runtime.CompilerServices;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using NLog;
+using NLog.Fluent;
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.DPC.Resources;
@@ -19,6 +21,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         private readonly IConnectionProvider _provider;
         private readonly Customer _customer;
         private readonly ResourceManager _taskRm;
+        private readonly static ILogger Logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// конструктор
         /// </summary>
@@ -47,9 +50,21 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         int? sourceTaskId = null, string exclusiveCategory = null, string config = null, byte[] binData = null)
         {
             var task = GetTaskObject(key, data, userId, userName, taskDisplayName, sourceTaskId, exclusiveCategory, config, binData);
+            
+            Logger.Info()
+                .Message("Adding task...")
+                .Property("task", task)
+                .Write();
+            
             using (var context = TaskRunnerEntities.Get(_provider))
             {
-                return AddTask(context, task);
+                var result = AddTask(context, task);
+                
+                Logger.Info()
+                    .Message("Task {taskId} added", result)
+                    .Write();
+                
+                return result;
             }
         }
 
@@ -129,7 +144,6 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 context.SaveChanges();
                 tr.Commit();
                 return task.ID;
-                
             }
         }
 
@@ -182,12 +196,29 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             using (var context = TaskRunnerEntities.Get(_provider))
             using (var tr = context.Database.BeginTransaction())
             {
+                
+                Logger.Info()
+                    .Message("Receiving task {taskId} for updating...", id)
+                    .Write();
+                
                 var task = GetTaskWithUpdateLock(context, id);
                 if (task == null)
+                {
+                    Logger.Error()
+                        .Message("Task {taskId} is not found", id)
+                        .Write();
+                    
                     return false;
+                }
 
                 if (allowedInitialStates != null && !allowedInitialStates.Select(x => (int) x).Contains(task.StateID))
+                {
+                    Logger.Error()
+                        .Message("Task {taskId} has been excluded by state {state}", id, task.TaskState)
+                        .Write();
+                    
                     return false;
+                }
                 
                 task.StateID = (int) state;
                 task.Message = message ?? task.Message;
@@ -197,7 +228,14 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
                 context.SaveChanges();
                 tr.Commit();
+                
+                Logger.Info()
+                    .Message("Task {taskId} has been updated", id)
+                    .Property("task", task)
+                    .Write();
+                
                 return true;
+                
             }
         }
 

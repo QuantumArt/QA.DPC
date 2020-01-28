@@ -19,6 +19,8 @@ namespace QA.Core.ProductCatalog.Actions.Tasks
 		public ActionTaskResult Result { get; set; }		
 		public bool IsCancellationRequested { get; set; }
 		public bool IsCancelled { get; set; }
+		public int TaskId => 0;
+
 		#endregion
 	}
 }

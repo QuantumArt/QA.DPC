@@ -208,40 +208,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			}
 		}
 
-
-        protected T DoWithLogging<T>(string message, string transactionId, Func<T> func, [CallerMemberName] string caller = "")
-        {
-            var timer = new Stopwatch();
-
-            try
-            {
-                T result;
-                timer.Start();
-                result = func();
-                return result;
-            }
-            finally
-            {
-                timer.Stop();
-                Logger.Debug(string.Format("{0} {1} {2} Elapsed {3}", transactionId, caller, message, timer.ElapsedMilliseconds));
-            }
-        }
-
-        protected void DoWithLogging(string message, string transactionId, Action func, [CallerMemberName] string caller = "")
-        {
-            var timer = new Stopwatch();
-            timer.Start();
-
-            try
-            {
-                func();
-            }
-            finally
-            {
-                timer.Stop();
-                Logger.Debug(string.Format("{0} {1} {2} Elapsed {3}", transactionId, caller, message, timer.ElapsedMilliseconds));
-            }
-        }
 		#endregion
 
 		#region Private methods

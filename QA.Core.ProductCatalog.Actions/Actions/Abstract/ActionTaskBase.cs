@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Newtonsoft.Json;
 using NLog;
+using NLog.Fluent;
 using QA.Core.DPC.Resources;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Tasks;
@@ -17,7 +19,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 	{
 		public const string ResourceClass = "TaskStrings";
 		
-		protected NLog.Logger Logger { get; set; }
+		protected ILogger Logger { get; set; }
 		protected ITaskExecutionContext TaskContext { get; private set; }
 		protected ActionData ActionData { get; private set; }
 
@@ -112,5 +114,69 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
         {
             Run(data, executionContext);
         }
-    }
+
+        protected T DoWithLogging<T>(string message, int taskId, Func<T> func, params object[] messageParams)
+        {
+	        var timer = new Stopwatch();
+
+	        try
+	        {
+		        T result;
+		        timer.Start();
+		        result = func();
+		        timer.Stop();
+		        Logger.Info()
+			        .Message(message, messageParams)
+			        .Property("taskId", taskId)
+			        .Property("elapsed", timer.ElapsedMilliseconds)
+			        .Write();                
+		        return result;
+	        }
+	        catch (Exception ex)
+	        {
+		        timer.Stop();
+		        Logger.Error()
+			        .Exception(ex)
+			        .Message(message, messageParams)
+			        .Property("taskId", taskId)
+			        .Property("elapsed", timer.ElapsedMilliseconds)
+			        .Write();
+
+		        throw;
+	        }
+            
+
+        }
+
+        protected void DoWithLogging(string message, int taskId, Action func, params object[] messageParams)
+        {
+	        var timer = new Stopwatch();
+	        timer.Start();
+
+	        try
+	        {
+		        func();
+	        }
+	        catch (Exception ex)
+	        {
+		        timer.Stop();
+		        Logger.Error()
+			        .Exception(ex)
+			        .Message(message, messageParams)
+			        .Property("taskId", taskId)
+			        .Property("elapsed", timer.ElapsedMilliseconds)
+			        .Write();
+
+		        throw;
+	        }
+	        
+	        timer.Stop();
+	        Logger.Info()
+		        .Message(message, messageParams)
+		        .Property("taskId", taskId)
+		        .Property("elapsed", timer.ElapsedMilliseconds)
+		        .Write();        
+
+        }
+	}
 }

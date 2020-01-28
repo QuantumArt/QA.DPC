@@ -17,5 +17,7 @@
 
         bool IsCancellationRequested { get; }
         bool IsCancelled { get; set; }
+        
+        int TaskId { get; }
     }
 }

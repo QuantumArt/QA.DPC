@@ -435,7 +435,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             int[] notFound = missing.Except(productsToRemove).Except(excluded).Except(frozen).Except(validationErrors.Keys).ToArray();
 
-            var writeErrorToLog = false;
             var notSucceeded = failed.Keys.Concat(notFound).Concat(excluded).Concat(frozen)
                 .Concat(validationErrors.Keys).ToArray();
 

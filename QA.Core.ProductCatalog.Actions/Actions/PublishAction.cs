@@ -1,26 +1,20 @@
-﻿using QA.Core.Models.Entities;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Transactions;
+using Newtonsoft.Json;
+using QA.Core.DPC.Loader.Services;
+using QA.Core.DPC.Resources;
+using QA.Core.Models;
+using QA.Core.Models.Configuration;
+using QA.Core.Models.Entities;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
-using QA.ProductCatalog.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using QA.Core.DPC.Loader.Services;
-using QA.Core.Models.Configuration;
-using QA.Core.Models;
-using Quantumart.QP8.BLL.Services.DTO;
-using System.Transactions;
-using NLog;
+using QA.Core.ProductCatalog.ActionsRunner;
 using QA.ProductCatalog.ContentProviders;
-using System.Collections.Concurrent;
-using System.Data;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
-using QA.Core.DPC.Resources;
-using QA.ProductCatalog.Integration;
-using Quantumart.QP8.BLL;
-using Article = QA.Core.Models.Entities.Article;
+using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions
 {
@@ -56,7 +50,6 @@ namespace QA.Core.ProductCatalog.Actions
         #region Overrides
         protected override void ProcessProduct(int productId, Dictionary<string, string> actionParameters)
         {
-            var transactionId = Guid.NewGuid().ToString();
 
 			string[] channels = actionParameters.GetChannels();
             bool localize = actionParameters.GetLocalize();
@@ -64,7 +57,13 @@ namespace QA.Core.ProductCatalog.Actions
             string ignoredStatus = (actionParameters.ContainsKey("IgnoredStatus")) ? actionParameters["IgnoredStatus"] : null;
 			var ignoredStatuses = ignoredStatus?.Split(',') ?? Enumerable.Empty<string>().ToArray();
 
-            var product = DoWithLogging("Productservice.GetProductById", transactionId, () => Productservice.GetProductById(productId));
+            var product = DoWithLogging(
+	            "Getting product {id}", 
+	            TaskContext.TaskId, 
+	            () => Productservice.GetProductById(productId), 
+	            productId
+	         );
+            
             if (product == null)
 	            throw new ProductException(productId, nameof(TaskStrings.ProductsNotFound));
             
@@ -75,14 +74,24 @@ namespace QA.Core.ProductCatalog.Actions
 			if (!ArticleFilter.DefaultFilter.Matches(product))
 				throw new ProductException(product.Id, nameof(TaskStrings.ProductsNotToPublish));
 
-            var state = FreezeService.GetFreezeState(product.Id);
+			var state = DoWithLogging(
+				"Getting freezing state for product {id}", 
+				TaskContext.TaskId, 
+				() => FreezeService.GetFreezeState(productId), 
+				productId
+			);
 
             if (state == FreezeState.Frozen)
             {
 	            throw new ProductException(product.Id, nameof(TaskStrings.ProductsFreezed));
             }
 
-            var xamlValidationErrors = DoWithLogging("ValidateXaml", transactionId, () => ArticleService.XamlValidationById(product.Id, true));
+            var xamlValidationErrors = DoWithLogging(
+	            "Validating XAML for product {id}", 
+	            TaskContext.TaskId, 
+	            () => ArticleService.XamlValidationById(product.Id, true), 
+	            productId
+	        );
             var validationResult = ActionTaskResult.FromRulesException(xamlValidationErrors, product.Id);
 
             if (!validationResult.IsSuccess)
@@ -91,27 +100,58 @@ namespace QA.Core.ProductCatalog.Actions
                 throw new ProductException(product.Id, JsonConvert.SerializeObject(validationResult));
             }
 
-            var allArticles = GetAllArticles(new[] { product }).ToArray();
+            var allArticles = DoWithLogging(
+	            "Getting all articles for product {id}", 
+	            TaskContext.TaskId, 
+	            () => GetAllArticles(new[] { product }).ToArray(),
+	            productId
+            );
+            
 			bool containsIgnored = allArticles.Any(a => ignoredStatuses.Contains(a.Status));
+			
+			var articleIds = allArticles
+				.Where(a => a.Id != productId && !a.IsPublished && !ignoredStatuses.Contains(a.Status))
+				.Select(a => a.Id)
+				.Distinct()
+				.ToArray();
 
-            var articleIds = DoWithLogging("GetAllArticles", transactionId, () => allArticles.Where(a => a.Id != productId && !a.IsPublished && !ignoredStatuses.Contains(a.Status)).Select(a => a.Id).Distinct().ToArray());
-
-            var result = DoWithLogging("ArticleService.Publish", transactionId, () => ArticleService.Publish(product.ContentId, new[] { productId }));
+            var result = DoWithLogging(
+	            "Publishing product {id}", 
+	            TaskContext.TaskId, 
+	            () => ArticleService.Publish(product.ContentId, new[] { productId }),
+	            productId
+	            );
+            
             ValidateMessageResult(productId, result);
 
-            DoWithLogging("ArticleService.SimplePublish", transactionId, () => ArticleService.SimplePublish(articleIds));
+            if (articleIds.Any())
+            {
+	            DoWithLogging(
+		            "Publishing articles {ids} for product {id}", 
+		            TaskContext.TaskId, 
+		            () => ArticleService.SimplePublish(articleIds),
+		            string.Join(",", articleIds),
+		            productId
+	            );	            
+            }
 
             if (state == FreezeState.Unfrosen)
             {
-                FreezeService.ResetFreezing(new []{ product.Id} );
+	            DoWithLogging(
+		            "Reset freezing for product {id}", 
+		            TaskContext.TaskId, 
+		            () => FreezeService.ResetFreezing(product.Id),
+		            productId
+	            );	  
+               
             }
 
             const string doNotSendNotificationsKey = "DoNotSendNotifications";
 			bool doNotSendNotifications = actionParameters.ContainsKey(doNotSendNotificationsKey) && bool.Parse(actionParameters[doNotSendNotificationsKey]);
 
 	        if (!doNotSendNotifications)
-			{
-				DoWithLogging("SendNotification (includes substeps)", transactionId, () => SendNotification(product, transactionId, UserName, UserId, containsIgnored, localize, channels));
+	        {
+		        SendNotification(product, UserName, UserId, containsIgnored, localize, channels);
             }          
         }
 
@@ -191,16 +231,38 @@ namespace QA.Core.ProductCatalog.Actions
 			}
 		}
 
-		private void SendNotification(Article stageProduct, string transactionId, string userName, int userId, bool sendSeparateLive, bool localize, string[] channels)
+		private void SendNotification(Article stageProduct, string userName, int userId, bool sendSeparateLive, bool localize, string[] channels)
 		{
 			try
 			{
 				var stageProducts = new[] { stageProduct };
+				var liveProducts = new[] { stageProduct };
+				var productId = stageProduct.Id;
                 using (new TransactionScope(TransactionScopeOption.Suppress))
                 {
-	                var liveProducts = new[] { sendSeparateLive ? Productservice.GetProductById(stageProduct.Id, true) : stageProduct };	                
-                    DoWithLogging("NotificationService.SendProducts stage", transactionId, () => NotificationService.SendProducts(stageProducts, true, userName, userId, localize, false, channels));
-                    DoWithLogging("NotificationService.SendProducts live", transactionId, () => NotificationService.SendProducts(liveProducts, false, userName, userId, localize, false, channels));
+	                if (sendSeparateLive)
+	                {
+		                liveProducts = DoWithLogging(
+			                "Receiving separate live product {id}", 
+			                TaskContext.TaskId,  
+			                () => new[] {Productservice.GetProductById(stageProduct.Id, true)},
+			                productId		
+		                );
+	                }
+	                
+                    DoWithLogging(
+	                    "Sending stage notifications for product {id}", 
+	                    TaskContext.TaskId, 
+	                    () => NotificationService.SendProducts(stageProducts, true, userName, userId, localize, false, channels),
+	                    productId
+	                    );
+                    
+                    DoWithLogging(
+	                    "Sending live notifications for product {id}", 
+	                    TaskContext.TaskId, 
+	                    () => NotificationService.SendProducts(liveProducts, false, userName, userId, localize, false, channels),
+	                    productId    
+	                    );
                 }
 			}
 			catch (Exception ex)
