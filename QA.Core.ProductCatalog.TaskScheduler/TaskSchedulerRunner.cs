@@ -55,6 +55,14 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 
 		private readonly object _stateLocker = new object();
 
+		private void CancelRequestedTasks()
+		{
+			using (var taskService = _taskServiceFunc())
+			{
+				taskService.CancelRequestedTasks();
+			}
+		}
+		
 		private void UpdateJobsAndTriggers()
 		{
 			using (var taskService = _taskServiceFunc())
@@ -179,7 +187,8 @@ namespace QA.Core.ProductCatalog.TaskScheduler
 				
 				else if (_scheduler.IsStarted)
 					return;
-
+				
+				CancelRequestedTasks();
 				UpdateJobsAndTriggers();
 
 				_scheduler.Start();

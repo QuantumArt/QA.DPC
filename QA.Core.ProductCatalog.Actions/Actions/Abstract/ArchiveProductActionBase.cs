@@ -53,13 +53,34 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 			var definition = Productservice.GetProductDefinition(0, product.ContentId);
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
             { 
-                dictionary = GetProductsToBeProcessed<DeletingMode>(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, excludeArchive);
+	            dictionary = DoWithLogging(
+		            () => GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, excludeArchive),
+		            "Getting products to be processed for product {id}", productId
+	            );
 			
 			    if (!doNotSendNotifications)
                     notificationProducts = GetNotificationProducts(productId);
             }
 
-			ArchiveProducts(dictionary, product);
+            var articleIds = dictionary.Values
+	            .Where(p => p.Article.Id != product.Id && p.Article.Archived != NeedToArchive)
+	            .Select(p => p.Article.Id)
+	        .ToArray();
+
+            var result = DoWithLogging(
+	            () => ArticleService.SetArchiveFlag(product.ContentId, new[] {product.Id}, NeedToArchive),
+				"Set archive flag in {flag} for product {id}", NeedToArchive, product.Id 
+            );
+            
+            ValidateMessageResult(product.Id, result);
+
+            if (articleIds.Any())
+            {
+	            DoWithLogging(
+		            () => ArticleService.SimpleSetArchiveFlag(articleIds, NeedToArchive),
+		            "Set archive flag in {flag} for articles {ids}", NeedToArchive, articleIds
+	            );           
+            }
 
             if (!doNotSendNotifications)
             {

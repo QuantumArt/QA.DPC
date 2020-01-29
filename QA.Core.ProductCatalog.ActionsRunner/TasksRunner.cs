@@ -165,6 +165,14 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                                     state, 
                                     JsonConvert.SerializeObject(executionContext.Result)
                                 );
+                                
+                                _logger.Info()
+                                    .Message(
+                                        "Task {taskId} state has been changed to {state}", 
+                                        taskIdToRun.Value, state
+                                    )
+                                    .Property("taskRunnerId", GetHashCode())
+                                    .Write();    
 
                                 if (state == ActionsRunnerModel.State.Done)
                                 {

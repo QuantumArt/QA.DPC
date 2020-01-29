@@ -39,7 +39,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		{
 			try
 			{
-				NotificationService.DeleteProducts(products, UserName, UserId, false, channels);
+				DoWithLogging(
+					() => NotificationService.DeleteProducts(products, UserName, UserId, false, channels),
+					"Sending delete notifications for product {id}", productId
+				);
 			}
 			catch (Exception ex)
 			{

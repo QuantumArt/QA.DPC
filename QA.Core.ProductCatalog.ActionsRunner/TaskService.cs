@@ -95,9 +95,11 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             return task.ID;
         }
 
-        private string _sqlUpdateHint => _customer.DatabaseType == DatabaseType.Postgres ? "" : "WITH (ROWLOCK, UPDLOCK)";
+        private string _sqlForUpdateHint => _customer.DatabaseType == DatabaseType.Postgres ? "" : "WITH (ROWLOCK, UPDLOCK)";
         
-        private string _pgUpdateHint => _customer.DatabaseType == DatabaseType.Postgres ? "FOR UPDATE" : "";
+        private string _sqlUpdateHint => _customer.DatabaseType == DatabaseType.Postgres ? "" : "WITH (ROWLOCK)";
+        
+        private string _pgForUpdateHint => _customer.DatabaseType == DatabaseType.Postgres ? "FOR UPDATE" : "";
 
         private string _sqlNolockHint => _customer.DatabaseType == DatabaseType.Postgres ? "" : "WITH (NOLOCK)";
         
@@ -125,14 +127,14 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             using (var tr = context.Database.BeginTransaction())
             {
                 var sql =
-                $@"SELECT {SqlTop(1)} * FROM tasks {_sqlUpdateHint}
+                $@"SELECT {SqlTop(1)} * FROM tasks {_sqlForUpdateHint}
                 WHERE {_stateId} = {{0}} AND (
                     {_exclusiveCategory} IS NULL OR NOT EXISTS (
                         SELECT * FROM tasks t
                         WHERE t.{_exclusiveCategory} = tasks.{_exclusiveCategory} AND t.{_stateId} = {{1}}
                     )
                 )
-                ORDER BY ID {_pgUpdateHint} {PgTop(1)}";
+                ORDER BY ID {_pgForUpdateHint} {PgTop(1)}";
                 var task = context.Tasks.FromSql(sql, State.New, State.Running).SingleOrDefault();
 
                 if (task == null)
@@ -172,7 +174,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         
         public Task GetTaskWithUpdateLock(TaskRunnerEntities ctx, int id)
         {
-            var sql = $@"SELECT * FROM tasks {_sqlUpdateHint} where id = {{0}} {_pgUpdateHint}";
+            var sql = $@"SELECT * FROM tasks {_sqlForUpdateHint} where id = {{0}} {_pgForUpdateHint}";
             return ctx.Tasks.FromSql(sql, id).SingleOrDefault();
         }
         
@@ -197,7 +199,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             using (var tr = context.Database.BeginTransaction())
             {
                 
-                Logger.Info()
+                Logger.Trace()
                     .Message("Receiving task {taskId} for updating...", id)
                     .Write();
                 
@@ -229,7 +231,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 context.SaveChanges();
                 tr.Commit();
                 
-                Logger.Info()
+                Logger.Trace()
                     .Message("Task {taskId} has been updated", id)
                     .Property("task", task)
                     .Write();
@@ -337,6 +339,17 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 context.SaveChanges();               
             }
 
+        }
+
+        public void CancelRequestedTasks()
+        {
+            using (var context = TaskRunnerEntities.Get(_provider))
+            {
+                var sql =
+                    ($@"UPDATE tasks {_sqlUpdateHint} SET {_stateId}={{0}} WHERE {_isCancellationRequested} = 1 AND {_stateId}={{1}}");
+                var fString = FormattableStringFactory.Create(sql, State.Cancelled, State.Running);
+                context.Database.ExecuteSqlCommand(fString);
+            }
         }
 
 

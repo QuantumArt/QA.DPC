@@ -110,7 +110,6 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<IProductService, TLoader>(
                 new InjectionConstructor(
                     new ResolvedParameter<IContentDefinitionService>("ContentDefinitionServiceAlwaysAdmin"),
-                    typeof(ILogger),
                     typeof(VersionedCacheProviderBase),
                     typeof(ICacheItemWatcher),
                     new ResolvedParameter<IReadOnlyArticleService>("CachedReadOnlyArticleServiceAdapter"),

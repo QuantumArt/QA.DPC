@@ -54,7 +54,10 @@ namespace QA.Core.ProductCatalog.Actions
 
             using (TransactionScope scope = new TransactionScope(TransactionScopeOption.Suppress))
             {
-                dictionary = GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, false);
+	            dictionary = DoWithLogging(
+		            () => GetProductsToBeProcessed(product, definition, ef => ef.DeletingMode, DeletingMode.Delete, false),
+		            "Receiving articles to be deleted for product {id}", product.Id
+	            );
                 products = doNotSendNotifications ? null : Productservice.GetSimpleProductsByIds(new[] { product.Id });
             }
 
@@ -71,23 +74,36 @@ namespace QA.Core.ProductCatalog.Actions
 		private void DeleteProducts(Dictionary<int, Product<DeletingMode>> dictionary, int productId, bool checkRootArticlePermissions)
 		{
 			var articleIds = dictionary.Values.Where(a => a.Article.Id != productId).Select(p => p.Article.Id).ToArray();
+			DoWithLogging(
+				() => DeleteRootArticle(productId, checkRootArticlePermissions),
+				"Deleting root article for product {id}", productId
+			);
 
-		    if (checkRootArticlePermissions)
-		    {
-                var result = ArticleService.Delete(productId);
-                ValidateMessageResult(productId, result);
-            }
-            else
-                ArticleService.SimpleDelete(new [] { productId } );
-
-            ArticleService.SimpleDelete(articleIds);
+		    DoWithLogging(
+			    () => ArticleService.SimpleDelete(articleIds),
+			    "Deleting articles {ids} for product {id}", articleIds, productId
+		    );
+		}
+		
+		private void DeleteRootArticle(int productId, bool checkRootArticlePermissions)
+		{
+			if (checkRootArticlePermissions)
+			{
+				var result = ArticleService.Delete(productId);
+				ValidateMessageResult(productId, result);
+			}
+			else
+				ArticleService.SimpleDelete(new[] {productId});
 		}
 
 		private void SendNotification(Models.Entities.Article[] products, int productId, string[] channels)
 		{
 			try
 			{
-				NotificationService.DeleteProducts(products, UserName, UserId, false, channels);
+				DoWithLogging(
+					() => NotificationService.DeleteProducts(products, UserName, UserId, false, channels),
+					"Sending delete notifications for product {id}", productId
+				);
 			}
 			catch (Exception ex)
 			{

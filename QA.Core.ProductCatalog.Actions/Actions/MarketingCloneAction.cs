@@ -76,7 +76,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 					break;
 				}
 
-				int marketingProductCloneId = CloneMarketingProduct(context, marketingProduct, relationFieldId, exceptions);
+				int marketingProductCloneId = DoWithLogging(
+					() => CloneMarketingProduct(context, marketingProduct, relationFieldId, exceptions),
+					"Cloning marketing product {id}", marketingProduct.Id
+				);
+				
 				SetProgress(++index, count);
 
 				if (marketingProductCloneId == 0)
@@ -94,7 +98,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 							break;
 						}
 
-						CloneProduct(context, productId, productContentId, marketingProductCloneId, backRelationFieldId, exceptions);
+						DoWithLogging(
+							() => CloneProduct(context, productId, productContentId, marketingProductCloneId, backRelationFieldId, exceptions),
+							"Cloning regional product {id} into marketing product {marketingProductId} ", productId, marketingProductCloneId
+						);
 						SetProgress(++index, count);
 					}
 				}

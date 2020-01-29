@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
 using NLog;
 using NLog.Fluent;
@@ -46,6 +47,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
 			try
 			{
+				Logger.Info()
+					.Message("{action} has been started", GetType().Name)
+					.Property("taskId",TaskContext.TaskId)
+					.Property("context", context)
+					.Write();
+
 				HttpContextUserProvider.ForcedUserId = context.UserId;
 				processResult = Process(context) ?? new ActionTaskResult();
 				HttpContextUserProvider.ForcedUserId = 0;
@@ -115,7 +122,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
             Run(data, executionContext);
         }
 
-        protected T DoWithLogging<T>(string message, int taskId, Func<T> func, params object[] messageParams)
+        protected T DoWithLogging<T>(Func<T> func, string message, params object[] messageParams)
         {
 	        var timer = new Stopwatch();
 
@@ -127,7 +134,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		        timer.Stop();
 		        Logger.Info()
 			        .Message(message, messageParams)
-			        .Property("taskId", taskId)
+			        .Property("taskId", TaskContext.TaskId)
 			        .Property("elapsed", timer.ElapsedMilliseconds)
 			        .Write();                
 		        return result;
@@ -138,7 +145,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		        Logger.Error()
 			        .Exception(ex)
 			        .Message(message, messageParams)
-			        .Property("taskId", taskId)
+			        .Property("taskId", TaskContext.TaskId)
 			        .Property("elapsed", timer.ElapsedMilliseconds)
 			        .Write();
 
@@ -148,7 +155,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
         }
 
-        protected void DoWithLogging(string message, int taskId, Action func, params object[] messageParams)
+        protected void DoWithLogging(Action func, string message, params object[] messageParams)
         {
 	        var timer = new Stopwatch();
 	        timer.Start();
@@ -163,7 +170,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 		        Logger.Error()
 			        .Exception(ex)
 			        .Message(message, messageParams)
-			        .Property("taskId", taskId)
+			        .Property("taskId", TaskContext.TaskId)
 			        .Property("elapsed", timer.ElapsedMilliseconds)
 			        .Write();
 
@@ -173,7 +180,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 	        timer.Stop();
 	        Logger.Info()
 		        .Message(message, messageParams)
-		        .Property("taskId", taskId)
+		        .Property("taskId", TaskContext.TaskId)
 		        .Property("elapsed", timer.ElapsedMilliseconds)
 		        .Write();        
 

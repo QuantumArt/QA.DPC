@@ -30,7 +30,6 @@ namespace QA.Core.DPC.Loader
         public bool ArchiveFiles { get; set; }
 
         public LocalSystemCachedLoader(IContentDefinitionService definitionService,
-            ILogger logger,
             VersionedCacheProviderBase cacheProvider,
             ICacheItemWatcher cacheItemWatcher,
             IReadOnlyArticleService articleService,
@@ -38,7 +37,7 @@ namespace QA.Core.DPC.Loader
             ISettingsService settingsService,
             IList<IConsumerMonitoringService> consumerMonitoringServices,
             IArticleFormatter formatter, IConnectionProvider connectionProvider) : base(definitionService,
-                logger, cacheProvider, cacheItemWatcher, articleService, fieldService, settingsService, consumerMonitoringServices, formatter, connectionProvider)
+                cacheProvider, cacheItemWatcher, articleService, fieldService, settingsService, consumerMonitoringServices, formatter, connectionProvider)
         {
             DataDirectory = AppDomain.CurrentDomain.GetData("DataDirectory") as string;
             if (DataDirectory == null)

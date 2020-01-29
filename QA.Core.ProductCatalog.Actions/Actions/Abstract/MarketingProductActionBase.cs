@@ -75,7 +75,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 
                     try
                     {
-                        action.Process(productContext);
+                        DoWithLogging(
+                            () => action.Process(productContext),
+                            "Calling {action} for product {id}", ActionKey, productId
+                        );
                         remainingCount--;
                     }
                     catch (ProductException pex)

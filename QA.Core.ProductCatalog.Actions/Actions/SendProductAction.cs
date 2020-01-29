@@ -70,7 +70,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             if (context.ContentItemIds == null || context.ContentItemIds.Length == 0)
             {
-                productIds = Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetCustomer());
+                productIds = DoWithLogging(
+                    () => Helpers.GetAllProductIds(int.Parse(context.Parameters["site_id"]), context.ContentId, _provider.GetCustomer()), 
+                    "Getting all products from content {contentId}", context.ContentId
+                );
 
                 articleIdsToCheckRelationsByContentId = new Dictionary<int, int[]>
                 {
@@ -79,7 +82,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
             }
             else
             {
-                productIds = Helpers.ExtractRegionalProductIdsFromMarketing(context.ContentItemIds, _articleService, marketingProductContentId, productsFieldName);
+                productIds = DoWithLogging(
+                    () => Helpers.ExtractRegionalProductIdsFromMarketing(context.ContentItemIds, _articleService, marketingProductContentId, productsFieldName), 
+                    "Getting regional product ids from marketing products content {contentId} using  field {fieldName} and ids {ids}", 
+                    marketingProductContentId, productsFieldName, context.ContentItemIds
+                );
 
                 articleIdsToCheckRelationsByContentId = Helpers.GetContentIds(productIds, _provider.GetCustomer());
             }
@@ -96,7 +103,12 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
             foreach (var articleIdsWithContentId in articleIdsToCheckRelationsByContentId)
             {
-                var checkResult = _articleService.CheckRelationSecurity(articleIdsWithContentId.Key, articleIdsWithContentId.Value, false);
+                var checkResult =
+                    DoWithLogging(
+                        () => _articleService.CheckRelationSecurity(articleIdsWithContentId.Key, articleIdsWithContentId.Value, false), 
+                        "Checking relation security in content {contentId} for articles {ids}", 
+                        articleIdsWithContentId.Key, articleIdsWithContentId.Value
+                    );
 
                 string idsstr = string.Join(", ", checkResult.Where(n => !n.Value));
 
@@ -169,7 +181,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         var localInvisibleOrArchivedIds = new HashSet<int>();
 
 
-                        Article[] prodsStage = tl.ProductService.GetProductsByIds(idsToProcess.ToArray());
+                        Article[] prodsStage = DoWithLogging(
+                            () => tl.ProductService.GetProductsByIds(idsToProcess.ToArray()), 
+                            "Getting products {ids}", idsToProcess.ToArray()
+                        );
                         IEnumerable<string> ignoredStatuses = ignoredStatus?.Split(',') ??
                                                               Enumerable.Empty<string>().ToArray();
                         var excludedStage = prodsStage.Where(n => ignoredStatuses.Contains(n.Status)).ToArray();
@@ -179,10 +194,16 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                         prodsStage = prodsStage.Except(excludedStage).ToArray();
 
+                        var frozenIds = new int[0];
 
-                        var frozenIds = skipLive
-                            ? new int[0]
-                            : _freezeService.GetFrozenProductIds(prodsStage.Select(p => p.Id).ToArray());
+                        if (!skipLive)
+                        {
+                            var idsToCheck = prodsStage.Select(p => p.Id).ToArray();
+                            frozenIds = DoWithLogging(
+                                () => _freezeService.GetFrozenProductIds(idsToCheck),
+                                "Getting freezing state for products {ids}", idsToCheck
+                            );                
+                        }
 
                         prodsStage = prodsStage.Where(p => !frozenIds.Contains(p.Id)).ToArray();
 
@@ -199,7 +220,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         //Валидация продуктов
                         foreach (int id in prodsStage.Where(w => !w.Archived && w.Visible).Select(s => s.Id))
                         {
-                            var xamlValidationErrors = _articleService.XamlValidationById(id, true);
+                            var xamlValidationErrors = DoWithLogging(
+                                () => _articleService.XamlValidationById(id, true), 
+                                "Validating XAML for product {id}", id
+                            );
                             var validationResult = ActionTaskResult.FromRulesException(xamlValidationErrors, id);
                             
                             if (!validationResult.IsSuccess)
@@ -210,13 +234,22 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         }
                         prodsStage = prodsStage.Where(w => !validationErrors.Keys.Contains(w.Id)).ToArray();
 
+                        var prodsLive = new Article[] { };
 
-                        //если будем автоматом публиковать то нет смысла отдельно получать prodsLive, prodsStage присвоим
-                        var prodsLive = skipLive
-                            ? new Article[] { }
-                            : skipPublishing
-                                ? tl.ProductService.GetProductsByIds(idsToProcess.ToArray(), true)
-                                : prodsStage;
+                        if (!skipLive)
+                        {
+                            if (!skipPublishing)
+                            {
+                                prodsLive = prodsStage;
+                            }
+                            else
+                            {
+                                prodsLive = DoWithLogging(
+                                    () => tl.ProductService.GetProductsByIds(idsToProcess.ToArray(), true),
+                                    "Getting separate live products {ids}", idsToProcess.ToArray()
+                                );     
+                            }
+                        }
 
 
                         if (TaskContext.IsCancellationRequested)
@@ -293,16 +326,23 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         int sectionSize = Math.Min(bundleSize, 5);
 
                         var tasks =
-                                ArticleFilter.LiveFilter.Filter(prodsLive)
+                            ArticleFilter.LiveFilter.Filter(prodsLive)
                                 .Section(sectionSize)
                                 .Select(z => tl.QpNotificationService
-                                    .SendProductsAsync(z.ToArray(), false, context.UserName, context.UserId, localize, false, channels)
-                                    .ContinueWith(y => UpdateFilteredIds(filteredInLive, y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed)))
+                                    .SendProductsAsync(z.ToArray(), false, context.UserName, context.UserId,
+                                        localize, false, channels)
+                                    .ContinueWith(y => UpdateFilteredIds(filteredInLive,
+                                        y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed)))
                                 .Concat(ArticleFilter.DefaultFilter.Filter(prodsStage)
                                     .Section(sectionSize)
-                                    .Select(z => tl.QpNotificationService.SendProductsAsync(z.ToArray(), true, context.UserName, context.UserId, localize, false, channels)
-                                    .ContinueWith(y => UpdateFilteredIds(filteredInStage, y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed))))
+                                    .Select(z => tl.QpNotificationService.SendProductsAsync(z.ToArray(), true,
+                                            context.UserName, context.UserId, localize, false, channels)
+                                        .ContinueWith(y => UpdateFilteredIds(filteredInStage,
+                                            y.IsFaulted ? null : y.Result, z, y.Exception, errors, failed))))
                                 .ToArray();
+
+                            
+                            
 
                         if (tasks.Length > 0)
                         {
@@ -319,7 +359,11 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                                 }))
                                 .ToArray();
 
-                            Task.WaitAll(tasks);
+                            DoWithLogging(() => Task.WaitAll(tasks),
+                                "Sending notifications for live ({liveIds}) and stage ({stageIds}) products",
+                                ArticleFilter.LiveFilter.Filter(prodsLive).Select(n => n.Id).ToArray(),
+                                ArticleFilter.DefaultFilter.Filter(prodsStage).Select(n => n.Id).ToArray()
+                            );
                         }
                         else
                         {
@@ -352,13 +396,20 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
                             try
                             {
-                                publishAction.Process(publishActionContext);
+                                DoWithLogging(
+                                    () => publishAction.Process(publishActionContext),
+                                    "Calling PublishAction for products {ids}",
+                                    prodsToPublishIds
+                                );
                             }
                             catch (ActionException ex)
                             {
 
                                 var ids = ex.InnerExceptions.OfType<ProductException>().Select(x => x.ProductId);
-                                Logger.Error().Message("ActionException when publish " + string.Join(",", ids)).Exception(ex).Write();                                
+                                Logger.Error()
+                                    .Exception(ex)
+                                    .Message("Exception has been thrown while publishing products {ids}", prodsToPublishIds)
+                                    .Write();                                
 
                                 foreach (var pID in ids)
                                 {
@@ -367,7 +418,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                             }
                             catch (Exception ex)
                             {
-                                Logger.Error().Message("Exception when publish ").Exception(ex).Write();
+                                Logger.Error()
+                                    .Exception(ex)
+                                    .Message("Exception has been thrown while publishing products {ids}", prodsToPublishIds)
+                                    .Write();         
                             }
                         }
 
@@ -382,7 +436,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     }
                     catch (Exception ex)
                     {
-                        Logger.Error().Message("Exception when send ").Exception(ex).Write();
+                        Logger.Error().Message("SendProductAction exception").Exception(ex).Write();
 
                         foreach (var item in idsToProcess)
                             failed.TryAdd(item, null);
@@ -405,21 +459,23 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                 }, context.ContentItemIds);      
             }
 
-            var productsToRemove = missing
+            var productsToRemove = new int[0];
+            var productsToRemoveCheck = missing
                 .Concat(invisibleOrArchivedIds)
                 .Except(excluded)
                 .Except(frozen)
                 .Except(validationErrors.Keys)
                 .ToArray();
 
-            if (productsToRemove.Length > 0)
+            if (productsToRemoveCheck.Length > 0)
             {
                 // проверяем, какие из проблемных продуктов присутствуют на витрине
-                productsToRemove = ObjectFactoryBase
-                    .Resolve<IList<IConsumerMonitoringService>>()
-                    .SelectMany(s => s.FindExistingProducts(productsToRemove))
-                    .Distinct()
-                    .ToArray();
+                var cmService = ObjectFactoryBase.Resolve<IList<IConsumerMonitoringService>>();
+
+                productsToRemove = DoWithLogging(
+                    () => cmService.SelectMany(s => s.FindExistingProducts(productsToRemoveCheck)).Distinct().ToArray(),
+                    "Checking whether products {ids} are missing on fronts", productsToRemoveCheck
+                );
 
                 if (productsToRemove.Length > 0)
                 {
@@ -427,11 +483,24 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                     // их надо удалить с витрин
                     var service = ObjectFactoryBase.Resolve<IQPNotificationService>();
                     var productService = ObjectFactoryBase.Resolve<IProductService>();
-                    Task.WhenAll(productsToRemove.Section(20).Select(s => service.DeleteProductsAsync(productService.GetSimpleProductsByIds(s.ToArray()), context.UserName, context.UserId, false))).Wait();
+                    DoWithLogging(
+                        () => Task.WhenAll(productsToRemove.Section(20).Select(
+                            s => service.DeleteProductsAsync(
+                                productService.GetSimpleProductsByIds(s.ToArray()), 
+                                context.UserName, 
+                                context.UserId, 
+                                false)
+                            )
+                        ).Wait(),
+                        "Removing missing products from fronts {ids}", productsToRemove
+                    );    
                 }
             }
-
-            _validationService.UpdateValidationInfo(productIds, validationErrorsSerialized);
+            
+            DoWithLogging(
+                () => _validationService.UpdateValidationInfo(productIds, validationErrorsSerialized),
+                "Updating validation info for products {ids}", productIds
+            );      
 
             int[] notFound = missing.Except(productsToRemove).Except(excluded).Except(frozen).Except(validationErrors.Keys).ToArray();
 

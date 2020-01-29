@@ -27,6 +27,8 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
 		void SaveSchedule(int taskId, bool enabled, string cronExpression);
 
+		void CancelRequestedTasks();
+
 		Dictionary<int, string> GetAllStates();
 
 		Task[] GetTasks(int skip, int take, int? userIdToFilterBy, int? stateIdToFilterBy, string nameFillter, bool? hasSchedule, out int totalCount);

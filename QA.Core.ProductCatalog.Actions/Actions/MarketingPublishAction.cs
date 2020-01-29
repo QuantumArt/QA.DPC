@@ -12,7 +12,7 @@ using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Actions
 {
-    public class MarketingPublishAction : IAction
+    public class MarketingPublishAction : ActionTaskBase
 	{
 		#region Constants
 		private const string PublishActionKey = "PublishAction";
@@ -22,17 +22,14 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		#endregion
 
 		#region Private properties
-		private readonly Func<string, string, IAction> _getPublishService;
 		private readonly  IArticleService _articleService;
 		private readonly  IFieldService _fieldService;
 		private readonly ISettingsService _settingsService;
-		protected readonly NLog.Logger Logger; 
 		#endregion
 
 		#region Constructor
-		public MarketingPublishAction(Func<string, string, IAction> getPublishService, IArticleService articleService, IFieldService fieldService, ISettingsService settingsService)
+		public MarketingPublishAction(IArticleService articleService, IFieldService fieldService, ISettingsService settingsService)
 		{
-			_getPublishService = getPublishService;
 			_articleService = articleService;
 			_fieldService = fieldService;
 			_settingsService = settingsService;
@@ -40,7 +37,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 		#endregion
 
 		#region IAction implementation
-		public ActionTaskResult Process(ActionContext context)
+		public override ActionTaskResult Process(ActionContext context)
 		{
 			if (context == null)
 				throw new ArgumentNullException("context");
@@ -51,7 +48,6 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 			try
 			{
 				string adapter = GetAdapter(context);
-				IAction publishService = _getPublishService(PublishActionKey, adapter);
 				var marketingProducts = _articleService.List(context.ContentId, context.ContentItemIds).ToArray();
 				string ignoredStatus = GetIgnoredStatus(context);
 				string[] ignoredStatuses = (ignoredStatus == null) ? Enumerable.Empty<string>().ToArray() : ignoredStatus.Split(new[] { ',' });
@@ -62,7 +58,10 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 				var backRelationField = _fieldService.Read(backRelationFieldId);
 				int productContentId = backRelationField.ContentId;
 
-			    int[] productIds = Helpers.GetProductIdsFromMarketingProducts(context.ContentItemIds, _articleService, _settingsService);
+			    int[] productIds = DoWithLogging(
+				    () => Helpers.GetProductIdsFromMarketingProducts(context.ContentItemIds, _articleService, _settingsService),
+				    "Receiving regional products from marketing product ids {ids} ", context.ContentItemIds
+				);
 
 				var filteredProductIds = _articleService.List(productContentId, productIds)
 										.Where(a => !ignoredStatuses.Contains(a.Status.Name) && !a.Archived && a.Visible)
@@ -73,6 +72,8 @@ namespace QA.Core.ProductCatalog.Actions.Actions
 
 				if (filteredProductIds.Any())
 				{
+					
+					var publishAction = ObjectFactoryBase.Resolve<PublishAction>();
 
 					var productContext = new ActionContext
 					{
@@ -85,8 +86,13 @@ namespace QA.Core.ProductCatalog.Actions.Actions
                         UserId = context.UserId,
                         UserName = context.UserName
 					};
-
-					result = publishService.Process(productContext);
+					
+					
+					result = DoWithLogging(
+						() => publishAction.Process(productContext),
+						"Calling Publish Action for products {ids}",
+						filteredProductIds
+					);
 				}
 				else
 				{

@@ -65,6 +65,11 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
         {
         }
 
+        public void CancelRequestedTasks()
+        {
+            throw new NotImplementedException();
+        }
+
         public Dictionary<int, string> GetAllStates()
         {
             return Enum.GetValues(typeof(State)).Cast<State>().ToDictionary(x => (int)x, x => x.ToString());
