@@ -85,7 +85,9 @@ namespace QA.ProductCatalog.Validation.Validators
 			int marketingProductContentId = helper.GetSettingValue(SettingsTitles.MARKETING_PRODUCT_CONTENT_ID);
 			helper.CheckSiteId(marketingProductContentId);
 
-			var matchService = new ArticleMatchService<Expression<Predicate<IArticle>>>(helper.Customer.ConnectionString, new ExpressionConditionMapper());
+			var matchService = new ArticleMatchService<Expression<Predicate<IArticle>>>(
+				helper.Customer.ConnectionString, helper.Customer.QpDatabaseType, new ExpressionConditionMapper()
+			);
 			object aliasValue = alias;
 			var filter = $"c.{Constants.FieldAlias} = '{aliasValue}' and c.{productTypeName} = {marketingProductTypeId}";
 			var matches = articleSerivce.List(marketingProductContentId, null, true, filter).Where(itm => itm.Id != id);

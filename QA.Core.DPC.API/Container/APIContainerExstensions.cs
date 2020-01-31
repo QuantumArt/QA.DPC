@@ -4,6 +4,7 @@ using QA.Core.DPC.QP.Services;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Mappers;
 using Quantumart.QP8.BLL.Repository.ArticleMatching.Models;
 using Quantumart.QP8.BLL.Services.API;
+using Quantumart.QP8.Constants;
 using Unity;
 using Unity.Injection;
 
@@ -22,7 +23,10 @@ namespace QA.Core.DPC.API.Container
 			where TCondition : class
 			where TMapper : IConditionMapper<TCondition>
 		{
-            container.RegisterFactory<IArticleMatchService<TCondition>>(c => new ArticleMatchService<TCondition>(factoryFunc(c), c.Resolve<IConditionMapper<TCondition>>()));
+            container.RegisterFactory<IArticleMatchService<TCondition>>(c => new ArticleMatchService<TCondition>(
+	            factoryFunc(c),
+	            c.Resolve<IConnectionProvider>().GetCustomer().QpDatabaseType,
+	            c.Resolve<IConditionMapper<TCondition>>()));
             container.RegisterType<IConditionMapper<TCondition>, TMapper>();
             return container;
 		}
