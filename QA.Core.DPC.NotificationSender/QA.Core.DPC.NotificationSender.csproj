@@ -29,7 +29,7 @@
     <PackageReference Include="NLog.Extensions.Hosting" Version="1.4.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.4.0" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.7.1" />
-    <PackageReference Include="QA.Configuration" Version="1.1.0-portable6" />
+    <PackageReference Include="QA.Configuration" Version="1.1.0-portable8" />
     <PackageReference Include="QA.Core.ServiceBaseLifeTime" Version="0.1.1" />
     <PackageReference Include="System.ServiceModel.Primitives" Version="4.5.3" />
     <PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.9.1" />

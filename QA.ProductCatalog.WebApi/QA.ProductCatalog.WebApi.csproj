@@ -40,8 +40,8 @@
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.7.1" />
     <PackageReference Include="Unity.Abstractions" Version="4.0.3" />
     <PackageReference Include="Unity.Microsoft.DependencyInjection" Version="5.9.1" />
-    <PackageReference Include="QA.Validation.Xaml" Version="1.3.0-portable2" />
-    <PackageReference Include="QA.Validation.Xaml.Extensions" Version="1.3.0-portable2" />    
+    <PackageReference Include="QA.Validation.Xaml" Version="1.3.0-portable6" />
+    <PackageReference Include="QA.Validation.Xaml.Extensions" Version="1.3.0-portable6" />    
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net471'">
     <ProjectReference Include="..\QA.Core.DocumentGenerator\QA.Core.DocumentGenerator.csproj" />    
