@@ -31,6 +31,10 @@ namespace QA.Core.ProductCatalog.Actions
 		{
             string[] channels = actionParameters.GetChannels();
             var product = ArticleService.Read(productId, false);
+            
+            if (product == null)
+	            throw new ProductException(productId, nameof(TaskStrings.ProductsNotFound));
+            
             var definition = Productservice.GetProductDefinition(0, product.ContentId);
 			bool doNotSendNotifications = actionParameters.ContainsKey(DoNotSendNotificationsKey) && bool.Parse(actionParameters[DoNotSendNotificationsKey]);
 
