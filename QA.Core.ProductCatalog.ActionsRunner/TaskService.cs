@@ -149,26 +149,30 @@ namespace QA.Core.ProductCatalog.ActionsRunner
             }
         }
 
-        /// <summary>
-        /// Получить задачу по ИД
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns>Null, если задача не найдена</returns>
-        public Task GetTask(int id)
+        public Task GetTask(int id, bool convertMessage = false)
         {
             using (var context = TaskRunnerEntities.Get(_provider))
             {
-                return GetTask(context, id);
+                return GetTask(context, id, convertMessage);
             }
         }
         
-        public Task GetTask(TaskRunnerEntities ctx, int id)
+        public Task GetTask(TaskRunnerEntities ctx, int id, bool convertMessage = false)
         {
             var task = ctx.Tasks.Include(x => x.TaskState).SingleOrDefault(x => x.ID == id);
-            if (task?.ScheduleID != null)
+            if (task != null)
             {
-                task.Schedule = ctx.Schedules.SingleOrDefault(n => n.ID == task.ScheduleID);
+                if (task.ScheduleID != null)
+                {
+                    task.Schedule = ctx.Schedules.SingleOrDefault(n => n.ID == task.ScheduleID);
+                }
+
+                if (convertMessage)
+                {
+                    task.Message = MessageToDisplay(task.Message);
+                } 
             }
+
             return task;
         }
         

@@ -90,7 +90,7 @@ namespace QA.Core.ProductCatalog.ActionsRunnerModel
             throw new NotImplementedException();
         }
 
-        public Task GetTask(int taskId)
+        public Task GetTask(int taskId, bool convertMessage = false)
         {
             return _tasks[taskId];
         }

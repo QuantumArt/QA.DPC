@@ -52,7 +52,7 @@ namespace QA.ProductCatalog.Admin.WebApp.Controllers
         [HttpGet]
         public async Task<ActionResult> Task(int taskId)
         {
-            var task = _taskService.GetTask(taskId);
+            var task = _taskService.GetTask(taskId, true);
 
             bool taskProcessingFinished = task.StateID != (byte)State.Running && task.StateID != (byte)State.New;
 

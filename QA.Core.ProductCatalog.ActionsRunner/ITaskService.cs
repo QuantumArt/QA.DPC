@@ -12,7 +12,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
 
         int? TakeNewTaskForProcessing();
 
-        Task GetTask(int taskId);
+        Task GetTask(int taskId, bool convertMessage = false);
 
 		bool ChangeTaskState(int id, State state, string message, State[] allowedInitialStates = null);
 		Task GetLastTask(int? userId, State? state = null, string key = null);
