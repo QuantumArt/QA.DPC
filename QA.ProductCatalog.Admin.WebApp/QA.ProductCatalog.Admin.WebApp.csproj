@@ -38,7 +38,7 @@
     <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NLog" Version="4.6.8" />
-    <PackageReference Include="Quantumart.QP8.BLL" Version="3.0.0-rc15" />
+    <PackageReference Include="Quantumart.QP8.BLL" Version="3.0.0-rc16" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.4.0" />
