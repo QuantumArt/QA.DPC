@@ -1,4 +1,5 @@
-﻿using QA.Core.DPC.QP.Models;
+﻿using Microsoft.Extensions.Options;
+using QA.Core.DPC.QP.Models;
 using QA.ProductCatalog.ContentProviders;
 
 namespace QA.Core.ProductCatalog.Actions.Services
@@ -7,9 +8,9 @@ namespace QA.Core.ProductCatalog.Actions.Services
 	{
 		private AuthProperties _properties;
 
-		public ConfigurableUserProvider(AuthProperties properties)
+		public ConfigurableUserProvider(IOptions<AuthProperties> properties)
 		{
-			_properties = properties;
+			_properties = properties.Value;
 		}
 
 		public int GetUserId()

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Transactions;
 using QA.Core.DPC.Loader.Services;
-using QA.Core.Logger;
+using NLog;
+using NLog.Fluent;
 using QA.Core.Models;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -25,7 +26,7 @@ namespace QA.Core.DPC.API.Update
         private readonly IFieldService _fieldService;
         private readonly DeleteAction _deleteAction;
         protected Func<ITransaction> _createTransaction;
-        private readonly ILogger _logger;
+        private readonly static ILogger _logger = LogManager.GetCurrentClassLogger();
 
         private readonly List<ArticleData> _updateData = new List<ArticleData>();
         private readonly Dictionary<int, Content> _articlesToDelete = new Dictionary<int, Content>();
@@ -38,14 +39,12 @@ namespace QA.Core.DPC.API.Update
             IArticleService articleService,
             IFieldService fieldService,
             DeleteAction deleteAction,
-            Func<ITransaction> createTransaction,
-            ILogger logger)
+            Func<ITransaction> createTransaction)
         {
             _productService = productService;
             _articleService = articleService;
             _fieldService = new CachedFieldService(fieldService);
             _createTransaction = createTransaction;
-            _logger = logger;
             _deleteAction = deleteAction;
         }
 
@@ -127,15 +126,22 @@ namespace QA.Core.DPC.API.Update
 
             using (var transaction = _createTransaction())
             {
-                _logger.Debug(() => "Start BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
+                _logger.Info()
+                    .Message("Batch update for product {id} started", product.Id)
+                    .Property("updateData", _updateData.ToDictionary(n => n.ToString(), m => m.Fields))
+                    .Write();
 
                 InsertData[] idMapping = _articleService.BatchUpdate(_updateData, createVersions);
 
-                _logger.Debug(() => "End BatchUpdate : " + ObjectDumper.DumpObject(_updateData));
+                _logger.Info("Batch update for product {id} completed", product.Id);
 
                 if (_articlesToDelete.Any())
                 {
-                    _logger.Debug(() => "Start Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
+                    _logger.Info()
+                        .Message("Deleting articles for product {id} started", product.Id)
+                        .Property("articlesToDelete", _articlesToDelete.Keys)
+                        .Write();
+                    
                     foreach (KeyValuePair<int, Content> articleToDeleteKv in _articlesToDelete)
                     {
                         try
@@ -148,10 +154,14 @@ namespace QA.Core.DPC.API.Update
                         }
                         catch (MessageResultException ex)
                         {
-                            _logger.ErrorException("Cannot remove article {0}", ex, articleToDeleteKv.Key);
+                            _logger.Error()
+                                .Exception(ex)
+                                .Message("Cannot remove article {id}", articleToDeleteKv.Key)
+                                .Write();
                         }
                     }
-                    _logger.Debug(() => "End Delete : " + ObjectDumper.DumpObject(_articlesToDelete));
+
+                    _logger.Info("Deleting articles for product {id} completed", product.Id);
                 }
 
                 transaction.Commit();
@@ -236,32 +246,39 @@ namespace QA.Core.DPC.API.Update
                         .Select(x => x.Id)
                         .Where(x => field.GetArticles(_filter).All(y => y.Id != x))
                         .ToArray() ?? new int[0];
-                    
-                    _updateData.AddRange(idsToAdd.Select(x => new ArticleData
-                    {
-                        Id = x,
-                        ContentId = backwardRelationFieldDef.Content.ContentId,
-                        Fields = new List<FieldData>
-                        {
-                            new FieldData { Id = field.FieldId.Value, ArticleIds = new[] { newArticle.Id } }
-                        }
-                    }));
 
-                    if (backwardRelationFieldDef.DeletingMode == DeletingMode.Delete)
+                    if (idsToAdd.Any())
                     {
-                        foreach (int idToRemove in idsToRemove)
-                        {
-                            _articlesToDelete[idToRemove] = backwardRelationFieldDef.Content;
-                        }
-                    }
-                    else
-                    {
-                        _updateData.AddRange(idsToRemove.Select(x => new ArticleData
+                        _updateData.AddRange(idsToAdd.Select(x => new ArticleData
                         {
                             Id = x,
-                            ContentId = backwardRelationFieldDef.Content.ContentId
-                        }));
+                            ContentId = backwardRelationFieldDef.Content.ContentId,
+                            Fields = new List<FieldData>
+                            {
+                                new FieldData { Id = field.FieldId.Value, ArticleIds = new[] { newArticle.Id } }
+                            }
+                        }));          
                     }
+
+                    if (idsToRemove.Any())
+                    {
+                        if (backwardRelationFieldDef.DeletingMode == DeletingMode.Delete)
+                        {
+                            foreach (int idToRemove in idsToRemove)
+                            {
+                                _articlesToDelete[idToRemove] = backwardRelationFieldDef.Content;
+                            }
+                        }
+                        else 
+                        {
+                            _updateData.AddRange(idsToRemove.Select(x => new ArticleData
+                            {
+                                Id = x,
+                                ContentId = backwardRelationFieldDef.Content.ContentId
+                            }));
+                        }         
+                    }
+
                 }
                 else if (fieldToSyncInfo.fieldDef is ExtensionField extensionFieldDef)
                 {
@@ -341,8 +358,10 @@ namespace QA.Core.DPC.API.Update
                 }
             }
 
-            // if (newArticleUpdateData.Fields.Any())
-            _updateData.Add(newArticleUpdateData);
+            if (newArticleUpdateData.Fields.Any())
+            {
+                _updateData.Add(newArticleUpdateData);                
+            }
 
             foreach (var fieldInfo in associationFieldsInfo
                 .Where(x => x.fieldDef.UpdatingMode == UpdatingMode.Update || x.fieldDef is ExtensionField))

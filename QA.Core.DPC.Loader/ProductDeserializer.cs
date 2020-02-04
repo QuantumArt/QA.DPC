@@ -162,11 +162,17 @@ namespace QA.Core.DPC.Loader
                 case PlainFieldType.Numeric:
                 case PlainFieldType.O2MRelation:
                     {
-                        object number = plainFieldFromQP.IsInteger ||
-                                        plainFieldFromQP.RelationType == RelationType.OneToMany
-                            ? productDataSource.GetInt(plainFieldFromQP.Name)
-                            : (object)productDataSource.GetDecimal(plainFieldFromQP.Name);
-
+                        object number;
+                        if (plainFieldFromQP.IsInteger ||
+                            plainFieldFromQP.RelationType == RelationType.OneToMany)
+                        {
+                            number = productDataSource.GetInt(plainFieldFromQP.Name);                       
+                        }
+                        else
+                        {
+                            var dec = productDataSource.GetDecimal(plainFieldFromQP.Name);
+                            number = !plainFieldFromQP.IsDecimal && dec.HasValue ? (object) Convert.ToDouble(dec) : dec;
+                        }
 
                         if (number != null)
                         {
