@@ -35,12 +35,12 @@
 <script id="treeNodeTemplate" type="text/x-kendo-template">
 	<span class="#=item.NotInDefinition?'NotInDefinition':''#">
 		#if(item.IsDictionaries){#
-		<span class="IsDictionaries">@ControlStrings.DictionaryCachingSettings</span>
+		<span class="IsDictionaries">@Html.Raw(ControlStrings.DictionaryCachingSettings)</span>
 		#}else{#
 		#: item.text #
 		#}#
 		#if(item.MissingInQp && !item.IsDictionaries){#
-		<span class="MissingInQp">@ControlStrings.MissingInQp</span>
+		<span class="MissingInQp">@Html.Raw(ControlStrings.MissingInQp)</span>
 		#}#
 	</span>
 </script>

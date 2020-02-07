@@ -108,12 +108,11 @@ namespace QA.Core.DPC.Loader.Services
 	        
 	        var query = $@"SELECT c.CONTENT_ID, f.ATTRIBUTE_ID FROM 
 				(SELECT DISTINCT Content AS CONTENT_ID FROM content_{_definitionContentId}_united 
-					WHERE visible = 1 AND archive = 0 AND content <> @contentId) AS c
+					WHERE visible = 1 AND archive = 0) AS c
 				JOIN CONTENT_ATTRIBUTE f ON c.CONTENT_ID = f.CONTENT_ID
 				WHERE f.ATTRIBUTE_NAME = @freezeField";
 	        var dbConnector = GetConnector();
 	        var dbCommand = dbConnector.CreateDbCommand(query);
-	        dbCommand.Parameters.AddWithValue("@contentId", _productContentId);
 	        dbCommand.Parameters.AddWithValue("@freezeField", _freezeFieldName);
 	        var metaData = dbConnector.GetRealData(dbCommand);
 	        List<ProductFreezeMetaRow> metaRows = new List<ProductFreezeMetaRow>(metaData.Rows.Count);
