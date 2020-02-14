@@ -76,11 +76,13 @@ namespace QA.Core.DPC.QP.Services
             return QPMode ? _customerProvider.GetCustomer(_identityProvider.Identity.CustomerCode) : _defaultConnections[service];
         }
         
+        [Obsolete]
         public string GetEFConnection()
         {
             return GetEFConnection(_defaultService);
         }
 
+        [Obsolete]
         public string GetEFConnection(Service service)
         {
             var connection = GetConnection(service);

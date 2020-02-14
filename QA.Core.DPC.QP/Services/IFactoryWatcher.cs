@@ -7,6 +7,7 @@ namespace QA.Core.DPC.QP.Services
     {
         void Start();
         void Stop();
+        void Watch();
         event EventHandler<FactoryWatcherEventArgs> OnConfigurationModify;
     }
 }

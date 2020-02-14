@@ -29,6 +29,7 @@ namespace QA.Core.DPC.QP.API.Services
             _baseUri = !String.IsNullOrEmpty(tntUrl) ? new Uri(tntUrl) : null;
             _settingsService = settingsService;
             _cacheProvider = cacheProvider;
+            _factory = factory;
             _expiration = TimeSpan.FromHours(1);
     }
 

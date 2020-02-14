@@ -49,13 +49,17 @@ namespace QA.Core.DPC.Loader.Container
             Container.RegisterType<IFreezeService, FreezeService>();
             Container.RegisterType<IValidationService, ValidationService>();
 
-            Container.RegisterType<IFieldService>("FieldServiceAdapterAlwaysAdmin",
-                GetHttpContextLifeTimeManager(),
-                new InjectionFactory(x => new FieldServiceAdapter(new FieldService(x.Resolve<IConnectionProvider>().GetConnection(), 1), x.Resolve<IConnectionProvider>())));
+            Container.RegisterFactory(typeof(IFieldService), "FieldServiceAdapterAlwaysAdmin", c => new FieldServiceAdapter(
+                    new FieldService(c.Resolve<IConnectionProvider>().GetConnection(), 1),
+                    c.Resolve<IConnectionProvider>()
+                ),
+            (IFactoryLifetimeManager)GetHttpContextLifeTimeManager());
             
-            Container.RegisterType<IContentService>("ContentServiceAdapterAlwaysAdmin",
-                GetHttpContextLifeTimeManager(),
-                new InjectionFactory(x => new ContentServiceAdapter(new ContentService(x.Resolve<IConnectionProvider>().GetConnection(), 1), x.Resolve<IConnectionProvider>())));
+            Container.RegisterFactory(typeof(IContentService), "ContentServiceAdapterAlwaysAdmin",
+                c => new ContentServiceAdapter(
+                    new ContentService(c.Resolve<IConnectionProvider>().GetConnection(), 1), 
+                    c.Resolve<IConnectionProvider>()
+                    ), (IFactoryLifetimeManager)GetHttpContextLifeTimeManager());
             
 
             Container.RegisterFactory<ITransaction>(c => new Transaction(c.Resolve<IConnectionProvider>(), c.Resolve<ILogger>()));

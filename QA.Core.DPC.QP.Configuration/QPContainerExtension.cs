@@ -50,7 +50,7 @@ namespace QA.Core.DPC.QP.Configuration
         public static FactoryBuilder For<T>(this FactoryBuilder builder, string code = null)
             where T : class
         {
-            builder.Container.RegisterType<T>(new InjectionFactory(c => c.Resolve<IFactory>(builder.FactoryName).Resolve<T>(code ?? c.GetCustomerCode())));
+            builder.Container.RegisterFactory<T>(c => c.Resolve<IFactory>(builder.FactoryName).Resolve<T>(code ?? c.GetCustomerCode()));
             return builder;
         }     
 
@@ -58,11 +58,11 @@ namespace QA.Core.DPC.QP.Configuration
         {
             if (name == null)
             {
-                builder.Container.RegisterType<T>(new InjectionFactory(c => c.Resolve<T>(builder.FactoryName)));
+                builder.Container.RegisterFactory<T>(c => c.Resolve<T>(builder.FactoryName));
             }
             else
             {
-                builder.Container.RegisterType<T>(name, new InjectionFactory(c => c.Resolve<T>(builder.FactoryName)));
+                builder.Container.RegisterFactory(typeof(T), name, c => c.Resolve<T>(builder.FactoryName));
             }
 
             return builder;

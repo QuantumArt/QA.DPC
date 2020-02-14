@@ -15,8 +15,7 @@ namespace QA.Core.DPC.API.Test.Tests
     public class OutdatedProductAPIProxyTest : TestBase
     {
         private const int Id = 2225400;
-        private const string Slug = "Q";
-        private const string Version = "v1";
+        private new const string Slug = "Q";
         [Test]
         public void Test_Proxy_Read()
         {
