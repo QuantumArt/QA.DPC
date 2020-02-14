@@ -9,6 +9,7 @@ using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.ActionsRunner;
 using QA.Core.ProductCatalog.TaskScheduler;
+using NLog;
 
 namespace QA.Core.ProductCatalog.ActionsService
 {
@@ -19,6 +20,7 @@ namespace QA.Core.ProductCatalog.ActionsService
         private Dictionary<string, ITasksRunner[]> _runnersDictionary = new Dictionary<string, ITasksRunner[]>();
         private TaskSchedulerRunner _taskSchedulerRunner;
         private ActionsServiceProperties _options;
+        private ILogger _logger = LogManager.GetCurrentClassLogger();
         
         public ActionsService(
             IFactoryWatcher watcher,
@@ -33,13 +35,19 @@ namespace QA.Core.ProductCatalog.ActionsService
         
         public void Start()
         {
+            _logger.Info("{serviceName} starting...", _options.Name);
+            
             _factoryWatcher.OnConfigurationModify += _factoryWatcher_OnConfigurationModify;
+            _factoryWatcher.Watch();
             _factoryWatcher.Start();
+            
+            _logger.Info("{serviceName} started", _options.Name);
 
             if (_options.EnableScheduleProcess)
             {
                 _taskSchedulerRunner.Start();
             }
+
         }
 
         private void _factoryWatcher_OnConfigurationModify(object sender, FactoryWatcherEventArgs e)
@@ -113,6 +121,7 @@ namespace QA.Core.ProductCatalog.ActionsService
 
         public void Stop()
         {
+            _logger.Info("{serviceName} stopping...", _options.Name);
             _factoryWatcher.OnConfigurationModify -= _factoryWatcher_OnConfigurationModify;
 
             foreach (var code in _runnersDictionary.Keys)
@@ -133,6 +142,7 @@ namespace QA.Core.ProductCatalog.ActionsService
 
             _factoryWatcher.Stop();
             _runnersDictionary.Clear();
+            _logger.Info("{serviceName} stopped", _options.Name);
         }
 
         public Task StartAsync(CancellationToken cancellationToken)

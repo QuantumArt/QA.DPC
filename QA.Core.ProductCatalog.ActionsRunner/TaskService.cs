@@ -349,6 +349,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
         {
             using (var context = TaskRunnerEntities.Get(_provider))
             {
+                if (context == null) return;
                 var sql =
                     ($@"UPDATE tasks {_sqlUpdateHint} SET {_stateId}={{0}} WHERE {_isCancellationRequested} = 1 AND {_stateId}={{1}}");
                 var fString = FormattableStringFactory.Create(sql, State.Cancelled, State.Running);
@@ -372,7 +373,7 @@ namespace QA.Core.ProductCatalog.ActionsRunner
                 var taskResult = JsonConvert.DeserializeObject<ActionTaskResult>(message);
                 return taskResult.ToString();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return message;
             }

@@ -55,7 +55,7 @@ namespace QA.ProductCatalog.ContentProviders
             {
                 result = JsonConvert.DeserializeObject<ActionTaskResultMessage>(str);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result = new ActionTaskResultMessage() {Message = str};
             }

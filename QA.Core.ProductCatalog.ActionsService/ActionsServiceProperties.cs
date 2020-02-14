@@ -16,5 +16,7 @@ namespace QA.Core.ProductCatalog.ActionsService
         
         public TaskRunnerDelays Delays { get; set; }
         
+        public string Name { get; set; }
+        
     }
 }
