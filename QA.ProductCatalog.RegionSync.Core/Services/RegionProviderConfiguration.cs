@@ -1,5 +1,7 @@
 ﻿using System.Configuration;
-using QA.Core.Logger;
+using NLog;
+using NLog.Fluent;
+
 
 namespace QA.ProductCatalog.RegionSync.Core.Services
 {
@@ -13,17 +15,14 @@ namespace QA.ProductCatalog.RegionSync.Core.Services
 		public int RegionContentId { get; private set; }
 		public int UserId { get; private set; }
 
+		private static ILogger Logger = LogManager.GetCurrentClassLogger();
+
 		public RegionProviderConfiguration(string key)
 		{
 			ConnectionString = ConfigurationManager.ConnectionStrings[string.Format(ConnectionStringKey, key)].ConnectionString;
 			RegionContentId = GetIntValue(string.Format(RegionContentIdKey, key));
 			UserId = GetIntValue(UserIdKey);
-		}
-
-		public RegionProviderConfiguration(string key, ILogger logger)
-			: this(key)
-		{		
-			logger.LogDebug(() => GetType().Name + ToString());
+			Logger.Debug(GetType().Name + ToString());
 		}
 
 		protected int GetIntValue(string key)
@@ -38,7 +37,7 @@ namespace QA.ProductCatalog.RegionSync.Core.Services
 			return value;
 		}
 
-		public override string ToString()
+		public sealed override string ToString()
 		{
 			return new { RegionContentId, UserId }.ToString();
 		}

@@ -249,7 +249,7 @@ namespace QA.Core.ProductCatalog.Actions.Actions.Abstract
 									from id in fv.RelatedItems
 									where !dictionary.ContainsKey(id) && fv.Field.ExactType != FieldExactTypes.Classifier
                                     let f = fv.Field
-									let contentId = backwardFieldValues.Contains(fv) ? f.ContentId : f.RelateToContentId.Value
+									let contentId = backwardFieldValues.Contains(fv) ? f.ContentId : f.RelateToContentId ?? 0
 									group new { Id = id, FieldId = f.Id, Relation = f.RelationType } by contentId into g
 									select new { ContentId = g.Key, RelatedItems = g })
 									.ToArray();

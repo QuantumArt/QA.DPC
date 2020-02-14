@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.DPC.QP.Services;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.ProductCatalog.Actions.Tests.Fakes;
@@ -8,7 +8,7 @@ using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {
-    [TestClass]
+    [TestFixture]
     public class ServiceFactoryTests
     {
         #region Constants
@@ -23,49 +23,54 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         #endregion
 
         #region Initialization
-        [TestInitialize]
+
+        [SetUp]
         public void Initialize()
         {
             ConnectionProvider = new ConnectionProviderFake(ConnectionString);
-            UserProvider = new UserProviderFake { UserId = UserId };
+            UserProvider = new UserProviderFake {UserId = UserId};
             Factory = new ServiceFactory(ConnectionProvider, UserProvider);
         }
+
         #endregion
 
         #region Test methods
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+
+        [Test]
         public void Constructor_ConnectionIsNull_ThrowException()
         {
-            // ReSharper disable once UnusedVariable
-            var serviceFactory = new ServiceFactory(null, UserProvider);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                // ReSharper disable once UnusedVariable
+                var serviceFactory = new ServiceFactory(null, UserProvider);
+            });
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void Constructor_UserProviderIsNull_ThrowException()
         {
-            // ReSharper disable once UnusedVariable
-            var service = new ServiceFactory(ConnectionProvider, null);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                // ReSharper disable once UnusedVariable
+                var service = new ServiceFactory(ConnectionProvider, null);
+            });
         }
 
-        [Ignore]
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
-        public void GetArticleService_InvalidConfiguration_ThrowException()
+        [Test]
+        public void GetArticleService_ValidConfiguration_ResolveService()
         {
             var service = Factory.GetArticleService();
             Assert.IsNotNull(service);
         }
 
-        [TestMethod]
+        [Test]
         public void GetContentService_ValidConfiguration_ResolveService()
         {
             var service = Factory.GetContentService();
             Assert.IsNotNull(service);
         }
 
-        [TestMethod]
+        [Test]
         public void GetFieldService_ValidConfiguration_ResolveService()
         {
             var service = Factory.GetFieldService();

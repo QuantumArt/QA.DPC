@@ -1,4 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Content ContentId="290" ContentName="Регионы"  xmlns="http://artq.com/configuration" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-	<PlainField ShowInList="True" FieldName="Title" FieldId="1114"/>
-</Content>

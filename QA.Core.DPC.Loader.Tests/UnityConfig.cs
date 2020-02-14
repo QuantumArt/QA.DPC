@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Configuration;
+using Microsoft.AspNetCore.Http;
+using Moq;
 using QA.Core.Cache;
 using QA.Core.DPC.Loader.Container;
 using QA.Core.DPC.Loader.Services;
@@ -27,10 +29,15 @@ namespace QA.Core.DPC.Loader.Tests
 
         public static UnityContainer RegisterTypes(UnityContainer container)
         {
+            container.AddExtension(new Diagnostic());
             // логируем в консоль
             container.RegisterInstance<ILogger>(new TextWriterLogger(Console.Out));
+            
+            var mock = new Mock<IHttpContextAccessor>();
+            container.RegisterInstance(mock.Object);
             container.AddNewExtension<LoaderConfigurationExtension>();
             container.RegisterType<IContentDefinitionService, ContentDefinitionService>();
+
 
             // устанавливаем фальшивый сервис для загрузки модели
             container.RegisterType<IProductService, ProductLoader>().RegisterType<IXmlProductService, XmlProductService>();

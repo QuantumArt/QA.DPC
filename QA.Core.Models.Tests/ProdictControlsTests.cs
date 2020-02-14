@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.DPC.UI;
 using QA.Core.DPC.UI.Controls;
 using QA.Core.Models.Entities;
@@ -9,11 +9,10 @@ using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.Models.Tests
 {
-    [Ignore]
-    [TestClass]
+    [TestFixture]
     public class ProductControlsTests
     {
-        [TestMethod]
+        [Test]
         public void Test_Entity_Editor()
         {
             Run(() =>
@@ -24,7 +23,7 @@ namespace QA.Core.Models.Tests
             });
         }
 
-        [TestMethod]
+        [Test]
         public void Test_Entity_Editor_items()
         {
             Run(() =>
@@ -37,13 +36,13 @@ namespace QA.Core.Models.Tests
 
                 foreach (var item in ((EntityCollection)control.Content).GetChildren())
                 {
-                    Assert.IsInstanceOfType(item, typeof(Label));
+                    Assert.IsInstanceOf<Label>(item);
                     Assert.IsNotNull(((Label)item).Title);
                 }
             });
         }
 
-        [TestMethod]
+        [Test]
         public void Test_Entity_Editor_gridview()
         {
             Run(() =>

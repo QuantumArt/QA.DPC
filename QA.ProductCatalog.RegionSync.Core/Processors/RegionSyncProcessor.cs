@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using QA.Scheduler.API.Services;
 using QA.ProductCatalog.RegionSync.Core.Services;
 
 namespace QA.ProductCatalog.RegionSync.Core.Processors

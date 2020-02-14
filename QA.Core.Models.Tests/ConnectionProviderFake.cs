@@ -2,7 +2,7 @@
 using QA.Core.DPC.QP.Models;
 using QA.Core.DPC.QP.Services;
 
-namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
+namespace QA.Core.Models.Tests
 {
     public class ConnectionProviderFake : IConnectionProvider
     {
@@ -42,17 +42,17 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 
         public Customer GetCustomer()
         {
-            return new Customer() { CustomerCode = "test", ConnectionString = _connection};
+            return new Customer() {ConnectionString = _connection, CustomerCode = "test"};
         }
 
         public Customer GetCustomer(DPC.QP.Models.Service service)
         {
-            throw new NotImplementedException();
+            return new Customer() {ConnectionString = _connection, CustomerCode = "test"};
         }
 
         public bool HasConnection(DPC.QP.Models.Service service)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }

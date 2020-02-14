@@ -1,14 +1,14 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.Models.Configuration;
 using System.IO;
 
 namespace QA.Core.Models.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class UnitTest1
     {
-        [TestMethod]
+        [Test]
         public void Test_ConfigurationSerializer_001()
         {
             Content entity = new Content
@@ -81,14 +81,10 @@ namespace QA.Core.Models.Tests
             Console.WriteLine(text);
         }
 
-        [TestMethod]
+        [Test]
         public void Test_ConfigurationSerializer_002()
         {
-            TextReader tr = new StreamReader(@"Xaml\LoaderMapping.xaml");
-            string xml = tr.ReadToEnd();
-
-            //string xml = QA.Core.Models.Tests.Helpers.ValidationHelper.GetEmbeddedResourceText(@"LoaderMapping.xaml");
-
+            string xml = Helpers.ValidationHelper.GetEmbeddedResourceText(@"QA.Core.Models.Tests.Xaml.LoaderMapping.xaml");
             Tools.ConfigurationSerializer.GetContent(xml);
         }
     }

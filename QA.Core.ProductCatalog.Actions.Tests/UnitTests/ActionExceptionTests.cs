@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 //using Quantumart.QP8.BLL.Services.DTO;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {
-	[TestClass]
+	[TestFixture]
 	public class ActionExceptionTests : ExceptionTestsBase<ActionException>
 	{
 		private const int ProductId = 15;

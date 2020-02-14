@@ -1,15 +1,15 @@
 ﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.Models.Entities;
 using QA.Core.Models.Extensions;
 using QA.Core.Models.Processors;
 
 namespace QA.Core.Models.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class HierarchySorterTests
     {
-        [TestMethod]
+        [Test]
         public void Test_HierarchySorter_valid_Fields()
         {
             var root = CreateValidTree();
@@ -41,7 +41,7 @@ namespace QA.Core.Models.Tests
             Assert.AreEqual(211, result1[5].Id);
         }
 
-        [TestMethod]
+        [Test]
         public void Test_HierarchySorter_valid_Fields_independent_orders()
         {
             var root = CreateTreeWithIndependentOrders();
@@ -73,14 +73,14 @@ namespace QA.Core.Models.Tests
             Assert.AreEqual(211, result1[5].Id);
         }
 
-        [TestMethod]
+        [Test]
         public void Test_HierarchySorter_empty()
         {
             var root = new Article();
             GetTp().ProcessModel(root);
         }
 
-        [TestMethod]
+        [Test]
         public void Test_HierarchySorter_invalid_Fields2()
         {
             var root = new Article();
@@ -88,7 +88,7 @@ namespace QA.Core.Models.Tests
             GetTp().ProcessModel(root);
         }
 
-        [TestMethod]
+        [Test]
         public void Test_HierarchySorter_invalid_Fields()
         {
             var root = new Article();
@@ -96,21 +96,21 @@ namespace QA.Core.Models.Tests
             GetTp().ProcessModel(root);
         }
 
-        [TestMethod]
+        [Test]
         public void Test_HierarchySorter_missing_null_value()
         {
             var root = new Article().AddField<MultiArticleField>("Parameters", f => f.AddArticle(new Article(2).AddPlainField("Order", null).AddPlainField("Title", "root 2")).AddArticle(new Article(3).AddPlainField("Order", 5).AddPlainField("Title", "root 3")));
             GetTp().ProcessModel(root);
         }
 
-        [TestMethod]
+        [Test]
         public void Test_HierarchySorter_null_parent()
         {
             var root = new Article().AddField<MultiArticleField>("Parameters", f => f.AddArticle(new Article(1).AddPlainField("Title", "root 1")).AddArticle(new Article(3).AddPlainField("Order", 5).AddPlainField("Title", "root 3").AddArticle("Parent", null)));
             GetTp().ProcessModel(root);
         }
 
-        [TestMethod]
+        [Test]
         public void Test_HierarchySorter_missing_fields()
         {
             var root = new Article().AddField<MultiArticleField>("Parameters", f => f.AddArticle(new Article(1).AddPlainField("Title", "root 1")).AddArticle(new Article(3).AddPlainField("Order", 5).AddPlainField("Title", "root 3")));
@@ -129,7 +129,7 @@ namespace QA.Core.Models.Tests
             });
         }
 
-        [TestMethod]
+        [Test]
         public void Test_HierarchySorter_ConstructHierarchy()
         {
             var root = new Article().AddField<MultiArticleField>("Parameters", f => f.AddArticle(new Article(2).AddPlainField("Order", 3).AddPlainField("Title", "root 2")).AddArticle(new Article(21).AddPlainField("Order", 1).AddPlainField("Title", "2.1").AddArticle("Parent", new Article(2))).AddArticle(new Article(211).AddPlainField("Order", 1).AddPlainField("Title", "2.1.1").AddArticle("Parent", new Article(21))).AddArticle(new Article(22).AddPlainField("Order", 2).AddPlainField("Title", "2.2").AddArticle("Parent", new Article(2))));

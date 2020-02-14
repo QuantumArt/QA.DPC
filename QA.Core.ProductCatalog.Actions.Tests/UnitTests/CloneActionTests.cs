@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {
-    [TestClass]
+    [TestFixture]
 	public class CloneActionTests : ActionTestsBase
 	{
 		#region Overrides

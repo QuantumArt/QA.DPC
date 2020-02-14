@@ -1,13 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.Models.Tests
 {
-    [Ignore]
-    [TestClass]
+    [TestFixture]
     public class FakeProductLoaderTests
     {
-        [TestMethod]
+        [Test]
         public void Test_That_Fake_Service_Works()
         {
             var service = ObjectFactoryBase.Resolve<IProductService>();

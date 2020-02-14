@@ -1,10 +1,8 @@
 ﻿﻿using System;
 using System.Diagnostics;
 using System.Linq;
-using System.Collections;
-using System.IO;
-using System.Runtime.InteropServices;
-using Microsoft.Extensions.Logging;
+ using System.IO;
+ using Microsoft.Extensions.Logging;
 using NLog.Web;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -23,7 +21,7 @@ namespace QA.Core.DPC
                 
             AppDomain.CurrentDomain.UnhandledException += (o, e) =>
             {
-                var log = new EventLog { Source = "ActionsService" };
+                var log = new EventLog { Source = "NotificationSender" };
 
                 log.WriteEntry(string.Join(" -> ", ((Exception)e.ExceptionObject).Flat().Select(x => x.Message)), EventLogEntryType.Error);
             };

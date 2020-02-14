@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
 {
-    [Ignore]
-    [TestClass]
+    [Ignore("Manual")]
+    [TestFixture]
     public class ArchiveActionIntegrationTests : IntegrationTestsBase
     {
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_Archive_Product1()
         {
             var action = ActionFactory("ArchiveAction");
@@ -15,8 +15,8 @@ namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
             action.Process(context);
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_Archive_MarketingProduct1()
         {
             var action = ActionFactory("ArchiveAction");

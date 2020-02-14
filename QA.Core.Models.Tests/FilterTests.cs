@@ -1,16 +1,16 @@
 ﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.Models.Entities;
 using QA.Core.Models.Filters;
 using QA.Core.Models.Filters.Base;
 
 namespace QA.Core.Models.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class FilterTests
     {
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_VisibleFilter_Filters()
         {
             var visible = new Article { Visible = true, Id = 1 };
@@ -27,8 +27,8 @@ namespace QA.Core.Models.Tests
             Assert.AreEqual(1, filtered[0].Id);
         }
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_PublishedFilter_Filters()
         {
             var pub = new Article { IsPublished = true, Id = 1 };
@@ -45,8 +45,8 @@ namespace QA.Core.Models.Tests
             Assert.AreEqual(1, filtered[0].Id);
         }
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_ArchivedFilter_Filters()
         {
             var archived = new Article { Archived = true, Id = 1 };
@@ -63,8 +63,8 @@ namespace QA.Core.Models.Tests
             Assert.AreEqual(1, filtered[0].Id);
         }
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_NotArchivedFilter_Filters()
         {
             var archived = new Article { Archived = true, Id = 1 };
@@ -81,8 +81,8 @@ namespace QA.Core.Models.Tests
             Assert.AreEqual(2, filtered[0].Id);
         }
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_DefaultFilterFilter_Filters()
         {
             var archived = new Article { Archived = true, Visible = true, Id = 1 };
@@ -104,8 +104,8 @@ namespace QA.Core.Models.Tests
             Assert.AreEqual(4, filtered[1].Id);
         }
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_LiveFilterFilter_Filters()
         {
             var archived = new Article { Archived = true, Visible = true, Id = 1 };
@@ -125,8 +125,8 @@ namespace QA.Core.Models.Tests
             Assert.AreEqual(4, filtered[0].Id);
         }
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_AllFilterFilter_Returns_False_If_Any_returns_false()
         {
             var filter = new AllFilter(new DelegateFilter(x => true), new DelegateFilter(x => true), new DelegateFilter(x => false));
@@ -136,8 +136,8 @@ namespace QA.Core.Models.Tests
             Assert.IsFalse(filter.Matches(article));
         }
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_AllFilterFilter_Returns_true()
         {
             var filter = new AllFilter(new DelegateFilter(x => true), new DelegateFilter(x => true), new DelegateFilter(x => true));
@@ -147,8 +147,8 @@ namespace QA.Core.Models.Tests
             Assert.IsTrue(filter.Matches(article));
         }
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_AnyFilterFilter_Returns_False_If_Any_returns_false()
         {
             var filter = new AnyFilter(new DelegateFilter(x => false), new DelegateFilter(x => false), new DelegateFilter(x => false));
@@ -159,8 +159,8 @@ namespace QA.Core.Models.Tests
         }
 
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_AnyFilterFilter_Returns_true1()
         {
             var filter = new AnyFilter(new DelegateFilter(x => true), new DelegateFilter(x => false), new DelegateFilter(x => true));
@@ -170,8 +170,8 @@ namespace QA.Core.Models.Tests
             Assert.IsTrue(filter.Matches(article));
         }
 
-        [TestMethod]
-        [TestCategory("Filters")]
+        [Test]
+        [Category("Filters")]
         public void Test_AnyFilterFilter_Returns_true2()
         {
             var filter = new AnyFilter(new DelegateFilter(x => true), new DelegateFilter(x => true), new DelegateFilter(x => true));

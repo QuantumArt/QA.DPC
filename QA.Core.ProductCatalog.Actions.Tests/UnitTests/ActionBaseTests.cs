@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.Core.ProductCatalog.Actions.Tests.Fakes;
@@ -7,7 +7,7 @@ using QA.Core.DPC.Loader.Services;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {
-	[TestClass]
+	[TestFixture]
 	public class ActionBaseTests
 	{
 		#region Constants
@@ -25,7 +25,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 		#endregion
 
 		#region Initialization
-		[TestInitialize]
+		[SetUp]
 		public void Initialize()
 		{
 			ArticleService = new ArticleServiceFake();
@@ -39,57 +39,41 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 		#endregion
 
 		#region Test methods
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void Constructor_ArticleServiceIsNull_ThrowException()
 		{
-			var action = new ActionBaseFake(null, FieldService, ProductService, TransactionFactory);
+			Assert.Throws<ArgumentNullException>(() =>
+			{
+				var action = new ActionBaseFake(null, FieldService, ProductService, TransactionFactory);
+			});
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void Constructor_ProductServiceIsNull_ThrowException()
 		{
-			var action = new ActionBaseFake(ArticleService, FieldService, null, TransactionFactory);
+			Assert.Throws<ArgumentNullException>(() =>
+			{
+				var action = new ActionBaseFake(ArticleService, FieldService, null, TransactionFactory);
+			});
 		}
 
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
-		public void Constructor_LoggerIsNull_ThrowException()
-		{
-			var action = new ActionBaseFake(ArticleService, FieldService, ProductService, TransactionFactory);
-		}
-
-		[TestMethod]
-		[ExpectedException(typeof(ArgumentNullException))]
+		[Test]
 		public void Constructor_TransactionFactoryIsNull_ThrowException()
 		{
-			var action = new ActionBaseFake(ArticleService, FieldService, ProductService, null);
+			Assert.Throws<ArgumentNullException>(() =>
+			{
+				var action = new ActionBaseFake(ArticleService, FieldService, ProductService, null);
+			});
 		}
 
-		[TestMethod]
+		[Test]
 		public void Process_ContentItemId_PassToProcessProduct()
 		{
 			Action.Process(Context);
-			Assert.AreEqual<int>(Context.ContentItemIds[0], Action.LastProductId);
+			Assert.AreEqual(Context.ContentItemIds[0], Action.LastProductId);
 		}
 
-		[TestMethod]
-		public void Process_CatchException_LogException()
-		{
-			Action.ExceptionToThrow = new Exception();
-
-			try
-			{
-				Action.Process(Context);
-			}
-			catch
-			{
-				Assert.AreEqual(Action.ExceptionToThrow, Logger.LastException);
-			}
-		}
-
-		[TestMethod]
+		[Test]
 		public void Process_CatchException_ThrowActionException()
 		{
 			Action.ExceptionToThrow = new Exception();

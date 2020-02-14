@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.Logger;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
@@ -35,7 +35,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         #endregion
 
         #region Initialization
-        [TestInitialize]
+        [SetUp]
         public void Initialize()
         {
             ArticleService = new ArticleServiceFake();
@@ -43,8 +43,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
             FieldService = new FieldServiceFake();
             FreezeService = new FreezeServiceFake();
             ValidationService = new ValidationServiceFake();
-            ProductService = new ProductServiceFake();
-            ProductService.Content = new Content();
+            ProductService = new ProductServiceFake {Content = new Content() {ContentId = ContentId}};
             Transaction = null;
             Logger = new LoggerFake();
             Context = new ActionContext();
@@ -53,12 +52,15 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         #endregion
 
         #region Test methods
-        [TestMethod]
-        [ExpectedException(typeof(ActionException))]
+        [Test]
         public void ProcessProduct_ArticleNotExists_ThrowException()
         {
-            Context.ContentItemIds = new[] { 0 };
-            Action.Process(Context);
+            Assert.Throws<ActionException>(() =>
+            {
+                Context.ContentItemIds = new[] {0};
+                Action.Process(Context);
+            });
+
         }
         #endregion
 
@@ -71,27 +73,19 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 
         protected virtual Models.Entities.Article GetProductNoRelation(int productId)
         {
-            return new Models.Entities.Article();
+            return new Models.Entities.Article() { Visible = true, Status = "None", ContentId = ContentId};
         }
 
         protected virtual Models.Entities.Article GetProductM2ORelation(int productId)
         {
-            return new Models.Entities.Article();
+            return new Models.Entities.Article() { Visible = true, Status = "None", ContentId = ContentId };
         }
         #endregion
 
         #region Protected methods
         protected ITransaction CreateTransaction()
         {
-            if (Transaction == null)
-            {
-                Transaction = new TransactionFake();
-            }
-            else
-            {
-                Assert.Fail("Transaction factory is called more than once");
-            }
-
+            Transaction = new TransactionFake();
             return Transaction;
         }
 
@@ -128,11 +122,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 
             var rootArticle = ArticleService.New(ContentId);
             InitializeArticle(rootArticle);
-            var fv = new Quantumart.QP8.BLL.FieldValue();
-            fv.Article = rootArticle;
-            fv.Field = new Quantumart.QP8.BLL.Field();
-            fv.Field.Id = 1;
+            var fv = new Quantumart.QP8.BLL.FieldValue
+            {
+                Article = rootArticle, Field = new Quantumart.QP8.BLL.Field {Id = 1, ContentId = ContentId}
+            };
             fv.Field.Init();
+            fv.Field.RelateToContentId = ContentId;
             fv.Field.ExactType = Quantumart.QP8.Constants.FieldExactTypes.M2ORelation;
             fv.UpdateValue(referencedArticle.Id.ToString());
             rootArticle.FieldValues.Add(fv);

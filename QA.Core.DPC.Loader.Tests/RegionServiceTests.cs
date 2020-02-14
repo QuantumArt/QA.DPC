@@ -1,13 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Loader.Tests
 {
-    [Ignore]
-    [TestClass]
+    [Ignore("Manual")]
+    [TestFixture]
     public class RegionServiceTests
     {
-        [TestMethod]
+        [Test]
         public void Test_get_parents()
         {
             var service = ObjectFactoryBase.Resolve<IRegionService>();

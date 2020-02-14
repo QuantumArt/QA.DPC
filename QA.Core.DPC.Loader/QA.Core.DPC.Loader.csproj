@@ -30,6 +30,16 @@
     <ProjectReference Include="..\QA.ProductCatalog.Infrastructure\QA.ProductCatalog.Infrastructure.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Xaml\content_287.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\content_288.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\content_666.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_17432.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_2360.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_2572.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_3136.xaml" CopyToOutputDirectory="Always" />
+    <EmbeddedResource Include="Xaml\product_685329.xaml" CopyToOutputDirectory="Always" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.10" />

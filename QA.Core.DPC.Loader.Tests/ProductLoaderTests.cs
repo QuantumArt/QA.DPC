@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.Cache;
 using QA.Core.Logger;
 using QA.Core.Models;
@@ -19,27 +19,17 @@ using Qp8Bll = Quantumart.QP8.BLL;
 
 namespace QA.Core.DPC.Loader.Tests
 {
-    [Ignore]
-    [TestClass]
+    [Ignore("Manual")]
+    [TestFixture]
     public class ProductLoaderTests
     {
         private const int ProductsContentId = 288;
         private const int ProductIdExisting = 699618;
         private const int ProductIdExistingService = 685329;
         private const int MproductIdExisting = 17432;
-        private static IUnityContainer _container;
 
-        [AssemblyInitialize]
-        public static void StartUp(TestContext ctx)
-        {
-            // ReSharper disable once UnusedVariable
-            var processRemoteValidationIf = new ProcessRemoteValidationIf { Condition = null };
-            ctx.WriteLine("Started!");
-            ctx.WriteLine("stub");
-            _container = UnityConfig.Configure();
-        }
 
-        [TestInitialize]
+        [SetUp]
         public void Init()
         {
             var connectinStringObject = ConfigurationManager.ConnectionStrings["qp_database"];
@@ -47,7 +37,7 @@ namespace QA.Core.DPC.Loader.Tests
             Do(connectionString);
         }
 
-        [TestMethod]
+        [Test]
         public void GetProductByIdTest()
         {
             var service = ObjectFactoryBase.Resolve<IProductService>();
@@ -57,7 +47,7 @@ namespace QA.Core.DPC.Loader.Tests
             Assert.AreEqual(MproductIdExisting, product.Id);
         }
 
-        [TestMethod]
+        [Test]
         public void Issue_failed_loading()
         {
             var service = ObjectFactoryBase.Resolve<IProductService>();
@@ -65,7 +55,7 @@ namespace QA.Core.DPC.Loader.Tests
             Assert.IsNotNull(faliedProduct);
         }
 
-        [TestMethod]
+        [Test]
         public void GetProductByIdTest_2_times_with_timer()
         {
             var service = ObjectFactoryBase.Resolve<IProductService>();
@@ -83,10 +73,10 @@ namespace QA.Core.DPC.Loader.Tests
             Trace.WriteLine("Elapsed ms: " + timer.ElapsedMilliseconds);
             timer.Reset();
 
-            _container.RegisterInstance<ICacheProvider>(new CacheProvider());
-            _container.RegisterSingleton<VersionedCacheProviderBase>();
+            Startup.Container.RegisterInstance<ICacheProvider>(new CacheProvider());
+            Startup.Container.RegisterSingleton<VersionedCacheProviderBase>();
 
-            ObjectFactoryConfigurator.DefaultContainer = _container;
+            ObjectFactoryConfigurator.DefaultContainer = Startup.Container;
             service = ObjectFactoryBase.Resolve<IProductService>();
 
             timer.Start();
@@ -96,7 +86,7 @@ namespace QA.Core.DPC.Loader.Tests
 
         }
 
-        [TestMethod]
+        [Test]
         public void Test_Get_Product_By_Id_And_Serialize()
         {
             ProcessProduct(ProductIdExisting);
@@ -104,7 +94,7 @@ namespace QA.Core.DPC.Loader.Tests
             ProcessProduct(MproductIdExisting);
         }
 
-        [TestMethod]
+        [Test]
         public void GetProductsByIdsTest()
         {
             var timer = new Stopwatch();
@@ -120,7 +110,7 @@ namespace QA.Core.DPC.Loader.Tests
             ObjectFactoryBase.Resolve<ILogger>().Info("Hot Elapsed ms: " + timer.ElapsedMilliseconds);
         }
 
-        [TestMethod]
+        [Test]
         public void GetProductXmlByIdTest()
         {
             var service = ObjectFactoryBase.Resolve<IProductService>();
@@ -130,7 +120,7 @@ namespace QA.Core.DPC.Loader.Tests
             Assert.IsTrue(xml.Contains("<Type>"));
         }
 
-        [TestMethod]
+        [Test]
         public void GetSimpleProductXmlByIdTest()
         {
             var service = ObjectFactoryBase.Resolve<IProductService>();
@@ -140,7 +130,7 @@ namespace QA.Core.DPC.Loader.Tests
             Assert.IsTrue(xml.Contains("<Type>"));
         }
 
-        [TestMethod]
+        [Test]
         public void Profile_LoadStructureCache()
         {
             var connectinStringObject = ConfigurationManager.ConnectionStrings["qp_database"];
@@ -155,7 +145,7 @@ namespace QA.Core.DPC.Loader.Tests
 
         }
 
-        [TestMethod]
+        [Test]
         public void RegionTagTest()
         {
             ObjectFactoryBase.Resolve<IContentDefinitionService>();
@@ -172,7 +162,7 @@ namespace QA.Core.DPC.Loader.Tests
             xmlservice.GetSingleXmlForProducts(product, ArticleFilter.DefaultFilter);
         }
 
-        [TestMethod]
+        [Test]
         public void RemoteMutualGroupValidatorTest()
         {
             var resourceDictrionary = Common.GetEmbeddedResourceText("QA.Core.DPC.Loader.RemoteValidators.Xaml.site_35.xaml");

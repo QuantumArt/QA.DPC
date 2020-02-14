@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.Models.Configuration;
 using QA.Core.ProductCatalog.Actions.Actions.Abstract;
 using Quantumart.QP8.BLL;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {
-    [TestClass]
+    [TestFixture]
     public class ProductTest
     {
         #region Constants
@@ -24,7 +24,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         #endregion
 
         #region Initialization
-        [TestInitialize]
+        [SetUp]
         public void Initialize()
         {
             Article = (Article)Activator.CreateInstance(typeof(Article), true);
@@ -37,38 +37,42 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
         #endregion
 
         #region Test methods
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void Constructor_ArticleIsNull_ThrowException()
         {
-            var product = new Product<CloningMode>(null, FieldModes, BackwardFieldValues);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var product = new Product<CloningMode>(null, FieldModes, BackwardFieldValues);
+            });
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void Constructor_FieldModesIsNull_ThrowException()
         {
-            var product = new Product<CloningMode>(Article, null, BackwardFieldValues);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var product = new Product<CloningMode>(Article, null, BackwardFieldValues);
+            });
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void Article_ArticleField_IsInitialized()
         {
             var product = new Product<CloningMode>(Article, FieldModes, BackwardFieldValues);
             Assert.AreEqual(Article, product.Article);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentNullException))]
+        [Test]
         public void GetCloningMode_NullArgument_ThrowException()
         {
-            var product = new Product<CloningMode>(Article, FieldModes, BackwardFieldValues);
-            product.GetCloningMode(null);
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                var product = new Product<CloningMode>(Article, FieldModes, BackwardFieldValues);
+                product.GetCloningMode(null);
+            });
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void GetCloningMode_MissedFieldArgument_ReturnsNull()
         {
             Field.Id = MissedFieldId;
@@ -77,8 +81,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
             Assert.IsNull(mode);
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void GetCloningMode_ExistingField_ReturnsCloningMode()
         {
             Field.Id = FieldId;

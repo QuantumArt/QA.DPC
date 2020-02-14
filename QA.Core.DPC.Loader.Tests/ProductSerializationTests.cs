@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Xml.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Configuration;
 using QA.Core.Models.Configuration;
 using QA.Core.Models.Entities;
@@ -10,11 +10,12 @@ using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DPC.Loader.Tests
 {
-    [TestClass]
+    [Ignore("Manual")]
+    [TestFixture]
     public class ProductSerializationTests
     {
-        [Ignore]
-        [TestMethod]
+
+        [Test]
         public void TestXmlDeserialization()
         {
             var xmlProductService = ObjectFactoryBase.Resolve<IXmlProductService>();
@@ -32,8 +33,7 @@ namespace QA.Core.DPC.Loader.Tests
             File.ReadAllText("TestData\\ReferenceDto.xaml");
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void TextJsonDeserialization()
         {
             var jsonProductService = ObjectFactoryBase.Resolve<IJsonProductService>();
@@ -45,7 +45,7 @@ namespace QA.Core.DPC.Loader.Tests
             Assert.AreEqual(resultXaml, referenceXaml);
         }
 
-        [TestMethod]
+        [Test]
         public void TestEvaluatorExtensionField()
         {
             var xaml = File.ReadAllText("TestData\\ReferenceDto.xaml");
@@ -54,7 +54,7 @@ namespace QA.Core.DPC.Loader.Tests
             Assert.IsTrue(res.Length > 0);
         }
 
-        [TestMethod]
+        [Test]
         public void TestEvaluatorRootFilter()
         {
             var xaml = File.ReadAllText("TestData\\ReferenceDto.xaml");
@@ -63,8 +63,7 @@ namespace QA.Core.DPC.Loader.Tests
             Assert.IsTrue(res.Length > 0);
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void Temp()
         {
             var productService = ObjectFactoryBase.Resolve<IProductService>();

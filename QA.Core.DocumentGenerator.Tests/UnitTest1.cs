@@ -1,17 +1,19 @@
 ﻿using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Moq;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.DocumentGenerator.Tests
 {
-    [TestClass]
+    [Ignore("Manual")]
+    [TestFixture]
     public class UnitTest1
     {
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext ctx)
+
+        [OneTimeSetUp]
+        public static void ClassInitialize()
         {
             NotesServiceMoq.Setup(x => x.GetNoteText(It.IsAny<int>())).Returns<int>(x => $"Тестовая заметка с id={x}.");
 
@@ -21,8 +23,7 @@ namespace QA.Core.DocumentGenerator.Tests
         private static readonly Mock<INotesService> NotesServiceMoq = new Mock<INotesService>();
         private static string _xmlText;
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void TestMailMerge()
         {
             var generator = new DocumentGenerator(NotesServiceMoq.Object);
@@ -34,8 +35,7 @@ namespace QA.Core.DocumentGenerator.Tests
             Process.Start(resFilePath);
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void TestNotes()
         {
             var generator = new DocumentGenerator(NotesServiceMoq.Object);
@@ -47,8 +47,7 @@ namespace QA.Core.DocumentGenerator.Tests
             Process.Start(resFilePath);
         }
 
-        [Ignore]
-        [TestMethod]
+        [Test]
         public void TestRazor()
         {
             var generator = new DocumentGenerator(NotesServiceMoq.Object);

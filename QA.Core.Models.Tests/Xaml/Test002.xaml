@@ -7,7 +7,7 @@
                >
     <QPControlTest Name="{Binding Path=/MarketingProduct/Title.FieldName}"
                    Title="{Binding Path=/MarketingProduct/Title.FieldName.Length}"
-                   Caption="{Binding Path=/MarketingProduct.Item/Family/IsUseModernDesign.Type}">        
+                   Caption="{Binding Path=/MarketingProduct/Family/Title}">        
     </QPControlTest>
 </QPControlTest>
 

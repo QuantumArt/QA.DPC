@@ -1,44 +1,44 @@
 ﻿using System;
 using Unity;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.DPC.Loader.Services;
 using QA.Core.ProductCatalog.Actions.Services;
 using QA.ProductCatalog.Infrastructure;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.IntegrationTests
 {
-    [Ignore]
-    [TestClass]
+    [Ignore("Manual")]
+    [TestFixture]
     public class ProductServiceIntegrationTests : IntegrationTestsBase
     {
         private const int ProductId = 2360;
         private const int MarketingProductId = 2423;
 
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_ProductService_GetProductDefinition()
         {
             CastomAction_ProductService_GetProductDefinition(ProductId);
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_ProductService_GetMarketingProductDefinition()
         {
             CastomAction_ProductService_GetProductDefinition(MarketingProductId);
         }
 
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_ProductService_GetProductById()
         {
             CastomAction_ProductService_GetProductById(ProductId);
         }
 
-        [TestMethod]
-        [TestCategory("Integration")]
+        [Test]
+        [Category("Integration")]
         public void CastomAction_ProductService_GetMarketingProductById()
         {
             CastomAction_ProductService_GetProductById(MarketingProductId);

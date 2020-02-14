@@ -1,29 +1,28 @@
 ﻿using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using QA.Core.Models.Configuration;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {
-    [Ignore]
-    [TestClass]
+    [TestFixture]
     public class DeleteActionTests : ActionTestsBase
     {
         #region Test methods
-        [TestMethod]
+        [Test]
         public void ProcessProduct_NoRelations_Archive()
         {
             SetupNoRelation();
             Assert.IsFalse(Articles.Any());
         }
 
-        [TestMethod]
+        [Test]
         public void ProcessProduct_M2ORelation_DeleteReference()
         {
             SetupM2ORelation(null, DeletingMode.Delete);
             Assert.IsFalse(Articles.Any());
         }
 
-        [TestMethod]
+        [Test]
         public void ProcessProduct_M2ORelation_IgnoreReference()
         {
             var productId = SetupM2ORelation(null, DeletingMode.Keep);
@@ -31,7 +30,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
             Assert.IsFalse(Articles.Any(a => a.Id == productId));
         }
 
-        [TestMethod]
+        [Test]
         public void ProcessProduct_M2ORelation_DefaultReference()
         {
             var productId = SetupM2ORelation(null, null);

@@ -1,10 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using QA.Core.ProductCatalog.Actions.Exceptions;
 using Quantumart.QP8.BLL.Services.DTO;
 
 namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 {
-	[TestClass]
+	[TestFixture]
 	public class MessageResultExceptionTests : ExceptionTestsBase<MessageResultException>
 	{
 		private const int ProductId = 15;
@@ -21,7 +21,7 @@ namespace QA.Core.ProductCatalog.Actions.Tests.UnitTests
 			Assert.AreEqual(originalException.Message, restoredRestored.Message);
 			Assert.AreEqual(originalException.ProductId, restoredRestored.ProductId);
 			Assert.IsNotNull(restoredRestored.MessageResult);
-			Assert.AreEqual(originalException.MessageResult.Text, restoredRestored.MessageResult.Type);
+			Assert.AreEqual(originalException.MessageResult.Text, restoredRestored.MessageResult.Text);
 		}
 	}
 }

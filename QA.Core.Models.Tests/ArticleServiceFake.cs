@@ -1,12 +1,12 @@
-﻿using Quantumart.QP8.BLL;
-using Quantumart.QP8.BLL.Services.DTO;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using QA.Core.DPC.Loader.Services;
+using Quantumart.QP8.BLL;
 using Quantumart.QP8.BLL.Services.API.Models;
+using Quantumart.QP8.BLL.Services.DTO;
 
-namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
+namespace QA.Core.Models.Tests
 {
     public class ArticleServiceFake : IArticleService
 	{
@@ -24,8 +24,6 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 			// TODO: Implement this method
 			throw new NotImplementedException();
 		}
-
-		public event EventHandler<ArticleEventArgs> ArticleSaved;
 
 		public void LoadStructureCache()
 		{
@@ -77,11 +75,6 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 
 			Articles[article.Id] = article;
 
-			if (ArticleSaved != null)
-			{
-				ArticleSaved(this, new ArticleEventArgs(article));
-			}
-
 			return article;
 		}
 
@@ -90,9 +83,6 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 			var article = (Article)Activator.CreateInstance(typeof(Article), true);
 			article.ContentId = contentId;
 			article.FieldValues = new List<FieldValue>();
-			article.Visible = true;
-			article.Status = new StatusType() { Name = "None"};
-			article.AggregatedArticles = new Article[] { };
 			return article;
 		}
 
@@ -177,12 +167,12 @@ namespace QA.Core.ProductCatalog.Actions.Tests.Fakes
 
 		public Dictionary<int, bool> CheckRelationSecurity(int contentId, int[] ids, bool isDeletable)
 		{
-			return ids.ToDictionary(n => n, m => true);
+			throw new NotImplementedException();
 		}
 
         public RulesException XamlValidationById(int articleId, bool persistChanges)
         {
-            return new RulesException();
+            throw new NotImplementedException();
         }
     }
 }
