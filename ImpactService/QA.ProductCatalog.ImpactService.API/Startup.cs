@@ -56,6 +56,17 @@ namespace QA.ProductCatalog.ImpactService.API
             }
 
             app.UseMvc();
+            
+            LogStart(app, loggerFactory);
+        }
+        
+        
+        private void LogStart(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        {
+            var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
+            var name = config["Name"];
+            var logger = loggerFactory.CreateLogger(GetType());
+            logger.LogInformation("{appName} started", name);         
         }
     }
 }
