@@ -373,18 +373,20 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             {
                 locator.Language = language.ToString();
             }
+
+            string fixedConnectionString = null;
             
             if (customerCode != null && customerCode != SingleCustomerCoreProvider.Key)
             {
-                locator.FixedConnectionString = DBConnector.GetConnectionString(customerCode);
+                fixedConnectionString= DBConnector.GetConnectionString(customerCode);
             }
             
             if (!String.IsNullOrEmpty(Options.FixedConnectionString))
             {
-                locator.FixedConnectionString = Options.FixedConnectionString;                
+                fixedConnectionString = Options.FixedConnectionString;                
             }
             
-            if (String.IsNullOrEmpty(locator.FixedConnectionString))
+            if (String.IsNullOrEmpty(fixedConnectionString))
             {
                 throw new Exception("Customer code or connection string is not defined");
             }

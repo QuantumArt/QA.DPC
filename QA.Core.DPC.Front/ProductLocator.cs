@@ -17,10 +17,8 @@ namespace QA.Core.DPC.Front
             Slug = String.Empty;
             QueryFormat = "json";
         }
-        
-        public string InstanceId { get; set; }
 
-        public string FixedConnectionString { get; set; }
+        public string InstanceId { get; set; }
 
         public bool UseProductVersions { get; set; }
 
@@ -42,12 +40,6 @@ namespace QA.Core.DPC.Front
         {
             get => (IsLive) ? "live" : "stage";
             set => IsLive = value.Equals("live", StringComparison.InvariantCulture);
-        }
-
-        public string StringVersion
-        {
-            get => $"v{Version}.0";
-            set => Version = int.Parse(Regex.Match(value, @"^v([\d]+).[\d]+").Value);
         }
 
         public IProductSerializer GetSerialiser()
