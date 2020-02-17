@@ -35,13 +35,11 @@ namespace QA.Core.ProductCatalog.ActionsService
         
         public void Start()
         {
-            _logger.Info("{serviceName} starting...", _options.Name);
+            _logger.Info("{serviceName} started", _options.Name);
             
             _factoryWatcher.OnConfigurationModify += _factoryWatcher_OnConfigurationModify;
             _factoryWatcher.Watch();
             _factoryWatcher.Start();
-            
-            _logger.Info("{serviceName} started", _options.Name);
 
             if (_options.EnableScheduleProcess)
             {

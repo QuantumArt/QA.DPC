@@ -54,6 +54,7 @@ namespace QA.Core.DPC
 
         public void Start()
         {
+            _logger.Info("{serviceName} started",_props.Name);
             Started = DateTime.Now;
 
             NotificationService.OnUpdateConfiguration += NotificationService_OnUpdateConfiguration;
@@ -81,6 +82,7 @@ namespace QA.Core.DPC
 
         public void Stop()
         {
+            _logger.Info("{serviceName} stopping...", _props.Name);
             NotificationService.OnUpdateConfiguration -= NotificationService_OnUpdateConfiguration;
             _configurationWatcher.OnConfigurationModify -= _configurationWatcher_OnConfigurationModify;
             _configurationWatcher.Stop();
@@ -95,6 +97,7 @@ namespace QA.Core.DPC
                     );
                 }
             }
+            _logger.Info("{serviceName} stopped", _props.Name);
         }
 
         private void StopConfiguration(string customerCode)

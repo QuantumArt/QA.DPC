@@ -118,6 +118,16 @@ namespace QA.ProductCatalog.Front.Core.API
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "DPC Front API");
             });
+            
+            LogStart(app, loggerFactory);
+        }
+        
+        private void LogStart(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        {
+            var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
+            var name = config["Data:Name"];
+            var logger = loggerFactory.CreateLogger(GetType());
+            logger.LogInformation("{appName} started", name);         
         }
     }
 }

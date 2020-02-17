@@ -9,5 +9,7 @@
         public bool UsePostgres { get; set; }
         public bool UseProductVersions { get; set; }
         public string InstanceId { get; set; }
+        
+        public string Name { get; set; }
     }
 }

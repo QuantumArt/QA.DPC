@@ -87,6 +87,18 @@ namespace QA.ProductCatalog.HighloadFront.Core.API
             }
 
             app.UseMvc();
+            
+            LogStart(app, loggerFactory);
+        }
+        
+        private void LogStart(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        {
+            var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
+            var syncName = config["Data:SyncName"];
+            var searchName = config["Data:SearchName"];
+            var canUpdate = bool.TryParse(config["Data:CanUpdate"], out var parsed) && parsed;
+            var logger = loggerFactory.CreateLogger(GetType());
+            logger.LogInformation("{appName} started", canUpdate ? syncName : searchName);         
         }
     }
 }

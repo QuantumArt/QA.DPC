@@ -15,7 +15,7 @@ namespace QA.Core.DPC
         
         public string InstanceId { get; set; }
         
-        
+        public string Name { get; set; }
     }
 
     public enum ChannelSource

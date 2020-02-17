@@ -104,8 +104,18 @@ namespace QA.ProductCatalog.WebApi
             });
 
             app.UseMvcWithDefaultRoute();
+            
+            LogStart(app, loggerFactory);
         }
 
+        private void LogStart(IApplicationBuilder app, ILoggerFactory loggerFactory)
+        {
+            var config = app.ApplicationServices.GetRequiredService<IConfiguration>();
+            var name = config["Properties:Name"];
+            var logger = loggerFactory.CreateLogger(GetType());
+            logger.LogInformation("{appName} started", name);         
+        }
+        
         private static void SetupMvcOptions(MvcOptions options, ServiceProvider sp)
         {
             options.Filters.Add(typeof(GlobalExceptionFilterAttribute));

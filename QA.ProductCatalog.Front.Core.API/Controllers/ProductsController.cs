@@ -1,16 +1,16 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using QA.Core.DPC.Front;
 using QA.Core.DPC.QP.Services;
-using QA.Core.Logger;
 using QA.Core.Service.Interaction;
 using QA.ProductCatalog.Front.Core.API.ActionResults;
 using Quantumart.QPublishing.Database;
+using NLog;
+using NLog.Fluent;
+    
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
 {
@@ -19,16 +19,15 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
     {
         protected readonly IDpcProductService ProductService;
 
-        protected readonly ILogger Logger;
+        protected static readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
         protected readonly IDpcService DpcService;
 
         protected readonly DataOptions Options;
         
-        public ProductsController(IDpcProductService productService, ILogger logger, IDpcService dpcService, DataOptions options)
+        public ProductsController(IDpcProductService productService, IDpcService dpcService, DataOptions options)
         {
             ProductService = productService;
-            Logger = logger;
             DpcService = dpcService;
             Options = options;
         }
@@ -74,7 +73,15 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var data = DpcService.GetProductData(locator, id);
 
             if (data == null)
+            {
+                _logger.Error()
+                    .Message("Product {productId} is not found", id)
+                    .Property("locator", locator)
+                    .Write();
+                
                 return BadRequest($"Product {id} is not found");
+                
+            }
 
             ControllerContext.HttpContext.Response.Headers.Add("Last-Modified", data.Updated.ToUniversalTime().ToString("R"));
             return (locator.Format == "json")
@@ -118,7 +125,15 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var data = DpcService.GetProductVersionData(locator, id, filterDate);
 
             if (data == null)
+            {
+                _logger.Error()
+                    .Message("Product version {versionId} is not found", id)
+                    .Property("locator", locator)
+                    .Write();       
+                
                 return BadRequest($"Product version {id} is not found");
+            }
+
 
             return (locator.Format == "json")
                 ? Content(data.Product, JsonHeader)
@@ -147,35 +162,45 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products != null)
             {
-                Logger.Info("Message parsed, deleting products... ");
+                _logger.Info("Message parsed, deleting products... ");
 
                 try
                 {
                     foreach (var p in res1.Result.Products)
                     {
-                        Logger.Info($"Deleting product {p.Id}...");
+                        _logger.Info()
+                            .Message("Deleting product {productId}...", p.Id)
+                            .Property("locator", locator)
+                            .Write();
 
                         var res2 = ProductService.DeleteProduct(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
-                            throw new Exception($"Error while deleting product {p.Id}: {res2.Error.Message}");
+                            throw new ProductException(
+                                "Error while deleting product", res2.Error.Message, p.Id, locator
+                            );
                         }
 
-                        Logger.Info($"Product {p.Id} successfully deleted");
+                        _logger.Info()
+                            .Message("Product {productId} successfully deleted", p.Id)
+                            .Property("locator", locator)
+                            .Write();
                     }
+                }
+                catch (ProductException pex)
+                {
+                    return ProcessProductException(pex);
                 }
                 catch (Exception e)
                 {
-                    Logger.Error(e.Message);
+                    _logger.Error().Exception(e).Write();
                     return BadRequest(e.Message);
                 }
 
                 return Ok();
             }
-            else
-            {
-                return ProceedParseError(data, res1);
-            }
+
+            return ProceedParseError(data, res1);
 
         }
 
@@ -201,43 +226,63 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             var res1 = ProductService.Parse(locator, data);
             if (res1.IsSucceeded && res1.Result?.Products?.Any() == true)
             {
-                Logger.Info("Message parsed, creating or updating products...  ");
+                _logger.Info("Message parsed, creating or updating products...  ");
 
                 try
                 {
                     foreach (var p in res1.Result.Products)
                     {
-                        Logger.Info($"Check for creating or updating (product {p.Id})");
-                        
+                        _logger.Info()
+                            .Message("Check for creating or updating product {productId}", p.Id)
+                            .Property("locator", locator)
+                            .Write();
+                            
+
                         // ReSharper disable once InconsistentlySynchronizedField
                         var res2 = ProductService.HasProductChanged(locator, p.Id, data);
                         if (!res2.IsSucceeded)
                         {
-                            throw new Exception($"Error while checking product {p.Id}: {res2.Error.Message}");
+                            throw new ProductException(
+                                "Error while checking product", res2.Error.Message, p.Id, locator
+                            );
                         }
 
                         if (!res2.Result)
                         {
-                            Logger.Info($"Product {p.Id} doesn't require updating");
+                            _logger.Info()
+                                .Message("Product {productId} doesn't require updating", p.Id)
+                                .Property("locator", locator)
+                                .Write();
                         }
                         else
                         {
-                            Logger.Info($"Creating or updating product {p.Id}");
+                            _logger.Info()
+                                .Message("Creating or updating product {productId}", p.Id)
+                                .Property("locator", locator)
+                                .Write();
 
                             var res3 = ProductService.UpdateProduct(locator, p, data, userName, userId);
                             if (!res3.IsSucceeded)
                             {
-                                throw new Exception(
-                                    $"Error while creating/updating product {p.Id}: {res3.Error.Message}");
+                                throw new ProductException(
+                                    "Error while creating/updating product", res3.Error.Message, p.Id, locator
+                                );
                             }
 
-                            Logger.Info($"Product {p.Id} successfully created/updated");
+                            _logger.Info()
+                                .Message("Product {productId} successfully created/updated", p.Id)
+                                .Property("locator", locator)
+                                .Write();
                         }
                     }
                 }
+                catch (ProductException pex)
+                {
+                    return ProcessProductException(pex);
+                }
                 catch (Exception e)
                 {
-                    Logger.Error(e.Message);
+                    _logger.Error().Exception(e).Write();
                     return BadRequest(e.Message);
                 }
                 return Ok();
@@ -245,8 +290,19 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
             return ProceedParseError(data, res1);
         }
-        
-        
+
+        private ActionResult ProcessProductException(ProductException pex)
+        {
+            _logger.Error()
+                .Message(pex.Message)
+                .Property("productId", pex.ProductId)
+                .Property("result", pex.Result)
+                .Property("locator", pex.Locator)
+                .Write();
+            return BadRequest($"{pex.Message}: {pex.ProductId}. {pex.Result}");
+        }
+
+
         [HttpGet("products/ValidateInstance", Name = "Validate")]
         [HttpGet("products/{language}/{state}/ValidateInstance", Name = "Validate-Channel")]
         [HttpGet("products/{filterDate:datetime}/ValidateInstance", Name = "Validate-Versions")]
@@ -269,7 +325,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
 
         private ActionResult InstanceError(string instanceId, string actualInstanceId)
         {
-            Logger.LogInfo(() => $"InstanceId {instanceId} is wrong. Must be {actualInstanceId}");
+            _logger.Error("InstanceId {instanceId} is wrong. Must be {actualInstanceId}", instanceId, actualInstanceId);
             return new ForbiddenActionResult();
         }
 
@@ -279,12 +335,19 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             if (!res1.IsSucceeded)
             {
                 result = res1.Error.Message;
-                Logger.Error($"Could not parse message to products. Message: {result}. Data: {data}");
+                _logger.Error()
+                    .Message("Could not parse message to products")
+                    .Property("data", data)
+                    .Property("result", result)
+                    .Write();
             }
             else
             {
                 result = "Could find products in parsed message";
-                Logger.Error(result);
+                _logger.Error()
+                    .Message(result)
+                    .Property("data", data)
+                    .Write();
             }
             return BadRequest(result);
         }

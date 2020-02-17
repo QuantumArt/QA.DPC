@@ -9,6 +9,8 @@ using Microsoft.Extensions.Options;
 using QA.Core.DPC.QP.Models;
 using QP.ConfigurationService.Models;
 using Quantumart.QPublishing.Database;
+using NLog;
+using NLog.Fluent;
 
 namespace QA.ProductCatalog.Front.Core.API.Controllers
 {
@@ -17,6 +19,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
     {
         private DataOptions _options;
         private IntegrationProperties _intOptions;
+        private static ILogger _logger = LogManager.GetCurrentClassLogger(); 
         public HealthCheckController(DataOptions options, IOptions<IntegrationProperties> integrationProps)
         {
             _options = options;
@@ -59,8 +62,12 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                 {
                     cc = DBConnector.GetCustomerConfiguration(customerCode.ToString()).Result;
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    _logger.Error().Exception(ex).Message("Cannot receive configuration")
+                        .Property("customerCode", customerCode)
+                        .Write();
+                    
                     return false;
                 }    
             }
@@ -77,8 +84,12 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
                     connection.Open();
                     return true;
                 }
-                catch (DbException)
+                catch (DbException dbex)
                 {
+                    _logger.Error().Exception(dbex).Message("Cannot connect to database")
+                        .Property("customerCode", customerCode)
+                        .Write();
+                    
                     return false;
                 }
             }
