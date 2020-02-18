@@ -458,6 +458,7 @@ namespace QA.Core.DPC
                             .Property("statusCode", httpResponse.StatusCode)
                             .Property("timeTaken", timer.ElapsedMilliseconds)
                             .Property("messageId", message.Id)
+                            .Property("customerCode", customerCode)
                             .Write();
 
                         channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
@@ -490,6 +491,7 @@ namespace QA.Core.DPC
                             .Property("statusCode", httpResponse.StatusCode)
                             .Property("timeTaken", timer.ElapsedMilliseconds)
                             .Property("messageId", message.Id)
+                            .Property("customerCode", customerCode)
                             .Write();
 
                         channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
@@ -505,6 +507,7 @@ namespace QA.Core.DPC
                             .Property("productId", message.Key)
                             .Property("timeTaken", timer.ElapsedMilliseconds)
                             .Property("messageId", message.Id)
+                            .Property("customerCode", customerCode)
                             .Write();
 
                         channelService.UpdateNotificationChannel(customerCode, channel.Name, message.Key,
@@ -519,6 +522,7 @@ namespace QA.Core.DPC
                         .Property("productId", message.Key)
                         .Property("timeTaken", timer.ElapsedMilliseconds)
                         .Property("messageId", message.Id)
+                        .Property("customerCode", customerCode)                        
                         .Write();
                 }
                 finally

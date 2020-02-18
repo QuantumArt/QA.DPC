@@ -378,6 +378,7 @@ namespace QA.ProductCatalog.Front.Core.API.Controllers
             
             if (customerCode != null && customerCode != SingleCustomerCoreProvider.Key)
             {
+                locator.CustomerCode = customerCode;
                 fixedConnectionString= DBConnector.GetConnectionString(customerCode);
             }
             
