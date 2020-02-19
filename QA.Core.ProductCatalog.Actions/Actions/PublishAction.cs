@@ -121,8 +121,7 @@ namespace QA.Core.ProductCatalog.Actions
             {
 	            DoWithLogging(
 		            () => ArticleService.SimplePublish(articleIds),
-		            "Publishing articles {ids} for product {id}",
-		            string.Join(",", articleIds), productId
+		            "Publishing articles {ids} for product {id}", articleIds, productId
 		        );	            
             }
 
